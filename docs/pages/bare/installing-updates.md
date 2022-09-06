@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 expo-updates fetches and manages updates to your app stored on a remote server.
 
-> 💡 If you are creating a new project, we recommend using `npx create-react-native-app` instead of `npx react-native init` because it will handle the following configuration for you automatically.
+> If you are creating a new project, we recommend using `npx create-react-native-app` instead of `npx react-native init` because it will handle the following configuration for you automatically.
 
 ## Installation
 
@@ -26,19 +26,19 @@ We need to modify **index.js** to import `expo-asset` early in your app, in orde
 
 <ConfigurationDiff source="/static/diffs/expo-updates-js.diff" />
 
-<Collapsible summary="💡 What is the SDK version field for?">
+<Collapsible summary="What is the SDK version field for?">
 
 Currently, all apps published to Expo's servers must be configured with a valid SDK version. We use the SDK version to determine which app binaries a particular update is compatible with. If your app has the `expo` package installed in package.json, your SDK version should match the major version number of this package. Otherwise, you can just use the latest Expo SDK version number (at least `38.0.0`).
 
 </Collapsible>
 
-<Collapsible summary="💡 How do I customize which assets are included in an update bundle?">
+<Collapsible summary="How do I customize which assets are included in an update bundle?">
 
 If you have assets (such as images or other media) that are imported in your application code, and you would like these to be downloaded atomically as part of an update, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example: `"assetBundlePatterns": ["**/*"]`
 
 </Collapsible>
 
-<Collapsible summary="💡 Migrating from an ExpoKit project?">
+<Collapsible summary="Migrating from an ExpoKit project?">
 
 If you're migrating from an ExpoKit project to the bare workflow with `expo-updates`, remove the `ios.publishBundlePath`, `ios.publishManifestPath`, `android.publishBundlePath`, and `android.publishManifestPath` keys from your app.json.
 
@@ -54,7 +54,7 @@ If you're migrating from an ExpoKit project to the bare workflow with `expo-upda
 <plist version="1.0">
   <dict>
     <key>EXUpdatesSDKVersion</key>
-    <string>43.0.0</string>
+    <string>45.0.0</string>
     <key>EXUpdatesURL</key>
     <string>https://exp.host/@my-expo-username/my-app</string>
   </dict>
@@ -73,7 +73,7 @@ If you're migrating from an ExpoKit project to the bare workflow with `expo-upda
    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
    <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
 +    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@my-expo-username/my-app"/>
-+    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="43.0.0"/>
++    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="45.0.0"/>
      <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>

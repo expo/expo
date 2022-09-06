@@ -2,9 +2,39 @@
 
 import Dispatch
 
-public let log = Logger(category: "expo")
+public let log = Logger(category: Logger.EXPO_LOG_CATEGORY)
 
+/**
+ An OptionSet defining the logging options that are currently supported.
+ Future options may include writing to a DB or other destinations
+ */
+public struct LoggerOptions: OptionSet {
+  public let rawValue: Int
+
+  public init(rawValue: Int) {
+    self.rawValue = rawValue
+  }
+
+  /**
+   Including this option will result in logs being written using os.log() or print(),
+   depending on the iOS version.
+   */
+  public static let logToOS = LoggerOptions(rawValue: 1 << 0)
+  /**
+   Including this option will result in logs being written to a flat file, as
+   strings separated by carriage returns.
+   */
+  public static let logToFile = LoggerOptions(rawValue: 1 << 1)
+}
+
+/**
+ Native iOS logging class for Expo, with options to direct logs
+ to different destinations.
+ */
 public class Logger {
+  public static let EXPO_MODULES_LOG_SUBSYSTEM = "dev.expo.modules"
+  public static let EXPO_LOG_CATEGORY = "expo"
+
   #if DEBUG || EXPO_CONFIGURATION_DEBUG
   private var minLevel: LogType = .trace
   #else
@@ -15,13 +45,18 @@ public class Logger {
 
   private var handlers: [LogHandler] = []
 
-  init(category: String = "main") {
+  public init(category: String = "main", options: LoggerOptions = [.logToOS]) {
     self.category = category
 
-    if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
-      addHandler(withType: OSLogHandler.self)
-    } else {
-      addHandler(withType: PrintLogHandler.self)
+    if options.contains(.logToFile) {
+      addHandler(withType: PersistentFileLogHandler.self)
+    }
+    if options.contains(.logToOS) {
+      if #available(macOS 11.0, iOS 14.0, watchOS 7.0, tvOS 14.0, *) {
+        addHandler(withType: OSLogHandler.self)
+      } else {
+        addHandler(withType: PrintLogHandler.self)
+      }
     }
   }
 
@@ -139,7 +174,7 @@ public class Logger {
     }
     let endTime = DispatchTime.now()
     let diff = Double(endTime.uptimeNanoseconds - startTime.uptimeNanoseconds) / 1_000_000
-    log(type: .timer, "Timer '\(id)' has finished in: \(diff) seconds")
+    log(type: .timer, "Timer '\(id)' has finished in: \(diff) ms")
     timers.removeValue(forKey: id)
   }
 
@@ -165,15 +200,16 @@ public class Logger {
     guard type.rawValue >= minLevel.rawValue else {
       return
     }
-    let message = items
-      .map { String(describing: $0) }
+    let messages = items
+      .map { describe(value: $0) }
       .joined(separator: " ")
       .split(whereSeparator: \.isNewline)
       .map { "\(type.prefix) \($0)" }
-      .joined()
 
     handlers.forEach { handler in
-      handler.log(type: type, message)
+      messages.forEach { message in
+        handler.log(type: type, message)
+      }
     }
   }
 
@@ -184,4 +220,17 @@ public class Logger {
 
 private func reformatStackSymbol(_ symbol: String) -> String {
   return symbol.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)
+}
+
+private func describe(value: Any) -> String {
+  if let value = value as? String {
+    return value
+  }
+  if let value = value as? CustomDebugStringConvertible {
+    return value.debugDescription
+  }
+  if let value = value as? CustomStringConvertible {
+    return value.description
+  }
+  return String(describing: value)
 }

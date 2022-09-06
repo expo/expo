@@ -2,6 +2,7 @@
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs/promises';
+import { sync as globSync } from 'glob';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
@@ -16,6 +17,28 @@ import {
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
+
+const templateFolder = path.join(__dirname, '../../../../../templates/expo-template-bare-minimum/');
+
+function getTemplatePath() {
+  const results = globSync(`*.tgz`, {
+    absolute: true,
+    cwd: templateFolder,
+  });
+
+  return results[0];
+}
+
+async function ensureTemplatePathAsync() {
+  let templatePath = getTemplatePath();
+  if (templatePath) return templatePath;
+  await execa('npm', ['pack'], { cwd: templateFolder });
+
+  templatePath = getTemplatePath();
+  if (templatePath) return templatePath;
+
+  throw new Error('Could not find template tarball');
+}
 
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
@@ -87,7 +110,13 @@ it(
   async () => {
     const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
     // `npx expo prebuild --no-install`
-    await execa('node', [bin, 'prebuild', '--no-install'], { cwd: projectRoot });
+
+    const templateFolder = await ensureTemplatePathAsync();
+    console.log('Using local template:', templateFolder);
+
+    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
+      cwd: projectRoot,
+    });
 
     // List output files with sizes for snapshotting.
     // This is to make sure that any changes to the output are intentional.
@@ -104,7 +133,7 @@ it(
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
     // Deleted
-    expect(pkg.main).not.toBeDefined();
+    expect(pkg.main).toBe('node_modules/expo/AppEntry.js');
 
     // Added new packages
     expect(Object.keys(pkg.dependencies).sort()).toStrictEqual([
@@ -112,9 +141,7 @@ it(
       'expo-splash-screen',
       'expo-status-bar',
       'react',
-      'react-dom',
       'react-native',
-      'react-native-web',
     ]);
 
     // Updated scripts
@@ -128,6 +155,7 @@ it(
     expect(files).toMatchInlineSnapshot(`
       Array [
         "App.js",
+        "android/.gitignore",
         "android/app/BUCK",
         "android/app/build.gradle",
         "android/app/build_defs.bzl",
@@ -138,6 +166,18 @@ it(
         "android/app/src/main/AndroidManifest.xml",
         "android/app/src/main/java/com/example/minimal/MainActivity.java",
         "android/app/src/main/java/com/example/minimal/MainApplication.java",
+        "android/app/src/main/java/com/example/minimal/newarchitecture/MainApplicationReactNativeHost.java",
+        "android/app/src/main/java/com/example/minimal/newarchitecture/components/MainComponentsRegistry.java",
+        "android/app/src/main/java/com/example/minimal/newarchitecture/modules/MainApplicationTurboModuleManagerDelegate.java",
+        "android/app/src/main/jni/Android.mk",
+        "android/app/src/main/jni/MainApplicationModuleProvider.cpp",
+        "android/app/src/main/jni/MainApplicationModuleProvider.h",
+        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.cpp",
+        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.h",
+        "android/app/src/main/jni/MainComponentsRegistry.cpp",
+        "android/app/src/main/jni/MainComponentsRegistry.h",
+        "android/app/src/main/jni/OnLoad.cpp",
+        "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png",
@@ -161,11 +201,12 @@ it(
         "android/gradlew.bat",
         "android/settings.gradle",
         "app.json",
-        "index.js",
+        "ios/.gitignore",
+        "ios/.xcode.env",
         "ios/Podfile",
         "ios/Podfile.properties.json",
         "ios/basicprebuild/AppDelegate.h",
-        "ios/basicprebuild/AppDelegate.m",
+        "ios/basicprebuild/AppDelegate.mm",
         "ios/basicprebuild/Images.xcassets/AppIcon.appiconset/Contents.json",
         "ios/basicprebuild/Images.xcassets/Contents.json",
         "ios/basicprebuild/Images.xcassets/SplashScreenBackground.imageset/Contents.json",
@@ -173,14 +214,12 @@ it(
         "ios/basicprebuild/Info.plist",
         "ios/basicprebuild/SplashScreen.storyboard",
         "ios/basicprebuild/Supporting/Expo.plist",
-        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
         "ios/basicprebuild/basicprebuild.entitlements",
         "ios/basicprebuild/main.m",
         "ios/basicprebuild/noop-file.swift",
         "ios/basicprebuild.xcodeproj/project.pbxproj",
         "ios/basicprebuild.xcodeproj/project.xcworkspace/contents.xcworkspacedata",
         "ios/basicprebuild.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist",
-        "ios/basicprebuild.xcodeproj/project.xcworkspace/xcuserdata/brentvatne.xcuserdatad/UserInterfaceState.xcuserstate",
         "ios/basicprebuild.xcodeproj/xcshareddata/xcschemes/basicprebuild.xcscheme",
         "metro.config.js",
         "package.json",

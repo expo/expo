@@ -1,6 +1,16 @@
 #include "MethodMetadata.h"
-
 #include "JSIInteropModuleRegistry.h"
+#include "JavaScriptValue.h"
+#include "JavaScriptObject.h"
+#include "JavaScriptTypedArray.h"
+#include "JavaReferencesCache.h"
+#include "Exceptions.h"
+
+#include <utility>
+
+#include "react/jni/ReadableNativeMap.h"
+#include "react/jni/ReadableNativeArray.h"
+#include "JSReferencesCache.h"
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -68,15 +78,79 @@ jni::local_ref<react::JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunct
   return react::JCxxCallbackImpl::newObjectCxxArgs(fn);
 }
 
+std::vector<jobject> MethodMetadata::convertJSIArgsToJNI(
+  JSIInteropModuleRegistry *moduleRegistry,
+  JNIEnv *env,
+  jsi::Runtime &rt,
+  const jsi::Value *args,
+  size_t count,
+  bool returnGlobalReferences
+) {
+  std::vector<jobject> result(count);
+
+  auto makeGlobalIfNecessary = [env, returnGlobalReferences](jobject obj) -> jobject {
+    if (returnGlobalReferences) {
+      return env->NewGlobalRef(obj);
+    }
+    return obj;
+  };
+
+  for (unsigned int argIndex = 0; argIndex < count; argIndex++) {
+    const jsi::Value &arg = args[argIndex];
+    auto &type = argTypes[argIndex];
+    if (arg.isNull() || arg.isUndefined()) {
+      // If value is null or undefined, we just passes a null
+      // Kotlin code will check if expected type is nullable.
+      result[argIndex] = nullptr;
+    } else {
+      if (type->converter->canConvert(rt, arg)) {
+        result[argIndex] = makeGlobalIfNecessary(
+          type->converter->convert(rt, env, moduleRegistry, arg)
+        );
+      } else {
+        auto stringRepresentation = arg.toString(rt).utf8(rt);
+        jni::throwNewJavaException(
+          UnexpectedException::create(
+            "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
+        );
+      }
+    }
+  }
+
+  return result;
+}
+
 MethodMetadata::MethodMetadata(
   std::string name,
   int args,
   bool isAsync,
+  jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
-) : name(name),
+) : name(std::move(name)),
     args(args),
     isAsync(isAsync),
-    jBodyReference(jBodyReference) {}
+    jBodyReference(std::move(jBodyReference)) {
+  argTypes.reserve(args);
+  for (size_t i = 0; i < args; i++) {
+    auto expectedType = expectedArgTypes->getElement(i);
+    argTypes.push_back(
+      std::make_unique<AnyType>(std::move(expectedType))
+    );
+  }
+}
+
+MethodMetadata::MethodMetadata(
+  std::string name,
+  int args,
+  bool isAsync,
+  std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
+  jni::global_ref<jobject> &&jBodyReference
+) : name(std::move(name)),
+    args(args),
+    isAsync(isAsync),
+    argTypes(std::move(expectedArgTypes)),
+    jBodyReference(std::move(jBodyReference)
+    ) {}
 
 std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
   jsi::Runtime &runtime,
@@ -86,54 +160,20 @@ std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
     if (isAsync) {
       body = std::make_shared<jsi::Function>(toAsyncFunction(runtime, moduleRegistry));
     } else {
-      body = std::make_shared<jsi::Function>(toSyncFunction(runtime));
+      body = std::make_shared<jsi::Function>(toSyncFunction(runtime, moduleRegistry));
     }
   }
 
   return body;
 }
 
-jsi::Function MethodMetadata::toSyncFunction(jsi::Runtime &runtime) {
-  return jsi::Function::createFromHostFunction(
-    runtime,
-    jsi::PropNameID::forAscii(runtime, name),
-    args,
-    [this](
-      jsi::Runtime &rt,
-      const jsi::Value &thisValue,
-      const jsi::Value *args,
-      size_t count
-    ) -> jsi::Value {
-      auto dynamicArray = folly::dynamic::array();
-      for (int i = 0; i < count; i++) {
-        auto &arg = args[i];
-        dynamicArray.push_back(jsi::dynamicFromValue(rt, arg));
-      }
-
-      // Cast in this place is safe, cause we know that this function is promise-less.
-      auto syncFunction = jni::static_ref_cast<JNIFunctionBody>(this->jBodyReference);
-      auto result = syncFunction->invoke(
-        react::ReadableNativeArray::newObjectCxxArgs(std::move(dynamicArray)).get()
-      );
-
-      if (result == nullptr) {
-        return jsi::Value::undefined();
-      }
-
-      return jsi::valueFromDynamic(rt, result->cthis()->consume())
-        .asObject(rt)
-        .asArray(rt)
-        .getValueAtIndex(rt, 0);
-    });
-}
-
-jsi::Function MethodMetadata::toAsyncFunction(
-  jsi::Runtime &runtime, 
+jsi::Function MethodMetadata::toSyncFunction(
+  jsi::Runtime &runtime,
   JSIInteropModuleRegistry *moduleRegistry
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
-    jsi::PropNameID::forAscii(runtime, name),
+    moduleRegistry->jsRegistry->getPropNameID(runtime, name),
     args,
     [this, moduleRegistry](
       jsi::Runtime &rt,
@@ -141,19 +181,106 @@ jsi::Function MethodMetadata::toAsyncFunction(
       const jsi::Value *args,
       size_t count
     ) -> jsi::Value {
-      auto dynamicArray = folly::dynamic::array();
-      for (int i = 0; i < count; i++) {
-        auto &arg = args[i];
-        dynamicArray.push_back(jsi::dynamicFromValue(rt, arg));
+      try {
+        return this->callSync(
+          rt,
+          moduleRegistry,
+          args,
+          count
+        );
+      } catch (jni::JniException &jniException) {
+        rethrowAsCodedError(rt, moduleRegistry, jniException);
       }
+    });
+}
 
-      auto Promise = rt.global().getPropertyAsFunction(rt, "Promise");
-      // Creates a JSI promise
-      jsi::Value promise = Promise.callAsConstructor(
-        rt,
-        createPromiseBody(rt, moduleRegistry, std::move(dynamicArray))
-      );
-      return promise;
+jsi::Value MethodMetadata::callSync(
+  jsi::Runtime &rt,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value *args,
+  size_t count
+) {
+  if (this->jBodyReference == nullptr) {
+    return jsi::Value::undefined();
+  }
+
+  JNIEnv *env = jni::Environment::current();
+
+  /**
+   * This will push a new JNI stack frame for the LocalReferences in this
+   * function call. When the stack frame for this lambda is popped,
+   * all LocalReferences are deleted.
+   */
+  jni::JniLocalScope scope(env, (int) count);
+
+  std::vector<jobject> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count,
+                                                           false);
+
+  // TODO(@lukmccall): Remove this temp array
+  auto tempArray = env->NewObjectArray(
+    convertedArgs.size(),
+    JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
+    nullptr
+  );
+  for (size_t i = 0; i < convertedArgs.size(); i++) {
+    env->SetObjectArrayElement(tempArray, i, convertedArgs[i]);
+  }
+
+  // Cast in this place is safe, cause we know that this function is promise-less.
+  auto syncFunction = jni::static_ref_cast<JNIFunctionBody>(this->jBodyReference);
+  auto result = syncFunction->invoke(
+    tempArray
+  );
+
+  if (result == nullptr) {
+    return jsi::Value::undefined();
+  }
+
+  return jsi::valueFromDynamic(rt, result->cthis()->consume())
+    .asObject(rt)
+    .asArray(rt)
+    .getValueAtIndex(rt, 0);
+}
+
+jsi::Function MethodMetadata::toAsyncFunction(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *moduleRegistry
+) {
+  return jsi::Function::createFromHostFunction(
+    runtime,
+    moduleRegistry->jsRegistry->getPropNameID(runtime, name),
+    args,
+    [this, moduleRegistry](
+      jsi::Runtime &rt,
+      const jsi::Value &thisValue,
+      const jsi::Value *args,
+      size_t count
+    ) -> jsi::Value {
+      JNIEnv *env = jni::Environment::current();
+
+      /**
+       * This will push a new JNI stack frame for the LocalReferences in this
+       * function call. When the stack frame for this lambda is popped,
+       * all LocalReferences are deleted.
+       */
+      jni::JniLocalScope scope(env, (int) count);
+
+      try {
+        std::vector<jobject> convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args,
+                                                                 count,
+                                                                 true);
+        auto &Promise = moduleRegistry->jsRegistry->getObject<jsi::Function>(
+          JSReferencesCache::JSKeys::PROMISE
+        );
+        // Creates a JSI promise
+        jsi::Value promise = Promise.callAsConstructor(
+          rt,
+          createPromiseBody(rt, moduleRegistry, std::move(convertedArgs))
+        );
+        return promise;
+      } catch (jni::JniException &jniException) {
+        rethrowAsCodedError(rt, moduleRegistry, jniException);
+      }
     }
   );
 }
@@ -161,11 +288,11 @@ jsi::Function MethodMetadata::toAsyncFunction(
 jsi::Function MethodMetadata::createPromiseBody(
   jsi::Runtime &runtime,
   JSIInteropModuleRegistry *moduleRegistry,
-  folly::dynamic &&args
+  std::vector<jobject> &&args
 ) {
   return jsi::Function::createFromHostFunction(
     runtime,
-    jsi::PropNameID::forAscii(runtime, "promiseFn"),
+    moduleRegistry->jsRegistry->getPropNameID(runtime, "promiseFn"),
     2,
     [this, args = std::move(args), moduleRegistry](
       jsi::Runtime &rt,
@@ -180,39 +307,51 @@ jsi::Function MethodMetadata::createPromiseBody(
       jsi::Function resolveJSIFn = promiseConstructorArgs[0].getObject(rt).getFunction(rt);
       jsi::Function rejectJSIFn = promiseConstructorArgs[1].getObject(rt).getFunction(rt);
 
+      auto &runtimeHolder = moduleRegistry->runtimeHolder;
       jobject resolve = createJavaCallbackFromJSIFunction(
         std::move(resolveJSIFn),
         rt,
-        moduleRegistry->jsInvoker
+        runtimeHolder->jsInvoker
       ).release();
 
       jobject reject = createJavaCallbackFromJSIFunction(
         std::move(rejectJSIFn),
         rt,
-        moduleRegistry->jsInvoker
+        runtimeHolder->jsInvoker
       ).release();
 
       JNIEnv *env = jni::Environment::current();
 
-      jclass jPromiseImpl =
-        env->FindClass("com/facebook/react/bridge/PromiseImpl");
-      jmethodID jPromiseImplConstructor = env->GetMethodID(
-        jPromiseImpl,
+      auto &jPromise = JavaReferencesCache::instance()->getJClass(
+        "com/facebook/react/bridge/PromiseImpl");
+      jmethodID jPromiseConstructor = jPromise.getMethod(
         "<init>",
-        "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V");
+        "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"
+      );
 
       // Creates a promise object
       jobject promise = env->NewObject(
-        jPromiseImpl,
-        jPromiseImplConstructor,
+        jPromise.clazz,
+        jPromiseConstructor,
         resolve,
         reject
       );
 
+      auto argsSize = args.size();
+      // TODO(@lukmccall): Remove this temp array
+      auto tempArray = env->NewObjectArray(
+        argsSize,
+        JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
+        nullptr
+      );
+      for (size_t i = 0; i < argsSize; i++) {
+        env->SetObjectArrayElement(tempArray, i, args[i]);
+      }
+
       // Cast in this place is safe, cause we know that this function expects promise.
       auto asyncFunction = jni::static_ref_cast<JNIAsyncFunctionBody>(this->jBodyReference);
       asyncFunction->invoke(
-        react::ReadableNativeArray::newObjectCxxArgs(args).get(),
+        tempArray,
         promise
       );
 
@@ -220,6 +359,11 @@ jsi::Function MethodMetadata::createPromiseBody(
       // It doesn't mean that the promise will be deallocated, but rather that we move
       // the ownership to the `JNIAsyncFunctionBody`.
       env->DeleteLocalRef(promise);
+
+      for (const auto &arg: args) {
+        env->DeleteGlobalRef(arg);
+      }
+      env->DeleteLocalRef(tempArray);
 
       return jsi::Value::undefined();
     }

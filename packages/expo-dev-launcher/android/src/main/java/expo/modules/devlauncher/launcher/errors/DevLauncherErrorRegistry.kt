@@ -15,11 +15,13 @@ data class DevLauncherErrorInstance(
   val throwable: Throwable,
   val timestamp: Long = DevLauncherRecentlyOpenedAppsRegistry.TimeHelper.getCurrentTime()
 ) {
-  fun toWritableMap(): WritableMap? = Arguments.fromBundle(Bundle().apply {
-    putLong("timestamp", timestamp)
-    putString("message", throwable.message ?: "Unknown")
-    putString("stack", throwable.stackTraceToString())
-  })
+  fun toWritableMap(): WritableMap? = Arguments.fromBundle(
+    Bundle().apply {
+      putLong("timestamp", timestamp)
+      putString("message", throwable.message ?: "Unknown")
+      putString("stack", throwable.stackTraceToString())
+    }
+  )
 }
 
 class DevLauncherErrorRegistry(context: Context) {

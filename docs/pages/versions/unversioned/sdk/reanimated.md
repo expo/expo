@@ -9,6 +9,8 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`react-native-reanimated`** provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations.
 
+> **Reanimated uses React Native APIs that are incompatible with "Remote JS Debugging" for JavaScriptCore**. In order to use a debugger with your app with react-native-reanimated, you will need to use the [Hermes JavaScript engine](/guides/using-hermes.md) and the [JavaScript Inspector for Hermes](/guides/using-hermes.md#javascript-inspector-for-hermes).
+
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
@@ -18,7 +20,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 **In all cases,** after the installation completes, you must also add the Babel plugin to **babel.config.js**:
 
 ```jsx
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],
@@ -27,11 +29,9 @@ module.exports = function(api) {
 };
 ```
 
-After you add the Babel plugin, restart your development server and clear the bundler cache: `expo start --clear`.
+After you add the Babel plugin, restart your development server and clear the bundler cache: `npx expo start --clear`.
 
 > Note: If you load other Babel plugins, the Reanimated plugin has to be the last item in the plugins array.
-
-> 🚨 **The new APIs in `react-native-reanimated@2` use React Native APIs that are incompatible with Remote JS Debugging**. Consequently, you can only debug apps using these APIs using Flipper, which is not yet available in the Expo managed workflow. **You will be unable to use Remote JS Debugging if you use the new APIs from Reanimated 2**. Remote JS Debugging will continue to work if you only use the APIs that were also available in Reanimated 1.
 
 ## API Usage
 

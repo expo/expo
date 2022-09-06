@@ -6,6 +6,7 @@
 
 #import <jsi/jsi.h>
 #import <ReactCommon/RCTTurboModule.h>
+#import <ReactCommon/TurboModuleUtils.h>
 #import <ExpoModulesCore/EXObjectDeallocator.h>
 
 namespace jsi = facebook::jsi;
@@ -21,7 +22,7 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<react::Cal
 
 #pragma mark - Classes
 
-using ClassConstructor = std::function<void(jsi::Runtime &runtime, const jsi::Value &thisValue, jsi::Array args)>;
+using ClassConstructor = std::function<void(jsi::Runtime &runtime, const jsi::Value &thisValue, const jsi::Value *args, size_t count)>;
 
 std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *name, ClassConstructor constructor);
 

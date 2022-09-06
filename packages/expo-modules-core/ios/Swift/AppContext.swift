@@ -28,8 +28,9 @@ public final class AppContext: NSObject {
   /**
    The legacy module registry with modules written in the old-fashioned way.
    */
-  @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
+
+  internal weak var legacyModulesProxy: LegacyNativeModulesProxy?
 
   /**
    React bridge of the context's app. Can be `nil` when the bridge
@@ -76,6 +77,15 @@ public final class AppContext: NSObject {
     moduleRegistry.register(fromProvider: provider)
     return self
   }
+
+  // MARK: - UI
+
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
+    let view: UIView? = reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag))
+    return view as? ViewType
+  }
+
+  // MARK: - Legacy modules
 
   /**
    Returns a legacy module implementing given protocol/interface.
@@ -242,7 +252,11 @@ public final class AppContext: NSObject {
   }
 
   @objc
-  public func exportedFunctionNames() -> [String: [[String: Any]]] {
+  public final lazy var expoModulesConfig = ModulesProxyConfig(constants: self.exportedModulesConstants(),
+                                                               methodNames: self.exportedFunctionNames(),
+                                                               viewManagers: self.viewManagersMetadata())
+
+  private func exportedFunctionNames() -> [String: [[String: Any]]] {
     var constants = [String: [[String: Any]]]()
 
     for holder in moduleRegistry {
@@ -257,15 +271,16 @@ public final class AppContext: NSObject {
     return constants
   }
 
-  @objc
-  public func exportedModulesConstants() -> [String: Any] {
-    return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
-      acc[holder.name] = holder.getConstants()
-    }
+  private func exportedModulesConstants() -> [String: Any] {
+    return moduleRegistry
+      // prevent infinite recursion - exclude NativeProxyModule constants
+      .filter { $0.name != NativeModulesProxyModule.moduleName }
+      .reduce(into: [String: Any]()) { acc, holder in
+        acc[holder.name] = holder.getConstants()
+      }
   }
 
-  @objc
-  public func viewManagersMetadata() -> [String: Any] {
+  private func viewManagersMetadata() -> [String: Any] {
     return moduleRegistry.reduce(into: [String: Any]()) { acc, holder in
       if let viewManager = holder.definition.viewManager {
         acc[holder.name] = [
@@ -332,19 +347,14 @@ public final class AppContext: NSObject {
     // [2] Fallback to an empty `ModulesProvider` if `ExpoModulesProvider` was not generated
     return ModulesProvider()
   }
-
 }
 
 // MARK: - Public exceptions
 
-public final class AppContextLostException: Exception {
-  override public var reason: String {
-    "The app context has been lost"
-  }
-}
+// Deprecated since v1.0.0
+@available(*, deprecated, renamed: "Exceptions.AppContextLost")
+public typealias AppContextLostException = Exceptions.AppContextLost
 
-public final class RuntimeLostException: Exception {
-  override public var reason: String {
-    "The JavaScript runtime has been lost"
-  }
-}
+// Deprecated since v1.0.0
+@available(*, deprecated, renamed: "Exceptions.RuntimeLost")
+public typealias RuntimeLostException = Exceptions.RuntimeLost

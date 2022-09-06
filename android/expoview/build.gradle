@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
+apply from: new File(rootDir, "versioning_linking.gradle")
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
@@ -69,6 +70,13 @@ def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
+
+def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${project(':ReactAndroid').projectDir}/prebuiltHermes")
+def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
+def currentHermesVersion = file("${rootDir}/sdks/.hermesversion").exists() ? file("${rootDir}/sdks/.hermesversion").text : null
+def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
+logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
+
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
 
@@ -181,7 +189,7 @@ android {
       "**/libglog.so",
       "**/libjscexecutor.so",
       "**/libfbjni.so",
-      "**/libfolly_json.so",
+      "**/libfolly_runtime.so",
       "**/libhermes.so",
       "**/libjsi.so",
     ]
@@ -195,8 +203,7 @@ android {
 
   buildTypes {
     release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      consumerProguardFiles('proguard-rules.pro')
     }
   }
 
@@ -228,12 +235,12 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
         it.toLowerCase().contains("release")
       } ? "release" : "debug"
 
-      workingDir '../../tools/bin'
+      workingDir '../../bin'
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
+        commandLine 'cmd.exe', '/c', "expotools android-generate-dynamic-macros --configuration ${configuration}"
       } else {
-        commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+        commandLine "./expotools", "android-generate-dynamic-macros", "--configuration", configuration
       }
     }
   }
@@ -282,9 +289,14 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
-  def hermesPath = "../../node_modules/hermes-engine/android/";
-  debugImplementation files(hermesPath + "hermes-debug.aar")
-  releaseImplementation files(hermesPath + "hermes-release.aar")
+  if (!buildHermesSource) {
+    debugImplementation(files("${prebuiltHermesDir}/hermes-engine-debug.aar"))
+    releaseImplementation(files("${prebuiltHermesDir}/hermes-engine-release.aar"))
+  } else {
+    implementation(project(':ReactAndroid:hermes-engine')) {
+      exclude(group:'com.facebook.fbjni', module: 'fbjni')
+    }
+  }
 
   // Expo modules
   api project(':expo')
@@ -295,15 +307,12 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_46
+  versionedApi 'host.exp:reactandroid-abi46_0_0:1.0.0'
+  // END_SDK_46
   // BEGIN_SDK_45
   versionedApi 'host.exp:reactandroid-abi45_0_0:1.0.0'
   // END_SDK_45
-  // BEGIN_SDK_44
-  versionedApi 'host.exp:reactandroid-abi44_0_0:1.0.0'
-  // END_SDK_44
-  // BEGIN_SDK_43
-  versionedApi 'host.exp:reactandroid-abi43_0_0:1.0.0'
-  // END_SDK_43
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -335,7 +344,7 @@ dependencies {
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
-  api 'com.google.android.gms:play-services-maps:17.0.0'
+  api 'com.google.android.gms:play-services-maps:18.0.0'
   api 'com.google.android.gms:play-services-auth:17.0.0'
   api 'com.google.android.gms:play-services-location:17.0.0'
   api 'com.google.android.gms:play-services-fitness:17.0.0'
@@ -345,7 +354,7 @@ dependencies {
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'commons-io:commons-io:2.6'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation "com.github.CanHub:Android-Image-Cropper:1.1.1"
+  implementation "com.github.CanHub:Android-Image-Cropper:4.3.0"
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
   api 'com.airbnb.android:lottie:3.4.0'
@@ -376,7 +385,7 @@ dependencies {
   api 'com.google.android.material:material:1.1.0'
 
   api 'com.google.firebase:firebase-core:17.2.3'
-  api 'com.google.firebase:firebase-messaging:21.1.0'
+  api 'com.google.firebase:firebase-messaging:22.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
@@ -405,9 +414,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:19.3.1') {
-    exclude group:'com.google.android.gms', module:'play-services-wallet'
-  }
+  implementation('com.stripe:stripe-android:20.5.+')
+  implementation('com.stripe:financial-connections:20.5.+')
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
   implementation 'com.google.android.material:material:1.3.0'
@@ -422,6 +430,7 @@ dependencies {
   implementation "androidx.work:work-runtime:2.7.1"
 }
 
+useVendoredModulesForExpoView('unversioned')
 
 // WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE
 
@@ -462,7 +471,7 @@ task createNativeDepsDirectories {
 }
 
 task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-  src("https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz")
+  src("https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz")
   onlyIfNewer(true)
   overwrite(false)
   dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
@@ -667,26 +676,6 @@ def getCmakeToolchainFile() {
   return "-DCMAKE_TOOLCHAIN_FILE=${getNdkBuildFullPath()}/../build/cmake/android.toolchain.cmake"
 }
 
-task prepareHermes() {
-  def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
-  if (!hermesPackagePath) {
-    throw new GradleScriptException("Could not find the hermes-engine npm package", null)
-  }
-
-  def hermesAAR = file("$hermesPackagePath/android/hermes-debug.aar")
-  if (!hermesAAR.exists()) {
-    throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"", null)
-  }
-
-  def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
-
-  copy {
-    from soFiles
-    from "$reactNative/ReactAndroid/src/main/jni/first-party/hermes/Android.mk"
-    into "$thirdPartyNdkDir/hermes"
-  }
-}
-
 // Create Android.mk library module based on jsc from npm
 task prepareJSC {
   doLast {
@@ -749,8 +738,8 @@ task extractSOFiles {
 }
 
 project.afterEvaluate {
-  def nativeBuildTask = tasks.findByName("copyUnversionedReleaseJniLibsProjectOnly")  // for expoview
-                        ?: tasks.findByName("copyReleaseJniLibsProjectOnly") // for expoview-${abiName}
+  def nativeBuildTask = tasks.findByName("copyUnversionedReleaseJniLibsProjectAndLocalJars")  // for expoview
+                        ?: tasks.findByName("copyReleaseJniLibsProjectAndLocalJars") // for expoview-${abiName}
   if (nativeBuildTask) {
     packageNdkLibs.dependsOn nativeBuildTask
   }
@@ -771,8 +760,8 @@ project.afterEvaluate {
 }
 
 task packageNdkLibs(type: Copy) {
-  from("$buildDir/intermediates/library_jni/unversionedRelease/jni") // for expoview
-  from("$buildDir/intermediates/library_jni/release/jni") // for expoview-${abiName}
+  from("$buildDir/intermediates/stripped_native_libs/unversionedRelease/out/lib") // for expoview
+  from("$buildDir/intermediates/stripped_native_libs/release/out/lib") // for expoview-${abiName}
   include("**/libreanimated*.so")
   into("$projectDir/src/main/jniLibs")
 }

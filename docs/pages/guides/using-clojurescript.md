@@ -105,7 +105,7 @@ For more information, see [Expo CLI](../workflow/expo-cli.md).
 # Generate main.js
 lein prod-build
 
-expo publish
+eas update
 ```
 
 This will publish your app to a persistent URL on Expo, for example: <https://expo.dev/@community/startr>
@@ -130,7 +130,7 @@ React Native uses JavaScriptCore, so modules using built-in node like stream, fs
 
 ### Do I need to restart the REPL after adding new JavaScript modules or assets?
 
-No, you do need to reload JavaScript. To do that, select **Reload** from the Developer Menu. You can also press `⌘ + R` in the iOS Simulator, or press `R` twice on Android emulators.
+No, you do need to reload JavaScript. To do that, select **Reload** from the Developer Menu. You can also press <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in the iOS Simulator, or press <kbd>R</kbd> twice on Android emulators.
 
 ### Will it support Boot?
 

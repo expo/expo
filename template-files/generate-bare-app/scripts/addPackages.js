@@ -11,6 +11,14 @@ function symlinkPackages(expoDirectory, projectDirectory, packageNames) {
     if (!symlinks.includes(packageName)) {
       symlinks.push(packageName);
     }
+
+    // add any dependencies of the specified packages if they are not already symlinked
+    const dependencies = getPackageDependencies({ packageName });
+    dependencies.forEach((dependency) => {
+      if (!symlinks.includes(dependency)) {
+        symlinks.push(dependency);
+      }
+    });
   });
 
   symlinks.forEach((packageName) => {
@@ -35,6 +43,27 @@ function symlinkPackages(expoDirectory, projectDirectory, packageNames) {
     JSON.stringify(pkgJson, null, 2),
     { encoding: 'utf-8' }
   );
+
+  function getPackageDependencies({ packageName }) {
+    const packagePath = path.resolve(expoDirectory, 'packages', packageName, 'package.json');
+
+    if (!fs.existsSync(packagePath)) {
+      return [];
+    }
+
+    const dependencies = new Set([packageName]);
+
+    const pkg = require(packagePath);
+
+    if (pkg.dependencies) {
+      Object.keys(pkg.dependencies).forEach((dependency) => {
+        const deps = getPackageDependencies({ packageName: dependency });
+        deps.forEach((dep) => dependencies.add(dep));
+      });
+    }
+
+    return Array.from(dependencies);
+  }
 
   console.log('Symlinking packages complete');
 }

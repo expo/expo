@@ -3,11 +3,11 @@
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.JavaOnlyArray
+import com.facebook.react.bridge.ReadableArray
 import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
 import expo.modules.assertThrows
-import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
@@ -20,9 +20,14 @@ import kotlin.reflect.typeOf
 class AnyFunctionTest {
   class MockedAnyFunction(
     desiredArgsTypes: Array<KType>
-  ) : AnyFunction("my-method", desiredArgsTypes.map { it.toAnyType() }.toTypedArray()) {
-    override fun callImplementation(moduleHolder: ModuleHolder, args: Array<out Any?>, promise: Promise) {
+  ) : AsyncFunction("my-method", desiredArgsTypes.map { it.toAnyType() }.toTypedArray()) {
+    override fun callUserImplementation(args: ReadableArray, promise: Promise) {
+      convertArgs(args)
       throw NullPointerException()
+    }
+
+    override fun callUserImplementation(args: Array<Any?>, promise: Promise) {
+      error("Not implemented.")
     }
   }
 

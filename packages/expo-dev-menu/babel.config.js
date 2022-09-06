@@ -15,12 +15,12 @@ module.exports = function (api) {
       presets: ['babel-preset-expo'],
     };
   } else {
-    const gestureHandler = tryResolveModule('./vendored/react-native-gesture-handler/src/index.js');
+    const gestureHandler = tryResolveModule('./vendored/react-native-gesture-handler/src/index.ts');
     const gestureHandlerJest = tryResolveModule(
-      './vendored/react-native-gesture-handler/src/jestSetup.js'
+      './vendored/react-native-gesture-handler/jestSetup.js'
     );
 
-    const reanimated = tryResolveModule('./vendored/react-native-reanimated/src/Animated.js');
+    const reanimated = tryResolveModule('./vendored/react-native-reanimated/src/index.ts');
     const safeAreaContext = tryResolveModule(
       './vendored/react-native-safe-area-context/src/index.tsx'
     );

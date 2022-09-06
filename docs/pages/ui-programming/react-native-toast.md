@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
 
 The code above results in this on a Pixel 3a:
 
-<ImageSpotlight style={{maxWidth: 360}} alt="Pixel 3a showing toast message in an Expo app" src="/static/images/ToastAndroid.png" />
+<ImageSpotlight style={{maxWidth: 360}} alt="Pixel 3a showing toast message in an app" src="/static/images/ToastAndroid.png" />
 
 There are many other ways to configure your toast position, duration, and gravity options. Read the
 [React Native `ToastAndroid`](https://reactnative.dev/docs/toastandroid) docs to learn more.
@@ -113,5 +113,5 @@ setTimeout(function hideToast() {
 <Toast visible={this.state.visible}>Thanks for subscribing!</Toast>
 ```
 
-This library has many options for [customizing the appearance and behavior](https://github.com/crazycodeboy/react-native-easy-toast#api) of your toast.
-docs](https://github.com/magicismight/react-native-root-toast) to learn more.
+This library has many options for [customizing the appearance and behavior](https://github.com/magicismight/react-native-root-toast#reference) of your toast.
+See the package [repository](https://github.com/magicismight/react-native-root-toast) to learn more.

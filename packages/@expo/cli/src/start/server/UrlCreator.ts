@@ -2,7 +2,10 @@ import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
+import { env } from '../../utils/env';
 import { getIpAddress } from '../../utils/ip';
+
+const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
 
 export interface CreateURLOptions {
   /** URL scheme to use when opening apps in custom runtimes. */
@@ -30,7 +33,9 @@ export class UrlCreator {
   public constructLoadingUrl(options: CreateURLOptions, platform: string): string {
     const url = new URL('_expo/loading', this.constructUrl({ scheme: 'http', ...options }));
     url.search = new URLSearchParams({ platform }).toString();
-    return url.toString();
+    const loadingUrl = url.toString();
+    debug(`Loading URL: ${loadingUrl}`);
+    return loadingUrl;
   }
 
   /** Create a URI for launching in a native dev client. Returns `null` when no `scheme` can be resolved. */
@@ -46,7 +51,11 @@ export class UrlCreator {
     }
 
     const manifestUrl = this.constructUrl({ ...options, scheme: 'http' });
-    return `${protocol}://expo-development-client/?url=${encodeURIComponent(manifestUrl)}`;
+    const devClientUrl = `${protocol}://expo-development-client/?url=${encodeURIComponent(
+      manifestUrl
+    )}`;
+    debug(`Dev client URL: ${devClientUrl} -- manifestUrl: ${manifestUrl} -- %O`, options);
+    return devClientUrl;
   }
 
   /** Create a generic URL. */
@@ -55,7 +64,9 @@ export class UrlCreator {
       ...this.defaults,
       ...options,
     });
-    return joinUrlComponents(urlComponents);
+    const url = joinUrlComponents(urlComponents);
+    debug(`URL: ${url}`);
+    return url;
   }
 
   /** Get the URL components from the Ngrok server URL. */
@@ -138,10 +149,16 @@ function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>)
   // This is because Android React Native WebSocket implementation is not spec compliant and fails without a port:
   // `E unknown:ReactNative: java.lang.IllegalArgumentException: Invalid URL port: "-1"`
   // Invoked first in `metro-runtime/src/modules/HMRClient.js`
-  const validPort = port || '80';
+  const validPort = env.EXPO_NO_DEFAULT_PORT ? port : port || '80';
   const validProtocol = protocol ? `${protocol}://` : '';
 
-  return `${validProtocol}${hostname}:${validPort}`;
+  let url = `${validProtocol}${hostname}`;
+
+  if (validPort) {
+    url += `:${validPort}`;
+  }
+
+  return url;
 }
 
 /** @deprecated */

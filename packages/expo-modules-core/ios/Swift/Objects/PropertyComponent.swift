@@ -28,7 +28,8 @@ public final class PropertyComponent: AnyDefinition {
   public func get<Value>(_ getter: @escaping () -> Value) -> Self {
     self.getter = SyncFunctionComponent(
       "get",
-      argTypes: [ArgumentType(Any.self)],
+      firstArgType: Void.self,
+      dynamicArgumentTypes: [~Any.self],
       { (caller: Any) in getter() }
     )
     return self
@@ -40,7 +41,8 @@ public final class PropertyComponent: AnyDefinition {
   public func set<Value>(_ setter: @escaping (_ newValue: Value) -> ()) -> Self {
     self.setter = SyncFunctionComponent(
       "set",
-      argTypes: [ArgumentType(Any.self), ArgumentType(Value.self)],
+      firstArgType: Void.self,
+      dynamicArgumentTypes: [~Any.self, ~Value.self],
       { (caller: Any, value: Value) in setter(value) }
     )
     return self
@@ -53,7 +55,8 @@ public final class PropertyComponent: AnyDefinition {
   public func get<Value, Caller>(_ getter: @escaping (_ this: Caller) -> Value) -> Self {
     self.getter = SyncFunctionComponent(
       "get",
-      argTypes: [ArgumentType(Caller.self)],
+      firstArgType: Caller.self,
+      dynamicArgumentTypes: [~Caller.self],
       getter
     )
     return self
@@ -66,7 +69,8 @@ public final class PropertyComponent: AnyDefinition {
   public func set<Value, Caller>(_ setter: @escaping (_ this: Caller, _ newValue: Value) -> ()) -> Self {
     self.setter = SyncFunctionComponent(
       "set",
-      argTypes: [ArgumentType(Caller.self), ArgumentType(Value.self)],
+      firstArgType: Caller.self,
+      dynamicArgumentTypes: [~Caller.self, ~Value.self],
       setter
     )
     return self
@@ -74,20 +78,20 @@ public final class PropertyComponent: AnyDefinition {
 
   // MARK: - Internals
 
-  internal func getValue<Value>(caller: Any? = nil) -> Value? {
-    let value = try? getter?.call(args: [caller as Any])
+  internal func getValue<Value>(caller: AnyObject? = nil) -> Value? {
+    let value = try? getter?.call(by: caller, withArguments: [caller as Any])
     return value as? Value
   }
 
-  internal func setValue(_ value: Any, caller: Any? = nil) {
-    let _ = try? setter?.call(args: [caller as Any, value])
+  internal func setValue(_ value: Any, caller: AnyObject? = nil) {
+    let _ = try? setter?.call(by: caller, withArguments: [caller as Any, value])
   }
 
   /**
    Creates the JavaScript function that will be used as a getter of the property.
    */
   internal func buildGetter(inRuntime runtime: JavaScriptRuntime, withCaller caller: AnyObject?) -> JavaScriptObject {
-    return runtime.createSyncFunction(name, argsCount: 0) { [weak self, weak caller] args in
+    return runtime.createSyncFunction(name, argsCount: 0) { [weak self, weak caller] this, args in
       return self?.getValue(caller: caller)
     }
   }
@@ -96,7 +100,7 @@ public final class PropertyComponent: AnyDefinition {
    Creates the JavaScript function that will be used as a setter of the property.
    */
   internal func buildSetter(inRuntime runtime: JavaScriptRuntime, withCaller caller: AnyObject?) -> JavaScriptObject {
-    return runtime.createSyncFunction(name, argsCount: 1) { [weak self, weak caller] args in
+    return runtime.createSyncFunction(name, argsCount: 1) { [weak self, weak caller] this, args in
       return self?.setValue(args.first as Any, caller: caller)
     }
   }
@@ -131,13 +135,16 @@ public func Property(_ name: String) -> PropertyComponent {
 /**
  Creates the read-only property whose getter doesn't take the caller as an argument.
  */
-public func Property<Value: AnyArgument>(_ name: String, get: @escaping () -> Value) -> PropertyComponent {
+public func Property<Value: AnyArgument>(_ name: String, @_implicitSelfCapture get: @escaping () -> Value) -> PropertyComponent {
   return PropertyComponent(name: name).get(get)
 }
 
 /**
  Creates the read-only property whose getter takes the caller as an argument.
  */
-public func Property<Value: AnyArgument, Caller>(_ name: String, get: @escaping (Caller) -> Value) -> PropertyComponent {
+public func Property<Value: AnyArgument, Caller>(
+  _ name: String,
+  @_implicitSelfCapture get: @escaping (Caller) -> Value
+) -> PropertyComponent {
   return PropertyComponent(name: name).get(get)
 }

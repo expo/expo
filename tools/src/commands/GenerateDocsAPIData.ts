@@ -22,12 +22,12 @@ type CommandAdditionalParams = [entryPoint: EntryPoint, packageName?: string];
 const MINIFY_JSON = true;
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
-  'expo-analytics-amplitude': ['Amplitude.ts'],
-  'expo-analytics-segment': ['Segment.ts'],
   'expo-app-loading': ['index.ts'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
+  'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
   'expo-auth-session': ['AuthSession.ts'],
+  'expo-av': [['AV.ts', 'AV.types.ts'], 'expo-av'],
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
   'expo-battery': ['Battery.ts'],
@@ -47,8 +47,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-face-detector': ['FaceDetector.ts'],
   'expo-firebase-analytics': ['Analytics.ts'],
   'expo-firebase-core': ['FirebaseCore.ts'],
-  'expo-facebook': [['Facebook.ts', 'Facebook.types.ts']],
   'expo-font': ['index.ts'],
+  'expo-gl': ['index.ts'],
   'expo-haptics': ['Haptics.ts'],
   'expo-image-manipulator': ['ImageManipulator.ts'],
   'expo-image-picker': ['ImagePicker.ts'],

@@ -66,22 +66,18 @@ class DevMenuActivity : ReactActivity() {
         putBundle("devSettings", DevMenuManager.getDevSettings())
         putBundle("menuPreferences", DevMenuManager.getMenuPreferences())
         putBoolean("isDevice", !isEmulator)
+        putStringArrayList("registeredCallbacks", DevMenuManager.registeredCallbacks)
       }
 
-      override fun createRootView() = createRootView(this@DevMenuActivity)
-    }
-  }
+      override fun createRootView(): ReactRootView {
+        if (rootViewWasInitialized()) {
+          return rootView
+        }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    // Due to a bug in API 26, we can't set the orientation in translucent activity.
-    // See https://stackoverflow.com/questions/48072438/java-lang-illegalstateexception-only-fullscreen-opaque-activities-can-request-o
-    requestedOrientation = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
-      ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-    } else {
-      ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        rootView = super.createRootView()
+        return rootView
+      }
     }
-
-    super.onCreate(savedInstanceState)
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
@@ -117,19 +113,6 @@ class DevMenuActivity : ReactActivity() {
     var appWasLoaded = false
     private lateinit var rootView: ReactRootView
 
-    fun createRootView(activity: ReactActivity): ReactRootView {
-      if (::rootView.isInitialized) {
-        return rootView
-      }
-
-      // This type hint is needed for the older kotlin version.
-      @Suppress("RemoveExplicitTypeArguments")
-      rootView = getVendoredClass<ReactRootView>(
-        "com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView",
-        arrayOf(Context::class.java),
-        arrayOf(activity)
-      )
-      return rootView
-    }
+    private fun rootViewWasInitialized() = ::rootView.isInitialized
   }
 }

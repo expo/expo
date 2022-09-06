@@ -1,4 +1,3 @@
-import { createSymbolicateMiddleware } from '@expo/dev-server/build/webpack/symbolicateMiddleware';
 import chalk from 'chalk';
 import type { Application } from 'express';
 import fs from 'fs';
@@ -24,7 +23,7 @@ import {
 } from './resolveFromProject';
 import { ensureEnvironmentSupportsTLSAsync } from './tls';
 
-type AnyCompiler = webpack.Compiler | webpack.MultiCompiler;
+const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
 
 export type WebpackConfiguration = webpack.Configuration & {
   devServer?: {
@@ -112,17 +111,11 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
     return ['ios', 'android'].includes(process.env.EXPO_WEBPACK_PLATFORM || '');
   }
 
-  isTargetingWeb(): boolean {
-    return true;
-  }
-
   private async createNativeDevServerMiddleware({
     port,
-    compiler,
     options,
   }: {
     port: number;
-    compiler: AnyCompiler;
     options: BundlerStartOptions;
   }) {
     if (!this.isTargetingNative()) {
@@ -140,14 +133,8 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const middleware = await this.getManifestMiddlewareAsync(options);
 
-    nativeMiddleware.middleware.use(middleware).use(
-      '/symbolicate',
-      createSymbolicateMiddleware({
-        projectRoot: this.projectRoot,
-        compiler,
-        logger: nativeMiddleware.logger,
-      })
-    );
+    nativeMiddleware.middleware.use(middleware);
+
     return nativeMiddleware;
   }
 
@@ -238,14 +225,14 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       },
     });
 
-    Log.debug('Starting webpack on port: ' + port);
+    debug('Starting webpack on port: ' + port);
 
     if (resetDevServer) {
       await this.clearWebProjectCacheAsync(this.projectRoot, mode);
     }
 
     if (https) {
-      Log.debug('Configuring TLS to enable HTTPS support');
+      debug('Configuring TLS to enable HTTPS support');
       await ensureEnvironmentSupportsTLSAsync(this.projectRoot).catch((error) => {
         Log.error(`Error creating TLS certificates: ${error}`);
       });
@@ -264,7 +251,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       // Create the middleware required for interacting with a native runtime (Expo Go, or a development build).
       nativeMiddleware = await this.createNativeDevServerMiddleware({
         port,
-        compiler,
         options,
       });
       // Inject the native manifest middleware.

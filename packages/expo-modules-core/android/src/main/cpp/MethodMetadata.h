@@ -2,11 +2,16 @@
 
 #pragma once
 
+#include "types/CppType.h"
+#include "types/ExpectedType.h"
+#include "types/AnyType.h"
+
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include <ReactCommon/TurboModuleUtils.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <memory>
+#include <vector>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 
@@ -34,23 +39,40 @@ public:
    * Whether this function is async
    */
   bool isAsync;
+  /**
+   * Representation of expected argument types.
+   */
+  std::vector<std::unique_ptr<AnyType>> argTypes;
 
   MethodMetadata(
     std::string name,
     int args,
     bool isAsync,
+    jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    jni::global_ref<jobject> &&jBodyReference
+  );
+
+  MethodMetadata(
+    std::string name,
+    int args,
+    bool isAsync,
+    std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
     jni::global_ref<jobject> &&jBodyReference
   );
 
   // We deleted the copy contractor to not deal with transforming the ownership of the `jBodyReference`.
   MethodMetadata(const MethodMetadata &) = delete;
 
+  MethodMetadata(MethodMetadata &&other) = default;
+
   /**
    * MethodMetadata owns the only reference to the Kotlin function.
    * We have to clean that, cause it's a `global_ref`.
    */
   ~MethodMetadata() {
-    jBodyReference.release();
+    if (jBodyReference != nullptr) {
+      jBodyReference.release();
+    }
   }
 
   /**
@@ -63,6 +85,16 @@ public:
   std::shared_ptr<jsi::Function> toJSFunction(
     jsi::Runtime &runtime,
     JSIInteropModuleRegistry *moduleRegistry
+  );
+
+  /**
+   * Calls the underlying Kotlin function.
+   */
+  jsi::Value callSync(
+    jsi::Runtime &rt,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value *args,
+    size_t count
   );
 
 private:
@@ -79,14 +111,23 @@ private:
    */
   std::shared_ptr<jsi::Function> body = nullptr;
 
-  jsi::Function toSyncFunction(jsi::Runtime &runtime);
+  jsi::Function toSyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
 
   jsi::Function toAsyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
 
   jsi::Function createPromiseBody(
     jsi::Runtime &runtime,
     JSIInteropModuleRegistry *moduleRegistry,
-    folly::dynamic &&args
+    std::vector<jobject> &&args
+  );
+
+  std::vector<jobject> convertJSIArgsToJNI(
+    JSIInteropModuleRegistry *moduleRegistry,
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    const jsi::Value *args,
+    size_t count,
+    bool returnGlobalReferences
   );
 };
 } // namespace expo

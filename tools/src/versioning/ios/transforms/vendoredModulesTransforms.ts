@@ -9,11 +9,6 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     '@stripe/stripe-react-native': {
       content: [
         {
-          paths: '*.m',
-          find: /RCT_EXTERN_MODULE\((ApplePayButtonManager|CardFieldManager|AuBECSDebitFormManager|StripeSdk|StripeContainerManager|CardFormManager)/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE($1, ${prefix}$1`,
-        },
-        {
           paths: '',
           find: /\.reactFocus\(/,
           replaceWith: `.${prefix.toLowerCase()}ReactFocus(`,
@@ -22,11 +17,6 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     },
     'lottie-react-native': {
       content: [
-        {
-          paths: 'LRNAnimationViewManagerObjC.m',
-          find: /RCT_EXTERN_MODULE\(/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE(LottieAnimationView, ${prefix}`,
-        },
         {
           paths: 'ContainerView.swift',
           find: /\breactSetFrame/g,
@@ -139,9 +129,19 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         {
           // `RNG*` symbols are already prefixed at this point,
           // but there are some new symbols in RNGH that don't have "G".
-          paths: '*.{h,m}',
+          paths: '*.{h,m,mm}',
           find: /\bRN(\w+?)\b/g,
           replaceWith: `${prefix}RN$1`,
+        },
+        {
+          paths: 'RNGestureHandler.m',
+          find: /UIGestureRecognizer \(GestureHandler\)/g,
+          replaceWith: `UIGestureRecognizer (${prefix}GestureHandler)`,
+        },
+        {
+          paths: 'RNGestureHandler.m',
+          find: /gestureHandler/g,
+          replaceWith: `${prefix}gestureHandler`,
         },
       ],
     },
@@ -173,6 +173,39 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     },
     'react-native-screens': {
       content: [],
+    },
+    '@shopify/react-native-skia': {
+      path: [
+        {
+          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager)/g,
+          replaceWith: `${prefix}$1`,
+        },
+      ],
+      content: [
+        {
+          paths: '*.h',
+          find: new RegExp(`ReactCommon/(?!${prefix})`, 'g'),
+          replaceWith: `ReactCommon/${prefix}`,
+        },
+        {
+          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|RNJsi)/g,
+          replaceWith: `${prefix}$1`,
+        },
+        {
+          // The module name in bridge should be unversioned `RNSkia`
+          paths: 'SkiaDrawViewManager.mm',
+          find: new RegExp(`(\\smoduleForName:@")${prefix}(RNSkia")`, 'g'),
+          replaceWith: '$1$2',
+        },
+        {
+          // __typename__ exposed to js should be unversioned
+          find: new RegExp(
+            `(\\bJSI_PROPERTY_GET\\(__typename__\\) \\{\\n\\s*return jsi::String::createFromUtf8\\(runtime, ")${prefix}(.*")`,
+            'gm'
+          ),
+          replaceWith: '$1$2',
+        },
+      ],
     },
   };
 }

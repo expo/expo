@@ -3,6 +3,8 @@ title: Module API
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { PlatformTag } from '~/ui/components/Tag';
+import { APIBox } from '~/components/plugins/APIBox';
 
 > Note: This API is still experimental and subject to change. Some features that you need may not be implemented yet.
 
@@ -84,7 +86,7 @@ Now that the class is set up and linked, you can start to add functionality. The
 
 As you might have noticed in the snippets above, each module class must implement the `definition` function. The definition consists of components that describe the module's functionality and behavior.
 
-### `Name`
+<APIBox header="Name">
 
 Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument. Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
 
@@ -95,8 +97,8 @@ Name("MyModuleName")
 ```
 
 </CodeBlocksTable>
-
-### `Constants`
+</APIBox>
+<APIBox header="Constants">
 
 Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
 
@@ -131,8 +133,8 @@ Constants {
 ```
 
 </CodeBlocksTable>
-
-### `Function`
+</APIBox>
+<APIBox header="Function">
 
 Defines a native synchronous function that will be exported to JavaScript. Synchronous means that when the function is executed in JavaScript, its native code is run on the same thread and blocks further execution of the script until the native function returns.
 
@@ -169,8 +171,8 @@ function getMessage() {
 ```
 
 </CodeBlocksTable>
-
-### `AsyncFunction`
+</APIBox>
+<APIBox header="AsyncFunction">
 
 Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on the different thread than the JavaScript runtime runs on.
 
@@ -218,8 +220,8 @@ async function getMessageAsync() {
 ```
 
 </CodeBlocksTable>
-
-### `Events`
+</APIBox>
+<APIBox header="Events">
 
 Defines event names that the module can send to JavaScript.
 
@@ -234,8 +236,8 @@ Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
 ```
 
 </CodeBlocksTable>
-
-### `View`
+</APIBox>
+<APIBox header="View">
 
 Defines the factory creating a native view, when the module is used as a view.
 On Android, the factory function also receives [Android Context](https://developer.android.com/reference/android/content/Context) which is required to create any view.
@@ -255,8 +257,8 @@ View { context ->
 ```
 
 </CodeBlocksTable>
-
-### `Prop`
+</APIBox>
+<APIBox header="Prop">
 
 Defines a setter for the view prop of given name.
 
@@ -285,7 +287,8 @@ Prop("background") { view: View, @ColorInt color: Int ->
 
 > Note: Props of function type (callbacks) are not supported yet.
 
-### `ViewManager`
+</APIBox>
+<APIBox header="ViewManager">
 
 Enables the module to be used as a view manager. The view manager definition is built from the definition components used in the closure passed to `viewManager`. Definition components that are accepted as part of the view manager definition: [`View`](#view), [`Prop`](#prop).
 
@@ -317,63 +320,79 @@ ViewManager {
 
 </CodeBlocksTable>
 
-### `OnCreate`
+> Note: The API for view managers is still experimental and subject to change.
+> We are investigating how to integrate it with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer) which may require us to make some API changes.
+
+</APIBox>
+<APIBox header="OnCreate">
 
 Defines module's lifecycle listener that is called right after module initialization. If you need to set up something when the module gets initialized, use this instead of module's class initializer.
 
-### `OnDestroy`
+</APIBox>
+<APIBox header="OnDestroy">
 
 Defines module's lifecycle listener that is called when the module is about to be deallocated. Use it instead of module's class destructor.
 
-### `OnStartObserving`
+</APIBox>
+<APIBox header="OnStartObserving">
 
 Defines the function that is invoked when the first event listener is added.
 
-### `OnStopObserving`
+</APIBox>
+<APIBox header="OnStopObserving">
 
 Defines the function that is invoked when all event listeners are removed.
 
-### `OnAppContextDestroys`
+</APIBox>
+<APIBox header="OnAppContextDestroys">
 
 Defines module's lifecycle listener that is called when the app context owning the module is about to be deallocated.
 
-### `OnAppEntersForeground` 🍏
+</APIBox>
+<APIBox header="OnAppEntersForeground" platforms={["ios"]}>
 
 Defines the listener that is called when the app is about to enter the foreground mode.
 
-> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground--) instead.
+> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
-### `OnAppEntersBackground` 🍏
+</APIBox>
+<APIBox header="OnAppEntersBackground" platforms={["ios"]}>
 
 Defines the listener that is called when the app enters the background mode.
 
-> Note: This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground--) instead.
+> Note: This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
 
-### `OnAppBecomesActive` 🍏
+</APIBox>
+<APIBox header="OnAppBecomesActive" platforms={["ios"]}>
 
 Defines the listener that is called when the app becomes active again (after `OnAppEntersForeground`).
 
-> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground--) instead.
+> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
-### `OnActivityEntersForeground` 🤖
+</APIBox>
+<APIBox header="OnActivityEntersForeground" platforms={["android"]}>
 
-> Note: This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground--) instead.
+> Note: This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
 
-### `OnActivityEntersBackground` 🤖
+</APIBox>
+<APIBox header="OnActivityEntersBackground" platforms={["android"]}>
 
-> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground--) instead.
+> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
-### `OnActivityDestroys` 🤖
+</APIBox>
+<APIBox header="OnActivityDestroys" platforms={["android"]}>
 
 Defines the listener that is called when the activity owning the JavaScript context is about to be destroyed.
 
-> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground--) instead.
+> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
+
+</APIBox>
 
 ## Argument Types
 
 Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and casted on its own. The Expo module API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
 
-### Convertibles
+<APIBox header="Convertibles">
 
 _Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. For example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers `(_x_, _y_)` or a JavaScript object with numeric `x` and `y` properties.
 
@@ -390,7 +409,8 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 | `CGColor`   | Color hex strings in formats: `#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`                                              |
 | `UIColor`   | Color hex strings in formats: `#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`                                              |
 
-### Records
+</APIBox>
+<APIBox header="Records">
 
 _Record_ is a convertible type and an equivalent of the dictionary (Swift) or map (Kotlin), but represented as a struct where each field can have its own type and provide a default value.
 
@@ -433,8 +453,8 @@ Function("readFile") { path: String, options: FileReadOptions ->
 ```
 
 </CodeBlocksTable>
-
-### Enums
+</APIBox>
+<APIBox header="Enums">
 
 With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (e.g. `String`, `Int`) and conform to `EnumArgument`.
 
@@ -468,6 +488,7 @@ class FileReadOptions : Record {
 ```
 
 </CodeBlocksTable>
+</APIBox>
 
 ## Examples
 

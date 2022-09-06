@@ -2,15 +2,17 @@
 title: Using Firebase
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 [Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users. Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
 
 > This guide uses `firebase@9.1.0`. As of SDK 43, the Expo SDK no longer enforces or recommends any specific version of Firebase to use in your app. If you are using an older version of the `firebase` library in your project you may have to adapt the code examples below to match the version that you are using, with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
 
-## Usage with Expo
+## Usage with Expo Go
 
-If you'd like to use Firebase in the Expo Go app with the managed workflow, we'd recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore & Realtime databases, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) for that.
+If you'd like to use Firebase in the Expo Go app, we recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore & Realtime databases, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [`expo-firebase-analytics`](/versions/latest/sdk/firebase-analytics) for that.
 
-If you'd like access to the full suite of native firebase tools, we recommend using the [react-native-firebase](https://github.com/invertase/react-native-firebase) library and creating [a development build] of your app (/development/introduction.md) using a built-in [config plugin].
+If you'd like access to the full suite of native firebase tools, we recommend using the [React Native Firebase](https://rnfirebase.io/#expo) with a [development build](/development/introduction). React Native Firebase is not supported in the [Expo Go](https://expo.dev/expo-go) app.
 
 > **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well). For more background on why some Firebase services are not supported, please refer to the ["What goes into the Expo SDK?" FYI page](https://expo.fyi/whats-in-the-sdk).
 
@@ -18,7 +20,7 @@ If you'd like access to the full suite of native firebase tools, we recommend us
 
 First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
 
-`expo install firebase`.
+<Terminal cmd={['$ npx expo install firebase']} />
 
 [Firebase Console](http://console.firebase.google.com/) provides you with an API key, and other identifiers for your project needed for initialization. [firebase-web-start](https://firebase.google.com/docs/database/web/start) has a detailed description of what each field means and where to find them in your console.
 
@@ -44,7 +46,7 @@ const firebaseConfig = {
   measurementId: 'G-measurement-id',
 };
 
-initializeApp(firebaseConfig);
+let myApp = initializeApp(firebaseConfig);
 ```
 
 ### Temporarily Bypass Default Security Rules
@@ -87,7 +89,8 @@ Now let's say we want another client to listen to updates to the high score of a
 ```javascript
 import { getDatabase, ref, onValue } from 'firebase/database';
 
-setupHighscoreListener(userId) {const db = getDatabase();
+setupHighscoreListener(userId) {
+  const db = getDatabase();
   const reference = ref(db, 'users/' + userId);
   onValue(reference, (snapshot) => {
     const highscore = snapshot.val().highscore;
@@ -108,19 +111,21 @@ We can choose different login methods that make sense to our application. The lo
 
 ### Facebook Login
 
-A common login system many developers opt for is a simple Facebook login that users are already familiar with. Expo provides a great Facebook login component already, so we just need to plug that in.
+<!-- TODO: Mention third-party facebook packages -->
+
+A common login system many developers opt for is a simple Facebook login that users are already familiar with.
 
 See the Facebook section of our docs for information on how to set this up. This works just as well with Google and [several others](<https://firebase.google.com/docs/reference/android/com/google/firebase/auth/AuthCredential#getProvider()>).
 
 ### Tying Sign-In Providers with Firebase
 
-Once you have added Facebook login to your Expo app, we need to adjust the Firebase console to check for it. Go to [Firebase Console](http://console.firebase.google.com/) >> _Authentication_ >> _Sign-In method_ tab to enable Facebook as a sign-in provider.
+Once you have added Facebook login to your React Native app, we need to adjust the Firebase console to check for it. Go to [Firebase Console](http://console.firebase.google.com/) >> _Authentication_ >> _Sign-In method_ tab to enable Facebook as a sign-in provider.
 
-You can add whichever provider makes sense for you, or even add multiple providers. We will stick with Facebook for now since we already have a simple drop-in Expo component already built.
+You can add whichever provider makes sense for you, or even add multiple providers.
 
 ### Phone Authentication
 
-To use phone authentication, you'll need the `expo-firebase-recaptcha` package. It provides a reCAPTCHA widget which is neccessary to verify that you are not a bot.
+To use phone authentication, you'll need the `expo-firebase-recaptcha` package. It provides a reCAPTCHA widget which is necessary to verify that you are not a bot.
 
 Please follow the instructions for the [expo-firebase-recaptcha](/versions/latest/sdk/firebase-recaptcha) package on how to use phone auth.
 
@@ -157,9 +162,9 @@ import {
 } from 'firebase/auth';
 import * as Facebook from 'expo-facebook';
 
-initializeApp(config);
+let myApp = initializeApp(config);
 
-const auth = getAuth();
+const auth = getAuth(myApp);
 
 // Listen for authentication state to change.
 onAuthStateChanged(auth, user => {
@@ -223,9 +228,9 @@ import { getFirestore, setDoc, doc } from 'firebase/firestore';
 
 const firebaseConfig = { ... }  // apiKey, authDomain, etc. (see above)
 
-initializeApp(firebaseConfig);
+let myApp = initializeApp(firebaseConfig);
 
-const firestore = getFirestore();
+const firestore = getFirestore(myApp);
 
 await setDoc(doc(firestore, "characters", "mario"), {
   employment: "plumber",
@@ -240,11 +245,11 @@ This sample was borrowed and edited from [this forum post](https://forums.expo.d
 
 In order to record analytics events, the Expo Firebase Core and Analytics packages needs to be installed.
 
-`expo install expo-firebase-analytics`
+<Terminal cmd={['$ npx expo install expo-firebase-analytics']} />
 
-This package uses the native Firebase SDK in standalone apps and bare apps and a JavaScript based implementation on Expo Go.
+This package uses a JavaScript-based implementation in Expo Go, and the native Firebase SDK everywhere else.
 
-To configure native Firebase, please follow the configuration instructions for the [expo-firebase-analytics](/versions/latest/sdk/firebase-analytics) package.
+To configure native Firebase, please follow the configuration instructions for the [`expo-firebase-analytics`](/versions/latest/sdk/firebase-analytics) package.
 
 ```javascript
 import * as Analytics from 'expo-firebase-analytics';

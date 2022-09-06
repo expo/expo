@@ -25,7 +25,7 @@
 #import <folly/Optional.h>
 #import <vector>
 
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeSafeAreaContext {
     struct ConstantsInitialWindowMetricsInsets {
 
@@ -55,7 +55,7 @@ namespace JS {
     };
   }
 }
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeSafeAreaContext {
     struct ConstantsInitialWindowMetricsFrame {
 
@@ -85,14 +85,14 @@ namespace JS {
     };
   }
 }
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeSafeAreaContext {
     struct ConstantsInitialWindowMetrics {
 
       struct Builder {
         struct Input {
-          ABI45_0_0RCTRequired<JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsInsets::Builder> insets;
-          ABI45_0_0RCTRequired<JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsFrame::Builder> frame;
+          ABI45_0_0RCTRequired<ABI45_0_0JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsInsets::Builder> insets;
+          ABI45_0_0RCTRequired<ABI45_0_0JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsFrame::Builder> frame;
         };
 
         /** Initialize with a set of values */
@@ -113,13 +113,13 @@ namespace JS {
     };
   }
 }
-namespace JS {
+namespace ABI45_0_0JS {
   namespace NativeSafeAreaContext {
     struct Constants {
 
       struct Builder {
         struct Input {
-          folly::Optional<JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder> initialWindowMetrics;
+          folly::Optional<ABI45_0_0JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder> initialWindowMetrics;
         };
 
         /** Initialize with a set of values */
@@ -142,8 +142,8 @@ namespace JS {
 }
 @protocol ABI45_0_0NativeSafeAreaContextSpec <ABI45_0_0RCTBridgeModule, ABI45_0_0RCTTurboModule>
 
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeSafeAreaContext::Constants::Builder>)constantsToExport;
-- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<JS::NativeSafeAreaContext::Constants::Builder>)getConstants;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeSafeAreaContext::Constants::Builder>)constantsToExport;
+- (ABI45_0_0facebook::ABI45_0_0React::ModuleConstants<ABI45_0_0JS::NativeSafeAreaContext::Constants::Builder>)getConstants;
 
 @end
 namespace ABI45_0_0facebook {
@@ -157,7 +157,7 @@ namespace ABI45_0_0facebook {
     };
   } // namespace ABI45_0_0React
 } // namespace ABI45_0_0facebook
-inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsInsets::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsInsets::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto top = i.top.get();
   d[@"top"] = @(top);
@@ -169,10 +169,10 @@ inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsInsets::Builder::
   d[@"left"] = @(left);
   return d;
 }) {}
-inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsInsets::Builder::Builder(ConstantsInitialWindowMetricsInsets i) : _factory(^{
+inline ABI45_0_0JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsInsets::Builder::Builder(ConstantsInitialWindowMetricsInsets i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsFrame::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsFrame::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto x = i.x.get();
   d[@"x"] = @(x);
@@ -184,10 +184,10 @@ inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsFrame::Builder::B
   d[@"height"] = @(height);
   return d;
 }) {}
-inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsFrame::Builder::Builder(ConstantsInitialWindowMetricsFrame i) : _factory(^{
+inline ABI45_0_0JS::NativeSafeAreaContext::ConstantsInitialWindowMetricsFrame::Builder::Builder(ConstantsInitialWindowMetricsFrame i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto insets = i.insets.get();
   d[@"insets"] = insets.buildUnsafeRawValue();
@@ -195,15 +195,15 @@ inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder::Builde
   d[@"frame"] = frame.buildUnsafeRawValue();
   return d;
 }) {}
-inline JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder::Builder(ConstantsInitialWindowMetrics i) : _factory(^{
+inline ABI45_0_0JS::NativeSafeAreaContext::ConstantsInitialWindowMetrics::Builder::Builder(ConstantsInitialWindowMetrics i) : _factory(^{
   return i.unsafeRawValue();
 }) {}
-inline JS::NativeSafeAreaContext::Constants::Builder::Builder(const Input i) : _factory(^{
+inline ABI45_0_0JS::NativeSafeAreaContext::Constants::Builder::Builder(const Input i) : _factory(^{
   NSMutableDictionary *d = [NSMutableDictionary new];
   auto initialWindowMetrics = i.initialWindowMetrics;
   d[@"initialWindowMetrics"] = initialWindowMetrics.hasValue() ? initialWindowMetrics.value().buildUnsafeRawValue() : nil;
   return d;
 }) {}
-inline JS::NativeSafeAreaContext::Constants::Builder::Builder(Constants i) : _factory(^{
+inline ABI45_0_0JS::NativeSafeAreaContext::Constants::Builder::Builder(Constants i) : _factory(^{
   return i.unsafeRawValue();
 }) {}

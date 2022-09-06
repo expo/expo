@@ -125,7 +125,11 @@ it(
     });
 
     console.log('Fetching manifest');
-    const results = await fetch('http://localhost:19000/').then((res) => res.json());
+    const results = await fetch('http://localhost:19000/', {
+      headers: {
+        'expo-platform': 'ios',
+      },
+    }).then((res) => res.json());
 
     // Required for Expo Go
     expect(results.packagerOpts).toStrictEqual({
@@ -146,7 +150,7 @@ it(
     expect(results.mainModuleName).toBe('node_modules/expo/AppEntry');
 
     // Manifest
-    expect(results.sdkVersion).toBe('44.0.0');
+    expect(results.sdkVersion).toBe('45.0.0');
     expect(results.slug).toBe('basic-start');
     expect(results.name).toBe('basic-start');
 

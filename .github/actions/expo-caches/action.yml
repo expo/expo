@@ -17,6 +17,9 @@ inputs:
   bare-expo-pods:
     description: 'Restore /apps/bare-expo/ios pods cache'
     required: false
+  native-tests-pods:
+    description: 'Restore /apps/native-tests/ios pods cache'
+    required: false
   gradle:
     description: 'Restore Gradle cache'
     required: false
@@ -37,6 +40,13 @@ inputs:
   git-lfs:
     description: 'Restore Git LFS cache'
     required: false
+  hermes-engine-aar:
+    description: 'Restore prebuilt hermes-engine AAR'
+    required: false
+  rebuild-hermes-engine-aar-if-needed:
+    description: 'Rebuild hermes-engine AAR when cache missed'
+    default: 'true'
+    required: false
 
 outputs:
   yarn-workspace-hit:
@@ -54,12 +64,18 @@ outputs:
   bare-expo-pods-hit:
     description: 'Returns true, if /apps/bare-expo/ios pods cache is up-to-date'
     value: steps.bare-expo-pods-cache.outputs.cache-hit
+  native-tests-pods-hit:
+    description: 'Returns true, if /apps/native-tests/ios pods cache is up-to-date'
+    value: steps.native-tests-pods-cache.outputs.cache-hit
   avd-hit:
     description: 'Returns true, if AVD cache is up-to-date'
     value: steps.avd-cache.outputs.cache-hit
   git-lfs-hit:
     description: 'Returns true, if Git LFS cache is up-to-date'
     value: steps.git-lfs-cache.outputs.cache-hit
+  hermes-engine-aar-hit:
+    description: 'Returns true, if prebuilt hermes-engine AAR cache is up-to-date'
+    value: steps.cache-hermes-engine-aar.outputs.cache-hit
 
 runs:
   using: 'composite'
@@ -91,8 +107,6 @@ runs:
       id: tools-modules-cache
       with:
         path: |
-          bin/et
-          bin/expotools
           tools/node_modules
         key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
 
@@ -125,6 +139,14 @@ runs:
       with:
         path: apps/bare-expo/ios/Pods
         key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
+
+    - name: ♻️ Restore apps/native-tests/ios/Pods from cache
+      if: inputs.native-tests-pods == 'true'
+      uses: actions/cache@v2
+      id: native-tests-pods-cache
+      with:
+        path: apps/native-tests/ios/Pods
+        key: ${{ runner.os }}-native-tests-pods-${{ hashFiles('apps/native-tests/ios/Podfile.lock') }}
 
     - name: ♻️ Restore Gradle cache
       if: inputs.avd == 'true' || inputs.ndk == 'true' || inputs.gradle == 'true'
@@ -172,3 +194,34 @@ runs:
       with:
         path: .git/lfs
         key: ${{ steps.git-lfs.outputs.sha256 }}
+
+    - name: ♻️ Restore hermes-engine AAR cache
+      if: inputs.hermes-engine-aar == 'true'
+      uses: actions/cache@v2
+      with:
+        path: android/ReactAndroid/prebuiltHermes
+        key: hermes-engine-aar-v2-${{ hashFiles('android/sdks/.hermesversion') }}
+    - name: Check hermes-engine cache-hit
+      if: inputs.hermes-engine-aar == 'true'
+      id: cache-hermes-engine-aar
+      shell: bash
+      run: |
+        CURRENT_VERSION=$(test -f android/ReactAndroid/prebuiltHermes/.hermesversion && cat android/ReactAndroid/prebuiltHermes/.hermesversion) || true
+        TARGET_VERSION=$(test -f android/sdks/.hermesversion && cat android/sdks/.hermesversion) || true
+        if [[ $CURRENT_VERSION == $TARGET_VERSION ]]; then echo '::set-output name=cache-hit::true'; else echo '::set-output name=cache-hit::false'; fi
+    - name: 🛠 Rebuild hermes-engine AAR when cache missed
+      if: inputs.hermes-engine-aar == 'true' && inputs.rebuild-hermes-engine-aar-if-needed == 'true' && steps.cache-hermes-engine-aar.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        # Ensure node packages are installed when yarn-workspace cache miss
+        yarn install --frozen-lockfile
+        mkdir -p ReactAndroid/prebuiltHermes
+        cp -f sdks/.hermesversion ReactAndroid/prebuiltHermes/
+        ./gradlew :ReactAndroid:hermes-engine:assembleRelease
+        ./gradlew :ReactAndroid:hermes-engine:assembleDebug
+        cp -f ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar ReactAndroid/prebuiltHermes/
+        cp -f ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-debug.aar ReactAndroid/prebuiltHermes/
+      env:
+        # Reset reactNativeArchitectures to build all architectures
+        ORG_GRADLE_PROJECT_reactNativeArchitectures:
+      working-directory: android

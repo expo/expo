@@ -14,6 +14,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.view.View;
 
 import com.facebook.jni.HybridData;
 
@@ -46,6 +47,7 @@ import expo.modules.av.video.VideoViewWrapper;
 import expo.modules.interfaces.permissions.Permissions;
 import expo.modules.interfaces.permissions.PermissionsResponseListener;
 
+import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl;
 
 import static android.media.MediaRecorder.MEDIA_RECORDER_INFO_MAX_FILESIZE_REACHED;
@@ -371,7 +373,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
   public void setAudioIsEnabled(final Boolean value) {
     mEnabled = value;
     if (!value) {
-      abandonAudioFocus();
+      getUIManager().runOnUiQueueThread(this::abandonAudioFocus);
     }
   }
 
@@ -380,7 +382,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
     mShouldDuckAudio = map.getBoolean(AUDIO_MODE_SHOULD_DUCK_KEY);
     if (!mShouldDuckAudio) {
       mIsDuckingAudio = false;
-      updateDuckStatusForAllPlayersPlaying();
+      getUIManager().runOnUiQueueThread(this::updateDuckStatusForAllPlayersPlaying);
     }
 
     if (map.containsKey(AUDIO_MODE_PLAY_THROUGH_EARPIECE)) {
@@ -499,33 +501,9 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   // Unified playback API - Video
 
-  private interface VideoViewCallback {
-    void runWithVideoView(final VideoView videoView);
-  }
-
-  // Rejects the promise if the VideoView is not found, otherwise executes the callback.
-  private void tryRunWithVideoView(final Integer tag, final VideoViewCallback callback, final Promise promise) {
-    if (mModuleRegistry != null) {
-      UIManager uiManager = getUIManager();
-      if (uiManager != null) {
-        uiManager.addUIBlock(tag, new UIManager.UIBlock<VideoViewWrapper>() {
-          @Override
-          public void resolve(VideoViewWrapper videoViewWrapper) {
-            callback.runWithVideoView(videoViewWrapper.getVideoViewInstance());
-          }
-
-          @Override
-          public void reject(Throwable throwable) {
-            promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.");
-          }
-        }, VideoViewWrapper.class);
-      }
-    }
-  }
-
   @Override
   public void loadForVideo(final Integer tag, final ReadableArguments source, final ReadableArguments status, final Promise promise) {
-    tryRunWithVideoView(tag, new VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         videoView.setSource(source, status, promise);
@@ -535,7 +513,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void unloadForVideo(final Integer tag, final Promise promise) {
-    tryRunWithVideoView(tag, new VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         videoView.setSource(null, null, promise);
@@ -545,7 +523,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void setStatusForVideo(final Integer tag, final ReadableArguments status, final Promise promise) {
-    tryRunWithVideoView(tag, new VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         videoView.setStatus(status, promise);
@@ -555,7 +533,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void replayVideo(final Integer tag, final ReadableArguments status, final Promise promise) {
-    tryRunWithVideoView(tag, new VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         videoView.setStatus(status, promise);
@@ -565,7 +543,7 @@ public class AVManager implements LifecycleEventListener, AudioManager.OnAudioFo
 
   @Override
   public void getStatusForVideo(final Integer tag, final Promise promise) {
-    tryRunWithVideoView(tag, new VideoViewCallback() {
+    ViewUtils.tryRunWithVideoView(mModuleRegistry, tag, new ViewUtils.VideoViewCallback() {
       @Override
       public void runWithVideoView(final VideoView videoView) {
         promise.resolve(videoView.getStatus());

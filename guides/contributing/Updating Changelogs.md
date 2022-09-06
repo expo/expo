@@ -36,7 +36,7 @@ Changes can be grouped within several predefined categories (Markdown sections w
 
 - **🎉 New features**
 
-  For new features and non-breaking changes in the API. Implies at least **minor** bump when publishing the package.
+  For non-breaking changes in the public API that may bring some new value to the user. New features that are internal (are not user-facing) should rather go into "Others" category. Implies at least **minor** bump when publishing the package.
 
 - **🐛 Bug fixes**
 
@@ -44,11 +44,11 @@ Changes can be grouped within several predefined categories (Markdown sections w
 
 - **⚠️ Notices**
 
-  For changes that don't fit into the above sections, but that users should be aware of, because they deprecate existing an API while still keeping backwards compatibility or cause behavior changes in some corner cases.
+  For changes that don't fit into the above categories, but that users should be aware of, because they deprecate existing API while still keeping backwards compatibility or cause behavior changes in some corner cases.
 
 - **💡 Others**
 
-  Anything that doesn't apply to the other types. Such changes are usually not very important for the users, but might come in handy for other contributors (e.g. refactors, build tools or language version updates, some routine work).
+  Anything that doesn't apply to the other types. Such changes are usually not very important for the users, but might come in handy for other contributors (e.g. essential internal changes, refactors, build tools or language version updates, some routine work).
 
 - **📚 3rd party library updates**
 
@@ -62,4 +62,4 @@ Changes can be grouped within several predefined categories (Markdown sections w
 
 - `et merge-changelogs`
 
-  This command is intented to be used by people doing a SDK release — it merges changelog entries from all SDK packages as of the previous SDK version and puts them into the root's [`CHANGELOG.md`](https://github.com/expo/expo/blob/main/CHANGELOG.md).
+  This command is intended to be used by people doing a SDK release — it merges changelog entries from all SDK packages as of the previous SDK version and puts them into the root's [`CHANGELOG.md`](https://github.com/expo/expo/blob/main/CHANGELOG.md).

@@ -1,6 +1,7 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import com.facebook.react.bridge.NativeMap
 import expo.modules.core.interfaces.DoNotStrip
 
 /**
@@ -10,28 +11,33 @@ import expo.modules.core.interfaces.DoNotStrip
  * All exported functions/objects will have a reference to the `JavaScriptModuleObject`,
  * so it must outlive the current RN context.
  */
+@Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptModuleObject {
+class JavaScriptModuleObject(val name: String) {
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
   private val mHybridData = initHybrid()
 
-  @Suppress("KotlinJniMissingFunction")
   private external fun initHybrid(): HybridData
+
+  /**
+   * Exports constants
+   */
+  external fun exportConstants(constants: NativeMap)
 
   /**
    * Register a promise-less function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  @Suppress("KotlinJniMissingFunction")
-  external fun registerSyncFunction(name: String, args: Int, body: JNIFunctionBody)
+  external fun registerSyncFunction(name: String, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   /**
    * Register a promise function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  @Suppress("KotlinJniMissingFunction")
-  external fun registerAsyncFunction(name: String, args: Int, body: JNIAsyncFunctionBody)
+  external fun registerAsyncFunction(name: String, args: Int, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
+
+  external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
 
   @Throws(Throwable::class)
   protected fun finalize() {

@@ -2,27 +2,35 @@ package expo.modules.devlauncher.splashscreen
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.view.Gravity
+import android.graphics.Color
+import android.util.TypedValue
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import android.widget.TextView
 import expo.modules.devlauncher.R
 
 @SuppressLint("ViewConstructor")
 class DevLauncherSplashScreen(
   context: Context,
-  textColor: Int
 ) : RelativeLayout(context) {
   init {
-    val textView = TextView(context)
-    textView.text = context.getString(R.string.splash_screen_text)
-    textView.gravity = Gravity.CENTER
-    textView.textSize = 24F
-    textView.layoutParams = LayoutParams(
-      LinearLayout.LayoutParams.MATCH_PARENT,
-      LinearLayout.LayoutParams.MATCH_PARENT
+    setBackgroundColor(Color.WHITE)
+
+    val imageWidthDPI = 85f
+    val imageWidthPixels = TypedValue.applyDimension(
+      TypedValue.COMPLEX_UNIT_DIP,
+      imageWidthDPI,
+      context.resources.displayMetrics
     )
-    textView.setTextColor(textColor)
-    addView(textView)
+
+    val imageView = ImageView(context)
+    imageView.setImageResource(R.drawable._expodevclientcomponents_assets_logoicon)
+    imageView.layoutParams = LayoutParams(
+      imageWidthPixels.toInt(),
+      LinearLayout.LayoutParams.WRAP_CONTENT,
+    ).apply {
+      addRule(CENTER_IN_PARENT, TRUE)
+    }
+    addView(imageView)
   }
 }

@@ -9,11 +9,14 @@ import {
   MethodSignatureData,
   PropsDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
   resolveTypeName,
   getComponentName,
+  STYLES_APIBOX,
+  getTagNamesList,
 } from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionComponentsProps = {
@@ -30,9 +33,11 @@ const renderComponent = (
 ): JSX.Element => {
   const resolvedType = extendedTypes?.length ? extendedTypes[0] : type;
   const resolvedName = getComponentName(name, children);
+  const extractedComment = getComponentComment(comment, signatures);
   return (
-    <div key={`component-definition-${resolvedName}`}>
-      <H3Code>
+    <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
+      <APISectionDeprecationNote comment={extractedComment} />
+      <H3Code tags={getTagNamesList(comment)}>
         <InlineCode>{resolvedName}</InlineCode>
       </H3Code>
       {resolvedType && (
@@ -40,9 +45,12 @@ const renderComponent = (
           <B>Type:</B> <InlineCode>{resolveTypeName(resolvedType)}</InlineCode>
         </P>
       )}
-      <CommentTextBlock comment={getComponentComment(comment, signatures)} />
+      <CommentTextBlock comment={extractedComment} />
       {componentsProps && componentsProps.length ? (
-        <APISectionProps data={componentsProps} header={`${resolvedName}Props`} />
+        <APISectionProps
+          data={componentsProps}
+          header={componentsProps.length === 1 ? 'Props' : `${resolvedName}Props`}
+        />
       ) : null}
     </div>
   );
@@ -51,7 +59,7 @@ const renderComponent = (
 const APISectionComponents = ({ data, componentsProps }: APISectionComponentsProps) =>
   data?.length ? (
     <>
-      <H2 key="components-header">Components</H2>
+      <H2 key="components-header">{data.length === 1 ? 'Component' : 'Components'}</H2>
       {data.map(component =>
         renderComponent(
           component,

@@ -21,7 +21,6 @@ import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
 import expo.interfaces.devmenu.DevMenuPreferencesInterface
-import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuCallableProvider
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
@@ -33,7 +32,6 @@ import expo.interfaces.devmenu.items.DevMenuScreen
 import expo.interfaces.devmenu.items.DevMenuScreenItem
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.items.getItemsOfType
-import expo.modules.devmenu.api.DevMenuExpoApiClient
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
@@ -61,7 +59,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private lateinit var devMenuHost: DevMenuHost
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
   private var currentScreenName: String? = null
-  private val expoApiClient = DevMenuExpoApiClient()
   private var canLaunchDevMenuOnStart = true
   var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
 
@@ -217,15 +214,19 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   private fun handleLoadedDelegateContext(reactContext: ReactContext) {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
-    maybeInitDevMenuHost(reactContext.currentActivity?.application
-      ?: reactContext.applicationContext as Application)
+    maybeInitDevMenuHost(
+      reactContext.currentActivity?.application
+        ?: reactContext.applicationContext as Application
+    )
     maybeStartDetectors(devMenuHost.getContext())
-    preferences = (testInterceptor.overrideSettings()
-      ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
-        reactContext.getNativeModule(DevMenuPreferences::class.java)!!
-      } else {
-        DevMenuDefaultPreferences()
-      }).also {
+    preferences = (
+      testInterceptor.overrideSettings()
+        ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
+          reactContext.getNativeModule(DevMenuPreferences::class.java)!!
+        } else {
+          DevMenuDefaultPreferences()
+        }
+      ).also {
       shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
       if (shouldLaunchDevMenuOnStart) {
         reactContext.addLifecycleEventListener(this)
@@ -234,11 +235,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   fun getAppInfo(): Bundle {
-    if (delegateReactContext != null) {
-      return DevMenuAppInfo.getAppInfo(delegateReactContext!!)
-    }
+    val reactContext = delegateReactContext ?: return Bundle.EMPTY
+    val instanceManager = delegate?.reactInstanceManager() ?: return Bundle.EMPTY
 
-    return Bundle.EMPTY
+    return DevMenuAppInfo.getAppInfo(instanceManager, reactContext)
   }
 
   fun getDevSettings(): Bundle {
@@ -275,6 +275,11 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)
     }
   }
+
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset by the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
+  var registeredCallbacks = arrayListOf<String>()
 
   //endregion
 
@@ -469,8 +474,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
   override fun getMenuHost(): ReactNativeHost = devMenuHost
-
-  override fun getExpoApiClient(): DevMenuExpoApiClientInterface = expoApiClient
 
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart

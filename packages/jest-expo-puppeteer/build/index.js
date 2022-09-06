@@ -62,7 +62,7 @@ function withExpoPuppeteer(config = {}) {
         command = ofCommands(commands);
     }
     else {
-        command = `expo start:web ${projectPath} --non-interactive --https`;
+        command = `expo-cli start:web ${projectPath} --non-interactive --https`;
         defaultURL = `https://localhost:${serverPort}`;
     }
     const hasModules = fs_1.default.existsSync(path_1.default.resolve(projectPath, 'node_modules'));

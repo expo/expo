@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- Added support for the light sensor on Android. ([#18225](https://github.com/expo/expo/pull/18225) by [bearkillerPT](https://github.com/bearkillerPT))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.4.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
 
 ## 11.3.0 — 2022-04-27
 

@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 161
-    versionName '2.22.3'
+    versionCode 173
+    versionName '2.25.1'
     // END VERSIONS
 
     multiDexEnabled true
@@ -123,30 +123,18 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
 
   // Our dependencies
-  implementation ('androidx.appcompat:appcompat:1.3.1') {
-    // Workaround for https://github.com/expo/expo/issues/17372
-    // Remove this version pinning when we drop sdk 44
-    version {
-      strictly '1.3.1'
-    }
-  }
+  implementation ('androidx.appcompat:appcompat:1.4.1')
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation ('androidx.appcompat:appcompat:1.3.1') {
-    // Workaround for https://github.com/expo/expo/issues/17372
-    // Remove this version pinning when we drop sdk 44
-    version {
-      strictly '1.3.1'
-    }
-  }
+  implementation ('androidx.appcompat:appcompat:1.4.1')
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   implementation 'com.jakewharton:butterknife:10.2.1'
   implementation 'de.greenrobot:eventbus:2.4.0'
 
   implementation 'com.squareup.picasso:picasso:2.5.2'
   implementation 'com.google.android.gms:play-services-analytics:16.0.1'
-  implementation 'com.google.android.gms:play-services-maps:15.0.1'
+  implementation 'com.google.android.gms:play-services-maps:18.0.0'
   implementation 'com.google.android.gms:play-services-auth:15.0.1'
   implementation 'com.google.android.gms:play-services-location:15.0.1'
   debugImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -157,7 +145,6 @@ dependencies {
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
   implementation 'com.github.CanHub:Android-Image-Cropper:1.1.1'
   implementation 'commons-codec:commons-codec:1.10'
-  implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'
   implementation 'net.openid:appauth:0.4.1'
   implementation 'com.airbnb.android:lottie:3.4.0'
@@ -213,19 +200,14 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_46
+  versionedImplementation(project(':expoview-abi46_0_0'))
+  // END_SDK_46
+
+
   // BEGIN_SDK_45
   versionedImplementation(project(':expoview-abi45_0_0'))
   // END_SDK_45
-
-
-  // BEGIN_SDK_44
-  versionedImplementation(project(':expoview-abi44_0_0'))
-  // END_SDK_44
-
-
-  // BEGIN_SDK_43
-  versionedImplementation(project(':expoview-abi43_0_0'))
-  // END_SDK_43
 
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'

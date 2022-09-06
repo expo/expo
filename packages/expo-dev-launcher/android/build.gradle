@@ -40,7 +40,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 9
-    versionName "0.11.5"
+    versionName "1.2.1"
   }
 
   lintOptions {
@@ -71,7 +71,9 @@ android {
     main {
       java {
         def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 67, 0)) {
+        if (rnVersion >= versionToNumber(0, 69, 0)) {
+          srcDirs += "src/react-native-69"
+        } else if (rnVersion >= versionToNumber(0, 67, 0)) {
           srcDirs += "src/react-native-67"
         } else if (rnVersion >= versionToNumber(0, 66, 0)) {
           srcDirs += "src/react-native-66"

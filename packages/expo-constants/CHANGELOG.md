@@ -8,9 +8,36 @@
 
 ### 🐛 Bug fixes
 
-- Improved support of nvm sourcing in iOS shell scripts. ([#17109](https://github.com/expo/expo/pull/17109) by [@liamronancb](https://github.com/liamronancb))
+- Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+
+## 13.2.3 — 2022-07-25
+
+### 🐛 Bug fixes
+
+- Deprecated the unreliable `source-login-scripts.sh` and sourcing the Node.js binary path from `.xcode.env` and `.xcode.env.local`. ([#18330](https://github.com/expo/expo/pull/18330) by [@kudo](https://github.com/kudo))
+
+## 13.2.2 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.1 — 2022-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2022-07-07
+
+### 🎉 New features
+
+- Add getter for expo client config. ([#17865](https://github.com/expo/expo/pull/17865) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- Improved support of nvm sourcing in iOS shell scripts. ([#17109](https://github.com/expo/expo/pull/17109) by [@liamronancb](https://github.com/liamronancb))
+- Fixed `source-login-scripts.sh` ~/zlogin typo. ([#17622](https://github.com/expo/expo/pull/17622) by [@vrgimael](https://github.com/vrgimael))
 
 ## 13.1.0 — 2022-04-18
 

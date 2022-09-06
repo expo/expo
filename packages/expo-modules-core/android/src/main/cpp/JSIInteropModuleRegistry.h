@@ -4,6 +4,10 @@
 
 #include "JavaScriptRuntime.h"
 #include "JavaScriptModuleObject.h"
+#include "JavaScriptValue.h"
+#include "JavaScriptObject.h"
+#include "JavaReferencesCache.h"
+#include "JSReferencesCache.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -40,6 +44,11 @@ public:
   );
 
   /**
+   * Initializes the test runtime. Shouldn't be used in the production.
+   */
+  void installJSIForTests();
+
+  /**
    * Gets a module for a given name. It will throw an exception if the module doesn't exist.
    *
    * @param moduleName
@@ -47,17 +56,44 @@ public:
    */
   jni::local_ref<JavaScriptModuleObject::javaobject> getModule(const std::string &moduleName) const;
 
+  /**
+   * Gets names of all available modules.
+   */
+  jni::local_ref<jni::JArrayClass<jni::JString>> getModulesName() const;
+
+  /**
+   * Exposes a `JavaScriptRuntime::evaluateScript` function to Kotlin
+   */
+  jni::local_ref<JavaScriptValue::javaobject> evaluateScript(jni::JString script);
+
+  /**
+   * Exposes a `JavaScriptRuntime::global` function to Kotlin
+   */
+  jni::local_ref<JavaScriptObject::javaobject> global();
+
+  /**
+   * Exposes a `JavaScriptRuntime::createObject` function to Kotlin
+   */
+  jni::local_ref<JavaScriptObject::javaobject> createObject();
+
+  /**
+   * Exposes a `JavaScriptRuntime::drainJSEventLoop` function to Kotlin
+   */
+  void drainJSEventLoop();
+
   std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<react::CallInvoker> nativeInvoker;
-
+  std::shared_ptr<JavaScriptRuntime> runtimeHolder;
+  std::unique_ptr<JSReferencesCache> jsRegistry;
 private:
   friend HybridBase;
-  std::unique_ptr<JavaScriptRuntime> runtimeHolder;
   jni::global_ref<JSIInteropModuleRegistry::javaobject> javaPart_;
 
   explicit JSIInteropModuleRegistry(jni::alias_ref<jhybridobject> jThis);
 
   inline jni::local_ref<JavaScriptModuleObject::javaobject>
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
+
+  inline jni::local_ref<jni::JArrayClass<jni::JString>> callGetJavaScriptModulesNames() const;
 };
 } // namespace expo

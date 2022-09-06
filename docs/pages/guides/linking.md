@@ -4,6 +4,7 @@ title: Linking
 
 import SnackInline from '~/components/plugins/SnackInline';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { YesIcon } from '~/ui/components/DocIcons';
 
 ## Introduction
 
@@ -15,7 +16,7 @@ In addition to `https`, you're likely also familiar with the `mailto` scheme. Wh
 
 Just like using the `mailto` scheme, it's possible to link to other applications by using other url schemes. For example, when you get a "Magic Link" email from Slack, the "Launch Slack" button is an anchor tag with an href that looks something like: `slack://secret/magic-login/other-secret`. Like with Slack, you can tell the operating system that you want to handle a custom scheme. Read more about [configuring a scheme](#in-a-standalone-app). When the Slack app opens, it receives the URL that was used to open it and can then act on the data that is made available through the url -- in this case, a secret string that will log the user in to a particular server. This is often referred to as **deep linking**. Read more about [handling deep links into your app](#handling-links-into-your-app).
 
-Deep linking with schemes isn't the only linking tool available to you. It is often desirable for regular HTTPS links to open your application on mobile. For example, if you're sending a notification email about a change to a record, you don't want to use a custom URL scheme in links in the email, because then the links would be broken on desktop. Instead, you want to use a regular HTTPS link such as `https://www.myapp.io/records/123`, and on mobile you want that link to open your app. iOS terms this concept "universal links" and Android calls it "deep links" (unfortunate naming, since deep links can also refer to the topic above). Expo supports these links on both platforms (with some [configuration](#universaldeep-links-without-a-custom-scheme)). Expo also supports deferred deep links with [Branch](../versions/latest/sdk/branch.md).
+Deep linking with schemes isn't the only linking tool available to you. It is often desirable for regular HTTPS links to open your application on mobile. For example, if you're sending a notification email about a change to a record, you don't want to use a custom URL scheme in links in the email, because then the links would be broken on desktop. Instead, you want to use a regular HTTPS link such as `https://www.myapp.io/records/123`, and on mobile you want that link to open your app. iOS terms this concept "universal links" and Android calls it "deep links" (unfortunate naming, since deep links can also refer to the topic above). Expo supports these links on both platforms (with some [configuration](#universaldeep-links-without-a-custom-scheme)). Expo also supports deferred deep links with [Branch](https://github.com/expo/config-plugins/tree/main/packages/react-native-branch).
 
 ## Linking from your app to other apps
 
@@ -23,12 +24,12 @@ Deep linking with schemes isn't the only linking tool available to you. It is of
 
 As mentioned in the introduction, there are some URL schemes for core functionality that exist on every platform. The following is a non-exhaustive list, but covers the most commonly used schemes.
 
-| Scheme           | Description                                   | iOS | Android |
-| ---------------- | --------------------------------------------- | --- | ------- |
-| `mailto`         | Open mail app, eg: `mailto: support@expo.dev` | ✅  | ✅      |
-| `tel`            | Open phone app, eg: `tel:+123456789`          | ✅  | ✅      |
-| `sms`            | Open SMS app, eg: `sms:+123456789`            | ✅  | ✅      |
-| `https` / `http` | Open web browser app, eg: `https://expo.dev`  | ✅  | ✅      |
+| Scheme           | Description                                   | iOS         | Android     |
+| ---------------- | --------------------------------------------- | ----------- | ----------- |
+| `mailto`         | Open mail app, eg: `mailto: support@expo.dev` | <YesIcon /> | <YesIcon /> |
+| `tel`            | Open phone app, eg: `tel:+123456789`          | <YesIcon /> | <YesIcon /> |
+| `sms`            | Open SMS app, eg: `sms:+123456789`            | <YesIcon /> | <YesIcon /> |
+| `https` / `http` | Open web browser app, eg: `https://expo.dev`  | <YesIcon /> | <YesIcon /> |
 
 ### Opening links from your app
 
@@ -149,7 +150,7 @@ If you don't specify this list, `Linking.canOpenURL` may return `false` regardle
 
 Before continuing it's worth taking a moment to learn how to link to your app within the Expo Go app. Expo Go uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the main screen.
 
-In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://exp.host/@community/with-webbrowser-redirect`. If you create a website with a link like `<a href="exp://expo.dev/@community/with-webbrowser-redirect">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
+In development, your app will live at a url like `exp://wg-qka.community.app.exp.direct:80`. When it's deployed, it will be at a URL like `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`. If you create a website with a link like `<a href="exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime-version=exposdk:45.0.0">Open my project</a>`, then open that site on your device and click the link, it will open your app within the Expo Go app. You can link to it from another app by using `Linking.openURL` too.
 
 ### In a standalone app
 
@@ -175,7 +176,7 @@ If your app is ejected, note that like some other parts of **app.json**, changin
 
 To save you the trouble of inserting a bunch of conditionals based on the environment that you're in and hardcoding urls, we provide some helper methods in our extension of the `Linking` module. When you want to provide a service with a url that it needs to redirect back into your app, you can call `Linking.createURL()` and it will resolve to the following:
 
-- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect`
+- _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`
 - _Published app in standalone_: `myapp://`
 - _Development in Expo Go_: `exp://127.0.0.1:19000`
 
@@ -209,7 +210,7 @@ const redirectUrl = Linking.createURL('path/into/app', {
 
 This will resolve into the following, depending on the environment:
 
-- _Published app in Expo Go_: `exp://exp.host/@community/with-webbrowser-redirect/--/path/into/app?hello=world`
+- _Published app in Expo Go_: `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]/--/path/into/app?hello=world`
 - _Published app in standalone_: `myapp://path/into/app?hello=world`
 - _Development in Expo Go_: `exp://127.0.0.1:19000/--/path/into/app?hello=world`
 
@@ -223,7 +224,11 @@ When [handling the URL that is used to open/foreground your app](#handling-urls-
 _handleUrl = ({ url }) => {
   this.setState({ url });
   let { hostname, path, queryParams } = Linking.parse(url);
-  alert(`Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(queryParams)}`);
+  alert(
+    `Linked to app with hostname: ${hostname}, path: ${path} and data: ${JSON.stringify(
+      queryParams
+    )}`
+  );
 };
 ```
 
@@ -264,10 +269,12 @@ The AASA must be served from `/.well-known/apple-app-site-association` (with no 
 {
   "applinks": {
     "apps": [], // This is usually left empty, but still must be included
-    "details": [{
-      "appID": "LKWJEF.io.myapp.example",
-      "paths": ["/records/*"]
-    }]
+    "details": [
+      {
+        "appID": "LKWJEF.io.myapp.example",
+        "paths": ["/records/*"]
+      }
+    ]
   }
 }
 ```
@@ -376,13 +383,137 @@ It may be desirable for links to your domain to always open your app (without pr
 ]
 ```
 
+### Handling App Links on Android with expo-dev-client
+
+From Android 12 onwards, there is an issue reported when verifying the App Links with [`expo-dev-client`](/development/getting-started/).
+
+When `expo.android.intentFilters` is used and `"autoVerify"` is set to `true`, the `expo-dev-client` adds a scheme `<data android:scheme="exp+<slug>" />` to the intent filter. This scheme breaks the App Links verification.
+
+An example of the `exp+` scheme breaking the verification process:
+
+```xml
+<activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:screenOrientation="portrait">
+  <intent-filter>
+    <action android:name="android.intent.action.MAIN"/>
+    <category android:name="android.intent.category.LAUNCHER"/>
+  </intent-filter>
+  <intent-filter>
+    <action android:name="android.intent.action.VIEW"/>
+    <category android:name="android.intent.category.DEFAULT"/>
+    <category android:name="android.intent.category.BROWSABLE"/>
+    <data android:scheme="<slug>"/>
+    <data android:scheme="<package>"/>
+    <data android:scheme="exp+<slug>"/>
+  </intent-filter>
+  <intent-filter android:autoVerify="true" data-generated="true">
+    <action android:name="android.intent.action.VIEW"/>
+    <data android:scheme="https" android:host="<name>.onelink.me" android:pathPrefix="/XXXX"/>
+    <data android:scheme="https" android:host="<name>.onelink.me" android:pathPrefix="/XXXX"/>
+    <data android:scheme="https" android:host="<name>.onelink.me" android:pathPrefix="/XXXX"/>
+    <!-- @info -->
+    <data android:scheme="exp+<slug>"/>
+    <!-- @end -->
+    <category android:name="android.intent.category.BROWSABLE"/>
+    <category android:name="android.intent.category.DEFAULT"/>
+  </intent-filter>
+</activity>
+```
+
+You can fix this issue by creating a custom [Config Plugin](/guides/config-plugins/) that removes the `exp+` schemes when verifying `intentFilters`.
+
+Create a new file called **withAndroidVerifiedLinksWorkaround.js** in your project with the following code snippet:
+
+```javascript
+const { createRunOncePlugin, withAndroidManifest } = require('@expo/config-plugins');
+
+/**
+ * @typedef {import('@expo/config-plugins').ConfigPlugin} ConfigPlugin
+ * @typedef {import('@expo/config-plugins').AndroidManifest} AndroidManifest
+ */
+
+/**
+ * Remove the custom Expo dev client scheme from intent filters, which are set to `autoVerify=true`.
+ * The custom scheme `<data android:scheme="exp+<slug>"/>` seems to block verification for these intent filters.
+ * This plugin makes sure there is no scheme in the autoVerify intent filters, that starts with `exp+`.
+ *
+ * @type {ConfigPlugin}
+ */
+const withAndroidVerifiedLinksWorkaround = config =>
+  withAndroidManifest(config, config => {
+    config.modResults = removeExpoSchemaFromVerifiedIntentFilters(config.modResults);
+    return config;
+  });
+
+/**
+ * Iterate over all `autoVerify=true` intent filters, and pull out schemes starting with `exp+`.
+ *
+ * @param {AndroidManifest} androidManifest
+ */
+function removeExpoSchemaFromVerifiedIntentFilters(androidManifest) {
+  for (const application of androidManifest.manifest.application || []) {
+    for (const activity of application.activity || []) {
+      if (activityHasSingleTaskLaunchMode(activity)) {
+        for (const intentFilter of activity['intent-filter'] || []) {
+          if (intentFilterHasAutoVerification(intentFilter) && intentFilter?.data) {
+            intentFilter.data = intentFilterRemoveSchemeFromData(intentFilter, scheme =>
+              scheme?.startsWith('exp+')
+            );
+          }
+        }
+        break;
+      }
+    }
+  }
+
+  return androidManifest;
+}
+
+/**
+ * Determine if the activity should contain the intent filters to clean.
+ *
+ */
+function activityHasSingleTaskLaunchMode(activity) {
+  return activity?.$?.['android:launchMode'] === 'singleTask';
+}
+
+/**
+ * Determine if the intent filter has `autoVerify=true`.
+ */
+function intentFilterHasAutoVerification(intentFilter) {
+  return intentFilter?.$?.['android:autoVerify'] === 'true';
+}
+
+/**
+ * Remove schemes from the intent filter that matches the function.
+ */
+function intentFilterRemoveSchemeFromData(intentFilter, schemeMatcher) {
+  return intentFilter?.data?.filter(entry => !schemeMatcher(entry?.$['android:scheme'] || ''));
+}
+
+module.exports = createRunOncePlugin(
+  withAndroidVerifiedLinksWorkaround,
+  'withAndroidVerifiedLinksWorkaround',
+  '1.0.0'
+);
+```
+
+Next, in you **app.json**, add this plugin under `expo.plugins`:
+
+```json
+{
+  "plugins": ["./plugins/withAndroidVerifiedLinksWorkaround"]
+}
+```
+
+If you are using [EAS Build](/build/introduction/), you will have to create a new build after adding these changes to your project so that they are reflected in your Android app.
+
 ## When to _not_ use deep links
 
 This is the easiest way to set up deep links into your app because it requires a minimal amount of configuration.
 
 The main problem is that if the user does not have your app installed and follows a link to your app with its custom scheme, their operating system will indicate that the page couldn't be opened but not give much more information. This is not a great experience. There is no way to work around this in the browser.
 
-Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://exp.host/@community/native-component-list` might just show up as plain text in your browser rather than as a link ([exp://exp.host/@community/native-component-list](exp://exp.host/@community/native-component-list)).
+Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
 
 An example of this is Gmail which strips the href property from links of most apps, a trick to use is to link to a regular https url instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the href property so you can host a file online that redirects the user to your app's custom schemes.
 

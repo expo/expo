@@ -114,6 +114,15 @@ class Video extends React.Component {
     unloadAsync = async () => {
         return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.unloadForVideo(tag));
     };
+    componentWillUnmount() {
+        // Auto unload video to perform necessary cleanup safely
+        this.unloadAsync().catch(() => {
+            // Ignored rejection. Sometimes the unloadAsync code is executed when video is already unloaded.
+            // In such cases, it throws:
+            // "[Unhandled promise rejection: Error: Invalid view returned from registry,
+            //  expecting EXVideo, got: (null)]"
+        });
+    }
     /**
      * Set status API, only available while `isLoaded = true`.
      * @hidden
@@ -136,7 +145,16 @@ class Video extends React.Component {
         }));
     };
     /**
-     * @hidden
+     * Sets a function to be called regularly with the `AVPlaybackStatus` of the playback object.
+     *
+     * `onPlaybackStatusUpdate` will be called whenever a call to the API for this playback object completes
+     * (such as `setStatusAsync()`, `getStatusAsync()`, or `unloadAsync()`), nd will also be called at regular intervals
+     * while the media is in the loaded state.
+     *
+     * Set `progressUpdateIntervalMillis` via `setStatusAsync()` or `setProgressUpdateIntervalAsync()` to modify
+     * the interval with which `onPlaybackStatusUpdate` is called while loaded.
+     *
+     * @param onPlaybackStatusUpdate A function taking a single parameter `AVPlaybackStatus`.
      */
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate) {
         this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
@@ -229,6 +247,7 @@ class Video extends React.Component {
                 ...Object.keys(status),
             ]),
             style: StyleSheet.flatten([_STYLES.base, this.props.style]),
+            videoStyle: StyleSheet.flatten([_STYLES.video, this.props.videoStyle]),
             source,
             resizeMode: nativeResizeMode,
             status,
@@ -240,7 +259,7 @@ class Video extends React.Component {
             onFullscreenUpdate: this._nativeOnFullscreenUpdate,
         };
         return (React.createElement(View, { style: nativeProps.style, pointerEvents: "box-none" },
-            React.createElement(ExponentVideo, { ref: this._nativeRef, ...nativeProps, style: _STYLES.video }),
+            React.createElement(ExponentVideo, { ref: this._nativeRef, ...nativeProps, style: nativeProps.videoStyle }),
             this._renderPoster()));
     }
 }

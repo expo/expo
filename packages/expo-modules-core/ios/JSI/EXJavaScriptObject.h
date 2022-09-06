@@ -42,6 +42,11 @@ NS_SWIFT_NAME(JavaScriptObject)
  Returns the pointer to the underlying object.
  */
 - (nonnull jsi::Object *)get;
+
+/**
+ Returns the shared pointer to the underlying object.
+ */
+- (std::shared_ptr<jsi::Object>)getShared;
 #endif // __cplusplus
 
 #pragma mark - Accessing object properties

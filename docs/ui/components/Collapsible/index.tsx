@@ -1,9 +1,16 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, shadows, spacing, theme } from '@expo/styleguide';
+import {
+  borderRadius,
+  iconSize,
+  shadows,
+  spacing,
+  theme,
+  typography,
+  TriangleDownIcon,
+} from '@expo/styleguide';
 import React, { PropsWithChildren, ReactNode } from 'react';
 
-import { HEADLINE, P } from '~/ui/components/Text';
-import { TriangleDownIcon } from '~/ui/foundations/icons';
+import { HEADLINE } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
   /**
@@ -26,7 +33,7 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
         </div>
         <HEADLINE tag="span">{summary}</HEADLINE>
       </summary>
-      <P css={contentStyle}>{children}</P>
+      <div css={contentStyle}>{children}</div>
     </details>
   );
 }
@@ -79,6 +86,10 @@ const summaryStyle = css({
   '&:hover span': {
     color: theme.text.secondary,
   },
+
+  '::-webkit-details-marker': {
+    display: 'none',
+  },
 });
 
 const markerWrapperStyle = css({
@@ -95,7 +106,7 @@ const markerStyle = css({
   'details[open] &': { transform: 'rotate(0)' },
 });
 
-const contentStyle = css({
+const contentStyle = css(typography.body.paragraph, {
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   p: {

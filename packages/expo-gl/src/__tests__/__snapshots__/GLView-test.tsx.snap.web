@@ -2,7 +2,8 @@
 
 exports[`renders static 1`] = `
 <div
-  className="css-view-1dbjc4n r-pointerEvents-12vffkv"
+  className="css-view-175oi2r r-pointerEvents-12vffkv"
+  dir={null}
 >
   <canvas
     style={

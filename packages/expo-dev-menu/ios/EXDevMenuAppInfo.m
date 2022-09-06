@@ -1,6 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 #import "EXDevMenuAppInfo.h"
+#if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
+#import <EXDevMenu/EXDevMenu-Swift.h>
+#else
 #import <EXDevMenu-Swift.h>
+#endif
 #import <EXManifests/EXManifestsManifestFactory.h>
 
 @implementation EXDevMenuAppInfo
@@ -22,6 +26,10 @@
     appVersion = [manager.currentManifest version];
   }
   
+  NSString *engine = @"JSC";
+  if ([[[[manager currentBridge] batchedBridge] bridgeDescription] containsString:@"Hermes"]) {
+    engine = @"Hermes";
+  }
   
   NSString *hostUrl = [manager.currentManifestURL absoluteString] ?: @"";
 
@@ -31,6 +39,7 @@
   appInfo[@"runtimeVersion"] = runtimeVersion;
   appInfo[@"sdkVersion"] = sdkVersion;
   appInfo[@"hostUrl"] = hostUrl;
+  appInfo[@"engine"] = engine;
 
   return appInfo;
 }

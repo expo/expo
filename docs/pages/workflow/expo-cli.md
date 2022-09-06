@@ -5,1024 +5,382 @@ maxHeadingDepth: 4
 
 import { Terminal } from '~/ui/components/Snippet';
 
-Expo CLI is a command line app that is the main interface between a developer and Expo tools. You'll use it for a variety of tasks, such as:
+The `expo` package provides a small and powerful CLI tool `npx expo` which is designed to keep you moving fast during app development.
 
-- Creating new projects
-- Developing your app: running the project server, viewing logs, opening your app in a simulator
-- [Publishing](publishing.md) your app JavaScript and other assets and managing releasing them as updates
-- [Building binaries](/distribution/building-standalone-apps.md) (`aab` and `ipa` files) to be [uploaded to the App Store and Play Store](/distribution/uploading-apps.md)
-- Managing Apple Credentials and Google Keystores
+**Highlights**
 
-You may use the CLI in your terminal or use the web based interface (it opens automatically by default, or you can press d from the CLI to open it on demand). The web interface enables you to use some of the most often used features from a quick-to-use graphical interface. We’ve only scratched the surface of what expo-cli can do so far. Be sure to check out all the possible commands below!
+- [Start a server](#develop) for developing your app: `npx expo start`.
+<!-- - Bundle the JavaScript and assets for your app: `npx expo export`. -->
+- [Generate the native iOS and Android directories](#prebuild) for your project: `npx expo prebuild`.
+- [Build and run](#compiling) the native apps locally: `npx expo run:ios` and `npx expo run:android`.
+- [Install and update packages](#install) that work with the version of `react-native` in your project: `npx expo install package-name`.
+- `npx expo` can be used with `npx react-native` simultaneously.
 
-## Installation
+> This documentation refers to the Local Expo CLI (SDK 46 and greater). For information on legacy Expo CLI, see [Global Expo CLI](/archived/expo-cli/).
 
-<Terminal cmd={['$ npm install -g expo-cli']} cmdCopy="npm install -g expo-cli" />
+<hr />
 
-## Checking CLI Version
+To view a list of available commands in Expo CLI, run the following in your project:
 
-Run `expo --version` to determine what version you are currently working with.
+<Terminal cmd={['$ npx expo -h']} />
 
-## Commands
+> You can also run `yarn expo -h` if you prefer to use yarn as the package manager.
 
-The commands listed below are derived from the latest version of Expo CLI. You can view the list of commands available with your version in your terminal using `expo --help`. To learn more about a specific command and its options use `expo [command] --help`.
+The output should look something like below:
 
-<Terminal cmd={[`# Usage: expo [command] [options]`]} />
+```
+  Usage
+    $ npx expo <command>
 
-<!-- BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/main/packages/expo-cli/scripts/introspect.ts -->
+  Commands
+    start, export, export:web
+    run:ios, run:android, prebuild
+    install, customize, config
+    login, logout, whoami, register
 
-> Based on `expo-cli` v5.2.0
+  Options
+    --version, -v   Version number
+    --help, -h      Usage info
+```
 
----
+You can run any command with the `--help` or `-h` flag to learn more about it:
 
-### Core
+<Terminal cmd={['$ npx expo login -h']} />
 
-<details>
-<summary>
-<h4>expo export</h4>
-<p>Export the static files of the app for hosting it on a web server</p>
-</summary>
-<p>
+## Develop
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--platform [all\|android\|ios]` | Platforms: android, ios, all |
-| `-p, --public-url [url]` | The public url that will host the static files (required) |
-| `-c, --clear` | Clear the Metro bundler cache |
-| `--output-dir [dir]` | The directory to export the static files to |
-| `-a, --asset-url [url]` | The absolute or relative url that will host the asset files |
-| `-d, --dump-assetmap` | Dump the asset map for further processing |
-| `--dev` | Configure static files for developing locally using a non-https server |
-| `-s, --dump-sourcemap` | Dump the source map for debugging the JS bundle |
-| `-q, --quiet` | Suppress verbose output |
-| `-t, --target [managed\|bare]` | Target environment for which this export is intended |
-| `--merge-src-dir [dir]` | A repeatable source dir to merge in |
-| `--merge-src-url [url]` | A repeatable source tar.gz file URL to merge in |
-| `--max-workers [num]` | Maximum number of tasks to allow Metro to spawn |
-| `--experimental-bundle` | export bundles for use with EAS updates |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+Start a development server to work on your project by running:
 
+<Terminal cmd={['$ npx expo start']} />
 
-</p>
-</details>
+> You can also run `npx expo` as an alias to `npx expo start`.
 
-<details>
-<summary>
-<h4>expo init</h4>
-<p>Create a new Expo project</p>
-</summary>
-<p>
+This command starts a server on `http://localhost:19000` which a client can use to interact with the bundler. The default bundler is [Metro](https://facebook.github.io/metro/).
 
-Alias: `expo i`
+The UI that shows up in the process is referred to as the **Terminal UI**.
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-t, --template [name]` | Specify which template to use. Valid options are "blank", "tabs", "bare-minimum" or a package on npm (e.g. "expo-template-bare-minimum") that includes an Expo project template. |
-| `--npm` | Use npm to install dependencies. (default when Yarn is not installed) |
-| `--yarn` | Use Yarn to install dependencies. (default when Yarn is installed) |
-| `--no-install` | Skip installing npm packages or CocoaPods. |
-| `--name [name]` | The name of your app visible on the home screen. |
-| `--yes` | Use default options. Same as "expo init . --template blank |
+The Terminal UI has a QR code (for the dev server URL) and a list of keyboard shortcuts you can press:
 
+- `a`: Open the project in Expo Go on Android.
+- `shift` + `a`: Select an Android device or emulator to open.
 
-</p>
-</details>
+- `i`: Open the project in Expo Go on iOS.
+- `shift` + `i`: Select an iOS Simulator to open.
+- `w`: Open the project in a web browser. This may require Webpack to be installed in your project.
 
-<details>
-<summary>
-<h4>expo install</h4>
-<p>Install a module or other package to a project</p>
-</summary>
-<p>
+- `r`: Reload the app on any connected device.
+- `m`: Open the dev menu on any connected native device (web not supported).
+- `shift` + `m`: Choose more commands to trigger on connected devices. This includes toggling the performance monitor, opening the element inspector, reloading the device, and opening the dev menu.
+- `j`: Open Chrome Dev Tools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes#javascript-inspector-for-hermes).
+- `o`: Open project code in your editor. This can be configured with the `EXPO_EDITOR` and `EDITOR` [environment variables](#environment-variables).
+- `c`: Show development server URL as a QR code in the terminal.
+- `?`: Show all Terminal UI commands.
 
-Alias: `expo add`
+### Server URL
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--npm` | Use npm to install dependencies. (default when package-lock.json exists) |
-| `--yarn` | Use Yarn to install dependencies. (default when yarn.lock exists) |
+By default, the project is served over a LAN connection. You can change this behavior to localhost-only by using the flag `npx expo start --localhost`.
 
+Other available options are:
 
-</p>
-</details>
+- `--port`: Port to start the dev server on (does not apply to Webpack or [tunnel URLs](#tunneling)). Default: **19000**.
+- `--https`: Start the dev server using a secure origin. This is currently only supported on web.
 
-<details>
-<summary>
-<h4>expo run:android</h4>
-<p>Run the Android app binary locally</p>
-</summary>
-<p>
+You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--no-bundler` | Skip starting the Metro bundler |
-| `-d, --device [device]` | Device name to build the app on |
-| `-p, --port [port]` | Port to start the Metro bundler on. Default: 8081 |
-| `--variant [name]` | (Android) build variant |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+<Terminal cmd={[
+'export EXPO_PACKAGER_PROXY_URL=http://expo.dev',
+'$ npx expo start'
+]} />
 
+Will open apps to: `exp://expo.dev:80` (the `:80` is a temporary workaround for Android websockets).
 
-</p>
-</details>
+#### Tunneling
 
-<details>
-<summary>
-<h4>expo run:ios</h4>
-<p>Run the iOS app binary locally</p>
-</summary>
-<p>
+Restrictive network conditions (common for public Wi-Fi), firewalls (common for Windows users), or Emulator misconfiguration can make it difficult to connect a remote device to your dev server over lan/localhost.
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--no-build-cache` | Clear the native derived data before building |
-| `--no-install` | Skip installing dependencies |
-| `--no-bundler` | Skip starting the Metro bundler |
-| `-d, --device [device]` | Device name or UDID to build the app on |
-| `-p, --port [port]` | Port to start the Metro bundler on. Default: 8081 |
-| `--scheme [scheme]` | Scheme to build |
-| `--configuration [configuration]` | Xcode configuration to use. Debug or Release. Default: Debug |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+Sometimes it's easier to connect to a dev server over a proxy URL that's accessible from any device with internet access, this is referred to as **tunneling**. `npx expo start` provides built-in support for **tunneling** via [ngrok][ngrok].
 
+To enable tunneling, first install `@expo/ngrok`:
 
-</p>
-</details>
+<Terminal cmd={['$ npm i -g @expo/ngrok']} />
 
-<details>
-<summary>
-<h4>expo send</h4>
-<p>Share the project's URL to an email address</p>
-</summary>
-<p>
+Then run the following to start your dev server from a _tunnel_ URL:
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-s, --send-to [dest]` | Email address to send the URL to |
-| `--dev-client` | Experimental: Starts the bundler for use with the expo-development-client |
-| `--scheme [scheme]` | Custom URI protocol to use with a development build |
-| `-a, --android` | Opens your app in Expo Go on a connected Android device |
-| `-i, --ios` | Opens your app in Expo Go in a currently running iOS simulator on your computer |
-| `-w, --web` | Opens your app in a web browser |
-| `-m, --host [mode]` | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
-| `--tunnel` | Same as --host tunnel |
-| `--lan` | Same as --host lan |
-| `--localhost` | Same as --host localhost |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+<Terminal cmd={['$ npx expo start --tunnel']} />
 
+This will serve your app from a public URL like: `http://xxxxxxx.bacon.19000.exp.direct:80`.
 
-</p>
-</details>
+**Drawbacks**
 
-<details>
-<summary>
-<h4>expo start</h4>
-<p>Start a local dev server for the app</p>
-</summary>
-<p>
+- Tunneling is slower than local connections because requests must be forwarded to a public URL.
+- Tunnel URLs are public and can be accessed by any device with a network connection. Expo CLI mitigates the risk of exposure by adding entropy to the beginning of the URL. Entropy can be reset by clearing the `.expo` directory in your project.
+- Tunnels require a network connection on both devices, meaning this feature cannot be used with the `--offline` flag.
 
-Alias: `expo r`
+#### Offline
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-s, --send-to [dest]` | An email address to send a link to |
-| `-c, --clear` | Clear the Metro bundler cache |
-| `--max-workers [num]` | Maximum number of tasks to allow Metro to spawn. |
-| `--no-dev` | Turn development mode off |
-| `--minify` | Minify code |
-| `--https` | To start webpack with https protocol |
-| `--force-manifest-type [manifest-type]` | Override auto detection of manifest type |
-| `-p, --port [port]` | Port to start the native Metro bundler on (does not apply to web or tunnel). Default: 19000 |
-| `--dev-client` | Experimental: Starts the bundler for use with the expo-development-client |
-| `--scheme [scheme]` | Custom URI protocol to use with a development build |
-| `-a, --android` | Opens your app in Expo Go on a connected Android device |
-| `-i, --ios` | Opens your app in Expo Go in a currently running iOS simulator on your computer |
-| `-w, --web` | Opens your app in a web browser |
-| `-m, --host [mode]` | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
-| `--tunnel` | Same as --host tunnel |
-| `--lan` | Same as --host lan |
-| `--localhost` | Same as --host localhost |
-| `--offline` | Allows this command to run while offline |
-| `--dev` | Deprecated: Dev mode is used by default |
-| `--no-minify` | Deprecated: Minify is disabled by default |
-| `--no-https` | Deprecated: https is disabled by default |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+You can develop without a network connection by using the `--offline` flag:
 
+<Terminal cmd={['$ npx expo start --offline']} />
 
-</p>
-</details>
+Offline will prevent the CLI from making network requests. If you don't use the flag and your computer has no internet connection, then offline support will automatically be enabled, it will just take a bit longer to verify the reachability.
 
-<details>
-<summary>
-<h4>expo start:web</h4>
-<p>Start a Webpack dev server for the web app</p>
-</summary>
-<p>
+Expo CLI makes network requests to sign manifests with your user credentials to ensure sensitive information is sandboxed in reusable runtimes like Expo Go.
 
-Alias: `expo web`
+## Building
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--no-dev` | Turn development mode off |
-| `--minify` | Minify code |
-| `--https` | To start webpack with https protocol |
-| `--force-manifest-type [manifest-type]` | Override auto detection of manifest type |
-| `-p, --port [port]` | Port to start the Webpack bundler on. Default: 19006 |
-| `-s, --send-to [dest]` | An email address to send a link to |
-| `--dev-client` | Experimental: Starts the bundler for use with the expo-development-client |
-| `--scheme [scheme]` | Custom URI protocol to use with a development build |
-| `-a, --android` | Opens your app in Expo Go on a connected Android device |
-| `-i, --ios` | Opens your app in Expo Go in a currently running iOS simulator on your computer |
-| `-w, --web` | Opens your app in a web browser |
-| `-m, --host [mode]` | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
-| `--tunnel` | Same as --host tunnel |
-| `--lan` | Same as --host lan |
-| `--localhost` | Same as --host localhost |
-| `--offline` | Allows this command to run while offline |
-| `--dev` | Deprecated: Dev mode is used by default |
-| `--no-minify` | Deprecated: Minify is disabled by default |
-| `--no-https` | Deprecated: https is disabled by default |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+A React Native app consists of two parts: a native runtime ([compiling](#compiling)), and static files like JavaScript bundles and assets ([exporting](#exporting)). Expo CLI provides commands for performing both tasks.
 
+### Compiling
 
-</p>
-</details>
+You can compile your app locally with the `run` commands:
+
+<Terminal cmd={[
+'# Build for iOS',
+'$ npx expo run:ios',
+'# Build for Android',
+'$ npx expo run:android'
+]} />
+
+**Highlights**
+
+- Build directly on connected devices with no global side-effects using the `--device` flag. Supports locked devices, letting you retry instantly instead of needing to rebuild.
+- Automatically codesign iOS apps for development from the CLI without having to open Xcode.
+- Smart log parsing show you warnings and errors from your project source code, unlike Xcode which surfaces hundreds of benign warnings from your node modules.
+- Fatal errors causing your app to crash will be surfaced to the terminal preventing the need to reproduce in Xcode.
 
 ---
 
-### Auth
+`expo run:ios` can only be run on a Mac, and Xcode must be installed. You can build the app in the cloud from any computer using `eas build -p ios`. Similarly, `expo run:android` requires Android Studio and Java to be installed and configured on your computer.
 
-<details>
-<summary>
-<h4>expo login</h4>
-<p>Login to an Expo account</p>
-</summary>
-<p>
+Building locally is useful for developing native modules and [debugging complex native issues](/workflow/debugging#native-debugging). Building remotely with `eas build` is a much more resilient option due to the preconfigured cloud environment.
 
-Alias: `expo signin`
+If your project does not have the corresponding native directories, the `npx expo prebuild` command will run once to generate the respective directory before building.
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-u, --username [string]` | Username |
-| `-p, --password [string]` | Password |
-| `--otp [string]` | One-time password from your 2FA device |
+For example, if your project does not have a root `ios/` directory, then `npx expo run:ios` will first run `npx expo prebuild -p ios` before compiling your app. Learn more about about this process in the [Expo Prebuild](/workflow/prebuild) doc.
 
+<!-- TODO: multi-platform setup guide -->
 
-</p>
-</details>
+**Cross-Platform Arguments**
 
-<details>
-<summary>
-<h4>expo logout</h4>
-<p>Logout of an Expo account</p>
-</summary>
-<p>
+- `--no-build-cache`: Clear the native cache before building. On iOS this is the **derived data** folder. Cache clearing is useful for profiling your build times.
+- `--no-install`: Skip installing dependencies. On iOS this will also skip running `npx pod-install` if the `dependencies` field in the project's `package.json` have changed.
+- `--no-bundler`: Skip starting the dev server. Enabled automatically if the dev server is already serving the app from a different process.
+- `-d, --device [device]`: Device name or ID to build the app on. You can pass `--device` without arguments to select a device from a list of available options. This supports connected devices as well as virtual devices.
+- `-p, --port <port>`: Port to start the development server. **Default: 8081**. This is only relevant for development builds. Production builds will [export](#exporting) the project and embed the files in the native binary before installing on a device.
 
-This command does not take any options.
+#### Compiling iOS
 
-</p>
-</details>
+An iOS app can have multiple **schemes** for representing different sub-apps like App Clips, watchOS apps, Safari Extensions, and so on. By default, `expo run:ios` will choose the scheme for your iOS app. You can pick a custom scheme with the `--scheme <my-scheme>` argument. If you pass in the `--scheme` argument alone, then Expo CLI will prompt you to choose a scheme from the list of available options in your Xcode project.
 
-<details>
-<summary>
-<h4>expo register</h4>
-<p>Sign up for a new Expo account</p>
-</summary>
-<p>
+The scheme you select will filter out which `--device` options show up in the selection prompt, for example, selecting an Apple TV scheme will only show available Apple TV devices.
 
-This command does not take any options.
+You can compile an iOS app for production by running:
 
-</p>
-</details>
+<Terminal cmd={['$ npx expo run:ios --configuration Release']} />
 
-<details>
-<summary>
-<h4>expo whoami</h4>
-<p>Return the currently authenticated account</p>
-</summary>
-<p>
+This build is not automatically code signed for submission to the Apple App Store. `npx expo run:ios` should mostly be used to test bugs that only show up in production builds. Native code signing requires several network requests and is prone to many different types of errors from the Apple servers. To generate a production build that is code signed for the App Store, we recommend using [EAS Build](/build/introduction).
 
-Alias: `expo w`
+When you compile your app onto a Simulator, the Simulator's native error logs will be piped to the Expo CLI process in the terminal. This is useful for quickly seeing bugs that may cause a fatal error. For example, missing permission messages. Error piping is not available for physical iOS devices.
 
-This command does not take any options.
+You can debug using `lldb` and all of the native Apple debugging tools by opening the project in Xcode and rebuilding from Xcode:
 
-</p>
-</details>
+<Terminal cmd={['$ xed ios']} />
 
----
+Building from Xcode is useful because you can set native breakpoints and profile any part of the application. Be sure to track changes in source control (git) in case you need to regenerate the native app with `npx expo prebuild -p ios --clean`.
 
-### Client
+##### iOS development signing
 
-<details>
-<summary>
-<h4>expo client:install:ios</h4>
-<p>Install Expo Go for iOS on the simulator</p>
-</summary>
-<p>
+If you want to see how your app will run on your device, all you have to do is connect it, run `npx expo run:ios —-device`, select your connected device.
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--latest` | Install the latest version of Expo Go, ignoring the current project version. |
+Expo CLI will automatically sign the device for development, install the app, and launch into it.
 
+If you don't have any developer profiles setup on your computer then you'll need to set them up manually outside of Expo CLI by following this guide: [Setup Xcode signing](https://expo.fyi/setup-xcode-signing).
 
-</p>
-</details>
+#### Compiling Android
 
-<details>
-<summary>
-<h4>expo client:install:android</h4>
-<p>Install Expo Go for Android on a connected device or emulator</p>
-</summary>
-<p>
+Android apps can have multiple different **variants** which are defined in the project's `build.gradle` file. Variants can be selected with the `--variant` flag:
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-d, --device [device]` | Device name to install the client on |
-| `--latest` | Install the latest version of Expo Go, ignore the current project version. |
+<Terminal cmd={['$ npx expo run:android --variant debug']} />
 
+You can compile the Android app for production by running:
 
-</p>
-</details>
+<Terminal cmd={['$ npx expo run:android --variant release']} />
 
----
+This build is not automatically code signed for submission to the Google Play Store. This command should be used to test bugs that may only show up in production builds. To generate a production build that is code signed for the Play Store, we recommend using [EAS Build](/build/introduction).
 
-### Info
+You can debug the native Android project using native debugging tools by opening the `android/` folder in Android Studio:
 
-<details>
-<summary>
-<h4>expo config</h4>
-<p>Show the project config</p>
-</summary>
-<p>
+<Terminal cmd={['$ open -a /Applications/Android\ Studio.app android']} />
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-t, --type [public\|prebuild\|introspect]` | Type of config to show. |
-| `--full` | Include all project config data |
-| `--json` | Output in JSON format |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+### Exporting
 
+You can export the JavaScript and assets for your app using Metro bundler by running:
 
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo diagnostics</h4>
-<p>Log environment info to the console</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
+<Terminal cmd={[
+'$ npx expo export',
+]} />
 
-</p>
-</details>
+This is done automatically when using `eas update` or when compiling the native runtime. The `export` command works similar to most web frameworks:
 
-<details>
-<summary>
-<h4>expo doctor</h4>
-<p>Diagnose issues with the project</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--fix-dependencies` | Fix incompatible dependency versions |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo upgrade</h4>
-<p>Upgrade the project packages and config for the given SDK version</p>
-</summary>
-<p>
-
-Alias: `expo update`
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--npm` | Use npm to install dependencies. (default when package-lock.json exists) |
-| `--yarn` | Use Yarn to install dependencies. (default when yarn.lock exists) |
-
-
-</p>
-</details>
-
----
-
-### Eject
+- A bundler transpiles and bundles your application code for **production** environments, stripping all code guarded by the `__DEV__` boolean.
+- All static files are copied into a static `dist/` folder which can be served from a static host.
+- Contents of the `public/` folder are copied into the `dist/` folder as-is.
 
-<details>
-<summary>
-<h4>expo customize:web</h4>
-<p>Eject the default web files for customization</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-f, --force` | Allows replacing existing files |
-| `--offline` | Allows this command to run while offline |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo eject</h4>
-<p>Create native iOS and Android project files. Learn more: https://docs.expo.dev/workflow/customizing/</p>
-</summary>
-<p>
+The following options are provided:
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--no-install` | Skip installing npm packages and CocoaPods. |
-| `--npm` | Use npm to install dependencies. (default when Yarn is not installed) |
-| `-p, --platform [all\|android\|ios]` | Platforms to sync: ios, android, all. Default: all |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo prebuild</h4>
-<p>Create native iOS and Android project files before building natively. Learn more: https://docs.expo.dev/workflow/customizing/</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--no-install` | Skip installing npm packages and CocoaPods. |
-| `--clean` | Delete the native folders and regenerate them before applying changes |
-| `--npm` | Use npm to install dependencies. (default when Yarn is not installed) |
-| `--template [template]` | Project template to clone from. File path pointing to a local tar file or a github repo |
-| `-p, --platform [all\|android\|ios]` | Platforms to sync: ios, android, all. Default: all |
-| `--skip-dependency-update [dependencies]` | Preserves versions of listed packages in package.json (comma separated list) |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
----
-
-### Publish
-
-<details>
-<summary>
-<h4>expo publish</h4>
-<p>Deploy a project to Expo hosting</p>
-</summary>
-<p>
+- `--platform <platform>`: Choose the platform to compile for: 'ios', 'android', 'all'. **Default: all**. 'web' is also available if configured in the Expo config. For more information, see [Customizing Metro](/guides/customizing-metro).
+- `--dev`: Bundle for **development** environments without minifying code or stripping the `__DEV__` boolean.
+- `--output-dir <dir>`: The directory to export the static files to. **Default: dist**
+- `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
+- `-c, --clear`: Clear the bundler cache before exporting.
 
-Alias: `expo p`
+<!-- TODO: Link to docs about self hosting -->
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-q, --quiet` | Suppress verbose output from the Metro bundler. |
-| `-s, --send-to [dest]` | A phone number or email address to send a link to |
-| `-c, --clear` | Clear the Metro bundler cache |
-| `-t, --target [managed\|bare]` | Target environment for which this publish is intended. Options are `managed` or `bare`. |
-| `--max-workers [num]` | Maximum number of tasks to allow Metro to spawn. |
-| `--release-channel [name]` | The release channel to publish to. Default is 'default'. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo publish:set</h4>
-<p>Specify the channel to serve a published release</p>
-</summary>
-<p>
+### Exporting with Webpack
 
-Alias: `expo ps`
+> Webpack is only supported for the Web platform.
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-c, --release-channel [name]` | The channel to set the published release. (Required) |
-| `-p, --publish-id [publish-id]` | The id of the published release to serve from the channel. (Required) |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+You can export the JavaScript and assets for your web app using Webpack by running the following:
 
+<Terminal cmd={[
+'$ npx expo export:web',
+]} />
 
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo publish:rollback</h4>
-<p>Undo an update to a channel</p>
-</summary>
-<p>
+- `--dev`: Bundle in 'development' mode without minifying code or stripping the `__DEV__` boolean.
+- `-c, --clear`: Clear the bundler cache before exporting.
 
-Alias: `expo pr`
+This command will be disabled if your project is configured to use `metro` for bundling web projects in the `app.json` via the `expo.web.bundler: 'metro'` field.
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--channel-id [channel-id]` | This flag is deprecated. |
-| `-c, --release-channel [name]` | The channel to rollback from. (Required) |
-| `-s, --sdk-version [version]` | The sdk version to rollback. (Required) |
-| `-p, --platform [android\|ios]` | The platform to rollback. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+## Prebuild
 
+<Terminal cmd={[
+'$ npx expo prebuild',
+]} cmdCopy="npx expo prebuild" />
 
-</p>
-</details>
+Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/prebuild.md).
 
-<details>
-<summary>
-<h4>expo publish:history</h4>
-<p>Log the project's releases</p>
-</summary>
-<p>
+## Config
 
-Alias: `expo ph`
+Evaluate the Expo config (**app.json**, or **app.config.js**) by running:
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-c, --release-channel [name]` | Filter by release channel. If this flag is not included, the most recent publications will be shown. |
-| `--count [number-of-logs]` | Number of logs to view, maximum 100, default 5. |
-| `-p, --platform [android\|ios]` | Filter by platform, android or ios. Defaults to both platforms. |
-| `-s, --sdk-version [version]` | Filter by SDK version e.g. 35.0.0 |
-| `-r, --raw` | Produce some raw output. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+<Terminal cmd={[
+'$ npx expo config',
+]} cmdCopy="npx expo config" />
 
+- `--full`: Include all project config data.
+- `--json`: Output in JSON format, useful for converting an `app.config.js` to an `app.config.json`.
+- `-t, --type`: [Type of config](#config-type) to show.
 
-</p>
-</details>
+### Config Type
 
-<details>
-<summary>
-<h4>expo publish:details</h4>
-<p>Log details of a published release</p>
-</summary>
-<p>
+There are three different config types that are generated from the Expo config:
 
-Alias: `expo pd`
+- `public`: The manifest file to use with OTA updates. Think of this like an `index.html` file's `<head />` element but for native apps.
+- `prebuild`: The config that is used for [Expo Prebuild](/workflow/prebuild) including async modifiers. This is the only time the config is not serializable.
+- `introspect`: A subset of the `prebuild` config that only shows in-memory modifications like `Info.plist` or `AndroidManifest.xml` changes. Learn more about [introspection](/guides/config-plugins#introspection).
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--publish-id [publish-id]` | Publication id. (Required) |
-| `-r, --raw` | Produce some raw output. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+## Install
 
+Unlike the web, React Native is not backwards compatible. This means that npm packages often need to be the exact right version for the currently installed copy of `react-native` in your project. Expo CLI provides a best-effort tool for doing this using a list of popular packages and the known working version combinations. Simply use the `install` command as a drop-in replacement for `npm install`:
 
-</p>
-</details>
+<Terminal cmd={[
+'$ npx expo install expo-camera',
+]} cmdCopy="npx expo install expo-camera" />
 
----
+Running a single instance of this command, you can also install multiple packages:
 
-### Build
+<Terminal cmd={[
+'$ npx expo install typescript expo-sms',
+]} cmdCopy="npx expo install typescript expo-sms" />
 
-<details>
-<summary>
-<h4>expo build:web</h4>
-<p>Build the web app for production</p>
-</summary>
-<p>
+You can directly pass arguments to the underlying package manager by using the `--` operator:
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-c, --clear` | Clear all cached build files and assets. |
-| `--no-pwa` | Prevent webpack from generating the manifest.json and injecting meta into the index.html head. |
-| `-d, --dev` | Turns dev flag on before bundling |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+<Terminal cmd={[
+'$ yarn expo install typescript -- -D',
+'# yarn add typescript -D',
+]} cmdCopy="yarn expo install typescript -- -D" />
 
+### Version validation
 
-</p>
-</details>
+You can perform validation and correction with the `--check` and `--fix` flags:
 
----
+- `--check`: Check which installed packages need to be updated.
+- `--fix`: Automatically update any invalid package versions.
 
-### Credentials
+Example:
 
-<details>
-<summary>
-<h4>expo credentials:manager</h4>
-<p>Manage your credentials</p>
-</summary>
-<p>
+<Terminal cmd={[
+'# Check all packages for incorrect versions, prompt to fix locally',
+'$ npx expo install --check',
+]} cmdCopy="npx expo install --check" />
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-p --platform [android\|ios]` | Platform: [android\|ios] |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+`npx expo install --check` prompts you about packages that are installed incorrectly. It also prompts about installing the these packages to their compatible versions locally. It exits with non-zero in Continuous Integration (CI). This means you can use this to do continuous immutable validation. In contrast, `npx expo install --fix` will always fix packages if needed, regardless of the environment.
 
+You can validate specific packages by passing them:
 
-</p>
-</details>
+<Terminal cmd={[
+'# Check only react-native and expo-sms',
+'$ npx expo install react-native expo-sms --check',
+]} cmdCopy="npx expo install react-native expo-sms --check"/>
 
-<details>
-<summary>
-<h4>expo fetch:ios:certs</h4>
-<p>Download the project's iOS standalone app signing credentials</p>
-</summary>
-<p>
+The command `npx expo install expo-camera` and `npx expo install expo-camera --fix` serve the same purpose, the `--fix` command is useful for upgrading all packages in your project like:
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+<Terminal cmd={[
+'$ npx expo install --fix',
+]} cmdCopy="npx expo install --fix"/>
 
+### Install package managers
 
-</p>
-</details>
+`npx expo install` has support for `yarn`, `npm`, and `pnpm`.
 
-<details>
-<summary>
-<h4>expo fetch:android:keystore</h4>
-<p>Download the project's Android keystore</p>
-</summary>
-<p>
+You can force the package manager using a named argument:
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+- `--npm`: Use **npm** to install dependencies. **Default** when `package-lock.json` exists
+- `--yarn`: Use **Yarn** to install dependencies. **Default** when `yarn.lock` exists
+- `--pnpm`: Use **pnpm** to install dependencies. **Default** when `pnpm-lock.yaml` exists
 
+## Authentication
 
-</p>
-</details>
+Expo CLI provides authentication methods to use with the `npx expo start` command. Authentication is used to "code sign" manifests for secure OTA usage. Think of this like HTTPS on the web.
 
-<details>
-<summary>
-<h4>expo fetch:android:hashes</h4>
-<p>Compute and log the project's Android key hashes</p>
-</summary>
-<p>
+1. Register an account with `npx expo register`.
+2. Login to your account with `npx expo login`.
+3. Check which account is currently authenticated with `npx expo whoami`.
+4. Logout with `npx expo logout`.
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+These credentials are shared across Expo CLI and EAS CLI.
 
+## Customizing
 
-</p>
-</details>
+Sometimes you may want to customize a project file that would otherwise be generated in memory by Expo CLI. When utilizing tools other than Expo CLI, you'll need to have the default config files present, otherwise your app may not work as expected. You can generate files by running:
 
-<details>
-<summary>
-<h4>expo fetch:android:upload-cert</h4>
-<p>Download the project's Android keystore</p>
-</summary>
-<p>
+<Terminal cmd={['$ npx expo customize']} />
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
+From here, you can choose to generate basic project files like:
 
+- `babel.config.js` -- The Babel configuration. This is required to be present if you plan to use tooling other than Expo CLI to bundle your project.
+- `webpack.config.js` -- The default Webpack config for web development.
+- `metro.config.js` -- The default Metro config for universal development. This is required for usage with `npx react-native`.
 
-</p>
-</details>
+## Environment Variables
 
----
+- `EXPO_NO_WEB_SETUP` (**boolean**) prevents the CLI from forcing web dependencies (`react-dom`, `react-native-web`, `@expo/webpack-config`) to be installed before using web functionality. This is useful for cases where you wish to perform non-standard web development.
+- `EXPO_NO_TYPESCRIPT_SETUP` (**boolean**) prevents the CLI from forcing TypeScript to be configured on `npx expo start`. For more information, see [TypeScript guide](/guides/typescript/).
+- `DEBUG=expo:*` (**string**) enables debug logs for the CLI, you can configure this using the [`debug` convention](https://github.com/debug-js/debug#conventions).
+- `EXPO_DEBUG` (**boolean**) an alias for `DEBUG=expo:*`.
+- `EXPO_PROFILE` (**boolean**) enable profiling stats for the CLI, this does not profile your application.
+- `EXPO_NO_CACHE` (**boolean**) disable all global caching. By default, Expo config JSON schemas, Expo Go binaries for simulators and emulators, and project templates are cached in the global `.expo` folder on your machine.
+- `CI` (**boolean**) when enabled, the CLI will disable interactive functionality, skip optional prompts, and fail on non-optional prompts. Example: `CI=1 npx expo install --check` will fail if any installed packages are outdated.
+- `EXPO_NO_TELEMETRY` (**boolean**) disables anonymous usage collection. [Learn more](#telemetry).
+- `EXPO_NO_GIT_STATUS` (**boolean**) skips warning about git status during potentially dangerous actions like `npx expo prebuild --clean`.
+- `EXPO_ENABLE_INTERSTITIAL_PAGE` (**boolean**) enables the experimental "interstitial page" for selecting an app, that shows when a user has `expo-dev-client` installed, and starts the project with `npx expo start` instead of `npx expo start --dev-client`.
+- `EXPO_PUBLIC_FOLDER` (**string**) public folder path to use with Metro for web. Default: `public`. [Learn more](/guides/customizing-metro/).
+- `EDITOR` (**string**) name of the editor to open when pressing `o` in the Terminal UI. This value is used across many command line tools.
+- `EXPO_EDITOR` (**string**) an Expo-specific version of the `EDITOR` variable which takes higher priority when defined.
+- `EXPO_IMAGE_UTILS_NO_SHARP` (**boolean**) disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.
 
-### Notifications
+## Telemetry
 
-<details>
-<summary>
-<h4>expo push:android:upload</h4>
-<p>Upload an FCM key for Android push notifications</p>
-</summary>
-<p>
+Expo dev tools collect anonymous data about general usage. This helps us know when a feature is not working as expected. Telemetry is completely optional, you can opt out by using the `EXPO_NO_TELEMETRY=1` environment variable.
 
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--api-key [api-key]` | Server API key for FCM. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo push:android:show</h4>
-<p>Log the value currently in use for FCM notifications for this project</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo push:android:clear</h4>
-<p>Delete a previously uploaded FCM credential</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
----
-
-### Url
-
-<details>
-<summary>
-<h4>expo url</h4>
-<p>Log a URL for opening the project in Expo Go</p>
-</summary>
-<p>
-
-Alias: `expo u`
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--dev-client` | Experimental: Starts the bundler for use with the expo-development-client |
-| `--scheme [scheme]` | Custom URI protocol to use with a development build |
-| `-a, --android` | Opens your app in Expo Go on a connected Android device |
-| `-i, --ios` | Opens your app in Expo Go in a currently running iOS simulator on your computer |
-| `-w, --web` | Opens your app in a web browser |
-| `-m, --host [mode]` | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
-| `--tunnel` | Same as --host tunnel |
-| `--lan` | Same as --host lan |
-| `--localhost` | Same as --host localhost |
-| `--offline` | Allows this command to run while offline |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo url:ipa</h4>
-<p>Log the download URL for the standalone iOS binary</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps) |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo url:apk</h4>
-<p>Log the download URL for the standalone Android binary</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps) |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
----
-
-### Webhooks
-
-<details>
-<summary>
-<h4>expo webhooks</h4>
-<p>List all webhooks for a project</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo webhooks:add</h4>
-<p>Add a webhook to a project</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--url [url]` | URL to request. (Required) |
-| `--event [event-type]` | Event type that triggers the webhook. [build] (Required) |
-| `--secret [secret]` | Secret used to create a hash signature of the request payload, provided in the 'Expo-Signature' header. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo webhooks:remove</h4>
-<p>Delete a webhook</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--id [id]` | ID of the webhook to remove. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo webhooks:update</h4>
-<p>Update an existing webhook</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--id [id]` | ID of the webhook to update. |
-| `--url [url]` | URL the webhook will request. |
-| `--event [event-type]` | Event type that triggers the webhook. [build] |
-| `--secret [secret]` | Secret used to create a hash signature of the request payload, provided in the 'Expo-Signature' header. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-
----
-
-### Deprecated
-
-<details>
-<summary>
-<h4>expo build:ios</h4>
-<p>Superseded by eas build in eas-cli</p>
-</summary>
-<p>
-
-Alias: `expo bi`
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-c, --clear-credentials` | Clear all credentials stored on Expo servers. |
-| `--clear-dist-cert` | Remove Distribution Certificate stored on Expo servers. |
-| `--clear-push-key` | Remove Push Notifications Key stored on Expo servers. |
-| `--clear-push-cert` | Remove Push Notifications Certificate stored on Expo servers. Use of Push Notifications Certificates is deprecated. |
-| `--clear-provisioning-profile` | Remove Provisioning Profile stored on Expo servers. |
-| `-r --revoke-credentials` | Revoke credentials on developer.apple.com, select appropriate using --clear-* options. |
-| `--apple-id [login]` | Apple ID username (please also set the Apple ID password as EXPO_APPLE_PASSWORD environment variable). |
-| `-t --type [archive\|simulator]` | Type of build: [archive\|simulator]. |
-| `--release-channel [name]` | Pull from specified release channel. |
-| `--no-publish` | Disable automatic publishing before building. |
-| `--no-wait` | Exit immediately after scheduling build. |
-| `--team-id [apple-teamId]` | Apple Team ID. |
-| `--dist-p12-path [path]` | Path to your Distribution Certificate P12 (set password as EXPO_IOS_DIST_P12_PASSWORD environment variable). |
-| `--push-id [push-id]` | Push Key ID (ex: 123AB4C56D). |
-| `--push-p8-path [path]` | Path to your Push Key .p8 file. |
-| `--provisioning-profile-path [path]` | Path to your Provisioning Profile. |
-| `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps). |
-| `--skip-credentials-check` | Skip checking credentials. |
-| `--skip-workflow-check` | Skip warning about build service bare workflow limitations. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo build:android</h4>
-<p>Superseded by eas build in eas-cli</p>
-</summary>
-<p>
-
-Alias: `expo ba`
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `-c, --clear-credentials` | Clear stored credentials. |
-| `--release-channel [name]` | Pull from specified release channel. |
-| `--no-publish` | Disable automatic publishing before building. |
-| `--no-wait` | Exit immediately after triggering build. |
-| `--keystore-path [path]` | Path to your Keystore: *.jks. |
-| `--keystore-alias [alias]` | Keystore Alias |
-| `--generate-keystore` | [deprecated] Generate Keystore if one does not exist |
-| `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps) |
-| `--skip-workflow-check` | Skip warning about build service bare workflow limitations. |
-| `-t --type [app-bundle\|apk]` | Type of build: [app-bundle\|apk]. |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo build:status</h4>
-<p>Superseded by eas build:list in eas-cli</p>
-</summary>
-<p>
-
-Alias: `expo bs`
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps). |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo upload:android</h4>
-<p>Superseded by eas submit in eas-cli</p>
-</summary>
-<p>
-
-Alias: `expo ua`
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--verbose` | Migrate to eas submit --verbose |
-| `--latest` | Migrate to eas submit --latest |
-| `--id [id]` | Migrate to eas submit --id [id] |
-| `--path [path]` | Migrate to eas submit --path [path] |
-| `--url [url]` | Migrate to eas submit --url [url] |
-| `--android-package [android-package]` | Migrate to eas submit (android-package is auto inferred) |
-| `--type [archive-type]` | Migrate to eas submit (type is auto inferred) |
-| `--key [key]` | Migrate to eas.json's serviceAccountKeyPath property |
-| `--track [track]` | Migrate to eas.json's track property |
-| `--release-status [release-status]` | Migrate to eas.json's releaseStatus property |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo upload:ios</h4>
-<p>Superseded by eas submit in eas-cli</p>
-</summary>
-<p>
-
-Alias: `expo ui`
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--verbose` | Migrate to eas submit --verbose |
-| `--latest` | Migrate to eas submit --latest |
-| `--id [id]` | Migrate to eas submit --id [id] |
-| `--path [path]` | Migrate to eas submit --path [path] |
-| `--url [url]` | Migrate to eas submit --url [url] |
-| `--apple-id [apple-id]` | Migrate to eas.json's appleId property |
-| `--itc-team-id [itc-team-id]` | Migrate to eas.json's appleTeamId property |
-| `--app-name [app-name]` | Migrate to eas.json's appName property |
-| `--company-name [company-name]` | Migrate to eas.json's companyName property |
-| `--sku [sku]` | Migrate to eas.json's sku property |
-| `--language [language]` | Migrate to eas.json's language property |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<details>
-<summary>
-<h4>expo client:ios</h4>
-<p>Superseded by Expo Dev Clients</p>
-</summary>
-<p>
-
-| Option         | Description             |
-| -------------- | ----------------------- |
-| `--apple-id [login]` | Apple ID username (please also set the Apple ID password as EXPO_APPLE_PASSWORD environment variable). |
-| `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
-
-
-</p>
-</details>
-
-<!-- END GENERATED BLOCK. DO NOT MODIFY MANUALLY. -->
+[ngrok]: https://ngrok.com

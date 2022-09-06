@@ -1,19 +1,25 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
-import { UL } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
-import { H2, H3Code, H4 } from '~/components/plugins/Headings';
+import { H2, H2Nested, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
   GeneratedData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
 import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
+  getTagData,
+  getTagNamesList,
+  mdComponents,
   resolveTypeName,
+  STYLES_APIBOX,
+  STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -27,22 +33,27 @@ const isProp = (child: PropData) =>
   !child.name.startsWith('_') &&
   !child.implementationOf;
 
-const isMethod = (child: PropData) => child.kind === TypeDocKind.Method && !child.overwrites;
+const isMethod = (child: PropData) =>
+  child.kind === TypeDocKind.Method &&
+  !child.overwrites &&
+  !child.name.startsWith('_') &&
+  !child?.implementationOf;
 
-const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX.Element => {
+const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes } = clx;
   const properties = children?.filter(isProp);
-  const methods = children?.filter(isMethod);
+  const methods = children
+    ?.filter(isMethod)
+    .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
+  const returnComment = getTagData('returns', comment);
+  const Header = exposeInSidebar ? H2Nested : H4;
 
   return (
-    <div key={`class-definition-${name}`}>
-      {hasMultipleClasses ? (
-        <H3Code>
-          <InlineCode>{name}</InlineCode>
-        </H3Code>
-      ) : (
-        <H2>{name}</H2>
-      )}
+    <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
+      <APISectionDeprecationNote comment={comment} />
+      <H3Code tags={getTagNamesList(comment)}>
+        <InlineCode>{name}</InlineCode>
+      </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <P>
           <B>Type: </B>
@@ -70,45 +81,45 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
         </P>
       )}
       <CommentTextBlock comment={comment} />
+      {returnComment && (
+        <>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4>Returns</H4>
+          </div>
+          <ReactMarkdown components={mdComponents}>{returnComment.text}</ReactMarkdown>
+        </>
+      )}
       {properties?.length ? (
         <>
-          {hasMultipleClasses ? (
-            <>
-              <H4>{name} Properties</H4>
-              <br />
-            </>
-          ) : (
-            <H2>{name} Properties</H2>
-          )}
-          <UL>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <Header>{name} Properties</Header>
+          </div>
+          <div>
             {properties.map(property =>
-              renderProp(property, property?.defaultValue, !hasMultipleClasses)
-            )}
-          </UL>
-        </>
-      ) : null}
-      {methods?.length ? (
-        <>
-          {hasMultipleClasses ? <H4>{name} Methods</H4> : <H2>{name} Methods</H2>}
-          <div style={{ paddingLeft: 8 }}>
-            {methods.map((method, index) =>
-              renderMethod(method, index, methods.length, undefined, undefined, !hasMultipleClasses)
+              renderProp(property, property?.defaultValue, exposeInSidebar)
             )}
           </div>
         </>
       ) : null}
-      <hr />
+      {methods?.length && (
+        <>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <Header>{name} Methods</Header>
+          </div>
+          {methods.map(method => renderMethod(method, { exposeInSidebar }))}
+        </>
+      )}
     </div>
   );
 };
 
 const APISectionClasses = ({ data }: APISectionClassesProps) => {
   if (data?.length) {
-    const hasMultipleClasses = data.length > 1;
+    const exposeInSidebar = data.length < 2;
     return (
       <>
-        {hasMultipleClasses ? <H2>Classes</H2> : null}
-        {data.map(cls => renderClass(cls, hasMultipleClasses))}
+        <H2>Classes</H2>
+        {data.map(cls => renderClass(cls, exposeInSidebar))}
       </>
     );
   }

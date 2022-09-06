@@ -23,15 +23,13 @@ class EXDevLauncherControllerTest: QuickSpec {
 
       let modules = module.extraModules(for: nil)!
 
-      expect(modules.count).to(equal(11))
+      expect(modules.count).to(equal(10))
       expect(modules.first { $0 is RCTDevMenu }).toNot(beNil())
       expect(modules.first { $0 is RCTAsyncLocalStorage }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "EXDevLauncherInternal" }).toNot(beNil())
-      expect(modules.first { type(of: $0).moduleName() == "ExpoDevMenuInternal" }).toNot(beNil())
 
       // vendored
-      expect(modules.first { type(of: $0).moduleName() == "ReanimatedModule" }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "RNGestureHandlerModule" }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "RNGestureHandlerButton" }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "RNCSafeAreaProvider" }).toNot(beNil())

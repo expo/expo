@@ -67,6 +67,8 @@ type Props = {
   innerGestureHandlerRefs: [React.RefObject<PanGestureHandler>, React.RefObject<TapGestureHandler>];
 
   animationEnabled?: boolean;
+
+  screenHeight: number;
 };
 
 type State = {
@@ -76,8 +78,6 @@ type State = {
   propsToNewIndices: { [key: string]: number };
   heightOfContent: Animated.Value<number>;
 };
-
-const { height: screenHeight } = Dimensions.get('window');
 
 const P = <T extends any>(android: T, ios: T): T => (Platform.OS === 'ios' ? ios : android);
 
@@ -532,7 +532,10 @@ export class BottomSheet extends React.Component<Props, State> {
     this.state.heightOfContent.setValue(height - this.state.initSnap);
   };
 
-  static renumber = (str: string) => (Number(str.split('%')[0]) * screenHeight) / 100;
+  static renumber = (str: string, screenHeight: number) => {
+    const result = (Number(str.split('%')[0]) * screenHeight) / 100;
+    return result;
+  };
 
   static getDerivedStateFromProps(props: Props, state: State | undefined): State {
     let snapPoints;
@@ -551,7 +554,7 @@ export class BottomSheet extends React.Component<Props, State> {
           if (typeof s === 'number') {
             return { val: s, ind: i };
           } else if (typeof s === 'string') {
-            return { val: BottomSheet.renumber(s), ind: i };
+            return { val: BottomSheet.renumber(s, props.screenHeight), ind: i };
           }
 
           throw new Error(`Invalid type for value ${s}: ${typeof s}`);
@@ -613,7 +616,7 @@ export class BottomSheet extends React.Component<Props, State> {
               ],
             },
           ]}>
-          <Animated.View style={[styles.container, { height: this.height }]}>
+          <Animated.View style={[styles.container]}>
             <PanGestureHandler
               ref={this.panRef}
               onGestureEvent={this.handlePan}
@@ -623,7 +626,6 @@ export class BottomSheet extends React.Component<Props, State> {
                   <View style={styles.fullscreenView}>
                     <Animated.View
                       style={{
-                        ...StyleSheet.absoluteFillObject,
                         transform: [
                           {
                             translateY: this.translateY as any,
@@ -638,7 +640,9 @@ export class BottomSheet extends React.Component<Props, State> {
                         // We saved screen heigh to apply it when we come back to the same screen later.
                         this.handleContentHeightChange(height);
                       }}>
-                      {this.props.children}
+                      <Animated.View style={[{ minHeight: this.height }]}>
+                        {this.props.children}
+                      </Animated.View>
                     </Animated.View>
                   </View>
                 </TapGestureHandler>
@@ -689,8 +693,10 @@ const styles = StyleSheet.create({
   },
   container: {
     overflow: 'hidden',
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    borderRadius: 10,
+    maxWidth: 525,
+    width: '100%',
+    alignSelf: 'center',
   },
   fullscreenView: {
     width: '100%',

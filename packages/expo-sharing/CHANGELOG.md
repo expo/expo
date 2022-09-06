@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 10.3.0 — 2022-07-07
+
+### 🛠 Breaking changes
+
+- Changed the return type of the `shareAsync` function. The promise now resolves to `void` instead of an empty object. ([#18019](https://github.com/expo/expo/pull/18019) by [@barthap](https://github.com/barthap))
+
 ## 10.2.0 — 2022-04-18
 
 ### ⚠️ Notices

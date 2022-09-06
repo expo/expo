@@ -7,17 +7,17 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo app when in development.
+Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo Go app when in development.
 
 ## Splash screen
 
-After telling our designers that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](../guides/splash-screens.md)), they gave us the following file:
+After telling our designers that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](/guides/splash-screens)), they gave us the following file:
 
 <ImageSpotlight src="/static/images/tutorial/splash.png" style={{ maxWidth: 150 }} containerStyle={{ marginBottom: 0 }} />
 
 <br />
 
-> 🐜 **What is this? A splash screen for ants?!** No, it's just scaled down here to fit more easily on this page 😅
+> **What is this? A splash screen for ants?!** No, it's just scaled down here to fit more easily on this page 😅
 
 Save this image to the **assets** directory inside of your project and call it **splash.png** &mdash; replace the existing file. Reload your app and you should see something like this:
 
@@ -27,7 +27,7 @@ Save this image to the **assets** directory inside of your project and call it *
 
 We can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready.
 
-First, run `expo install expo-splash-screen`.
+First, run `npx expo install expo-splash-screen`.
 
 Next, add the following code to delay hiding the splash screen for five seconds.
 
@@ -38,7 +38,7 @@ SplashScreen.preventAutoHideAsync();
 setTimeout(SplashScreen.hideAsync, 5000);
 ```
 
-🚨 _Don't forget to remove this code when you are done testing your splash screen!_
+_Don't forget to remove this code when you are done testing your splash screen!_
 
 </Collapsible>
 
@@ -75,6 +75,6 @@ Save this image to the **assets** directory inside of your project and call it *
 
 ## We have completed our app!
 
-Well done, you have now gone through the motions of building a simple but meaningful app that runs on iOS, Android, and web from the same codebase! We hope that this tutorial has answered some of your questions and posed many more.
+Well done, you have now gone through the motions of building a simple but meaningful app that runs on iOS, and Android from the same codebase! We hope that this tutorial has answered some of your questions and posed many more.
 
-The next section of the tutorial will guide you towards resources to learn more about concepts we've covered here and others we have only mentioned in passing, like standalone apps. [Continue to find out how you can learn more](../tutorial/follow-up.md).
+The next section of the tutorial will guide you towards resources to learn more about concepts we've covered here and others we have only mentioned in passing, like standalone apps. [Continue to find out how you can learn more](/tutorial/follow-up).

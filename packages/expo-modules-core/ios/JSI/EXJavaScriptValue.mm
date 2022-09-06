@@ -3,6 +3,8 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/EXJavaScriptValue.h>
 #import <ExpoModulesCore/EXJavaScriptRuntime.h>
+#import <ExpoModulesCore/EXJavaScriptTypedArray.h>
+#import <ExpoModulesCore/TypedArray.h>
 
 @implementation EXJavaScriptValue {
   __weak EXJavaScriptRuntime *_runtime;
@@ -70,28 +72,13 @@
   return false;
 }
 
-+ (nonnull NSString *)kindOf:(nonnull EXJavaScriptValue *)value
+- (BOOL)isTypedArray
 {
-  if ([value isUndefined]) {
-    return @"undefined";
+  if (_value->isObject()) {
+    jsi::Runtime *runtime = [_runtime get];
+    return expo::isTypedArray(*runtime, _value->getObject(*runtime));
   }
-  if ([value isNull]) {
-    return @"null";
-  }
-  if ([value isBool]) {
-    return @"boolean";
-  }
-  if ([value isNumber]) {
-    return @"number";
-  }
-  if ([value isString]) {
-    return @"string";
-  }
-  if ([value isFunction]) {
-    return @"function";
-  }
-  assert([value isObject] && "Expecting object.");
-  return @"object";
+  return false;
 }
 
 #pragma mark - Type casting
@@ -153,6 +140,16 @@
   jsi::Runtime *runtime = [_runtime get];
   std::shared_ptr<jsi::Object> objectPtr = std::make_shared<jsi::Object>(_value->asObject(*runtime));
   return [[EXJavaScriptObject alloc] initWith:objectPtr runtime:_runtime];
+}
+
+- (nullable EXJavaScriptTypedArray *)getTypedArray
+{
+  if (![self isTypedArray]) {
+    return nil;
+  }
+  jsi::Runtime *runtime = [_runtime get];
+  std::shared_ptr<jsi::Object> objectPtr = std::make_shared<jsi::Object>(_value->asObject(*runtime));
+  return [[EXJavaScriptTypedArray alloc] initWith:objectPtr runtime:_runtime];
 }
 
 #pragma mark - Helpers

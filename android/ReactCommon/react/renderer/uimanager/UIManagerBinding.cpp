@@ -98,7 +98,7 @@ void UIManagerBinding::dispatchEvent(
     std::string const &type,
     ReactEventPriority priority,
     ValueFactory const &payloadFactory) const {
-  SystraceSection s("UIManagerBinding::dispatchEvent");
+  SystraceSection s("UIManagerBinding::dispatchEvent", "type", type);
 
   auto payload = payloadFactory(runtime);
 
@@ -220,7 +220,8 @@ jsi::Value UIManagerBinding::get(
             size_t count) noexcept -> jsi::Value {
           return valueFromShadowNode(
               runtime,
-              uiManager->cloneNode(shadowNodeFromValue(runtime, arguments[0])));
+              uiManager->cloneNode(
+                  *shadowNodeFromValue(runtime, arguments[0])));
         });
   }
 
@@ -287,7 +288,7 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
-                  shadowNodeFromValue(runtime, arguments[0]),
+                  *shadowNodeFromValue(runtime, arguments[0]),
                   ShadowNode::emptySharedShadowNodeSharedList()));
         });
   }
@@ -307,7 +308,7 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
-                  shadowNodeFromValue(runtime, arguments[0]),
+                  *shadowNodeFromValue(runtime, arguments[0]),
                   nullptr,
                   &rawProps));
         });
@@ -328,7 +329,7 @@ jsi::Value UIManagerBinding::get(
           return valueFromShadowNode(
               runtime,
               uiManager->cloneNode(
-                  shadowNodeFromValue(runtime, arguments[0]),
+                  *shadowNodeFromValue(runtime, arguments[0]),
                   ShadowNode::emptySharedShadowNodeSharedList(),
                   &rawProps));
         });

@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.15.1'
+version = '0.16.1'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -74,7 +74,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 21
-    versionName '0.15.1'
+    versionName '0.16.1'
   }
 
   lintOptions {
@@ -92,7 +92,11 @@ dependencies {
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 
-  api 'com.google.firebase:firebase-messaging:21.1.0'
+  api 'com.google.firebase:firebase-messaging:22.0.0'
 
   api 'me.leolin:ShortcutBadger:1.1.22@aar'
+
+  if (project.findProject(':expo-modules-test-core')) {
+    testImplementation project(':expo-modules-test-core')
+  }
 }

@@ -3,9 +3,9 @@ import { useNavigation } from '@react-navigation/native';
 import { SectionHeader } from 'components/SectionHeader';
 import { Text, View, Image, useExpoTheme, Row, Spacer, Divider } from 'expo-dev-client-components';
 import React from 'react';
+import { FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
-import { FlatList } from '../../components/FlatList';
 import { Home_CurrentUserQuery } from '../../graphql/types';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
@@ -72,7 +72,7 @@ export function LoggedInAccountView({ accounts }: Props) {
                   borderBottomWidth: index === accounts.length - 1 ? 1 : 0,
                   borderTopWidth: index === 0 ? 1 : 0,
                 }}>
-                <Row align={!account.owner?.fullName ? 'center' : 'start'}>
+                <Row flex="1" align={!account.owner?.fullName ? 'center' : 'start'}>
                   {account?.owner?.profilePhoto ? (
                     <Image size="xl" rounded="full" source={{ uri: account.owner.profilePhoto }} />
                   ) : (
@@ -81,23 +81,40 @@ export function LoggedInAccountView({ accounts }: Props) {
                     </View>
                   )}
                   <Spacer.Horizontal size="small" />
-                  <View>
+                  <View flex="1">
                     {account.owner ? (
                       <>
                         {account.owner.fullName ? (
                           <>
-                            <Text type="InterBold">{account.owner.fullName}</Text>
+                            <Text
+                              type="InterBold"
+                              style={{ paddingRight: spacing[4] }}
+                              numberOfLines={1}>
+                              {account.owner.fullName}
+                            </Text>
                             <Spacer.Vertical size="tiny" />
-                            <Text color="secondary" type="InterRegular" size="small">
+                            <Text
+                              style={{ paddingRight: spacing[4] }}
+                              color="secondary"
+                              type="InterRegular"
+                              numberOfLines={1}
+                              size="small">
                               {account.owner.username}
                             </Text>
                           </>
                         ) : (
-                          <Text type="InterBold">{account.owner.username}</Text>
+                          <Text
+                            type="InterBold"
+                            style={{ paddingRight: spacing[4] }}
+                            numberOfLines={1}>
+                            {account.owner.username}
+                          </Text>
                         )}
                       </>
                     ) : (
-                      <Text type="InterBold">{account.name}</Text>
+                      <Text type="InterBold" style={{ paddingRight: spacing[4] }} numberOfLines={1}>
+                        {account.name}
+                      </Text>
                     )}
                   </View>
                 </Row>

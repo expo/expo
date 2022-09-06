@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler
 
 import android.content.Context
+import android.os.Handler
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
@@ -40,6 +41,9 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
   private var lastY = 0f
   private var velocityTracker: VelocityTracker? = null
   private var averageTouches = false
+  private var activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
+  private val activateDelayed = Runnable { activate() }
+  private var handler: Handler? = null
 
   /**
    * On Android when there are multiple pointers on the screen pan gestures most often just consider
@@ -54,7 +58,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
    * position of all the fingers will remain still while doing a rotation gesture.
    */
   init {
-    val vc = ViewConfiguration.get(context)
+    val vc = ViewConfiguration.get(context!!)
     val touchSlop = vc.scaledTouchSlop
     defaultMinDistSq = (touchSlop * touchSlop).toFloat()
     minDistSq = defaultMinDistSq
@@ -76,6 +80,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     minDistSq = defaultMinDistSq
     minPointers = DEFAULT_MIN_POINTERS
     maxPointers = DEFAULT_MAX_POINTERS
+    activateAfterLongPress = DEFAULT_ACTIVATE_AFTER_LONG_PRESS
     averageTouches = false
   }
 
@@ -125,6 +130,10 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
 
   fun setAverageTouches(averageTouches: Boolean) = apply {
     this.averageTouches = averageTouches
+  }
+
+  fun setActivateAfterLongPress(time: Long) = apply {
+    this.activateAfterLongPress = time
   }
 
   /**
@@ -177,13 +186,18 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
 
   private fun shouldFail(): Boolean {
     val dx = lastX - startX + offsetX
+    val dy = lastY - startY + offsetY
+
+    if (activateAfterLongPress > 0 && dx * dx + dy * dy > defaultMinDistSq) {
+      handler?.removeCallbacksAndMessages(null)
+      return true
+    }
     if (failOffsetXStart != MAX_VALUE_IGNORE && dx < failOffsetXStart) {
       return true
     }
     if (failOffsetXEnd != MIN_VALUE_IGNORE && dx > failOffsetXEnd) {
       return true
     }
-    val dy = lastY - startY + offsetY
     if (failOffsetYStart != MAX_VALUE_IGNORE && dy < failOffsetYStart) {
       return true
     }
@@ -216,6 +230,13 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
       velocityTracker = VelocityTracker.obtain()
       addVelocityMovement(velocityTracker, event)
       begin()
+
+      if (activateAfterLongPress > 0) {
+        if (handler == null) {
+          handler = Handler()
+        }
+        handler!!.postDelayed(activateDelayed, activateAfterLongPress)
+      }
     } else if (velocityTracker != null) {
       addVelocityMovement(velocityTracker, event)
       velocityTracker!!.computeCurrentVelocity(1000)
@@ -257,7 +278,12 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     super.activate(force)
   }
 
+  override fun onCancel() {
+    handler?.removeCallbacksAndMessages(null)
+  }
+
   override fun onReset() {
+    handler?.removeCallbacksAndMessages(null)
     velocityTracker?.let {
       it.recycle()
       velocityTracker = null
@@ -274,6 +300,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     private const val MAX_VALUE_IGNORE = Float.MIN_VALUE
     private const val DEFAULT_MIN_POINTERS = 1
     private const val DEFAULT_MAX_POINTERS = 10
+    private const val DEFAULT_ACTIVATE_AFTER_LONG_PRESS = 0L
 
     /**
      * This method adds movement to {@class VelocityTracker} first resetting offset of the event so

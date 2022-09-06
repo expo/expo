@@ -6,11 +6,21 @@
 
 ### 🎉 New features
 
-- Add projectNameForProxy option. ([#17327](https://github.com/expo/expo/pull/17327) by [@wschurman](https://github.com/wschurman))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Update docs to remove mentions of `expo start:web`. ([#18419](https://github.com/expo/expo/pull/18419) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.7.1 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 3.7.0 — 2022-07-07
+
+### 🎉 New features
+
+- Add projectNameForProxy option. ([#17327](https://github.com/expo/expo/pull/17327) by [@wschurman](https://github.com/wschurman))
 
 ## 3.6.0 — 2022-04-18
 

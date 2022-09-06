@@ -55,8 +55,6 @@ open class DevMenuManager: NSObject {
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
-
-  public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
   
   /**
    Shared singleton instance.
@@ -103,10 +101,7 @@ open class DevMenuManager: NSObject {
   public var currentManifestURL: URL?
   
   
-  @objc
-  public func setSession(_ session: String) {
-    self.expoApiClient.setSessionSecret(session)
-  }
+
 
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
@@ -432,4 +427,11 @@ open class DevMenuManager: NSObject {
       CTFontManagerRegisterGraphicsFont(font!, &error)
     }
   }
+  
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset by the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
+  @objc
+  public var registeredCallbacks: [String] = []
+
 }

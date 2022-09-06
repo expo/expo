@@ -9,13 +9,11 @@ import { ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-build-properties`** is a [config plugin](../../../guides/config-plugins.md) for [managed apps](../../../introduction/managed-vs-bare.md) to override the default native build properties. During `expo prebuild`, the config plugin will populate build properties from given [config](#configuration-in-appjson--appconfigjs) to `android/gradle.properties` and `ios/Podfile.properties.json`.
+**`expo-build-properties`** is a [config plugin](/guides/config-plugins) configuring the native build properties of your `ios/Podfile.properties.json` and `android/gradle.properties` directories during [Expo Prebuild](/workflow/prebuild). This config plugin configures how [Expo Prebuild](/workflow/prebuild) generates the native `ios` and `android` folders and therefore cannot be used with projects that don't run `npx expo prebuild` (bare projects).
 
 <PlatformsSection ios simulator android emulator />
 
 ## Installation
-
-> **Note:** To use this config plugin, your apps must be a managed app and build by either [EAS Build](/build/introduction.md) or `expo run:[android|ios]`. This package has no effect on project's built with the classic `expo build:android` or `expo build:ios` commands, or when running in the Expo Go app.
 
 <APIInstallSection hideBareInstructions={true} />
 

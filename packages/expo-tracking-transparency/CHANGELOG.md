@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.3.1 — 2022-07-16
+
+### 💡 Others
+
+- Removed legacy Objective-C implementation and changed the pod name to `ExpoTrackingTransparency`. ([#18157](https://github.com/expo/expo/pull/18157) by [@barthap](https://github.com/barthap))
+
+## 2.3.0 — 2022-07-07
+
+### 💡 Others
+
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
 
 ## 2.2.0 — 2022-04-18

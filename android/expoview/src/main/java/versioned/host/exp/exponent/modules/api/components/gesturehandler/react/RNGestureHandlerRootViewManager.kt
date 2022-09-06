@@ -3,6 +3,9 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler.react
 import com.facebook.react.module.annotations.ReactModule
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.ViewGroupManager
+import com.facebook.react.uimanager.ViewManagerDelegate
+import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerDelegate
+import com.facebook.react.viewmanagers.RNGestureHandlerRootViewManagerInterface
 
 /**
  * React native's view manager used for creating instances of []RNGestureHandlerRootView}. It
@@ -10,8 +13,20 @@ import com.facebook.react.uimanager.ViewGroupManager
  * to be provided.
  */
 @ReactModule(name = RNGestureHandlerRootViewManager.REACT_CLASS)
-class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootView>() {
+class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootView>(),
+  RNGestureHandlerRootViewManagerInterface<RNGestureHandlerRootView> {
+  private val mDelegate: ViewManagerDelegate<RNGestureHandlerRootView>
+
+  init {
+    mDelegate = RNGestureHandlerRootViewManagerDelegate<RNGestureHandlerRootView, RNGestureHandlerRootViewManager>(this)
+  }
+
+  override fun getDelegate(): ViewManagerDelegate<RNGestureHandlerRootView> {
+    return mDelegate
+  }
+
   override fun getName() = REACT_CLASS
+
   override fun createViewInstance(reactContext: ThemedReactContext) = RNGestureHandlerRootView(reactContext)
 
   override fun onDropViewInstance(view: RNGestureHandlerRootView) {
@@ -29,6 +44,6 @@ class RNGestureHandlerRootViewManager : ViewGroupManager<RNGestureHandlerRootVie
       mutableMapOf("registrationName" to RNGestureHandlerStateChangeEvent.EVENT_NAME))
 
   companion object {
-    const val REACT_CLASS = "GestureHandlerRootView"
+    const val REACT_CLASS = "RNGestureHandlerRootView"
   }
 }

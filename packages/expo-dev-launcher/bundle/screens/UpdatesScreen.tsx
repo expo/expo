@@ -10,6 +10,7 @@ import {
   Spacer,
   Text,
   useExpoPalette,
+  scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Animated, Linking } from 'react-native';
@@ -187,13 +188,17 @@ function BranchDetailsHeader({ branchName, updates, onOpenPress }: BranchDetails
           <BranchIcon />
         </View>
 
-        <View>
-          <Heading weight="bold">{branchName}</Heading>
+        <View shrink="1">
+          <Heading weight="bold" numberOfLines={2}>
+            {branchName}
+          </Heading>
         </View>
 
         <Spacer.Horizontal />
         {hasUpdates && (
-          <View opacity={isLatestUpdateCompatible ? '1' : '0.75'}>
+          <View
+            opacity={isLatestUpdateCompatible ? '1' : '0.75'}
+            style={{ marginLeft: scale.small }}>
             <BasicButton label="Open Latest" onPress={onOpenPress} size="small" />
           </View>
         )}

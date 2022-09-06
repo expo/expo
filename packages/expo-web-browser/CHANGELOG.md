@@ -6,14 +6,37 @@
 
 ### 🎉 New features
 
+- Support CSS colors in `controlsColor`, `toolbarColor` and `secondaryToolbarColor` options. ([#18586](https://github.com/expo/expo/pull/18586) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 🐛 Bug fixes
 
-- On Web fix popup being blocked by Safari. ([#17222](https://github.com/expo/expo/pull/17222) by [@sreuter](https://github.com/sreuter))
+### 💡 Others
+
+- Update docs to remove mentions of `expo start:web`. ([#18419](https://github.com/expo/expo/pull/18419) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 11.0.0 — 2022-07-07
+
+### 🎉 New features
+
+- Native module on Android is now written in Kotlin using the new API. ([#17454](https://github.com/expo/expo/pull/17454) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+- Fixed `removeListener(): Method has been deprecated` warning. ([#17645](https://github.com/expo/expo/pull/17645) by [@barthap](https://github.com/barthap))
+- Fixed `service not registered` exception on Android. ([#17855](https://github.com/expo/expo/pull/17855) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `redirectUrl` auth session argument to be optional and thus match documentation. ([#17953](https://github.com/expo/expo/pull/17953) by [@barthap](https://github.com/barthap))
+- Fixed `windowFeatures` property not being properly recognized on web. ([#18106](https://github.com/expo/expo/pull/18106) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
 - Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
 - Rewritten Android code to Kotlin. ([#17195](https://github.com/expo/expo/pull/17195) by [@barthap](https://github.com/barthap))
+
+## 10.2.1 — 2022-05-24
+
+### 🐛 Bug fixes
+
+- On Web fix popup being blocked by Safari. ([#17222](https://github.com/expo/expo/pull/17222) by [@sreuter](https://github.com/sreuter))
 
 ## 10.2.0 — 2022-04-18
 

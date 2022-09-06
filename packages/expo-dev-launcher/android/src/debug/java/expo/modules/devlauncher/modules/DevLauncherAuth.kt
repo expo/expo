@@ -1,27 +1,20 @@
 package expo.modules.devlauncher.modules
 
-
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.se.omapi.Session
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import com.facebook.react.bridge.*
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
 import expo.modules.devmenu.DevMenuManager
-import org.json.JSONObject
-
 
 private const val SessionKey = "expo-dev-menu.session"
 private const val SessionStore = "expo.modules.devmenu.sessionstore"
 
-class DevLauncherAuth(reactContext: ReactApplicationContext?)
-  : ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
+class DevLauncherAuth(reactContext: ReactApplicationContext?) :
+  ReactContextBaseJavaModule(reactContext), DevLauncherKoinComponent {
 
   private val localStore = reactApplicationContext.getSharedPreferences(SessionStore, Context.MODE_PRIVATE)
-
-  private val devMenuManager = DevMenuManager
 
   override fun getName(): String {
     return "EXDevLauncherAuth"
@@ -29,7 +22,6 @@ class DevLauncherAuth(reactContext: ReactApplicationContext?)
 
   @ReactMethod
   fun setSessionAsync(session: String?, promise: Promise) {
-    devMenuManager.getExpoApiClient().setSessionSecret(session)
     saveSessionToLocalStorage(session)
     promise.resolve(null)
   }

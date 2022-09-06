@@ -12,6 +12,7 @@ const semver_1 = __importDefault(require("semver"));
  */
 const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
     android: {
+        minSdkVersion: 21,
         compileSdkVersion: 31,
         targetSdkVersion: 31,
         kotlinVersion: '1.6.10',
@@ -26,6 +27,7 @@ const schema = {
         android: {
             type: 'object',
             properties: {
+                minSdkVersion: { type: 'integer', nullable: true },
                 compileSdkVersion: { type: 'integer', nullable: true },
                 targetSdkVersion: { type: 'integer', nullable: true },
                 buildToolsVersion: { type: 'string', nullable: true },
@@ -64,26 +66,30 @@ const schema = {
  * @ignore
  */
 function maybeThrowInvalidVersions(config) {
-    var _a, _b, _c, _d, _e, _f;
     const checkItems = [
         {
+            name: 'android.minSdkVersion',
+            configVersion: config.android?.minSdkVersion,
+            minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.minSdkVersion,
+        },
+        {
             name: 'android.compileSdkVersion',
-            configVersion: (_a = config.android) === null || _a === void 0 ? void 0 : _a.compileSdkVersion,
+            configVersion: config.android?.compileSdkVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.compileSdkVersion,
         },
         {
             name: 'android.targetSdkVersion',
-            configVersion: (_b = config.android) === null || _b === void 0 ? void 0 : _b.targetSdkVersion,
+            configVersion: config.android?.targetSdkVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.targetSdkVersion,
         },
         {
             name: 'android.kotlinVersion',
-            configVersion: (_c = config.android) === null || _c === void 0 ? void 0 : _c.kotlinVersion,
+            configVersion: config.android?.kotlinVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.kotlinVersion,
         },
         {
             name: 'ios.deploymentTarget',
-            configVersion: (_d = config.ios) === null || _d === void 0 ? void 0 : _d.deploymentTarget,
+            configVersion: config.ios?.deploymentTarget,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.ios.deploymentTarget,
         },
     ];
@@ -95,7 +101,7 @@ function maybeThrowInvalidVersions(config) {
         }
         if (typeof configVersion === 'string' &&
             typeof minimalVersion === 'string' &&
-            semver_1.default.lt((_e = semver_1.default.coerce(configVersion)) !== null && _e !== void 0 ? _e : '0.0.0', (_f = semver_1.default.coerce(minimalVersion)) !== null && _f !== void 0 ? _f : '0.0.0')) {
+            semver_1.default.lt(semver_1.default.coerce(configVersion) ?? '0.0.0', semver_1.default.coerce(minimalVersion) ?? '0.0.0')) {
             throw new Error(`\`${name}\` needs to be at least version ${minimalVersion}.`);
         }
     }

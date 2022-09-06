@@ -10,11 +10,9 @@ pluginManagement {
 include ':app'
 
 apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
+apply from: new File(rootDir, "versioning_linking.gradle")
 
 /* UNCOMMENT WHEN DISTRIBUTING
-
-includeBuild('../node_modules/react-native-gradle-plugin')
-
 useExpoModules([
     exclude: [
         'expo-module-template',
@@ -42,6 +40,8 @@ includeBuild('../react-native-lab/react-native/packages/react-native-gradle-plug
 include ':expoview'
 include ':tools'
 include ':ReactAndroid'
+include ':ReactAndroid:hermes-engine'
+project(':ReactAndroid:hermes-engine').projectDir = new File(rootDir, 'ReactAndroid/hermes-engine')
 include ':expo-modules-test-core'
 project(':expo-modules-test-core').projectDir = new File(rootDir, '../packages/expo-modules-test-core/android')
 
@@ -51,9 +51,8 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi46_0_0",
     "abi45_0_0",
-    "abi44_0_0",
-    "abi43_0_0",
 ].forEach({ abiVariant ->
   include ":expoview-$abiVariant"
   project(":expoview-$abiVariant").projectDir = new File(rootDir, "versioned-abis/expoview-$abiVariant")
@@ -69,4 +68,8 @@ useExpoModules([
         'expo-dev-client'
     ]
 ])
+
+useVendoredModulesForSettingsGradle('unversioned')
+useVendoredModulesForSettingsGradle('sdk46')
+
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

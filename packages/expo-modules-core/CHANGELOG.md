@@ -4,15 +4,86 @@
 
 ### 🛠 Breaking changes
 
+### ⚠️ Notices
+
+- Removed deprecated module definition components that started with a lowercase letter. ([#18851](https://github.com/expo/expo/pull/18851) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
+- Added the interface for the light sensor support on Android. ([#18225](https://github.com/expo/expo/pull/18225) by [bearkillerPT](https://github.com/bearkillerPT))
+- Add better JSI error handling on Android. ([#18259](https://github.com/expo/expo/pull/18259) by [@lukmccall](https://github.com/lukmccall))
+- Experimental support for typed arrays on Android. ([#18379](https://github.com/expo/expo/pull/18379) by [@lukmccall](https://github.com/lukmccall))
+- Using JSI instead of the bridge to call native methods also on legacy modules on iOS. ([#18438](https://github.com/expo/expo/pull/18438) by [@tsapeta](https://github.com/tsapeta))
+- Experimental support for Fabric on iOS. ([#18500](https://github.com/expo/expo/pull/18500), [#18678](https://github.com/expo/expo/pull/18678) by [@tsapeta](https://github.com/tsapeta))
+- Added view prop callbacks support for old-style views written in Objective-C. ([#18636](https://github.com/expo/expo/pull/18636) by [@tsapeta](https://github.com/tsapeta))
+- Add Logger support for writing logs to a file; add Logger and associated classes to Android. ([#18513](https://github.com/expo/expo/pull/18513) by [@douglowder](https://github.com/douglowder))
+- Experimental support for Fabric on Android. ([#18541](https://github.com/expo/expo/pull/18541) by [@kudo](https://github.com/kudo))
+- Add option to generate a `coalescingKey` in callback on Android. ([#18774](https://github.com/expo/expo/pull/18774) by [@lukmccall](https://github.com/lukmccall))
+- Automatically convert records to dicts when returned by the function. ([#18824](https://github.com/expo/expo/pull/18824) by [@tsapeta](https://github.com/tsapeta))
+- Closures passed to definition components are now implicitly capturing `self` on iOS. ([#18831](https://github.com/expo/expo/pull/18831) by [@tsapeta](https://github.com/tsapeta))
+- Support for CSS named colors in `UIColor` and `CGColor` convertibles on iOS. ([#18845](https://github.com/expo/expo/pull/18845) by [@tsapeta](https://github.com/tsapeta))
+- Lazy load building the module's JavaScript object from the definition on iOS (already implemented on Android). ([#18863](https://github.com/expo/expo/pull/18863) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fix issue with Android builds when gradle clean and build were called concurrently. ([#18518](https://github.com/expo/expo/pull/18518) by [EdwardDrapkin](https://github.com/EdwardDrapkin))
+- Fixed `FabricUIManager` errors when turning on new architecture mode on Android. ([#18472](https://github.com/expo/expo/pull/18472) by [@kudo](https://github.com/kudo))
+- Fixed the `2 files found with path 'lib/arm64-v8a/libfbjni.so'` error on Android. ([#18607](https://github.com/expo/expo/pull/18607) by [@lukmccall](https://github.com/lukmccall))
+- Fixed event dispatching for Sweet API views when running in Fabric mode on Android. ([#18814](https://github.com/expo/expo/pull/18814) by [@kudo](https://github.com/kudo))
+- Removed the hard dependency to Hermes or JSC in *libexpo-modules-core.so* on Android and fixed the broken support for react-native-v8. ([#18899](https://github.com/expo/expo/pull/18899) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Centralized Android emulator detection for native code and added checks to pick up additional emulator types in `EmulatorUtilities`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
+- Created a separate high priority queue for all async function calls. ([#18734](https://github.com/expo/expo/pull/18734) by [@tsapeta](https://github.com/tsapeta))
+
+## 0.11.3 — 2022-07-18
+
+### 💡 Others
+
+- Changed access levels in the Logger and fixed the timer to log milliseconds instead of seconds. ([#18271](https://github.com/expo/expo/pull/18271) by [@douglowder](https://github.com/douglowder))
+
+## 0.11.2 — 2022-07-16
+
+### 🐛 Bug fixes
+
+- Fix dangling pointer in the fbjni from the MethodMetadata::createPromiseBody on Android. ([#18206](https://github.com/expo/expo/pull/18206) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.11.1 — 2022-07-11
+
+### 🐛 Bug fixes
+
+- Fixed a crash when remote debugging is enabled on Android. ([#18165](https://github.com/expo/expo/pull/18165) by [@kudo](https://github.com/kudo))
+
+## 0.11.0 — 2022-07-07
+
+### 🎉 New features
+
+- Create `AppContext.registerForActivityResult` mechanism similar to [`ComponentActivity.registerForActivityResult`](https://developer.android.com/training/basics/intents/result)). ([#17572](https://github.com/expo/expo/pull/17572), ([#17987](https://github.com/expo/expo/pull/17987) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Added support for React Native 0.69.x ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
+
+## 0.10.0 — 2022-06-23
+
+### 🎉 New features
+
+- Add proxy methods for `Permissions` module accepting `expo.modules.kotlin.Promise` on Android. ([#17668](https://github.com/expo/expo/pull/17668) by [@bbarthec](https://github.com/bbarthec))
+- Create `CurrentActivityProvider` on Android. ([#17571](https://github.com/expo/expo/pull/17571) by [@bbarthec](https://github.com/bbarthec))
+- Create `AppContextProvider` on Android. ([#17546](https://github.com/expo/expo/pull/17546) by [@bbarthec](https://github.com/bbarthec))
 - Introduce dynamic properties in the Sweet API on iOS. ([#17318](https://github.com/expo/expo/pull/17318) by [@tsapeta](https://github.com/tsapeta))
+- Implemented classes in the Sweet API on iOS. ([#17514](https://github.com/expo/expo/pull/17514), [#17525](https://github.com/expo/expo/pull/17525) by [@tsapeta](https://github.com/tsapeta))
 - Add basic support for sync functions in the Sweet API on Android. ([#16977](https://github.com/expo/expo/pull/16977) by [@lukmccall](https://github.com/lukmccall))
+- Better error handling in the synchronous functions on iOS. ([#17628](https://github.com/expo/expo/pull/17628) by [@tsapeta](https://github.com/tsapeta))
+- Experimental support for typed arrays on iOS. ([#17667](https://github.com/expo/expo/pull/17667) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Fix modules have not been deallocated during the application reload on iOS. ([#17285](https://github.com/expo/expo/pull/17285) by [@lukmccall](https://github.com/lukmccall))
 - Fix view props weren't recognized in the bare workflow on iOS. ([#17411](https://github.com/expo/expo/pull/17411) by [@lukmccall](https://github.com/lukmccall))
+- Fix support for optional function arguments on iOS. ([#17950](https://github.com/expo/expo/pull/17950) by [@barthap](https://github.com/barthap))
+- Added support for React Native 0.69.x ([#17629](https://github.com/expo/expo/pull/17629) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

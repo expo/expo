@@ -37,6 +37,11 @@
   return _jsObjectPtr.get();
 }
 
+- (std::shared_ptr<jsi::Object>)getShared
+{
+  return _jsObjectPtr;
+}
+
 #pragma mark - Accessing object properties
 
 - (BOOL)hasProperty:(nonnull NSString *)name

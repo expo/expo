@@ -9,7 +9,7 @@
 #import "RNCWKProcessPoolManager.h"
 
 @interface RNCWKProcessPoolManager() {
-    WKProcessPool *_sharedProcessPool;
+  WKProcessPool *_sharedProcessPool;
     NSMutableDictionary<NSString *, WKProcessPool *> *_pools;
 }
 @end
@@ -37,20 +37,20 @@
 
 
 + (id) sharedManager {
-    static RNCWKProcessPoolManager *_sharedManager = nil;
-    @synchronized(self) {
-        if(_sharedManager == nil) {
-            _sharedManager = [[super alloc] init];
-        }
-        return _sharedManager;
+  static RNCWKProcessPoolManager *_sharedManager = nil;
+  @synchronized(self) {
+    if(_sharedManager == nil) {
+      _sharedManager = [[super alloc] init];
     }
+    return _sharedManager;
+  }
 }
 
 - (WKProcessPool *)sharedProcessPool {
-    if (!_sharedProcessPool) {
-        _sharedProcessPool = [[WKProcessPool alloc] init];
-    }
-    return _sharedProcessPool;
+  if (!_sharedProcessPool) {
+    _sharedProcessPool = [[WKProcessPool alloc] init];
+  }
+  return _sharedProcessPool;
 }
 
 @end

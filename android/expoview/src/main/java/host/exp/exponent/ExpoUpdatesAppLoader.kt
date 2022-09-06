@@ -3,10 +3,10 @@ package host.exp.exponent
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.LegacyManifest
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -242,7 +242,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           // so we need to check the compatibility here
           val sdkVersion = updateManifest.manifest.getSDKVersion()
           if (!isValidSdkVersion(sdkVersion)) {
-            callback.onError(formatExceptionForIncompatibleSdk(sdkVersion ?: "null"))
+            callback.onError(formatExceptionForIncompatibleSdk(sdkVersion))
             didAbort = true
             return
           }
@@ -413,10 +413,13 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       return headers
     }
 
+  private val isRunningOnEmulator: Boolean
+    get() = EmulatorUtilities.isRunningOnEmulator()
+
   private val clientEnvironment: String
     get() = if (Constants.isStandaloneApp()) {
       "STANDALONE"
-    } else if (Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")) {
+    } else if (EmulatorUtilities.isRunningOnEmulator()) {
       "EXPO_SIMULATOR"
     } else {
       "EXPO_DEVICE"
@@ -437,11 +440,13 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
     return false
   }
 
-  private fun formatExceptionForIncompatibleSdk(sdkVersion: String): ManifestException {
+  private fun formatExceptionForIncompatibleSdk(sdkVersion: String?): ManifestException {
     val errorJson = JSONObject()
     try {
       errorJson.put("message", "Invalid SDK version")
-      if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSIONS_LIST[0])) {
+      if (sdkVersion == null) {
+        errorJson.put("errorCode", "NO_SDK_VERSION_SPECIFIED")
+      } else if (ABIVersion.toNumber(sdkVersion) > ABIVersion.toNumber(Constants.SDK_VERSIONS_LIST[0])) {
         errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_TOO_NEW")
       } else {
         errorJson.put("errorCode", "EXPERIENCE_SDK_VERSION_OUTDATED")

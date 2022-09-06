@@ -13,9 +13,7 @@ import com.facebook.react.ReactRootView
 import com.facebook.soloader.SoLoader
 import com.squareup.leakcanary.LeakCanary
 import de.greenrobot.event.EventBus
-import expo.modules.analytics.amplitude.AmplitudePackage
 import expo.modules.barcodescanner.BarCodeScannerPackage
-import expo.modules.camera.CameraPackage
 import expo.modules.constants.ConstantsPackage
 import expo.modules.core.interfaces.Package
 import expo.modules.device.DevicePackage
@@ -31,7 +29,6 @@ import expo.modules.splashscreen.SplashScreenImageResizeMode
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.splashscreen.singletons.SplashScreen
 import expo.modules.taskManager.TaskManagerPackage
-import expo.modules.webbrowser.WebBrowserPackage
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
@@ -150,15 +147,12 @@ open class HomeActivity : BaseExperienceActivity() {
         FontLoaderPackage(),
         BarCodeScannerPackage(),
         KeepAwakePackage(),
-        AmplitudePackage(),
-        CameraPackage(),
         FaceDetectorPackage(),
         MediaLibraryPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         DevicePackage(),
         SplashScreenPackage(),
-        WebBrowserPackage(),
         HapticsPackage()
       )
     }

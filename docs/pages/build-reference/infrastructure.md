@@ -5,11 +5,15 @@ sidebar_title: Server infrastructure
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-This document describes the current build infrastructure as of February 1, 2022. It is likely to change over time, and this document will be updated.
+This document describes the current build infrastructure as of June 27, 2022. It is likely to change over time, and this document will be updated.
+
+## Worker IP addresses
+
+Here is the [up-to-date list of worker IP addresses](https://expo.dev/eas-build-worker-ips.txt).
 
 ## Configuring build environment
 
-Images for each platform have one specific version of Node, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](../build/eas-json). If there's no dedicated configuration option you're looking for, you can use [npm hooks](how-tos/#eas-build-specific-npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Please take into account that those customizations are applied during the build and will increase your build times.
+Images for each platform have one specific version of Node.js, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](../build/eas-json). If there is no dedicated configuration option you're looking for, you can use [npm hooks](npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Please take into account that those customizations are applied during the build and will increase your build times.
 
 When selecting an image for the build you can use the full name provided below or one of the aliases: `default`, `latest`.
 
@@ -47,12 +51,40 @@ When selecting an image for the build you can use the full name provided below o
 
   ```yml
   unsafeHttpWhitelist:
-    - "*"
-  npmRegistryServer: "http://npm-cache-service.worker-infra-production.svc.cluster.local:4873"
+    - '*'
+  npmRegistryServer: 'http://npm-cache-service.worker-infra-production.svc.cluster.local:4873'
   enableImmutableInstalls: false
   ```
 
-#### Image `ubuntu-20.04-jdk-11-ndk-r21e` (alias `latest`)
+#### Image `ubuntu-22.04-jdk-11-ndk-r21e` (alias `latest`)
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220531`
+- NDK 21.4.7075529
+- Node.js 16.13.2
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.1.2
+- Java 11
+
+</Collapsible>
+
+#### Image `ubuntu-22.04-jdk-8-ndk-r21e`
+
+<Collapsible summary="Details">
+
+- Docker image: `ubuntu:jammy-20220531`
+- NDK 21.4.7075529
+- Node.js 16.13.2
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.1.2
+- Java 8
+
+</Collapsible>
+
+#### Image `ubuntu-20.04-jdk-11-ndk-r21e` (alias `default`)
 
 <Collapsible summary="Details">
 
@@ -60,6 +92,7 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 21.4.7075529
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - Java 11
 
@@ -73,6 +106,7 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 21.4.7075529
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - Java 8
 
@@ -86,12 +120,13 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 19.2.5345600
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - Java 11
 
 </Collapsible>
 
-#### Image `ubuntu-18.04-jdk-8-ndk-r19c` (alias `default`)
+#### Image `ubuntu-18.04-jdk-8-ndk-r19c`
 
 <Collapsible summary="Details">
 
@@ -99,6 +134,7 @@ When selecting an image for the build you can use the full name provided below o
 - NDK 19.2.5345600
 - Node.js 16.13.2
 - Yarn 1.22.17
+- pnpm 7.0.0
 - npm 8.1.2
 - Java 8
 
@@ -121,12 +157,28 @@ When selecting an image for the build you can use the full name provided below o
 
   ```yml
   unsafeHttpWhitelist:
-    - "*"
-  npmRegistryServer: "registry=http://10.254.24.8:4873"
+    - '*'
+  npmRegistryServer: 'registry=http://10.254.24.8:4873'
   enableImmutableInstalls: false
   ```
 
-#### Image `macos-monterey-12.3-xcode-13.3` (alias `default`, `latest`)
+#### Image `macos-monterey-12.4-xcode-13.4` (alias `latest`)
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.4
+- Xcode 13.4 (13F17a)
+- Node.js 16.13.2
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.1.2
+- fastlane 2.205.2
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
+#### Image `macos-monterey-12.3-xcode-13.3` (alias `default`)
 
 <Collapsible summary="Details">
 

@@ -14,6 +14,10 @@ const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<PluginConfigType>(
   [
     {
+      propName: 'android.minSdkVersion',
+      propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
+    },
+    {
       propName: 'android.compileSdkVersion',
       propValueGetter: (config) => config.android?.compileSdkVersion?.toString(),
     },

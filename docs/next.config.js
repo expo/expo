@@ -1,25 +1,24 @@
-/* eslint-disable import/order */
-const { copySync, removeSync } = require('fs-extra');
-const merge = require('lodash/merge');
-const { join } = require('path');
-const semver = require('semver');
-const { ESBuildMinifyPlugin } = require('esbuild-loader');
-const { info: logInfo } = require('next/dist/build/output/log');
+import fsExtra from 'fs-extra';
+import { info as logInfo } from 'next/dist/build/output/log.js';
+import { join } from 'path';
+import rehypeSlug from 'rehype-slug';
+import remarkFrontmatter from 'remark-frontmatter';
+import semver from 'semver';
+import { fileURLToPath } from 'url';
 
-const navigation = require('./constants/navigation');
-const { VERSIONS } = require('./constants/versions');
-const { version, betaVersion } = require('./package.json');
+import * as navigation from './constants/navigation.cjs';
+import { VERSIONS } from './constants/versions.cjs';
+import remarkExportHeadings from './mdx-plugins/remark-export-headings.cjs';
+import remarkExportYaml from './mdx-plugins/remark-export-yaml.cjs';
+import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.cjs';
+import createSitemap from './scripts/create-sitemap.cjs';
 
-// To generate a sitemap, we need context about the supported versions and navigational data
-const createSitemap = require('./scripts/create-sitemap');
+const { copySync, removeSync, readJsonSync } = fsExtra;
 
-// Determine if we are using esbuild for MDX transpiling
-const enableEsbuild = !!process.env.USE_ESBUILD;
-logInfo(
-  enableEsbuild
-    ? 'Using esbuild for MDX files, USE_ESBUILD set to true'
-    : 'Using babel for MDX files, USE_ESBUILD not set'
-);
+// note(simek): We cannot use direct JSON import because ESLint do not support `assert { type: 'json' }` syntax yet:
+// * https://github.com/eslint/eslint/discussions/15305
+const { version, betaVersion } = readJsonSync('./package.json');
+const dirname = fileURLToPath(new URL('.', import.meta.url));
 
 // Prepare the latest version by copying the actual exact latest version
 const vLatest = join('pages', 'versions', `v${version}/`);
@@ -29,74 +28,55 @@ copySync(vLatest, latest);
 logInfo(`Copied latest Expo SDK version from v${version}`);
 
 /** @type {import('next').NextConfig}  */
-module.exports = {
+export default {
   trailingSlash: true,
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
-  // Next 11 does not support ESLint v8, enable it when we upgrade to 12
-  eslint: { ignoreDuringBuilds: true },
-  // Keep using webpack 4, webpack 5 causes some issues. See: https://github.com/expo/expo/pull/12794
-  webpack5: false,
+  compiler: { emotion: true },
+  swcMinify: true,
   webpack: (config, options) => {
     // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
     // It's to prevent over-usage and separate the cache to allow manually invalidation.
     // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
     config.module.rules.push({
-      test: /.jsx?$/,
-      include: [join(__dirname, 'constants')],
-      use: merge({}, options.defaultLoaders.babel, {
+      test: /.js$/,
+      include: [join(dirname, 'constants')],
+      use: {
+        loader: 'babel-loader',
         options: {
           // Keep this path in sync with package.json and other scripts that clear the cache
           cacheDirectory: '.next/preval',
           plugins: ['preval'],
+          presets: ['next/babel'],
         },
-      }),
+      },
     });
 
-    // Add support for MDX with our custom loader and esbuild
+    // Add support for MDX with our custom loader
     config.module.rules.push({
-      test: /.mdx?$/, // load both .md and .mdx files
+      test: /.mdx?$/,
       use: [
-        !enableEsbuild
-          ? options.defaultLoaders.babel
-          : {
-              loader: 'esbuild-loader',
-              options: {
-                loader: 'tsx',
-                target: 'es2017',
-              },
-            },
+        options.defaultLoaders.babel,
         {
           loader: '@mdx-js/loader',
           options: {
             remarkPlugins: [
-              [require('remark-frontmatter'), ['yaml']],
-              require('./mdx-plugins/remark-export-yaml'),
-              require('./mdx-plugins/remark-export-headings'),
-              require('./mdx-plugins/remark-link-rewrite'),
+              [remarkFrontmatter, ['yaml']],
+              remarkExportYaml,
+              remarkExportHeadings,
+              remarkLinkRewrite,
             ],
-            rehypePlugins: [require('rehype-slug')],
+            rehypePlugins: [rehypeSlug],
           },
         },
       ],
     });
 
-    // Fix inline or browser MDX usage: https://mdxjs.com/getting-started/webpack#running-mdx-in-the-browser
-    // Webpack 4
-    config.node = { fs: 'empty' };
-    // Webpack 5
-    // config.resolve.fallback = { fs: false, path: require.resolve('path-browserify') };
-
-    // Add the esbuild plugin only when using esbuild
-    if (enableEsbuild) {
-      config.optimization.minimizer = [
-        new ESBuildMinifyPlugin({
-          target: 'es2017',
-        }),
-      ];
-    }
+    // Fix inline or browser MDX usage
+    config.resolve.fallback = { fs: false, path: 'path-browserify' };
 
     return config;
   },
+
   // Create a map of all pages to export
   async exportPathMap(defaultPathMap, { dev, outDir }) {
     if (dev) {
@@ -126,7 +106,6 @@ module.exports = {
       // Some of the search engines only track the first N items from the sitemap,
       // this makes sure our starting and general guides are first, and API index last (in order from new to old)
       pathsPriority: [
-        ...navigation.startingDirectories,
         ...navigation.generalDirectories,
         ...navigation.easDirectories,
         ...VERSIONS.map(version => `versions/${version}`),

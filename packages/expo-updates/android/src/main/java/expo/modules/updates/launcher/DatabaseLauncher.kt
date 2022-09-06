@@ -85,6 +85,10 @@ class DatabaseLauncher(
 
     localAssetFiles = mutableMapOf<AssetEntity, String>().apply {
       for (asset in assetEntities) {
+        if (asset.id == launchAsset.id) {
+          // we took care of this one above
+          continue
+        }
         val filename = asset.relativePath
         if (filename != null) {
           val assetFile = ensureAssetExists(asset, database, context)
@@ -122,6 +126,10 @@ class DatabaseLauncher(
     }
     val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
     return selectionPolicy.selectUpdateToLaunch(filteredLaunchableUpdates, manifestFilters)
+  }
+
+  fun getReadyUpdateIds(database: UpdatesDatabase): List<UUID> {
+    return database.updateDao().loadAllUpdateIdsWithStatus(UpdateStatus.READY)
   }
 
   internal fun ensureAssetExists(asset: AssetEntity, database: UpdatesDatabase, context: Context): File? {

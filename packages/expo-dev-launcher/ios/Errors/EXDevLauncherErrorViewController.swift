@@ -60,6 +60,8 @@ public class EXDevLauncherErrorViewController: UIViewController, UITableViewData
   }
 
   private func navigateToLauncher() {
-    manager?.controller?.navigateToLauncher()
+    RCTExecuteOnMainQueue { [self]
+      self.manager?.controller?.navigateToLauncher()
+    }
   }
 }

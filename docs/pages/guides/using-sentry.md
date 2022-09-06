@@ -1,7 +1,9 @@
 ---
 title: Using Sentry
+maxHeadingDepth: 4
 ---
 
+import { ConfigReactNative, ConfigClassic } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
@@ -10,7 +12,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 It notifies you of exceptions or errors that your users run into while using your app, and organizes them for you on a web dashboard. Reported exceptions include stacktraces, device info, version, and other relevant context automatically; you can also provide additional context that is specific to your application, like the current route and user id.
 
-## Why `sentry-expo`?
+## Why sentry-expo?
 
 - Sentry treats React Native as a first-class citizen and we have collaborated with Sentry to make sure Expo is, too.
 - It's very easy to set up and use
@@ -23,7 +25,7 @@ It notifies you of exceptions or errors that your users run into while using you
 
 <PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
-## How to add Sentry to your Expo project
+## Installating and configuring Sentry
 
 ### Step 0: Sign up for a Sentry account and create a project
 
@@ -43,20 +45,19 @@ Once you have each of these: organization name, project name, DSN, and auth toke
 
 In your project directory, run:
 
-<Terminal cmd={['$ expo install sentry-expo']} cmdCopy="expo install sentry-expo" />
+<Terminal cmd={['$ npx expo install sentry-expo']} />
 
-> If you're using SDK 39 or lower, run `yarn add sentry-expo@~3.0.0`
+`sentry-expo` also requires some additional Expo module packages. To install them, run:
 
-`sentry-expo` also requires some additional dependencies, otherwise it won't work properly. To install them, run:
-
-<Terminal 
-  cmd={['$ expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
-  cmdCopy="expo install expo-application expo-constants expo-device expo-updates @sentry/react-native"
+<Terminal
+cmd={['$ npx expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
 />
 
 ### Step 2: Code
 
-Add the following to your app's main file (usually `App.js`):
+#### Initialization
+
+Add the following to your app's main file such as **App.js**:
 
 ```js
 import * as Sentry from 'sentry-expo';
@@ -66,17 +67,60 @@ Sentry.init({
   enableInExpoDevelopment: true,
   debug: true, // If `true`, Sentry will try to print out useful debugging information if something goes wrong with sending the event. Set it to `false` in production
 });
-
-// Access any @sentry/react-native exports via:
-Sentry.Native.*
-
-// Access any @sentry/browser exports via:
-Sentry.Browser.*
 ```
 
-### Step 3: App Config
+#### Usage
 
-#### Configure your `postPublish` hook
+Depending on which platform you are on (mobile or web), use the following methods to access any `@sentry/*` methods for instrumentation, performance, capturing exceptions and so on:
+
+- For React Native, access any `@sentry/react-native` exports with `Sentry.Native.*`
+- For web, access any `@sentry/browser` exports with `Sentry.Browser.*`
+
+```js
+// Access any @sentry/react-native exports via:
+// Sentry.Native.*
+
+// Access any @sentry/browser exports via:
+// Sentry.Browser.*
+
+// The following example uses `captureException()` from Sentry.Native.* to capture errors:
+try {
+  // your code
+} catch (error) {
+  Sentry.Native.captureException(error);
+}
+```
+
+### Step 3: App Configuration
+
+Configuring sentry-expo is done through the config plugin in your **app.json** or **app.config.js**.
+
+<ConfigClassic>
+
+The instructions below will still apply, with the exception of the `plugin` configuration. Config plugins have no effect when using the classic build system.
+
+</ConfigClassic>
+
+<ConfigReactNative>
+
+If you use bare workflow, **you should not use the `plugins` property in app.json**. Instead, use `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra:
+
+```js
+import * as Sentry from '@sentry/react-native';
+
+Sentry.init({
+  dsn: 'YOUR DSN',
+});
+```
+
+to your root project file (usually **App.js**), so make sure you remove it (but keep the `sentry-expo` import and original `Sentry.init` call!)
+
+
+</ConfigReactNative>
+
+<br />
+
+#### 3.1: Configure a `postPublish` hook
 
 Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 
@@ -89,8 +133,8 @@ Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
-            "organization": "your sentry organization's short name here",
-            "project": "your sentry project's name here",
+            "organization": "your sentry organization slug here",
+            "project": "your sentry project name here",
             "authToken": "your auth token here"
           }
         }
@@ -100,19 +144,19 @@ Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 }
 ```
 
-The correct `authToken` value can be generated from the [Sentry API page ](https://sentry.io/settings/account/api/).
+The `authToken` value can be generated from the [Sentry API page](https://sentry.io/settings/account/api/).
 
-> You can also use environment variables for your config, if you prefer:
->
-> - organization = SENTRY_ORG
-> - project = SENTRY_PROJECT
-> - authToken = SENTRY_AUTH_TOKEN
->
-> You can pass them in directly like this:
->
-> ```
-> SENTRY_PROJECT=myCoolProject expo publish
-> ```
+
+<Collapsible summary="Prefer to use environment variables instead of storing values in app.json?">
+
+You can also use environment variables for your config, if you prefer:
+
+- organization → `SENTRY_ORG`
+- project → `SENTRY_PROJECT`
+- authToken → `SENTRY_AUTH_TOKEN`
+
+</Collapsible>
+
 
 <Collapsible summary="Additional configuration options">
 
@@ -126,17 +170,17 @@ In addition to the required config fields above, you can also provide these **op
 
 > You can also use environment variables for your config, if you prefer:
 >
-> - setCommits = SENTRY_SET_COMMITS
-> - deployEnv = SENTRY_DEPLOY_ENV
-> - distribution = SENTRY_DIST
-> - release = SENTRY_RELEASE
-> - url = SENTRY_URL
+> - setCommits → `SENTRY_SET_COMMITS`
+> - deployEnv → `SENTRY_DEPLOY_ENV`
+> - distribution → `SENTRY_DIST`
+> - release → `SENTRY_RELEASE`
+> - url → `SENTRY_URL`
 
 </Collapsible>
 
-#### Add the Config Plugin
+<br />
 
-> Note: Disregard the following if you're using the classic build system (`expo build:[android|ios]`).
+#### 3.2: Add the Config Plugin
 
 Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 
@@ -149,41 +193,30 @@ Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 }
 ```
 
-If you directly edit your native `ios/` and `android/` directories (i.e. you have ejected your project, or have a bare workflow project), **you should not use the above `plugins` property**. Instead, use `yarn sentry-wizard -i reactNative -p ios android` to configure your native projects. This `sentry-wizard` command will add an extra:
-
-```js
-import * as Sentry from '@sentry/react-native';
-
-Sentry.init({
-  dsn: 'YOUR DSN',
-});
-```
-
-to your root project file (usually **App.js**), so make sure you remove it (but keep the `sentry-expo` import and original `Sentry.init` call!)
-
 ## Sourcemaps
 
-With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release. If you're not familiar with publishing on Expo, you can [read more about it here](../workflow/publishing.md).
+<!-- TODO: Drop `expo publish` mention -->
 
-> This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/hosting-your-app.md).
+With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release.
 
-### "No publish builds"
+> This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/custom-updates-server.md).
+
+### Uploading sourcemaps at build time
 
 > Note: Disregard the following if you're using the classic build system (`expo build:[android|ios]`).
 
 With `expo-updates`, release builds of both iOS and Android apps will create and embed a new update from your JavaScript source at build-time. **This new update will not be published automatically** and will exist only in the binary with which it was bundled. Since it isn't published, the sourcemaps aren't uploaded in the usual way like they are when you run `expo publish` (actually, we are relying on Sentry's native scripts to handle that). Because of this you have some extra things to be aware of:
 
 - Your `release` will automatically be set to Sentry's expected value- `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android).
-- Your `dist` will automatically be set to Sentry's expected value- `${buildNumber}` (iOS) or `${versionCode}` (Android).
-- The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). If you're using the managed workflow, then we handle all of this setup for you via the [`plugin` you added above](#add-the-config-plugin).
+- Your `dist` will automatically be set to Sentry's expected value: `${buildNumber}` (iOS) or `${versionCode}` (Android).
+- The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). Manual configuration is only required for bare projects, the [sentry-expo config plugin handles it otherwise](#add-the-config-plugin).
+- Configuration for `expo publish` and `npx expo export` for projects is done via `app.json`, whether using bare workflow or not.
 
-> Please note that configuration for `expo publish` and `expo export` in bare and managed is still done via `app.json`.
+Skipping or misconfiguring either of these can lead to invalid sourcemaps, and you won't see human readable stacktraces in your errors.
 
-Skipping or misconfiguring either of these will result in sourcemaps not working, and thus you won't see proper stacktraces in your errors.
+### Self-hosting updates
 
-### Self-hosting updates?
-
-If you're self-hosting your updates (this means you run `expo export` instead of `expo publish`), you need to:
+If you're self-hosting your updates (this means you run `npx expo export` instead of `expo publish`), you need to:
 
 - replace `hooks.postPublish` in your **app.json** file with `hooks.postExport` (everything else stays the same)
 - add the `RewriteFrames` integration to your `Sentry.init` call like so:
@@ -215,7 +248,7 @@ When building tests for your application, you want to assert that the right flow
 
 See how to get started with `sentry-testkit` in their [documentation site here](https://wix.github.io/sentry-testkit/)
 
-> If you're using `Jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
+> If you're using `jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
 ## Error reporting semantics
 

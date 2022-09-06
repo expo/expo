@@ -54,7 +54,7 @@ Now you can build your app through `eas build` and your app will run with Hermes
 
 When using Hermes for iOS, you may encounter the following error when building for the simulator:
 
-> ❌ `ld: building for iOS Simulator, but linking in dylib built for iOS, file '/path/to/projectName/ios/Pods/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework/hermes' for architecture arm64`
+> `ld: building for iOS Simulator, but linking in dylib built for iOS, file '/path/to/projectName/ios/Pods/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework/hermes' for architecture arm64`
 
 This is [a known issue for React Native 0.64](https://github.com/facebook/hermes/issues/468); to workaround it, you can add the following patch to your `ios/Podfile`:
 
@@ -89,8 +89,8 @@ This is [a known issue for React Native 0.64](https://github.com/facebook/hermes
 Reinstall Pods and clean Xcode build cache:
 
 <Terminal cmd={[
-  '$ npx pod-install',
-  '$ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName}'
+'$ npx pod-install',
+'$ xcodebuild clean -workspace ios/{projectName}.xcworkspace -scheme {projectName}'
 ]} />
 
 </Collapsible>
@@ -117,20 +117,20 @@ You may want to use Hermes on one platform and JSC on another. One way to do thi
 
 ## Publish updates
 
-Publishing updates with `expo publish` and `expo export` will generate Hermes bytecode bundles and their source maps.
+Publishing updates with `eas update` and `npx expo export` will generate Hermes bytecode bundles and their source maps.
 
 Please note that the Hermes bytecode format may change between different versions of `hermes-engine` — an update produced for a specific version of Hermes will not run on a different version of Hermes. Updating the Hermes version can be thought of in the same way as updating any other native module, and so if you update the `hermes-engine` version you should also update the `runtimeVersion` in **app.json**. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older version of `hermes-engine` that is incompatible with the updated bytecode format. See ["Update Compatibility"](/bare/updating-your-app/#update-compatibility) for more information.
 
 ## JavaScript inspector for Hermes
 
-To debug JavaScript code running with Hermes, you can start your project with `expo start` then press `j` to open the JavaScript inspector in Google Chrome or Microsoft Edge. _This is only supported for debug builds._
+To debug JavaScript code running with Hermes, you can start your project with `npx expo start` then press `j` to open the JavaScript inspector in Google Chrome or Microsoft Edge. _This is only supported for debug builds._
 
 Alternatively, you can use the JavaScript inspector from the following tools:
 
 - [Open Google Chrome DevTools manually](https://reactnative.dev/docs/hermes#debugging-js-on-hermes-using-google-chromes-devtools)
 - [Flipper](https://fbflipper.com/)
 
-> 💡 [Development builds](/development/introduction.md) built with `expo-dev-client` simplify this process by integrating directly with the JavaScript inspector in Hermes.
+> [Development builds](/development/introduction.md) built with `expo-dev-client` simplify this process by integrating directly with the JavaScript inspector in Hermes.
 
 ## Limitations
 

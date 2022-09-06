@@ -433,13 +433,69 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
   }
 
   private void updateViewAccessibility(@NonNull T view) {
-    ReactAccessibilityDelegate.setDelegate(view);
+    ReactAccessibilityDelegate.setDelegate(
+        view, view.isFocusable(), view.getImportantForAccessibility());
   }
 
   @Override
   protected void onAfterUpdateTransaction(@NonNull T view) {
     super.onAfterUpdateTransaction(view);
     updateViewAccessibility(view);
+  }
+
+  @Override
+  public @Nullable Map<String, Object> getExportedCustomBubblingEventTypeConstants() {
+    Map<String, Object> baseEventTypeConstants = super.getExportedCustomDirectEventTypeConstants();
+    Map<String, Object> eventTypeConstants =
+        baseEventTypeConstants == null ? new HashMap<String, Object>() : baseEventTypeConstants;
+    eventTypeConstants.putAll(
+        MapBuilder.<String, Object>builder()
+            .put(
+                "topPointerCancel",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onPointerCancel", "captured", "onPointerCancelCapture")))
+            .put(
+                "topPointerDown",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onPointerDown", "captured", "onPointerDownCapture")))
+            .put(
+                "topPointerEnter2",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled",
+                        "onPointerEnter2",
+                        "captured",
+                        "onPointerEnter2Capture",
+                        "skipBubbling",
+                        true)))
+            .put(
+                "topPointerLeave2",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled",
+                        "onPointerLeave2",
+                        "captured",
+                        "onPointerLeave2Capture",
+                        "skipBubbling",
+                        true)))
+            .put(
+                "topPointerMove2",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of(
+                        "bubbled", "onPointerMove2", "captured", "onPointerMove2Capture")))
+            .put(
+                "topPointerUp",
+                MapBuilder.of(
+                    "phasedRegistrationNames",
+                    MapBuilder.of("bubbled", "onPointerUp", "captured", "onPointerUpCapture")))
+            .build());
+    return eventTypeConstants;
   }
 
   @Override
@@ -486,18 +542,103 @@ public abstract class BaseViewManager<T extends View, C extends LayoutShadowNode
     FLog.w(ReactConstants.TAG, "%s doesn't support property '%s'", getName(), propName);
   }
 
-  @ReactProp(name = "pointerenter")
-  public void setPointerEnter(@NonNull T view, @Nullable boolean value) {
+  @ReactProp(name = "onPointerEnter")
+  public void setPointerEnter(@NonNull T view, boolean value) {
     view.setTag(R.id.reactandroid_pointer_enter, value);
   }
 
-  @ReactProp(name = "pointerleave")
-  public void setPointerLeave(@NonNull T view, @Nullable boolean value) {
+  @ReactProp(name = "onPointerLeave")
+  public void setPointerLeave(@NonNull T view, boolean value) {
     view.setTag(R.id.reactandroid_pointer_leave, value);
   }
 
-  @ReactProp(name = "pointermove")
-  public void setPointerMove(@NonNull T view, @Nullable boolean value) {
+  @ReactProp(name = "onPointerMove")
+  public void setPointerMove(@NonNull T view, boolean value) {
     view.setTag(R.id.reactandroid_pointer_move, value);
+  }
+
+  @ReactProp(name = "onMoveShouldSetResponder")
+  public void setMoveShouldSetResponder(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onMoveShouldSetResponderCapture")
+  public void setMoveShouldSetResponderCapture(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onStartShouldSetResponder")
+  public void setStartShouldSetResponder(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onStartShouldSetResponderCapture")
+  public void setStartShouldSetResponderCapture(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderGrant")
+  public void setResponderGrant(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderReject")
+  public void setResponderReject(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderStart")
+  public void setResponderStart(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderEnd")
+  public void setResponderEnd(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderRelease")
+  public void setResponderRelease(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderMove")
+  public void setResponderMove(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderTerminate")
+  public void setResponderTerminate(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onResponderTerminationRequest")
+  public void setResponderTerminationRequest(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onShouldBlockNativeResponder")
+  public void setShouldBlockNativeResponder(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onTouchStart")
+  public void setTouchStart(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onTouchMove")
+  public void setTouchMove(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onTouchEnd")
+  public void setTouchEnd(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
+  }
+
+  @ReactProp(name = "onTouchCancel")
+  public void setTouchCancel(@NonNull T view, boolean value) {
+    // no-op, handled by JSResponder
   }
 }

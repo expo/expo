@@ -1,6 +1,6 @@
 import compareUrls from 'compare-urls';
 import { CodedError, Platform } from 'expo-modules-core';
-import { AppState, Dimensions, AppStateStatus } from 'react-native';
+import { AppState, Dimensions, AppStateStatus, NativeEventSubscription } from 'react-native';
 
 import {
   WebBrowserAuthSessionResult,
@@ -27,10 +27,10 @@ function dismissPopup() {
   }
   popupWindow.close();
   if (listenerMap.has(popupWindow)) {
-    const { listener, appStateListener, interval } = listenerMap.get(popupWindow);
+    const { listener, appStateSubscription, interval } = listenerMap.get(popupWindow);
     clearInterval(interval);
     window.removeEventListener('message', listener);
-    AppState.removeEventListener('change', appStateListener);
+    (appStateSubscription as NativeEventSubscription).remove();
     listenerMap.delete(popupWindow);
 
     const handle = window.localStorage.getItem(getHandle());
@@ -178,7 +178,7 @@ export default {
         }
       };
 
-      AppState.addEventListener('change', appStateListener);
+      const appStateSubscription = AppState.addEventListener('change', appStateListener);
 
       // Check if the window has been closed every second.
       const interval = setInterval(() => {
@@ -193,7 +193,7 @@ export default {
       listenerMap.set(popupWindow, {
         listener,
         interval,
-        appStateListener,
+        appStateSubscription,
       });
     });
   },
@@ -290,7 +290,7 @@ function normalizePopupFeaturesString(
     for (const pair of windowFeaturePairs) {
       const [key, value] = pair.trim().split('=');
       if (key && value) {
-        windowFeaturePairs[key] = value;
+        windowFeatures[key] = value;
       }
     }
   } else if (options) {

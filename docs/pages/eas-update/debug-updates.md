@@ -2,9 +2,8 @@
 title: Debugging guide
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-
-> EAS Update is currently available only to customers with an EAS subscription plan. [Sign up](https://expo.dev/accounts/[account]/settings/subscriptions).
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Terminal } from '~/ui/components/Snippet';
 
 It's important to tell the current state of our app at any given time. We built EAS Update with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire. This guide sets out to show how we can verify our EAS Update and expo-updates configuration, so that we can find the source of problems like an app not showing a published update.
 
@@ -22,15 +21,13 @@ When we set up EAS Update, we likely ran `eas update:configure` to configure exp
 
 Finally, make sure that `expo-updates` is included in **package.json**. If it's not, run:
 
-```bash
-expo install expo-updates
-```
+<Terminal cmd={['$ npx expo install expo-updates']} />
 
 ### Inspecting expo-updates configuration after prebuild
 
-Whenever we run `eas build`, the `expo prebuild` command is run on our project on EAS' servers to unpack the **android** and **ios** directories that contain native files. This make it so EAS Build can build any project, whether it includes the native files or not.
+Whenever we run `eas build`, the `npx expo prebuild` command is run on our project on EAS' servers to unpack the **android** and **ios** directories that contain native files. This make it so EAS Build can build any project, whether it includes the native files or not.
 
-If our project does not have **android** or **ios** directories, we can make commit any existing changes, then run `expo prebuild` to inspect the project state that EAS Build will act on. After running this, look for the following files: **android/app/src/main/AndroidManifest.xml** and **ios/your-project-name/Supporting/Expo.plist**.
+If our project does not have **android** or **ios** directories, we can make commit any existing changes, then run `npx expo prebuild` to inspect the project state that EAS Build will act on. After running this, look for the following files: **android/app/src/main/AndroidManifest.xml** and **ios/your-project-name/Supporting/Expo.plist**.
 
 In each, we expect to see configuration for the EAS Update URL and the runtime version. Here are properties we'd expect to see in each file:
 
@@ -97,8 +94,7 @@ or
 ```bash
 eas channel:view [channel-name]
 
-# example
-
+# Example
 eas channel:view production
 ```
 
@@ -107,8 +103,7 @@ We'd expect the output of these commands to display the same channel name that o
 ```bash
 eas channel:create [channel-name]
 
-# example
-
+# Example
 eas channel:create production
 ```
 
@@ -121,8 +116,7 @@ To verify which branch is linked to a channel, we can run:
 ```bash
 eas channel:view [channel-name]
 
-# example
-
+# Example
 eas channel:view production
 ```
 
@@ -131,8 +125,7 @@ If the channel is not linked to the branch we expect, we can change the link wit
 ```bash
 eas channel:edit [channel-name] --branch [branch-name]
 
-# example
-
+# Example
 eas channel:edit production --branch release-1.0
 ```
 
@@ -145,8 +138,7 @@ To inspect which updates are on a branch, we can run:
 ```bash
 eas branch:view [branch-name]
 
-# example
-
+# Example
 eas branch:view production
 ```
 
@@ -156,9 +148,7 @@ The output of this command will show us a list of updates and their runtime vers
 
 To create and publish an update, we can run the following command:
 
-```bash
-eas update
-```
+<Terminal cmd={['$ eas update']} />
 
 After publishing, the output will display the branch and the runtime version. This info can help us verify that we're creating an update with the configuration we expect.
 
@@ -226,7 +216,7 @@ Below is a screenshot showing the request of a successful update manfiest reques
 
 ### Inspecting a build manually
 
-When building a project into an app, there can be multiple steps that alter the output of `expo prebuild`. After making a build, it is possible to open the build's contents and inspect native files to see its final configuration.
+When building a project into an app, there can be multiple steps that alter the output of `npx expo prebuild`. After making a build, it is possible to open the build's contents and inspect native files to see its final configuration.
 
 Here are the steps for inspecting an iOS simulator build on macOS:
 
@@ -273,9 +263,7 @@ https://u.expo.dev/your-project-id?runtime-version=1.0.0&channel-name=production
 
 It may be helpful to see which assets are included in our update bundle. We can see a list of named assets by running:
 
-```bash
-expo export --experimental-bundle
-```
+<Terminal cmd={['$ npx expo export']} />
 
 ## Mitigation steps
 

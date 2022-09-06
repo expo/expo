@@ -7,10 +7,11 @@
 #include <react/jni/ReadableNativeArray.h>
 #include <jni/JCallback.h>
 
-#include <map>
+#include <unordered_map>
 
 #include "MethodMetadata.h"
 #include "JNIFunctionBody.h"
+#include "types/ExpectedType.h"
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -48,13 +49,19 @@ public:
   std::shared_ptr<jsi::Object> getJSIObject(jsi::Runtime &runtime);
 
   /**
+   * Exports constants that will be assigned to the underlying HostObject.
+   */
+  void exportConstants(jni::alias_ref<react::NativeMap::javaobject> constants);
+
+  /**
    * Registers a sync function.
    * That function can be called via the `JavaScriptModuleObject.callSyncMethod` method.
    */
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
-    jni::alias_ref<JNIFunctionBody::javaobject> JSIFunctionBody
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
   /**
@@ -64,7 +71,22 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
-    jni::alias_ref<JNIAsyncFunctionBody::javaobject> JSIAsyncFunctionBody
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
+  );
+
+  /**
+   * Registers a property
+   * @param name of the property
+   * @param desiredType of the setter argument
+   * @param getter body for the get method - can be nullptr
+   * @param setter body for the set method - can be nullptr
+   */
+  void registerProperty(
+    jni::alias_ref<jstring> name,
+    jni::alias_ref<ExpectedType> expectedArgType,
+    jni::alias_ref<JNIFunctionBody::javaobject> getter,
+    jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
 
   /**
@@ -104,7 +126,18 @@ private:
   /**
    * Metadata map that stores information about all available methods on this module.
    */
-  std::map<std::string, MethodMetadata> methodsMetadata;
+  std::unordered_map<std::string, MethodMetadata> methodsMetadata;
+
+  /**
+   * A constants map.
+   */
+  std::unordered_map<std::string, folly::dynamic> constants;
+
+  /**
+   * A registry of properties
+   * The first MethodMetadata points to the getter and the second one to the setter.
+   */
+  std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
 
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
     : javaPart_(jni::make_global(jThis)) {}

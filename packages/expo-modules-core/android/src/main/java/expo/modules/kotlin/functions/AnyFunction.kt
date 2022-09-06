@@ -1,60 +1,39 @@
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.ReadableArray
-import expo.modules.kotlin.ModuleHolder
-import expo.modules.kotlin.Promise
+import com.facebook.react.bridge.ReadableType
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.iterator
+import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
 
+/**
+ * Base class of all exported functions
+ */
 abstract class AnyFunction(
   protected val name: String,
-  private val desiredArgsTypes: Array<AnyType>,
-  isSync: Boolean = false
+  protected val desiredArgsTypes: Array<AnyType>
 ) {
-  internal var isSync = isSync
-    private set
-
-  fun runSynchronously() = apply {
-    isSync = true
-  }
-
-  @Throws(CodedException::class)
-  internal fun callSync(module: ModuleHolder, args: ReadableArray): Any? {
-    if (desiredArgsTypes.size != args.size()) {
-      throw InvalidArgsNumberException(args.size(), desiredArgsTypes.size)
-    }
-
-    val convertedArgs = convertArgs(args)
-    return callSyncImplementation(module, convertedArgs)
-  }
-
-  @Throws(CodedException::class)
-  internal fun call(module: ModuleHolder, args: ReadableArray, promise: Promise) {
-    if (desiredArgsTypes.size != args.size()) {
-      throw InvalidArgsNumberException(args.size(), desiredArgsTypes.size)
-    }
-
-    val convertedArgs = convertArgs(args)
-    callImplementation(module, convertedArgs, promise)
-  }
-
-  @Throws(CodedException::class)
-  internal abstract fun callImplementation(holder: ModuleHolder, args: Array<out Any?>, promise: Promise)
-
-  @Throws(CodedException::class)
-  internal open fun callSyncImplementation(holder: ModuleHolder, args: Array<out Any?>): Any? {
-    throw UnsupportedOperationException("The sync call is not supported yet!")
-  }
-
   internal val argsCount get() = desiredArgsTypes.size
 
+  /**
+   * Tries to convert arguments from RN representation to expected types.
+   *
+   * @return An array of converted arguments
+   * @throws `CodedException` if conversion isn't possible
+   */
   @Throws(CodedException::class)
-  private fun convertArgs(args: ReadableArray): Array<out Any?> {
+  protected fun convertArgs(args: ReadableArray): Array<out Any?> {
+    if (desiredArgsTypes.size != args.size()) {
+      throw InvalidArgsNumberException(args.size(), desiredArgsTypes.size)
+    }
+
     val finalArgs = Array<Any?>(desiredArgsTypes.size) { null }
     val argIterator = args.iterator()
     desiredArgsTypes
@@ -69,5 +48,42 @@ abstract class AnyFunction(
         }
       }
     return finalArgs
+  }
+
+  /**
+   * Tries to convert arguments from [Any]? to expected types.
+   *
+   * @return An array of converted arguments
+   * @throws `CodedException` if conversion isn't possible
+   */
+  @Throws(CodedException::class)
+  protected fun convertArgs(args: Array<Any?>): Array<out Any?> {
+    if (desiredArgsTypes.size != args.size) {
+      throw InvalidArgsNumberException(args.size, desiredArgsTypes.size)
+    }
+
+    val finalArgs = Array<Any?>(desiredArgsTypes.size) { null }
+    val argIterator = args.iterator()
+    desiredArgsTypes
+      .withIndex()
+      .forEach { (index, desiredType) ->
+        val element = argIterator.next()
+
+        exceptionDecorator({ cause ->
+          ArgumentCastException(desiredType.kType, index, ReadableType.String, cause)
+        }) {
+          finalArgs[index] = desiredType.convert(element)
+        }
+      }
+    return finalArgs
+  }
+
+  /**
+   * Attaches current function to the provided js object.
+   */
+  internal abstract fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject)
+
+  fun getCppRequiredTypes(): List<ExpectedType> {
+    return desiredArgsTypes.map { it.getCppRequiredTypes() }
   }
 }

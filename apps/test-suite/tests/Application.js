@@ -1,4 +1,5 @@
 import * as Application from 'expo-application';
+import { isDevice } from 'expo-device';
 import { Platform } from 'react-native';
 
 import ExponentTest from '../ExponentTest';
@@ -62,7 +63,11 @@ export async function test({ describe, it, expect, jasmine }) {
       it('Application.getIosPushNotificationServiceEnvironmentAsync() returns a string', async () => {
         const apnsEnvironment = await Application.getIosPushNotificationServiceEnvironmentAsync();
         expect(apnsEnvironment).toBeDefined();
-        expect(apnsEnvironment).toEqual(jasmine.any(String));
+        if (isDevice) {
+          expect(apnsEnvironment).toEqual(jasmine.any(String));
+        } else {
+          expect(apnsEnvironment).toBeNull();
+        }
       });
 
       describe(`doesn't get Android-only constants`, () => {

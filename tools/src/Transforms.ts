@@ -1,11 +1,28 @@
 import fs from 'fs-extra';
+import inquirer from 'inquirer';
 import minimatch from 'minimatch';
 import path from 'path';
 
-import { CopyFileOptions, CopyFileResult, StringTransform } from './Transforms.types';
+import { printDiff } from './Diff';
+import {
+  CopyFileOptions,
+  CopyFileResult,
+  FileTransform,
+  RawTransform,
+  ReplaceTransform,
+  StringTransform,
+} from './Transforms.types';
 import { arrayize } from './Utils';
 
 export * from './Transforms.types';
+
+function isRawTransform(transform: any): transform is RawTransform {
+  return transform.transform;
+}
+
+function isReplaceTransform(transform: any): transform is ReplaceTransform {
+  return transform.find !== undefined && transform.replaceWith !== undefined;
+}
 
 /**
  * Transforms input string according to the given transform rules.
@@ -17,11 +34,60 @@ export function transformString(
   if (!transforms) {
     return input;
   }
-  return transforms.reduce(
+  return transforms.reduce((acc, transform) => {
+    return applySingleTransform(acc, transform);
+  }, input);
+}
+
+async function getTransformedFileContentAsync(
+  filePath: string,
+  transforms: FileTransform[]
+): Promise<string> {
+  let result = await fs.readFile(filePath, 'utf8');
+  for (const transform of transforms) {
+    const beforeTransformation = result;
+    result = applySingleTransform(result, transform);
+    await maybePrintDebugInfoAsync(beforeTransformation, result, filePath, transform);
+  }
+  return result;
+}
+
+async function maybePrintDebugInfoAsync(
+  contentBefore: string,
+  contentAfter: string,
+  filePath: string,
+  transform: FileTransform
+): Promise<void> {
+  if (!transform.debug || contentAfter === contentBefore) {
+    return;
+  }
+  const transformName =
+    typeof transform.debug === 'string' ? transform.debug : JSON.stringify(transform, null, 2);
+
+  printDiff(contentBefore, contentAfter);
+
+  const { isCorrect } = await inquirer.prompt<{ isCorrect: boolean }>([
+    {
+      type: 'confirm',
+      name: 'isCorrect',
+      message: `Changes in file ${filePath} introduced by transform ${transformName}`,
+      default: true,
+    },
+  ]);
+  if (!isCorrect) {
+    throw new Error('ABORTING');
+  }
+}
+
+function applySingleTransform(input: string, transform: StringTransform): string {
+  if (isRawTransform(transform)) {
+    return transform.transform(input);
+  } else if (isReplaceTransform(transform)) {
+    const { find, replaceWith } = transform;
     // @ts-ignore @tsapeta: TS gets crazy on `replaceWith` being a function.
-    (acc, { find, replaceWith }) => acc.replace(find, replaceWith),
-    input
-  );
+    return input.replace(find, replaceWith);
+  }
+  throw new Error(`Unknown transform type`);
 }
 
 /**
@@ -57,10 +123,16 @@ export async function copyFileWithTransformsAsync(
     ) ?? [];
 
   // Transform source content.
-  const content = transformString(await fs.readFile(sourcePath, 'utf8'), filteredContentTransforms);
+  const content = await getTransformedFileContentAsync(sourcePath, filteredContentTransforms);
 
   // Save transformed source file at renamed target path.
   await fs.outputFile(targetPath, content);
+
+  // Keep original file mode if needed.
+  if (options.keepFileMode) {
+    const { mode } = await fs.stat(sourcePath);
+    await fs.chmod(targetPath, mode);
+  }
 
   return {
     content,

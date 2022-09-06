@@ -1,4 +1,5 @@
 #import "DevMenuRNGestureHandler.h"
+#import "DevMenuRNManualActivationRecognizer.h"
 
 #import "Handlers/DevMenuRNNativeViewHandler.h"
 
@@ -7,13 +8,13 @@
 #import <React/UIView+React.h>
 
 @interface UIGestureRecognizer (DevMenuGestureHandler)
-@property (nonatomic, readonly) DevMenuRNGestureHandler *devMenugestureHandler;
+@property (nonatomic, readonly) DevMenuRNGestureHandler *devMenuGestureHandler;
 @end
 
 
 @implementation UIGestureRecognizer (DevMenuGestureHandler)
 
-- (DevMenuRNGestureHandler *)devMenugestureHandler
+- (DevMenuRNGestureHandler *)devMenuGestureHandler
 {
     id delegate = self.delegate;
     if ([delegate isKindOfClass:[DevMenuRNGestureHandler class]]) {
@@ -61,6 +62,9 @@ CGRect DevMenuRNGHHitSlopInsetRect(CGRect rect, DevMenuRNGHHitSlop hitSlop) {
 static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
 
 @implementation DevMenuRNGestureHandler {
+    DevMenuRNGestureHandlerPointerTracker *_pointerTracker;
+    DevMenuRNGestureHandlerState _state;
+    DevMenuRNManualActivationRecognizer *_manualActivationRecognizer;
     NSArray<NSNumber *> *_handlersToWaitFor;
     NSArray<NSNumber *> *_simultaneousHandlers;
     DevMenuRNGHHitSlop _hitSlop;
@@ -70,9 +74,12 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super init])) {
+        _pointerTracker = [[DevMenuRNGestureHandlerPointerTracker alloc] initWithGestureHandler:self];
         _tag = tag;
         _lastState = DevMenuRNGestureHandlerStateUndetermined;
         _hitSlop = DevMenuRNGHHitSlopEmpty;
+        _state = DevMenuRNGestureHandlerStateBegan;
+        _manualActivationRecognizer = nil;
 
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -84,23 +91,42 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
     return self;
 }
 
+- (void)resetConfig
+{
+  self.enabled = YES;
+  _shouldCancelWhenOutside = NO;
+  _handlersToWaitFor = nil;
+  _simultaneousHandlers = nil;
+  _hitSlop = DevMenuRNGHHitSlopEmpty;
+  _needsPointerData = NO;
+  
+  self.manualActivation = NO;
+}
+
 - (void)configure:(NSDictionary *)config
 {
+  [self resetConfig];
     _handlersToWaitFor = [RCTConvert NSNumberArray:config[@"waitFor"]];
     _simultaneousHandlers = [RCTConvert NSNumberArray:config[@"simultaneousHandlers"]];
 
     id prop = config[@"enabled"];
     if (prop != nil) {
         self.enabled = [RCTConvert BOOL:prop];
-    } else {
-        self.enabled = YES;
     }
 
     prop = config[@"shouldCancelWhenOutside"];
     if (prop != nil) {
         _shouldCancelWhenOutside = [RCTConvert BOOL:prop];
-    } else {
-        _shouldCancelWhenOutside = NO;
+    }
+  
+    prop = config[@"needsPointerData"];
+    if (prop != nil) {
+        _needsPointerData = [RCTConvert BOOL:prop];
+    }
+    
+    prop = config[@"manualActivation"];
+    if (prop != nil) {
+        self.manualActivation = [RCTConvert BOOL:prop];
     }
 
     prop = config[@"hitSlop"];
@@ -141,12 +167,16 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
     view.userInteractionEnabled = YES;
     self.recognizer.delegate = self;
     [view addGestureRecognizer:self.recognizer];
+  
+  [self bindManualActivationToView:view];
 }
 
 - (void)unbindFromView
 {
     [self.recognizer.view removeGestureRecognizer:self.recognizer];
     self.recognizer.delegate = nil;
+  
+    [self unbindManualActivation];
 }
 
 - (DevMenuRNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
@@ -159,6 +189,7 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
 
 - (void)handleGesture:(UIGestureRecognizer *)recognizer
 {
+    _state = [self recognizerState];
     DevMenuRNGestureHandlerEventExtraData *eventData = [self eventExtraData:recognizer];
     [self sendEventsInState:self.state forViewWithTag:recognizer.view.reactTag withExtraData:eventData];
 }
@@ -176,11 +207,12 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
             self->_eventCoalescingKey = nextEventCoalescingKey++;
 
         } else if (state == DevMenuRNGestureHandlerStateEnd && _lastState != DevMenuRNGestureHandlerStateActive) {
-            [self.emitter sendStateChangeEvent:[[DevMenuRNGestureHandlerStateChange alloc] initWithReactTag:reactTag
-                                                                                          handlerTag:_tag
-                                                                                               state:DevMenuRNGestureHandlerStateActive
-                                                                                           prevState:_lastState
-                                                                                           extraData:extraData]];
+            id event = [[DevMenuRNGestureHandlerStateChange alloc] initWithReactTag:reactTag
+                                                                  handlerTag:_tag
+                                                                       state:DevMenuRNGestureHandlerStateActive
+                                                                   prevState:_lastState
+                                                                   extraData:extraData];
+            [self sendStateChangeEvent:event];
             _lastState = DevMenuRNGestureHandlerStateActive;
         }
         id stateEvent = [[DevMenuRNGestureHandlerStateChange alloc] initWithReactTag:reactTag
@@ -188,7 +220,7 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
                                                                         state:state
                                                                     prevState:_lastState
                                                                     extraData:extraData];
-        [self.emitter sendStateChangeEvent:stateEvent];
+        [self sendStateChangeEvent:stateEvent];
         _lastState = state;
     }
 
@@ -198,11 +230,36 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
                                                                   state:state
                                                               extraData:extraData
                                                           coalescingKey:self->_eventCoalescingKey];
-        [self.emitter sendTouchEvent:touchEvent];
+        [self sendStateChangeEvent:touchEvent];
     }
 }
 
-- (DevMenuRNGestureHandlerState)state
+- (void)sendStateChangeEvent:(DevMenuRNGestureHandlerStateChange *)event
+{
+    if (self.usesDeviceEvents) {
+        [self.emitter sendStateChangeDeviceEvent:event];
+    } else {
+        [self.emitter sendStateChangeEvent:event];
+    }
+}
+
+- (void)sendTouchEventInState:(DevMenuRNGestureHandlerState)state
+                 forViewWithTag:(NSNumber *)reactTag
+{
+  id extraData = [DevMenuRNGestureHandlerEventExtraData forEventType:_pointerTracker.eventType
+                                          withChangedPointers:_pointerTracker.changedPointersData
+                                              withAllPointers:_pointerTracker.allPointersData
+                                          withNumberOfTouches:_pointerTracker.trackedPointersCount];
+  id event = [[DevMenuRNGestureHandlerEvent alloc] initWithReactTag:reactTag handlerTag:_tag state:state extraData:extraData coalescingKey:[_tag intValue]];
+  
+  if (self.usesDeviceEvents) {
+      [self.emitter sendStateChangeDeviceEvent:event];
+  } else {
+      [self.emitter sendStateChangeEvent:event];
+  }
+}
+
+- (DevMenuRNGestureHandlerState)recognizerState
 {
     switch (_recognizer.state) {
         case UIGestureRecognizerStateBegan:
@@ -220,11 +277,57 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
     return DevMenuRNGestureHandlerStateUndetermined;
 }
 
+- (DevMenuRNGestureHandlerState)state
+{
+    // instead of mapping state of the recognizer directly, use value mapped when handleGesture was
+    // called, making it correct while awaiting for another handler failure
+    return _state;
+}
+
+#pragma mark Manual activation
+
+- (void)stopActivationBlocker
+{
+  if (_manualActivationRecognizer != nil) {
+    [_manualActivationRecognizer fail];
+  }
+}
+
+- (void)setManualActivation:(BOOL)manualActivation
+{
+  _manualActivation = manualActivation;
+  
+  if (manualActivation) {
+    _manualActivationRecognizer = [[DevMenuRNManualActivationRecognizer alloc] initWithGestureHandler:self];
+
+    if (_recognizer.view != nil) {
+      [_recognizer.view addGestureRecognizer:_manualActivationRecognizer];
+    }
+  } else if (_manualActivationRecognizer != nil) {
+    [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
+    _manualActivationRecognizer = nil;
+  }
+}
+
+- (void)bindManualActivationToView:(UIView *)view
+{
+  if (_manualActivationRecognizer != nil) {
+    [view addGestureRecognizer:_manualActivationRecognizer];
+  }
+}
+
+- (void)unbindManualActivation
+{
+  if (_manualActivationRecognizer != nil) {
+    [_manualActivationRecognizer.view removeGestureRecognizer:_manualActivationRecognizer];
+  }
+}
+
 #pragma mark UIGestureRecognizerDelegate
 
 + (DevMenuRNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer
 {
-    DevMenuRNGestureHandler *handler = recognizer.devMenugestureHandler;
+    DevMenuRNGestureHandler *handler = recognizer.devMenuGestureHandler;
     if (handler != nil) {
         return handler;
     }
@@ -238,7 +341,7 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
 
     for (UIGestureRecognizer *recognizer in reactView.gestureRecognizers) {
         if ([recognizer isKindOfClass:[DevMenuRNDummyGestureRecognizer class]]) {
-            return recognizer.devMenugestureHandler;
+            return recognizer.devMenuGestureHandler;
         }
     }
 
@@ -297,7 +400,14 @@ shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherG
 
 - (void)reset
 {
-    _lastState = DevMenuRNGestureHandlerStateUndetermined;
+    // do not reset states while gesture is tracking pointers, as gestureRecognizerShouldBegin
+    // might be called after some pointers are down, and after state manipulation by the user.
+    // Pointer tracker calls this method when it resets, and in that case it no longer tracks
+    // any pointers, thus entering this if
+    if (!_needsPointerData || _pointerTracker.trackedPointersCount == 0) {
+        _lastState = DevMenuRNGestureHandlerStateUndetermined;
+        _state = DevMenuRNGestureHandlerStateBegan;
+    }
 }
 
  - (BOOL)containsPointInView

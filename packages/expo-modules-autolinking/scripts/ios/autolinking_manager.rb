@@ -26,7 +26,8 @@ module Expo
       end
 
       global_flags = @options.fetch(:flags, {})
-      tests = @options.fetch(:tests, [])
+      tests_only = @options.fetch(:testsOnly, false)
+      include_tests = @options.fetch(:includeTests, false)
 
       project_directory = Pod::Config.instance.project_root
 
@@ -44,9 +45,22 @@ module Expo
 
             pod_options = {
               :path => podspec_dir_path,
-              :testspecs => tests.include?(package.name) ? ['Tests'] : [],
               :configuration => package.debugOnly ? ['Debug'] : [] # An empty array means all configurations
             }.merge(global_flags, package.flags)
+
+            if tests_only || include_tests
+              podspec_file_path = File.join(podspec_dir_path, pod.pod_name + ".podspec")
+              podspec = Pod::Specification.from_file(podspec_file_path)
+              test_specs_names = podspec.test_specs.map { |test_spec|
+                test_spec.name.delete_prefix(podspec.name + "/")
+              }
+
+              # Jump to the next package when it doesn't have any test specs (except interfaces, they're required)
+              # TODO: Can remove interface check once we move all the interfaces into the core.
+              next if tests_only && test_specs_names.empty? && !pod.pod_name.end_with?('Interface')
+
+              pod_options[:testspecs] = test_specs_names
+            end
 
             # Install the pod.
             @podfile.pod(pod.pod_name, pod_options)
@@ -79,6 +93,11 @@ module Expo
     # Returns the provider name which is also a name of the generated file
     public def modules_provider_name
       @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
+    end
+
+    # For now there is no need to generate the modules provider for testing.
+    public def should_generate_modules_provider?
+      return !@options.fetch(:testsOnly, false)
     end
 
     # privates

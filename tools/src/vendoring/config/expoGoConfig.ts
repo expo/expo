@@ -1,6 +1,11 @@
+import assert from 'assert';
 import fs from 'fs-extra';
+import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
+import { EXPO_DIR, EXPOTOOLS_DIR } from '../../Constants';
+import logger from '../../Logger';
+import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
 
 const config: VendoringTargetConfig = {
@@ -17,7 +22,7 @@ const config: VendoringTargetConfig = {
     '@stripe/stripe-react-native': {
       source: 'https://github.com/stripe/stripe-react-native.git',
       ios: {
-        mutatePodspec(podspec: Podspec) {
+        async mutatePodspec(podspec: Podspec) {
           if (!podspec.pod_target_xcconfig) {
             podspec.pod_target_xcconfig = {};
           }
@@ -65,7 +70,7 @@ const config: VendoringTargetConfig = {
           await fs.writeFile(podspecPath, content);
           return podspecPath;
         },
-        mutatePodspec(podspec: Podspec) {
+        async mutatePodspec(podspec: Podspec) {
           // TODO: The podspec checks RN version from package.json.
           // however we don't have RN's package.json in the place where it looks for and the fallback
           // is set to `0.66.0`.
@@ -271,6 +276,98 @@ const config: VendoringTargetConfig = {
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
       packageJsonPath: 'src/package.json',
+    },
+    '@shopify/react-native-skia': {
+      source: '@shopify/react-native-skia',
+      sourceType: 'npm',
+      ios: {
+        async mutatePodspec(podspec: Podspec, sourceDirectory: string, targetDirectory: string) {
+          const vendoredRootDir = path.dirname(path.dirname(path.dirname(targetDirectory)));
+          assert(path.basename(vendoredRootDir) === 'vendored');
+          const vendoredCommonDir = path.join(vendoredRootDir, 'common');
+          const vendoredFrameworks = podspec.ios?.vendored_frameworks ?? [];
+          for (const framework of vendoredFrameworks) {
+            // create symlink from node_modules/@shopify/react-native-skia to common lib dir
+            const sourceFrameworkPath = path.join(
+              EXPO_DIR,
+              'node_modules/@shopify/react-native-skia',
+              framework
+            );
+            const sharedFrameworkPath = path.join(vendoredCommonDir, path.basename(framework));
+            await fs.unlink(sharedFrameworkPath);
+            await fs.symlink(
+              path.relative(path.dirname(sharedFrameworkPath), sourceFrameworkPath),
+              sharedFrameworkPath
+            );
+
+            // create symlink from common lib dir to module dir, because podspec cannot specify files out of its dir.
+            const symlinkFrameworkPath = path.join(targetDirectory, framework);
+            await fs.ensureDir(path.dirname(symlinkFrameworkPath));
+            await fs.symlink(
+              path.relative(path.dirname(symlinkFrameworkPath), sharedFrameworkPath),
+              symlinkFrameworkPath
+            );
+          }
+
+          // Workaround React-bridging header search path for react-native 0.69 with `generate_multiple_pod_projects=true`
+          if (!podspec.pod_target_xcconfig) {
+            podspec.pod_target_xcconfig = {};
+          }
+          podspec.pod_target_xcconfig['HEADER_SEARCH_PATHS'] =
+            '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging" "$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"';
+        },
+      },
+      android: {
+        includeFiles: ['android/**', 'cpp/**'],
+        async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
+          // create symlink from node_modules/@shopify/react-native-skia to common lib dir
+          const libs = ['libskia.a', 'libskshaper.a', 'libsvg.a'];
+          const archs = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'];
+          for (const lib of libs) {
+            for (const arch of archs) {
+              const sourceLibPath = path.join(
+                EXPO_DIR,
+                'node_modules/@shopify/react-native-skia/libs/android',
+                arch,
+                lib
+              );
+              const commonLibPath = path.join(targetDirectory, '../../../common/libs', arch, lib);
+              await fs.ensureDir(path.dirname(commonLibPath));
+              await fs.unlink(commonLibPath);
+              await fs.symlink(
+                path.relative(path.dirname(commonLibPath), sourceLibPath),
+                commonLibPath
+              );
+            }
+          }
+
+          // patch gradle and cmake files
+          const patchFile = path.join(
+            EXPOTOOLS_DIR,
+            'src/vendoring/config/react-native-skia.patch'
+          );
+          const patchContent = await fs.readFile(patchFile, 'utf8');
+          try {
+            await applyPatchAsync({
+              patchContent,
+              cwd: targetDirectory,
+              stripPrefixNum: 0,
+            });
+          } catch (e) {
+            logger.error(
+              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+            );
+            throw e;
+          }
+        },
+      },
+    },
+    '@shopify/flash-list': {
+      source: 'https://github.com/Shopify/flash-list',
+      ios: {},
+      android: {
+        excludeFiles: ['**/src/test/**'],
+      },
     },
   },
 };

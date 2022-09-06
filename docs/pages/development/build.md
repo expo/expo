@@ -11,7 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 You can set up your project to use EAS by running:
 
-<Terminal cmd={['$ eas build:configure']} cmdCopy="eas build:configure" />
+<Terminal cmd={['$ eas build:configure']} />
 
 If you have not installed EAS CLI yet, you can do so by running `npm install -g eas-cli`.
 
@@ -34,6 +34,8 @@ This profile has two options set:
 - Setting `developmentClient` to `true` will create a Debug build, which allows the `expo-dev-client` library to allow you to choose the update to load in your app and provide tools to help you develop.
 - Setting `distribution` to "internal" will make a build ready for [internal distribution](/build/internal-distribution).
 
+> iOS builds with a `developmentClient` should always be distributed as "internal". If you are distributing for TestFlight, you have to set the `distribution` to "store".
+
 ### Running a build
 
 <Tabs tabs={["For Android", "For iOS"]}>
@@ -44,7 +46,7 @@ To create and share a development build with your team, you can run the followin
 
 <Terminal cmd={["$ eas build --profile development --platform android"]} cmdCopy="eas build --profile development --platform android" />
 
-To share the build with your team, direct them to the build page on https://expo.dev. There, they'll be able to download the app directly on their device.
+To share the build with your team, direct them to the build page in [Expo Dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds). There, they'll be able to download the app directly on their device.
 
 </Tab>
 <Tab>
@@ -52,12 +54,12 @@ To share the build with your team, direct them to the build page on https://expo
 To allow iOS devices to run a build built for internal distribution, you'll have to register each iOS device you'd like to install your development build on.
 
 You can register an iOS device and install a provisioning profile with the following command:
-<Terminal cmd={["$ eas device:create"]} cmdCopy="eas device:create" />
+<Terminal cmd={["$ eas device:create"]} />
 
 Once you've registered all iOS devices you'll want to run your development build on, you can run the following to create a build ready for internal distribution:
-<Terminal cmd={["$ eas build --profile development --platform ios"]} cmdCopy="eas build --profile development --platform ios" />
+<Terminal cmd={["$ eas build --profile development --platform ios"]} />
 
-To share the build with your team, direct them to the build page on https://expo.dev. There, they'll be able to download the app directly on their device.
+To share the build with your team, direct them to the build page in [Expo Dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds). There, they'll be able to download the app directly on their device.
 
 Note: If you register any new iOS devices, you'll need create a new development build. Learn more about [internal distribution](/build/internal-distribution).
 
@@ -68,7 +70,7 @@ Note: If you register any new iOS devices, you'll need create a new development 
 
 If you are comfortable setting up Xcode, Android Studio, and related dependencies, you can build and distribute your app the same as any other iOS or Android app.
 
-The `expo run` commands will create a new build, install it on to your emulator or device, and start running it.
+The `npx expo run` commands will create a new build, install it on to your emulator or device, and start running it.
 
 <Tabs tabs={["For Android", "For iOS (macOS Only)"]}>
 
@@ -77,11 +79,11 @@ The `expo run` commands will create a new build, install it on to your emulator 
 
 To build and run on an emulator:
 
-<Terminal cmd={["$ expo run:android"]} cmdCopy="expo run:android" />
+<Terminal cmd={["$ npx expo run:android"]} />
 
 To build and run on a connected device:
 
-<Terminal cmd={["$ expo run:android -d"]} cmdCopy="expo run:android -d" />
+<Terminal cmd={["$ npx expo run:android -d"]} />
 
 </Tab>
 <Tab>
@@ -89,11 +91,11 @@ To build and run on a connected device:
 
 To build and run on a simulator:
 
-<Terminal cmd={["$ expo run:ios"]} cmdCopy="expo run:ios" />
+<Terminal cmd={["$ npx expo run:ios"]} />
 
 To build and run on a connected device:
 
-<Terminal cmd={["$ expo run:ios -d"]} cmdCopy="expo run:ios -d" />
+<Terminal cmd={["$ npx expo run:ios -d"]} />
 
 </Tab>
 
