@@ -63,5 +63,24 @@ export declare type Localization = {
      * @example `'America/Los_Angeles'`
      */
     timezone: string;
+    getPreferredLocales: () => PreferredLocale[];
+    getPreferredCalendars: () => PreferredCalendar[];
+};
+export declare type PreferredLocale = {
+    languageTag: string;
+    languageCode: string | null;
+    regionCode: string | null;
+    currencyCode: string | null;
+    currencySymbol: string | null;
+    decimalSeparator: string | null;
+    digitGroupingSeparator: string | null;
+    textDirection: string | null;
+    measurementSystem: string | null;
+};
+export declare type PreferredCalendar = {
+    calendar: string | null;
+    uses24hourClock: boolean | null;
+    firstWeekday: number | null;
+    timeZone: string | null;
 };
 //# sourceMappingURL=Localization.types.d.ts.map

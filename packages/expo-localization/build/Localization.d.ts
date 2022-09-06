@@ -65,6 +65,39 @@ export declare const timezone: string;
  */
 export declare const region: string | null;
 /**
+ * List of user's preffered locales, returned as an array of objects of type `PreferredLocale`.
+ * Guarranteed to contain at least 1 element.
+ * These are returned in the order the user defines in their device settings.
+ * On the web currency and measurements systems are not provided, instead returned as null.
+ * If needed, you can infer them from the current region using a lookup table.
+ * @example `[{
+    "languageTag": "pl-PL",
+    "languageCode": "pl",
+    "textDirection": "ltr",
+    "digitGroupingSeparator": " ",
+    "decimalSeparator": ",",
+    "measurementSystem": "metric",
+    "currencyCode": "PLN",
+    "currencySymbol": "zł",
+    "regionCode": "PL"
+  }]`
+ */
+export declare const getPreferredLocales: () => import("./Localization.types").PreferredLocale[];
+/**
+ * List of user's preffered calendars, returned as an array of objects of type `PreferredCalendar`.
+ * For now always returns a single element. The calendar field does't include aliases, such as "gregorian" for "gregory",
+ * so it can differ per platform.
+ * @example `[
+    {
+      "calendar": "gregory",
+      "timeZone": "Europe/Warsaw",
+      "uses24hourClock": true,
+      "firstWeekday": 1
+    }
+  ]`
+ */
+export declare const getPreferredCalendars: () => import("./Localization.types").PreferredCalendar[];
+/**
  * Get the latest native values from the device. Locale can be changed on some Android devices
  * without resetting the app.
  * > On iOS, changing the locale will cause the device to reset meaning the constants will always be
@@ -77,5 +110,5 @@ export declare const region: string | null;
  * const { locale } = await Localization.getLocalizationAsync();
  * ```
  */
-export declare function getLocalizationAsync(): Promise<Localization>;
+export declare function getLocalizationAsync(): Promise<Omit<Localization, 'getPreferredCalendars' | 'getPreferredLocales'>>;
 //# sourceMappingURL=Localization.d.ts.map
