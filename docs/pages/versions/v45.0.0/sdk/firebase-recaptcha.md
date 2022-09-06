@@ -419,7 +419,7 @@ const styles = StyleSheet.create({
 If you want a custom look & feel, then create your own `<Modal>` or display the `<FirebaseRecaptcha>` component inline in your screen. Make sure to reserve enough space for the widget as it can not only display the compact "I'm not a robot" UI but also the **full verification UI requiring users to select images**.
 
 ```tsx
-import { FirebaseRecaptchaVerifier } from 'expo-firebase-recaptcha';
+import { FirebaseRecaptcha, FirebaseRecaptchaVerifier } from 'expo-firebase-recaptcha';
 
 class CustomPhoneAuthScreen extends React.Component {
   state = {
@@ -443,7 +443,7 @@ class CustomPhoneAuthScreen extends React.Component {
 
   render() {
     return (
-      <FirebaseRecaptchaVerifier
+      <FirebaseRecaptcha
         style={...}
         firebaseConfig={...}
 
