@@ -111,6 +111,8 @@ Everything offered by Expo including [EAS][eas], Expo CLI, and the libraries in 
 
 A single native project on its own is complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date for the latest operating system releases and to avoid falling too far behind in any third party dependencies. We created the _optional_ Expo Prebuild system to streamline this process. Below are a few issues we've identified with native development in the context of React Native and some corresponding reasons we believe Expo Prebuild solves these issues.
 
+> Prebuild can be used in any React Native project. Read more in [adopting prebuild](/workflow/adopting-prebuild).
+
 ### Sensible upgrades
 
 Building native code requires a basic familiarity with that native platform's default tooling leading to a fairly difficult learning curve. In cross-platform, this curve is multiplied by the amount of platforms you wish to develop for. Cross-platform tooling doesn't solve this issue if you need to drop down and implement many features individually in platform-specific native code.
