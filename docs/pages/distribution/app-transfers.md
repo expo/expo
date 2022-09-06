@@ -1,13 +1,16 @@
 ---
 title: App Transfers
+hideTOC: true
 ---
 
-When you upload an iOS app to App Store Connect and distribute it through the App Store, it becomes (semi-)permanently associated with your Apple Developer account. This means that any future updates to your app must go through your Apple account. Apple provides a process called [App Transfer](https://help.apple.com/app-store-connect/#/deved688524f) as a way around this, for cases in which you want to transfer the ownership and maintainability of one of your apps to a different Apple Developer account.
+import { BoxLink } from '~/ui/components/BoxLink';
 
-One of the [criteria for an app to be eligible to transfer](https://help.apple.com/app-store-connect/#/devaf27784ff) is that `"No version of the app can use a Passbook entitlement."`. Until December 11, 2018, apps built with Expo SDK 30 or 31 included the `Payments` module, which necessitates linking a file called `PassKit.framework`. This file includes the native APIs for interacting with the native iOS payments functionality. All SDK 30 and 31 apps built before this date included this file -- this is because we always include the native code for all modules in every build, even modules that you don't import in your JS. (Among other reasons, this makes it possible for you to use different modules in updates without having to build a new binary.)
+There are two different representations of your app to consider when handing over ownership to another entity: the app as it exists on Expo Application Services (to create builds with EAS Build, send updates with EAS Update, etc.) and the app records on the Apple App Store/Google Play Store (to distribute the app to end-users). The following guides explain how to handle app transfers in each case.
 
-While no apps built with the classic build service have ever had any Passbook entitlements enabled, we've received a number of reports indicating that simply including `PassKit.framework` in a project is enough to make an app permanently ineligible to transfer. We removed the `Payments` module from all iOS builds beginning December 12, 2018. However, if you built an SDK 30 or 31 iOS app with `expo build:ios` before this date, and uploaded the resulting .ipa file to App Store Connect, your app will likely be ineligible to transfer using the App Transfer process. If you attempt to transfer your app but receive a rejection due to "use of the PassKit Integration API", then your app is affected by this issue.
 
-For affected apps, the only way to transfer an app to a different account is to resubmit the app under the new Apple Developer account with a new `bundleIdentifier` (binary reassignment). The transferred app will effectively be a new and separate app on the App Store and on users' devices. We suggest that once this process is completed, you submit a final update to the old app which notifies users about the new app listing and directs them to download it.
 
-If you never submitted an SDK 30 or 31 .ipa file to App Store Connect, or if you only did so with .ipa files built on or after December 12, 2018, your app should be eligible for App Transfer.
+<BoxLink title="EAS project transfers" description="Transfer an EAS project to a different Expo account." href="/accounts/account-types/#transferring-projects-between-accounts" />
+
+<BoxLink title="Apple project transfers" description="Transfer an iOS app to a different Apple Developer account." href="https://help.apple.com/app-store-connect/#/deved688524f" />
+
+<BoxLink title="Google project transfers" description="Transfer an Android app to a different Google Play developer account." href="https://support.google.com/googleplay/android-developer/answer/6230247" />
