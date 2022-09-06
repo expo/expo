@@ -3,6 +3,7 @@ import { AndroidConfig, AndroidManifest } from '@expo/config-plugins';
 import {
   removeExpoSchemaFromVerifiedIntentFilters,
   setGeneratedAndroidScheme,
+  withGeneratedAndroidScheme,
 } from '../withGeneratedAndroidScheme';
 
 describe(setGeneratedAndroidScheme, () => {
@@ -139,10 +140,8 @@ describe(setGeneratedAndroidScheme, () => {
       },
     };
     const config = { slug: 'cello' };
-
     androidManifest = setGeneratedAndroidScheme(config, androidManifest);
-    androidManifest = removeExpoSchemaFromVerifiedIntentFilters(androidManifest);
-
+    androidManifest = removeExpoSchemaFromVerifiedIntentFilters(config, androidManifest);
     const schemes = AndroidConfig.Scheme.getSchemesFromManifest(androidManifest);
     expect(schemes.length).toEqual(1);
   });

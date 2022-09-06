@@ -8,23 +8,24 @@ import {
   ManifestActivity,
   ManifestIntentFilter,
 } from '@expo/config-plugins/build/android/Manifest';
+import { ExpoConfig } from '@expo/config-types';
 
 import getDefaultScheme from './getDefaultScheme';
 
 export const withGeneratedAndroidScheme: ConfigPlugin = (config) => {
   return withAndroidManifest(config, (config) => {
-    // Generate a cross-platform scheme used to launch the dev client.
-    const scheme = getDefaultScheme(config);
-    config.modResults = setGeneratedAndroidScheme(scheme, config.modResults);
-    config.modResults = removeExpoSchemaFromVerifiedIntentFilters(scheme, config.modResults);
+    config.modResults = setGeneratedAndroidScheme(config, config.modResults);
+    config.modResults = removeExpoSchemaFromVerifiedIntentFilters(config, config.modResults);
     return config;
   });
 };
 
 export function setGeneratedAndroidScheme(
-  scheme: string,
+  config: Pick<ExpoConfig, 'scheme' | 'slug'>,
   androidManifest: AndroidManifest
 ): AndroidManifest {
+  // Generate a cross-platform scheme used to launch the dev client.
+  const scheme = getDefaultScheme(config);
   if (!AndroidConfig.Scheme.hasScheme(scheme, androidManifest)) {
     androidManifest = AndroidConfig.Scheme.appendScheme(scheme, androidManifest);
   }
@@ -42,9 +43,11 @@ export function setGeneratedAndroidScheme(
  * @param {AndroidManifest} androidManifest
  */
 export function removeExpoSchemaFromVerifiedIntentFilters(
-  defaultScheme: string,
+  config: Pick<ExpoConfig, 'scheme' | 'slug'>,
   androidManifest: AndroidManifest
 ) {
+  // Generate a cross-platform scheme used to launch the dev client.
+  const defaultScheme = getDefaultScheme(config);
   // see: https://github.com/expo/expo-cli/blob/f1624c75b52cc1c4f99354ec4021494e0eff74aa/packages/config-plugins/src/android/Scheme.ts#L164-L179
   for (const application of androidManifest.manifest.application || []) {
     for (const activity of application.activity || []) {
