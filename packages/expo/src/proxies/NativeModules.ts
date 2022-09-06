@@ -1,4 +1,5 @@
 import { ExecutionEnvironment } from 'expo-constants';
+import { NativeModules as RNNativeModules } from 'react-native';
 
 const PROPS_TO_IGNORE: Set<string> = new Set([
   /**
@@ -112,5 +113,5 @@ export function disableMissingNativeModuleErrors(moduleNames?: string[] | string
  * @returns Corresponding native module object, or null if it doesn't exist
  */
 export function getNativeModuleIfExists(moduleName: string): any {
-  return originalNativeModules[moduleName];
+  return originalNativeModules ? originalNativeModules[moduleName] : RNNativeModules[moduleName];
 }

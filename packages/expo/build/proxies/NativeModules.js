@@ -1,4 +1,5 @@
 import { ExecutionEnvironment } from 'expo-constants';
+import { NativeModules as RNNativeModules } from 'react-native';
 const PROPS_TO_IGNORE = new Set([
     /**
      * We don't want to throw when the expo or expo-modules-core packages try to access any of these
@@ -102,6 +103,6 @@ export function disableMissingNativeModuleErrors(moduleNames) {
  * @returns Corresponding native module object, or null if it doesn't exist
  */
 export function getNativeModuleIfExists(moduleName) {
-    return originalNativeModules[moduleName];
+    return originalNativeModules ? originalNativeModules[moduleName] : RNNativeModules[moduleName];
 }
 //# sourceMappingURL=NativeModules.js.map
