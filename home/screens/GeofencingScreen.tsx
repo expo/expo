@@ -4,7 +4,15 @@ import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import * as React from 'react';
-import { AppState, AppStateStatus, Platform, StyleSheet, Text, View } from 'react-native';
+import {
+  AppState,
+  AppStateStatus,
+  NativeEventSubscription,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import MapView, { Circle, MapEvent } from 'react-native-maps';
 
 import NavigationEvents from '../components/NavigationEvents';
@@ -38,6 +46,8 @@ type Props = unknown;
 export default class GeofencingScreen extends React.Component<Props, State> {
   mapViewRef = React.createRef<MapView>();
 
+  appStateSubscription?: NativeEventSubscription;
+
   readonly state: State = {
     isGeofencing: false,
     newRegionRadius: REGION_RADIUSES[1],
@@ -50,7 +60,7 @@ export default class GeofencingScreen extends React.Component<Props, State> {
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
     if (status !== 'granted') {
-      AppState.addEventListener('change', this.handleAppStateChange);
+      this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
       this.setState({
         error:
           'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
@@ -88,7 +98,10 @@ export default class GeofencingScreen extends React.Component<Props, State> {
     }
 
     if (this.state.initialRegion) {
-      AppState.removeEventListener('change', this.handleAppStateChange);
+      if (this.appStateSubscription != null) {
+        this.appStateSubscription.remove();
+        this.appStateSubscription = undefined;
+      }
       return;
     }
 

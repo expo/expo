@@ -66,7 +66,10 @@ export default class SelectScreen extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    Linking.removeEventListener('url', this._handleOpenURL);
+    if (this._openUrlSubscription != null) {
+      this._openUrlSubscription.remove();
+      this._openUrlSubscription = null;
+    }
   }
 
   checkLinking = (incomingTests) => {
@@ -108,7 +111,7 @@ export default class SelectScreen extends React.PureComponent {
   };
 
   componentDidMount() {
-    Linking.addEventListener('url', this._handleOpenURL);
+    this._openUrlSubscription = Linking.addEventListener('url', this._handleOpenURL);
 
     Linking.getInitialURL()
       .then((url) => {
