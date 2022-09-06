@@ -292,7 +292,7 @@ export function JoinTheCommunity() {
         <Row>
           <CommunityGridCell
             title="Reddit"
-            description="Get the latest on /r/expo."
+            description="Get the latest on r/expo."
             link="https://www.reddit.com/r/expo"
             icon={<RedditIcon color={palette.white} size={iconSize.large} />}
             iconBackground="#FC471E"
