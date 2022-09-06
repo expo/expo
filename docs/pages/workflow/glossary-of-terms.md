@@ -167,7 +167,7 @@ Refers to the command `npx expo export` from [Expo CLI](#expo-cli). This command
 
 ### Expo Go
 
-The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo Go app and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+The iOS and Android app that runs React Native apps. When you want to run your app outside of the Expo Go app and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
 
 ### Expo Install
 

@@ -46,9 +46,9 @@ When you're ready, you can create a standalone app (**.ipa** and **.aab**) for s
 
 </Collapsible>
 
-<Collapsible summary="What version of Android and iOS are supported by Expo apps?">
+<Collapsible summary="What version of Android and iOS are supported by the Expo SDK?">
 
-Expo supports Android 5+ and iOS 11+.
+Expo SDK supports Android 5+ and iOS 11+.
 
 </Collapsible>
 
