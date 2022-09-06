@@ -247,6 +247,16 @@ const Home = () => {
         </Row>
       </CellContainer>
       <H3>Join the community</H3>
+      <JoinTheCommunity />
+    </DocumentationPage>
+  );
+};
+
+export function JoinTheCommunity() {
+  const { palette } = theme;
+
+  return (
+    <>
       <Description>See the source code, connect with others, and get connected.</Description>
       <CellContainer>
         <Row>
@@ -282,16 +292,16 @@ const Home = () => {
         <Row>
           <CommunityGridCell
             title="Reddit"
-            description="Get the latest on /r/expo."
+            description="Get the latest on r/expo."
             link="https://www.reddit.com/r/expo"
             icon={<RedditIcon color={palette.white} size={iconSize.large} />}
             iconBackground="#FC471E"
           />
         </Row>
       </CellContainer>
-    </DocumentationPage>
+    </>
   );
-};
+}
 
 const baseGradientStyle = css({
   top: 0,
