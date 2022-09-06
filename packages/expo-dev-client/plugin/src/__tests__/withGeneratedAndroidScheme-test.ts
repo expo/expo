@@ -3,7 +3,6 @@ import { AndroidConfig, AndroidManifest } from '@expo/config-plugins';
 import {
   removeExpoSchemaFromVerifiedIntentFilters,
   setGeneratedAndroidScheme,
-  withGeneratedAndroidScheme,
 } from '../withGeneratedAndroidScheme';
 
 describe(setGeneratedAndroidScheme, () => {

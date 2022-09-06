@@ -1,6 +1,7 @@
 import { AndroidConfig, AndroidManifest, ConfigPlugin } from '@expo/config-plugins';
+import { ExpoConfig } from '@expo/config-types';
 export declare const withGeneratedAndroidScheme: ConfigPlugin;
-export declare function setGeneratedAndroidScheme(scheme: string, androidManifest: AndroidManifest): AndroidManifest;
+export declare function setGeneratedAndroidScheme(config: Pick<ExpoConfig, 'scheme' | 'slug'>, androidManifest: AndroidManifest): AndroidManifest;
 /**
  * Remove the custom Expo dev client scheme from intent filters, which are set to `autoVerify=true`.
  * The custom scheme `<data android:scheme="exp+<slug>"/>` seems to block verification for these intent filters.
@@ -10,4 +11,4 @@ export declare function setGeneratedAndroidScheme(scheme: string, androidManifes
  *
  * @param {AndroidManifest} androidManifest
  */
-export declare function removeExpoSchemaFromVerifiedIntentFilters(defaultScheme: string, androidManifest: AndroidManifest): AndroidConfig.Manifest.AndroidManifest;
+export declare function removeExpoSchemaFromVerifiedIntentFilters(config: Pick<ExpoConfig, 'scheme' | 'slug'>, androidManifest: AndroidManifest): AndroidConfig.Manifest.AndroidManifest;
