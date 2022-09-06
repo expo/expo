@@ -102,6 +102,26 @@ export async function transformFileAsync(
 }
 
 /**
+ * Transforms multiple files' content in-place.
+ */
+export async function transformFilesAsync(files: string[], transforms: FileTransform[]) {
+  for (const file of files) {
+    // Filter out transforms that don't match paths patterns.
+    const filteredContentTransforms =
+      transforms.filter(
+        ({ paths }) =>
+          !paths || arrayize(paths).some((pattern) => minimatch(file, pattern, { matchBase: true }))
+      ) ?? [];
+
+    // Transform source content.
+    const content = await getTransformedFileContentAsync(file, filteredContentTransforms);
+
+    // Save transformed source file at renamed target path.
+    await fs.outputFile(file, content);
+  }
+}
+
+/**
  * Copies a file from source directory to target directory with transformed relative path and content.
  */
 export async function copyFileWithTransformsAsync(
