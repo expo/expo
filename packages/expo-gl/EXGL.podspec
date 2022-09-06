@@ -26,6 +26,6 @@ Pod::Spec.new do |s|
     s.source_files = "ios/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = "ios/**/*.{h,m,mm}", "common/**/*.{h,cpp}"
+    s.source_files = "ios/**/*.{h,m,mm}", "common/**/*.{h,cpp,def}"
   end
 end
