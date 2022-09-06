@@ -204,7 +204,7 @@ export function SettingsScreen() {
                 </Text>
               </Row>
             </Button.ScaleOnPressContainer>
-            {(userData?.isExpoAdmin || __DEV__) && (
+            {userData?.isExpoAdmin && (
               <>
                 <Spacer.Vertical size="medium" />
                 <DebugSettings />
