@@ -8,15 +8,15 @@ const config_plugins_1 = require("@expo/config-plugins");
 const getDefaultScheme_1 = __importDefault(require("./getDefaultScheme"));
 const withGeneratedAndroidScheme = (config) => {
     return (0, config_plugins_1.withAndroidManifest)(config, (config) => {
-        config.modResults = setGeneratedAndroidScheme(config, config.modResults);
-        config.modResults = removeExpoSchemaFromVerifiedIntentFilters(config.modResults);
+        // Generate a cross-platform scheme used to launch the dev client.
+        const scheme = (0, getDefaultScheme_1.default)(config);
+        config.modResults = setGeneratedAndroidScheme(scheme, config.modResults);
+        config.modResults = removeExpoSchemaFromVerifiedIntentFilters(scheme, config.modResults);
         return config;
     });
 };
 exports.withGeneratedAndroidScheme = withGeneratedAndroidScheme;
-function setGeneratedAndroidScheme(config, androidManifest) {
-    // Generate a cross-platform scheme used to launch the dev client.
-    const scheme = (0, getDefaultScheme_1.default)(config);
+function setGeneratedAndroidScheme(scheme, androidManifest) {
     if (!config_plugins_1.AndroidConfig.Scheme.hasScheme(scheme, androidManifest)) {
         androidManifest = config_plugins_1.AndroidConfig.Scheme.appendScheme(scheme, androidManifest);
     }
@@ -32,14 +32,14 @@ exports.setGeneratedAndroidScheme = setGeneratedAndroidScheme;
  *
  * @param {AndroidManifest} androidManifest
  */
-function removeExpoSchemaFromVerifiedIntentFilters(androidManifest) {
+function removeExpoSchemaFromVerifiedIntentFilters(defaultScheme, androidManifest) {
     // see: https://github.com/expo/expo-cli/blob/f1624c75b52cc1c4f99354ec4021494e0eff74aa/packages/config-plugins/src/android/Scheme.ts#L164-L179
     for (const application of androidManifest.manifest.application || []) {
         for (const activity of application.activity || []) {
             if (activityHasSingleTaskLaunchMode(activity)) {
                 for (const intentFilter of activity['intent-filter'] || []) {
                     if (intentFilterHasAutoVerification(intentFilter) && intentFilter?.data) {
-                        intentFilter.data = intentFilterRemoveSchemeFromData(intentFilter, (scheme) => scheme?.startsWith('exp+'));
+                        intentFilter.data = intentFilterRemoveSchemeFromData(intentFilter, (scheme) => scheme === defaultScheme);
                     }
                 }
                 break;
