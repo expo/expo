@@ -16,7 +16,7 @@
     "lint-case": "case-police 'pages/**/*.md' -p brands,general,products,softwares -d expo-dict.json",
     "lint-links": "remark -u validate-links ./pages",
     "watch": "tsc --noEmit -w",
-    "test": "yarn node --experimental-vm-modules $(yarn bin jest)",
+    "test": "yarn generate-static-resoures && yarn node --experimental-vm-modules $(yarn bin jest)",
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js"
