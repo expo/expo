@@ -26,4 +26,4 @@ Debugging errors is one of the most frustrating but satisfying parts of developm
 
 ## Up next
 
-We suggest [following a tutorial](../tutorial/planning.md) before proceeding to the rest of the documentation, this will guide you through building a simple but meaningful project. [Continue to the tutorial](../tutorial/planning.md).
+We suggest [following a tutorial](/tutorial/introduction) before proceeding to the rest of the documentation, this will guide you through building a project that covers various aspects of building a mobile application.
