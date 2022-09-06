@@ -153,6 +153,7 @@ const general = [
       makePage('guides/monorepos.md'),
       makePage('guides/sharing-preview-releases.md'),
       makePage('guides/using-hermes.md'),
+      makePage('guides/adopting-prebuild.md'),
     ]),
   ]),
   makeSection('Expo accounts', [
