@@ -1118,7 +1118,4 @@ Please add the following to your Expo config
 [expo-plist]: https://www.npmjs.com/package/@expo/plist
 [memfs]: https://www.npmjs.com/package/memfs
 [emc]: https://github.com/expo/expo/tree/main/packages/expo-modules-core
-
-<!-- TODO: Better link for Expo autolinking docs -->
-
-[autolinking]: /bare/installing-unimodules/
+[autolinking]: /workflow/glossary-of-terms#autolinking
