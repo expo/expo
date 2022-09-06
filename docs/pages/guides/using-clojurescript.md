@@ -108,7 +108,7 @@ lein prod-build
 eas update
 ```
 
-This will publish your app to a persistent URL on Expo, for example: <https://expo.dev/@community/startr>
+This will publish your app to a persistent URL on Expo, for example: `https://expo.dev/@community/startr`
 
 ## FAQ
 

@@ -218,9 +218,9 @@ Rendered at the very beginning of the list. Can be a React Component (e.g. `Some
 
 Called once when the scroll position gets within `onEndReachedThreshold` of the rendered content.
 
-| Type                                        |
-| ------------------------------------------- |
-| (info: { distanceFromEnd: number }) => void |
+| Type                                                      |
+|-----------------------------------------------------------|
+| (info: &lbrace; distanceFromEnd: number &rbrace;) => void |
 
 ---
 
@@ -248,9 +248,9 @@ If provided, a standard RefreshControl will be added for "Pull to Refresh" funct
 
 Called when the viewability of rows changes, as defined by the `viewabilityConfig` prop.
 
-| Type                                                                                                                     |
-| ------------------------------------------------------------------------------------------------------------------------ |
-| (callback: { changed: array of [ViewToken](viewtoken.md)s, viewableItems: array of [ViewToken](viewtoken.md)s }) => void |
+| Type                                                                                                                                   |
+|----------------------------------------------------------------------------------------------------------------------------------------|
+| (callback: &lbrace; changed: array of [ViewToken](viewtoken.md)s, viewableItems: array of [ViewToken](viewtoken.md)s &rbrace;) => void |
 
 ---
 
