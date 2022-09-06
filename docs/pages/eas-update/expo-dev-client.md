@@ -12,7 +12,7 @@ The `expo-dev-client` library supports loading published EAS Updates through cha
 
 1. Create a [development build](/development/getting-started) of the project.
 2. Next, make non-native changes locally, then publish them using `eas update --branch ...`. The branch specified should correspond to a channel. You can see how channels are linked to branches with `eas channel:list`.
-3. After publishing an update, it's time to load the update in the development build. All development clients that have the `expo-updates` package installed will include an Extensions tab where you can select an update:
+3. After publishing an update, it's time to load the update in the development build. All development builds that have the `expo-updates` package installed will include an Extensions tab where you can select an update:
 
 <img src="/static/images/dev-client/extensions-panel.png" style={{ display:"block", maxWidth: 300, margin: "12px auto" }} />
 
