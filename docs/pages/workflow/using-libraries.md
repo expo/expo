@@ -5,6 +5,7 @@ title: Using libraries
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import SnackInline from '~/components/plugins/SnackInline';
 
