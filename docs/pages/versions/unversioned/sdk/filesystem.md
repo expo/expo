@@ -473,7 +473,7 @@ Please refer to the "[how to handle such requests](#how-to-handle-such-requests)
 
   - **mimeType (_string_)** -- The MIME type of the provided file. If not provided, the module will try to guess it based on the extension.
 
-  - **parameters (_Record<string, string>_)** -- Additional form properties. They will be located in the request body.
+  - **parameters (_Record&lt;string, string&gt;_)** -- Additional form properties. They will be located in the request body.
 
 #### Returns
 

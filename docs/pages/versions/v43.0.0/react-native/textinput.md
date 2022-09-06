@@ -661,9 +661,9 @@ If `true`, the text input obscures the text entered so that sensitive text like 
 
 The start and end of the text input's selection. Set start and end to the same value to position the cursor.
 
-| Type                                |
-| ----------------------------------- |
-| object: {start: number,end: number} |
+| Type                                              |
+|---------------------------------------------------|
+| object: &lbrace;start: number,end: number&rbrace; |
 
 ---
 
