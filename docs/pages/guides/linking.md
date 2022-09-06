@@ -29,7 +29,7 @@ Web browsers have additional link functionality like right-click to copy, and ho
 import { A } from '@expo/html-elements';
 
 export default function App() {
-  return <Anchor href="https://google.com">Go to Google</Anchor>;
+  return <A href="https://google.com">Go to Google</A>;
 }
 ```
 
