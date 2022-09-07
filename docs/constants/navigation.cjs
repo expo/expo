@@ -67,6 +67,7 @@ const general = [
   makeSection(
     'Conceptual Overview',
     [
+      makePage('introduction/expo.md'),
       makePage('introduction/managed-vs-bare.md'),
       // makePage('introduction/walkthrough.md'),
       makePage('introduction/why-not-expo.md'),
