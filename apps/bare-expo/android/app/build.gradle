@@ -322,7 +322,7 @@ dependencies {
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
 
-if (isNewArchitectureEnabled()) {
+if (isNewArchitectureEnabled() || findProperty("reactNativeNightly") == "true") {
     // If new architecture is enabled, we let you build RN from source
     // Otherwise we fallback to a prebuilt .aar bundled in the NPM package.
     // This will be applied to all the imported transtitive dependency.
