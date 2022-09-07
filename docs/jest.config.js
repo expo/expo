@@ -10,8 +10,8 @@ const jestConfig = {
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/$1',
   },
-  // transform: {},
-  // extensionsToTreatAsEsm: ['.ts', '.tsx'],
+  transform: {},
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   snapshotSerializers: ['@emotion/jest/serializer'],
 };
 
