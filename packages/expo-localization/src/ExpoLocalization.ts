@@ -114,7 +114,7 @@ export default {
 
       return {
         languageTag,
-        languageCode: language || null,
+        languageCode: language || languageTag.split('-')[0] || 'en',
         textDirection: (textInfo?.direction as 'ltr' | 'rtl') || null,
         digitGroupingSeparator,
         decimalSeparator,

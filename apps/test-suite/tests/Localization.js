@@ -32,6 +32,52 @@ export function test(t) {
   }
 
   t.describe(`Localization methods`, () => {
+    t.it('expect to getPreferredLocales return preferred locales', async () => {
+      const locales = await Localization.getPreferredLocales();
+      t.expect(locales.length).toBeGreaterThanOrEqual(1);
+      const {
+        languageTag,
+        languageCode,
+        regionCode,
+        currencyCode,
+        currencySymbol,
+        decimalSeparator,
+        digitGroupingSeparator,
+        textDirection,
+        measurementSystem,
+      } = locales[0];
+      validateString(languageTag);
+      validateString(languageCode);
+      // following properties can be nullish if the locale does not provide/override them
+      t.expect(regionCode).toBeDefined();
+      t.expect(currencyCode).toBeDefined();
+      t.expect(currencySymbol).toBeDefined();
+      t.expect(decimalSeparator).toBeDefined();
+      t.expect(digitGroupingSeparator).toBeDefined();
+      t.expect(textDirection).toBeDefined();
+      if (textDirection) {
+        t.expect(['rtl', 'ltr'].includes(textDirection)).toBe(true);
+      }
+      t.expect(measurementSystem).toBeDefined();
+      if (measurementSystem) {
+        t.expect(['metric', 'us', 'uk'].includes(measurementSystem)).toBe(true);
+      }
+    });
+
+    t.it('expect getPreferredCalendars to return at least a single calendar', async () => {
+      const calendars = await Localization.getPreferredCalendars();
+      t.expect(calendars.length).toBeGreaterThanOrEqual(1);
+      const { calendar, uses24hourClock, firstWeekday, timeZone } = calendars[0];
+      t.expect(calendar).toBeDefined();
+      t.expect(timeZone).toBeDefined();
+      if (timeZone) {
+        t.expect(timeZone).toContain('/');
+      }
+      // following properties can be nullish if the locale does not provide/override them
+      t.expect(typeof uses24hourClock).toBe('boolean');
+      t.expect(typeof firstWeekday).toBe('number');
+    });
+
     t.it('expect async to return locale', async () => {
       const {
         currency,

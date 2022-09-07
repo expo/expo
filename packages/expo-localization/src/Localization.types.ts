@@ -70,7 +70,7 @@ export type Localization = {
 
 export type PreferredLocale = {
   languageTag: string;
-  languageCode: string | null;
+  languageCode: string;
   regionCode: string | null;
   currencyCode: string | null;
   currencySymbol: string | null;
