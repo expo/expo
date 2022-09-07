@@ -7,7 +7,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
 
-Development builds of your app are Debug builds of your project that includes the [`expo-dev-client`](https://www.npmjs.com/package/expo-dev-client) library. It allows you to develop and debug projects from Expo CLI or a compatible server.
+Development builds of your app are Debug builds of your project. To create a Development build,  [`expo-dev-client`](https://www.npmjs.com/package/expo-dev-client) library is used, which allows you to develop and debug projects from Expo CLI or a compatible server.
 
 `expo-dev-client` is designed to support any workflow, release process, or set of dependencies in the Expo/React Native ecosystem. Whatever the needs of your project, either now or in the future, you'll be able to create development builds for it and get the productivity and quality of life improvements of JavaScript-driven development.
 
