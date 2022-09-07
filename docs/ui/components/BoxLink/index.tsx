@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { borderRadius, spacing, theme, ArrowRightIcon, iconSize, shadows } from '@expo/styleguide';
-import { IconProps } from '@expo/styleguide/dist/types';
+import type { IconProps } from '@expo/styleguide/dist/types';
 import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
 
 import { A, HEADLINE, P } from '~/ui/components/Text';
