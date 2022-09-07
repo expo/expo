@@ -87,17 +87,6 @@ function createHermesTransforms(versionName: string, versionedJsiDir: string): F
       find: 'JSI_PATH="$REACT_NATIVE_PATH/ReactCommon/jsi"',
       replaceWith: 'JSI_PATH="${JSI_PATH:-$REACT_NATIVE_PATH/ReactCommon/jsi}"',
     },
-    // remove catalyst build
-    {
-      paths: 'utils/build-ios-framework.sh',
-      find: 'build_apple_framework "catalyst" "x86_64;arm64" "$ios_deployment_target"',
-      replaceWith: '',
-    },
-    {
-      paths: 'utils/build-ios-framework.sh',
-      find: 'create_universal_framework "iphoneos" "iphonesimulator" "catalyst"',
-      replaceWith: 'create_universal_framework "iphoneos" "iphonesimulator"',
-    },
     // framework versioning
     {
       paths: 'API/hermes/CMakeLists.txt',
