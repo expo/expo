@@ -93,42 +93,45 @@ class LocalizationModule : Module() {
       mapOf<LocaleData.MeasurementSystem, String>(
         LocaleData.MeasurementSystem.SI to "metric",
         LocaleData.MeasurementSystem.UK to "uk",
-        LocaleData.MeasurementSystem.US to "us")[LocaleData.getMeasurementSystem(ULocale.forLocale(locale))]
+        LocaleData.MeasurementSystem.US to "us"
+      )[LocaleData.getMeasurementSystem(ULocale.forLocale(locale))]
     } else {
-      if (getRegionCode(locale).equals("uk")) return "uk";
-      if (USES_IMPERIAL.contains(getRegionCode(locale))) return "us" else return "metric";
-    };
+      if (getRegionCode(locale).equals("uk")) return "uk"
+      if (USES_IMPERIAL.contains(getRegionCode(locale))) return "us" else return "metric"
+    }
   }
 
   private fun getPreferredLocales(): List<Map<String, Any?>> {
 
-    val locales = mutableListOf<Map<String, Any?>>();
+    val locales = mutableListOf<Map<String, Any?>>()
     val localeList: LocaleListCompat = LocaleListCompat.getDefault()
     for (i in 0 until localeList.size()) {
       val locale: Locale = localeList.get(i)
       val decimalFormat = DecimalFormatSymbols.getInstance(locale)
-      locales.add(mapOf(
-        "languageTag" to locale.toLanguageTag(),
-        "regionCode" to getRegionCode(locale),
-        "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
-        "languageCode" to locale.language,
+      locales.add(
+        mapOf(
+          "languageTag" to locale.toLanguageTag(),
+          "regionCode" to getRegionCode(locale),
+          "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
+          "languageCode" to locale.language,
 
-        // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
-        "decimalSeparator" to decimalFormat.decimalSeparator.toString(),
-        "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
+          // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
+          "decimalSeparator" to decimalFormat.decimalSeparator.toString(),
+          "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
 
-        "measurementSystem" to getMeasurementSystem(locale),
-        "currencyCode" to decimalFormat.currency.currencyCode,
+          "measurementSystem" to getMeasurementSystem(locale),
+          "currencyCode" to decimalFormat.currency.currencyCode,
 
-        // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
-        "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
-      ))
+          // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
+          "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+        )
+      )
     }
-    return locales;
+    return locales
   }
 
   private fun uses24HourClock(): Boolean {
-    if (appContext.reactContext == null) return false;
+    if (appContext.reactContext == null) return false
     return DateFormat.is24HourFormat(appContext.reactContext)
   }
 
@@ -137,19 +140,19 @@ class LocalizationModule : Module() {
       Calendar.getInstance().calendarType.toString()
     } else {
       "gregorian"
-    };
+    }
   }
-
 
   private fun getPreferredCalendars(): List<Map<String, Any?>> {
-    return listOf<Map<String, Any?>>(mapOf("calendar" to getCalendarType(),
-      "uses24hourClock" to uses24HourClock(), // we ideally would use hourCycle (one of h12, h23, h11, h24) instead, but not sure how to get it on android and ios
-      "firstWeekday" to Calendar.getInstance().firstDayOfWeek, // 1..7, 1 is sunday
-      "timeZone" to Calendar.getInstance().timeZone.id
-    ))
+    return listOf<Map<String, Any?>>(
+      mapOf(
+        "calendar" to getCalendarType(),
+        "uses24hourClock" to uses24HourClock(), // we ideally would use hourCycle (one of h12, h23, h11, h24) instead, but not sure how to get it on android and ios
+        "firstWeekday" to Calendar.getInstance().firstDayOfWeek, // 1..7, 1 is sunday
+        "timeZone" to Calendar.getInstance().timeZone.id
+      )
+    )
   }
-
-
 }
 
 /**

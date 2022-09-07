@@ -90,7 +90,7 @@ export default {
             const decimalSeparator = (1.1).toLocaleString(languageTag).substring(1, 2);
             return {
                 languageTag,
-                languageCode: language || null,
+                languageCode: language || languageTag.split('-')[0] || 'en',
                 textDirection: textInfo?.direction || null,
                 digitGroupingSeparator,
                 decimalSeparator,

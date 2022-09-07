@@ -10,19 +10,15 @@ public class LocalizationModule: Module {
     Constants {
       return Self.getCurrentLocalization()
     }
-
     AsyncFunction("getLocalizationAsync") {
       return Self.getCurrentLocalization()
     }
-
     Function("getPreferredLocales") {
       return Self.getPreferredLocales()
     }
-
     Function("getPreferredCalendars") {
       return Self.getPreferredCalendars()
     }
-
   }
 
   // If the application isn't manually localized for the device language then the
@@ -37,10 +33,10 @@ public class LocalizationModule: Module {
     return Locale(identifier: preferredIdentifier)
   }
 
-
   static func getPreferredLocales() -> [[String: Any?]] {
-    return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages).map { (languageTag) -> [String: Any?] in
-      var locale = Locale.init(identifier: languageTag);
+    return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages)
+    .map { (languageTag) -> [String: Any?] in
+      var locale = Locale.init(identifier: languageTag)
       return [
         "languageTag": languageTag,
         "languageCode": locale.languageCode,
@@ -50,7 +46,7 @@ public class LocalizationModule: Module {
         "digitGroupingSeparator": locale.groupingSeparator,
         "measurementSystem": locale.usesMetricSystem ? "metric" : "us",
         "currencyCode": locale.currencyCode,
-        "currencySymbol": locale.currencySymbol,
+        "currencySymbol": locale.currencySymbol
       ] as [String: Any?]
     }
   }
@@ -62,18 +58,20 @@ public class LocalizationModule: Module {
     return dateFormat.firstIndex(of: "a") == nil
   }
 
-  //    Alternatively we could separate into several functions (getCalendar, getTimeZone, getUses24hourClock), but I think it's better to return grouped vs singular values
+  // Alternatively we could separate into several functions (getCalendar, getTimeZone, getUses24hourClock),
+  // but I think it's better to return grouped vs singular values
   static func getPreferredCalendars() -> [[String: Any?]] {
-    var calendar = Locale.current.calendar;
+    var calendar = Locale.current.calendar
     return [
-      [
-        "calendar": "\(calendar.identifier)",
-        "timeZone": "\(calendar.timeZone.identifier)",
-        "uses24hourClock": uses24HourClock(),
-        // we might want to subtract 1 to avoid confusion with 1..7 indexing, 1 is sunday
-        "firstWeekday": calendar.firstWeekday,
-        // timezone
-      ]]
+        [
+          "calendar": "\(calendar.identifier)",
+          "timeZone": "\(calendar.timeZone.identifier)",
+          "uses24hourClock": uses24HourClock(),
+          // we might want to subtract 1 to avoid confusion with 1..7 indexing, 1 is sunday
+          "firstWeekday": calendar.firstWeekday
+          // timezone
+        ]
+      ]
   }
 
   static func getCurrentLocalization() -> [String: Any?] {
@@ -94,7 +92,7 @@ public class LocalizationModule: Module {
       "locale": languageIds.first,
       "locales": languageIds,
       "region": locale.regionCode ?? "US",
-      "timezone": TimeZone.current.identifier,
+      "timezone": TimeZone.current.identifier
     ]
   }
 }

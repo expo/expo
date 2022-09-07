@@ -70,12 +70,15 @@ export function test(t) {
       const { calendar, uses24hourClock, firstWeekday, timeZone } = calendars[0];
       t.expect(calendar).toBeDefined();
       t.expect(timeZone).toBeDefined();
-      if (timeZone) {
-        t.expect(timeZone).toContain('/');
-      }
       // following properties can be nullish if the locale does not provide/override them
-      t.expect(typeof uses24hourClock).toBe('boolean');
-      t.expect(typeof firstWeekday).toBe('number');
+      t.expect(uses24hourClock).toBeDefined();
+      if (uses24hourClock !== null) {
+        t.expect(typeof uses24hourClock).toBe('boolean');
+      }
+      t.expect(firstWeekday).toBeDefined();
+      if (firstWeekday !== null) {
+        t.expect(typeof firstWeekday).toBe('number');
+      }
     });
 
     t.it('expect async to return locale', async () => {
