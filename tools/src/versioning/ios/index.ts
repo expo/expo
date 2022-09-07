@@ -348,6 +348,13 @@ async function generateReactNativePodScriptAsync(
       ),
       replaceWith: `"${versionName}$1":$2`,
     },
+    // hermes
+    { find: /^\s+prepare_hermes(.|\n)*abort unless prep_status == 0\n$/gm, replaceWith: '' },
+    {
+      find: `pod '${versionName}hermes-engine', :podspec => "#{prefix}/sdks/hermes/hermes-engine.podspec"`,
+      replaceWith: `pod '${versionName}hermes-engine', :path => "#{prefix}/sdks/hermes-engine", :project_name => '${versionName}'`,
+    },
+    { find: new RegExp(`\\b${versionName}(libevent)\\b`, 'g'), replaceWith: '$1' },
   ];
 
   const transforms: FileTransforms = {
