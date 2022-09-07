@@ -30,7 +30,13 @@ The following resources are useful for learning about Expo tooling and services.
 
 - [React Native Express](http://www.reactnativeexpress.com/) - The best way to get started with React Native! It's a walkthrough the building blocks of React and React Native.
 - [Intermediate React Native](https://frontendmasters.com/courses/intermediate-react-native/) - Paid course by Frontend Masters.
-- [Animating React Native UI Elements](https://egghead.io/courses/animate-react-native-ui-elements) (video course on Egghead.io)
+
+## Animation and Gestures
+- [React Native Reanimated](/versions/latest/sdk/reanimated/)
+- [React Native Gesture Handler](/versions/latest/sdk/gesture-handler/)
+
+## Navigation
+- [React Navigation](/guides/routing-and-navigation/)
 
 ## Talks
 
