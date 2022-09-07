@@ -19,7 +19,7 @@ namespace ABI46_0_0facebook::ABI46_0_0React {
 class EventQueueProcessorTest : public testing::Test {
  protected:
   void SetUp() override {
-    runtime_ = ABI46_0_0facebook::hermes::makeHermesRuntime();
+    runtime_ = ABI46_0_0facebook::ABI46_0_0hermes::makeHermesRuntime();
 
     auto eventPipe = [this](
                          jsi::Runtime &runtime,
@@ -37,7 +37,7 @@ class EventQueueProcessorTest : public testing::Test {
         std::make_unique<EventQueueProcessor>(eventPipe, dummyStatePipe);
   }
 
-  std::unique_ptr<ABI46_0_0facebook::hermes::HermesRuntime> runtime_;
+  std::unique_ptr<ABI46_0_0facebook::ABI46_0_0hermes::HermesRuntime> runtime_;
   std::unique_ptr<EventQueueProcessor> eventProcessor_;
   std::vector<std::string> eventTypes_;
   std::vector<ABI46_0_0ReactEventPriority> eventPriorities_;

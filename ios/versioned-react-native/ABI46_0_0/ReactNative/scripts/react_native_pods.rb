@@ -111,15 +111,15 @@ def use_react_native_ABI46_0_0! (options={})
   end
 
   if hermes_enabled
-    prepare_hermes = 'node scripts/hermes/prepare-hermes-for-build'
-    react_native_dir = Pod::Config.instance.installation_root.join(prefix)
-    prep_output, prep_status = Open3.capture2e(prepare_hermes, :chdir => react_native_dir)
-    prep_output.split("\n").each { |line| Pod::UI.info line }
-    abort unless prep_status == 0
+    # prepare_hermes = 'node scripts/hermes/prepare-hermes-for-build'
+    # react_native_dir = Pod::Config.instance.installation_root.join(prefix)
+    # prep_output, prep_status = Open3.capture2e(prepare_hermes, :chdir => react_native_dir)
+    # prep_output.split("\n").each { |line| Pod::UI.info line }
+    # abort unless prep_status == 0
 
     pod 'ABI46_0_0React-hermes', :path => "#{prefix}/ReactCommon/hermes", :project_name => 'ABI46_0_0'
-    pod 'ABI46_0_0hermes-engine', :podspec => "#{prefix}/sdks/hermes/hermes-engine.podspec"
-    pod 'ABI46_0_0libevent', '~> 2.1.12'
+    pod 'ABI46_0_0hermes-engine', :path => "#{prefix}/sdks/hermes-engine", :project_name => 'ABI46_0_0'
+    pod 'libevent', '~> 2.1.12'
   end
 
   pods_to_update = LocalPodspecPatch.pods_to_update(options)

@@ -54,6 +54,7 @@
 #import <ABI46_0_0React/ABI46_0_0RCTCxxBridgeDelegate.h>
 #import <ABI46_0_0React/ABI46_0_0CoreModulesPlugins.h>
 #import <ABI46_0_0ReactCommon/ABI46_0_0RCTTurboModuleManager.h>
+#import <ABI46_0_0reacthermes/ABI46_0_0HermesExecutorFactory.h>
 #import <ABI46_0_0React/ABI46_0_0JSCExecutorFactory.h>
 #import <strings.h>
 
@@ -575,7 +576,7 @@ ABI46_0_0RCT_EXTERN void ABI46_0_0EXRegisterScopedModule(Class, ...);
          jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
          jsi::Object::createFromHostObject(runtime, reanimatedModule));
   };
-  return new ABI46_0_0facebook::ABI46_0_0React::JSCExecutorFactory(ABI46_0_0RCTJSIExecutorRuntimeInstaller(executor));
+  return new ABI46_0_0facebook::ABI46_0_0React::HermesExecutorFactory(ABI46_0_0RCTJSIExecutorRuntimeInstaller(executor));
 }
 
 @end

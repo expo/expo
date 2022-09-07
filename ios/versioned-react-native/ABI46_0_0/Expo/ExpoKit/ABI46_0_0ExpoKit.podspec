@@ -79,7 +79,6 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI46_0_0EXFirebaseAnalytics"
     ss.dependency         "ABI46_0_0EXFirebaseCore"
     ss.dependency         "ABI46_0_0EXFont"
-    ss.dependency         "ABI46_0_0EXGL_CPP"
     ss.dependency         "ABI46_0_0EXGL"
     ss.dependency         "ABI46_0_0ExpoHaptics"
     ss.dependency         "ABI46_0_0EXImageLoader"
@@ -133,6 +132,7 @@ Pod::Spec.new do |s|
     ss.dependency         "Branch"
     ss.dependency         "RCT-Folly"
     ss.dependency         "ABI46_0_0ExpoModulesProvider"
+    ss.dependency         "ABI46_0_0React-hermes"
   end
 
   s.subspec "ExpoOptional" do |ss|

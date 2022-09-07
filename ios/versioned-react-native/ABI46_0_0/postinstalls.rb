@@ -23,7 +23,7 @@ if pod_name.start_with?('ABI46_0_0React') || pod_name == 'ABI46_0_0ExpoKit'
     ]
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)']
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI46_0_0RCT_DEV=1'
-    config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI46_0_0RCT_ENABLE_INSPECTOR=0'
+    config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI46_0_0RCT_ENABLE_INSPECTOR=1'
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI46_0_0RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION=0'
     # Enable Google Maps support
     config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'ABI46_0_0HAVE_GOOGLE_MAPS=1'

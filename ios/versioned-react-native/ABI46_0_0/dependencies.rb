@@ -2,7 +2,11 @@
 
 require './versioned-react-native/ABI46_0_0/ReactNative/scripts/react_native_pods.rb'
 
-use_react_native_ABI46_0_0! path: './versioned-react-native/ABI46_0_0/ReactNative'
+use_react_native_ABI46_0_0!(
+  :path => './versioned-react-native/ABI46_0_0/ReactNative',
+  :hermes_enabled => true,
+  :fabric_enabled => false,
+)
 
 pod 'ABI46_0_0ExpoKit',
   :path => './versioned-react-native/ABI46_0_0/Expo/ExpoKit',
