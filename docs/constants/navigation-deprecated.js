@@ -153,6 +153,7 @@ const general = [
       makePage('guides/monorepos.md'),
       makePage('guides/sharing-preview-releases.md'),
       makePage('guides/using-hermes.md'),
+      makePage('guides/adopting-prebuild.md'),
     ]),
   ]),
   makeSection('Expo accounts', [
@@ -165,15 +166,10 @@ const general = [
   ]),
   makeSection('Bare workflow', [
     makeGroup('Bare workflow', [
-      makePage('bare/exploring-bare-workflow.md'),
       makePage('bare/hello-world.md'),
-      makePage('bare/existing-apps.md'),
       makePage('bare/installing-expo-modules.md'),
-      makePage('bare/installing-unimodules.md'),
       makePage('bare/installing-updates.md'),
-      makePage('bare/unimodules-full-list.md'),
       makePage('bare/using-expo-client.md'),
-      makePage('bare/migrating-from-expokit.md'),
       makePage('bare/updating-your-app.md'),
       makePage('bare/error-recovery.md'),
     ]),
