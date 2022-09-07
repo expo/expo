@@ -57,7 +57,7 @@ Once you have registered all of the iOS devices you would like to develop on, yo
 
 After creating the first build, [install it on your device](/build/internal-distribution.md).
 
-> **Note**: If you are using a library that contains native APIs, for example, [`expo-secure-store`](/versions/latest/sdk/securestore/), you will have to rebuild the development client. This is because the native code of the library is not included in the development client automatically when installing the library as a dependency to your project.
+> **Note**: If you add a library that contains native APIs to your project, for example, [`expo-secure-store`](/versions/latest/sdk/securestore/), you will have to rebuild the development client. This is because the native code of the library is not included in the development client automatically when installing the library as a dependency to your project.
 
 ## Developing your app
 
@@ -69,7 +69,7 @@ Instead, all you need to do to start developing is to run:
 
 <Terminal cmd={["$ npx expo start --dev-client"]} />
 
-Then, scan the resulting QR code with your system camera or QR code reader (if you want to develop it against a physical device). Alternatively, you can press <kbd>a</kbd> or <kbd>i</kbd> keys (to open the app in your Android or iPhone emulator or simulator).
+Then, scan the resulting QR code with your system camera or QR code reader (if you want to develop against a physical device). Alternatively, you can press the <kbd>a</kbd> or <kbd>i</kbd> keys (to open the app in your Android emulator or iPhone simulator).
 
 Now make some changes to your project code and see them reflected on your device.
 
