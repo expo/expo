@@ -110,7 +110,7 @@ export declare function openURL(url: string): Promise<true>;
  * `false` if not.
  *
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
- * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#opening-links-to-other-apps).
+ * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#linking-from-your-app).
  */
 export declare function canOpenURL(url: string): Promise<boolean>;
 /**

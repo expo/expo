@@ -147,6 +147,7 @@ const general = [
       makePage('guides/education.md'),
       makePage('guides/how-expo-works.md'),
       makePage('guides/linking.md'),
+      makePage('guides/deep-linking.md'),
       makePage('guides/setting-up-continuous-integration.md'),
       makePage('guides/troubleshooting-proxies.md'),
       makePage('guides/config-plugins.md'),
