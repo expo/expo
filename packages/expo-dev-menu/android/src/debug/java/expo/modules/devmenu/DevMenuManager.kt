@@ -206,6 +206,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
+  private fun hasDisableOnboardingQueryParam(urlString: String): Boolean {
+    return urlString.contains("disableOnboarding")
+  }
+
   /**
    * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuPreferences].
    * We can't open dev menu here, cause then the app will crash - two react instance try to render.
@@ -227,6 +231,10 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
           DevMenuDefaultPreferences()
         }
       ).also {
+      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty())) {
+        it.isOnboardingFinished = true
+      }
+    }.also {
       shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
       if (shouldLaunchDevMenuOnStart) {
         reactContext.addLifecycleEventListener(this)

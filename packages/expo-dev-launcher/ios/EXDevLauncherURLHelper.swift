@@ -1,6 +1,7 @@
   // Copyright 2015-present 650 Industries. All rights reserved.
 
 import Foundation
+import EXDevMenu
 
 @objc
 public class EXDevLauncherUrl: NSObject {
@@ -50,6 +51,18 @@ public class EXDevLauncherURLHelper: NSObject {
     }
     
     return hasUrlQueryParam
+  }
+
+  @objc
+  public static func disableOnboardingPopupIfNeeded(_ url: URL) {
+    let components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)
+
+    for queryItem in components?.queryItems ?? [] {
+      if queryItem.name == "disableOnboarding" && queryItem.value != nil {
+        DevMenuPreferences.isOnboardingFinished = true
+        break
+      }
+    }
   }
 
   @objc
