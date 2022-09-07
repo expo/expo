@@ -161,7 +161,7 @@ Once you build and install your app, you will be able to open it with links to `
 
 > [Expo Prebuild](/workflow/prebuild) automatically adds the app's iOS bundle identifier/Android package as a URL scheme.
 
-<ConfigReactNative title="Are you using this feature in a bare React Native app?">
+<ConfigReactNative abstract>
 
 In **bare** apps, you can use the [`uri-scheme` package][n-uri-scheme] to easily add, remove, list, and open your URIs.
 
