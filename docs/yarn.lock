@@ -706,10 +706,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@expo/styleguide@^4.1.1":
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-4.1.1.tgz#2c064c30864439c1101c045415e4c5f7cf8a4742"
-  integrity sha512-Z6v8m/9PwnvuDZf3WalLJSW+hVxfEJd6TjKKtAh5K8RCZ8L2QPZcHf4wLpaitdR6w3ct+8NTh/XQtVwN/z/uyQ==
+"@expo/styleguide@^4.1.2":
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-4.1.2.tgz#b27480ca32f0644ce14d776c643c648674df7f5e"
+  integrity sha512-9EeYwwvpd0jferqsqZLu3o5bZacOZpW+uTkW2krFDDgdzwjnvaUZL6kvEZc3LO+Mo13qu5rv6cI41hW12UhvAQ==
 
 "@humanwhocodes/config-array@^0.9.2":
   version "0.9.5"

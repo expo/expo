@@ -1,26 +1,214 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
+.emotion-0 {
+  border: 1px solid var(--expo-theme-border-default);
+  border-radius: 6px;
+  overflow-y: hidden;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  box-shadow: var(--expo-theme-shadows-micro);
+}
+
+.emotion-0::-webkit-scrollbar {
+  height: 6px;
+}
+
+.emotion-0::-webkit-scrollbar-track {
+  background: var(--expo-theme-background-default);
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.emotion-0::-webkit-scrollbar-thumb {
+  background: var(--expo-theme-background-tertiary);
+  border-radius: 6px;
+}
+
+.emotion-0::-webkit-scrollbar-thumb:hover {
+  background: var(--expo-theme-background-quaternary);
+}
+
+.emotion-1 {
+  font-size: 0.875rem;
+  line-height: 1.5714286;
+  letter-spacing: -0.006rem;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+  border-collapse: collapse;
+  color: var(--expo-theme-text-default);
+  table-layout: auto;
+}
+
+.emotion-1 blockquote,
+.emotion-1 li {
+  font-size: 0.875rem;
+  line-height: 1.5714286;
+  letter-spacing: -0.006rem;
+}
+
+.emotion-2 {
+  background-color: var(--expo-theme-background-secondary);
+  border-bottom: 1px solid var(--expo-theme-border-default);
+}
+
+.emotion-3:nth-of-type(2n) {
+  background-color: var(--expo-theme-background-secondary);
+}
+
+.emotion-3:nth-of-type(2n) blockquote,
+.emotion-3:nth-of-type(2n) summary {
+  background-color: var(--expo-theme-background-tertiary);
+}
+
+.emotion-4 {
+  padding: 16px;
+  font-family: Inter-Medium;
+  vertical-align: middle;
+  border-right: 1px solid var(--expo-theme-border-default);
+  text-align: left;
+}
+
+.emotion-4:last-child {
+  border-right: 0;
+}
+
+.emotion-7 {
+  padding: 16px;
+  vertical-align: middle;
+  border-right: 1px solid var(--expo-theme-border-default);
+  text-align: left;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.emotion-7:last-child {
+  border-right: 0;
+}
+
+.emotion-8 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 16px;
+}
+
+.emotion-9 {
+  padding: 16px;
+  vertical-align: middle;
+  border-right: 1px solid var(--expo-theme-border-default);
+  text-align: left;
+}
+
+.emotion-9:last-child {
+  border-right: 0;
+}
+
+.emotion-11 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 16px;
+  font-size: inherit;
+  font-family: Inter-SemiBold;
+}
+
+.emotion-37 {
+  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.6153846;
+  letter-spacing: -0.003rem;
+  color: var(--expo-theme-text-default);
+  white-space: pre-wrap;
+  display: inline;
+  padding: 2px 4px;
+  max-width: 100%;
+  word-wrap: break-word;
+  background-color: var(--expo-theme-background-secondary);
+  border: 1px solid var(--expo-theme-border-default);
+  border-radius: 4px;
+  vertical-align: middle;
+  overflow-x: auto;
+}
+
+a .emotion-37 {
+  border-color: var(--expo-theme-border-default);
+}
+
+h2 .emotion-37,
+h3 .emotion-37,
+h4 .emotion-37 {
+  position: relative;
+  top: -2px;
+}
+
+.emotion-44 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-left: 4px solid var(--expo-theme-border-default);
+  background: var(--expo-theme-background-secondary);
+  border-radius: 4;
+}
+
+.emotion-44 div {
+  margin: 0;
+}
+
+.emotion-44 code {
+  background-color: var(--expo-theme-background-tertiary);
+}
+
+table .emotion-44 {
+  margin: 8px 0;
+}
+
+table .emotion-44:first-of-type {
+  margin-top: 0;
+}
+
+table .emotion-44:last-child {
+  margin-bottom: 0;
+}
+
 <div>
   <div
-    class="css-rufzkc-Table"
+    class="emotion-0"
   >
     <table
-      class="css-1gg2jm1-Table"
+      class="emotion-1"
     >
       <thead
-        class="css-3b8qij-TableHead"
+        class="emotion-2"
       >
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <th
-            class="css-1p6k6di-HeaderCell"
+            class="emotion-4"
           >
             Property
           </th>
           <th
-            class="css-1p6k6di-HeaderCell"
+            class="emotion-4"
           >
             Description
           </th>
@@ -28,729 +216,263 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </thead>
       <tbody>
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="emotion-7"
           >
             <div
               data-testid="<propertyAnchor level={0}><inlineCode>name</inlineCode></propertyAnchor>"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
-              <div
-                class=" css-19f55nd-PDIV"
+              <p
+                class="emotion-8"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
-                >
-                  <span
-                    class="css-120d683"
-                    id="name"
-                  />
-                  <a
-                    class="css-8y2kaf"
-                    href="#name"
-                  >
-                    <span
-                      class="css-6n7j50"
-                    >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        name
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
-                    >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
-              </div>
+                &lt;propertyAnchor level={0}&gt;
+                &lt;inlineCode&gt;
+                name
+                &lt;/inlineCode&gt;
+                &lt;/propertyAnchor&gt;
+              </p>
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="emotion-9"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="emotion-8"
               data-text="true"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-11"
               >
                 (string)
               </strong>
                - Name of your app.
-              <div
-                class="css-1wra0b6-BareWorkflowCollapsible"
-              >
-                <details
-                  class="css-1nmf69-Collapsible"
-                >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
-                  >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      Bare Workflow
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    Edit the 'Display Name' field in Xcode
-                  </div>
-                </details>
-              </div>
-            </div>
+              &lt;bareworkflowDetails&gt;
+              Edit the 'Display Name' field in Xcode
+              &lt;/bareworkflowDetails&gt;
+            </p>
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="emotion-7"
           >
             <div
               data-testid="<propertyAnchor level={0}><inlineCode>androidNavigationBar</inlineCode></propertyAnchor>"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
-              <div
-                class=" css-19f55nd-PDIV"
+              <p
+                class="emotion-8"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
-                >
-                  <span
-                    class="css-120d683"
-                    id="androidnavigationbar"
-                  />
-                  <a
-                    class="css-8y2kaf"
-                    href="#androidnavigationbar"
-                  >
-                    <span
-                      class="css-6n7j50"
-                    >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        androidNavigationBar
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
-                    >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
-              </div>
+                &lt;propertyAnchor level={0}&gt;
+                &lt;inlineCode&gt;
+                androidNavigationBar
+                &lt;/inlineCode&gt;
+                &lt;/propertyAnchor&gt;
+              </p>
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="emotion-9"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="emotion-8"
               data-text="true"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-11"
               >
                 (object)
               </strong>
                - Configuration for the bottom navigation bar on Android.
-              <div
-                class="css-1r2rajm-ExpoKitCollapsible"
-              >
-                <details
-                  class="css-1nmf69-Collapsible"
-                >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
-                  >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      ExpoKit
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    Set this property using AppConstants.java.
-                  </div>
-                </details>
-              </div>
-              <div
-                class="css-1wra0b6-BareWorkflowCollapsible"
-              >
-                <details
-                  class="css-1nmf69-Collapsible"
-                >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
-                  >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      Bare Workflow
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    Set this property using just Xcode
-                  </div>
-                </details>
-              </div>
-            </div>
+              &lt;expokitDetails&gt;
+              Set this property using AppConstants.java.
+              &lt;/expokitDetails&gt;
+              &lt;bareworkflowDetails&gt;
+              Set this property using just Xcode
+              &lt;/bareworkflowDetails&gt;
+            </p>
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="emotion-7"
           >
             <div
               data-testid="<subpropertyAnchor level={1}><inlineCode>visible</inlineCode></subpropertyAnchor>"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
-              <div
-                class=" css-19f55nd-PDIV"
+              <p
+                class="emotion-8"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
-                >
-                  <span
-                    class="css-120d683"
-                    id="visible"
-                  />
-                  <a
-                    class="css-8y2kaf"
-                    href="#visible"
-                  >
-                    <span
-                      class="css-6n7j50"
-                    >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        visible
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
-                    >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
-              </div>
+                &lt;subpropertyAnchor level={1}&gt;
+                &lt;inlineCode&gt;
+                visible
+                &lt;/inlineCode&gt;
+                &lt;/subpropertyAnchor&gt;
+              </p>
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="emotion-9"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="emotion-8"
               data-text="true"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-11"
               >
                 (enum)
               </strong>
                - Determines how and when the navigation bar is shown.
-              <div
-                class="css-1r2rajm-ExpoKitCollapsible"
-              >
-                <details
-                  class="css-1nmf69-Collapsible"
-                >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
-                  >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      ExpoKit
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    Set this property using Xcode.
-                  </div>
-                </details>
-              </div>
-            </div>
+              &lt;expokitDetails&gt;
+              Set this property using Xcode.
+              &lt;/expokitDetails&gt;
+            </p>
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="emotion-7"
           >
             <div
               data-testid="<subpropertyAnchor level={2}><inlineCode>always</inlineCode></subpropertyAnchor>"
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
-              <div
-                class=" css-19f55nd-PDIV"
+              <p
+                class="emotion-8"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
-                >
-                  <span
-                    class="css-120d683"
-                    id="always"
-                  />
-                  <a
-                    class="css-8y2kaf"
-                    href="#always"
-                  >
-                    <span
-                      class="css-6n7j50"
-                    >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        always
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
-                    >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
-              </div>
+                &lt;subpropertyAnchor level={2}&gt;
+                &lt;inlineCode&gt;
+                always
+                &lt;/inlineCode&gt;
+                &lt;/subpropertyAnchor&gt;
+              </p>
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="emotion-9"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="emotion-8"
               data-text="true"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-11"
               >
                 (boolean)
               </strong>
                - Test sub-sub-property
-            </div>
+            </p>
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="emotion-7"
           >
             <div
               data-testid="<subpropertyAnchor level={1}><inlineCode>backgroundColor</inlineCode></subpropertyAnchor>"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
-              <div
-                class=" css-19f55nd-PDIV"
+              <p
+                class="emotion-8"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
-                >
-                  <span
-                    class="css-120d683"
-                    id="backgroundcolor"
-                  />
-                  <a
-                    class="css-8y2kaf"
-                    href="#backgroundcolor"
-                  >
-                    <span
-                      class="css-6n7j50"
-                    >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        backgroundColor
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
-                    >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
-              </div>
+                &lt;subpropertyAnchor level={1}&gt;
+                &lt;inlineCode&gt;
+                backgroundColor
+                &lt;/inlineCode&gt;
+                &lt;/subpropertyAnchor&gt;
+              </p>
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="emotion-9"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="emotion-8"
               data-text="true"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-11"
               >
                 (string)
               </strong>
-               - Specifies the background color of the navigation bar. 
-            </div>
-            <div
-              class=" css-19f55nd-PDIV"
+               - Specifies the background color of the navigation bar.
+            </p>
+            
+
+            <p
+              class="emotion-8"
               data-text="true"
             >
               6 character long hex color string, eg: 
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-37"
               >
                 '#000000'
               </code>
-            </div>
+            </p>
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="emotion-7"
           >
             <div
               data-testid="<propertyAnchor level={0}><inlineCode>intentFilters</inlineCode></propertyAnchor>"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
-              <div
-                class=" css-19f55nd-PDIV"
+              <p
+                class="emotion-8"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
-                >
-                  <span
-                    class="css-120d683"
-                    id="intentfilters"
-                  />
-                  <a
-                    class="css-8y2kaf"
-                    href="#intentfilters"
-                  >
-                    <span
-                      class="css-6n7j50"
-                    >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        intentFilters
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
-                    >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
-              </div>
+                &lt;propertyAnchor level={0}&gt;
+                &lt;inlineCode&gt;
+                intentFilters
+                &lt;/inlineCode&gt;
+                &lt;/propertyAnchor&gt;
+              </p>
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="emotion-9"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="emotion-8"
               data-text="true"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-11"
               >
                 (array)
               </strong>
                - Configuration for setting an array of custom intent filters in Android manifest.
-              <div
-                class="css-1wra0b6-BareWorkflowCollapsible"
-              >
-                <details
-                  class="css-1nmf69-Collapsible"
-                >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
-                  >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      Bare Workflow
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    This is set in AndroidManifest.xml directly.
-                  </div>
-                </details>
-              </div>
-            </div>
+              &lt;bareworkflowDetails&gt;
+              This is set in AndroidManifest.xml directly.
+              &lt;/bareworkflowDetails&gt;
+            </p>
+            
+
             <blockquote
-              class="css-1nn217x-Quote"
+              class="emotion-44"
               data-text="true"
             >
               <div
@@ -774,266 +496,134 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 </svg>
               </div>
               <div>
-                <div
-                  class=" css-19f55nd-PDIV"
-                  data-text="true"
-                >
-                   
-                  [{
+                
+
+              </div>
+            </blockquote>
+            
+
+            <p
+              class="emotion-8"
+              data-text="true"
+            >
+              [{
 "autoVerify": true,
 "data": {"host": "*.example.com"
 }
 }]
-                </div>
-              </div>
-            </blockquote>
+            </p>
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="emotion-7"
           >
             <div
               data-testid="<subpropertyAnchor level={1}><inlineCode>autoVerify</inlineCode></subpropertyAnchor>"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
-              <div
-                class=" css-19f55nd-PDIV"
+              <p
+                class="emotion-8"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
-                >
-                  <span
-                    class="css-120d683"
-                    id="autoverify"
-                  />
-                  <a
-                    class="css-8y2kaf"
-                    href="#autoverify"
-                  >
-                    <span
-                      class="css-6n7j50"
-                    >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        autoVerify
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
-                    >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
-              </div>
+                &lt;subpropertyAnchor level={1}&gt;
+                &lt;inlineCode&gt;
+                autoVerify
+                &lt;/inlineCode&gt;
+                &lt;/subpropertyAnchor&gt;
+              </p>
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="emotion-9"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="emotion-8"
               data-text="true"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-11"
               >
                 (boolean)
               </strong>
                - You may also use an intent filter to set your app as the default handler for links
-            </div>
+            </p>
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="emotion-7"
           >
             <div
               data-testid="<subpropertyAnchor level={1}><inlineCode>data</inlineCode></subpropertyAnchor>"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
-              <div
-                class=" css-19f55nd-PDIV"
+              <p
+                class="emotion-8"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
-                >
-                  <span
-                    class="css-120d683"
-                    id="data"
-                  />
-                  <a
-                    class="css-8y2kaf"
-                    href="#data"
-                  >
-                    <span
-                      class="css-6n7j50"
-                    >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        data
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
-                    >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
-              </div>
+                &lt;subpropertyAnchor level={1}&gt;
+                &lt;inlineCode&gt;
+                data
+                &lt;/inlineCode&gt;
+                &lt;/subpropertyAnchor&gt;
+              </p>
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="emotion-9"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="emotion-8"
               data-text="true"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-11"
               >
                 (array || object)
               </strong>
-            </div>
+            </p>
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="emotion-3"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="emotion-7"
           >
             <div
               data-testid="<subpropertyAnchor level={2}><inlineCode>host</inlineCode></subpropertyAnchor>"
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
-              <div
-                class=" css-19f55nd-PDIV"
+              <p
+                class="emotion-8"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
-                >
-                  <span
-                    class="css-120d683"
-                    id="host"
-                  />
-                  <a
-                    class="css-8y2kaf"
-                    href="#host"
-                  >
-                    <span
-                      class="css-6n7j50"
-                    >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        host
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
-                    >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
-              </div>
+                &lt;subpropertyAnchor level={2}&gt;
+                &lt;inlineCode&gt;
+                host
+                &lt;/inlineCode&gt;
+                &lt;/subpropertyAnchor&gt;
+              </p>
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="emotion-9"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="emotion-8"
               data-text="true"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-11"
               >
                 (string)
               </strong>
-            </div>
+            </p>
           </td>
         </tr>
       </tbody>

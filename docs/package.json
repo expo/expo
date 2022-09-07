@@ -24,7 +24,7 @@
   "dependencies": {
     "@docsearch/react": "^3.2.1",
     "@emotion/react": "^11.9.3",
-    "@expo/styleguide": "^4.1.1",
+    "@expo/styleguide": "^4.1.2",
     "@mdx-js/loader": "^2.1.2",
     "@mdx-js/mdx": "^2.1.2",
     "@mdx-js/react": "^2.1.2",

@@ -1,40 +1,134 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
+.emotion-0 {
+  padding: 20px 24px 24px 24px;
+  width: 280px;
+}
+
+@media screen and (max-width:1024px) {
+  .emotion-0 {
+    width: 100%;
+  }
+}
+
+.emotion-1 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  color: var(--expo-theme-text-secondary);
+  -webkit-transition: 50ms ease color;
+  transition: 50ms ease color;
+  font-size: 14px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  margin-bottom: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  font-family: Inter-Medium;
+}
+
+.emotion-1:hover {
+  color: var(--expo-theme-link-default);
+}
+
+.emotion-2 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.emotion-3 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  color: var(--expo-theme-text-secondary);
+  -webkit-transition: 50ms ease color;
+  transition: 50ms ease color;
+  font-size: 14px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  margin-bottom: 6px;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+}
+
+.emotion-3:hover {
+  color: var(--expo-theme-link-default);
+}
+
+.emotion-6 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: Menlo-Regular;
+  font-size: 13px;
+}
+
 <div>
   <nav
-    class="css-1u2eykn"
+    class="emotion-0"
     data-sidebar="true"
   >
     <a
-      class="css-1fc6p3j"
+      class="emotion-1"
       href="#base-level-heading"
       style="padding-left: 0px;"
     >
       <span
-        class="css-12j5c3t"
+        class="emotion-2"
       >
         Base level heading
       </span>
     </a>
     <a
-      class="css-1yg0875"
+      class="emotion-3"
       href="#level-3-subheading"
       style="padding-left: 12px;"
     >
       <span
-        class="css-12j5c3t"
+        class="emotion-2"
       >
         Level 3 subheading
       </span>
     </a>
     <a
-      class="css-1yg0875"
+      class="emotion-3"
       href="#code-heading-depth-1"
       style="padding-left: 12px;"
     >
       <span
-        class="css-1ta84j1"
+        class="emotion-6"
       >
         Code heading depth 1
       </span>
