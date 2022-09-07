@@ -27,7 +27,7 @@ Intermediate artifacts like `node_modules` directories are not cached and restor
 
 <Collapsible summary="Maximum build duration of 2 hours">
 
-If your build takes longer than 2 hours to run, it will be cancelled. This limit is lower on the free plan, and is limit is subject to change in the future.
+If your build takes longer than 2 hours to run, it will be cancelled. This limit is lower on the free plan, and the limit is subject to change in the future.
 
 </Collapsible>
 

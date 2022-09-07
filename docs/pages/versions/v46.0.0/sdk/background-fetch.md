@@ -154,7 +154,7 @@ For Android, you can set the `minimumInterval` option of your task to a small nu
 ```tsx
 async function registerBackgroundFetchAsync() {
   return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-    minimumInterval: 1, // task will fire 1 minute after app is backgrounded
+    minimumInterval: 1 * 60, // task will fire 1 minute after app is backgrounded
   });
 }
 ```

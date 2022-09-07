@@ -6,7 +6,7 @@ const path = require('path');
 const make = require('unist-builder');
 const { URL } = require('url');
 
-const { LATEST_VERSION, VERSIONS } = require('./versions');
+const { LATEST_VERSION, VERSIONS } = require('./versions.cjs');
 const PAGES_DIR = path.resolve(__dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
@@ -66,7 +66,6 @@ const general = [
         makePage('introduction/faq.md'),
       ]),
       makeGroup('Next steps', [
-        makePage('next-steps/using-the-documentation.md'),
         makePage('next-steps/community.md'),
         makePage('next-steps/additional-resources.md'),
       ]),
@@ -100,9 +99,7 @@ const general = [
       makePage('distribution/app-stores.md'),
       makePage('distribution/runtime-versions.md'),
       makePage('distribution/custom-updates-server.md'),
-      makePage('distribution/uploading-apps.md'),
       makePage('distribution/app-transfers.md'),
-      makePage('distribution/security.md'),
       makePage('distribution/publishing-websites.md'),
     ]),
   ]),
@@ -150,13 +147,13 @@ const general = [
       makePage('guides/education.md'),
       makePage('guides/how-expo-works.md'),
       makePage('guides/linking.md'),
-      makePage('guides/running-in-the-browser.md'),
       makePage('guides/setting-up-continuous-integration.md'),
       makePage('guides/troubleshooting-proxies.md'),
       makePage('guides/config-plugins.md'),
       makePage('guides/monorepos.md'),
       makePage('guides/sharing-preview-releases.md'),
       makePage('guides/using-hermes.md'),
+      makePage('guides/adopting-prebuild.md'),
     ]),
   ]),
   makeSection('Expo accounts', [
@@ -169,17 +166,10 @@ const general = [
   ]),
   makeSection('Bare workflow', [
     makeGroup('Bare workflow', [
-      makePage('bare/exploring-bare-workflow.md'),
       makePage('bare/hello-world.md'),
-      makePage('bare/using-libraries.md'),
-      makePage('bare/existing-apps.md'),
       makePage('bare/installing-expo-modules.md'),
-      makePage('bare/installing-unimodules.md'),
       makePage('bare/installing-updates.md'),
-      makePage('bare/unimodules-full-list.md'),
       makePage('bare/using-expo-client.md'),
-      makePage('bare/using-web.md'),
-      makePage('bare/migrating-from-expokit.md'),
       makePage('bare/updating-your-app.md'),
       makePage('bare/error-recovery.md'),
     ]),
@@ -271,6 +261,7 @@ const eas = [
         makePage('app-signing/local-credentials.md'),
         makePage('app-signing/existing-credentials.md'),
         makePage('app-signing/syncing-credentials.md'),
+        makePage('app-signing/security.md'),
       ]),
       makeGroup('Reference', [
         makePage('build-reference/eas-json.md'),

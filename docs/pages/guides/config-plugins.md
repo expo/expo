@@ -517,7 +517,7 @@ We highly recommend installing the [Expo config VS Code plugin](https://marketpl
 
 You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you're gonna want a monorepo.
 
-A monorepo will enable you to work on a node module and import it in your Expo app like you would if it were published to NPM. Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
+A monorepo will enable you to work on a node module and import it in your Expo config like you would if it were published to NPM. Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
 
 We recommend using [`expo-yarn-workspaces`](https://www.npmjs.com/package/expo-yarn-workspaces) which makes Expo monorepos very easy to setup.
 In your monorepo's `packages/` folder, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
@@ -1118,7 +1118,4 @@ Please add the following to your Expo config
 [expo-plist]: https://www.npmjs.com/package/@expo/plist
 [memfs]: https://www.npmjs.com/package/memfs
 [emc]: https://github.com/expo/expo/tree/main/packages/expo-modules-core
-
-<!-- TODO: Better link for Expo autolinking docs -->
-
-[autolinking]: /bare/installing-unimodules/
+[autolinking]: /workflow/glossary-of-terms#autolinking
