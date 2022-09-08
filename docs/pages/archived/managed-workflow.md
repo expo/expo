@@ -53,7 +53,7 @@ This is because terms like "Does not work with Expo" can unintentionally imply t
 
 This is a bit trickier as **eject** is still a reasonable term to use when a package does not support Expo Prebuild, however the term **eject** is a bit drastic and may dissuade developers from using your library altogether. Being more explicit will increase the chances that a developer sticks with your library. You can also link to resources that describe [what to do if a package doesn't support Prebuild][prebuild-supported] or [how to develop a local Expo Config Plugin][local-config-plugin].
 
-[adopting-prebuild]: cite-needed!!
+[adopting-prebuild]: /guides/adopting-prebuild
 [local-config-plugin]: /guides/config-plugins#developing-a-plugin
 [config-plugins]: /guides/config-plugins
 [prebuild-supported]: /workflow/prebuild/#config-plugin-support-in-the-community
