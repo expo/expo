@@ -29,6 +29,10 @@ const tableCellStyle = css({
   '&:last-child': {
     borderRight: 0,
   },
+
+  '> *:last-child': {
+    marginBottom: 0,
+  },
 });
 
 const fitContentStyle = css({

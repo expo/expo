@@ -38,22 +38,6 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
   );
 }
 
-export function ExpoKitCollapsible({ children }: CollapsibleProps) {
-  return (
-    <div css={configDetailsStyle}>
-      <Collapsible summary="ExpoKit">{children}</Collapsible>
-    </div>
-  );
-}
-
-export function BareWorkflowCollapsible({ children }: CollapsibleProps) {
-  return (
-    <div css={configDetailsStyle}>
-      <Collapsible summary="Bare Workflow">{children}</Collapsible>
-    </div>
-  );
-}
-
 const detailsStyle = css({
   overflow: 'hidden',
   background: theme.background.default,
@@ -115,13 +99,5 @@ const contentStyle = css(typography.body.paragraph, {
 
   'pre > pre': {
     marginTop: 0,
-  },
-});
-
-const configDetailsStyle = css({
-  marginTop: spacing[3],
-
-  '& details[open]': {
-    paddingBottom: spacing[4],
   },
 });

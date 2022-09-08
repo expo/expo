@@ -89,6 +89,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
   border-right: 0;
 }
 
+.emotion-7>*:last-child {
+  margin-bottom: 0;
+}
+
 .emotion-8 {
   font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
   font-weight: 400;
@@ -97,32 +101,46 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
   letter-spacing: -0.011rem;
   color: var(--expo-theme-text-default);
   margin-bottom: 16px;
+  display: block;
+}
+
+.emotion-8.is-wider {
+  max-width: 1200px;
+}
+
+@media screen and (max-width:1024px) {
+  .emotion-8.is-wider {
+    max-width: 100%;
+    width: 100%;
+  }
 }
 
 .emotion-9 {
-  padding: 16px;
-  vertical-align: middle;
-  border-right: 1px solid var(--expo-theme-border-default);
-  text-align: left;
+  position: relative;
 }
 
-.emotion-9:last-child {
-  border-right: 0;
+.emotion-10 {
+  display: block;
+  position: absolute;
+  top: -100px;
+  visibility: hidden;
 }
 
 .emotion-11 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  margin-bottom: 16px;
-  font-size: inherit;
-  font-family: Inter-SemiBold;
+  color: inherit;
+  -webkit-text-decoration: inherit;
+  text-decoration: inherit;
 }
 
-.emotion-37 {
+details .emotion-11 {
+  pointer-events: none;
+}
+
+.emotion-12 {
+  display: inline;
+}
+
+.emotion-13 {
   font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
   font-weight: 400;
   font-size: 0.8125rem;
@@ -141,18 +159,180 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
   overflow-x: auto;
 }
 
-a .emotion-37 {
+a .emotion-13 {
   border-color: var(--expo-theme-border-default);
 }
 
-h2 .emotion-37,
-h3 .emotion-37,
-h4 .emotion-37 {
+h2 .emotion-13,
+h3 .emotion-13,
+h4 .emotion-13 {
   position: relative;
   top: -2px;
 }
 
-.emotion-44 {
+.emotion-14 {
+  cursor: pointer;
+  vertical-align: text-top;
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  padding: 0 0.2em;
+  visibility: hidden;
+}
+
+a:hover .emotion-14 {
+  visibility: visible;
+}
+
+.emotion-14 svg {
+  width: 100%;
+  height: auto;
+}
+
+.emotion-15 {
+  padding: 16px;
+  vertical-align: middle;
+  border-right: 1px solid var(--expo-theme-border-default);
+  text-align: left;
+}
+
+.emotion-15:last-child {
+  border-right: 0;
+}
+
+.emotion-15>*:last-child {
+  margin-bottom: 0;
+}
+
+.emotion-16 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 16px;
+}
+
+.emotion-17 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 16px;
+  font-size: inherit;
+  font-family: Inter-SemiBold;
+}
+
+.emotion-18 {
+  overflow: hidden;
+  background: var(--expo-theme-background-default);
+  border: 1px solid var(--expo-theme-border-default);
+  border-radius: 6px;
+  padding: 0;
+  margin-bottom: 12px;
+}
+
+.emotion-18[open] {
+  box-shadow: var(--expo-theme-shadows-micro);
+}
+
+h4+.emotion-18,
+li>.emotion-18 {
+  margin-top: 12px;
+}
+
+.emotion-19 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  list-style: none;
+  background-color: var(--expo-theme-background-secondary);
+  padding: 6px;
+  padding-right: 12px;
+  margin: 0;
+  cursor: pointer;
+}
+
+.emotion-19:hover span {
+  color: var(--expo-theme-text-secondary);
+}
+
+.emotion-19::-webkit-details-marker {
+  display: none;
+}
+
+.emotion-20 {
+  -webkit-align-self: baseline;
+  -ms-flex-item-align: baseline;
+  align-self: baseline;
+  margin-top: 5px;
+  margin-left: 6px;
+  margin-right: 8px;
+}
+
+.emotion-21 {
+  -webkit-transform: rotate(-90deg);
+  -moz-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg);
+  transform: rotate(-90deg);
+  -webkit-transition: -webkit-transform 200ms;
+  transition: transform 200ms;
+}
+
+details[open] .emotion-21 {
+  -webkit-transform: rotate(0);
+  -moz-transform: rotate(0);
+  -ms-transform: rotate(0);
+  transform: rotate(0);
+}
+
+.emotion-22 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  font-family: Inter-Medium,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+}
+
+.emotion-23 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  padding: 16px 20px 0;
+}
+
+.emotion-23 p {
+  margin-left: 0;
+}
+
+.emotion-23 pre>pre {
+  margin-top: 0;
+}
+
+.emotion-115 {
   font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
   font-weight: 400;
   font-size: 1rem;
@@ -169,23 +349,23 @@ h4 .emotion-37 {
   border-radius: 4;
 }
 
-.emotion-44 div {
+.emotion-115 div {
   margin: 0;
 }
 
-.emotion-44 code {
+.emotion-115 code {
   background-color: var(--expo-theme-background-tertiary);
 }
 
-table .emotion-44 {
+table .emotion-115 {
   margin: 8px 0;
 }
 
-table .emotion-44:first-of-type {
+table .emotion-115:first-of-type {
   margin-top: 0;
 }
 
-table .emotion-44:last-child {
+table .emotion-115:last-child {
   margin-bottom: 0;
 }
 
@@ -222,38 +402,124 @@ table .emotion-44:last-child {
             class="emotion-7"
           >
             <div
-              data-testid="<propertyAnchor level={0}><inlineCode>name</inlineCode></propertyAnchor>"
+              data-testid="name"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
-              <p
-                class="emotion-8"
+              <div
+                class=" emotion-8"
                 data-text="true"
               >
-                &lt;propertyAnchor level={0}&gt;
-                &lt;inlineCode&gt;
-                name
-                &lt;/inlineCode&gt;
-                &lt;/propertyAnchor&gt;
-              </p>
+                <div
+                  class="emotion-9"
+                >
+                  <span
+                    class="emotion-10"
+                    id="name"
+                  />
+                  <a
+                    class="emotion-11"
+                    href="#name"
+                  >
+                    <span
+                      class="emotion-12"
+                    >
+                      <code
+                        class="inline emotion-13"
+                      >
+                        name
+                      </code>
+                    </span>
+                    <span
+                      class="emotion-14"
+                    >
+                      <svg
+                        aria-label="permalink"
+                        class="anchor-icon"
+                        fill="none"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </td>
           <td
-            class="emotion-9"
+            class="emotion-15"
           >
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               <strong
-                class="emotion-11"
+                class="emotion-17"
               >
                 (string)
               </strong>
                - Name of your app.
-              &lt;bareworkflowDetails&gt;
-              Edit the 'Display Name' field in Xcode
-              &lt;/bareworkflowDetails&gt;
             </p>
+            <details
+              class="emotion-18"
+            >
+              <summary
+                class="emotion-19"
+              >
+                <div
+                  class="emotion-20"
+                >
+                  <svg
+                    class="emotion-21"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
+                  >
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="emotion-22"
+                >
+                  Bare Workflow
+                </span>
+              </summary>
+              <div
+                class="emotion-23"
+              >
+                <p
+                  class="emotion-16"
+                  data-text="true"
+                >
+                  Edit the 'Display Name' field in Xcode
+                </p>
+              </div>
+            </details>
           </td>
         </tr>
         <tr
@@ -263,41 +529,168 @@ table .emotion-44:last-child {
             class="emotion-7"
           >
             <div
-              data-testid="<propertyAnchor level={0}><inlineCode>androidNavigationBar</inlineCode></propertyAnchor>"
+              data-testid="androidNavigationBar"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
-              <p
-                class="emotion-8"
+              <div
+                class=" emotion-8"
                 data-text="true"
               >
-                &lt;propertyAnchor level={0}&gt;
-                &lt;inlineCode&gt;
-                androidNavigationBar
-                &lt;/inlineCode&gt;
-                &lt;/propertyAnchor&gt;
-              </p>
+                <div
+                  class="emotion-9"
+                >
+                  <span
+                    class="emotion-10"
+                    id="androidnavigationbar"
+                  />
+                  <a
+                    class="emotion-11"
+                    href="#androidnavigationbar"
+                  >
+                    <span
+                      class="emotion-12"
+                    >
+                      <code
+                        class="inline emotion-13"
+                      >
+                        androidNavigationBar
+                      </code>
+                    </span>
+                    <span
+                      class="emotion-14"
+                    >
+                      <svg
+                        aria-label="permalink"
+                        class="anchor-icon"
+                        fill="none"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </td>
           <td
-            class="emotion-9"
+            class="emotion-15"
           >
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               <strong
-                class="emotion-11"
+                class="emotion-17"
               >
                 (object)
               </strong>
                - Configuration for the bottom navigation bar on Android.
-              &lt;expokitDetails&gt;
-              Set this property using AppConstants.java.
-              &lt;/expokitDetails&gt;
-              &lt;bareworkflowDetails&gt;
-              Set this property using just Xcode
-              &lt;/bareworkflowDetails&gt;
             </p>
+            <details
+              class="emotion-18"
+            >
+              <summary
+                class="emotion-19"
+              >
+                <div
+                  class="emotion-20"
+                >
+                  <svg
+                    class="emotion-21"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
+                  >
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="emotion-22"
+                >
+                  ExpoKit
+                </span>
+              </summary>
+              <div
+                class="emotion-23"
+              >
+                <p
+                  class="emotion-16"
+                  data-text="true"
+                >
+                  Set this property using AppConstants.java.
+                </p>
+              </div>
+            </details>
+            <details
+              class="emotion-18"
+            >
+              <summary
+                class="emotion-19"
+              >
+                <div
+                  class="emotion-20"
+                >
+                  <svg
+                    class="emotion-21"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
+                  >
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="emotion-22"
+                >
+                  Bare Workflow
+                </span>
+              </summary>
+              <div
+                class="emotion-23"
+              >
+                <p
+                  class="emotion-16"
+                  data-text="true"
+                >
+                  Set this property using just Xcode
+                </p>
+              </div>
+            </details>
           </td>
         </tr>
         <tr
@@ -307,38 +700,124 @@ table .emotion-44:last-child {
             class="emotion-7"
           >
             <div
-              data-testid="<subpropertyAnchor level={1}><inlineCode>visible</inlineCode></subpropertyAnchor>"
+              data-testid="visible"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
-              <p
-                class="emotion-8"
+              <div
+                class=" emotion-8"
                 data-text="true"
               >
-                &lt;subpropertyAnchor level={1}&gt;
-                &lt;inlineCode&gt;
-                visible
-                &lt;/inlineCode&gt;
-                &lt;/subpropertyAnchor&gt;
-              </p>
+                <div
+                  class="emotion-9"
+                >
+                  <span
+                    class="emotion-10"
+                    id="visible"
+                  />
+                  <a
+                    class="emotion-11"
+                    href="#visible"
+                  >
+                    <span
+                      class="emotion-12"
+                    >
+                      <code
+                        class="inline emotion-13"
+                      >
+                        visible
+                      </code>
+                    </span>
+                    <span
+                      class="emotion-14"
+                    >
+                      <svg
+                        aria-label="permalink"
+                        class="anchor-icon"
+                        fill="none"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </td>
           <td
-            class="emotion-9"
+            class="emotion-15"
           >
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               <strong
-                class="emotion-11"
+                class="emotion-17"
               >
                 (enum)
               </strong>
                - Determines how and when the navigation bar is shown.
-              &lt;expokitDetails&gt;
-              Set this property using Xcode.
-              &lt;/expokitDetails&gt;
             </p>
+            <details
+              class="emotion-18"
+            >
+              <summary
+                class="emotion-19"
+              >
+                <div
+                  class="emotion-20"
+                >
+                  <svg
+                    class="emotion-21"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
+                  >
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="emotion-22"
+                >
+                  ExpoKit
+                </span>
+              </summary>
+              <div
+                class="emotion-23"
+              >
+                <p
+                  class="emotion-16"
+                  data-text="true"
+                >
+                  Set this property using Xcode.
+                </p>
+              </div>
+            </details>
           </td>
         </tr>
         <tr
@@ -348,30 +827,75 @@ table .emotion-44:last-child {
             class="emotion-7"
           >
             <div
-              data-testid="<subpropertyAnchor level={2}><inlineCode>always</inlineCode></subpropertyAnchor>"
+              data-testid="always"
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
-              <p
-                class="emotion-8"
+              <div
+                class=" emotion-8"
                 data-text="true"
               >
-                &lt;subpropertyAnchor level={2}&gt;
-                &lt;inlineCode&gt;
-                always
-                &lt;/inlineCode&gt;
-                &lt;/subpropertyAnchor&gt;
-              </p>
+                <div
+                  class="emotion-9"
+                >
+                  <span
+                    class="emotion-10"
+                    id="always"
+                  />
+                  <a
+                    class="emotion-11"
+                    href="#always"
+                  >
+                    <span
+                      class="emotion-12"
+                    >
+                      <code
+                        class="inline emotion-13"
+                      >
+                        always
+                      </code>
+                    </span>
+                    <span
+                      class="emotion-14"
+                    >
+                      <svg
+                        aria-label="permalink"
+                        class="anchor-icon"
+                        fill="none"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </td>
           <td
-            class="emotion-9"
+            class="emotion-15"
           >
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               <strong
-                class="emotion-11"
+                class="emotion-17"
               >
                 (boolean)
               </strong>
@@ -386,30 +910,75 @@ table .emotion-44:last-child {
             class="emotion-7"
           >
             <div
-              data-testid="<subpropertyAnchor level={1}><inlineCode>backgroundColor</inlineCode></subpropertyAnchor>"
+              data-testid="backgroundColor"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
-              <p
-                class="emotion-8"
+              <div
+                class=" emotion-8"
                 data-text="true"
               >
-                &lt;subpropertyAnchor level={1}&gt;
-                &lt;inlineCode&gt;
-                backgroundColor
-                &lt;/inlineCode&gt;
-                &lt;/subpropertyAnchor&gt;
-              </p>
+                <div
+                  class="emotion-9"
+                >
+                  <span
+                    class="emotion-10"
+                    id="backgroundcolor"
+                  />
+                  <a
+                    class="emotion-11"
+                    href="#backgroundcolor"
+                  >
+                    <span
+                      class="emotion-12"
+                    >
+                      <code
+                        class="inline emotion-13"
+                      >
+                        backgroundColor
+                      </code>
+                    </span>
+                    <span
+                      class="emotion-14"
+                    >
+                      <svg
+                        aria-label="permalink"
+                        class="anchor-icon"
+                        fill="none"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </td>
           <td
-            class="emotion-9"
+            class="emotion-15"
           >
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               <strong
-                class="emotion-11"
+                class="emotion-17"
               >
                 (string)
               </strong>
@@ -418,12 +987,12 @@ table .emotion-44:last-child {
             
 
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               6 character long hex color string, eg: 
               <code
-                class="inline emotion-37"
+                class="inline emotion-13"
               >
                 '#000000'
               </code>
@@ -437,42 +1006,126 @@ table .emotion-44:last-child {
             class="emotion-7"
           >
             <div
-              data-testid="<propertyAnchor level={0}><inlineCode>intentFilters</inlineCode></propertyAnchor>"
+              data-testid="intentFilters"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
-              <p
-                class="emotion-8"
+              <div
+                class=" emotion-8"
                 data-text="true"
               >
-                &lt;propertyAnchor level={0}&gt;
-                &lt;inlineCode&gt;
-                intentFilters
-                &lt;/inlineCode&gt;
-                &lt;/propertyAnchor&gt;
-              </p>
+                <div
+                  class="emotion-9"
+                >
+                  <span
+                    class="emotion-10"
+                    id="intentfilters"
+                  />
+                  <a
+                    class="emotion-11"
+                    href="#intentfilters"
+                  >
+                    <span
+                      class="emotion-12"
+                    >
+                      <code
+                        class="inline emotion-13"
+                      >
+                        intentFilters
+                      </code>
+                    </span>
+                    <span
+                      class="emotion-14"
+                    >
+                      <svg
+                        aria-label="permalink"
+                        class="anchor-icon"
+                        fill="none"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </td>
           <td
-            class="emotion-9"
+            class="emotion-15"
           >
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               <strong
-                class="emotion-11"
+                class="emotion-17"
               >
                 (array)
               </strong>
                - Configuration for setting an array of custom intent filters in Android manifest.
-              &lt;bareworkflowDetails&gt;
-              This is set in AndroidManifest.xml directly.
-              &lt;/bareworkflowDetails&gt;
             </p>
-            
-
+            <details
+              class="emotion-18"
+            >
+              <summary
+                class="emotion-19"
+              >
+                <div
+                  class="emotion-20"
+                >
+                  <svg
+                    class="emotion-21"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
+                  >
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="emotion-22"
+                >
+                  Bare Workflow
+                </span>
+              </summary>
+              <div
+                class="emotion-23"
+              >
+                <p
+                  class="emotion-16"
+                  data-text="true"
+                >
+                  This is set in AndroidManifest.xml directly.
+                </p>
+              </div>
+            </details>
             <blockquote
-              class="emotion-44"
+              class="emotion-115"
               data-text="true"
             >
               <div
@@ -498,20 +1151,11 @@ table .emotion-44:last-child {
               <div>
                 
 
+                [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
+                
+
               </div>
             </blockquote>
-            
-
-            <p
-              class="emotion-8"
-              data-text="true"
-            >
-              [{
-"autoVerify": true,
-"data": {"host": "*.example.com"
-}
-}]
-            </p>
           </td>
         </tr>
         <tr
@@ -521,30 +1165,75 @@ table .emotion-44:last-child {
             class="emotion-7"
           >
             <div
-              data-testid="<subpropertyAnchor level={1}><inlineCode>autoVerify</inlineCode></subpropertyAnchor>"
+              data-testid="autoVerify"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
-              <p
-                class="emotion-8"
+              <div
+                class=" emotion-8"
                 data-text="true"
               >
-                &lt;subpropertyAnchor level={1}&gt;
-                &lt;inlineCode&gt;
-                autoVerify
-                &lt;/inlineCode&gt;
-                &lt;/subpropertyAnchor&gt;
-              </p>
+                <div
+                  class="emotion-9"
+                >
+                  <span
+                    class="emotion-10"
+                    id="autoverify"
+                  />
+                  <a
+                    class="emotion-11"
+                    href="#autoverify"
+                  >
+                    <span
+                      class="emotion-12"
+                    >
+                      <code
+                        class="inline emotion-13"
+                      >
+                        autoVerify
+                      </code>
+                    </span>
+                    <span
+                      class="emotion-14"
+                    >
+                      <svg
+                        aria-label="permalink"
+                        class="anchor-icon"
+                        fill="none"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </td>
           <td
-            class="emotion-9"
+            class="emotion-15"
           >
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               <strong
-                class="emotion-11"
+                class="emotion-17"
               >
                 (boolean)
               </strong>
@@ -559,30 +1248,75 @@ table .emotion-44:last-child {
             class="emotion-7"
           >
             <div
-              data-testid="<subpropertyAnchor level={1}><inlineCode>data</inlineCode></subpropertyAnchor>"
+              data-testid="data"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
-              <p
-                class="emotion-8"
+              <div
+                class=" emotion-8"
                 data-text="true"
               >
-                &lt;subpropertyAnchor level={1}&gt;
-                &lt;inlineCode&gt;
-                data
-                &lt;/inlineCode&gt;
-                &lt;/subpropertyAnchor&gt;
-              </p>
+                <div
+                  class="emotion-9"
+                >
+                  <span
+                    class="emotion-10"
+                    id="data"
+                  />
+                  <a
+                    class="emotion-11"
+                    href="#data"
+                  >
+                    <span
+                      class="emotion-12"
+                    >
+                      <code
+                        class="inline emotion-13"
+                      >
+                        data
+                      </code>
+                    </span>
+                    <span
+                      class="emotion-14"
+                    >
+                      <svg
+                        aria-label="permalink"
+                        class="anchor-icon"
+                        fill="none"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </td>
           <td
-            class="emotion-9"
+            class="emotion-15"
           >
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               <strong
-                class="emotion-11"
+                class="emotion-17"
               >
                 (array || object)
               </strong>
@@ -596,30 +1330,75 @@ table .emotion-44:last-child {
             class="emotion-7"
           >
             <div
-              data-testid="<subpropertyAnchor level={2}><inlineCode>host</inlineCode></subpropertyAnchor>"
+              data-testid="host"
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
-              <p
-                class="emotion-8"
+              <div
+                class=" emotion-8"
                 data-text="true"
               >
-                &lt;subpropertyAnchor level={2}&gt;
-                &lt;inlineCode&gt;
-                host
-                &lt;/inlineCode&gt;
-                &lt;/subpropertyAnchor&gt;
-              </p>
+                <div
+                  class="emotion-9"
+                >
+                  <span
+                    class="emotion-10"
+                    id="host"
+                  />
+                  <a
+                    class="emotion-11"
+                    href="#host"
+                  >
+                    <span
+                      class="emotion-12"
+                    >
+                      <code
+                        class="inline emotion-13"
+                      >
+                        host
+                      </code>
+                    </span>
+                    <span
+                      class="emotion-14"
+                    >
+                      <svg
+                        aria-label="permalink"
+                        class="anchor-icon"
+                        fill="none"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                        <path
+                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                          stroke="#9B9B9B"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                        />
+                      </svg>
+                    </span>
+                  </a>
+                </div>
+              </div>
             </div>
           </td>
           <td
-            class="emotion-9"
+            class="emotion-15"
           >
             <p
-              class="emotion-8"
+              class="emotion-16"
               data-text="true"
             >
               <strong
-                class="emotion-11"
+                class="emotion-17"
               >
                 (string)
               </strong>
