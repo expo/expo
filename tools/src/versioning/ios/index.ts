@@ -1053,7 +1053,7 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
       chalk.yellow(
         '################################################################################################################'
       ) +
-      `\nIf you want to commit the versioned code to git, please also remember upload the versioned Hermes tarball at ${chalk.cyan(
+      `\nIf you want to commit the versioned code to git, please also upload the versioned Hermes tarball at ${chalk.cyan(
         hermesTarball
       )} to:\n` +
       chalk.cyan(
