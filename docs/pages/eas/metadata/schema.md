@@ -21,7 +21,7 @@ import {
 </Callout>
 <br />
 
-The store config in EAS Metadata is a large object containing information that otherwise would be provided manually through the app store dashboards.
+The store config in EAS Metadata contains information that otherwise would be provided manually through the app store dashboards.
 This document outlines the structure of the store config object.
 
 > If you use the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme), you get all this information through auto-complete, suggestions, and warnings in your editor.
