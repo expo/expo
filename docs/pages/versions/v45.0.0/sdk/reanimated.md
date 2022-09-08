@@ -33,7 +33,7 @@ After you add the Babel plugin, restart your development server and clear the bu
 
 > Note: If you load other Babel plugins, the Reanimated plugin has to be the last item in the plugins array.
 
-## API Usage
+## Usage
 
 You should refer to the [react-native-reanimated docs](https://docs.swmansion.com/react-native-reanimated/docs/) for more information on the API and its usage. But the following example (courtesy of that repo) is a quick way to get started.
 
