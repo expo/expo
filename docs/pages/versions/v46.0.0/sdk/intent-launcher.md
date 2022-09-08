@@ -16,7 +16,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <APIInstallSection />
 
-#### Example
+## Usage
 
 ```ts
 import { startActivityAsync, ActivityAction } from 'expo-intent-launcher';

@@ -41,4 +41,6 @@ class ComponentName extends Component {
 }
 ```
 
+## Usage
+
 Read the [react-native-gesture-handler docs](https://docs.swmansion.com/react-native-gesture-handler/) for more information on the API and usage.
