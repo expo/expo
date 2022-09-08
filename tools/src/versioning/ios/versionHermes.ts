@@ -100,8 +100,8 @@ function createHermesTransforms(versionName: string, versionedJsiDir: string): F
     },
     {
       paths: 'utils/*.sh',
-      find: 'hermes.framework',
-      replaceWith: `${versionName}hermes.framework`,
+      find: /\b(hermes.(xc)?framework)/g,
+      replaceWith: `${versionName}$1`,
     },
   ];
 }
@@ -213,24 +213,28 @@ export async function createVersionedHermesTarball(
   }
 
   const hermesRoot = options?.hermesDir ?? path.join(os.tmpdir(), 'hermes');
-  await fs.ensureDir(hermesRoot);
+  try {
+    await fs.remove(hermesRoot);
+    await fs.ensureDir(hermesRoot);
 
-  logger.log('Downloading hermes source code');
-  await downloadHermesSourceAsync(hermesRoot, hermesGitRef);
+    logger.log('Downloading hermes source code');
+    await downloadHermesSourceAsync(hermesRoot, hermesGitRef);
 
-  logger.log('Versioning hermes source code');
-  await transformHermesAsync(hermesRoot, versionedReactNativeRoot, versionName);
+    logger.log('Versioning hermes source code');
+    await transformHermesAsync(hermesRoot, versionedReactNativeRoot, versionName);
 
-  logger.log('Building hermes');
-  await buildHermesAsync(hermesRoot, options);
+    logger.log('Building hermes');
+    await buildHermesAsync(hermesRoot, options);
 
-  const tarball = path.join(hermesRoot, `${versionName}hermes.tar.gz`);
-  logger.log(`Archiving hermes tarball: ${tarball}`);
-  await removeUnusedHeaders(hermesRoot, versionName);
-  await spawnAsync('tar', ['cvfz', tarball, 'destroot'], {
-    cwd: hermesRoot,
-    stdio: options?.verbose ? 'inherit' : 'ignore',
-  });
-
-  return tarball;
+    const tarball = path.join(EXPO_DIR, `${versionName}hermes.tar.gz`);
+    logger.log(`Archiving hermes tarball: ${tarball}`);
+    await removeUnusedHeaders(hermesRoot, versionName);
+    await spawnAsync('tar', ['cvfz', tarball, 'destroot'], {
+      cwd: hermesRoot,
+      stdio: options?.verbose ? 'inherit' : 'ignore',
+    });
+    return tarball;
+  } finally {
+    await fs.remove(hermesRoot);
+  }
 }
