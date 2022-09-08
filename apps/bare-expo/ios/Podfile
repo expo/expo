@@ -37,6 +37,10 @@ abstract_target 'BareExpoMain' do
     :app_path => "#{Dir.pwd}/.."
   )
 
+  # required for Firebase modules
+  # see https://github.com/invertase/react-native-firebase/issues/6332
+  use_modular_headers!
+
   # Fix Google Sign-in and Flipper
   post_install do |installer|
     # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
