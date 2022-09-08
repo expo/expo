@@ -17,6 +17,13 @@ podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {
 abstract_target 'BareExpoMain' do
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
+  # Required by latest firebase versions
+  # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
+  pod 'Firebase', :modular_headers => true
+  pod 'FirebaseCoreInternal', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+  $RNFirebaseAsStaticFramework = true
+
   use_expo_modules!(
     tests: [
       'expo-dev-menu-interface',
@@ -36,10 +43,6 @@ abstract_target 'BareExpoMain' do
     # An absolute path to your application root.
     :app_path => "#{Dir.pwd}/.."
   )
-
-  # required for Firebase modules
-  # see https://github.com/invertase/react-native-firebase/issues/6332
-  use_modular_headers!
 
   # Fix Google Sign-in and Flipper
   post_install do |installer|
