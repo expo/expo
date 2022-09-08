@@ -53,7 +53,7 @@ export default {
               [remarkMDXFrontmatter, { name: 'meta' }],
               remarkExportHeadings,
               remarkLinkRewrite,
-              [remarkCreateStaticProps, `{ meta, headings: headings || [] }`],
+              [remarkCreateStaticProps, `{ meta: meta || {}, headings: headings || [] }`],
             ],
             rehypePlugins: [rehypeSlug],
           },
