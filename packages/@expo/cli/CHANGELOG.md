@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Hide server rate limiting warning during `npx expo start`. ([#19038](https://github.com/expo/expo/pull/19038) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.3.1 — 2022-09-26
 
 _This version does not introduce any user-facing changes._

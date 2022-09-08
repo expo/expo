@@ -1,7 +1,6 @@
 import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
 import openBrowserAsync from 'better-opn';
-import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 
 import { APISettings } from '../../api/settings';
@@ -244,13 +243,15 @@ export abstract class BundlerDevServer {
       this.isTargetingNative()
         ? this.getNativeRuntimeUrl()
         : this.getDevServerUrl({ hostType: 'localhost' }),
-      (error) => {
-        Log.error(
-          chalk.red(
-            '\nAn unexpected error occurred while updating the Dev Client API. This project will not appear in the "Development servers" section of the Expo Go app until this process has been restarted.'
-          )
-        );
-        Log.exception(error);
+      () => {
+        // TODO: This appears to be happening consistently after an hour.
+        // We should investigate why this is happening and fix it on our servers.
+        // Log.error(
+        //   chalk.red(
+        //     '\nAn unexpected error occurred while updating the Dev Session API. This project will not appear in the "Development servers" section of the Expo Go app until this process has been restarted.'
+        //   )
+        // );
+        // Log.exception(error);
         this.devSession?.closeAsync().catch((error) => {
           debug('[dev-session] error closing: ' + error.message);
         });
