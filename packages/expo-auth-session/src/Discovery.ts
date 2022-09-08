@@ -218,7 +218,7 @@ export function issuerWithWellKnownUrl(issuer: Issuer): string {
  * @return Returns a discovery document that can be used for authentication.
  */
 export async function fetchDiscoveryAsync(issuer: Issuer): Promise<DiscoveryDocument> {
-  const json = await requestAsync<ProviderMetadata>(issuerWithWellKnownUrl(issuer), {
+  const json = await requestAsync<ProviderMetadata>(isWellKnownPath(issuer) ? issuer : issuerWithWellKnownUrl(issuer), {
     dataType: 'json',
     method: 'GET',
   });
@@ -251,4 +251,8 @@ export async function resolveDiscoveryAsync(
     return await fetchDiscoveryAsync(issuerOrDiscovery);
   }
   return issuerOrDiscovery;
+}
+
+function isWellKnownPath(issuer: Issuer): boolean {
+  return issuer.indexOf('/.well-known/openid-configuration') >= 0;
 }
