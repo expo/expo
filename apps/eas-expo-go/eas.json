@@ -57,6 +57,7 @@
         "gradleCommand": ":app:bundleVersionedRelease"
       },
       "ios": {
+        "credentialsSource": "remote",
         "simulator": false
       }
     },
