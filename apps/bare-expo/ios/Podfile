@@ -19,10 +19,8 @@ abstract_target 'BareExpoMain' do
 
   # Required by latest firebase versions
   # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
-  pod 'Firebase', :modular_headers => true
-  pod 'FirebaseCoreInternal', :modular_headers => true
+  pod 'FirebaseCore', :modular_headers => true
   pod 'GoogleUtilities', :modular_headers => true
-  $RNFirebaseAsStaticFramework = true
 
   use_expo_modules!(
     tests: [
