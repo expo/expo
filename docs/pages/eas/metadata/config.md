@@ -1,0 +1,128 @@
+---
+title: Create config files for EAS Metadata
+sidebar_title: Creating the store config
+---
+
+import { Callout } from '~/ui/components/Callout';
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+
+<Callout type="warning">
+  EAS Metadata is in beta and subject to breaking changes.
+</Callout>
+<br />
+
+EAS Metadata is designed to be as simple as possible while still being extensible to cover almost all use cases.
+By default, it uses a simple **store.config.json** file located at the _root of your project_.
+
+You can configure the path or name of the store config file with the **eas.json** [`metadataPath`](../../submit/eas-json.md#metadatapath) property.
+Besides the default JSON format, EAS Metadata also supports more dynamic config using JavaScript files.
+
+## Static store config
+
+The default store config type for EAS Metadata is a simple JSON file.
+The example below shows an example store config with basic App Store information written in English (U.S.).
+
+You can find all configuration options in the [store config schema](./schema.md).
+
+> If you have the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme) installed, you get auto-complete, suggestions, and warnings for **store.config.json** files.
+
+<CodeBlocksTable tabs={['store.config.json']}>
+
+```json
+{
+  "configVersion": 0,
+  "apple": {
+    "info": {
+      "en-US": {
+        "title": "Awesome App",
+        "subtitle": "Your self-made awesome app",
+        "description": "The most awesome app you've ever seen",
+        "keywords": ["awesome", "app"],
+        "marketingUrl": "https://example.com/en/promo",
+        "supportUrl": "https://example.com/en/support",
+        "privacyPolicyUrl": "https://example.com/en/privacy"
+      }
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+
+## Dynamic store config
+
+The static config can get you far, but sometimes it's better to use a dynamic value.
+For example, copyright notices usually contain the current year, which is easy to forget to update every year.
+You can make this dynamic by using a **store.config.js** file configured with the [`metadataPath`](../../submit/eas-json.md#metadatapath) property in your **eas.json** file.
+
+> `eas metadata:pull` can't update dynamic store config files. Instead, it creates a JSON file with the same name as the configured file. You can import the JSON file to reuse the data from `eas metadata:pull`.
+
+<CodeBlocksTable tabs={['store.config.js', 'eas.json']}>
+
+```js
+// Use the data from `eas metadata:pull`
+const config = require('./store.config.json');
+
+const year = new Date().getFullYear();
+
+module.exports = {
+  ...config,
+  copyright: `${year} Acme, Inc.`,
+};
+```
+
+```json
+{
+  "submit": {
+    "production": {
+      "ios": {
+        "metadataPath": "./store.config.js"
+      }
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+## Store config with external content
+
+When using external services for localizations or concepts like "remote config", you have to fetch external content.
+EAS Metadata supports synchronous and asynchronous functions exported from dynamic store config files.
+The function results are awaited before validating and syncing with the stores.
+
+> The **store.config.js** function is evaluated in Node. If you need special values, like secrets, use environment variables.
+
+<CodeBlocksTable tabs={['store.config.js', 'eas.json']}>
+
+```js
+// Use the data from `eas metadata:pull`
+const config = require('./store.config.json');
+
+module.exports = async () => {
+  const year = new Date().getFullYear();
+  const info = await fetchLocalizations('...')
+    .then(response => response.json());
+
+  return {
+    ...config,
+    copyright: `${year} Acme, Inc.`,
+    info,
+  };
+};
+```
+
+```json
+{
+  "submit": {
+    "production": {
+      "ios": {
+        "metadataPath": "./store.config.js"
+      }
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
