@@ -1039,7 +1039,6 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
   logger.info('\n💿 Starting to build versioned Hermes tarball');
   const versionedReactNativeRoot = getVersionedReactNativePath(versionName);
   const hermesTarball = await createVersionedHermesTarball(versionedReactNativeRoot, versionName, {
-    // hermesDir: '/Users/kudo/hermes',
     verbose: true,
   });
   await spawnAsync('tar', ['xfz', hermesTarball], {
