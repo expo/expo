@@ -7832,28 +7832,6 @@ table .emotion-86:last-child {
   opacity: 0.5;
 }
 
-.emotion-124 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  border-top: 1px solid var(--expo-theme-border-default);
-  border-bottom: 1px solid var(--expo-theme-border-default);
-  margin: 24px -20px 16px;
-  padding: 10px 20px;
-  background-color: var(--expo-theme-background-secondary);
-}
-
-.emotion-124 h4 {
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  font-family: Inter-Medium;
-  margin-bottom: 0;
-  margin-top: 0;
-  color: var(--expo-theme-text-secondary);
-}
-
 .emotion-131 {
   font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
   font-weight: 400;
@@ -8988,7 +8966,7 @@ This can be used to quickly create specific permission hooks in every module.
       </pre>
     </pre>
     <div
-      class="emotion-124"
+      class="emotion-120"
     >
       <h4
         class="  emotion-121"
@@ -9236,7 +9214,7 @@ This can be used to quickly create specific permission hooks in every module.
       Checks user's permissions for accessing the camera.
     </p>
     <div
-      class="emotion-124"
+      class="emotion-120"
     >
       <h4
         class="  emotion-121"
@@ -9441,7 +9419,7 @@ This can be used to quickly create specific permission hooks in every module.
       .
     </p>
     <div
-      class="emotion-124"
+      class="emotion-120"
     >
       <h4
         class="  emotion-121"
@@ -9765,7 +9743,7 @@ the platform.
       Scan bar codes from the image given by the URL.
     </p>
     <div
-      class="emotion-124"
+      class="emotion-120"
     >
       <h4
         class="  emotion-121"
@@ -10000,7 +9978,7 @@ code.
       An object obtained by permissions get and request functions.
     </p>
     <div
-      class="emotion-124"
+      class="emotion-120"
     >
       <h4
         class="  emotion-121"
