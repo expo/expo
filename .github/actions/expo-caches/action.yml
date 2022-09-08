@@ -238,5 +238,5 @@ runs:
       uses: actions/cache@v2
       with:
         path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
-        key: ${{ runner.os }}-gradle-downloads-${{ hashFiles('yarn.lock') }}
-        restore-keys: ${{ runner.os }}-gradle-downloads-
+        key: gradle-downloads-${{ hashFiles('yarn.lock') }}
+        restore-keys: gradle-downloads-
