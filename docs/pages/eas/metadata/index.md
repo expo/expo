@@ -13,7 +13,7 @@ import { Terminal } from '~/ui/components/Snippet';
 </Callout>
 <br />
 
-**EAS Metadata** is a tool that helps submit app store information to get your app approved.
+**EAS Metadata** enables you to automate and maintain your app store presence from the command line.
 
 You need to provide a lot of information to multiple app stores before your users can use your app. This information is often about complex topics that don't apply to your app. You have to start a lengthy review process after providing the information. When the reviewer finds any issues in the information you provided, you need to restart this process.
 

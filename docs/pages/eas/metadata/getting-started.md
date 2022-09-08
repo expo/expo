@@ -13,7 +13,7 @@ import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 </Callout>
 <br />
 
-EAS Metadata helps you submit app store information to get your app approved. It uses a [**store.config.json**](./config.md#static-store-config) file containing all required app information instead of going through multiple different forms. It also tries to find common pitfalls that could cause app rejections with built-in validation.
+EAS Metadata enables you to automate and maintain your app store presence from the command line. It uses a [**store.config.json**](./config.md#static-store-config) file containing all required app information instead of going through multiple different forms. It also tries to find common pitfalls that could cause app rejections with built-in validation.
 
 ## Prerequisites
 
