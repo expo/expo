@@ -22,7 +22,7 @@ public func Constants(@_implicitSelfCapture _ body: @autoclosure @escaping () ->
 /**
  Defines event names that the object can send to JavaScript.
  */
-public func Events(_ names: String...) -> AnyDefinition {
+public func Events(_ names: String...) -> EventsDefinition {
   return EventsDefinition(names: names)
 }
 
