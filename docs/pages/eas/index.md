@@ -16,4 +16,4 @@ Read the full pitch at [expo.dev/eas](https://expo.dev/eas), or follow the links
 
 <BoxLink title="EAS Update" description="Address small bugs and push quick fixes directly to end-users. Learn more." href="/eas-update/introduction" />
 
-<BoxLink title="EAS Metadata (In Preview)" description="Upload all app store information required to get your app published. Learn more." href="/eas-metadata/introduction" />
+<BoxLink title="EAS Metadata (In Preview)" description="Upload all app store information required to get your app published. Learn more." href="/eas/metadata/" />

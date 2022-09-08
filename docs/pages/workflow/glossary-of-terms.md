@@ -111,7 +111,7 @@ The `eas.json` file used to configure [EAS CLI](#eas-cli). For more information,
 
 ### EAS Metadata
 
-A command line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the `eas-cli` package and should be used to improve the iOS submission process.
+A command line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the [EAS CLI](#eas-cli) package and should be used to improve the iOS submission process, see [EAS Metadata](../eas/metadata/index.md).
 
 ### EAS Update
 
