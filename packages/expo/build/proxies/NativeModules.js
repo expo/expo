@@ -1,5 +1,6 @@
 import { ExecutionEnvironment } from 'expo-constants';
-import { NativeModules as RNNativeModules } from 'react-native';
+import { NativeModules } from 'react-native';
+const originalNativeModules = NativeModules;
 const PROPS_TO_IGNORE = new Set([
     /**
      * We don't want to throw when the expo or expo-modules-core packages try to access any of these
@@ -37,7 +38,6 @@ const PROPS_TO_IGNORE = new Set([
 const alreadyErroredModules = new Set();
 let additionalModulesToIgnore = new Set();
 let enabled = true;
-let originalNativeModules = null;
 function createErrorMessageForStoreClient(moduleName) {
     return `Your JavaScript code tried to access a native module, ${moduleName}, that isn't supported in Expo Go.
 To continue development with ${moduleName}, you need to create a development build of your app. See https://expo.fyi/missing-native-module for more info, including how to disable these errors.`;
@@ -48,7 +48,6 @@ Make sure you are using the newest available development build of this app and r
 See https://expo.fyi/missing-native-module for more info, including how to disable these errors.`;
 }
 export function createProxyForNativeModules(NativeModules) {
-    originalNativeModules = NativeModules;
     if (!__DEV__) {
         return NativeModules;
     }
@@ -103,6 +102,6 @@ export function disableMissingNativeModuleErrors(moduleNames) {
  * @returns Corresponding native module object, or null if it doesn't exist
  */
 export function getNativeModuleIfExists(moduleName) {
-    return originalNativeModules ? originalNativeModules[moduleName] : RNNativeModules[moduleName];
+    return originalNativeModules[moduleName];
 }
 //# sourceMappingURL=NativeModules.js.map
