@@ -3,6 +3,7 @@ package expo.modules.kotlin.exception
 import com.facebook.react.bridge.ReadableType
 import expo.modules.core.interfaces.DoNotStrip
 import java.util.*
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
@@ -88,8 +89,14 @@ internal class NullArgumentException :
 internal class FieldRequiredException(property: KProperty1<*, *>) :
   CodedException(message = "Value for field '$property' is required, got nil")
 
-internal class UnexpectedException(val throwable: Throwable) :
-  CodedException(message = throwable.toString(), throwable)
+@DoNotStrip
+class UnexpectedException(
+  message: String?,
+  cause: Throwable? = null
+) : CodedException(message = message, cause) {
+  constructor(throwable: Throwable) : this(throwable.toString(), throwable)
+  constructor(message: String) : this(message, null)
+}
 
 internal class ValidationException(message: String) :
   CodedException(message = message)
@@ -112,6 +119,15 @@ internal class FunctionCallException(
   cause: CodedException
 ) : DecoratedException(
   message = "Call to function '$moduleName.$methodName' has been rejected.",
+  cause,
+)
+
+internal class PropSetException(
+  propName: String,
+  viewType: KClass<*>,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot set prop '$propName' on view '$viewType'",
   cause,
 )
 
@@ -159,7 +175,7 @@ class JavaScriptEvaluateException(
   val jsStack: String
 ) : CodedException(
   message = """
-  Cannot evaluate JavaScript code: $message.
+  Cannot evaluate JavaScript code: $message
   $jsStack
   """.trimIndent()
 )

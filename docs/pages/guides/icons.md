@@ -8,11 +8,12 @@ As trendy as it is these days, not every app has to use emoji for all icons -- m
 
 ## @expo/vector-icons
 
-This library is installed by default on the template project that get through `npx create-expo-app` -- it is part of the `expo` package. It includes popular icon sets and you can browse all of the icons using [icons.expo.fyi](https://icons.expo.fyi).
+This library is installed by default on the template project using `npx create-expo-app` and is part of the `expo` package. It is built on top of [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons) and uses a similar API. It includes popular icon sets that you can browse at [icons.expo.fyi](https://icons.expo.fyi).
+
+In the example below, the component loads the `Ionicons` font, and renders a checkmark icon.
 
 <SnackInline label='Vector icons' dependencies={['@expo/vector-icons']}>
 
-<!-- prettier-ignore -->
 ```jsx
 import * as React from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -22,13 +23,13 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info */
-      <Ionicons name="md-checkmark-circle" size={32} color="green" />/* @end */
-
+      <Ionicons name="md-checkmark-circle" size={32} color="green" />
+      /* @end */
     </View>
   );
 }
 
-/* @hide const styles = StyleSheet.create({ ... }); */
+/* @hide */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -41,17 +42,19 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-This component loads the Ionicons font if it hasn't been loaded already, and renders a checkmark icon that I found through the vector-icons directory mentioned above. `@expo/vector-icons` is built on top of [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons) and uses a similar API.
-
-> **Note:** As with [any custom font](using-custom-fonts.md#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`.
+> **Note:** As with [any custom font](using-custom-fonts.md#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. Read more on about [pre-loading and caching assets](preloading-and-caching-assets#pre-loading-and-caching-assets).
 
 ## Custom Icon Fonts
 
-First, make sure you import your custom icon font. [Read more about loading custom fonts](using-custom-fonts.md#using-custom-fonts). Once your font has loaded, you'll need to create an Icon Set. `@expo/vector-icons` exposes three methods to help you create an icon set.
+To use a custom icon font, you have to make sure you import them into your project. Only after a font has loaded, you can create an Icon set. [Learn more about loading custom fonts](using-custom-fonts.md).
+
+`@expo/vector-icons` exposes three methods to help you create an icon set:
 
 ### createIconSet
 
-Returns your own custom font based on the `glyphMap` where the key is the icon name and the value is either a UTF-8 character or it's character code. `fontFamily` is the name of the font **NOT** the filename. The `expoAssetId` can be anything that you can pass in to [Font.loadAsync](../versions/latest/sdk/font.md#fontloadasyncobject). See [react-native-vector-icons](https://github.com/oblador/react-native-vector-icons/blob/master/README.md#custom-fonts) for more details.
+This method returns your own custom font based on the `glyphMap` where the key is the icon name and the value is either a UTF-8 character or it's character code.
+
+In the example below, the `glyphMap` object is defined which is then passed as the first argument to the `createIconSet` method. The second argument,`fontFamily`, is the name of the font (not the filename). Optionally, you can pass the third argument for Android support, which is the custom font file name.
 
 ```jsx
 import * as React from 'react';
@@ -59,30 +62,18 @@ import * as Font from 'expo-font';
 import { createIconSet } from '@expo/vector-icons';
 
 const glyphMap = { 'icon-name': 1234, test: '∆' };
-const CustomIcon = createIconSet(glyphMap, 'FontName', 'custom-icon-font.ttf');
+const CustomIcon = createIconSet(glyphMap, 'fontFamily', 'custom-icon-font.ttf');
 
-export default class CustomIconExample extends React.Component {
-  render() {
-    return <CustomIcon name="icon-name" size={32} color="red" />;
-  }
+export default function CustomIconExample() {
+  return <CustomIcon name="icon-name" size={32} color="red" />;
 }
-```
-
-### createIconSetFromFontello
-
-Convenience method to create a custom font based on a [Fontello](http://fontello.com/) config file. Don't forget to import the font as described above and drop the **config.json** somewhere convenient in your project, using `Font.loadAsync`.
-
-```javascript
-// Once your custom font has been loaded...
-import { createIconSetFromFontello } from '@expo/vector-icons';
-import fontelloConfig from './config.json';
-// Both the font name and files exported from Fontello are most likely called "fontello"
-const Icon = createIconSetFromFontello(fontelloConfig, 'fontello', 'fontello.ttf');
 ```
 
 ### createIconSetFromIcoMoon
 
-Convenience method to create a custom font based on an [IcoMoon](https://icomoon.io/) config file. Don't forget to import the font as described above and drop the **config.json** somewhere convenient in your project, using `Font.loadAsync`.
+The `@expo/vector-icons` library provides `createIconSetFromIcoMoon` method to create a custom font based on an [IcoMoon](https://icomoon.io/) config file. You have to save the **selection.json** and **.ttf** somewhere convenient in your project, preferably in the `assets/*` folder, and then load the font using either `useFonts` hook or `Font.loadAsync` method from `expo-font`.
+
+See the example below that uses the `useFonts` hook to load the font:
 
 <SnackInline
 label='Icomoon Icons'
@@ -90,13 +81,12 @@ files={{
     'assets/icomoon/icomoon.ttf': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/71ce651cbddbee5366aef87c456a80bb',
     'assets/icomoon/selection.json': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/a06aa5b6e7eb1df1fa1c8d06d4ab8463'
   }}
-dependencies={['@expo/vector-icons', 'expo-font', 'expo-app-loading']}>
+dependencies={['@expo/vector-icons', 'expo-font']}>
 
 <!-- prettier-ignore -->
 ```jsx
 import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import AppLoading from 'expo-app-loading';
+import { View, StyleSheet } from 'react-native';
 import { useFonts } from 'expo-font';
 import { createIconSetFromIcoMoon } from '@expo/vector-icons';
 
@@ -109,17 +99,22 @@ const Icon = createIconSetFromIcoMoon(
 /* @end */
 
 export default function App() {
-  // Load the icon font before using it
-  const [fontsLoaded] = useFonts({ IcoMoon: require('./assets/icomoon/icomoon.ttf') });
+  /* @info Load the icon font before using it */
+  const [fontsLoaded] = useFonts({
+    IcoMoon: require('./assets/icomoon/icomoon.ttf'),
+  });
+  /* @end */
+
+  /* @info See <a href="/guides/using-custom-fonts/#waiting-for-fonts-to-load"> Waiting for fonts to Load section</a> for more information on how to display a splash screen when fonts are loaded. */
   if (!fontsLoaded) {
-    return <AppLoading />;
+    return null;
   }
+  /* @end */
 
   return (
     <View style={styles.container}>
       /* @info */
       <Icon name="pacman" size={50} color="red" />/* @end */
-
     </View>
   );
 }
@@ -137,9 +132,26 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
+### createIconSetFromFontello
+
+The `@expo/vector-icons` library provides `createIconSetFromFontello` method to create a custom font based on a [Fontello](http://fontello.com/) config file. You have to save the **config.json** and **.ttf** somewhere convenient in your project, preferably in the `assets/*` folder, and then load the font using either `useFonts` hook or `Font.loadAsync` method from `expo-font`.
+
+It follows the similar configuration as `createIconSetFromIcoMoon` as shown in the example:
+
+```javascript
+// Import the createIconSetFromFontello method
+import { createIconSetFromFontello } from '@expo/vector-icons';
+
+// Import the config file
+import fontelloConfig from './config.json';
+
+// Both the font name and files exported from Fontello are most likely called "fontello"
+const Icon = createIconSetFromFontello(fontelloConfig, 'fontello', 'fontello.ttf');
+```
+
 ## Icon images
 
-If you know how to use the react-native `<Image>` component this will be a breeze.
+You can use the `Image` component from React Native to display an icon. The `source` prop takes the relative path to refer the image.
 
 <SnackInline
 label='Icon images'
@@ -148,7 +160,7 @@ files={{
   }}>
 
 ```jsx
-import * as React from 'react';
+import React from 'react';
 import { Image, View, StyleSheet } from 'react-native';
 
 export default function App() {
@@ -176,37 +188,31 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-Let's assume that our `SlackIcon` class is located in `my-project/components/SlackIcon.js`, and our icon images are in `my-project/assets/images`, in order to refer to the image we use require and include the relative path. You can provide versions of your icon at various pixel densities and the appropriate image will be automatically used for you. In this example, we actually have `slack-icon@2x.png` and `slack-icon@3x.png`, so if I view this on an iPhone 6s the image I will see is `slack-icon@3x.png`. More on this in the [Images guide in the react-native documentation](https://reactnative.dev/docs/images#static-image-resources).
-
-We also set the `fadeDuration` (an Android specific property) to `0` because we usually want the icon to appear immediately rather than fade in over several hundred milliseconds.
+You can also provide different versions of your icon at various pixel densities. The `Image` component takes care of using the image with appropriate pixel density automatically. For example, if the image has variants like `icon@2x.png` and `icon@3x.png`, the `@2x` suffix is served for a device's screen density for older devices such as iPhone 8 and the `@3x` suffix is served for a device's screen density on newer devices such as iPhone 13. [You can learn more about serving different densities in React Native documentation](https://reactnative.dev/docs/images#static-image-resources).
 
 ## Button Component
 
-A convenience component for creating buttons with an icon on the left side.
+You can create an Icon Button using the `Font.Button` syntax where the `Font` is the icon set that you import from `@expo/vector-icons`.
+
+In the example below, a login button uses the `FontAwesome` icon set. Notice that the `FontAwesome.Button` component accepts props to handle action when a button is pressed and can wrap the text of the button.
 
 <SnackInline label='Icon Button Component' dependencies={['@expo/vector-icons']}>
 
-<!-- prettier-ignore -->
 ```jsx
-import * as React from 'react';
+import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 export default function App() {
-  /* @hide const loginWithFacebook = () => { ... } */
   const loginWithFacebook = () => {
     console.log('Button pressed');
   };
-  /* @end */
 
   return (
     <View style={styles.container}>
-      /* @info */
-      <FontAwesome.Button name="facebook" backgroundColor="#3b5998" onPress={loginWithFacebook}>/* @end */
-
+      <FontAwesome.Button name="facebook" backgroundColor="#3b5998" onPress={loginWithFacebook}>
         Login with Facebook
-      /* @info */</FontAwesome.Button>/* @end */
-
+      </FontAwesome.Button>
     </View>
   );
 }

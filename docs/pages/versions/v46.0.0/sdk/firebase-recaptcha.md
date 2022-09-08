@@ -20,7 +20,9 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Additionally, you'll also need to install the webview using `expo install react-native-webview`
 
-## Basic usage
+## Usage
+
+### Basic usage
 
 To get started, [read the official Firebase phone-auth guide and **ignore all steps** that cover the reCAPTCHA configuration.](https://firebase.google.com/docs/auth/web/phone-auth)
 
@@ -53,7 +55,7 @@ const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, ve
 const authResult = await firebase.auth().signInWithCredential(credential);
 ```
 
-## Example usage
+### Phone authentication example
 
 The examples below assumes that you are using `firebase@9.x.x`.
 
@@ -419,7 +421,7 @@ const styles = StyleSheet.create({
 If you want a custom look & feel, then create your own `<Modal>` or display the `<FirebaseRecaptcha>` component inline in your screen. Make sure to reserve enough space for the widget as it can not only display the compact "I'm not a robot" UI but also the **full verification UI requiring users to select images**.
 
 ```tsx
-import { FirebaseRecaptchaVerifier } from 'expo-firebase-recaptcha';
+import { FirebaseRecaptcha, FirebaseRecaptchaVerifier } from 'expo-firebase-recaptcha';
 
 class CustomPhoneAuthScreen extends React.Component {
   state = {
@@ -443,7 +445,7 @@ class CustomPhoneAuthScreen extends React.Component {
 
   render() {
     return (
-      <FirebaseRecaptchaVerifier
+      <FirebaseRecaptcha
         style={...}
         firebaseConfig={...}
 

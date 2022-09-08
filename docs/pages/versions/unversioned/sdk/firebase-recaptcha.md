@@ -18,9 +18,11 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <APIInstallSection />
 
-Additionally, you'll also need to install the webview using `expo install react-native-webview`
+Additionally, you'll also need to install the webview using `npx expo install react-native-webview`
 
-## Basic usage
+## Usage
+
+### Basic usage
 
 To get started, [read the official Firebase phone-auth guide and **ignore all steps** that cover the reCAPTCHA configuration.](https://firebase.google.com/docs/auth/web/phone-auth)
 
@@ -53,7 +55,7 @@ const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, ve
 const authResult = await firebase.auth().signInWithCredential(credential);
 ```
 
-## Example usage
+### Phone authentication example
 
 The examples below assumes that you are using `firebase@9.x.x`.
 
@@ -92,7 +94,9 @@ const auth = getAuth();
 
 // Double-check that we can run the example
 if (!app?.options || Platform.OS === 'web') {
-  throw new Error('This example only works on Android or iOS, and requires a valid Firebase config.');
+  throw new Error(
+    'This example only works on Android or iOS, and requires a valid Firebase config.'
+  );
 }
 
 export default function App() {
@@ -157,10 +161,7 @@ export default function App() {
         disabled={!verificationId}
         onPress={async () => {
           try {
-            const credential = PhoneAuthProvider.credential(
-              verificationId,
-              verificationCode
-            );
+            const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
             await signInWithCredential(auth, credential);
             showMessage({ text: 'Phone authentication successful 👍' });
           } catch (err) {
@@ -185,9 +186,7 @@ export default function App() {
             {message.text}
           </Text>
         </TouchableOpacity>
-      ) : (
-        undefined
-      )}
+      ) : undefined}
       {attemptInvisibleVerification && <FirebaseRecaptchaBanner />}
     </View>
   );
@@ -301,9 +300,7 @@ export default function PhoneAuthScreen() {
         {verifyInProgress && <ActivityIndicator style={styles.loader} />}
         {verificationId ? (
           <Text style={styles.success}>A verification code has been sent to your phone</Text>
-        ) : (
-          undefined
-        )}
+        ) : undefined}
         <Text style={styles.text}>Enter verification code</Text>
         <TextInput
           ref={verificationCodeTextInput}
@@ -319,10 +316,7 @@ export default function PhoneAuthScreen() {
             try {
               setConfirmError(undefined);
               setConfirmInProgress(true);
-              const credential = PhoneAuthProvider.credential(
-                verificationId,
-                verificationCode
-              );
+              const credential = PhoneAuthProvider.credential(verificationId, verificationCode);
               const authResult = await signInWithCredential(auth, credential);
               setConfirmInProgress(false);
               setVerificationId('');
@@ -419,7 +413,7 @@ const styles = StyleSheet.create({
 If you want a custom look & feel, then create your own `<Modal>` or display the `<FirebaseRecaptcha>` component inline in your screen. Make sure to reserve enough space for the widget as it can not only display the compact "I'm not a robot" UI but also the **full verification UI requiring users to select images**.
 
 ```tsx
-import { FirebaseRecaptchaVerifier } from 'expo-firebase-recaptcha';
+import { FirebaseRecaptcha, FirebaseRecaptchaVerifier } from 'expo-firebase-recaptcha';
 
 class CustomPhoneAuthScreen extends React.Component {
   state = {
@@ -443,7 +437,7 @@ class CustomPhoneAuthScreen extends React.Component {
 
   render() {
     return (
-      <FirebaseRecaptchaVerifier
+      <FirebaseRecaptcha
         style={...}
         firebaseConfig={...}
 

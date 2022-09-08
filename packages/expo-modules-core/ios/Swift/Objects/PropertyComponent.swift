@@ -135,13 +135,16 @@ public func Property(_ name: String) -> PropertyComponent {
 /**
  Creates the read-only property whose getter doesn't take the caller as an argument.
  */
-public func Property<Value: AnyArgument>(_ name: String, get: @escaping () -> Value) -> PropertyComponent {
+public func Property<Value: AnyArgument>(_ name: String, @_implicitSelfCapture get: @escaping () -> Value) -> PropertyComponent {
   return PropertyComponent(name: name).get(get)
 }
 
 /**
  Creates the read-only property whose getter takes the caller as an argument.
  */
-public func Property<Value: AnyArgument, Caller>(_ name: String, get: @escaping (Caller) -> Value) -> PropertyComponent {
+public func Property<Value: AnyArgument, Caller>(
+  _ name: String,
+  @_implicitSelfCapture get: @escaping (Caller) -> Value
+) -> PropertyComponent {
   return PropertyComponent(name: name).get(get)
 }

@@ -1,12 +1,11 @@
 package expo.modules.kotlin.events
 
 import android.os.Bundle
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
-import com.facebook.react.uimanager.UIManagerModule
-import com.facebook.react.uimanager.events.EventDispatcher
-import com.facebook.react.uimanager.events.RCTEventEmitter
+import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.JSTypeConverter
@@ -62,16 +61,11 @@ open class KEventEmitterWrapper(
       .get()
       ?.getJSModule(RCTDeviceEventEmitter::class.java)
 
-  private val uiEventDispatcher: EventDispatcher?
-    get() = reactContextHolder
-      .get()
-      ?.getNativeModule(UIManagerModule::class.java)
-      ?.eventDispatcher
-
   override fun emit(eventName: String, eventBody: WritableMap?) {
     deviceEventEmitter
       ?.emit(eventName, eventBody)
   }
+
   override fun emit(eventName: String, eventBody: Record?) {
     deviceEventEmitter
       ?.emit(eventName, JSTypeConverter.convertToJSValue(eventBody))
@@ -82,21 +76,31 @@ open class KEventEmitterWrapper(
       ?.emit(eventName, JSTypeConverter.convertToJSValue(eventBody))
   }
 
-  override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?) {
-    uiEventDispatcher
-      ?.dispatchEvent(UIEvent(viewId, eventName, eventBody))
+  override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {
+    val context = reactContextHolder.get() ?: return
+    UIManagerHelper.getEventDispatcherForReactTag(context, viewId)
+      ?.dispatchEvent(UIEvent(viewId, eventName, eventBody, coalescingKey))
   }
 
   private class UIEvent(
-    private val viewId: Int,
+    viewId: Int,
     private val eventName: String,
-    private val eventBody: WritableMap?
+    private val eventBody: WritableMap?,
+    private val coalescingKey: Short?
   ) : com.facebook.react.uimanager.events.Event<UIEvent>(viewId) {
-    override fun getEventName(): String = eventName
-    override fun canCoalesce(): Boolean = false
-    override fun getCoalescingKey(): Short = 0
-    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-      rctEventEmitter.receiveEvent(viewId, eventName, eventBody)
-    }
+    override fun getEventName(): String = normalizeEventName(eventName)
+    override fun canCoalesce(): Boolean = coalescingKey != null
+    override fun getCoalescingKey(): Short = coalescingKey ?: 0
+    override fun getEventData(): WritableMap = eventBody ?: Arguments.createMap()
   }
+}
+
+/**
+ * On Android, event names should be explicitly "top" prefixed, especially in Fabric mode.
+ * This method can help to make sure event name is in correct format.
+ */
+fun normalizeEventName(eventName: String): String {
+  return if (eventName.startsWith("on")) {
+    "top" + eventName.substring(2)
+  } else eventName
 }

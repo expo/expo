@@ -35,7 +35,6 @@ const withRootViewBackgroundColorStyles = (config) => {
 };
 exports.withRootViewBackgroundColorStyles = withRootViewBackgroundColorStyles;
 function getRootViewBackgroundColor(config) {
-    var _a;
-    return ((_a = config.android) === null || _a === void 0 ? void 0 : _a.backgroundColor) || config.backgroundColor || null;
+    return config.android?.backgroundColor || config.backgroundColor || null;
 }
 exports.getRootViewBackgroundColor = getRootViewBackgroundColor;

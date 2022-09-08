@@ -40,7 +40,7 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
   static func tryToSendExceptionToBundler(_ exception: NSException) {
     let controller = EXDevLauncherController.sharedInstance()
     if (controller.isAppRunning()) {
-      guard let url = getLogsUrl(controller) else {
+      guard let url = getWebSocketUrl(controller) else {
         return
       }
       
@@ -50,18 +50,22 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
       logsManager.sendSync()
     }
   }
-  
-  static func getLogsUrl(_ controller: EXDevLauncherController) -> URL? {
-    let logsUrlFromManifest = controller.appManifest()?.logUrl()
-    if (logsUrlFromManifest != nil) {
-      return URL.init(string: logsUrlFromManifest!)
-    }
-    
+
+  static func getWebSocketUrl(_ controller: EXDevLauncherController) -> URL? {
+    // URL structure replicates
+    // https://github.com/facebook/react-native/blob/0.69-stable/Libraries/Utilities/HMRClient.js#L164
+    // but URLSessionWebSocketTask will crash if the scheme is not `ws` or `wss`
     guard let appUrl = controller.appBridge?.bundleURL else {
       return nil
     }
-    
-    return URL.init(string: "logs", relativeTo: appUrl)
+    guard let socketUrl = URL.init(string: "hot", relativeTo: appUrl) else {
+      return nil
+    }
+    guard var components = URLComponents(url: socketUrl, resolvingAgainstBaseURL: true) else {
+      return nil
+    }
+    components.scheme = "ws"
+    return components.url
   }
   
   static func tryToSaveException(_ exception: NSException) {

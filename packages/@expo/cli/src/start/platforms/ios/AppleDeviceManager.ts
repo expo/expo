@@ -1,9 +1,12 @@
 import * as osascript from '@expo/osascript';
 import assert from 'assert';
 import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
 
 import { delayAsync, waitForActionAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
+import { parsePlistAsync } from '../../../utils/plist';
 import { validateUrl } from '../../../utils/url';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
@@ -17,6 +20,8 @@ import {
 } from './getBestSimulator';
 import { promptAppleDeviceAsync } from './promptAppleDevice';
 import * as SimControl from './simctl';
+
+const debug = require('debug')('expo:start:platforms:ios:AppleDeviceManager') as typeof console.log;
 
 const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
 
@@ -141,7 +146,14 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   private async getApplicationIdFromBundle(filePath: string): Promise<string> {
-    // TODO: Implement...
+    debug('getApplicationIdFromBundle:', filePath);
+    const builtInfoPlistPath = path.join(filePath, 'Info.plist');
+    if (fs.existsSync(builtInfoPlistPath)) {
+      const { CFBundleIdentifier } = await parsePlistAsync(builtInfoPlistPath);
+      debug('getApplicationIdFromBundle: using built Info.plist', CFBundleIdentifier);
+      return CFBundleIdentifier;
+    }
+    debug('getApplicationIdFromBundle: no Info.plist found');
     return EXPO_GO_BUNDLE_IDENTIFIER;
   }
 

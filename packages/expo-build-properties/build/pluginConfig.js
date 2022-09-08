@@ -66,31 +66,30 @@ const schema = {
  * @ignore
  */
 function maybeThrowInvalidVersions(config) {
-    var _a, _b, _c, _d, _e, _f, _g;
     const checkItems = [
         {
             name: 'android.minSdkVersion',
-            configVersion: (_a = config.android) === null || _a === void 0 ? void 0 : _a.minSdkVersion,
+            configVersion: config.android?.minSdkVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.minSdkVersion,
         },
         {
             name: 'android.compileSdkVersion',
-            configVersion: (_b = config.android) === null || _b === void 0 ? void 0 : _b.compileSdkVersion,
+            configVersion: config.android?.compileSdkVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.compileSdkVersion,
         },
         {
             name: 'android.targetSdkVersion',
-            configVersion: (_c = config.android) === null || _c === void 0 ? void 0 : _c.targetSdkVersion,
+            configVersion: config.android?.targetSdkVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.targetSdkVersion,
         },
         {
             name: 'android.kotlinVersion',
-            configVersion: (_d = config.android) === null || _d === void 0 ? void 0 : _d.kotlinVersion,
+            configVersion: config.android?.kotlinVersion,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.android.kotlinVersion,
         },
         {
             name: 'ios.deploymentTarget',
-            configVersion: (_e = config.ios) === null || _e === void 0 ? void 0 : _e.deploymentTarget,
+            configVersion: config.ios?.deploymentTarget,
             minimalVersion: EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS.ios.deploymentTarget,
         },
     ];
@@ -102,7 +101,7 @@ function maybeThrowInvalidVersions(config) {
         }
         if (typeof configVersion === 'string' &&
             typeof minimalVersion === 'string' &&
-            semver_1.default.lt((_f = semver_1.default.coerce(configVersion)) !== null && _f !== void 0 ? _f : '0.0.0', (_g = semver_1.default.coerce(minimalVersion)) !== null && _g !== void 0 ? _g : '0.0.0')) {
+            semver_1.default.lt(semver_1.default.coerce(configVersion) ?? '0.0.0', semver_1.default.coerce(minimalVersion) ?? '0.0.0')) {
             throw new Error(`\`${name}\` needs to be at least version ${minimalVersion}.`);
         }
     }

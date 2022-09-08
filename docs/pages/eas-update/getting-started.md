@@ -26,7 +26,7 @@ Install EAS and Expo CLIs by running:
 1. Create an account at [https://expo.dev/signup](https://expo.dev/signup)
 2. Then, log in with EAS CLI:
 
-<Terminal cmd={['$ eas login']} />
+   <Terminal cmd={['$ eas login']} />
 
 3. After logging in, you can verify the logged-in account with `eas whoami`.
 
@@ -40,15 +40,15 @@ Create a project by running:
 
 1. Install the latest `expo-updates` library with:
 
-<Terminal cmd={['$ expo install expo-updates']} />
+   <Terminal cmd={['$ npx expo install expo-updates']} />
 
 2. Initialize your project with EAS Update:
 
-<Terminal cmd={['$ eas update:configure']} />
+   <Terminal cmd={['$ eas update:configure']} />
 
 3. To set up the configuration file for builds, run:
 
-<Terminal cmd={['$ eas build:configure']} />
+   <Terminal cmd={['$ eas build:configure']} />
 
 This command will create a file named **eas.json**.
 
@@ -88,7 +88,7 @@ Once we've created a build, we're ready to iterate on our project. Start a local
 <Terminal cmd={[
 '$ yarn start',
 '# or',
-'$ expo start',
+'$ npx expo start',
 ]} />
 
 Then, make any desired changes to your project's JavaScript, styling, or image assets.

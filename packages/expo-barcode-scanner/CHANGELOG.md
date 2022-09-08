@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- Remove the manual re-export of `usePermissions` hook at package top level. ([#18630](https://github.com/expo/expo/pull/18630) by [@Simek](https://github.com/Simek))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Fix camera not being correctly released on unmount (Android) ([#18768](https://github.com/expo/expo/pull/18768) by [@stefan-schweiger](https://github.com/stefan-schweiger))
+
 ### 💡 Others
+
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 11.4.0 — 2022-07-07
 

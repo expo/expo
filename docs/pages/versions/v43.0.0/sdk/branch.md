@@ -24,7 +24,7 @@ For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, y
 
 Branch can track universal links from domains you associate with your app. **Note:** Universal Links handled by Branch won't be forwarded to the [Linking](linking.md) module.
 
-- Enable associated domains on [Apple's Developer Portal](https://developer.apple.com/account/ios/identifier/bundle) for your app id. To do so go in the `App IDs` section and click on your app id. Select `Edit`, check the `Associated Domains` checkbox and click `Done`.
+- Enable associated domains on [Apple's Developer Portal](https://developer.apple.com/account/resources/identifiers/list) for your app id. To do so go in the `App IDs` section and click on your app id. Select `Edit`, check the `Associated Domains` checkbox and click `Done`.
 
 - Enable Universal Links in the [Link Settings](https://dashboard.branch.io/link-settings) section of the Branch Dashboard and fill in your Bundle Identifier and Apple App Prefix.
 

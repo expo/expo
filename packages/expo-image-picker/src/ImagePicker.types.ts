@@ -18,13 +18,6 @@ export type MediaLibraryPermissionResponse = PermissionResponse & {
 };
 
 // @needsAudit
-/**
- * An alias for the `MediaLibraryPermissionResponse` object.
- * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse` instead.
- */
-export type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
-
-// @needsAudit
 export enum MediaTypeOptions {
   /**
    * Images and videos.

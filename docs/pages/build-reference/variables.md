@@ -48,7 +48,7 @@ See the [eas.json reference](/build/eas-json.md) for more information.
 
 ## Environment variables and app.config.js
 
-Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important in order to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (in order to gather metadata for the build job) and when it occurs on the remote build worker, for example to configure the project during `expo prebuild` or to embed the configuration data in the app.
+Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important in order to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (in order to gather metadata for the build job) and when it occurs on the remote build worker, for example to configure the project during `npx expo prebuild` or to embed the configuration data in the app.
 
 ## Built-in environment variables
 
@@ -57,6 +57,7 @@ The following environment variables are exposed to each build job &mdash; they a
 - `CI=1` - indicates this is a CI environment
 - `EAS_BUILD=true` - indicates this is an EAS Build environment
 - `EAS_BUILD_PLATFORM` - either `android` or `ios`
+- `EAS_BUILD_RUNNER` - either `eas-build` for EAS Build cloud builds or `local-build-plugin` for [local builds](local-builds)
 - `EAS_BUILD_ID` - the build ID, e.g. `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
 - `EAS_BUILD_PROFILE` - the name of the build profile from **eas.json**, e.g. `production`
 - `EAS_BUILD_GIT_COMMIT_HASH` - the hash of the Git commit, e.g. `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
@@ -64,10 +65,6 @@ The following environment variables are exposed to each build job &mdash; they a
 - `EAS_BUILD_MAVEN_CACHE_URL` - the URL of Maven cache ([learn more](/build-reference/caching/#android-dependencies))
 - `EAS_BUILD_USERNAME` - the username of the user initiating the build (it's undefined for bot users)
 - `EAS_BUILD_WORKINGDIR` - the remote directory path with your project
-
-<!-- TODO: uncomment when remote (managed) version are fully implemented -->
-<!-- - `EAS_BUILD_ANDROID_VERSION_CODE` - Android version code -->
-<!-- - `EAS_BUILD_IOS_BUILD_NUMBER` - iOS Build number -->
 
 ## Using secrets in environment variables
 
@@ -94,7 +91,7 @@ To create **app-specific secrets**, navigate to [the "Secrets" tab in your proje
 To create a new secret, run `eas secret:create`
 
 ```
-> eas secret:create project SECRET_NAME secretvalue
+> eas secret:create --scope project --name SECRET_NAME --value secretvalue
 ✔ Linked to project @fiberjw/goodweebs
 ✔ You're inside the project directory. Would you like to use fiberjw account? … yes
 ✔ ️Created a new secret SECRET_NAME on project @fiberjw/goodweebs.
@@ -127,7 +124,7 @@ Environment variables can be tricky to use if you don't have the correct mental 
 
 ### Can I share environment variables defined in eas.json with `expo start` and `eas update`?
 
-When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imagine we had the following **eas.json**:
+When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `npx expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imagine we had the following **eas.json**:
 
 ```json
 {
@@ -251,7 +248,7 @@ For example, if you create a secret with name `MY_TOKEN` and value `secret` and 
 
 ### How do environment variables work for my Expo Development Client builds?
 
-Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used for the app manifest; this becomes the same situation as described above for **expo start**.
+Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `npx expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used for the app manifest; this becomes the same situation as described above for **expo start**.
 
 ### Can I just set my environment variables on a CI provider?
 

@@ -1,4 +1,40 @@
-# @expo/cli
+<!-- Title -->
+
+<p align="center">
+  <a href="https://expo.dev/">
+    <img alt="Expo CLI" src="../../../.github/resources/cli-banner.svg">
+  </a>
+</p>
+
+<p align="center">The fastest way to build and run universal React Native apps for iOS, Android, and the web</p>
+
+<p align="center">
+
+  <a aria-label="Join the Expo Discord" href="https://discord.gg/4gtbPAdpaE" target="_blank">
+    <img alt="Discord" src="https://img.shields.io/discord/695411232856997968.svg?style=flat-square&labelColor=000000&color=000000&logo=discord&logoColor=FFFFFF&label=" />
+  </a>
+  <a aria-label="Browse the Expo forums" href="https://forums.expo.dev" target="_blank">
+    <img alt="" src="https://img.shields.io/badge/Ask%20Questions%20-000.svg?style=flat-square&logo=discourse&logoWidth=15&labelColor=000000&color=000000">
+  </a>
+
+</p>
+
+<p align="center">
+  <a aria-label="expo documentation" href="https://docs.expo.dev/workflow/expo-cli/">📚 Read the Documentation</a>
+  |
+  <a aria-label="Contribute to Expo CLI" href="#contributing"><b>Contribute to Expo CLI</b></a>
+</p>
+
+<p>
+  <a aria-label="Follow @expo on Twitter" href="https://twitter.com/intent/follow?screen_name=expo" target="_blank">
+    <img  alt="Twitter: expo" src="https://img.shields.io/twitter/follow/expo.svg?style=flat-square&label=Follow%20%40expo&logo=TWITTER&logoColor=FFFFFF&labelColor=00aced&logoWidth=15&color=lightgray" target="_blank" />
+  </a>
+  <a aria-label="Follow Expo on Medium" href="https://blog.expo.dev">
+    <img align="right" alt="Medium: exposition" src="https://img.shields.io/badge/Learn%20more%20on%20our%20blog-lightgray.svg?style=flat-square" target="_blank" />
+  </a>
+</p>
+
+---
 
 The `@expo/cli` package is a CLI binary that should be used via `expo` like `npx expo start`.
 
@@ -6,13 +42,15 @@ The `@expo/cli` package is a CLI binary that should be used via `expo` like `npx
 npx expo
 ```
 
+> ⭐️ Be sure to star the Expo GitHub repo if you enjoy using the project!
+
 ## Design
 
 This CLI has the following purposes:
 
 - Be a minimal interface for starting a local development server that emulates a production EAS Updates server. The development server is the proxy between a native runtime (Expo Go, Dev Client) and a JS Bundler (Metro, Webpack).
-  - To accomplish secure manifest signing (think https/TSL/SSL for web (required for sandboxing AsyncStorage, Permissions, etc.)) we need an authenticated Expo user account. This is the only reason we include the authentication commands `login`, `logout`, `whoami`, `register`. Standard web CLIs don't have authentication commands because they either don't setup https or they use emulation via packages like `devcert`.
-- Orchestrating various native tools like Xcode, Simulator.app, Android Studio, ADB, etc. to make native builds as painless as possible. `run:ios`, `run:android` commands.
+  - To accomplish secure manifest signing (think https/TSL/SSL for web (required for sandboxing AsyncStorage, Permissions, etc.)) we need an authenticated Expo user account. This is the only reason we include the authentication commands `login`, `logout`, `whoami`, `register`. Standard web CLIs don't have authentication commands because they either don't set up https or they use emulation via packages like `devcert`.
+- Orchestrating various native tools like Xcode, `Simulator.app`, Android Studio, ADB, etc. to make native builds as painless as possible. `run:ios`, `run:android` commands.
 - Implementing a versioned `prebuild` command that can reliably work with a project for long periods of time. Prebuild is like a bundler for native code, it generates the `ios`, `android` folders based on the project Expo config (`app.json`).
   - `npx expo config` is auxiliary to `npx expo prebuild` and used for debugging/introspection.
 - Installing versioned libraries with `npx expo install` this is a minimal utility born out of pure necessity since versioning in React Native is hard to get right.
@@ -31,13 +69,13 @@ We highly recommend setting up an alias for the Expo CLI so you can try it in pr
 alias nexpo="/path/to/expo/packages/@expo/cli/build/bin/cli"
 ```
 
-Then use it with `nexpo` like `nexpo config`. You can also setup a debug version:
+Then use it with `nexpo` like `nexpo config`. You can also set up a debug version:
 
 ```
 alias expo-inspect="node --inspect /path/to/expo/packages/@expo/cli/build/bin/cli"
 ```
 
-Then you can run it, and visit `chrome://inspect/#devices` in Chrome, and press "Open dedicated DevTools for Node" to get a debugger attached to your process. When debugging the CLI, you'll want to disable workers whenever possible, this will make all code run on the same thread, this is mostly applicable to the `start` command, i.e. `expo-inspect start --max-workers 0`.
+Then you can run it and visit `chrome://inspect/#devices` in Chrome, and press "Open dedicated DevTools for Node" to get a debugger attached to your process. When debugging the CLI, you'll want to disable workers whenever possible, this will make all code run on the same thread, this is mostly applicable to the `start` command, i.e. `expo-inspect start --max-workers 0`.
 
 ## Format
 
@@ -67,19 +105,19 @@ Then you can run it, and visit `chrome://inspect/#devices` in Chrome, and press 
 There are two testing scripts:
 
 - `yarn test`: Controlled unit and integration tests.
-- `yarn test:e2e`: End to end testing for CLI commands. This requires the files be built with `yarn build`
+- `yarn test:e2e`: End to end testing for CLI commands. This requires the files to be built with `yarn build`
 
 ---
 
 - You can target a specific set of tests with the `--watch` flag. Example: `yarn test --watch config`.
-- We use back ticks for `it` blocks. Example <code>it(`works`)</code>.
-- If a pull request is fully self contained to the `packages/@expo/cli/` folder (i.e. no `yarn.lock` modifications, etc.) then most native CI tests will be skipped, making CI pass faster in PRs.
+- We use backticks for `it` blocks. Example <code>it(`works`)</code>.
+- If a pull request is fully self-contained to the `packages/@expo/cli/` folder (i.e. no `yarn.lock` modifications, etc.) then most native CI tests will be skipped, making CI pass faster in PRs.
 
 ### Unit Testing Guidelines
 
 - Use `nock` for network requests.
 - No top level `describe` blocks that wrap all the tests in a file.
-- When testing a function, pass the function to the describe instead of a stringified function name:
+- When testing a function, pass the function to the `describe` block instead of a stringified function name:
   - `describe(foobar, () => {})` instead of `describe('foobar', () => {})`
 - Use virtual `fs` via `memfs` whenever possible.
 - We have a lot of global module [**mocks**](./e2e/setup.ts) already in place, consider them when writing tests.
@@ -97,7 +135,7 @@ There are two testing scripts:
 
 The legacy global `expo-cli` package was deprecated in favor of this versioned `@expo/cli` package for the following reasons:
 
-- `expo-cli` was too big and took way too long to install. This made CI frustrating to setup since you needed to also target global node modules for caching.
+- `expo-cli` was too big and took way too long to install. This made CI frustrating to set up since you needed to also target global node modules for caching.
 - `expo-cli` worked for almost all versions of the `expo` package, meaning it was getting more complex with every release.
 - `expo-cli` combined service commands (like the legacy `build`, `submit`, `publish`) with project-level commands like `expo start`. We've since divided services into `eas-cli` and project commands into `npx expo` (`@expo/cli`). This structure is more optimal/faster for developers since they can install/update commands when they need them.
 - This CLI utilizes more Node.js standard features like `$EDITOR` instead of the custom `$EXPO_EDITOR` environment variable. Also transitioning away from `$EXPO_DEBUG` and more towards `$DEBUG=expo:*`. These types of changes make Expo CLI play nicer with existing tooling.

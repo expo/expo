@@ -5,29 +5,21 @@ title: Customizing Metro
 import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-When you run `expo start`, the CLI uses [Metro](https://facebook.github.io/metro/) to bundle JavaScript for Android and iOS platforms. By default Expo CLI will use the Metro configuration defined in the [`@expo/metro-config`](https://github.com/expo/expo-cli/tree/main/packages/metro-config) package (re-exported from `expo` as `expo/metro-config` in SDK 41 and greater). You can add custom options for Metro by creating a file named **metro.config.js** in the project root directory.
+When you run `npx expo start`, the [Expo CLI][expo-cli] uses [Metro](https://facebook.github.io/metro/) to bundle JavaScript for Android and iOS platforms. By default [Expo CLI][expo-cli] will use the Metro configuration defined in the [`@expo/metro-config`](https://github.com/expo/expo/tree/main/packages/@expo/metro-config) package. You can add custom options for Metro by creating a file named **metro.config.js** in the project root directory or by running:
 
-The **metro.config.js** file looks like this:
+<Terminal cmd={["$ npx expo customize metro.config.js"]} />
 
-```js
-module.exports = {
-  /* add options here */
-};
-```
-
-It can also export a function or an async function, if necessary:
+The **metro.config.js** file looks something like this:
 
 ```js
-module.exports = async () => {
-  return {
-    /* dynamically created options can be added here */
-  };
-};
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+module.exports = config;
 ```
 
-You can find a complete list of supported options in the Metro docs: [Configuring Metro](https://facebook.github.io/metro/docs/configuration). Please note that you only need to specify the options that you want to customize: the custom config will be merged with the defaults from `expo/metro-config` when using Expo CLI.
-
-To add to a value, such as an array of file extensions, defined in the default configuration, you can access the defaults using the `getDefaultConfig(projectRoot)` function defined in `@expo/metro-config`. Add `@expo/metro-config` to the dependencies of your project to do this. In SDK +41 you can import from `expo/metro-config`.
+You can find a complete list of supported options in the Metro docs: [Configuring Metro](https://facebook.github.io/metro/docs/configuration). Please note that you only need to specify the options that you want to customize: the custom config will be merged with the defaults from `expo/metro-config` when using [Expo CLI][expo-cli] to start dev servers (`npx expo start`) or export static files (`npx expo export`).
 
 ## Web Support
 
@@ -162,7 +154,15 @@ module.exports = config;
 
 Here are all of the [default Uglify options](https://github.com/facebook/metro/blob/b629f44239bbb3414491755185cf19b5834b4b7a/packages/metro-config/src/defaults/index.js#L94-L111) applied in Metro bundler.
 
-### Using Terser
+## Minification
+
+By default, Metro uses `uglify-es` to minify code for production environments (`npx expo export`). According to [this benchmark](https://github.com/privatenumber/minification-benchmarks) `uglify` generally produces the smallest bundles but it isn't the fastest minifier. Here are some alternative packages you can use for minification:
+
+### Minification: esbuild
+
+You can use [`esbuild`](https://esbuild.github.io/) to minify exponentially faster than `uglify-es` and `terser`. Just follow this guide: [`metro-minify-esbuild` usage](https://github.com/EvanBacon/metro-minify-esbuild#usage).
+
+### Minification: Terser
 
 You can use [`terser`](https://github.com/terser/terser) instead of `uglify-es` to mangle and compress your project.
 
@@ -190,3 +190,5 @@ module.exports = config;
 A useful way to debug your source code is by exploring the source maps. You can do this easily in any Expo project using [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer). Just install it with `yarn add -D react-native-bundle-visualizer`, then run `npx react-native-bundle-visualizer`.
 
 This will show you an interactive breakdown of what makes up your React bundle. Using this you can find large packages that you may not have wanted bundled in your project. The smaller the bundle, the faster your app will start.
+
+[expo-cli]: /workflow/expo-cli

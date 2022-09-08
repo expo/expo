@@ -36,7 +36,6 @@ function setRootViewBackgroundColor(config, infoPlist) {
 }
 exports.setRootViewBackgroundColor = setRootViewBackgroundColor;
 function getRootViewBackgroundColor(config) {
-    var _a;
-    return ((_a = config.ios) === null || _a === void 0 ? void 0 : _a.backgroundColor) || config.backgroundColor || null;
+    return config.ios?.backgroundColor || config.backgroundColor || null;
 }
 exports.getRootViewBackgroundColor = getRootViewBackgroundColor;
