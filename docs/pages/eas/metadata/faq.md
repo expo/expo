@@ -43,11 +43,19 @@ With asynchronous functions, there are no limits to adapting EAS Metadata to sui
 
 Here are some reasons EAS Metadata might **not** be the right fit for a project.
 
-### Need features not yet implemented
+### Does EAS Metadata support the Google Play Store?
 
 We are committed to EAS Metadata and will expand functionality over time.
-But that also means that not all functionality is currently implemented in EAS Metadata.
+But that also means that not all functionality is implemented in EAS Metadata.
+The Google Play Store is one of those features currently not implemented.
 See the [store config schema](./schema.md#config-schema) for all existing functionality.
+
+### How do I use unsupported app store features?
+
+EAS Metadata only sends the data from your store config to the app stores.
+It does not block you from using the app store dashboards if you need a feature that EAS Metadata does not cover yet.
+
+When using EAS Metadata and editing something in the app store dashboards, make sure to run `eas metadata:pull` after these changes. Without updating your local store config, EAS Metadata might overwrite your changes when pushing to the app stores.
 
 ### Using restricted app store accounts
 
