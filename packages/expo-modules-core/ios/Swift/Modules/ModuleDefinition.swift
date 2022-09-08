@@ -83,6 +83,6 @@ internal struct ConstantsDefinition: AnyDefinition {
 /**
  A definition for module's events that can be sent to JavaScript.
  */
-internal struct EventsDefinition: AnyDefinition {
+public struct EventsDefinition: AnyDefinition {
   let names: [String]
 }
