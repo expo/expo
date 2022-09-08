@@ -25,7 +25,7 @@ EAS Metadata aims to make this easier by using a [**store.config.json**](./confi
 
 ## Built-in validation
 
-EAS Metadata does not only get the information into the stores; it also tries to find common pitfalls that could cause app rejections. It does all this before sending anything to the app stores, saving you valuable time to spend on your project.
+EAS Metadata can also instantly identify known app store restrictions that could trigger a rejection after a length review queue.
 
 > Using VS Code? Install the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme) for auto-complete, suggestions, and warnings in your **store.config.json** files.
 

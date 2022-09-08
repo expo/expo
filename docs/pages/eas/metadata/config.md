@@ -1,5 +1,5 @@
 ---
-title: Create config files for EAS Metadata
+title: Configuring EAS Metadata
 sidebar_title: Creating the store config
 ---
 
@@ -11,8 +11,7 @@ import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 </Callout>
 <br />
 
-EAS Metadata is designed to be as simple as possible while still being extensible to cover almost all use cases.
-By default, it uses a simple **store.config.json** file located at the _root of your project_.
+EAS Metadata is configured by a **store.config.json** file in the _root of your project_.
 
 You can configure the path or name of the store config file with the **eas.json** [`metadataPath`](../../submit/eas-json.md#metadatapath) property.
 Besides the default JSON format, EAS Metadata also supports more dynamic config using JavaScript files.
@@ -52,9 +51,9 @@ You can find all configuration options in the [store config schema](./schema.md)
 
 ## Dynamic store config
 
-The static config can get you far, but sometimes it's better to use a dynamic value.
-For example, copyright notices usually contain the current year, which is easy to forget to update every year.
-You can make this dynamic by using a **store.config.js** file configured with the [`metadataPath`](../../submit/eas-json.md#metadatapath) property in your **eas.json** file.
+Metadata like the **copyright notice** should contain the current year, with EAS Metadata this can be automated.
+
+Generate content dynamically by creating a JavaScript config file **store.config.js**. Use the [`metadataPath`](../../submit/eas-json.md#metadatapath) property in the **eas.json** file to pick the JS config file.
 
 > `eas metadata:pull` can't update dynamic store config files. Instead, it creates a JSON file with the same name as the configured file. You can import the JSON file to reuse the data from `eas metadata:pull`.
 
