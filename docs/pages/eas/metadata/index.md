@@ -13,7 +13,7 @@ import { Terminal } from '~/ui/components/Snippet';
 </Callout>
 <br />
 
-**EAS Metadata** is a tool that helps submit app store information to publish your app.
+**EAS Metadata** is a tool that helps submit app store information to get your app approved.
 
 You need to provide a lot of information to multiple app stores before your users can use your app. This information is often about complex topics that don't apply to your app. You have to start a lengthy review process after providing the information. When the reviewer finds any issues in the information you provided, you need to restart this process.
 
@@ -27,7 +27,7 @@ EAS Metadata aims to make this easier by using a [**store.config.json**](./confi
 
 EAS Metadata does not only get the information into the stores; it also tries to find common pitfalls that could cause app rejections. It does all this before sending anything to the app stores, saving you valuable time to spend on your project.
 
-> Using VS Code? The [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme) gives you auto-complete, suggestions, and warnings for **store.config.json** files.
+> Using VS Code? Install the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme) for auto-complete, suggestions, and warnings in your **store.config.json** files.
 
 ## Get started
 

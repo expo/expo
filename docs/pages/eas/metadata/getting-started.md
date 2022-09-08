@@ -6,27 +6,32 @@ sidebar_title: Getting started
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Callout } from '~/ui/components/Callout';
 import { Terminal } from '~/ui/components/Snippet';
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
 <Callout type="warning">
   EAS Metadata is in beta and subject to breaking changes.
 </Callout>
 <br />
 
-EAS Metadata helps you prepare your app for review by uploading most of the required app information using a simple JSON file. It also helps you prevent common pitfalls that may lead to a rejected app submission.
+EAS Metadata helps you submit app store information to get your app approved. It uses a [**store.config.json**](./config.md#static-store-config) file containing all required app information instead of going through multiple different forms. It also tries to find common pitfalls that could cause app rejections with built-in validation.
 
 ## Prerequisites
 
 EAS Metadata is available starting from EAS CLI >= 0.54.0, and _currently_ only supports the Apple App Store.
 
-If you are using VS Code, make sure to [install the Expo plugin](https://github.com/expo/vscode-expo#readme) for **store.config.json** auto-completion.
+> Using VS Code? Install the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme) for auto-complete, suggestions, and warnings in your **store.config.json** files.
 
 ## Create the store config
 
-Let's start by creating our **store.config.json** file in the root directory of your project. This file holds all the information you want to upload to the app stores. If you have an existing app in the stores, you can generate the config file by running:
+Let's start by creating our **store.config.json** file in the root directory of your project. This file holds all the information you want to upload to the app stores.
+
+If you already have an app in the stores, you can pull the information into a store config by running:
 
 <Terminal cmd={['$ eas metadata:pull']} />
 
-If you don't have an app in the stores, EAS Metadata can't pull that information. You can create a new **store.config.json** file manually instead.
+If you don't have an app in the stores yet, EAS Metadata can't generate the store config for you. Instead, create a new store config file.
+
+<CodeBlocksTable tabs={['store.config.json']}>
 
 ```json
 {
@@ -47,25 +52,29 @@ If you don't have an app in the stores, EAS Metadata can't pull that information
 }
 ```
 
-> EAS Metadata will use the **store.config.json** file name in your project root by default; you can change the name and location of the file by [configuring the `metadataPath` on the EAS Submit profile](../submit/eas-json.md#metadatapath).
+</CodeBlocksTable>
+
+> By default, EAS Metadata uses the **store.config.json** file in the root of your project. You can change the name and location of this file by setting the **eas.json** [`metadataPath`](../../submit/eas-json.md#metadatapath) property.
 
 ## Update the store config
 
-Now it's time to edit the **store.config.json** file and customize it to your app needs. You can find all available options for the **store.config.json** in the [store config schema](./schema.md).
+Now it's time to edit the **store.config.json** file and customize it to your app needs. You can find all available options in the [store config schema](./schema.md).
 
 ## Upload a new app version
 
-Before you can upload the **store.config.json**, you must upload a new binary of your app. [Read more about uploading new binaries to stores](../../submit/introduction.md).
+Before pushing the **store.config.json** to the app stores, you must upload a new binary of your app. [Read more about uploading new binaries to stores](../../submit/introduction.md).
 
-After the binary is submitted and processed, we can upload the **store.config.json** to the app stores.
+After the binary is submitted and processed, we can push the store config to the app stores.
 
 ## Upload the store config
 
-When you are happy with the **store.config.json** settings, start syncing that data to the app stores. All you need to do is run the following command:
+When you are happy with the **store.config.json** settings, we can send it to the app stores. You can push the store config to the app stores by running:
 
 <Terminal cmd={['$ eas metadata:push']} />
 
-If EAS Metadata runs into any issues with the **store.config.json**, it will warn you when running this command. When the errors are minor, it will still try to upload the rest of the data. After correcting the **store.config.json**, you can rerun the same command to retry uploading the previously failed items.
+If EAS Metadata runs into any issues with your store config, it will warn you when running this command. When there are no errors, or you confirm to push it with possible issues, it will try to upload as much as possible.
+
+When the store config partially fails, you can change the store config and retry. `eas metadata:push` can be used to retry pushing the missing items.
 
 ## Next
 
