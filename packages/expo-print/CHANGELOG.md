@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash on some Android devices when WebView returns an unknown error. ([#18911](https://github.com/expo/expo/pull/18911) by [@matkastner](https://github.com/matkastner))
+
 ### 💡 Others
 
 ## 11.3.0 — 2022-07-07
