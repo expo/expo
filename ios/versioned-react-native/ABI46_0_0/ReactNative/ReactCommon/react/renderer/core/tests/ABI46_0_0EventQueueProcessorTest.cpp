@@ -6,7 +6,7 @@
  */
 
 #include <gtest/gtest.h>
-#include <hermes/API/hermes/hermes.h>
+#include <hermes/API/hermes/ABI46_0_0hermes.h>
 #include <ABI46_0_0jsi/ABI46_0_0jsi.h>
 #include <ABI46_0_0React/ABI46_0_0renderer/core/EventPipe.h>
 #include <ABI46_0_0React/ABI46_0_0renderer/core/EventQueueProcessor.h>

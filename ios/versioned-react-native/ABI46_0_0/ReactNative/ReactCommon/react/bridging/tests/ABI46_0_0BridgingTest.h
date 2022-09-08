@@ -8,7 +8,7 @@
 #pragma once
 
 #include <gtest/gtest.h>
-#include <hermes/hermes.h>
+#include <hermes/ABI46_0_0hermes.h>
 #include <ABI46_0_0React/bridging/ABI46_0_0Bridging.h>
 
 #define ABI46_0_0EXPECT_JSI_THROW(expr) ABI46_0_0EXPECT_THROW((expr), ABI46_0_0facebook::jsi::JSIException)
@@ -35,8 +35,8 @@ class BridgingTest : public ::testing::Test {
  protected:
   BridgingTest()
       : invoker(std::make_shared<TestCallInvoker>()),
-        runtime(hermes::makeHermesRuntime(
-            ::hermes::vm::RuntimeConfig::Builder()
+        runtime(ABI46_0_0hermes::makeHermesRuntime(
+            ::ABI46_0_0hermes::vm::RuntimeConfig::Builder()
                 // Make promises work with Hermes microtasks.
                 .withVMExperimentFlags(1 << 14 /* JobQueue */)
                 .build())),
