@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Drop support for `logUrl` which sent console logs to the legacy `expo-cli`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

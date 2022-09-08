@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Drop support for sending `logUrl` in manifests (unimplemented feature from `expo-cli`).
 - Drop support for copying `index.js` and removing `main` field in `package.json` during `expo prebuild` in favor of native build scripts which resolve the user-defined entry file. ([#18381](https://github.com/expo/expo/pull/18381) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
