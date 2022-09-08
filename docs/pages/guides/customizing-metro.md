@@ -10,7 +10,7 @@ Expo CLI uses Metro during [`npx expo start`](/workflow/expo-cli#develop) and [`
 
 ## Customizing
 
-You can customize the Metro bundler by creating a **metro.config.js** file in the root of your project. This file should export a [Metro configuration][metro-config] that extends [`@expo/metro-config`][expo-metro-config].
+You can customize the Metro bundler by creating a **metro.config.js** file in the root of your project. This file should export a [Metro configuration][metro-config] that extends [`expo/metro-config`][expo-metro-config]. Users should import `expo/metro-config` instead of `@expo/metro-config` to ensure version consistency.
 
 Run the following to generate the template file:
 
@@ -41,7 +41,7 @@ The most common customization is including extra asset extensions to Metro. In t
 
 ```js
 // metro.config.js
-const { getDefaultConfig } = require('@expo/metro-config');
+const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
 
@@ -107,9 +107,9 @@ Here are all of the [default Uglify options](https://github.com/facebook/metro/b
 
 ## Source map exploration
 
-A useful way to debug your source code is by exploring the source maps. You can do this easily in any Expo project using [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer). Just install it with `yarn add -D react-native-bundle-visualizer`, then run `npx react-native-bundle-visualizer`.
+A useful way to debug your source code is by exploring the source maps with [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer). Install it with `yarn add -D react-native-bundle-visualizer`, then run `npx react-native-bundle-visualizer`.
 
-This will show you an interactive breakdown of what makes up your React bundle. Using this you can find large packages that you may not have wanted bundled in your project. The smaller the bundle, the faster your app will start.
+This will show you an interactive breakdown of what makes up your JavaScript bundle. Using this you can find large packages that you may not have intended to bundle in your project. The smaller the bundle, the faster your app will start.
 
 ## Web Support
 
