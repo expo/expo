@@ -17,7 +17,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 You need to provide a lot of information to multiple app stores before your users can use your app. This information is often about complex topics that don't apply to your app. You have to start a lengthy review process after providing the information. When the reviewer finds any issues in the information you provided, you need to restart this process.
 
-EAS Metadata aims to make this easier by using a [**store.config.json**](./config.md#static-store-config) file. You can provide all information in this store instead of going through multiple forms in the app store dashboards. When it's time to update the app stores, you can push the store config to the app stores.
+EAS Metadata uses a [**store.config.json**](./config.md#static-store-config) file to provide information instead of going through multiple forms in the app store dashboards. When it's time to update the app stores, you can push the store config to the app stores.
 
 <Terminal cmd={['$ eas metadata:push']} />
 
