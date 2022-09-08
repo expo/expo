@@ -26,7 +26,7 @@ This document outlines the structure of the store config object.
 
 > If you use the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme), you get all this information through auto-complete, suggestions, and warnings in your editor.
 
-## Config Schema
+## Config schema
 
 An essential property in the store config is the `configVersion` property.
 App stores might require more or change existing information structures to publish your app.
@@ -60,7 +60,7 @@ EAS Metadata _currently_ only supports the Apple App Store.
 ]}
 </MetadataTable>
 
-### Apple Advisory
+### Apple advisory
 
 Apple uses a complex questionnaire to determine the app's [age rating](https://help.apple.com/app-store-connect/#/dev599d50efb).
 Parental controls on the App Store use this calculated age rating.
@@ -130,7 +130,7 @@ EAS Metadata uses the least restrictive answer for each of these questions by de
 ]}
 </MetadataTable>
 
-#### Apple Advisory Age Rating
+#### Apple advisory age rating
 
 <MetadataTable headers={['Name', 'Description']}>
 {[
@@ -140,7 +140,7 @@ EAS Metadata uses the least restrictive answer for each of these questions by de
 ]}
 </MetadataTable>
 
-#### Apple Advisory Kids Age
+#### Apple advisory kids age
 
 <MetadataTable headers={['Name', 'Description']}>
 {[
@@ -150,7 +150,7 @@ EAS Metadata uses the least restrictive answer for each of these questions by de
 ]}
 </MetadataTable>
 
-### Apple Categories
+### Apple categories
 
 The App Store helps users discover new apps by [categorizing apps into categories](https://developer.apple.com/app-store/categories/), using primary, secondary, and possible subcategories.
 
@@ -226,7 +226,7 @@ The App Store helps users discover new apps by [categorizing apps into categorie
 ]}
 </MetadataTable>
 
-### Apple Info
+### Apple info
 
 The App Store is a global service used by many people in different languages.
 You can localize your App Store presence in [multiple languages](#apple-info-languages).
@@ -304,7 +304,7 @@ You can localize your App Store presence in [multiple languages](#apple-info-lan
 ]}
 </MetadataTable>
 
-#### Apple Info Languages
+#### Apple info languages
 
 <MetadataTable headers={['Language', 'Language Code']}>
 {[
@@ -360,7 +360,7 @@ You can localize your App Store presence in [multiple languages](#apple-info-lan
 ]}
 </MetadataTable>
 
-### Apple Release
+### Apple release
 
 There are multiple strategies to put the app in the hands of your users.
 You can release the app automatically after store approval or gradually release an update to your users.
@@ -410,7 +410,7 @@ You can release the app automatically after store approval or gradually release 
 ]}
 </MetadataTable>
 
-### Apple Review
+### Apple review
 
 Before publishing the app on the App Store, store approval is required.
 The App Store review team must have all the information to test your app, or you risk an app rejection.
