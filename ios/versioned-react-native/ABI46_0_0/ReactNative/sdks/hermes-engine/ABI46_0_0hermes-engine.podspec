@@ -31,8 +31,11 @@ elsif currentremote.strip.end_with?("facebook/react-native.git") and currentbran
   source[:git] = git
   source[:commit] = `git ls-remote https://github.com/facebook/hermes main | cut -f 1`.strip
 else
-  # source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz"
-  source[:path] = "."
+  if File.exists?(File.join(__dir__, "destroot"))
+    source[:path] = '.'
+  else
+    source[:http] = 'https://github.com/expo/react-native/releases/download/sdk-46.0.0/ABI46_0_0hermes.tar.gz'
+  end
 end
 
 module HermesHelper
@@ -56,7 +59,7 @@ Pod::Spec.new do |spec|
   spec.header_mappings_dir = "destroot/include"
 
   spec.ios.vendored_frameworks = "destroot/Library/Frameworks/universal/ABI46_0_0hermes.xcframework"
-  spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/ABI46_0_0hermes.framework"
+  spec.osx.vendored_frameworks = "destroot/Library/Frameworks/macosx/hermes.framework"
 
   spec.xcconfig            = { "CLANG_CXX_LANGUAGE_STANDARD" => "c++17", "CLANG_CXX_LIBRARY" => "compiler-default", "GCC_PREPROCESSOR_DEFINITIONS" => "HERMES_ENABLE_DEBUGGER=1" }
 

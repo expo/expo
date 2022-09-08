@@ -17,8 +17,8 @@
 #import <dlfcn.h>
 #endif
 
-#if __has_include(<reacthermes/ABI46_0_0HermesExecutorFactory.h>)
-#import <reacthermes/ABI46_0_0HermesExecutorFactory.h>
+#if __has_include(<ABI46_0_0reacthermes/ABI46_0_0HermesExecutorFactory.h>)
+#import <ABI46_0_0reacthermes/ABI46_0_0HermesExecutorFactory.h>
 #elif __has_include(<hermes/hermes.h>)
 #import <hermes/hermes.h>
 #else
@@ -180,10 +180,8 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     return val;
   };
 
-#if __has_include(<reacthermes/ABI46_0_0HermesExecutorFactory.h>)
-  std::shared_ptr<jsi::Runtime> animatedRuntime = ABI46_0_0facebook::hermes::makeHermesRuntime();
-#elif __has_include(<hermes/hermes.h>)
-  std::shared_ptr<jsi::Runtime> animatedRuntime = ABI46_0_0facebook::hermes::makeHermesRuntime();
+#if __has_include(<ABI46_0_0reacthermes/ABI46_0_0HermesExecutorFactory.h>)
+  std::shared_ptr<jsi::Runtime> animatedRuntime = ABI46_0_0facebook::ABI46_0_0hermes::makeHermesRuntime();
 #else
   std::shared_ptr<jsi::Runtime> animatedRuntime = ABI46_0_0facebook::jsc::makeJSCRuntime();
 #endif

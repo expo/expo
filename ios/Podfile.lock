@@ -745,7 +745,6 @@ PODS:
     - ABI46_0_0EXFirebaseCore
     - ABI46_0_0EXFont
     - ABI46_0_0EXGL
-    - ABI46_0_0EXGL_CPP
     - ABI46_0_0EXImageLoader
     - ABI46_0_0EXJSONUtils
     - ABI46_0_0EXLocalAuthentication
@@ -792,6 +791,7 @@ PODS:
     - ABI46_0_0RCTTypeSafety
     - ABI46_0_0React-Core
     - ABI46_0_0React-Core/DevSupport
+    - ABI46_0_0React-hermes
     - ABI46_0_0ReactCommon
     - ABI46_0_0UMAppLoader
     - Amplitude
@@ -892,6 +892,7 @@ PODS:
     - ABI46_0_0React-jsi (= 0.69.1)
     - ABI46_0_0ReactCommon/turbomodule/core (= 0.69.1)
     - RCT-Folly (= 2021.06.28.00-v2)
+  - ABI46_0_0hermes-engine (0.69.1)
   - ABI46_0_0lottie-react-native (5.1.3):
     - ABI46_0_0React-Core
     - lottie-ios (~> 3.2.3)
@@ -1072,6 +1073,17 @@ PODS:
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.06.28.00-v2)
+  - ABI46_0_0React-hermes (0.69.1):
+    - ABI46_0_0hermes-engine
+    - ABI46_0_0React-cxxreact (= 0.69.1)
+    - ABI46_0_0React-jsi (= 0.69.1)
+    - ABI46_0_0React-jsiexecutor (= 0.69.1)
+    - ABI46_0_0React-jsinspector (= 0.69.1)
+    - ABI46_0_0React-perflogger (= 0.69.1)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.06.28.00-v2)
+    - RCT-Folly/Futures (= 2021.06.28.00-v2)
   - ABI46_0_0React-jsi (0.69.1):
     - ABI46_0_0React-jsi/Default (= 0.69.1)
     - boost (= 1.76.0)
@@ -1637,7 +1649,9 @@ PODS:
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.7.2)
+  - hermes-engine (0.69.1)
   - JKBigInteger (0.0.6)
+  - libevent (2.1.12)
   - lottie-ios (3.2.3)
   - lottie-react-native (5.1.3):
     - lottie-ios (~> 3.2.3)
@@ -1686,6 +1700,12 @@ PODS:
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
+  - RCT-Folly/Futures (2021.06.28.00-v2):
+    - boost
+    - DoubleConversion
+    - fmt (~> 6.2.1)
+    - glog
+    - libevent
   - RCTRequired (0.69.1)
   - RCTTypeSafety (0.69.1):
     - FBLazyVector (= 0.69.1)
@@ -1863,6 +1883,17 @@ PODS:
     - React-logger (= 0.69.1)
     - React-perflogger (= 0.69.1)
     - React-runtimeexecutor (= 0.69.1)
+  - React-hermes (0.69.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2021.06.28.00-v2)
+    - RCT-Folly/Futures (= 2021.06.28.00-v2)
+    - React-cxxreact (= 0.69.1)
+    - React-jsi (= 0.69.1)
+    - React-jsiexecutor (= 0.69.1)
+    - React-jsinspector (= 0.69.1)
+    - React-perflogger (= 0.69.1)
   - React-jsi (0.69.1):
     - boost (= 1.76.0)
     - DoubleConversion
@@ -2238,6 +2269,7 @@ DEPENDENCIES:
   - ABI46_0_0EXVideoThumbnails (from `./versioned/sdk46/EXVideoThumbnails`)
   - ABI46_0_0FBLazyVector (from `./versioned-react-native/ABI46_0_0/ReactNative/Libraries/FBLazyVector`)
   - ABI46_0_0FBReactNativeSpec (from `./versioned-react-native/ABI46_0_0/ReactNative/React/FBReactNativeSpec`)
+  - ABI46_0_0hermes-engine (from `./versioned-react-native/ABI46_0_0/ReactNative/sdks/hermes-engine`)
   - ABI46_0_0lottie-react-native (from `./vendored/sdk46/lottie-react-native`)
   - ABI46_0_0RCTRequired (from `./versioned-react-native/ABI46_0_0/ReactNative/Libraries/RCTRequired`)
   - ABI46_0_0RCTTypeSafety (from `./versioned-react-native/ABI46_0_0/ReactNative/Libraries/TypeSafety`)
@@ -2250,6 +2282,7 @@ DEPENDENCIES:
   - ABI46_0_0React-Core/RCTWebSocket (from `./versioned-react-native/ABI46_0_0/ReactNative/`)
   - ABI46_0_0React-CoreModules (from `./versioned-react-native/ABI46_0_0/ReactNative/React/CoreModules`)
   - ABI46_0_0React-cxxreact (from `./versioned-react-native/ABI46_0_0/ReactNative/ReactCommon/cxxreact`)
+  - ABI46_0_0React-hermes (from `./versioned-react-native/ABI46_0_0/ReactNative/ReactCommon/hermes`)
   - ABI46_0_0React-jsi (from `./versioned-react-native/ABI46_0_0/ReactNative/ReactCommon/jsi`)
   - ABI46_0_0React-jsiexecutor (from `./versioned-react-native/ABI46_0_0/ReactNative/ReactCommon/jsiexecutor`)
   - ABI46_0_0React-jsinspector (from `./versioned-react-native/ABI46_0_0/ReactNative/ReactCommon/jsinspector`)
@@ -2362,7 +2395,9 @@ DEPENDENCIES:
   - Google-Maps-iOS-Utils (~> 2.1.0)
   - GoogleMaps (~> 3.6)
   - GoogleUtilities
+  - hermes-engine (from `../react-native-lab/react-native/sdks/hermes/hermes-engine.podspec`)
   - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
+  - libevent (~> 2.1.12)
   - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
   - Nimble (from `./Nimble.podspec`)
@@ -2378,6 +2413,7 @@ DEPENDENCIES:
   - React-Core/RCTWebSocket (from `../react-native-lab/react-native/`)
   - React-CoreModules (from `../react-native-lab/react-native/React/CoreModules`)
   - React-cxxreact (from `../react-native-lab/react-native/ReactCommon/cxxreact`)
+  - React-hermes (from `../react-native-lab/react-native/ReactCommon/hermes`)
   - React-jsi (from `../react-native-lab/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../react-native-lab/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../react-native-lab/react-native/ReactCommon/jsinspector`)
@@ -2439,6 +2475,7 @@ SPEC REPOS:
     - GoogleUtilitiesComponents
     - GTMAppAuth
     - GTMSessionFetcher
+    - libevent
     - lottie-ios
     - MBProgressHUD
     - MLImage
@@ -2813,6 +2850,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI46_0_0/ReactNative/Libraries/FBLazyVector"
   ABI46_0_0FBReactNativeSpec:
     :path: "./versioned-react-native/ABI46_0_0/ReactNative/React/FBReactNativeSpec"
+  ABI46_0_0hermes-engine:
+    :path: "./versioned-react-native/ABI46_0_0/ReactNative/sdks/hermes-engine"
   ABI46_0_0lottie-react-native:
     :path: "./vendored/sdk46/lottie-react-native"
   ABI46_0_0RCTRequired:
@@ -2833,6 +2872,8 @@ EXTERNAL SOURCES:
     :path: "./versioned-react-native/ABI46_0_0/ReactNative/React/CoreModules"
   ABI46_0_0React-cxxreact:
     :path: "./versioned-react-native/ABI46_0_0/ReactNative/ReactCommon/cxxreact"
+  ABI46_0_0React-hermes:
+    :path: "./versioned-react-native/ABI46_0_0/ReactNative/ReactCommon/hermes"
   ABI46_0_0React-jsi:
     :path: "./versioned-react-native/ABI46_0_0/ReactNative/ReactCommon/jsi"
   ABI46_0_0React-jsiexecutor:
@@ -3031,6 +3072,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/glog.podspec"
+  hermes-engine:
+    :podspec: "../react-native-lab/react-native/sdks/hermes/hermes-engine.podspec"
   JKBigInteger:
     :podspec: vendored/common/JKBigInteger.podspec.json
   lottie-react-native:
@@ -3057,6 +3100,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/React/CoreModules"
   React-cxxreact:
     :path: "../react-native-lab/react-native/ReactCommon/cxxreact"
+  React-hermes:
+    :path: "../react-native-lab/react-native/ReactCommon/hermes"
   React-jsi:
     :path: "../react-native-lab/react-native/ReactCommon/jsi"
   React-jsiexecutor:
@@ -3266,7 +3311,7 @@ SPEC CHECKSUMS:
   ABI46_0_0ExpoImageManipulator: d9c826732149dfa28c997f524d663d009fa536b6
   ABI46_0_0ExpoImagePicker: 0374ce58edabd479a94717cbc32418faf93bf6b6
   ABI46_0_0ExpoKeepAwake: 2a2af5decb4280b6d025b1b5043cd9370d2ab67f
-  ABI46_0_0ExpoKit: 4bed88e7a06dbf4b306354e143302ffae73d5020
+  ABI46_0_0ExpoKit: 7d974080a1ad4ec1fd78bdc03ee3786b62ecf7cd
   ABI46_0_0ExpoLinearGradient: 9766a6de9eaad87afb1dfb1391403e70995b946e
   ABI46_0_0ExpoLocalization: a0d35d7490ab40a3015b26abbeb1d6da98daef78
   ABI46_0_0ExpoMailComposer: f6dc505417b6989d4fdaae7480f7b6add2deca62
@@ -3294,6 +3339,7 @@ SPEC CHECKSUMS:
   ABI46_0_0EXVideoThumbnails: 4fc2a132668c006c73112fa955f9da702f476328
   ABI46_0_0FBLazyVector: 0ce5b1a14996f1a7ba2b18761d61bac0550a1a70
   ABI46_0_0FBReactNativeSpec: 90b388c58207e1310996d8534c621a5931f0ac8c
+  ABI46_0_0hermes-engine: 466092e1aaf0f226ffc822c9aea9af9ae2d5a32e
   ABI46_0_0lottie-react-native: 10361ebb7ccb3debc74cf826ab330764b01c9fc2
   ABI46_0_0RCTRequired: 736812a646562cd807a16ff2abdab8395f146f06
   ABI46_0_0RCTTypeSafety: bb3ebe870703849d2dcd7631b91186056279fd40
@@ -3301,9 +3347,10 @@ SPEC CHECKSUMS:
   ABI46_0_0React-bridging: 329754a00d3709d372c50df133ee0a30c672fc1d
   ABI46_0_0React-callinvoker: 9f77dff726b09481458a4c8be8e3ea053cf699b3
   ABI46_0_0React-Codegen: 513b352b831b08206050ae26c01928b4227b840a
-  ABI46_0_0React-Core: c953b8a620329af1c5d452c3bf5e10baaa273be1
+  ABI46_0_0React-Core: 9c6e97f21be78a3e5a9e60efd4909d9e23add262
   ABI46_0_0React-CoreModules: c30eb48847fb89c06ba5e04ea0cc89aac18ea7b9
   ABI46_0_0React-cxxreact: ab8ce45361e9699b7c41a17f48f3ffc0bae56c96
+  ABI46_0_0React-hermes: 10707cdb6b850730c0db608b57980b05e6941369
   ABI46_0_0React-jsi: f45419e0e85eefc10ba2f19f838143ba3a893951
   ABI46_0_0React-jsiexecutor: ebe16ce75e412407a6dd2cdc1ecc6eca2ca1c9df
   ABI46_0_0React-jsinspector: b456c205e72a57245f3c2cb92438c43d130f8fbc
@@ -3328,7 +3375,7 @@ SPEC CHECKSUMS:
   ABI46_0_0ReactCommon: 72ee9b0eb70367a2cf7bf0081517b4347b428360
   ABI46_0_0RNFlashList: 6c43b292eae5c8805241097c437b0f970cb66465
   ABI46_0_0RNGestureHandler: 42f00c4ce0ac12c4c51081de65e2ba831dfd5cb7
-  ABI46_0_0RNReanimated: c68969af1eae15d09ee5b8b3b61407feb5db9884
+  ABI46_0_0RNReanimated: e302e9d783e51534f97a633d1a1847473cfdc83b
   ABI46_0_0RNScreens: f521a4613dc2207aab4fcd72b5bb7cef74104a39
   ABI46_0_0stripe-react-native: 599bc13001fb6eae9a687e1eb587c720d04ee744
   ABI46_0_0UMAppLoader: 271ab738d153f711d91da6b1b7a3a981d668dcfe
@@ -3432,7 +3479,9 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMAppAuth: 4d8f864896f3646f0c33baf38a28362f4c601e15
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
+  hermes-engine: ece2bfa9bdb7f77f393cb2b41edf638eb086ec1a
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
+  libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
   lottie-react-native: a501112fa980529ccb80b9f3ee117a7f98c6af3a
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
@@ -3457,6 +3506,7 @@ SPEC CHECKSUMS:
   React-Core: 6177b1f2dd794fe202a5042d3678b2ddfcbfb7d4
   React-CoreModules: c74e6b155f9876b1947fc8a13f0cb437cc7f6dcd
   React-cxxreact: a07b7d90c4c71dd38c7383c7344b34d0a1336aee
+  React-hermes: 7e3687d19af44c3c53ad6acfad4f8fa53009d11b
   React-jsi: d762c410d10830b7579225c78f2fd881c29649ca
   React-jsiexecutor: 758e70947c232828a66b5ddc42d02b4d010fa26e
   React-jsinspector: 55605caf04e02f9b0e05842b786f1c12dde08f4b
@@ -3493,6 +3543,6 @@ SPEC CHECKSUMS:
   Yoga: 7ab6e3ee4ce47d7b789d1cb520163833e515f452
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: fb67edc6caee3fe9ca9ccd657f8bf43867f15a0e
+PODFILE CHECKSUM: f62830111ef5327df252b05689ab23c660585ef5
 
 COCOAPODS: 1.11.2
