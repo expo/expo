@@ -160,7 +160,7 @@ const cellTitleWrapperStyle = css({
 
 const cellCommunityStyle = css({
   display: 'flex',
-  minHeight: 'auto',
+  minHeight: `calc(100% - (2 * ${spacing[3]}px}))`,
   padding: spacing[4],
   margin: `${spacing[3]}px ${spacing[4]}px`,
   flexDirection: 'row',

@@ -82,7 +82,7 @@ The Expo community and the React and React Native communities are great resource
 
 ## Useful tools for debugging
 
-Below are a few tools we recommend, and use ourselves, when it comes to debugging your Expo app:
+Below are a few tools we recommend, and use ourselves, when it comes to debugging your React Native app:
 
 ## Developer menu
 
@@ -177,7 +177,7 @@ React DevTools can also be paired with remote debugging, allowing you to inspect
 
 ## Remote debugging with Chrome Developer Tools
 
-You can debug Expo apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc, as you would when debugging a web app.
+You can debug React Native apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc, as you would when debugging a web app.
 
 - To ensure the best debugging experience, first, change your host type to `npx expo start --lan` or `npx expo start --localhost`. If you use `npx expo start --tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable.
 

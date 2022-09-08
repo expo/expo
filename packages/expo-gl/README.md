@@ -15,10 +15,6 @@ For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare
 
 For bare React Native projects, you must ensure that you have [installed and configured the `expo` package](https://docs.expo.dev/bare/installing-expo-modules/) before continuing.
 
-### Install expo-gl-cpp
-
-expo-gl requires that you also install and configure [expo-gl-cpp](https://github.com/expo/expo/tree/main/packages/expo-gl-cpp).
-
 ### Add the package to your npm dependencies
 
 ```

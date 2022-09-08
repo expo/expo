@@ -7,10 +7,10 @@ Android and iOS each expose two values that identify the version of an applicati
 
 In managed projects, we use fields `version`/`android.versionCode`/`ios.buildNumber` in **app.json** to define versions, where `android.versionCode`/`ios.buildNumber` represents the developer-facing build version and `version` is the user-facing value visible in stores. For bare projects, each of those values maps to specific parts of the native configuration:
 
-- `version` field in **app.json** on iOS represents `CFBundleShortVersionString` in **Info.plist**.
-- `version` field in **app.json** on Android represents `versionName` in **android/app/build.gradle**.
-- `ios.buildNumber` field in **app.json** represents `CFBundleVersion` in **Info.plist**.
-- `android.versionCode` field in **app.json** represents `versionCode` in **android/app/build.gradle**.
+- [`version`][config-version] field in **app.json** on iOS represents `CFBundleShortVersionString` in **Info.plist**.
+- [`version`][config-version] field in **app.json** on Android represents `versionName` in **android/app/build.gradle**.
+- [`ios.buildNumber`][config-ios-buildnumber] field in **app.json** represents `CFBundleVersion` in **Info.plist**.
+- [`android.versionCode`][config-android-versioncode] field in **app.json** represents `versionCode` in **android/app/build.gradle**.
 
 One of the most frequent causes of app store rejections is submitting a build with a duplicate version number. This happens when a developer forgets to increment the version number prior to running a build.
 
@@ -108,3 +108,6 @@ In the case of bare React Native projects, values in native code take precedence
 - For bare React Native projects with Gradle configuration that supports multiple flavors, EAS CLI is not able to read or modify the version, so `autoIncrement` option is not supported and versions will not be listed in the build details page on [expo.dev](https://expo.dev).
 
 
+[config-version]: /versions/latest/config/app/#version
+[config-android-versioncode]: /versions/latest/config/app/#versioncode
+[config-ios-buildnumber]: /versions/latest/config/app/#buildnumber

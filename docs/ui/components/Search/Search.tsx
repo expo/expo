@@ -2,7 +2,7 @@ import { DocSearch } from '@docsearch/react';
 import { Global } from '@emotion/react';
 import * as React from 'react';
 
-import { LATEST_VERSION } from '~/constants/versions';
+import { LATEST_VERSION } from '~/constants/versions.cjs';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { DocSearchStyles } from '~/ui/components/Search/styles';
 

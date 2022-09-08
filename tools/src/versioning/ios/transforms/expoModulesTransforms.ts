@@ -23,7 +23,7 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         replaceWith: `${prefix}$1$2+$3$4`,
       },
       {
-        // expo-gl-cpp
+        // expo-gl
         find: /\bEXWebGL([^/]*)\.def\b/,
         replaceWith: `${prefix}EXWebGL$1.def`,
       },
@@ -53,8 +53,8 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       },
       {
         paths: swiftFilesPattern,
-        find: /r(eactTag)/gi,
-        replaceWith: (_, p1) => `${prefix.toLowerCase()}R${p1}`,
+        find: /(for)?[rR](eactTag)/gi,
+        replaceWith: (_, p1, p2) => `${p1 ?? ''}${p1 ? prefix : prefix.toLowerCase()}R${p2}`,
       },
       {
         // Prefixes name of the Expo modules provider.

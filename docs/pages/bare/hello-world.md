@@ -1,78 +1,39 @@
 ---
-title: Up and Running
-sidebar_label: Up and Running
+title: Overview
+sidebar_title: Introduction
+hideTOC: true
 ---
 
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
+import { InlineCode } from '~/components/base/code';
 
-> This guide assumes that you have Xcode and/or Android Studio installed and working. It also assumes that you want to create a new project. If you have an existing app that you would like to integrate the Expo SDK in an existing app, read the [existing apps guide](../bare/existing-apps.md).
+A bare React Native app is a project where developers make direct changes to their native `ios` and `android` project directories rather than continuously generating them on demand using the [Expo config (**app.json**) and prebuild](/workflow/prebuild). All tools and services offered by Expo including [EAS](/eas), Expo CLI, and the libraries in the Expo SDK, are built around bare React Native apps.
 
-Before you get started with a bare React Native project, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
+Before you get started with a React Native app, make sure you set up your environment for [React Native CLI](https://reactnative.dev/docs/environment-setup).
 
-After this, let's get started with a bare project. Run `npx create-expo-app --template bare-minimum` (we'll use the native template here).
-
-<Terminal cmd={[
-  "# Create a new native project",
-  "$ npx create-expo-app --template bare-minimum",
-  "",
-  "# If you don't have expo-cli yet, get it",
-  "$ npm i -g expo-cli",
-  "",
-]} cmdCopy="npx create-expo-app --template bare-minimum && npm i -g expo-cli" />
-
-Next, let's get the project running. Go into your project directory and run `expo run:ios` or `expo run:android` &mdash; hurray! Your project is working.
-
-## Using Expo modules
-
-Bare template projects come with `expo` installed and configured, so you're ready to install and use any package from the Expo SDK.
-
-## Install an Expo SDK package
-
-We're going to install [`expo-web-browser`](/versions/latest/sdk/webbrowser/), it's a useful little package for showing a modal web browser using the appropriate native APIs on each platform.
-
-<Terminal cmd={['$ expo install expo-web-browser']} />
-
-Open up **App.js** and add a button that, when pressed, opens up a web browser. Here's some code for you.
-
-```tsx
-import * as React from 'react';
-import { Button, View } from 'react-native';
-import * as WebBrowser from 'expo-web-browser';
-
-export default function App() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Button
-        title="Open a web browser"
-        onPress={() => {
-          WebBrowser.openBrowserAsync('https://expo.dev');
-        }}
-      />
-    </View>
-  );
-}
-```
-
-This will not yet work because we haven't linked the native code that powers it. To do this, we need to follow the instructions in the [`expo-web-browser` README](https://github.com/expo/expo/tree/main/packages/expo-web-browser) to configure it for iOS and Android. Let's do it.
-
-### iOS configuration
+To bootstrap a new React Native project, you can use `create-expo-app`. If you have an existing project or want to bootstrap with `npx react-native init`, then you will need to [install the `expo` package](/bare/installing-expo-modules) manually.
 
 <Terminal cmd={[
-  '# Build your native iOS project',
-  '$ expo run:ios'
-]}/>
+"# Create a new native project",
+"$ npx create-expo-app --template bare-minimum",
+]} cmdCopy="npx create-expo-app --template bare-minimum" />
 
-You may need to run `npx pod-install` to link the native iOS packages using [CocoaPods](https://cocoapods.org/), this is like running `yarn` or `npm install` in an Expo project. `expo run:ios` does this automatically when the **package.json** changes.
-
-### Android configuration
+Navigate into your project directory, then build the apps locally:
 
 <Terminal cmd={[
-  '# Build your native Android project',
-  '$ expo run:android'
+'# Build your native Android project',
+'$ npx expo run:android',
+'',
+'# Build your native iOS project',
+'$ npx expo run:ios'
 ]} />
 
-Once the app is built, press the "Open a web browser" button and watch the browser open. Success! Happy times.
+> Learn more about [compiling native apps](/workflow/expo-cli#compiling).
 
-## What now?
+## Next
 
-Most of the Expo SDKs APIs are available in bare React Native projects and can be installed using a process very similar to the above. You can see which are supported and which aren't in the [Supported Expo SDK Packages](unimodules-full-list.md) section, or just go ahead and browse the `API Reference` section and follow the installation instructions linked there, read the API documentation, and enjoy. Good luck building your app!
+<BoxLink title="Installing libraries" description="Learn how to install and configure native libraries." href="/workflow/using-libraries#installing-a-third-party-library" />
+<BoxLink title="Using the Expo SDK" description="Start adding features to your app." href="/versions/" />
+<BoxLink title="Adopting Prebuild" description="Automate your native directories using the app.json." href="/guides/adopting-prebuild" />
+<BoxLink title="Distributing your app" description="Build and submit your app to the app store with a single command!" href="/distribution/introduction" />

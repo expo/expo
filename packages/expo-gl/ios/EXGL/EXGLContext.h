@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <OpenGLES/EAGL.h>
-#import <EXGL_CPP/EXGL.h>
+#import <EXGL/EXGLNativeApi.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 
 @class EXGLContext;

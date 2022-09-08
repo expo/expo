@@ -3,9 +3,9 @@ title: Using FCM for Push Notifications
 sidebar_title: Using FCM
 ---
 
-**Firebase Cloud Messaging is required for all managed and bare workflow Android apps made with Expo**, unless you're still running your app in the Expo Go app. To set up your Expo Android app to get push notifications using your own FCM credentials, follow this guide closely.
+**Firebase Cloud Messaging is required for all Android apps using Expo SDK**, unless you're still running your app in the Expo Go app. To set up your Expo Android app to get push notifications using your own FCM credentials, follow this guide closely.
 
-Note that FCM is not currently available for Expo iOS apps.
+Note that FCM is not currently available for `expo-notifications` on iOS.
 
 ## Client Setup
 
@@ -13,7 +13,7 @@ Note that FCM is not currently available for Expo iOS apps.
 
 2. In your new project console, click **Add Firebase to your Android app** and follow the setup steps. **Make sure that the Android package name you enter is the same as the value of `android.package` in your app.json.**
 
-3. Download the `google-services.json` file and place it in your Expo app's root directory.
+3. Download the `google-services.json` file and place it in your app's root directory.
   > **Note:** The `google-services.json` file contains unique and non-secret identifiers of your Firebase project. For more information, see [Understand Firebase Projects](https://firebase.google.com/docs/projects/learn-more#config-files-objects).
 4. In your app.json, add an `android.googleServicesFile` field with the relative path to the `google-services.json` file you just downloaded. If you placed it in the root directory, this will probably look like
 
@@ -63,7 +63,7 @@ In order for Expo to send notifications from our servers using your credentials,
 
 2. Click on the **Cloud Messaging** tab in the Settings pane.
 
-3. Copy the token listed next to **Server key**. 
+3. Copy the token listed next to **Server key**.
 
 > ** Note:** Server Key is only available in **Cloud Messaging API (Legacy)**, which may be Disabled by default. Enable it by clicking the 3-dot menu > Manage API in Google Cloud Console and follow the flow there. Once the legacy messaging API is enabled, you should see Server Key in that section.
 
