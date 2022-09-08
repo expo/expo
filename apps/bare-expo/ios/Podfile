@@ -17,6 +17,11 @@ podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {
 abstract_target 'BareExpoMain' do
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
+  # Required by latest firebase versions
+  # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+
   use_expo_modules!(
     tests: [
       'expo-dev-menu-interface',
