@@ -1,7 +1,6 @@
 import { MessageSocket } from '@expo/dev-server';
 import assert from 'assert';
 import openBrowserAsync from 'better-opn';
-import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 
 import { APISettings } from '../../api/settings';
