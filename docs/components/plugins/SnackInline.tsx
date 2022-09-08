@@ -3,10 +3,11 @@ import * as React from 'react';
 
 import { SNACK_URL, getSnackFiles } from '~/common/snack';
 import { PageApiVersionContext, PageApiVersionContextType } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
 import { Button } from '~/ui/components/Button';
 
 const DEFAULT_PLATFORM = 'android';
-const LATEST_VERSION = `v${require('../../package.json').version}`;
+const { LATEST_VERSION } = versions;
 
 type Props = React.PropsWithChildren<{
   dependencies: string[];
