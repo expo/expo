@@ -207,7 +207,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   }
 
   private fun hasDisableOnboardingQueryParam(urlString: String): Boolean {
-    return urlString.contains("disableOnboarding")
+    return urlString.contains("disableOnboarding=1")
   }
 
   /**
