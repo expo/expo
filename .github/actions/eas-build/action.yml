@@ -20,6 +20,10 @@ inputs:
   noWait:
     description: 'Exit immediately after build is scheduled'
     required: false
+  message:
+    description: 'Message attached to the build'
+    required: false
+
 
 outputs:
   build_id:
@@ -33,13 +37,16 @@ runs:
       shell: bash
       id: build_start
       run: |
-        BUILD_ID=$(eas build -p $PLATFORM --profile $EAS_BUILD_PROFILE --resource-class ${{ inputs.resourceClass }} --non-interactive --json --no-wait | jq -r ".[0].id")
+        COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+        MESSAGE="${MESSAGE:-$COMMIT_MESSAGE}"
+        BUILD_ID=$(eas build -p $PLATFORM --profile $EAS_BUILD_PROFILE --message "$MESSAGE" --resource-class ${{ inputs.resourceClass }} --non-interactive --json --no-wait | jq -r ".[0].id")
         echo ::set-output name=build_id::"$BUILD_ID"
       working-directory: ${{ inputs.projectRoot }}
       env:
         EXPO_TOKEN: ${{ inputs.expoToken }}
         EAS_BUILD_PROFILE: ${{ inputs.profile }}
         PLATFORM: ${{ inputs.platform }}
+        MESSAGE: ${{ inputs.message }}
         EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID: host.exp.exponent
     - name: Wait for build to finish
       shell: bash

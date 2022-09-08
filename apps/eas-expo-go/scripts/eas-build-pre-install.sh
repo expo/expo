@@ -8,8 +8,6 @@ if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
   sudo apt-get -y update
   sudo apt-get -y install ruby icu-devtools libicu66 libicu-dev maven
   sdkmanager "cmake;3.10.2.4988404"
-elif [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
-  HOMEBREW_NO_AUTO_UPDATE=1 brew install direnv
 fi
 
 cat << EOF > $ROOT_DIR/.gitmodules
@@ -31,6 +29,10 @@ cat << EOF > $ROOT_DIR/.gitmodules
 EOF
 
 git submodule update --init
+
+if [ ! -z "$EAS_BUILD_NPM_CACHE_URL" ]; then
+  sed -i -e "s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g" $ROOT_DIR/yarn.lock || true
+fi
 
 pushd $ROOT_DIR/tools
 yarn

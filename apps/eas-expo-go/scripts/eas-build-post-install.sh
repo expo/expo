@@ -3,12 +3,7 @@
 set -xeuo pipefail
 
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../../.. && pwd )"
-
-mkdir -p ~/.config/direnv
-cat << EOF > ~/.config/direnv/direnv.toml
-[whitelist]
-prefix = [ "/" ]
-EOF
+export PATH="$ROOT_DIR/bin:$PATH"
 
 maybe_prebuild_hermes() {
   ANDROID_DIR="$ROOT_DIR/android"
@@ -28,7 +23,7 @@ maybe_prebuild_hermes() {
 }
 
 if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
-  direnv exec . et ios-generate-dynamic-macros
+  et ios-generate-dynamic-macros
 elif [ "$EAS_BUILD_PLATFORM" = "android" ]; then
   if [ "$EAS_BUILD_PROFILE" != "versioned-client-add-sdk" ]; then
     maybe_prebuild_hermes
@@ -36,5 +31,10 @@ elif [ "$EAS_BUILD_PLATFORM" = "android" ]; then
 fi
 
 if [ "$EAS_BUILD_PROFILE" = "versioned-client-add-sdk" ]; then
-  direnv exec . et add-sdk --platform android
+  if [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
+    pushd ios
+    bundle install
+    popd
+  fi
+  et add-sdk --platform $EAS_BUILD_PLATFORM
 fi

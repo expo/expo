@@ -84,6 +84,26 @@ jobs:
           else
             echo ::set-output name=profile::"unversioned-client"
           fi
+      - name: Generate local credentials.json
+        working-directory: ./apps/eas-expo-go
+        run: |
+          cat >credentials.json <<EOL
+          {
+            "android": {
+              "keystore": {
+                "keystorePath": "release.keystore",
+                "keystorePassword": "$ANDROID_KEYSTORE_PASSWORD",
+                "keyAlias": "ExponentKey",
+                "keyPassword": "$ANDROID_KEY_PASSWORD"
+              }
+            }
+          }
+          EOL
+          echo $ANDROID_KEYSTORE_B64 | base64 -d > release.keystore
+        env:
+          ANDROID_KEYSTORE_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
       - name: Build
         uses: ./.github/actions/eas-build
         id: build
@@ -94,6 +114,7 @@ jobs:
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           resourceClass: large
           noWait: ${{ github.event.schedule }}
+          message: ${{ github.event.pull_request.title }}
       - name: On workflow canceled
         if: ${{ cancelled() && steps.build.outputs.build_id }}
         run: eas build:cancel ${{ steps.build.outputs.build_id }}
