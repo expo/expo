@@ -87,7 +87,7 @@ module.exports = {
 
 ## Store config with external content
 
-When using external services for localizations or concepts like "remote config", you have to fetch external content.
+When using external services for localizations, you have to fetch external content.
 EAS Metadata supports synchronous and asynchronous functions exported from dynamic store config files.
 The function results are awaited before validating and syncing with the stores.
 
