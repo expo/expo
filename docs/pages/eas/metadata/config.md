@@ -64,11 +64,9 @@ Generate content dynamically by creating a JavaScript config file **store.config
 const config = require('./store.config.json');
 
 const year = new Date().getFullYear();
+config.apple.copyright = `${year} Acme, Inc.`;
 
-module.exports = {
-  ...config,
-  copyright: `${year} Acme, Inc.`,
-};
+module.exports = config;
 ```
 
 ```json
@@ -104,11 +102,10 @@ module.exports = async () => {
   const info = await fetchLocalizations('...')
     .then(response => response.json());
 
-  return {
-    ...config,
-    copyright: `${year} Acme, Inc.`,
-    info,
-  };
+  config.apple.copyright = `${year} Acme, Inc.`;
+  config.apple.info = info;
+
+  return config;
 };
 ```
 
