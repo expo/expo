@@ -6,22 +6,45 @@ hideTOC: true
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Callout } from '~/ui/components/Callout';
+import { Terminal } from '~/ui/components/Snippet';
 
 <Callout type="warning">
   EAS Metadata is in beta and subject to breaking changes.
 </Callout>
 <br />
 
-**EAS Metadata** is a service to help you provide all necessary information to the stores and get your app published.
+**EAS Metadata** is a tool that helps submit app store information to publish your app.
 
-To get your app into the hands of your users, you have to publish the app on multiple app stores. During this process, you'll have to answer questions about complex topics that often don't apply to your app. After submitting the information, you can start the lengthy review process. If the reviewer finds any issues in the information you sent, you'll have to restart the review process.
+You need to provide a lot of information to multiple app stores before your users can use your app. This information is often about complex topics that don't apply to your app. You have to start a lengthy review process after providing the information. When the reviewer finds any issues in the information you provided, you need to restart this process.
 
-EAS Metadata makes this easier by allowing users to configure the app store information locally. After this store configuration is ready, you can sync the app stores using `eas metadata:push`. EAS Metadata does not only get the information into the stores; it also tries to find common pitfalls that could cause an app rejection. It does all this before syncing with the app stores, saving you valuable time to spend on your project.
+## Store config
 
-### Get started
+EAS Metadata aims to make this easier by using a [**store.config.json**](./config.md#static-store-config) file. You can provide all information in this store instead of going through multiple forms in the app store dashboards. When it's time to update the app stores, you can push the store config to the app stores.
 
-<BoxLink title="Getting started" href="/eas/metadata/getting-started" description="Add EAS Metadata to a new project, or generate the store config from an existing app." />
+<Terminal cmd={['$ eas metadata:push']} />
 
-<BoxLink title="Customize the store config" href="/eas/metadata/config" description="Customize the store config to adapt EAS Metadata to your preferred workflow." />
+## Built-in validation
 
-<BoxLink title="Store config schema" href="/eas/metadata/schema" description="Explore all configurable options EAS Metadata has to offer." />
+EAS Metadata does not only get the information into the stores; it also tries to find common pitfalls that could cause app rejections. It does all this before sending anything to the app stores, saving you valuable time to spend on your project.
+
+> Using VS Code? The [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme) gives you auto-complete, suggestions, and warnings for **store.config.json** files.
+
+## Get started
+
+<BoxLink
+  href="/eas/metadata/getting-started"
+  title="Introduction"
+  description="Add EAS Metadata to a new project, or generate the store config from an existing app."
+/>
+
+<BoxLink
+  href="/eas/metadata/config"
+  title="Customize the store config"
+  description="Customize the store config to adapt EAS Metadata to your preferred workflow."
+/>
+
+<BoxLink
+  href="/eas/metadata/schema"
+  title="Store config schema"
+  description="Explore all configurable options EAS Metadata has to offer."
+/>
