@@ -87,6 +87,7 @@
     "jest": "^29.0.2",
     "jest-environment-jsdom": "^29.0.2",
     "js-yaml": "^4.1.0",
+    "next-router-mock": "^0.7.4",
     "prettier": "^2.7.1",
     "puppeteer": "^10.2.0",
     "react-test-renderer": "^18.2.0",

@@ -1,4 +1,4 @@
-import { DocSearch } from '@docsearch/react';
+import * as docsearch from '@docsearch/react';
 import { Global } from '@emotion/react';
 import * as React from 'react';
 
@@ -13,7 +13,7 @@ export const Search = () => {
   return (
     <>
       <Global styles={DocSearchStyles} />
-      <DocSearch
+      <docsearch.DocSearch
         appId="QEX7PB7D46"
         indexName="expo"
         apiKey="89231e630c63f383765538848f9a0e9e"
