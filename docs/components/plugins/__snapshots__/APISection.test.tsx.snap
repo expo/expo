@@ -7246,29 +7246,828 @@ for more details.
 `;
 
 exports[`APISection expo-barcode-scanner 1`] = `
+.emotion-0 {
+  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 500;
+  font-size: 1.5625rem;
+  line-height: 1.4;
+  letter-spacing: -0.021rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 12px;
+  margin-top: 32px;
+}
+
+@media (max-width: 900px) {
+  .emotion-0 {
+    font-size: 1.375rem;
+    line-height: 1.4090909;
+    letter-spacing: -0.018rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .emotion-0 {
+    font-size: 1.1875rem;
+    line-height: 1.5263158;
+    letter-spacing: -0.015rem;
+  }
+}
+
+.emotion-0 code {
+  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 500;
+  font-size: 1.5625rem;
+  line-height: 1.4;
+  letter-spacing: -0.021rem;
+  color: var(--expo-theme-text-default);
+  font-family: Menlo-Regular;
+  padding: 1px 8px;
+  border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .emotion-0 code {
+    font-size: 1.375rem;
+    line-height: 1.4090909;
+    letter-spacing: -0.018rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .emotion-0 code {
+    font-size: 1.1875rem;
+    line-height: 1.5263158;
+    letter-spacing: -0.015rem;
+  }
+}
+
+.emotion-1 {
+  position: relative;
+}
+
+.emotion-2 {
+  display: block;
+  position: absolute;
+  top: -100px;
+  visibility: hidden;
+}
+
+.emotion-3 {
+  color: inherit;
+  -webkit-text-decoration: inherit;
+  text-decoration: inherit;
+}
+
+details .emotion-3 {
+  pointer-events: none;
+}
+
+.emotion-4 {
+  display: inline;
+}
+
+.emotion-5 {
+  cursor: pointer;
+  vertical-align: text-top;
+  display: inline-block;
+  width: 1.2em;
+  height: 1.2em;
+  padding: 0 0.2em;
+  visibility: hidden;
+}
+
+a:hover .emotion-5 {
+  visibility: visible;
+}
+
+.emotion-5 svg {
+  width: 100%;
+  height: auto;
+}
+
+.emotion-6 {
+  border-radius: 6px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--expo-theme-border-default);
+  padding: 4px 20px;
+  box-shadow: var(--expo-theme-shadows-micro);
+  margin-bottom: 24px;
+  overflow-x: hidden;
+}
+
+.emotion-6 h3 {
+  margin-top: 16px;
+}
+
+.emotion-6 th {
+  color: var(--expo-theme-text-secondary);
+  padding: 12px 16px;
+}
+
+.emotion-6 .css-nn3pc0 {
+  box-shadow: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .emotion-6 {
+    padding: 0 16px;
+  }
+}
+
+.emotion-7 {
+  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  letter-spacing: -0.017rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 6px;
+  margin-top: 24px;
+}
+
+@media (max-width: 900px) {
+  .emotion-7 {
+    font-size: 1.125rem;
+    line-height: 1.5555556;
+    letter-spacing: -0.014rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .emotion-7 {
+    font-size: 1rem;
+    line-height: 1.625;
+    letter-spacing: -0.011rem;
+  }
+}
+
+.emotion-7 code {
+  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 500;
+  font-size: 1.25rem;
+  line-height: 1.5;
+  letter-spacing: -0.017rem;
+  color: var(--expo-theme-text-default);
+  font-family: Menlo-Regular;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+@media (max-width: 900px) {
+  .emotion-7 code {
+    font-size: 1.125rem;
+    line-height: 1.5555556;
+    letter-spacing: -0.014rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .emotion-7 code {
+    font-size: 1rem;
+    line-height: 1.625;
+    letter-spacing: -0.011rem;
+  }
+}
+
+.emotion-12 {
+  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.6153846;
+  letter-spacing: -0.003rem;
+  color: var(--expo-theme-text-default);
+  white-space: pre-wrap;
+  display: inline;
+  padding: 2px 4px;
+  max-width: 100%;
+  word-wrap: break-word;
+  background-color: var(--expo-theme-background-secondary);
+  border: 1px solid var(--expo-theme-border-default);
+  border-radius: 4px;
+  vertical-align: middle;
+  overflow-x: auto;
+}
+
+a .emotion-12 {
+  border-color: var(--expo-theme-border-default);
+}
+
+h2 .emotion-12,
+h3 .emotion-12,
+h4 .emotion-12 {
+  position: relative;
+  top: -2px;
+}
+
+.emotion-14 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 16px;
+}
+
+.emotion-15 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 16px;
+  font-size: inherit;
+  font-family: Inter-SemiBold;
+}
+
+.emotion-17 {
+  color: var(--expo-theme-link-default);
+  font-size: inherit;
+}
+
+.emotion-17:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.emotion-17 code {
+  color: var(--expo-theme-link-default);
+}
+
+.emotion-24 {
+  border-radius: 6px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--expo-theme-border-default);
+  padding: 4px 20px;
+  box-shadow: var(--expo-theme-shadows-micro);
+  margin-bottom: 24px;
+  overflow-x: hidden;
+}
+
+.emotion-24 h3 {
+  margin-top: 16px;
+}
+
+.emotion-24 th {
+  color: var(--expo-theme-text-secondary);
+  padding: 12px 16px;
+}
+
+.emotion-24 .css-nn3pc0 {
+  box-shadow: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .emotion-24 {
+    padding: 0 16px;
+  }
+}
+
+.emotion-30 {
+  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.6153846;
+  letter-spacing: -0.003rem;
+  color: var(--expo-theme-text-default);
+  white-space: pre-wrap;
+  display: inline;
+  padding: 2px 4px;
+  max-width: 100%;
+  word-wrap: break-word;
+  background-color: var(--expo-theme-background-secondary);
+  border: 1px solid var(--expo-theme-border-default);
+  border-radius: 4px;
+  vertical-align: middle;
+  overflow-x: auto;
+}
+
+a .emotion-30 {
+  border-color: var(--expo-theme-border-default);
+}
+
+h2 .emotion-30,
+h3 .emotion-30,
+h4 .emotion-30 {
+  position: relative;
+  top: -2px;
+}
+
+.emotion-33 {
+  color: var(--expo-theme-text-secondary);
+  font-size: 90%;
+  font-weight: 600;
+}
+
+.emotion-57 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-gap: 12px;
+  padding: 12px;
+  margin-bottom: 16px;
+  border-left: 4px solid var(--expo-theme-border-default);
+  background: var(--expo-theme-background-secondary);
+  border-radius: 4;
+}
+
+.emotion-57 div {
+  margin: 0;
+}
+
+.emotion-57 code {
+  background-color: var(--expo-theme-background-tertiary);
+}
+
+table .emotion-57 {
+  margin: 8px 0;
+}
+
+table .emotion-57:first-of-type {
+  margin-top: 0;
+}
+
+table .emotion-57:last-child {
+  margin-bottom: 0;
+}
+
+.emotion-86 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  list-style: disc;
+  margin-left: 16px;
+  margin-bottom: 24px;
+}
+
+.emotion-86 .anchor-icon {
+  display: none;
+}
+
+table .emotion-86 {
+  margin: 0.5rem 1rem;
+  line-height: 125%;
+}
+
+table .emotion-86:first-of-type {
+  margin-top: 0;
+}
+
+table .emotion-86:last-child {
+  margin-bottom: 0;
+}
+
+.emotion-86 ol,
+.emotion-86 ul {
+  margin-left: 4px;
+}
+
+.emotion-87 {
+  margin-left: 16px;
+  padding: 4px 0;
+}
+
+.emotion-87:before {
+  font-size: 130%;
+  line-height: 0;
+  margin: 0 8px 0 -16px;
+  position: relative;
+  color: var(--expo-theme-text-default);
+}
+
+.emotion-87>div {
+  display: inline;
+}
+
+.emotion-104 {
+  border: 1px solid var(--expo-theme-border-default);
+  border-radius: 6px;
+  overflow-y: hidden;
+  overflow-x: auto;
+  margin-bottom: 16px;
+  box-shadow: var(--expo-theme-shadows-micro);
+}
+
+.emotion-104::-webkit-scrollbar {
+  height: 6px;
+}
+
+.emotion-104::-webkit-scrollbar-track {
+  background: var(--expo-theme-background-default);
+  border-bottom-left-radius: 6px;
+  border-bottom-right-radius: 6px;
+}
+
+.emotion-104::-webkit-scrollbar-thumb {
+  background: var(--expo-theme-background-tertiary);
+  border-radius: 6px;
+}
+
+.emotion-104::-webkit-scrollbar-thumb:hover {
+  background: var(--expo-theme-background-quaternary);
+}
+
+.emotion-105 {
+  font-size: 0.875rem;
+  line-height: 1.5714286;
+  letter-spacing: -0.006rem;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+  border-collapse: collapse;
+  color: var(--expo-theme-text-default);
+  table-layout: auto;
+}
+
+.emotion-105 blockquote,
+.emotion-105 li {
+  font-size: 0.875rem;
+  line-height: 1.5714286;
+  letter-spacing: -0.006rem;
+}
+
+.emotion-106 {
+  background-color: var(--expo-theme-background-secondary);
+  border-bottom: 1px solid var(--expo-theme-border-default);
+}
+
+.emotion-107:nth-of-type(2n) {
+  background-color: var(--expo-theme-background-secondary);
+}
+
+.emotion-107:nth-of-type(2n) blockquote,
+.emotion-107:nth-of-type(2n) summary {
+  background-color: var(--expo-theme-background-tertiary);
+}
+
+.emotion-108 {
+  padding: 16px;
+  font-family: Inter-Medium;
+  vertical-align: middle;
+  border-right: 1px solid var(--expo-theme-border-default);
+  text-align: left;
+}
+
+.emotion-108:last-child {
+  border-right: 0;
+}
+
+.emotion-112 {
+  padding: 16px;
+  vertical-align: middle;
+  border-right: 1px solid var(--expo-theme-border-default);
+  text-align: left;
+}
+
+.emotion-112:last-child {
+  border-right: 0;
+}
+
+.emotion-114 {
+  color: var(--expo-theme-text-secondary);
+  font-size: 90%;
+  padding-top: 22px;
+}
+
+.emotion-120 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  border-top: 1px solid var(--expo-theme-border-default);
+  border-bottom: 1px solid var(--expo-theme-border-default);
+  margin: 24px -20px 16px;
+  padding: 10px 20px;
+  background-color: var(--expo-theme-background-secondary);
+}
+
+.emotion-120 h4 {
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  font-family: Inter-Medium;
+  margin-bottom: 0;
+  margin-top: 0;
+  color: var(--expo-theme-text-secondary);
+}
+
+.emotion-121 {
+  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-top: 24px;
+  margin-bottom: 4px;
+}
+
+.emotion-121 code {
+  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  font-family: Menlo-Regular;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.emotion-122 {
+  border: 1px solid var(--expo-theme-border-default);
+  padding: 16px;
+  margin: 16px 0;
+  white-space: pre;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--expo-theme-background-secondary);
+  line-height: 120%;
+  border-radius: 4px;
+}
+
+.emotion-123 {
+  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.6153846;
+  letter-spacing: -0.003rem;
+  color: var(--expo-theme-text-default);
+  white-space: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+.emotion-123 .code-annotation {
+  -webkit-transition: 200ms ease all;
+  transition: 200ms ease all;
+  transition-property: text-shadow,opacity;
+  text-shadow: var(--expo-theme-highlight-emphasis) 0 0 10px,var(--expo-theme-highlight-emphasis) 0 0 10px,var(--expo-theme-highlight-emphasis) 0 0 10px,var(--expo-theme-highlight-emphasis) 0 0 10px;
+}
+
+.emotion-123 .code-annotation.with-tooltip:hover {
+  cursor: pointer;
+  -webkit-animation: none;
+  animation: none;
+  opacity: 0.8;
+}
+
+.emotion-123 .code-hidden {
+  display: none;
+}
+
+.emotion-123 .code-placeholder {
+  opacity: 0.5;
+}
+
+.emotion-124 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  border-top: 1px solid var(--expo-theme-border-default);
+  border-bottom: 1px solid var(--expo-theme-border-default);
+  margin: 24px -20px 16px;
+  padding: 10px 20px;
+  background-color: var(--expo-theme-background-secondary);
+}
+
+.emotion-124 h4 {
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  font-family: Inter-Medium;
+  margin-bottom: 0;
+  margin-top: 0;
+  color: var(--expo-theme-text-secondary);
+}
+
+.emotion-131 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  list-style: disc;
+  margin-left: 16px;
+  margin-bottom: 24px;
+  list-style: none;
+  margin-left: 0;
+  margin-bottom: 12px;
+}
+
+.emotion-131 .anchor-icon {
+  display: none;
+}
+
+table .emotion-131 {
+  margin: 0.5rem 1rem;
+  line-height: 125%;
+}
+
+table .emotion-131:first-of-type {
+  margin-top: 0;
+}
+
+table .emotion-131:last-child {
+  margin-bottom: 0;
+}
+
+.emotion-131 ol,
+.emotion-131 ul {
+  margin-left: 4px;
+}
+
+.emotion-131 li {
+  margin-left: 0.25rem;
+}
+
+.emotion-133 {
+  -webkit-transform: rotate(180deg);
+  -moz-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  transform: rotate(180deg);
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.emotion-164 {
+  color: var(--expo-theme-link-default);
+  font-size: inherit;
+}
+
+.emotion-164:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.emotion-164 code {
+  color: var(--expo-theme-link-default);
+}
+
+.emotion-273 {
+  padding: 16px;
+  vertical-align: middle;
+  border-right: 1px solid var(--expo-theme-border-default);
+  text-align: left;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.emotion-273:last-child {
+  border-right: 0;
+}
+
+.emotion-526 {
+  border-radius: 6px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--expo-theme-border-default);
+  padding: 4px 20px;
+  box-shadow: var(--expo-theme-shadows-micro);
+  margin-bottom: 24px;
+  overflow-x: hidden;
+}
+
+.emotion-526 h3 {
+  margin-top: 16px;
+}
+
+.emotion-526 th {
+  color: var(--expo-theme-text-secondary);
+  padding: 12px 16px;
+}
+
+.emotion-526 .css-nn3pc0 {
+  box-shadow: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .emotion-526 {
+    padding: 0 16px;
+  }
+}
+
+.emotion-526 blockquote {
+  margin: 8px 0;
+}
+
+.emotion-526 ul {
+  margin-bottom: 0;
+}
+
+.emotion-534 {
+  border-radius: 6px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: var(--expo-theme-border-default);
+  padding: 4px 20px;
+  box-shadow: var(--expo-theme-shadows-micro);
+  margin-bottom: 24px;
+  overflow-x: hidden;
+  box-shadow: none;
+  margin-bottom: 12px;
+}
+
+.emotion-534 h3 {
+  margin-top: 16px;
+}
+
+.emotion-534 th {
+  color: var(--expo-theme-text-secondary);
+  padding: 12px 16px;
+}
+
+.emotion-534 .css-nn3pc0 {
+  box-shadow: none;
+}
+
+@media screen and (max-width: 1024px) {
+  .emotion-534 {
+    padding: 0 16px;
+  }
+}
+
+.emotion-535 {
+  margin-top: 12px;
+}
+
+.emotion-535 h4 {
+  margin-top: 0;
+}
+
+.emotion-543 {
+  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.6153846;
+  letter-spacing: -0.003rem;
+  color: var(--expo-theme-text-default);
+  white-space: pre-wrap;
+  display: inline;
+  padding: 2px 4px;
+  max-width: 100%;
+  word-wrap: break-word;
+  background-color: var(--expo-theme-background-secondary);
+  border: 1px solid var(--expo-theme-border-default);
+  border-radius: 4px;
+  vertical-align: middle;
+  overflow-x: auto;
+  display: inline-block;
+  padding: 0 8px;
+  color: var(--expo-theme-text-secondary);
+  font-size: 75%;
+  margin-bottom: 12px;
+}
+
+a .emotion-543 {
+  border-color: var(--expo-theme-border-default);
+}
+
+h2 .emotion-543,
+h3 .emotion-543,
+h4 .emotion-543 {
+  position: relative;
+  top: -2px;
+}
+
 <div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="emotion-0"
     data-heading="true"
   >
     <div
-      class="css-79elbk"
+      class="emotion-1"
     >
       <span
-        class="css-120d683"
+        class="emotion-2"
         id="component"
       />
       <a
-        class="css-8y2kaf"
+        class="emotion-3"
         href="#component"
       >
         <span
-          class="css-6n7j50"
+          class="emotion-4"
         >
           Component
         </span>
         <span
-          class="css-1eysgws"
+          class="emotion-5"
         >
           <svg
             aria-label="permalink"
@@ -7299,34 +8098,34 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </div>
   </h2>
   <div
-    class="css-excx5x-APISectionComponents"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodescanner"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodescanner"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               BarCodeScanner
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -7357,23 +8156,23 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </div>
     </h3>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       <strong
-        class="css-1qx481h-B"
+        class="emotion-15"
       >
         Type:
       </strong>
        
       <code
-        class="inline css-ov7own-InlineCode"
+        class="inline emotion-12"
       >
         Component
         &lt;
         <span>
           <a
-            class="css-153g748-InternalLink"
+            class="emotion-17"
             href="/#barcodescannerprops"
           >
             BarCodeScannerProps
@@ -7383,27 +8182,27 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </code>
     </p>
     <h2
-      class="css-1ck3d9a-H2"
+      class="emotion-0"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="props"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#props"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             Props
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -7435,34 +8234,34 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="emotion-24"
       >
         <h3
-          class="css-m417je-H3"
+          class="emotion-7"
           data-heading="true"
         >
           <div
-            class="css-79elbk"
+            class="emotion-1"
           >
             <span
-              class="css-120d683"
+              class="emotion-2"
               id="barcodetypes"
             />
             <a
-              class="css-8y2kaf"
+              class="emotion-3"
               href="#barcodetypes"
             >
               <span
-                class="css-6n7j50"
+                class="emotion-4"
               >
                 <code
-                  class="inline css-1pk617c-InlineCode"
+                  class="inline emotion-30"
                 >
                   barCodeTypes
                 </code>
               </span>
               <span
-                class="css-1eysgws"
+                class="emotion-5"
               >
                 <svg
                   aria-label="permalink"
@@ -7493,46 +8292,46 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </div>
         </h3>
         <p
-          class="css-6jxvia-P"
+          class="emotion-14"
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="emotion-33"
           >
             Optional • 
           </span>
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="emotion-33"
           >
             Type:
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             string[]
           </code>
         </p>
         <p
-          class="css-6jxvia-P"
+          class="emotion-14"
           data-text="true"
         >
           An array of bar code types. Usage: 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             BarCodeScanner.Constants.BarCodeType.&lt;codeType&gt;
           </code>
            where
 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             codeType
           </code>
            is one of these 
           <a
-            class="css-153g748-InternalLink"
+            class="emotion-17"
             href="/#supported-formats"
           >
             listed above
@@ -7542,12 +8341,12 @@ code types. It is recommended to provide only the bar code formats you expect to
 minimize battery usage.
         </p>
         <p
-          class="css-6jxvia-P"
+          class="emotion-14"
           data-text="true"
         >
           For example: 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
           </code>
@@ -7555,34 +8354,34 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="emotion-24"
       >
         <h3
-          class="css-m417je-H3"
+          class="emotion-7"
           data-heading="true"
         >
           <div
-            class="css-79elbk"
+            class="emotion-1"
           >
             <span
-              class="css-120d683"
+              class="emotion-2"
               id="onbarcodescanned"
             />
             <a
-              class="css-8y2kaf"
+              class="emotion-3"
               href="#onbarcodescanned"
             >
               <span
-                class="css-6n7j50"
+                class="emotion-4"
               >
                 <code
-                  class="inline css-1pk617c-InlineCode"
+                  class="inline emotion-30"
                 >
                   onBarCodeScanned
                 </code>
               </span>
               <span
-                class="css-1eysgws"
+                class="emotion-5"
               >
                 <svg
                   aria-label="permalink"
@@ -7613,25 +8412,25 @@ minimize battery usage.
           </div>
         </h3>
         <p
-          class="css-6jxvia-P"
+          class="emotion-14"
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="emotion-33"
           >
             Optional • 
           </span>
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="emotion-33"
           >
             Type:
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             <a
-              class="css-153g748-InternalLink"
+              class="emotion-17"
               href="/#barcodescannedcallback"
             >
               BarCodeScannedCallback
@@ -7639,13 +8438,13 @@ minimize battery usage.
           </code>
         </p>
         <p
-          class="css-6jxvia-P"
+          class="emotion-14"
           data-text="true"
         >
           A callback that is invoked when a bar code has been successfully scanned. The callback is
 provided with an 
           <a
-            class="css-153g748-InternalLink"
+            class="emotion-17"
             href="/#barcodescannerresult"
           >
             BarCodeScannerResult
@@ -7655,7 +8454,7 @@ provided with an
         
 
         <blockquote
-          class="css-1nn217x-Quote"
+          class="emotion-57"
           data-text="true"
         >
           <div
@@ -7682,19 +8481,19 @@ provided with an
             
 
             <strong
-              class="css-1qx481h-B"
+              class="emotion-15"
             >
               Note:
             </strong>
              Passing 
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               undefined
             </code>
              to the 
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               onBarCodeScanned
             </code>
@@ -7707,34 +8506,34 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="emotion-24"
       >
         <h3
-          class="css-m417je-H3"
+          class="emotion-7"
           data-heading="true"
         >
           <div
-            class="css-79elbk"
+            class="emotion-1"
           >
             <span
-              class="css-120d683"
+              class="emotion-2"
               id="type"
             />
             <a
-              class="css-8y2kaf"
+              class="emotion-3"
               href="#type"
             >
               <span
-                class="css-6n7j50"
+                class="emotion-4"
               >
                 <code
-                  class="inline css-1pk617c-InlineCode"
+                  class="inline emotion-30"
                 >
                   type
                 </code>
               </span>
               <span
-                class="css-1eysgws"
+                class="emotion-5"
               >
                 <svg
                   aria-label="permalink"
@@ -7765,22 +8564,22 @@ data has been retrieved.
           </div>
         </h3>
         <p
-          class="css-6jxvia-P"
+          class="emotion-14"
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="emotion-33"
           >
             Optional • 
           </span>
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="emotion-33"
           >
             Type:
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             <span>
               'front'
@@ -7796,13 +8595,13 @@ data has been retrieved.
           </code>
           <span>
             <span
-              class="css-5s9hp0-APISectionProps"
+              class="emotion-33"
             >
                • Default:
             </span>
              
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               Type.back
 
@@ -7810,31 +8609,31 @@ data has been retrieved.
           </span>
         </p>
         <p
-          class="css-6jxvia-P"
+          class="emotion-14"
           data-text="true"
         >
           Camera facing. Use one of 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             BarCodeScanner.Constants.Type
           </code>
           . Use either 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             Type.front
           </code>
            or 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             Type.back
           </code>
           .
 Same as 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             Camera.Constants.Type
           </code>
@@ -7842,27 +8641,27 @@ Same as
         </p>
       </div>
       <h3
-        class="css-m417je-H3"
+        class="emotion-7"
         data-heading="true"
       >
         <div
-          class="css-79elbk"
+          class="emotion-1"
         >
           <span
-            class="css-120d683"
+            class="emotion-2"
             id="inherited-props"
           />
           <a
-            class="css-8y2kaf"
+            class="emotion-3"
             href="#inherited-props"
           >
             <span
-              class="css-6n7j50"
+              class="emotion-4"
             >
               Inherited Props
             </span>
             <span
-              class="css-1eysgws"
+              class="emotion-5"
             >
               <svg
                 aria-label="permalink"
@@ -7893,17 +8692,17 @@ Same as
         </div>
       </h3>
       <ul
-        class="css-ftstf7-UL"
+        class="emotion-86"
         data-text="true"
       >
         <li
-          class="docs-list-item css-1yzgz3v-LI"
+          class="docs-list-item emotion-87"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="inline emotion-12"
           >
             <a
-              class="css-153g748-InternalLink"
+              class="emotion-17"
               href="/versions/latest/react-native/view#props"
             >
               ViewProps
@@ -7914,27 +8713,27 @@ Same as
     </div>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="emotion-0"
     data-heading="true"
   >
     <div
-      class="css-79elbk"
+      class="emotion-1"
     >
       <span
-        class="css-120d683"
+        class="emotion-2"
         id="hooks"
       />
       <a
-        class="css-8y2kaf"
+        class="emotion-3"
         href="#hooks"
       >
         <span
-          class="css-6n7j50"
+          class="emotion-4"
         >
           Hooks
         </span>
         <span
-          class="css-1eysgws"
+          class="emotion-5"
         >
           <svg
             aria-label="permalink"
@@ -7965,34 +8764,34 @@ Same as
     </div>
   </h2>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="emotion-24"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="usepermissionsoptions"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#usepermissionsoptions"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-1pk617c-InlineCode"
+              class="inline emotion-30"
             >
               usePermissions(options)
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -8023,29 +8822,29 @@ Same as
       </div>
     </h3>
     <div
-      class="css-rufzkc-Table"
+      class="emotion-104"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="emotion-105"
       >
         <thead
-          class="css-3b8qij-TableHead"
+          class="emotion-106"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Name
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Type
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Description
             </th>
@@ -8053,31 +8852,31 @@ Same as
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-t44xva-Cell"
+              class="emotion-112"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 options
               </strong>
               <br />
               <span
-                class="css-1sme59g-APISectionMethods"
+                class="emotion-114"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="emotion-112"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="emotion-17"
                   href="/#permissionhookoptions"
                 >
                   PermissionHookOptions
@@ -8090,7 +8889,7 @@ Same as
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="emotion-112"
             >
               -
             </td>
@@ -8099,17 +8898,17 @@ Same as
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       Create a new permission hook with the permission methods built-in.
 This can be used to quickly create specific permission hooks in every module.
     </p>
     <div
-      class="css-12a4dfj-CommentTextBlock"
+      class="emotion-120"
     >
       <h4
-        class="css-uucypz-H4"
+        class="emotion-121"
         data-heading="true"
       >
         Example
@@ -8117,11 +8916,11 @@ This can be used to quickly create specific permission hooks in every module.
     </div>
     <pre>
       <pre
-        class="css-1kjja91"
+        class="emotion-122"
         data-text="true"
       >
         <code
-          class="css-3rj4bb"
+          class="emotion-123"
         >
           <span
             class="token keyword"
@@ -8189,31 +8988,31 @@ This can be used to quickly create specific permission hooks in every module.
       </pre>
     </pre>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="emotion-124"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  emotion-121"
         data-components-heading="true"
         data-heading="true"
       >
         <div
-          class="css-79elbk"
+          class="emotion-1"
         >
           <span
-            class="css-120d683"
+            class="emotion-2"
             id="returns"
           />
           <a
-            class="css-8y2kaf"
+            class="emotion-3"
             href="#returns"
           >
             <span
-              class="css-6n7j50"
+              class="emotion-4"
             >
               Returns
             </span>
             <span
-              class="css-1eysgws"
+              class="emotion-5"
             >
               <svg
                 aria-label="permalink"
@@ -8245,14 +9044,14 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
+      class="emotion-131"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item emotion-87"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="emotion-133"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -8270,7 +9069,7 @@ This can be used to quickly create specific permission hooks in every module.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           [
           <span>
@@ -8280,7 +9079,7 @@ This can be used to quickly create specific permission hooks in every module.
             </span>
             <span>
               <a
-                class="css-153g748-InternalLink"
+                class="emotion-17"
                 href="/#permissionresponse"
               >
                 PermissionResponse
@@ -8293,7 +9092,7 @@ This can be used to quickly create specific permission hooks in every module.
             &lt;
             <span>
               <a
-                class="css-153g748-InternalLink"
+                class="emotion-17"
                 href="/#permissionresponse"
               >
                 PermissionResponse
@@ -8307,7 +9106,7 @@ This can be used to quickly create specific permission hooks in every module.
             &lt;
             <span>
               <a
-                class="css-153g748-InternalLink"
+                class="emotion-17"
                 href="/#permissionresponse"
               >
                 PermissionResponse
@@ -8321,27 +9120,27 @@ This can be used to quickly create specific permission hooks in every module.
     </ul>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="emotion-0"
     data-heading="true"
   >
     <div
-      class="css-79elbk"
+      class="emotion-1"
     >
       <span
-        class="css-120d683"
+        class="emotion-2"
         id="methods"
       />
       <a
-        class="css-8y2kaf"
+        class="emotion-3"
         href="#methods"
       >
         <span
-          class="css-6n7j50"
+          class="emotion-4"
         >
           Methods
         </span>
         <span
-          class="css-1eysgws"
+          class="emotion-5"
         >
           <svg
             aria-label="permalink"
@@ -8372,35 +9171,35 @@ This can be used to quickly create specific permission hooks in every module.
     </div>
   </h2>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="emotion-24"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodescannergetpermissionsasync"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodescannergetpermissionsasync"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-1pk617c-InlineCode"
+              class="inline emotion-30"
             >
               BarCodeScanner.
               getPermissionsAsync()
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -8431,37 +9230,37 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h3>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       Checks user's permissions for accessing the camera.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="emotion-124"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  emotion-121"
         data-components-heading="true"
         data-heading="true"
       >
         <div
-          class="css-79elbk"
+          class="emotion-1"
         >
           <span
-            class="css-120d683"
+            class="emotion-2"
             id="returns-1"
           />
           <a
-            class="css-8y2kaf"
+            class="emotion-3"
             href="#returns-1"
           >
             <span
-              class="css-6n7j50"
+              class="emotion-4"
             >
               Returns
             </span>
             <span
-              class="css-1eysgws"
+              class="emotion-5"
             >
               <svg
                 aria-label="permalink"
@@ -8493,14 +9292,14 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
+      class="emotion-131"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item emotion-87"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="emotion-133"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -8518,10 +9317,10 @@ This can be used to quickly create specific permission hooks in every module.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="emotion-164"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
           >
@@ -8530,7 +9329,7 @@ This can be used to quickly create specific permission hooks in every module.
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="emotion-17"
               href="/#permissionresponse"
             >
               PermissionResponse
@@ -8541,16 +9340,16 @@ This can be used to quickly create specific permission hooks in every module.
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       Return a promise that fulfills to an object of type 
       <a
-        class="css-153g748-InternalLink"
+        class="emotion-17"
         href="/#permissionresponse"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           PermissionResponse
         </code>
@@ -8559,35 +9358,35 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="emotion-24"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodescannerrequestpermissionsasync"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodescannerrequestpermissionsasync"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-1pk617c-InlineCode"
+              class="inline emotion-30"
             >
               BarCodeScanner.
               requestPermissionsAsync()
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -8618,55 +9417,55 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h3>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       Asks the user to grant permissions for accessing the camera.
     </p>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       On iOS this will require apps to specify the 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="inline emotion-12"
       >
         NSCameraUsageDescription
       </code>
        entry in the 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="inline emotion-12"
       >
         Info.plist
       </code>
       .
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="emotion-124"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  emotion-121"
         data-components-heading="true"
         data-heading="true"
       >
         <div
-          class="css-79elbk"
+          class="emotion-1"
         >
           <span
-            class="css-120d683"
+            class="emotion-2"
             id="returns-2"
           />
           <a
-            class="css-8y2kaf"
+            class="emotion-3"
             href="#returns-2"
           >
             <span
-              class="css-6n7j50"
+              class="emotion-4"
             >
               Returns
             </span>
             <span
-              class="css-1eysgws"
+              class="emotion-5"
             >
               <svg
                 aria-label="permalink"
@@ -8698,14 +9497,14 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
+      class="emotion-131"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item emotion-87"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="emotion-133"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -8723,10 +9522,10 @@ This can be used to quickly create specific permission hooks in every module.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="emotion-164"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
           >
@@ -8735,7 +9534,7 @@ This can be used to quickly create specific permission hooks in every module.
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="emotion-17"
               href="/#permissionresponse"
             >
               PermissionResponse
@@ -8746,16 +9545,16 @@ This can be used to quickly create specific permission hooks in every module.
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       Return a promise that fulfills to an object of type 
       <a
-        class="css-153g748-InternalLink"
+        class="emotion-17"
         href="/#permissionresponse"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           PermissionResponse
         </code>
@@ -8764,35 +9563,35 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="emotion-24"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodescannerscanfromurlasyncurl-barcodetypes"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodescannerscanfromurlasyncurl-barcodetypes"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-1pk617c-InlineCode"
+              class="inline emotion-30"
             >
               BarCodeScanner.
               scanFromURLAsync(url, barCodeTypes)
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -8823,29 +9622,29 @@ This can be used to quickly create specific permission hooks in every module.
       </div>
     </h3>
     <div
-      class="css-rufzkc-Table"
+      class="emotion-104"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="emotion-105"
       >
         <thead
-          class="css-3b8qij-TableHead"
+          class="emotion-106"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Name
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Type
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Description
             </th>
@@ -8853,28 +9652,28 @@ This can be used to quickly create specific permission hooks in every module.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-t44xva-Cell"
+              class="emotion-112"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 url
               </strong>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="emotion-112"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 string
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="emotion-112"
             >
               <span>
                 URL to get the image from.
@@ -8882,34 +9681,34 @@ This can be used to quickly create specific permission hooks in every module.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-t44xva-Cell"
+              class="emotion-112"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 barCodeTypes
               </strong>
               <br />
               <span
-                class="css-1sme59g-APISectionMethods"
+                class="emotion-114"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="emotion-112"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 string[]
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="emotion-112"
             >
               <span>
                 An array of bar code types. Defaults to all supported bar code types on
@@ -8918,7 +9717,7 @@ the platform.
               
 
               <blockquote
-                class="css-1nn217x-Quote"
+                class="emotion-57"
                 data-text="true"
               >
                 <div
@@ -8945,7 +9744,7 @@ the platform.
                   
 
                   <strong
-                    class="css-1qx481h-B"
+                    class="emotion-15"
                   >
                     Note:
                   </strong>
@@ -8960,37 +9759,37 @@ the platform.
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       Scan bar codes from the image given by the URL.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="emotion-124"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  emotion-121"
         data-components-heading="true"
         data-heading="true"
       >
         <div
-          class="css-79elbk"
+          class="emotion-1"
         >
           <span
-            class="css-120d683"
+            class="emotion-2"
             id="returns-3"
           />
           <a
-            class="css-8y2kaf"
+            class="emotion-3"
             href="#returns-3"
           >
             <span
-              class="css-6n7j50"
+              class="emotion-4"
             >
               Returns
             </span>
             <span
-              class="css-1eysgws"
+              class="emotion-5"
             >
               <svg
                 aria-label="permalink"
@@ -9022,14 +9821,14 @@ the platform.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
+      class="emotion-131"
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item emotion-87"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="emotion-133"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -9047,10 +9846,10 @@ the platform.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="emotion-164"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
           >
@@ -9059,7 +9858,7 @@ the platform.
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="emotion-17"
               href="/#barcodescannerresult"
             >
               BarCodeScannerResult
@@ -9071,12 +9870,12 @@ the platform.
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       A possibly empty array of objects of the 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="inline emotion-12"
       >
         BarCodeScannerResult
       </code>
@@ -9086,27 +9885,27 @@ code.
     </p>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="emotion-0"
     data-heading="true"
   >
     <div
-      class="css-79elbk"
+      class="emotion-1"
     >
       <span
-        class="css-120d683"
+        class="emotion-2"
         id="interfaces"
       />
       <a
-        class="css-8y2kaf"
+        class="emotion-3"
         href="#interfaces"
       >
         <span
-          class="css-6n7j50"
+          class="emotion-4"
         >
           Interfaces
         </span>
         <span
-          class="css-1eysgws"
+          class="emotion-5"
         >
           <svg
             aria-label="permalink"
@@ -9137,34 +9936,34 @@ code.
     </div>
   </h2>
   <div
-    class="css-dox4n0-APISectionInterfaces"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="permissionresponse"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#permissionresponse"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               PermissionResponse
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -9195,38 +9994,38 @@ code.
       </div>
     </h3>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       An object obtained by permissions get and request functions.
     </p>
     <div
-      class="css-sr97iy-APISectionInterfaces"
+      class="emotion-124"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  emotion-121"
         data-components-heading="true"
         data-heading="true"
       >
         <div
-          class="css-79elbk"
+          class="emotion-1"
         >
           <span
-            class="css-120d683"
+            class="emotion-2"
             id="permissionresponse--properties"
           />
           <a
-            class="css-8y2kaf"
+            class="emotion-3"
             href="#permissionresponse--properties"
           >
             <span
-              class="css-6n7j50"
+              class="emotion-4"
             >
               PermissionResponse
                Properties
             </span>
             <span
-              class="css-1eysgws"
+              class="emotion-5"
             >
               <svg
                 aria-label="permalink"
@@ -9258,29 +10057,29 @@ code.
       </h4>
     </div>
     <div
-      class="css-rufzkc-Table"
+      class="emotion-104"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="emotion-105"
       >
         <thead
-          class="css-3b8qij-TableHead"
+          class="emotion-106"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Name
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Type
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Description
             </th>
@@ -9288,28 +10087,28 @@ code.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 canAskAgain
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 boolean
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 Indicates if user can be asked again for specific permission.
@@ -9319,25 +10118,25 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 expires
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="emotion-17"
                   href="/#permissionexpiration"
                 >
                   PermissionExpiration
@@ -9345,7 +10144,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 Determines time when the permission expires.
@@ -9353,28 +10152,28 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 granted
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 boolean
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 A convenience boolean that indicates if the permission is granted.
@@ -9382,25 +10181,25 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 status
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="emotion-17"
                   href="/#permissionstatus"
                 >
                   PermissionStatus
@@ -9408,7 +10207,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 Determines the status of the permission.
@@ -9420,27 +10219,27 @@ in order to enable/disable the permission.
     </div>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="emotion-0"
     data-heading="true"
   >
     <div
-      class="css-79elbk"
+      class="emotion-1"
     >
       <span
-        class="css-120d683"
+        class="emotion-2"
         id="types"
       />
       <a
-        class="css-8y2kaf"
+        class="emotion-3"
         href="#types"
       >
         <span
-          class="css-6n7j50"
+          class="emotion-4"
         >
           Types
         </span>
         <span
-          class="css-1eysgws"
+          class="emotion-5"
         >
           <svg
             aria-label="permalink"
@@ -9471,34 +10270,34 @@ in order to enable/disable the permission.
     </div>
   </h2>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodebounds"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodebounds"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               BarCodeBounds
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -9529,29 +10328,29 @@ in order to enable/disable the permission.
       </div>
     </h3>
     <div
-      class="css-rufzkc-Table"
+      class="emotion-104"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="emotion-105"
       >
         <thead
-          class="css-3b8qij-TableHead"
+          class="emotion-106"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Name
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Type
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Description
             </th>
@@ -9559,25 +10358,25 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 origin
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="emotion-17"
                   href="/#barcodepoint"
                 >
                   BarCodePoint
@@ -9585,7 +10384,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 The origin point of the bounding box.
@@ -9593,25 +10392,25 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 size
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="emotion-17"
                   href="/#barcodesize"
                 >
                   BarCodeSize
@@ -9619,7 +10418,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 The size of the bounding box.
@@ -9631,34 +10430,34 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodeevent"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodeevent"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               BarCodeEvent
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -9689,14 +10488,14 @@ in order to enable/disable the permission.
       </div>
     </h3>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       <code
-        class="inline css-ov7own-InlineCode"
+        class="inline emotion-12"
       >
         <a
-          class="css-153g748-InternalLink"
+          class="emotion-17"
           href="/#barcodescannerresult"
         >
           BarCodeScannerResult
@@ -9706,29 +10505,29 @@ in order to enable/disable the permission.
       extended by:
     </p>
     <div
-      class="css-rufzkc-Table"
+      class="emotion-104"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="emotion-105"
       >
         <thead
-          class="css-3b8qij-TableHead"
+          class="emotion-106"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Name
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Type
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Description
             </th>
@@ -9736,34 +10535,34 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 target
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="emotion-114"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 number
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               -
             </td>
@@ -9773,34 +10572,34 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodeeventcallbackarguments"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodeeventcallbackarguments"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               BarCodeEventCallbackArguments
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -9831,29 +10630,29 @@ in order to enable/disable the permission.
       </div>
     </h3>
     <div
-      class="css-rufzkc-Table"
+      class="emotion-104"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="emotion-105"
       >
         <thead
-          class="css-3b8qij-TableHead"
+          class="emotion-106"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Name
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Type
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Description
             </th>
@@ -9861,25 +10660,25 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 nativeEvent
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="emotion-17"
                   href="/#barcodeevent"
                 >
                   BarCodeEvent
@@ -9887,7 +10686,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               -
             </td>
@@ -9897,34 +10696,34 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodepoint"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodepoint"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               BarCodePoint
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -9955,36 +10754,36 @@ in order to enable/disable the permission.
       </div>
     </h3>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
 are using the barcode scanner view, these values are adjusted to the dimensions of the view).
     </p>
     <div
-      class="css-rufzkc-Table"
+      class="emotion-104"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="emotion-105"
       >
         <thead
-          class="css-3b8qij-TableHead"
+          class="emotion-106"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Name
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Type
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Description
             </th>
@@ -9992,33 +10791,33 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 x
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 number
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 The 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="inline emotion-12"
                 >
                   x
                 </code>
@@ -10027,33 +10826,33 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 y
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 number
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 The 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="inline emotion-12"
                 >
                   y
                 </code>
@@ -10066,35 +10865,35 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodescannedcallback"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodescannedcallback"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               BarCodeScannedCallback
               ()
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -10126,29 +10925,29 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </h3>
     <div>
       <div
-        class="css-rufzkc-Table"
+        class="emotion-104"
       >
         <table
-          class="css-1gg2jm1-Table"
+          class="emotion-105"
         >
           <thead
-            class="css-3b8qij-TableHead"
+            class="emotion-106"
           >
             <tr
-              class="css-1cjtxd5-Row"
+              class="emotion-107"
             >
               <th
-                class="css-1p6k6di-HeaderCell"
+                class="emotion-108"
               >
                 Name
               </th>
               <th
-                class="css-1p6k6di-HeaderCell"
+                class="emotion-108"
               >
                 Type
               </th>
               <th
-                class="css-1p6k6di-HeaderCell"
+                class="emotion-108"
               >
                 Description
               </th>
@@ -10156,25 +10955,25 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </thead>
           <tbody>
             <tr
-              class="css-1cjtxd5-Row"
+              class="emotion-107"
             >
               <td
-                class="css-t44xva-Cell"
+                class="emotion-112"
               >
                 <strong
-                  class="css-1qx481h-B"
+                  class="emotion-15"
                 >
                   params
                 </strong>
               </td>
               <td
-                class="css-t44xva-Cell"
+                class="emotion-112"
               >
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="inline emotion-12"
                 >
                   <a
-                    class="css-153g748-InternalLink"
+                    class="emotion-17"
                     href="/#barcodeevent"
                   >
                     BarCodeEvent
@@ -10182,7 +10981,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 </code>
               </td>
               <td
-                class="css-t44xva-Cell"
+                class="emotion-112"
               >
                 -
               </td>
@@ -10193,34 +10992,34 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodescannerresult"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodescannerresult"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               BarCodeScannerResult
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -10251,7 +11050,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </div>
     </h3>
     <blockquote
-      class="css-1nn217x-Quote"
+      class="emotion-57"
       data-text="true"
     >
       <div
@@ -10278,31 +11077,31 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         
 
         <strong
-          class="css-1qx481h-B"
+          class="emotion-15"
         >
           Note:
         </strong>
          
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           bounds
         </code>
          and 
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           cornerPoints
         </code>
          are not always available. On iOS, for 
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           code39
         </code>
          and 
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           pdf417
         </code>
@@ -10314,29 +11113,29 @@ For some types, they will represent the area used by the scanner.
       </div>
     </blockquote>
     <div
-      class="css-rufzkc-Table"
+      class="emotion-104"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="emotion-105"
       >
         <thead
-          class="css-3b8qij-TableHead"
+          class="emotion-106"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Name
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Type
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Description
             </th>
@@ -10344,31 +11143,31 @@ For some types, they will represent the area used by the scanner.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 bounds
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="emotion-114"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="emotion-17"
                   href="/#barcodebounds"
                 >
                   BarCodeBounds
@@ -10376,12 +11175,12 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 The 
                 <a
-                  class="css-153g748-InternalLink"
+                  class="emotion-17"
                   href="/#barcodebounds"
                 >
                   BarCodeBounds
@@ -10391,31 +11190,31 @@ For some types, they will represent the area used by the scanner.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 cornerPoints
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="emotion-114"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="emotion-17"
                   href="/#barcodepoint"
                 >
                   BarCodePoint
@@ -10424,7 +11223,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 Corner points of the bounding box.
@@ -10432,28 +11231,28 @@ For some types, they will represent the area used by the scanner.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 data
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 string
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 The information encoded in the bar code.
@@ -10461,28 +11260,28 @@ For some types, they will represent the area used by the scanner.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 type
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 string
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 The barcode type.
@@ -10494,34 +11293,34 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="barcodesize"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#barcodesize"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               BarCodeSize
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -10552,29 +11351,29 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <div
-      class="css-rufzkc-Table"
+      class="emotion-104"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="emotion-105"
       >
         <thead
-          class="css-3b8qij-TableHead"
+          class="emotion-106"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Name
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Type
             </th>
             <th
-              class="css-1p6k6di-HeaderCell"
+              class="emotion-108"
             >
               Description
             </th>
@@ -10582,28 +11381,28 @@ For some types, they will represent the area used by the scanner.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 height
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 number
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 The height value.
@@ -10611,28 +11410,28 @@ For some types, they will represent the area used by the scanner.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="emotion-107"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <strong
-                class="css-1qx481h-B"
+                class="emotion-15"
               >
                 width
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="inline emotion-12"
               >
                 number
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="emotion-273"
             >
               <span>
                 The width value.
@@ -10644,34 +11443,34 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="emotion-6"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="permissionhookoptions"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#permissionhookoptions"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               PermissionHookOptions
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -10702,14 +11501,14 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <p
-      class="css-6jxvia-P"
+      class="emotion-14"
       data-text="true"
     >
       Acceptable values are:
        
       <span>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           PermissionHookBehavior
         </code>
@@ -10717,7 +11516,7 @@ For some types, they will represent the area used by the scanner.
       </span>
       <span>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="inline emotion-12"
         >
           Options
         </code>
@@ -10726,27 +11525,27 @@ For some types, they will represent the area used by the scanner.
     </p>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="emotion-0"
     data-heading="true"
   >
     <div
-      class="css-79elbk"
+      class="emotion-1"
     >
       <span
-        class="css-120d683"
+        class="emotion-2"
         id="enums"
       />
       <a
-        class="css-8y2kaf"
+        class="emotion-3"
         href="#enums"
       >
         <span
-          class="css-6n7j50"
+          class="emotion-4"
         >
           Enums
         </span>
         <span
-          class="css-1eysgws"
+          class="emotion-5"
         >
           <svg
             aria-label="permalink"
@@ -10777,34 +11576,34 @@ For some types, they will represent the area used by the scanner.
     </div>
   </h2>
   <div
-    class="css-eskewv-APISectionEnums"
+    class="emotion-526"
   >
     <h3
-      class="css-m417je-H3"
+      class="emotion-7"
       data-heading="true"
     >
       <div
-        class="css-79elbk"
+        class="emotion-1"
       >
         <span
-          class="css-120d683"
+          class="emotion-2"
           id="permissionstatus"
         />
         <a
-          class="css-8y2kaf"
+          class="emotion-3"
           href="#permissionstatus"
         >
           <span
-            class="css-6n7j50"
+            class="emotion-4"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="inline emotion-12"
             >
               PermissionStatus
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="emotion-5"
           >
             <svg
               aria-label="permalink"
@@ -10835,38 +11634,38 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="emotion-534"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="emotion-535"
       >
         <h4
-          class="  css-uucypz-H4"
+          class="  emotion-121"
           data-components-heading="true"
           data-heading="true"
         >
           <div
-            class="css-79elbk"
+            class="emotion-1"
           >
             <span
-              class="css-120d683"
+              class="emotion-2"
               id="denied"
             />
             <a
-              class="css-8y2kaf"
+              class="emotion-3"
               href="#denied"
             >
               <span
-                class="css-6n7j50"
+                class="emotion-4"
               >
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="inline emotion-12"
                 >
                   DENIED
                 </code>
               </span>
               <span
-                class="css-1eysgws"
+                class="emotion-5"
               >
                 <svg
                   aria-label="permalink"
@@ -10898,7 +11697,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline emotion-543"
       >
         PermissionStatus
         .
@@ -10906,45 +11705,45 @@ For some types, they will represent the area used by the scanner.
          ＝ "denied"
       </code>
       <p
-        class="css-6jxvia-P"
+        class="emotion-14"
         data-text="true"
       >
         User has denied the permission.
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="emotion-534"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="emotion-535"
       >
         <h4
-          class="  css-uucypz-H4"
+          class="  emotion-121"
           data-components-heading="true"
           data-heading="true"
         >
           <div
-            class="css-79elbk"
+            class="emotion-1"
           >
             <span
-              class="css-120d683"
+              class="emotion-2"
               id="granted"
             />
             <a
-              class="css-8y2kaf"
+              class="emotion-3"
               href="#granted"
             >
               <span
-                class="css-6n7j50"
+                class="emotion-4"
               >
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="inline emotion-12"
                 >
                   GRANTED
                 </code>
               </span>
               <span
-                class="css-1eysgws"
+                class="emotion-5"
               >
                 <svg
                   aria-label="permalink"
@@ -10976,7 +11775,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline emotion-543"
       >
         PermissionStatus
         .
@@ -10984,45 +11783,45 @@ For some types, they will represent the area used by the scanner.
          ＝ "granted"
       </code>
       <p
-        class="css-6jxvia-P"
+        class="emotion-14"
         data-text="true"
       >
         User has granted the permission.
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="emotion-534"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="emotion-535"
       >
         <h4
-          class="  css-uucypz-H4"
+          class="  emotion-121"
           data-components-heading="true"
           data-heading="true"
         >
           <div
-            class="css-79elbk"
+            class="emotion-1"
           >
             <span
-              class="css-120d683"
+              class="emotion-2"
               id="undetermined"
             />
             <a
-              class="css-8y2kaf"
+              class="emotion-3"
               href="#undetermined"
             >
               <span
-                class="css-6n7j50"
+                class="emotion-4"
               >
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="inline emotion-12"
                 >
                   UNDETERMINED
                 </code>
               </span>
               <span
-                class="css-1eysgws"
+                class="emotion-5"
               >
                 <svg
                   aria-label="permalink"
@@ -11054,7 +11853,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline emotion-543"
       >
         PermissionStatus
         .
@@ -11062,7 +11861,7 @@ For some types, they will represent the area used by the scanner.
          ＝ "undetermined"
       </code>
       <p
-        class="css-6jxvia-P"
+        class="emotion-14"
         data-text="true"
       >
         User hasn't granted or denied the permission yet.

@@ -31,24 +31,181 @@ exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
 `;
 
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
+.emotion-0 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 16px;
+}
+
+.emotion-1 {
+  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-bottom: 16px;
+  font-size: inherit;
+  font-family: Inter-SemiBold;
+}
+
+.emotion-2 {
+  color: var(--expo-theme-link-default);
+  font-size: inherit;
+}
+
+.emotion-2:hover {
+  -webkit-text-decoration: underline;
+  text-decoration: underline;
+}
+
+.emotion-2 code {
+  color: var(--expo-theme-link-default);
+}
+
+.emotion-3 {
+  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.6153846;
+  letter-spacing: -0.003rem;
+  color: var(--expo-theme-text-default);
+  white-space: pre-wrap;
+  display: inline;
+  padding: 2px 4px;
+  max-width: 100%;
+  word-wrap: break-word;
+  background-color: var(--expo-theme-background-secondary);
+  border: 1px solid var(--expo-theme-border-default);
+  border-radius: 4px;
+  vertical-align: middle;
+  overflow-x: auto;
+}
+
+a .emotion-3 {
+  border-color: var(--expo-theme-border-default);
+}
+
+h2 .emotion-3,
+h3 .emotion-3,
+h4 .emotion-3 {
+  position: relative;
+  top: -2px;
+}
+
+.emotion-4 {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  border-top: 1px solid var(--expo-theme-border-default);
+  border-bottom: 1px solid var(--expo-theme-border-default);
+  margin: 24px -20px 16px;
+  padding: 10px 20px;
+  background-color: var(--expo-theme-background-secondary);
+}
+
+.emotion-4 h4 {
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  font-family: Inter-Medium;
+  margin-bottom: 0;
+  margin-top: 0;
+  color: var(--expo-theme-text-secondary);
+}
+
+.emotion-5 {
+  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  margin-top: 24px;
+  margin-bottom: 4px;
+}
+
+.emotion-5 code {
+  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 500;
+  font-size: 1rem;
+  line-height: 1.625;
+  letter-spacing: -0.011rem;
+  color: var(--expo-theme-text-default);
+  font-family: Menlo-Regular;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.emotion-6 {
+  border: 1px solid var(--expo-theme-border-default);
+  padding: 16px;
+  margin: 16px 0;
+  white-space: pre;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  background-color: var(--expo-theme-background-secondary);
+  line-height: 120%;
+  border-radius: 4px;
+}
+
+.emotion-7 {
+  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
+  font-weight: 400;
+  font-size: 0.8125rem;
+  line-height: 1.6153846;
+  letter-spacing: -0.003rem;
+  color: var(--expo-theme-text-default);
+  white-space: inherit;
+  padding: 0;
+  margin: 0;
+}
+
+.emotion-7 .code-annotation {
+  -webkit-transition: 200ms ease all;
+  transition: 200ms ease all;
+  transition-property: text-shadow,opacity;
+  text-shadow: var(--expo-theme-highlight-emphasis) 0 0 10px,var(--expo-theme-highlight-emphasis) 0 0 10px,var(--expo-theme-highlight-emphasis) 0 0 10px,var(--expo-theme-highlight-emphasis) 0 0 10px;
+}
+
+.emotion-7 .code-annotation.with-tooltip:hover {
+  cursor: pointer;
+  -webkit-animation: none;
+  animation: none;
+  opacity: 0.8;
+}
+
+.emotion-7 .code-hidden {
+  display: none;
+}
+
+.emotion-7 .code-placeholder {
+  opacity: 0.5;
+}
+
 <div>
   <p
-    class="css-6jxvia-P"
+    class="emotion-0"
     data-text="true"
   >
     <strong
-      class="css-1qx481h-B"
+      class="emotion-1"
     >
       Android only.
     </strong>
      Gets the referrer URL of the installed app with the 
     <a
-      class="css-ccg2mn-ExternalLink"
+      class="emotion-2"
       href="https://developer.android.com/google/play/installreferrer"
       rel="noopener noreferrer"
     >
       <code
-        class="inline css-ov7own-InlineCode"
+        class="inline emotion-3"
       >
         Install Referrer API
       </code>
@@ -57,10 +214,10 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
   </p>
   <div
-    class="css-12a4dfj-CommentTextBlock"
+    class="emotion-4"
   >
     <h4
-      class="css-uucypz-H4"
+      class="emotion-5"
       data-heading="true"
     >
       Example
@@ -68,11 +225,11 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
   </div>
   <pre>
     <pre
-      class="css-1kjja91"
+      class="emotion-6"
       data-text="true"
     >
       <code
-        class="css-3rj4bb"
+        class="emotion-7"
       >
         <span
           class="token keyword"

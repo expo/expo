@@ -6,6 +6,9 @@ import tippy, { roundArrow } from 'tippy.js';
 
 import { installLanguages } from './languages';
 
+// @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
+const { default: testTippy } = tippy;
+
 installLanguages(Prism);
 
 const attributes = {
@@ -94,7 +97,8 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
   }
 
   private runTippy() {
-    tippy('.code-annotation.with-tooltip', {
+    const tippyFunc = testTippy || tippy;
+    tippyFunc('.code-annotation.with-tooltip', {
       allowHTML: true,
       theme: 'expo',
       placement: 'top',
