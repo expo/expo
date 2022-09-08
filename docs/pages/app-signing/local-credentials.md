@@ -34,6 +34,37 @@ If you opt in to local credentials configuration, you'll need to create a **cred
 
 > Remember to add **credentials.json** and all of your credentials to `.gitignore` so you don't accidentally commit them to the repository and potentially leak your secrets.
 
+### iOS Credentials
+
+There are a few more prerequisites for building the iOS app binary. You need a paid Apple Developer Account, and then you'll need to generate the Distribution Certificate and Provisioning Profile for your application, which can be done via the [Apple Developer Portal](https://developer.apple.com/account/resources/certificates/list).
+
+Once you have the Distribution Certificate and Provisioning Profile on your computer, you should move them to the appropriate directory. We recommend you keep them in the `ios/certs` directory. In the rest of this document we assume that they are named **dist.p12** and `profile.mobileprovision` respectively. **Remember to git-ignore all files in the directory!** If you've placed the credentials in the suggested directory, you can ignore those files by adding the following line to `.gitignore`:
+
+```
+ios/certs/*
+```
+
+Create (or edit) **credentials.json** and configure it with the credentials:
+
+```json
+{
+  "android": {
+    ...
+  },
+  "ios": {
+    "provisioningProfilePath": "ios/certs/profile.mobileprovision",
+    "distributionCertificate": {
+      "path": "ios/certs/dist.p12",
+      "password": "DISTRIBUTION_CERTIFICATE_PASSWORD"
+    }
+  }
+}
+```
+
+- `provisioningProfilePath` points to where the Provisioning Profile is located on your computer. Both relative (to the project root) and absolute paths are supported.
+- `distributionCertificate.path` points to where the Distribution Certificate is located on your computer. Both relative (to the project root) and absolute paths are supported.
+- `distributionCertificate.password` is the password for the Distribution Certificate located at `distributionCertificate.path`.
+
 ### Android credentials
 
 If you want to build an Android app binary you'll need to have a keystore. If you don't have a release keystore yet, you can generate it on your own using the following command (replace `KEYSTORE_PASSWORD`, `KEY_PASSWORD`, `KEY_ALIAS` and `com.expo.your.android.package` with the values of your choice):
@@ -77,37 +108,6 @@ Create **credentials.json** and configure it with the credentials:
 - `keystorePassword` is the keystore password. If you've followed the previous steps it's the value of `KEYSTORE_PASSWORD`.
 - `keyAlias` is the key alias. If you've followed the previous steps it's the value of `KEY_ALIAS`.
 - `keyPassword` is the key password. If you've followed the previous steps it's the value of `KEY_PASSWORD`.
-
-### iOS Credentials
-
-There are a few more prerequisites for building the iOS app binary. You need a paid Apple Developer Account, and then you'll need to generate the Distribution Certificate and Provisioning Profile for your application, which can be done via the [Apple Developer Portal](https://developer.apple.com/account/resources/certificates/list).
-
-Once you have the Distribution Certificate and Provisioning Profile on your computer, you should move them to the appropriate directory. We recommend you keep them in the `ios/certs` directory. In the rest of this document we assume that they are named **dist.p12** and `profile.mobileprovision` respectively. **Remember to git-ignore all files in the directory!** If you've placed the credentials in the suggested directory, you can ignore those files by adding the following line to `.gitignore`:
-
-```
-ios/certs/*
-```
-
-Create (or edit) **credentials.json** and configure it with the credentials:
-
-```json
-{
-  "android": {
-    ...
-  },
-  "ios": {
-    "provisioningProfilePath": "ios/certs/profile.mobileprovision",
-    "distributionCertificate": {
-      "path": "ios/certs/dist.p12",
-      "password": "DISTRIBUTION_CERTIFICATE_PASSWORD"
-    }
-  }
-}
-```
-
-- `provisioningProfilePath` points to where the Provisioning Profile is located on your computer. Both relative (to the project root) and absolute paths are supported.
-- `distributionCertificate.path` points to where the Distribution Certificate is located on your computer. Both relative (to the project root) and absolute paths are supported.
-- `distributionCertificate.password` is the password for the Distribution Certificate located at `distributionCertificate.path`.
 
 #### Multi-target project
 
