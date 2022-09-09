@@ -245,15 +245,17 @@ If you have set up everything correctly you should see the successful test resul
 
 ### 6. Upload screenshots of failed test cases
 
-This step is optional but highly recommended. When an E2E test case fails, it can be helpful to see the screenshot of the application state. EAS Build makes it easy to upload any arbitrary build artifacts using the [`buildArtifactPaths`](/build-reference/eas-json.md#buildartifactpaths) field in **eas.json**.
+> This step is optional but highly recommended. 
+
+When an E2E test case fails, it can be helpful to see the screenshot of the application state. EAS Build makes it easy to upload any arbitrary build artifacts using the [`buildArtifactPaths`](/build-reference/eas-json.md#buildartifactpaths) field in **eas.json**.
 
 #### Take screenshots for failed tests
 
 [Detox supports taking in-test screenshots of the device](https://wix.github.io/Detox/docs/api/screenshots). It exposes the `device.takeScreenshot()` function that can be called from any test case.
 
-We want to take the screenshot only for failed test cases. Unfortunately, neither `jest` nor `detox` offers a simple way to detect whether a paricular test case has failed. We will implement our own mechanism for that.
+Neither `jest` nor `detox` offers a simple way to detect when a particular test case has failed and take a screenshot for only failed test cases. You will have to implement your own mechanism for that.
 
-Let's start by editing **e2e/environment.js** and adding the `handleTestEvent` method to the `CustomDetoxEnvironment` class. The function handles test events and sets a global `testFailed` variable in the case of test case failure. See the snippet below:
+Edit **e2e/environment.js** and add the `handleTestEvent` method to the `CustomDetoxEnvironment` class. The function handles test events and sets a global `testFailed` variable for test case failure. See the snippet below:
 
 ```ts
 // e2e/environment.js
@@ -276,7 +278,7 @@ class CustomDetoxEnvironment extends DetoxCircusEnvironment {
 }
 ```
 
-After modifying the environment class, we can define an `afterEach` hook that calls `device.takeScreenshot()` for failed tests. Create the `e2e/setup.ts` file with the following contents:
+After modifying the environment class, define an `afterEach` hook that calls `device.takeScreenshot()` for failed tests. Create the `e2e/setup.ts` file with the following snippet:
 
 ```ts
 // e2e/setup.ts
@@ -287,7 +289,7 @@ afterEach(async () => {
 });
 ```
 
-The last step is to configure `jest` to load `e2e/setup.ts` before running tests. This way we don't need to include the `afterEach` hook in every test suite:
+The last step is to configure `jest` to load `e2e/setup.ts` before running tests. This way, you don't need to include the `afterEach` hook in every test suite:
 
 ```json
 // e2e/config.json
@@ -297,7 +299,7 @@ The last step is to configure `jest` to load `e2e/setup.ts` before running tests
 }
 ```
 
-After making those changes, screenshots for failed tests will be saved to the `artifacts` directory.
+After making those changes, screenshots for failed tests will be saved in the `artifacts` directory.
 
 #### Configure EAS Build for screenshots upload
 
@@ -317,7 +319,7 @@ Edit **eas.json** and add `buildArtifactPaths` to the `test` build profile:
 }
 ```
 
-In contrast to `applicationArchivePath`, the build artifacts defined at `buildArtifactPaths` will be uploaded even if the build fails. All `.png` files from the `artifacts` directory will be packed into a tarball and uploaded to AWS S3. You can later download them from the build details page.
+In contrast to `applicationArchivePath`, the build artifacts defined at `buildArtifactPaths` will be uploaded even if the build fails. All `.png` files from the `artifacts` directory will be packed into a tarball and uploaded to AWS S3. You can download them later from the build details page.
 
 If you run E2E tests locally, remember to add `artifacts` to `.gitignore`:
 
@@ -328,7 +330,7 @@ artifacts/
 
 #### Break a test and run a build
 
-In order to test our new configuration, let's break a test and see that EAS Build uploads the screenshots.
+To test the new configuration, let's break a test and see that EAS Build uploads the screenshots.
 
 Edit `e2e/homeScreen.e2e.js` and make the following change:
 
