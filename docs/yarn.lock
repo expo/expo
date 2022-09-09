@@ -1490,13 +1490,6 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
-"@types/cacache@^15.0.1":
-  version "15.0.1"
-  resolved "https://registry.yarnpkg.com/@types/cacache/-/cacache-15.0.1.tgz#3d1943cc80ade160c9ae98bd5c1ebcc538f9cd57"
-  integrity sha512-JhL2GFJuHMx4RMg4z0XfXB4ZkKdyiOaOLpjoYMXcyKfrkF3IBXNZBj6/Peo9zX/7PPHyfI63NWVD589cI2YTzg==
-  dependencies:
-    "@types/node" "*"
-
 "@types/concat-stream@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@types/concat-stream/-/concat-stream-2.0.0.tgz#a716f0ba9015014e643addb351da05a73bef425c"
@@ -6378,13 +6371,6 @@ react-error-boundary@^3.1.0:
   integrity sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==
   dependencies:
     "@babel/runtime" "^7.12.5"
-
-react-feather@^2.0.10:
-  version "2.0.10"
-  resolved "https://registry.yarnpkg.com/react-feather/-/react-feather-2.0.10.tgz#0e9abf05a66754f7b7bb71757ac4da7fb6be3b68"
-  integrity sha512-BLhukwJ+Z92Nmdcs+EMw6dy1Z/VLiJTzEQACDUEnWMClhYnFykJCGWQx+NmwP/qQHGX/5CzQ+TGi8ofg2+HzVQ==
-  dependencies:
-    prop-types "^15.7.2"
 
 react-grid-system@^8.1.5:
   version "8.1.5"
