@@ -52,7 +52,7 @@ ABI45_0_0EX_EXPORT_METHOD_AS(setTestDeviceIDAsync,
   NSArray<NSString *>* testDeviceIdentifiers = nil;
   if (testDeviceID && ![testDeviceID isEqualToString:@""]) {
     if ([testDeviceID isEqualToString:@"EMULATOR"]) {
-      testDeviceIdentifiers = @[kGADSimulatorID];
+      testDeviceIdentifiers = @[GADSimulatorID];
     } else {
       testDeviceIdentifiers = @[testDeviceID];
     }

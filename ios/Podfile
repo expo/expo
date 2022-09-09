@@ -20,6 +20,11 @@ abstract_target 'Expo Go' do
   pod 'JKBigInteger', :podspec => 'vendored/common/JKBigInteger.podspec.json'
   pod 'MBProgressHUD', '~> 1.2.0'
 
+  # Required by latest firebase versions
+  # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+
   # Expo modules
   use_expo_modules!({
     exclude: [
