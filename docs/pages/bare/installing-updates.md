@@ -6,7 +6,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-expo-updates fetches and manages updates to your app stored on a remote server.
+`expo-updates` fetches and manages updates to your app stored on a remote server.
 
 > If you are creating a new project, we recommend using `npx create-react-native-app` instead of `npx react-native init` because it will handle the following configuration for you automatically.
 
