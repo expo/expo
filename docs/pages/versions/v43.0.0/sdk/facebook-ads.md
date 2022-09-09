@@ -334,7 +334,7 @@ Asks for permissions to use data for tracking the user or the device.
 
 > iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
 
-##### Returns
+**Returns**
 
 A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
@@ -344,7 +344,7 @@ Checks application's permissions for using data for tracking the user or the dev
 
 > iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
 
-##### Returns
+**Returns**
 
 A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 

@@ -16,7 +16,11 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 > Migrating from Expo's `LegacyNotifications` module? [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
 
-### Features
+<PlatformsSection title="Push notifications Platform Compatibility" android ios />
+
+<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator />
+
+## Features
 
 - 📣 schedule a one-off notification for a specific date, or some time from now,
 - 🔁 schedule a notification repeating in some time interval (or a calendar date match on iOS),
@@ -29,10 +33,6 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 - 🔕 imperatively dismiss notifications from Notification Center/tray,
 - 🗂 create, update, delete Android notification channels,
 - 🎨 set custom icon and color for notifications on Android.
-
-<PlatformsSection title="Push notifications Platform Compatibility" android ios />
-
-<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator />
 
 ## Installation
 

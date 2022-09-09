@@ -44,13 +44,14 @@ Next, this is what happens when EAS Build picks up your request:
 
 1. **Deprecated:** Run the `eas-build-pre-upload-artifacts` script from **package.json** if defined.
 1. Store a cache of files and directories defined in the build profile. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
-1. Upload the build artifact to AWS S3.
+1. Upload the application archive to AWS S3.
 
-   - The artifact path can be configured in **eas.json** at `builds.android.PROFILE_NAME.artifactPath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
+   - The artifact path can be configured in **eas.json** at `builds.android.PROFILE_NAME.applicationArchivePath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.
 
 1. If the build was successful: run the `eas-build-on-success` script from **package.json** if defined.
 1. If the build failed: run the `eas-build-on-error` script from **package.json** if defined.
 1. Run the `eas-build-on-complete` script from **package.json** if defined. The `EAS_BUILD_STATUS` env variable is set to either `finished` or `errored`.
+1. Upload the build artifacts archive to a private AWS S3 bucket if `buildArtifactPaths` is specified in the build profile.
 
 ## Project Auto-Configuration
 

@@ -47,7 +47,7 @@ Snapshots the given view.
 
 An image of the format specified in the options parameter.
 
-##### Note on pixel values
+## Note on pixel values
 
 Remember to take the device `PixelRatio` into account. When you work with pixel values in a UI, most of the time those units are "logical pixels" or "device-independent pixels". With images like PNG files, you often work with "physical pixels". You can get the `PixelRatio` of the device using the React Native API: `PixelRatio.get()`
 

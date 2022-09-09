@@ -20,7 +20,9 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 Additionally, you'll also need to install the webview using `expo install react-native-webview`
 
-## Basic usage
+## Usage
+
+### Basic usage
 
 To get started, [read the official Firebase phone-auth guide and **ignore all steps** that cover the reCAPTCHA configuration.](https://firebase.google.com/docs/auth/web/phone-auth)
 
@@ -53,7 +55,7 @@ const credential = firebase.auth.PhoneAuthProvider.credential(verificationId, ve
 const authResult = await firebase.auth().signInWithCredential(credential);
 ```
 
-## Example usage
+### Phone authentication example
 
 The examples below assumes that you are using `firebase@9.x.x`.
 
