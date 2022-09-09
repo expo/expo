@@ -6,7 +6,7 @@ import { InlineCode } from '~/components/base/code';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-Expo is an npm package that enables a suite of incredible features for React Native apps. The `expo` package can be installed in nearly any React Native project.
+Expo is an npm package that enables a suite of incredible features for React Native apps. The `expo` package can be installed in nearly **any React Native project**.
 
 ## Features
 
@@ -29,7 +29,7 @@ Expo is an npm package that enables a suite of incredible features for React Nat
 | First-class TypeScript support.                                   | <YesIcon />             | <NoIcon />                                    |
 | Install natively compatible libraries from the command line.      | <YesIcon />             | <NoIcon />                                    |
 | Develop performant websites with the same codebase.               | <YesIcon />             | <NoIcon />                                    |
-| [Tunnel](/workflow/expo-cli/#tunneling) your dev server to any device.                             | <YesIcon />             | <NoIcon />                                    |
+| [Tunnel][tunnel] your dev server to any device.                   | <YesIcon />             | <NoIcon />                                    |
 
 ## Services
 
@@ -40,5 +40,6 @@ The team behind Expo also provides **Expo Application Services**, deeply integra
 > Expo Application Services (EAS) can be used with **any React Native app**, regardless of whether it uses `expo` or not.
 
 [snack]: https://snack.expo.dev
+[tunnel]: /workflow/expo-cli/#tunneling
 
 <!-- TODO: Link to migration docs. -->
