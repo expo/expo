@@ -1,23 +1,11 @@
-import { render, screen, RenderOptions } from '@testing-library/react';
-import GithubSlugger from 'github-slugger';
+import { render, screen } from '@testing-library/react';
 import { createRequire } from 'node:module';
-import React, { PropsWithChildren, ReactElement } from 'react';
 
-import { HeadingsContext } from '../page-higher-order/withHeadingManager';
 import APISection from './APISection';
 
-import { HeadingManager } from '~/common/headingManager';
+import { renderWithHeadings } from '~/common/test-utilities';
 
 const require = createRequire(import.meta.url);
-
-const Wrapper = ({ children }: PropsWithChildren<object>) => (
-  <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), { headings: [] })}>
-    {children}
-  </HeadingsContext.Provider>
-);
-
-const customRender = (element: ReactElement, options?: Omit<RenderOptions, 'wrapper'>) =>
-  render(element, { wrapper: Wrapper, ...options });
 
 describe('APISection', () => {
   test('no data', () => {
@@ -29,7 +17,7 @@ describe('APISection', () => {
   });
 
   test('expo-apple-authentication', () => {
-    const { container } = customRender(
+    const { container } = renderWithHeadings(
       <APISection
         packageName="expo-apple-authentication"
         forceVersion="unversioned"
@@ -56,7 +44,7 @@ describe('APISection', () => {
   });
 
   test('expo-barcode-scanner', () => {
-    const { container } = customRender(
+    const { container } = renderWithHeadings(
       <APISection
         packageName="expo-barcode-scanner"
         apiName="BarCodeScanner"
@@ -83,7 +71,7 @@ describe('APISection', () => {
   });
 
   test('expo-pedometer', () => {
-    const { container } = customRender(
+    const { container } = renderWithHeadings(
       <APISection packageName="expo-pedometer" forceVersion="v45.0.0" testRequire={require} />
     );
 
@@ -107,7 +95,7 @@ describe('APISection', () => {
   });
 
   test('expo-asset', () => {
-    customRender(
+    renderWithHeadings(
       <APISection packageName="expo-asset" forceVersion="unversioned" testRequire={require} />
     );
 
