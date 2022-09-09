@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove default scheme from intent filters that specify `autoVerify=true`. ([#18963](https://github.com/expo/expo/pull/18963) by [@ajsmth](https://github.com/ajsmth))
+
 ### 💡 Others
 
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
