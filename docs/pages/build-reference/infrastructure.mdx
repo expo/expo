@@ -30,7 +30,7 @@ When selecting an image for the build you can use the full name provided below o
 - Android workers run on Kubernetes in an isolated environment
   - Every build gets its own container running on a dedicated Kubernetes node
   - Build resources: 4 CPU, 12 GB RAM
-- NPM cache deployed with Kubernetes. [Learn more](caching/#javascript-dependencies)
+- npm cache deployed with Kubernetes. [Learn more](caching/#javascript-dependencies)
 - Maven cache deployed with Kubernetes. [Learn more](caching/#android-dependencies)
 - Global Gradle configuration in `~/.gradle/gradle.properties`:
 
@@ -146,7 +146,7 @@ When selecting an image for the build you can use the full name provided below o
   - Every build gets its own fresh macOS VM
   - Hardware: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
   - Build resource limits: 3 cores, 12 GB RAM
-- NPM cache. [Learn more](caching/#javascript-dependencies)
+- npm cache. [Learn more](caching/#javascript-dependencies)
 - CocoaPods cache. [Learn more](caching/#ios-dependencies)
 - `~/.npmrc`
 
@@ -163,6 +163,12 @@ When selecting an image for the build you can use the full name provided below o
   enableImmutableInstalls: false
   ```
 
+
+- Project's `Podfile` will have CocoaPods cache server URL added as a source during the build step called `Install pods` (if `Podfile` already contains explicitly specified `https://cdn.cocoapods.org/` source, it will be replaced with CocoaPods cache server URL).
+
+  ```ruby
+  source "http://10.254.24.7:8081/repository/cocoapods-proxy/"
+  ```
 #### Image `macos-monterey-12.6-xcode-14.0` (alias `latest`)
 
 <Collapsible summary="Details">

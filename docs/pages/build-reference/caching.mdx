@@ -31,10 +31,9 @@ Currently we are caching:
 
 ## iOS dependencies
 
-EAS Build uses a CocoaPods cache server that can speed up downloading iOS dependencies for your build jobs and makes the service
-more resistant to the CocoaPods CDN outages.
+EAS Build runs a CocoaPods cache server that can speed up downloading iOS dependencies for your build jobs. It also makes the service more resilient to CocoaPods CDN outages.
 
-Currently we are caching all the pods available to be fetched from the CocoaPods CDN.
+Currently, EAS Build is configured to cache all the pods fetched from the CocoaPods CDN.
 
 We also cache `Podfile.lock` in order to provide consistent results across managed app builds.
 
