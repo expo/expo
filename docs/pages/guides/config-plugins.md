@@ -515,7 +515,7 @@ We highly recommend installing the [Expo config VS Code plugin](https://marketpl
 
 ### Setting up a playground environment
 
-You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you're gonna want a monorepo.
+You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you will want a monorepo.
 
 A monorepo will enable you to work on a node module and import it in your Expo config like you would if it were published to NPM. Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
 
