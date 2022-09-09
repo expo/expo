@@ -32,5 +32,3 @@ Currently we are caching:
 ## iOS dependencies
 
 There is no caching done for CocoaPods dependencies yet, only the `Podfile.lock` file is cached (in order to provide consistent results across managed app builds).
-
-<br />

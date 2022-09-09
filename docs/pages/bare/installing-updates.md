@@ -16,8 +16,6 @@ Like most Expo modules, **this package requires that you have already [installed
 
 <InstallSection packageName="expo-updates" cmd={["expo install expo-updates", "npx pod-install"]} hideBareInstructions />
 
-<br />
-
 Once installation is complete, apply the changes from the following diffs to configure expo-updates in your project. This is expected to take about five minutes, and you may need to adapt it slightly depending on how customized your project is.
 
 ## Configuration in JavaScript and JSON

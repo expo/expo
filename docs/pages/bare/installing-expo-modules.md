@@ -34,8 +34,6 @@ The following instructions apply to installing the latest version of Expo module
 
 <InstallSection packageName="expo" cmd={["npm install expo"]} hideBareInstructions />
 
-<br />
-
 Once installation is complete, apply the changes from the following diffs to configure Expo modules in your project. This is expected to take about five minutes, and you may need to adapt it slightly depending on how customized your project is.
 
 ### Configuration for iOS

@@ -31,13 +31,9 @@ To make your native app handle `mycoolredirect://` simply run:
 
 <Terminal cmd={['$ npx uri-scheme add mycoolredirect']} />
 
-<br />
-
 You should now be able to see a list of all your project's schemes by running:
 
 <Terminal cmd={['$ npx uri-scheme list']} />
-
-<br />
 
 You can test it to ensure it works like this:
 

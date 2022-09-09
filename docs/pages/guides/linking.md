@@ -169,13 +169,9 @@ To make your native app handle `myapp://` simply run:
 
 <Terminal cmd={['$ npx uri-scheme add myapp']} />
 
-<br />
-
 You should now be able to see a list of all your project's schemes by running:
 
 <Terminal cmd={['$ npx uri-scheme list']} />
-
-<br />
 
 You can test it to ensure it works like this:
 
