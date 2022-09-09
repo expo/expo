@@ -1,7 +1,7 @@
 import { NextRouter } from 'next/router';
 import React, { createContext, PropsWithChildren, useCallback, useContext } from 'react';
 
-import navigation from '~/public/static/constants/navigationDeprecated.json';
+import navigation from '~/public/static/constants/navigation.json';
 
 export const PageApiVersionContext = createContext({
   /** The version selected in the URL, or the default version */
