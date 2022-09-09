@@ -146,11 +146,12 @@ When selecting an image for the build you can use the full name provided below o
   - Every build gets its own fresh macOS VM
   - Hardware: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
   - Build resource limits: 3 cores, 12 GB RAM
-- npm cache. [Learn more](caching/#javascript-dependencies)
+- NPM cache. [Learn more](caching/#javascript-dependencies)
+- CocoaPods cache. [Learn more](caching/#ios-dependencies)
 - `~/.npmrc`
 
   ```ini
-  registry=http://10.254.24.8:4873
+  registry=http://10.254.24.9:4873
   ```
 
 - `~/.yarnrc.yml`
@@ -158,7 +159,7 @@ When selecting an image for the build you can use the full name provided below o
   ```yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'registry=http://10.254.24.8:4873'
+  npmRegistryServer: 'registry=http://10.254.24.9:4873'
   enableImmutableInstalls: false
   ```
 

@@ -63,6 +63,7 @@ The following environment variables are exposed to each build job &mdash; they a
 - `EAS_BUILD_GIT_COMMIT_HASH` - the hash of the Git commit, e.g. `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
 - `EAS_BUILD_NPM_CACHE_URL` - the URL of the npm cache ([learn more](/build-reference/private-npm-packages))
 - `EAS_BUILD_MAVEN_CACHE_URL` - the URL of Maven cache ([learn more](/build-reference/caching/#android-dependencies))
+- `EAS_BUILD_COCOAPODS_CACHE_URL` - the URL of CocoaPods cache ([learn more](/build-reference/caching/#ios-dependencies))
 - `EAS_BUILD_USERNAME` - the username of the user initiating the build (it's undefined for bot users)
 - `EAS_BUILD_WORKINGDIR` - the remote directory path with your project
 
