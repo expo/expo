@@ -1,6 +1,6 @@
 ---
-title: Config schema for EAS Metadata
-sidebar_title: Store config schema
+title: Schema for EAS Metadata
+sidebar_title: Metadata schema
 sidebar_depth: 4
 ---
 
@@ -22,13 +22,13 @@ import {
 <br />
 
 The store config in EAS Metadata contains information that otherwise would be provided manually through the app store dashboards.
-This document outlines the structure of the store config object.
+This document outlines the structure of the object in your store config.
 
 > If you use the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme), you get all this information through auto-complete, suggestions, and warnings in your editor.
 
 ## Config schema
 
-An essential property in the store config is the `configVersion` property.
+An essential property in the store config object is the `configVersion` property.
 App stores might require more or change existing information structures to publish your app.
 This property helps versioning changes that are not backward compatible.
 

@@ -1,6 +1,6 @@
 ---
 title: Configuring EAS Metadata
-sidebar_title: Creating the store config
+sidebar_title: store.config.json
 ---
 
 import { Callout } from '~/ui/components/Callout';
