@@ -1,29 +1,77 @@
 ---
 title: Routing & Navigation
-previous___FILE: ./using-custom-fonts.md
-next___FILE: ./push-notifications.md
 ---
 
+import { BoxLink } from '~/ui/components/BoxLink';
 import Video from '~/components/plugins/Video'
+import { Collapsible } from '~/ui/components/Collapsible';
+import SnackInline from '~/components/plugins/SnackInline'
 
-Routing and navigation refers to the ability to organize your app into distinct screens, map screens to URLs, move between those screens, and display the appropriate platform-specific navigation-related user interface elements (eg: tabs, navigation bar, screen transition animations and gestures, drawers).
+Routing and navigation refers to organizing an app into distinct screens, mapping screens to URLs, moving between those screens, and displaying the appropriate platform-specific navigation-related user interface elements (eg: tabs, navigation bar, screen transition animations and gestures, drawers). Navigation has very nuanced behavior on each platform and is extremely complicated to build entirely on your own, so you should always use a library to ensure that your app looks and behaves as users expect.
 
-## Our recommendation: React Navigation
+[React Navigation](https://github.com/react-navigation/react-navigation) is the most popular navigation library in the React Native ecosystem and the best choice for most apps. It is maintained by the Expo team and supports iOS, Android, and web.
 
 <Video file={"routing-and-navigation/preview.mp4"} loop={false} />
 
 > This video demonstrates using React Navigation on iOS, Android, and web. Notice that it adapts to the platform conventions in each case. The code that powers this example app is available on GitHub in [react-navigation/example](https://github.com/react-navigation/react-navigation/tree/main/example).
 
-The library that we recommend that you use for routing & navigation for iOS, Android, and web is [React Navigation](https://github.com/react-navigation/react-navigation).
+React Navigation includes support for common navigation patterns, and it's fully customizable so you can achieve any navigation pattern, even if it's not built into the library. React Navigation uses Android and iOS native APIs with [`createNativeStackNavigator`](https://reactnavigation.org/docs/native-stack-navigator) — this is commonly called "native navigation".
 
-React Navigation is the most popular navigation library in the React Native ecosystem and it is maintained by Expo, so it's guaranteed to work great in your apps. It includes support for common navigation patterns like stacks, tabs, and drawers. It's also built to be customizable, so you can achieve any navigation pattern that you wish with it, even if it's not built-in to the library. It supports using the platform native APIs via [`createNativeStackNavigator`](https://reactnavigation.org/docs/native-stack-navigator), this is commonly referred to in React Native as "native navigation".
+## Usage
 
-### Getting started with React Navigation
+1. Install React Navigation in your project, refer to the ["Getting started" guide](https://reactnavigation.org/docs/getting-started/).
+2. Read the "Fundamentals" section of the React Navigation docs, starting with ["Hello React Navigation"](https://reactnavigation.org/docs/hello-react-navigation).
 
-- **Install**: To install React Navigation in your project, refer to its ["Getting started" guide](https://reactnavigation.org/docs/getting-started/).
-- **Learn**: We strongly advise going through the "Fundamentals" guides to become comfortable with the library, you can start with ["Hello React Navigation"](https://reactnavigation.org/docs/hello-react-navigation) after installing the library in your project.
+<SnackInline dependencies={['@react-navigation/native', '@react-navigation/native-stack', 'react-native-screens', 'react-native-safe-area-context']}>
 
-## Alternatives
+```js
+import React from 'react';
+import { View, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-- An alternative solution for web is to use [Next.js](../guides/using-nextjs.md). It provides its own routing system and built-in support for code-splitting. Read more in [Using Next.js with Expo for Web](../guides/using-nextjs.md).
-- [React Native Navigation](https://github.com/wix/react-native-navigation) will not work in Expo managed workflow apps, but if you are using a bare React Native app it may be something you will consider. Similar to `createNativeStackNavigator` from React Navigation, it uses the platform native APIs.
+function HomeScreen() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Home Screen</Text>
+    </View>
+  );
+}
+
+const Stack = createNativeStackNavigator();
+
+function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default App;
+```
+
+</SnackInline>
+
+## Next
+
+<BoxLink title="Linking" description="Create links and handle incoming URL requests for your app." href="/guides/linking" />
+<BoxLink title="Deep linking" description="Connect an app to a website to enable universal links and deep links." href="/guides/deep-linking" />
+<BoxLink title="React Navigation linking" description="Forward URLs to React Navigation screens." href="https://reactnavigation.org/docs/configuring-links" />
+
+## FAQ
+
+<Collapsible summary="Can I use Next.js routing for web?">
+
+Yes, you can use [Next.js](/guides/using-nextjs) routing for web. You can read more about this in [Using Next.js with Expo for Web](/guides/using-nextjs).
+
+</Collapsible>
+
+<Collapsible summary="Can I use React Native Navigation by Wix?">
+ 
+- This library is not available in the Expo Go app and is not yet compatible with `expo-dev-client`.
+- We recommend [`createNativeStackNavigator`](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation to use Android and iOS native navigation APIs.
+
+</Collapsible>
