@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-google-ap
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { InlineCode } from '~/components/base/code';
 
-> ⚠️ This package is deprecated in favor of the Google [**AuthSession**](auth-session.md) provider. Check out the [Google authentication guides](../../../guides/authentication.md#google) to learn how to migrate your app today.
+> ⚠️ This package is deprecated in favor of the Google [**AuthSession**](auth-session.md) provider. Check out the [Google authentication guides](/guides/authentication#google) to learn how to migrate your app today.
 
 **`expo-google-app-auth`** provides Google authentication integration for Expo apps using a secure system web browser with native [**`expo-app-auth`**](./app-auth). This is better than a WebView because you can reuse credentials saved on the device. This module uses [PKCE](https://tools.ietf.org/html/rfc7636) for secure native authentication. You won't need to define a provider config because this package utilizes Open ID Connect [auto discovery](https://openid.net/specs/openid-connect-discovery-1_0.html).
 

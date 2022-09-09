@@ -245,7 +245,7 @@ The package `@expo/cli` which is installed with the `expo` package. This is some
 
 ### Manifest
 
-An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo needs to know how to run the app and other relevant data. [Read more in "How Expo Works"](how-expo-works.md#expo-manifest).
+An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo needs to know how to run the app and other relevant data. [Read more in "How Expo Works"](/guides/how-expo-works/#expo-manifest).
 
 ### Meta
 

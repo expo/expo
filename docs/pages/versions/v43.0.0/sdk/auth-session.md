@@ -11,7 +11,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import SnackInline from '~/components/plugins/SnackInline';
 import { InlineCode } from '~/components/base/code';
 
-`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.md), [Crypto](crypto.md), and [Random](random.md). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](../../../guides/authentication.md).
+`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.md), [Crypto](crypto.md), and [Random](random.md). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -64,7 +64,7 @@ In order to be able to deep link back into your app, you will need to set a `sch
 
 ## Guides
 
-The guides have moved: [Authentication Guide](../../../guides/authentication.md).
+The guides have moved: [Authentication Guide](/guides/authentication).
 
 ## How web browser based authentication flows work
 
@@ -116,7 +116,7 @@ const [request, response, promptAsync] = useAuthRequest({ ... }, { ... });
 Load an authorization request for a code. Returns a loaded request, a response, and a prompt method.
 When the prompt method completes then the response will be fulfilled.
 
-> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](../../../guides/authentication.md#identityserver-4) for more info.
+> 🚨 In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`. See the [Identity example](/guides/authentication#identityserver-4) for more info.
 
 If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()` to get a `TokenResponse` instance which you can use to easily refresh the token.
 
@@ -529,7 +529,7 @@ AuthSession has built-in support for some popular providers to make usage as eas
 import * as Google from 'expo-auth-session/providers/google';
 ```
 
-- See the guide for more info on usage: [Google Authentication](../../../guides/authentication.md#google).
+- See the guide for more info on usage: [Google Authentication](/guides/authentication#google).
 - Provides an extra `loginHint` parameter. If the user's email address is known ahead of time, it can be supplied to be the default option.
 - Enforces minimum scopes to `['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']` for optimal usage with services like Firebase and Auth0.
 - By default, the authorization `code` will be automatically exchanged for an access token. This can be overridden with `shouldAutoExchangeCode`.
@@ -564,7 +564,7 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 ```
 
 - Uses implicit auth (`ResponseType.Token`) by default.
-- See the guide for more info on usage: [Facebook Authentication](../../../guides/authentication.md#facebook).
+- See the guide for more info on usage: [Facebook Authentication](/guides/authentication#facebook).
 - Enforces minimum scopes to `['public_profile', 'email']` for optimal usage with services like Firebase and Auth0.
 - Uses `display=popup` for better UI results.
 - Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration.
