@@ -2,6 +2,7 @@
 
 package expo.modules.kotlin.types
 
+import android.graphics.Color
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -145,6 +146,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       BigInt64Array::class.createType(nullable = isOptional) to BigInt64ArrayTypeConverter(isOptional),
       BigUint64Array::class.createType(nullable = isOptional) to BigUint64ArrayTypeConverter(isOptional),
       TypedArray::class.createType(nullable = isOptional) to TypedArrayTypeConverter(isOptional),
+
+      Color::class.createType(nullable = isOptional) to ColorTypeConverter(isOptional),
 
       Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )
