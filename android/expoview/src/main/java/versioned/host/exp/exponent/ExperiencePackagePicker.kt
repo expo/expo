@@ -8,7 +8,6 @@ import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryPackage
 import expo.modules.brightness.BrightnessPackage
 import expo.modules.calendar.CalendarPackage
-import expo.modules.camera.CameraModule
 import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
@@ -129,7 +128,6 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
-    CameraModule::class.java,
     CameraViewModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
