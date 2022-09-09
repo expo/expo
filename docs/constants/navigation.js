@@ -380,6 +380,7 @@ export default {
   generalDirectories,
   previewDirectories,
   easDirectories,
+  archiveDirectories,
 };
 
 // --- MDX methods ---

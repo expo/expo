@@ -3895,11 +3895,6 @@ hosted-git-info@^5.0.0:
   dependencies:
     lru-cache "^7.5.1"
 
-hotshot@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/hotshot/-/hotshot-1.0.5.tgz#9b58890c89f9d72f01716ed91b1b550d6fcb86e4"
-  integrity sha512-cZvRguZxDU3+eJJjP7/BouiwktjXmJcefRSlG6iLF514gtq/tEg4dhXTWZC6r9TCcrwZ5dMkRLe/ptMswdMIGg==
-
 html-encoding-sniffer@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/html-encoding-sniffer/-/html-encoding-sniffer-3.0.0.tgz#2cb1a8cf0db52414776e5b2a7a04d5dd98158de9"

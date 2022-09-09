@@ -80,7 +80,7 @@ export default {
         } else {
           // Remove newer unreleased versions from the exported side
           const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
-          if (versionMatch?.[1] && semver.gt(versionMatch[1], betaVersion || version)) {
+          if (versionMatch?.[1] && semver.gt(versionMatch[1], betaVersion || version, false)) {
             return {};
           }
         }
@@ -101,7 +101,7 @@ export default {
         ...VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap
-      pathsHidden: navigation.previewDirectories,
+      pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories],
     });
     logInfo(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
 
