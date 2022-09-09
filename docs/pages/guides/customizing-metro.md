@@ -6,11 +6,11 @@ sidebar_title: Bundling with Metro
 import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-Expo CLI uses Metro during [`npx expo start`](/workflow/expo-cli#develop) and [`npx expo export`](/workflow/expo-cli#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native, and used for large scale applications like Facebook and Instagram.
+Expo CLI uses Metro during [`npx expo start`](/workflow/expo-cli#develop) and [`npx expo export`](/workflow/expo-cli#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native, and used for large scale applications such as Facebook and Instagram.
 
 ## Customizing
 
-You can customize the Metro bundler by creating a **metro.config.js** file in the root of your project. This file should export a [Metro configuration][metro-config] that extends [`expo/metro-config`][expo-metro-config]. Users should import `expo/metro-config` instead of `@expo/metro-config` to ensure version consistency.
+You can customize the Metro bundler by creating a **metro.config.js** file at the root of your project. This file should export a [Metro configuration][metro-config] that extends [`expo/metro-config`][expo-metro-config]. You should import `expo/metro-config` instead of `@expo/metro-config` to ensure version consistency.
 
 Run the following to generate the template file:
 
@@ -30,14 +30,14 @@ To learn more, refer to the [`metro.config.js` docs](https://facebook.github.io/
 
 ## Assets
 
-Metro resolves files as either source code or assets. Source code is JavaScript, TypeScript, JSON, and other files that are used by your application. [Asset](/guides/assets) are images, fonts, and other files that should not be transformed by Metro. To accommodate large-scale codebases, Metro requires all extensions for both source code and assets to be explicitly defined before starting the bundler. This is done by adding the `resolver.sourceExts` and `resolver.assetExts` options to the Metro configuration. By default we include the following extensions:
+Metro resolves files as either source code or assets. Source code is JavaScript, TypeScript, JSON, and other files used by your application. [Asset](/guides/assets) are images, fonts, and other files that should not be transformed by Metro. To accommodate large-scale codebases, Metro requires all extensions for both source code and assets to be explicitly defined before starting the bundler. This is done by adding the `resolver.sourceExts` and `resolver.assetExts` options to the Metro configuration. By default, the following extensions are included:
 
 - [`resolver.assetExts`](https://github.com/facebook/metro/blob/main/packages/metro-config/src/defaults/defaults.js#L15)
 - [`resolver.sourceExts`](https://github.com/facebook/metro/blob/main/packages/metro-config/src/defaults/defaults.js#L15)
 
 ### Adding more file extensions to `assetExts`
 
-The most common customization is including extra asset extensions to Metro. In the **metro.config.js** file, add the file extension (without a leading `.`) to `resolver.assetExts`:
+The most common customization is to include extra asset extensions to Metro. In the **metro.config.js** file, add the file extension (without a leading `.`) to `resolver.assetExts`:
 
 ```js
 // metro.config.js
@@ -55,7 +55,7 @@ module.exports = config;
 
 ## Minification
 
-Source code is optimized for readability and debugging. To optimize your application for performance, the source code is automatically minified when [compiling](/workflow/expo-cli#compiling) and [exporting](/workflow/expo-cli#exporting). You can also minify your code during development with `npx expo start --minify`, this is sometimes useful for testing production optimizations.
+Source code is optimized for readability and debugging. To optimize your application for performance, the source code is automatically minified when [compiling](/workflow/expo-cli#compiling) and [exporting](/workflow/expo-cli#exporting). You can also minify your code during development with `npx expo start --minify`. This is sometimes useful for testing production optimizations.
 
 By default, Metro uses `uglify-es` to minify code. According to [this benchmark](https://github.com/privatenumber/minification-benchmarks) `uglify` generally produces the smallest bundles, and is nearly the _slowest_ minifier. Here are some alternative minifiers you can use with Metro.
 
@@ -88,7 +88,7 @@ module.exports = config;
 
 ### Minification: Uglify
 
-By default, Metro uses [`uglify-es`](https://github.com/mishoo/UglifyJS) to minify and compress your code. You can customize uglify by passing [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`. For example, if you wanted to remove all console logs from your app in production, you can do the following:
+By default, Metro uses [`uglify-es`](https://github.com/mishoo/UglifyJS) to minify and compress your code. You can customize uglify by passing [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`. For example, if you want to remove all `console.log()` methods from your app in production, you can do the following:
 
 **metro.config.js**
 
@@ -109,7 +109,7 @@ Here are all of the [default Uglify options](https://github.com/facebook/metro/b
 
 A useful way to debug your source code is by exploring the source maps with [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer). Install it with `yarn add -D react-native-bundle-visualizer`, then run `npx react-native-bundle-visualizer`.
 
-This will show you an interactive breakdown of what makes up your JavaScript bundle. Using this you can find large packages that you may not have intended to bundle in your project. The smaller the bundle, the faster your app will start.
+This will show you an interactive breakdown of what makes up your JavaScript bundle. Using this, you can find large packages that you may not have intended to bundle in your project. The smaller the bundle, the faster your app will start.
 
 ## Web Support
 
