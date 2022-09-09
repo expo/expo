@@ -15,7 +15,7 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
-import navigation from '~/constants/navigation-deprecated.cjs';
+import navigation from '~/constants/navigation.cjs';
 import * as Constants from '~/constants/theme';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { NavigationRoute } from '~/types/common';
@@ -102,7 +102,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   };
 
   private isFeaturePreviewPath = (path?: string) => {
-    return navigation.featurePreview.some(name => this.pathStartsWith(name, path));
+    return navigation.featurePreview.some((name: string) => this.pathStartsWith(name, path));
   };
 
   private isPreviewPath = () => {
@@ -136,9 +136,9 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
 
   private getRoutes = (): NavigationRoute[] => {
     if (this.isReferencePath()) {
-      return navigation.reference[this.props.version];
+      return (navigation as any).reference[this.props.version];
     } else {
-      return navigation[this.getActiveTopLevelSection()];
+      return (navigation as any)[this.getActiveTopLevelSection()];
     }
   };
 
