@@ -47,6 +47,9 @@ inputs:
     description: 'Rebuild hermes-engine AAR when cache missed'
     default: 'true'
     required: false
+  react-native-gradle-downloads:
+    description: 'Restore Gradle downloads cache for React Native libraries'
+    required: false
 
 outputs:
   yarn-workspace-hit:
@@ -225,3 +228,15 @@ runs:
         # Reset reactNativeArchitectures to build all architectures
         ORG_GRADLE_PROJECT_reactNativeArchitectures:
       working-directory: android
+
+    - name: 🛠 Setup "REACT_NATIVE_DOWNLOADS_DIR" environment variable
+      if: inputs.react-native-gradle-downloads == 'true'
+      shell: bash
+      run: echo "REACT_NATIVE_DOWNLOADS_DIR=$HOME/.gradle/react-native-downloads" >> $GITHUB_ENV
+    - name: ♻️ Restore Gradle downloads cache for React Native libraries
+      if: inputs.react-native-gradle-downloads == 'true'
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
+        key: gradle-downloads-${{ hashFiles('yarn.lock') }}
+        restore-keys: gradle-downloads-

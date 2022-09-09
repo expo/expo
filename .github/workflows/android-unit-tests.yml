@@ -54,6 +54,7 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
           hermes-engine-aar: 'true'
+          react-native-gradle-downloads: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Install node modules in root dir
