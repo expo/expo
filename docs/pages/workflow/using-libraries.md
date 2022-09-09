@@ -54,8 +54,6 @@ After the platform compatibility table, there will be an Installation section, w
 
 <InstallSection packageName="expo-device" hideBareInstructions />
 
-<br />
-
 The `npx expo install` command will pick a version of the library that is compatible with your project and then use your JavaScript package manager (such as npm) to install it.
 
 Next, under the API section the reference page will tell you how to import the library in your code:
