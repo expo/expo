@@ -2,7 +2,7 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-firebase_sdk_version = '8.14.0'
+firebase_sdk_version = '9.5.0'
 if defined? $FirebaseSDKVersion
   firebase_sdk_version = $FirebaseSDKVersion
 end

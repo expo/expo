@@ -16,7 +16,7 @@ import DocumentationSidebarRight, {
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
 import { PageApiVersionContextType, usePageApiVersion } from '~/providers/page-api-version';
-import navigation from '~/public/static/constants/navigationDeprecated.json';
+import navigation from '~/public/static/constants/navigation.json';
 import { NavigationRoute } from '~/types/common';
 import { Header } from '~/ui/components/Header';
 import { Sidebar } from '~/ui/components/Sidebar';
@@ -101,7 +101,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   };
 
   private isFeaturePreviewPath = (path?: string) => {
-    return navigation.featurePreview.some(name => this.pathStartsWith(name, path));
+    return navigation.featurePreview.some((name: string) => this.pathStartsWith(name, path));
   };
 
   private isPreviewPath = () => {

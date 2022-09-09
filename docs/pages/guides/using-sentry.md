@@ -115,10 +115,7 @@ Sentry.init({
 
 to your root project file (usually **App.js**), so make sure you remove it (but keep the `sentry-expo` import and original `Sentry.init` call!)
 
-
 </ConfigReactNative>
-
-<br />
 
 #### 3.1: Configure a `postPublish` hook
 
@@ -177,8 +174,6 @@ In addition to the required config fields above, you can also provide these **op
 > - url → `SENTRY_URL`
 
 </Collapsible>
-
-<br />
 
 #### 3.2: Add the Config Plugin
 

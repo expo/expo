@@ -188,7 +188,7 @@ You can debug using `lldb` and all of the native Apple debugging tools by openin
 
 Building from Xcode is useful because you can set native breakpoints and profile any part of the application. Be sure to track changes in source control (git) in case you need to regenerate the native app with `npx expo prebuild -p ios --clean`.
 
-##### iOS development signing
+**iOS development signing**
 
 If you want to see how your app will run on your device, all you have to do is connect it, run `npx expo run:ios —-device`, select your connected device.
 
