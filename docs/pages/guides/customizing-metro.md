@@ -1,11 +1,18 @@
 ---
-title: Customizing Metro
+title: Metro bundler
+sidebar_title: Bundling with Metro
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-When you run `npx expo start`, the [Expo CLI][expo-cli] uses [Metro](https://facebook.github.io/metro/) to bundle JavaScript for Android and iOS platforms. By default [Expo CLI][expo-cli] will use the Metro configuration defined in the [`@expo/metro-config`](https://github.com/expo/expo/tree/main/packages/@expo/metro-config) package. You can add custom options for Metro by creating a file named **metro.config.js** in the project root directory or by running:
+Expo CLI uses Metro during [`npx expo start`](/workflow/expo-cli#develop) and [`npx expo export`](/workflow/expo-cli#exporting) to bundle your JavaScript code and assets. Metro is built and optimized for React Native, and used for large scale applications such as Facebook and Instagram.
+
+## Customizing
+
+You can customize the Metro bundler by creating a **metro.config.js** file at the root of your project. This file should export a [Metro configuration][metro-config] that extends [`expo/metro-config`][expo-metro-config]. You should import `expo/metro-config` instead of `@expo/metro-config` to ensure version consistency.
+
+Run the following to generate the template file:
 
 <Terminal cmd={["$ npx expo customize metro.config.js"]} />
 
@@ -19,7 +26,90 @@ const config = getDefaultConfig(__dirname);
 module.exports = config;
 ```
 
-You can find a complete list of supported options in the Metro docs: [Configuring Metro](https://facebook.github.io/metro/docs/configuration). Please note that you only need to specify the options that you want to customize: the custom config will be merged with the defaults from `expo/metro-config` when using [Expo CLI][expo-cli] to start dev servers (`npx expo start`) or export static files (`npx expo export`).
+To learn more, refer to the [`metro.config.js` docs](https://facebook.github.io/metro/docs/configuration).
+
+## Assets
+
+Metro resolves files as either source code or assets. Source code is JavaScript, TypeScript, JSON, and other files used by your application. [Asset](/guides/assets) are images, fonts, and other files that should not be transformed by Metro. To accommodate large-scale codebases, Metro requires all extensions for both source code and assets to be explicitly defined before starting the bundler. This is done by adding the `resolver.sourceExts` and `resolver.assetExts` options to the Metro configuration. By default, the following extensions are included:
+
+- [`resolver.assetExts`](https://github.com/facebook/metro/blob/main/packages/metro-config/src/defaults/defaults.js#L15)
+- [`resolver.sourceExts`](https://github.com/facebook/metro/blob/main/packages/metro-config/src/defaults/defaults.js#L15)
+
+### Adding more file extensions to `assetExts`
+
+The most common customization is to include extra asset extensions to Metro. In the **metro.config.js** file, add the file extension (without a leading `.`) to `resolver.assetExts`:
+
+```js
+// metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.resolver.assetExts.push(
+  // Adds support for `.db` files for SQLite databases
+  'db'
+);
+
+module.exports = config;
+```
+
+## Minification
+
+Source code is optimized for readability and debugging. To optimize your application for performance, the source code is automatically minified when [compiling](/workflow/expo-cli#compiling) and [exporting](/workflow/expo-cli#exporting). You can also minify your code during development with `npx expo start --minify`. This is sometimes useful for testing production optimizations.
+
+By default, Metro uses `uglify-es` to minify code. According to [this benchmark](https://github.com/privatenumber/minification-benchmarks) `uglify` generally produces the smallest bundles, and is nearly the _slowest_ minifier. Here are some alternative minifiers you can use with Metro.
+
+### Minification: esbuild
+
+You can use [`esbuild`](https://esbuild.github.io/) to minify exponentially faster than `uglify-es` and `terser`. Just follow this guide: [`metro-minify-esbuild` usage](https://github.com/EvanBacon/metro-minify-esbuild#usage).
+
+### Minification: Terser
+
+You can use [`terser`](https://github.com/terser/terser) instead of `uglify-es` to mangle and compress your project.
+
+First, install terser in your project with `yarn add --dev metro-minify-terser`.
+
+Now set terser with `transformer.minifierPath`, and pass in [`terser` options](https://github.com/terser/terser#compress-options) via `transformer.minifierConfig`.
+
+**metro.config.js**
+
+```js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+config.transformer.minifierPath = 'metro-minify-terser';
+config.transformer.minifierConfig = {
+  // Terser options...
+};
+
+module.exports = config;
+```
+
+### Minification: Uglify
+
+By default, Metro uses [`uglify-es`](https://github.com/mishoo/UglifyJS) to minify and compress your code. You can customize uglify by passing [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`. For example, if you want to remove all `console.log()` methods from your app in production, you can do the following:
+
+**metro.config.js**
+
+```js
+const { getDefaultConfig } = require('expo/metro-config');
+
+const config = getDefaultConfig(__dirname);
+
+// Remove all console logs in production...
+config.transformer.minifierConfig.compress.drop_console = true;
+
+module.exports = config;
+```
+
+Here are all of the [default Uglify options](https://github.com/facebook/metro/blob/b629f44239bbb3414491755185cf19b5834b4b7a/packages/metro-config/src/defaults/index.js#L94-L111) applied in Metro bundler.
+
+## Source map exploration
+
+A useful way to debug your source code is by exploring the source maps with [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer). Install it with `yarn add -D react-native-bundle-visualizer`, then run `npx react-native-bundle-visualizer`.
+
+This will show you an interactive breakdown of what makes up your JavaScript bundle. Using this, you can find large packages that you may not have intended to bundle in your project. The smaller the bundle, the faster your app will start.
 
 ## Web Support
 
@@ -117,78 +207,7 @@ You can overwrite the default `index.html` in Metro web by creating a `public/in
 
 In the future, this will work universally across platforms with EAS Update hosting. Currently the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates does not support this feature.
 
-## Examples
-
-### Adding more file extensions to `assetExts`
-
-One use case for custom **metro.config.js** is adding more file extensions that are considered to be an [asset](assets.md). Many image, video, audio and font formats (e.g. `jpg`, `png`, `mp4`, `mp3` and `ttf`) are included by default. To add more asset file extensions, create a **metro.config.js** file in the project root. In the file add the file extension (without a leading `.`) to `assetExts`:
-
-```js
-const { getDefaultConfig } = require('@expo/metro-config');
-
-const defaultConfig = getDefaultConfig(__dirname);
-
-defaultConfig.resolver.assetExts.push('db');
-
-module.exports = defaultConfig;
-```
-
-(This example adds `.db`, the extension of SQLite database files to `assetExts`).
-
-## Optimizations
-
-By default, Metro uses [`uglify-es`](https://github.com/mishoo/UglifyJS) to minify and compress your code. You can customize uglify by passing [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`. For example, if you wanted to remove all console logs from your app in production, you can do the following:
-
-**metro.config.js**
-
-```js
-const { getDefaultConfig } = require('expo/metro-config');
-
-const config = getDefaultConfig(__dirname);
-
-// Remove all console logs in production...
-config.transformer.minifierConfig.compress.drop_console = true;
-
-module.exports = config;
-```
-
-Here are all of the [default Uglify options](https://github.com/facebook/metro/blob/b629f44239bbb3414491755185cf19b5834b4b7a/packages/metro-config/src/defaults/index.js#L94-L111) applied in Metro bundler.
-
-## Minification
-
-By default, Metro uses `uglify-es` to minify code for production environments (`npx expo export`). According to [this benchmark](https://github.com/privatenumber/minification-benchmarks) `uglify` generally produces the smallest bundles but it isn't the fastest minifier. Here are some alternative packages you can use for minification:
-
-### Minification: esbuild
-
-You can use [`esbuild`](https://esbuild.github.io/) to minify exponentially faster than `uglify-es` and `terser`. Just follow this guide: [`metro-minify-esbuild` usage](https://github.com/EvanBacon/metro-minify-esbuild#usage).
-
-### Minification: Terser
-
-You can use [`terser`](https://github.com/terser/terser) instead of `uglify-es` to mangle and compress your project.
-
-First, install terser in your project with `yarn add --dev metro-minify-terser`.
-
-Now set terser with `transformer.minifierPath`, and pass in [`terser` options](https://github.com/terser/terser#compress-options) via `transformer.minifierConfig`.
-
-**metro.config.js**
-
-```js
-const { getDefaultConfig } = require('expo/metro-config');
-
-const config = getDefaultConfig(__dirname);
-
-config.transformer.minifierPath = 'metro-minify-terser';
-config.transformer.minifierConfig = {
-  // Terser options...
-};
-
-module.exports = config;
-```
-
-### Source map exploration
-
-A useful way to debug your source code is by exploring the source maps. You can do this easily in any Expo project using [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer). Just install it with `yarn add -D react-native-bundle-visualizer`, then run `npx react-native-bundle-visualizer`.
-
-This will show you an interactive breakdown of what makes up your React bundle. Using this you can find large packages that you may not have wanted bundled in your project. The smaller the bundle, the faster your app will start.
-
 [expo-cli]: /workflow/expo-cli
+[metro]: https://facebook.github.io/metro
+[metro-config]: https://facebook.github.io/metro/docs/configuration
+[expo-metro-config]: https://github.com/expo/expo/tree/main/packages/@expo/metro-config

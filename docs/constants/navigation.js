@@ -66,6 +66,7 @@ const general = [
       makeGroup(
         'Conceptual overview',
         [
+          makePage('introduction/expo.md'),
           makePage('introduction/managed-vs-bare.md'),
           // makePage('introduction/walkthrough.md'),
           makePage('introduction/why-not-expo.md'),
@@ -126,9 +127,7 @@ const general = [
     makePage('guides/using-clojurescript.md'),
     makePage('guides/using-graphql.md'),
     makePage('guides/using-styled-components.md'),
-    makePage('guides/using-electron.md'),
     makePage('guides/using-nextjs.md'),
-    makePage('guides/using-preact.md'),
     makePage('guides/typescript.md'),
   ]),
   makeSection('Assorted guides', [
