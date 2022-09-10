@@ -14,9 +14,7 @@ With Expo Go, you can run your projects on your own device faster than ever, and
 
 Expo Go is a native app that is installed on your device. When you run `npx expo start` in your project, [Expo CLI](/workflow/expo-cli) starts a [development server](/workflow/expo-cli#develop) and generates a QR code. You can then open the Expo Go app on your device and scan the QR code to connect to the dev server.
 
-<Terminal cmd={[
-'$ npx expo start'
-]} />
+<Terminal cmd={['$ npx expo start']} />
 
 <ImageSpotlight alt="Expo Go connecting to Expo CLI" src="/static/images/fetch-app-development.png" style={{ maxWidth: 600}} />
 
