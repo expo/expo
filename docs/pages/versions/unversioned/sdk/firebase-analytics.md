@@ -12,7 +12,7 @@ import { InlineCode } from '~/components/base/code';
 
 > **This is the only Firebase Analytics package for React Native that has universal platform support (iOS, Android, Web, and Electron).**
 
-**`expo-firebase-analytics`** enables the use of native Google Analytics for Firebase. Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
+`expo-firebase-analytics` enables the use of native Google Analytics for Firebase. Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
 Learn more in the official [Firebase Docs](https://firebase.google.com/docs/analytics/).
 
 <PlatformsSection android emulator ios simulator web />
@@ -21,12 +21,11 @@ Learn more in the official [Firebase Docs](https://firebase.google.com/docs/anal
 
 <APIInstallSection />
 
-When using the web-platform, you'll also need to run `npx expo install firebase`, which install the Firebase JS SDK.
+When using the web platform, you'll also need to run `npx expo install firebase`, which installs the Firebase JS SDK.
 
 ## Configuration
 
-To use this package, the native Firebase configurations need to be added to your app.
-[Please follow this guide on how to set up native Firebase.](/guides/setup-native-firebase)
+> If you are using [`react-native-firebase`](https://rnfirebase.io/) library in your project, you should use [`@react-native-firebase/analytics`](https://rnfirebase.io/analytics/usage) package provided by the library. For more information on how to configure native Firebase library, see [using the native Firebase SDK](/guides/setup-native-firebase/).
 
 ### Expo Go: Limitations & configuration
 
