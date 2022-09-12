@@ -47,7 +47,6 @@ internal class ColorTypeConverterTest {
     Truth.assertThat(color.blue()).isEqualTo(expectedColor[2])
   }
 
-
   @Test
   fun `converts from double array`() {
     val colorArray = DynamicFromObject(
