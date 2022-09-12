@@ -17,13 +17,14 @@ import {
   BranchIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Animated, ScrollView } from 'react-native';
+import { Animated, ScrollView, useWindowDimensions } from 'react-native';
 
 import { AppHeader } from '../components/AppHeader';
 import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
 import { useLoadingContainerStyle } from '../components/EASUpdatesRows';
 import { LoadAppErrorModal } from '../components/LoadAppErrorModal';
 import { PulseIndicator } from '../components/PulseIndicator';
+import { ScreenContainer } from '../components/ScreenContainer';
 import { Toasts } from '../components/Toasts';
 import { UrlDropdown } from '../components/UrlDropdown';
 import { formatUpdateUrl } from '../functions/formatUpdateUrl';
@@ -114,7 +115,12 @@ export function HomeScreen({
   return (
     <View testID="DevLauncherMainScreen">
       <AppHeader navigation={navigation} />
-      <ScrollView contentContainerStyle={{ paddingBottom: scale['48'] }}>
+      <ScrollView
+        style={{}}
+        contentContainerStyle={{
+          paddingBottom: scale['48'],
+        }}>
+          <ScreenContainer>
         {crashReport && (
           <View px="medium" py="small" mt="small">
             <Button.ScaleOnPressContainer onPress={onCrashReportPress} bg="default" rounded="large">
@@ -197,6 +203,7 @@ export function HomeScreen({
 
           <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
         </View>
+        </ScreenContainer>
       </ScrollView>
     </View>
   );

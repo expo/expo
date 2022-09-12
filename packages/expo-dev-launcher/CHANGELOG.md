@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Better support for landscape orientation. ([#19010](https://github.com/expo/expo/pull/19010) by [@ajsmth](https://github.com/ajsmth))
+
 ### 🐛 Bug fixes
 
 - Remove the deprecated `Linking.removeEventListener` in expo-dev-launcher bundle. ([#18939](https://github.com/expo/expo/pull/18939) by [@kudo](https://github.com/kudo))
