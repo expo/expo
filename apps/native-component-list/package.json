@@ -155,7 +155,7 @@
     "react-native-safe-area-view": "^0.14.8",
     "react-native-screens": "~3.15.0",
     "react-native-shared-element": "0.8.4",
-    "react-native-svg": "12.3.0",
+    "react-native-svg": "12.4.4",
     "react-native-view-shot": "3.3.0",
     "react-native-web": "~0.18.7",
     "react-native-webview": "11.22.4",
