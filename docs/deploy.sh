@@ -125,6 +125,10 @@ redirects[introduction/walkthrough]=tutorial/planning/
 redirects[guides/using-gatsby]=guides/
 redirects[guides/testing-on-devices]=workflow/run-on-device
 redirects[distribution/uploading-apps]=submit/introduction
+redirects[distribution/uploading-apps]=submit/introduction
+
+# We should change this redirect to a more general EAS guide later
+redirects[guides/setting-up-continuous-integration]=build/building-on-ci
 
 # Moved classic updates
 redirects[distribution/release-channels]=archive/classic-updates/release-channels
