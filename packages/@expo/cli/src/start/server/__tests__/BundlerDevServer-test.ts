@@ -2,8 +2,6 @@ import openBrowserAsync from 'better-opn';
 import { vol } from 'memfs';
 
 import * as Log from '../../../log';
-import { AppIdResolver } from '../../platforms/AppIdResolver';
-import { DeviceManager } from '../../platforms/DeviceManager';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
