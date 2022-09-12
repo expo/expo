@@ -9,12 +9,13 @@ export declare type FontSource = string | number | Asset | FontResource;
  * with [`loadAsync`](#loadasync).
  */
 export declare type FontResource = {
-    uri: string | number;
+    uri?: string | number;
     /**
      * _Web Only._ Sets the [`font-display`](#fontdisplay) property for a given typeface in the
      * browser.
      */
     display?: FontDisplay;
+    default?: string;
 };
 /**
  * __Web Only__. Sets the [font-display](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display)
