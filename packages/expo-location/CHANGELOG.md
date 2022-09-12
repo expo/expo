@@ -7,7 +7,8 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-
+				- Fix altitude on iPhone to use WGS184. ([#19084](https://github.com/expo/expo/pull/19084) by [@pwellner](https://github.com/pwellner))
+				
 ### 💡 Others
 
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
