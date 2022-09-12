@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
+import { PageApiVersionContext } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -39,13 +40,26 @@ type InstallSectionProps = React.PropsWithChildren<{
 const getPackageLink = (packageNames: string) =>
   `https://github.com/expo/expo/tree/main/packages/${packageNames.split(' ')[0]}`;
 
+function getInstallCmd(packageName: string) {
+  return `$ npx expo install ${packageName}`;
+}
+
 const InstallSection = ({
   packageName,
   hideBareInstructions = false,
-  cmd = [`$ expo install ${packageName}`],
+  cmd = [getInstallCmd(packageName)],
   href = getPackageLink(packageName),
 }: InstallSectionProps) => {
   const { sourceCodeUrl } = usePageMetadata();
+  const { version } = React.useContext(PageApiVersionContext);
+
+  // Recommend just `expo install` for SDK 43, 44, and 45.
+  // TODO: remove this when we drop SDK 45 from docs
+  if (version.startsWith('v43') || version.startsWith('v44') || version.startsWith('v45')) {
+    if (cmd[0] === getInstallCmd(packageName)) {
+      cmd[0] = cmd[0].replace('npx expo', 'expo');
+    }
+  }
 
   return (
     <>

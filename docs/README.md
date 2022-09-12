@@ -278,7 +278,7 @@ Whenever shell commands are used or referred, use `Terminal` component to make t
 import { Terminal } from '~/ui/components/Snippet';
 
 // for single command and one prop
-<Terminal cmd={["$ expo install package"]} />
+<Terminal cmd={["$ npx expo install package"]} />
 
 // for multiple commands
 
