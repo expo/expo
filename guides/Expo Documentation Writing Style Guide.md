@@ -240,7 +240,9 @@ When a collapsible component has a single item or a paragraph to represent text,
 
 Avoid mentioning or using the terms to represent outdated/archived workflows: managed or bare workflow.
 
-To avoid using the term "managed workflow", use "using Expo Prebuild" or "not using Expo Prebuild" to represent the current state of the Expo ecosystem. This is now the default way of explaining things.
+To avoid using the term "managed workflow", use "using Expo" to represent the current state of the Expo ecosystem. This is now the default way of explaining things.
+
+When offering guidance for projects that require manually editing native code/directories, put those instructions in a drop down saying "manual setup" or "usage in bare React Native projects"
 
 ## Tools to use when using visualization or interactivity to communicate
 
