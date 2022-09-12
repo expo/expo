@@ -1,15 +1,22 @@
+import minimatch from 'minimatch';
 import path from 'path';
 
 import Git from '../../Git';
 import { lintStringAsync, LintViolation } from '../../linting/SwiftLint';
 import { ReviewComment, ReviewInput, ReviewOutput, ReviewStatus } from '../types';
 
+const IGNORED_PATHS = ['ios/{vendored,versioned}/**', '**/{Tests,UITests}/**'];
+
 /**
  * The entry point for the reviewer checking whether the PR violates SwiftLint rules.
  */
 export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput | null> {
   const swiftFiles = diff.filter((fileDiff) => {
-    return !fileDiff.deleted && path.extname(fileDiff.path) === '.swift';
+    return (
+      !fileDiff.deleted &&
+      path.extname(fileDiff.path) === '.swift' &&
+      !IGNORED_PATHS.some((pattern) => minimatch(fileDiff.to!, pattern))
+    );
   });
 
   const comments: ReviewComment[] = [];
