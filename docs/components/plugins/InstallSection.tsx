@@ -2,8 +2,8 @@ import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
+import { PageApiVersionContext } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
-import { PageApiVersionContext, PageApiVersionContextType } from '~/providers/page-api-version';
 import { Terminal } from '~/ui/components/Snippet';
 
 const STYLES_P = css`
