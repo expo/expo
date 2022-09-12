@@ -6,42 +6,38 @@ import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 In this chapter, you will create the first screen of your app.
-
-This layout will display an image and two buttons. The image is later used as a background image to put an emoji sticker on it. We will provide a default image as a placeholder in case you do not want to pick a new image.
-
-Both buttons have different functionalities. The first button will allow picking an image from the device's media library. The second button will allow using the placeholder image as the background image.
-
-You will build the following layout as the first screen of your app:
-
 <ImageSpotlight alt="Initial layout." src="/static/images/tutorial/initial-layout.jpg" style={{ maxWidth: 300 }} containerStyle={{ marginBottom: 0 }} />
+
+The screen above displays an image and two buttons. The user will select an image using one of the two buttons provided. The first button allows the users to select an image from their device. The second button allows the user to use a default image.
+
+Once the user selects an image, they'll be able to select and add a sticker to the image. So, let's get started creating this screen.
+
 
 ## Step 1: Break down the layout
 
 Before you build this layout by writing code, let's break it down into some essential elements. Most of these elements directly correspond to the built-in [Core Components](https://reactnative.dev/docs/components-and-apis) from React Native.
 
-In the layout of the screen, there are three essential elements:
 
 <ImageSpotlight alt="Break down of initial layout." src="/static/images/tutorial/breakdown-of-layout.jpg" style={{ maxWidth: 300 }} containerStyle={{ marginBottom: 0 }} />
 
-On breaking down the initial layout, you get:
+In the layout of the screen, there are three essential elements:
 
-- The screen background uses a specific background color
+- The screen has a specific background color
 - There is a large image displayed at the center of the screen
 - There are two buttons in the bottom half of the screen
 
-One of the essential elements of the layout is composed of multiple components. For example, the first button encapsulated inside a yellow border contains a parent element that provides this border. Also, it wraps around an icon component and a text component to display the complete label inside.
+The first button is composed of multiple components. The parent element provides its yellow border and contains an icon component and a text component.
 
 <ImageSpotlight alt="Break down of the button component with row." src="/static/images/tutorial/breakdown-of-buttons.jpg" style={{ maxWidth: 480 }} containerStyle={{ marginBottom: 0 }} />
 
-These elements are also using custom styles. In React Native, the styling of the application is done using JavaScript. All the Core components accept a `style` prop that accepts a JavaScript object as its value. For in-detail information, see [Styling in React Native](https://reactnative.dev/docs/styles).
+These elements use custom styles. In React Native, styling is done using JavaScript. All the React Native core components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see [Styling in React Native](https://reactnative.dev/docs/styles).
 
-If you want to dive deep and understand the layout mechanism in React Native, start with React Native's [Layout with Flexbox](https://reactnative.dev/docs/flexbox).
 
-Once the layout breaks into small elements, it becomes easier to implement.
+Now that we've broken down the UI into smaller chunks, we're ready to start coding.
 
 ## Step 2: Style the background
 
-First, you will change the app screen's background color. From the layout image, you can notice that it uses a specific background color. This value is defined in the `styles` object in **App.js**.
+First, let's change the background color. To match the screen in the design, you'll need to apply a specific background color. This value is defined in the `styles` object in **App.js**.
 
 Replace the default value of `#fff` with `#25292e` in the `styles.container.backgroundColor`. It will change the background color of the screen.
 
@@ -73,7 +69,7 @@ const styles = StyleSheet.create({
 
 ## Step 3: Change the text color
 
-The `Text` component uses the color value of `#000` as the default text color. Setting up the new background color value on the `View` component is going to make the text harder to read. Let's also add an inline style on the `Text` to change the text color to `#fff`.
+Now that the background is a dark color, the text is difficult to read. By default, the `<Text>` component uses `#000` (black) as its default color. Let's add a style to the `<Text>` component to change the text color to `#fff` (white).
 
 <SnackInline label="Styled Background" dependencies={['expo-status-bar']}>
 
@@ -86,7 +82,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info Replace the default value of color property to "#fff". */
-      <Text style={{color: '#fff'}}>Open up App.js to start working on your app!</Text>
+      <Text style={{ color: '#fff' }}>Open up App.js to start working on your app!</Text>
       /* @end */
       <StatusBar style="auto" />
     </View>
@@ -111,9 +107,8 @@ const styles = StyleSheet.create({
 
 ## Step 4: Display the image
 
-The `Image` component from React Native displays the image on the screen. It requires a source of the image. This source can be a [static asset](https://reactnative.dev/docs/images#static-image-resources). For example, the source can be required from the app's **assets/images** directory, or the source can come from the [Network](https://reactnative.dev/docs/images#network-images) in the form of a URI.
+React Native's `<Image>` component will display the image on the screen. It requires a source of the image. This source can be a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source can be required from the app's **./assets/images** directory, or the source can come from the [Network](https://reactnative.dev/docs/images#network-images) in the form of a `uri` property.
 
-Our amazing designers provided a placeholder image that we will use throughout this tutorial.
 
 <ImageSpotlight alt="Background image that we are going to use as a placeholder for the tutorial." src="/static/images/tutorial/background-image.png" style={{ maxWidth: 250 }} containerStyle={{ marginBottom: 0 }} />
 
@@ -121,7 +116,7 @@ You can download the above image and save it inside the **assets/images** direct
 
 > If you are using the starter template, find this image inside the **assets/images** directory with a file name of `background-image.png`.
 
-Next, import and use the `Image` component from React Native to display the image from the static resource. Let's also import the `background-image.png` in the **App.js**:
+Next, import and use the `Image` component from React Native. Also, import `background-image.png` in the **App.js**:
 
 <SnackInline label="Display placeholder image" dependencies={['expo-status-bar']} files={{
     'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910'
@@ -177,8 +172,7 @@ Let's learn what the above code does.
 
 The `PlaceholderImage` variable:
 
-- Holds the reference to the static background image
-- This reference is used as the value of the `source` prop on the `Image` component.
+The `PlaceholderImage` variable references the **./assets/images/background-image.png** and is used as the `source` prop on the `<Image>` component.
 
 The `Image` component:
 
@@ -188,7 +182,7 @@ The `Image` component:
 
 ## Step 5: Dividing components into files
 
-The code snippets will get quite big, especially with each snippet requiring custom styles. From this point, let's divide the code into multiple files.
+As you add more components to this screen, let's divide the code into multiple files.
 
 - Create a **components** directory at the root of the project. This will contain all the custom components created throughout this tutorial.
 - Then, create a new file **ImageViewer.js** inside the **components** folder.
@@ -254,9 +248,8 @@ const styles = StyleSheet.create({
 
 ## Step 6: Create buttons using Pressable
 
-A modern mobile device typically constitutes a touch screen as the primary interface between an application and the user. Any level of event interaction in an application can be achieved by using a button that, on a physical device, is a simple finger touch.
 
-React Native provides various components to handle touch events on native platforms. For this tutorial, let's use the [`Pressable`](https://reactnative.dev/docs/pressable). It is a core component wrapper that can detect various stages of interactions, from basic single tap events to advance events such as the long press. It can be customized in terms of style and appearance, and you can extend the functionality by creating a custom wrapper component around it.
+React Native provides various components to handle touch events on native platforms. For this tutorial, let's use the [`Pressable`](https://reactnative.dev/docs/pressable) component. It is a core component wrapper that can detect various stages of interactions, from basic single tap events to advanced events such as a long press.
 
 From the layout, there are two buttons you have to implement. Each has different styles and labels. Let's start by creating a function component that can be reused to create the two buttons.
 
@@ -305,11 +298,10 @@ const styles = StyleSheet.create({
 });
 ```
 
-The `Button` component receives a `label` [prop](https://reactnative.dev/docs/intro-react#props) so that anytime this component is used, the button can have a text displayed.
 
-Now, in the app, when the user will touch any of the buttons on the screen, a dialog box will be displayed. This is done by using an `alert()` function to display a static message. Currently, it is used as a placeholder since both buttons do not trigger any functionality right now.
+Now, in the app, when the user taps any of the buttons on the screen, an alert will be displayed. This happens because the `<Pressable>` uses an `alert()` function with its `onPress` prop.
 
-Now let's import this component into **App.js** and see it in action:
+Let's import this component into **App.js** and see it in action:
 
 <!-- prettier-ignore -->
 ```js
@@ -363,7 +355,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-The second button with the label "Use this photo" resembles the actual button from the layout. However, the first button needs more styling to match the layout design.
+The second button with the label "Use this photo" resembles the actual button from the design. However, the first button needs more styling to match the design.
 
 ## Step 7: Enhance the reusable button component
 
