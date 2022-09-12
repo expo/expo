@@ -10,15 +10,15 @@ This does not apply to builds signed using enterprise provisioning, nor to any b
 
 To enable Developer Mode on your iOS 16+ device, follow these instructions (once per device):
 
-- In the **Settings** app, navigate to **Privacy & Security > Developer Mode**.
+- In the Settings app, navigate to "Privacy & Security" > "Developer Mode".
 
 <ImageSpotlight alt="Navigating to Developer Mode setting" src="/static/images/ios-16-developer-mode-1.png" style={{maxWidth: 480}} />
 
-- Enable the toggle if it isn't already on. You will receive a prompt from iOS to restart your device. Press **Restart** to do so.
+- Enable the toggle if it isn't already on. You will receive a prompt from iOS to restart your device. Press "Restart" to do so.
 
 <ImageSpotlight alt="Developer Mode restart prompt" src="/static/images/ios-16-developer-mode-2.png" style={{maxWidth: 480}} />
 
-- After the device restarts, unlock your device; a system alert should appear. Press **Turn On** and then, when prompted, enter your passcode.
+- After the device restarts, unlock your device; a system alert should appear. Press "Turn On" and then, when prompted, enter your passcode.
 
 <ImageSpotlight alt="Alert and passcode prompt" src="/static/images/ios-16-developer-mode-3.png" style={{maxWidth: 480}} />
 
