@@ -7,7 +7,6 @@ import {
   SettingsFilledIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { useWindowDimensions } from 'react-native';
 
 import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
