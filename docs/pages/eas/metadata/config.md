@@ -11,7 +11,7 @@ import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 </Callout>
 <br />
 
-EAS Metadata is configured by a **store.config.json** file in the _root of your project_.
+EAS Metadata is configured by a **store.config.json** file at the _root of your project_.
 
 You can configure the path or name of the store config file with the **eas.json** [`metadataPath`](../../submit/eas-json.md#metadatapath) property.
 Besides the default JSON format, EAS Metadata also supports more dynamic config using JavaScript files.
@@ -19,7 +19,7 @@ Besides the default JSON format, EAS Metadata also supports more dynamic config 
 ## Static store config
 
 The default store config type for EAS Metadata is a simple JSON file.
-The example below shows an example store config with basic App Store information written in English (U.S.).
+The code snippet below shows an example store config with basic App Store information written in English (U.S.).
 
 You can find all configuration options in the [store config schema](./schema.md).
 
@@ -51,9 +51,9 @@ You can find all configuration options in the [store config schema](./schema.md)
 
 ## Dynamic store config
 
-Metadata like the **copyright notice** should contain the current year, with EAS Metadata this can be automated.
+At times, Metadata properties can benefit from dynamic values. For example, the Metadata **copyright notice** should contain the current year. This can be automated with EAS Metadata.
 
-Generate content dynamically by creating a JavaScript config file **store.config.js**. Use the [`metadataPath`](../../submit/eas-json.md#metadatapath) property in the **eas.json** file to pick the JS config file.
+To generate content dynamically, start by creating a JavaScript config file **store.config.js**. Then, use the [`metadataPath`](../../submit/eas-json.md#metadatapath) property in the **eas.json** file to pick the JS config file.
 
 > `eas metadata:pull` can't update dynamic store config files. Instead, it creates a JSON file with the same name as the configured file. You can import the JSON file to reuse the data from `eas metadata:pull`.
 
@@ -89,7 +89,7 @@ When using external services for localizations, you have to fetch external conte
 EAS Metadata supports synchronous and asynchronous functions exported from dynamic store config files.
 The function results are awaited before validating and syncing with the stores.
 
-> The **store.config.js** function is evaluated in Node. If you need special values, like secrets, use environment variables.
+> The **store.config.js** function is evaluated in Node.js. If you need special values, like secrets, use environment variables.
 
 <CodeBlocksTable tabs={['store.config.js', 'eas.json']}>
 

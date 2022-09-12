@@ -54,7 +54,7 @@ If you don't have an app in the stores yet, EAS Metadata can't generate the stor
 
 </CodeBlocksTable>
 
-> By default, EAS Metadata uses the **store.config.json** file in the root of your project. You can change the name and location of this file by setting the **eas.json** [`metadataPath`](../../submit/eas-json.md#metadatapath) property.
+> By default, EAS Metadata uses the **store.config.json** file at the root of your project. You can change the name and location of this file by setting the **eas.json** [`metadataPath`](../../submit/eas-json.md#metadatapath) property.
 
 ## Update the store config
 
@@ -62,7 +62,7 @@ Now it's time to edit the **store.config.json** file and customize it to your ap
 
 ## Upload a new app version
 
-Before pushing the **store.config.json** to the app stores, you must upload a new binary of your app. [Read more about uploading new binaries to stores](../../submit/introduction.md).
+Before pushing the **store.config.json** to the app stores, you must upload a new binary of your app. For more information, see [uploading new binaries to stores](../../submit/introduction.md).
 
 After the binary is submitted and processed, we can push the store config to the app stores.
 

@@ -11,13 +11,9 @@ import { Callout } from '~/ui/components/Callout';
 
 ## Pitch
 
-If you are creating or maintaining an app in the stores, keeping the app store information up to date can be a big task.
-When making small changes like supporting a new app store region, you have to find and fill in the proper forms in the app store dashboard.
-After providing all the required information, that content still needs to be approved, where one word can be the difference between approval and rejection.
+If you are creating or maintaining an app in the stores, keeping the app store information up to date can be a big task. When making small changes, for example, supporting a new app store region, you have to find and fill in the forms in an app store's dashboard. Then, after providing all the required information, that content still needs to be approved, where one word can be the difference between approval and rejection.
 
-EAS Metadata aims to make this stage of app development as easy as possible.
-Using a simple configuration file, you can provide all the information to the stores without leaving your project environment.
-Combined with built-in validation, you get instant feedback about the content you provide, even before any review.
+EAS Metadata aims to make this stage of app development as easy as possible. Using a simple configuration file, you can provide all the information to the stores without leaving your project environment. Combined with built-in validation, you get instant feedback about the content you provide, even before any review.
 
 ### Easy to configure, update, or maintain
 
@@ -27,9 +23,7 @@ Before pushing the changes to the app stores, EAS Metadata looks for common pitf
 
 ### Faster feedback loop with validation
 
-EAS Metadata comes with built-in validation, even before anything is sent to the app stores.
-This validation helps you iterate faster over the information without starting a review.
-You can start the review process when everything is provided, and no issues are detected.
+EAS Metadata comes with built-in validation, even before anything is sent to the app stores. This validation helps you iterate faster over the information without starting a review. Instead, you can begin the review process when everything is provided, and no issues are detected.
 
 > Make sure to install the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme) to get auto-complete, suggestions, and warnings for **store.config.json** files.
 
@@ -46,7 +40,7 @@ Here are some reasons EAS Metadata might **not** be the right fit for a project.
 ### Does EAS Metadata support the Google Play Store?
 
 We are committed to EAS Metadata and will expand functionality over time.
-But that also means that not all functionality is implemented in EAS Metadata.
+This also means that not all functionality is implemented in EAS Metadata.
 The Google Play Store is one of those features currently not implemented.
 See the [store config schema](./schema.md#config-schema) for all existing functionality.
 

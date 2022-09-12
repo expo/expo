@@ -21,9 +21,9 @@ EAS Metadata uses a [**store.config.json**](./config.md#static-store-config) fil
 
 <Terminal cmd={['$ eas metadata:push']} />
 
-EAS Metadata can also instantly identify known app store restrictions that could trigger a rejection after a length review queue.
+EAS Metadata can also instantly identify known app store restrictions that could trigger a rejection after a lengthy review queue.
 
-When adding the store config file to your repository, you can collaborate with others to prepare the app submission.
+Adding the store config file to your repository enables you to collaborate with other team members to prepare the app submission.
 
 > Using VS Code? Install the [VS Code Expo plugin](https://github.com/expo/vscode-expo#readme) for auto-complete, suggestions, and warnings in your **store.config.json** files.
 
