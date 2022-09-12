@@ -10,6 +10,7 @@ import { FileNotifier } from '../../utils/FileNotifier';
 import { resolveWithTimeout } from '../../utils/delay';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { learnMore } from '../../utils/link';
 import {
   BaseOpenInCustomProps,
   BaseResolveDeviceProps,
@@ -400,28 +401,41 @@ export abstract class BundlerDevServer {
   }
 
   /** Should use the interstitial page for selecting which runtime to use. */
-  protected shouldUseInterstitialPage(): boolean {
-    return (
-      env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
+  protected shouldUseInterstitialPage(isDevelopmentBuildInstalled: boolean = true): boolean {
+    if (
+      !env.EXPO_ENABLE_INTERSTITIAL_PAGE ||
       // Checks if dev client is installed.
-      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
-    );
+      !resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
+    ) {
+      return false;
+    }
+    if (!isDevelopmentBuildInstalled) {
+      Log.warn(
+        `\u203A The 'expo-dev-client' package is installed, but a development build isn't ` +
+          `available.\nYour app will open in Expo Go instead. If you want to use a ` +
+          `development build, you need to make and install one first.\n${learnMore(
+            'https://docs.expo.dev/development/build/'
+          )}`
+      );
+      return false;
+    }
+    return true;
   }
 
   /** Get the URL for opening in Expo Go. */
-  protected getExpoGoUrl(): string | null {
-    return this.urlCreator?.constructUrl({ scheme: 'exp' }) ?? null;
-  }
-
-  protected getInterstitialPageUrl(platform: keyof typeof PLATFORM_MANAGERS): string | null {
-    if (!this.shouldUseInterstitialPage()) {
-      return null;
+  protected getExpoGoUrl(
+    platform: keyof typeof PLATFORM_MANAGERS,
+    isDevelopmentBuildInstalled: boolean = true
+  ): string | null {
+    if (this.shouldUseInterstitialPage(isDevelopmentBuildInstalled)) {
+      const loadingUrl =
+        platform === 'emulator'
+          ? this.urlCreator?.constructLoadingUrl({}, 'android')
+          : this.urlCreator?.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
+      return loadingUrl ?? null;
     }
-    const loadingUrl =
-      platform === 'emulator'
-        ? this.urlCreator?.constructLoadingUrl({}, 'android')
-        : this.urlCreator?.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
-    return loadingUrl ?? null;
+
+    return this.urlCreator?.constructUrl({ scheme: 'exp' }) ?? null;
   }
 
   protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {
@@ -437,8 +451,7 @@ export abstract class BundlerDevServer {
       debug(`Creating platform manager (platform: ${platform}, port: ${port})`);
       this.platformManagers[platform] = new Manager(this.projectRoot, port, {
         getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
-        getExpoGoUrl: this.getExpoGoUrl.bind(this),
-        getInterstitialPageUrl: this.getInterstitialPageUrl.bind(this, platform),
+        getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),
         getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
       });
     }

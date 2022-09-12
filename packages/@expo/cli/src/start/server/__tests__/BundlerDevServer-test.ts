@@ -1,10 +1,14 @@
 import openBrowserAsync from 'better-opn';
 import { vol } from 'memfs';
 
+import * as Log from '../../../log';
+import { AppIdResolver } from '../../platforms/AppIdResolver';
+import { DeviceManager } from '../../platforms/DeviceManager';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 
+jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
 jest.mock('../DevelopmentSession');
 jest.mock('../../platforms/ios/ApplePlatformManager', () => {
@@ -95,12 +99,8 @@ class MockBundlerDevServer extends BundlerDevServer {
     return ['./fake.config.js'];
   }
 
-  public getExpoGoUrl(platform: 'simulator' | 'emulator') {
-    return super.getExpoGoUrl(platform);
-  }
-
-  public getInterstitialPageUrl(platform: 'simulator' | 'emulator'): string | null {
-    return super.getInterstitialPageUrl(platform);
+  public getExpoGoUrl(platform: 'simulator' | 'emulator', isDevelopmentBuildInstalled: boolean) {
+    return super.getExpoGoUrl(platform, isDevelopmentBuildInstalled);
   }
 }
 
@@ -171,19 +171,7 @@ describe('stopAsync', () => {
 });
 
 describe('getExpoGoUrl', () => {
-  it(`gets the native Expo Go URL`, async () => {
-    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
-    await server.startAsync({
-      location: {},
-    });
-
-    expect(server.getExpoGoUrl('emulator')).toBe('exp://100.100.1.100:3000');
-    expect(server.getExpoGoUrl('simulator')).toBe('exp://100.100.1.100:3000');
-  });
-});
-
-describe('getInterstitialPageUrl', () => {
-  it(`gets the interstitial page URL if dev-launcher is installed`, async () => {
+  it(`gets the interstitial page URL`, async () => {
     process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
     vol.fromJSON(
       {
@@ -200,23 +188,27 @@ describe('getInterstitialPageUrl', () => {
     const urlCreator = server.getPublicUrlCreator();
     urlCreator.constructLoadingUrl = jest.fn(urlCreator.constructLoadingUrl);
 
-    expect(server.getInterstitialPageUrl('emulator')).toBe(
+    expect(server.getExpoGoUrl('emulator', true)).toBe(
       'http://100.100.1.100:3000/_expo/loading?platform=android'
     );
-    expect(server.getInterstitialPageUrl('simulator')).toBe(
+    expect(server.getExpoGoUrl('simulator', true)).toBe(
       'http://127.0.0.1:3000/_expo/loading?platform=ios'
     );
     expect(urlCreator.constructLoadingUrl).toBeCalledTimes(2);
+
+    // should skip interstitial page if no development build is installed on the device
+    expect(server.getExpoGoUrl('emulator', false)).toBe('exp://100.100.1.100:3000');
+    expect(server.getExpoGoUrl('simulator', false)).toBe('exp://100.100.1.100:3000');
+    expect(Log.warn).toHaveBeenCalledTimes(2);
   });
-  it(`returns null if dev-launcher is not installed`, async () => {
-    process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
+  it(`gets the native Expo Go URL`, async () => {
     const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     await server.startAsync({
       location: {},
     });
 
-    expect(server.getInterstitialPageUrl('emulator')).toBeNull();
-    expect(server.getInterstitialPageUrl('simulator')).toBeNull();
+    expect(await server.getExpoGoUrl('emulator')).toBe('exp://100.100.1.100:3000');
+    expect(await server.getExpoGoUrl('simulator')).toBe('exp://100.100.1.100:3000');
   });
 });
 

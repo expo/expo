@@ -1,7 +1,6 @@
 import { getConfig } from '@expo/config';
 import assert from 'assert';
 
-import { Log } from '../../log';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
@@ -35,11 +34,9 @@ export class PlatformManager<
       /** Get the base URL for the dev server hosting this platform manager. */
       getDevServerUrl: () => string | null;
       /** Expo Go URL */
-      getExpoGoUrl: () => string | null;
+      getExpoGoUrl: (isDevelopmentBuildInstalled: boolean) => string | null;
       /** Dev Client */
       getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
-      /** Interstitial page URL, or null if the interstitial page should not open */
-      getInterstitialPageUrl: () => string | null;
       /** Resolve a device, this function should automatically handle opening the device and asserting any system validations. */
       resolveDeviceAsync: (
         resolver?: Partial<IResolveDeviceProps>
@@ -52,28 +49,15 @@ export class PlatformManager<
     throw new UnimplementedError();
   }
 
-  protected async openProjectInExpoGoOrInterstitialPageAsync(
+  protected async openProjectInExpoGoAsync(
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
-    const interstitialPageUrl = this.props.getInterstitialPageUrl();
-    const expoGoUrl = this.props.getExpoGoUrl();
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
-
-    let url = expoGoUrl;
-    if (interstitialPageUrl) {
-      const applicationId = await this._getAppIdResolver().getAppIdAsync();
-      if (await deviceManager.isAppInstalledAsync(applicationId)) {
-        url = interstitialPageUrl;
-      } else {
-        Log.warn(
-          `\u203A The 'expo-dev-client' package is installed, but a development build isn't ` +
-            `available.\nYour app will open in Expo Go instead. If you want to use a ` +
-            `development build, you need to make and install one first.\n${learnMore(
-              'https://docs.expo.dev/development/build/'
-            )}`
-        );
-      }
-    }
+    const applicationId = await this._getAppIdResolver().resolveAppIdFromNativeAsync();
+    const isDevelopmentBuildInstalled = applicationId
+      ? await deviceManager.isAppInstalledAsync(applicationId)
+      : true;
+    const url = this.props.getExpoGoUrl(isDevelopmentBuildInstalled);
     // This should never happen, but just in case...
     assert(url, 'Could not get dev server URL');
 
@@ -156,7 +140,7 @@ export class PlatformManager<
       resolveSettings.device
     );
     if (options.runtime === 'expo') {
-      return this.openProjectInExpoGoOrInterstitialPageAsync(resolveSettings);
+      return this.openProjectInExpoGoAsync(resolveSettings);
     } else if (options.runtime === 'web') {
       return this.openWebProjectAsync(resolveSettings);
     } else if (options.runtime === 'custom') {

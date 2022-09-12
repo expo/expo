@@ -17,11 +17,9 @@ export class AndroidPlatformManager extends PlatformManager<Device, AndroidOpenI
       /** Get the base URL for the dev server hosting this platform manager. */
       getDevServerUrl: () => string | null;
       /** Expo Go URL. */
-      getExpoGoUrl: () => string | null;
+      getExpoGoUrl: (isDevelopmentBuildInstalled: boolean) => string | null;
       /** Dev Client URL. */
       getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
-      /** Interstitial page URL */
-      getInterstitialPageUrl: () => string | null;
     }
   ) {
     super(projectRoot, {
