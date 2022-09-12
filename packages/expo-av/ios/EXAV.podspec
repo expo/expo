@@ -15,11 +15,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'ReactCommon'
-  # 'React-runtimeexecutor' is added only for prebuilding purposes as this process cannot resolve transitive headers' paths at the time of writing.
-  # This dependency is transitively included via following chain: 'ReactCommon' -> 'ReactCommon/turbomodule' -> 'React-cxxreact' -> 'React-runtimeexecutor'.
-  # TODO: remove once prebuilding starts supporting resolution of transitive dependencies
-  s.dependency 'React-runtimeexecutor'
+  s.dependency 'ReactCommon/turbomodule/core'
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
