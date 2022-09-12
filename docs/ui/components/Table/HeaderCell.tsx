@@ -5,11 +5,11 @@ import React, { PropsWithChildren } from 'react';
 import { TextAlign } from './types';
 
 type HeaderCellProps = PropsWithChildren<{
-  textAlign?: TextAlign;
+  align?: TextAlign;
 }>;
 
-export const HeaderCell = ({ children, textAlign = TextAlign.Left }: HeaderCellProps) => (
-  <th css={[tableHeadersCellStyle, { textAlign }]}>{children}</th>
+export const HeaderCell = ({ children, align = TextAlign.Left }: HeaderCellProps) => (
+  <th css={[tableHeadersCellStyle, { textAlign: align }]}>{children}</th>
 );
 
 const tableHeadersCellStyle = css({

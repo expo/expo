@@ -6,7 +6,7 @@ import { TextAlign } from './types';
 
 type CellProps = PropsWithChildren<{
   fitContent?: boolean;
-  textAlign?: TextAlign;
+  align?: TextAlign;
   colSpan?: number;
 }>;
 
@@ -14,9 +14,9 @@ export const Cell = ({
   children,
   colSpan,
   fitContent = false,
-  textAlign = TextAlign.Left,
+  align = TextAlign.Left,
 }: CellProps) => (
-  <td css={[tableCellStyle, { textAlign }, fitContent && fitContentStyle]} colSpan={colSpan}>
+  <td css={[tableCellStyle, { textAlign: align }, fitContent && fitContentStyle]} colSpan={colSpan}>
     {children}
   </td>
 );
