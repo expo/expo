@@ -1298,8 +1298,7 @@ PODS:
     - ExpoModulesCore
   - EXAV (12.0.2):
     - ExpoModulesCore
-    - React-runtimeexecutor
-    - ReactCommon
+    - ReactCommon/turbomodule/core
   - EXBackgroundFetch (10.3.0):
     - ExpoModulesCore
   - EXBarCodeScanner (11.4.0):
@@ -1983,25 +1982,6 @@ PODS:
     - ReactCommon/turbomodule/core (= 0.69.1)
   - React-runtimeexecutor (0.69.1):
     - React-jsi (= 0.69.1)
-  - ReactCommon (0.69.1):
-    - React-logger (= 0.69.1)
-    - ReactCommon/react_debug_core (= 0.69.1)
-    - ReactCommon/turbomodule (= 0.69.1)
-  - ReactCommon/react_debug_core (0.69.1):
-    - React-logger (= 0.69.1)
-  - ReactCommon/turbomodule (0.69.1):
-    - DoubleConversion
-    - glog
-    - RCT-Folly (= 2021.06.28.00-v2)
-    - React-bridging (= 0.69.1)
-    - React-callinvoker (= 0.69.1)
-    - React-Core (= 0.69.1)
-    - React-cxxreact (= 0.69.1)
-    - React-jsi (= 0.69.1)
-    - React-logger (= 0.69.1)
-    - React-perflogger (= 0.69.1)
-    - ReactCommon/turbomodule/core (= 0.69.1)
-    - ReactCommon/turbomodule/samples (= 0.69.1)
   - ReactCommon/turbomodule/core (0.69.1):
     - DoubleConversion
     - glog
@@ -2013,18 +1993,6 @@ PODS:
     - React-jsi (= 0.69.1)
     - React-logger (= 0.69.1)
     - React-perflogger (= 0.69.1)
-  - ReactCommon/turbomodule/samples (0.69.1):
-    - DoubleConversion
-    - glog
-    - RCT-Folly (= 2021.06.28.00-v2)
-    - React-bridging (= 0.69.1)
-    - React-callinvoker (= 0.69.1)
-    - React-Core (= 0.69.1)
-    - React-cxxreact (= 0.69.1)
-    - React-jsi (= 0.69.1)
-    - React-logger (= 0.69.1)
-    - React-perflogger (= 0.69.1)
-    - ReactCommon/turbomodule/core (= 0.69.1)
   - RNFlashList (1.1.0):
     - React-Core
   - RNGestureHandler (2.5.0):
@@ -3376,7 +3344,7 @@ SPEC CHECKSUMS:
   EASClient: a2581835cf9b97d0defd5d630fc6eb1bf77045e7
   EXAppleAuthentication: b9e9d8fa9b0cc5277b2121eb809cf0f57c2496a7
   EXApplication: e418d737a036e788510f2c4ad6c10a7d54d18586
-  EXAV: 8e97d63b798d96e937269b157a1a75eec0b47bbe
+  EXAV: 9c85596b3a57b5701c7f64fd22c8df370c30e4d9
   EXBackgroundFetch: 6e0952481a966c4c0580009a7e5d0f95cb531373
   EXBarCodeScanner: 557c131b375dc861595867eece49a619bfd076dd
   EXBattery: f81f2ece048150431f12792abb552dcba8794364
