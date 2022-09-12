@@ -3,17 +3,21 @@ title: Environment variables in Expo
 sidebar_title: Environment variables
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 > Are you using [EAS Build](/build/introduction/)? The [EAS Build documentation about environment variables build secrets](/build-reference/variables.md) explains how to work with sensitive values that you would not include in your source code and Git repository. It also explains how to set environment variables for build profiles.
 
-Environment variables are global values that are defined in your system. Without these variables, your operating system wouldn't know what to do when you execute a command like `npx expo start`. Under the hood, it uses the [`PATH`](http://www.linfo.org/path_env_var.html) variable to fetch a list of directories to search for the `expo` executable.
+Environment variables are global values that are defined in your system. Without these variables, your operating system wouldn't know what to do when you execute a command like `npx expo start`. Under the hood, it uses the [`PATH`](http://www.linfo.org/path_env_var.html) variable to fetch a list of directories to search for the `expo` executable. Environment variables are always strings.
 
 Because they are defined globally, these variables are useful to change the behavior of code _without changing the code itself_. Just like your system behaving _differently_ when adding directories to the `PATH` variable, you can implement these in your React Native app as well. For example, you can enable or disable certain features when building a testing version of your app, or you can switch to a different API endpoint when building for production.
 
-### Using app manifest `extra`
+## Passing data through the app manifest `extra` field
 
-In the app manifest, there is also a `extra` property. Unlike `.env`, this property is included when you publish your project with `eas update` or `expo build`. The contents of the `extra` property are taken from your app manifest. By default, this does not add any environment variables, but we can make that happen with the [dynamic app manifest configuration](/workflow/configuration#app-config).
+In the app manifest, there is also a `extra` property. This property is inlined when you publish your project with EAS Update, and at build time for EAS Build (be sure to set the environment variable in your build profile if needed).
 
-Below you can see an example of the dynamic **app.config.js** manifest. It's similar to the **app.json**, but written in JavaScript instead of JSON. The manifest is loaded when starting or publishing your app and has access to the environment variables using [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env). With this we can configure the `extra.enableComments` property without having to change the code itself, like `COOLAPP_COMMENTS=true npx expo start`.
+### Dynamic app config
+
+The following is an example of a [dynamic **app.config.js** config](/workflow/configuration#app-config) that reads from the [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env) to expose it through the `extra` field.
 
 ```js
 // app.config.js
@@ -26,6 +30,10 @@ module.exports = {
   },
 };
 ```
+
+With this app config, we can configure the `extra.enableComments` property without having to change the code itself by running: `COOLAPP_COMMENTS=true npx expo start`.
+
+### Reading the variables from application code
 
 To use these `extra` properties in your app, you have to use the [`expo-constants`](/versions/latest/sdk/constants.md) module. Here you can see a simple component rendering the comments component, only when these are enabled.
 
@@ -42,11 +50,23 @@ export const Post = ({ enableComments = Constants.manifest.extra.enableComments 
 
 > You can also use `manifest.extra.enableComments` directly in your if statement, but that makes it a bit harder to test or override.
 
-### Using Babel to "replace" variables
+## Using Babel to inline environment variables in code at build time
 
-In the bare workflow, you don't have access to the manifest via the [`expo-constants`](/versions/latest/sdk/constants) module. You can still use environment variables using another method, a Babel plugin. This approach replaces all references to `process.env.VARNAME` with the variable contents, and works in both Bare and Managed Workflows.
+This approach replaces all references to `process.env.VARNAME` with the value directly in your app source code, not just in the app manifest. For example:
 
-To set this up, we need to install the [`babel-plugin-transform-inline-environment-variables`](https://github.com/babel/website/blob/master/docs/plugin-transform-inline-environment-variables.md) plugin. After adding this to your dev dependencies, we need to tell Babel to use this plugin. Below you can see a modified **babel.config.js** with this plugin enabled.
+```js
+// Before build step (in your source code)
+const API_URL = process.env.API_URL;
+
+// After build step (in app bundle)
+const API_URL = 'https://api.production.com';
+```
+
+### Installing and configuring babel-plugin-transform-inline-environment-variables
+
+To use [`babel-plugin-transform-inline-environment-variables`](https://github.com/babel/website/blob/master/docs/plugin-transform-inline-environment-variables.md), install the package and add it to your Babel config, then restart your development server and clear the cache.
+
+<Terminal cmd={['$ npm install --save-dev babel-plugin-transform-inline-environment-variables']} />
 
 ```js
 module.exports = function (api) {
@@ -58,7 +78,9 @@ module.exports = function (api) {
 };
 ```
 
-After adding the new Babel plugin to your config, you can access the environment variable. Here you can see the same component as above, but without `expo-constants`.
+When you modify **babel.config.js** you should always restart the development server and clear the cache: `npx expo start --clear`. Now you can use environment variables directly in your source code.
+
+### Reading the variables from application code
 
 ```tsx
 export const Post = ({
@@ -71,44 +93,20 @@ export const Post = ({
 );
 ```
 
-> Keep in mind that all environment variables are parsed as a string. If you use booleans like `true` or `false`, you have to check using their string equivalent.
+This approach this plugin will work well with environment variables set in your shell process, but it won't automatically load **.env** files. We recommend using [direnv](https://direnv.net/) and **.envrc** to accomplish this.
 
-### Using a dotenv file
+## Storing environment variables in .envrc or .env
 
-Over time your app grows, and more configuration is added. When this happens, it could get harder to find the correct environment variables to start or build your app. Luckily, there is a concept called "dotenv" that can help when this happens.
+If you want to automatically load environment variables from a file in your project rather than setting them in your shell profile or manually when running `npx expo start`, you may want to use a **.envrc** or **.env** file.
 
-A dotenv file is a file with all environment variables, and their value, within your project. You can load these dotenv files in Node with a library called [`dotenv`](https://github.com/motdotla/dotenv).
+### direnv
 
-#### From **app.config.js**
+[direnv](https://direnv.net/) automatically loads and unloads environment variables in your shell depending on your current directory. So when you `cd` into your project directory, it will load all of the variables as configured in **.envrc**. [Learn how to get started](https://direnv.net/#getting-started).
 
-Below you can see the dynamic manifest using this `dotenv` library. It imports the `/config` module to automatically load the `.env` and merge it with `process.env`. You can also use it without merging it to `process.env`, [read more about that here](https://github.com/motdotla/dotenv#config).
+### dotenv
 
-```js
-import 'dotenv/config';
+[dotenv](https://github.com/motdotla/dotenv) is a library that you import in your application code to load the **.env** file. We prefer [direnv](https://direnv.net/) because it hooks into the shell rather than your application code. If you want to use dotenv, you can [learn more in the README](https://github.com/motdotla/dotenv).
 
-module.exports = {
-  name: 'CoolApp',
-  version: '1.0.0',
-  extra: {
-    enableComments: process.env.COOLAPP_COMMENTS === 'true',
-  },
-};
-```
-
-#### From **babel.config.js**
-
-The official `transform-inline-environment-variables` plugin does not load the `.env` file. If you want to use these files with Babel, you can use unofficial plugins like [`babel-plugin-inline-dotenv`](https://github.com/brysgo/babel-plugin-inline-dotenv). This plugin will load your `.env` when Babel is building your app.
-
-```js
-module.exports = function (api) {
-  api.cache(true);
-  return {
-    presets: ['babel-preset-expo'],
-    plugins: ['inline-dotenv'],
-  };
-};
-```
-
-### Security considerations
+## Security considerations
 
 Never store sensitive secrets in your environment variables. The reason behind this is that your code is run on the client side, and thus including your environment variables in the code itself. You can [read more about this topic here](https://reactnative.dev/docs/security#storing-sensitive-info).
