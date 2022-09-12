@@ -25,7 +25,7 @@ Some words have multiple legitimate ways to spell them. One of the most notoriou
 
 ### Voice and tone
 
-Developers read documentation to find answers to their problems. Documentation exists because it can translate complex information into easily digestible pieces. Voice and tone directly influence translating of complex information and remove any frictions.
+Developers read documentation to find answers to their problems. Documentation exists because it can translate complex information into easily digestible pieces. Voice and tone directly influence translation of complex information and remove any friction.
 
 Writing clearly and concisely using plain American English is the approach we take at Expo. We also use [curb-effect](https://ssir.org/articles/entry/the_curb_cut_effect) when approaching technical documentation. We aim for clarity for all English speakers.
 
@@ -179,11 +179,6 @@ Exception: Always capitalize product phrases:
 - Correct: Expo Developer Server
 - Incorrect: expo developer server
 
-Tip: For referencing workflow names, use sentence case:
-
-- Correct: With the managed workflow, you only write JavaScript.
-- Incorrect: With the Managed workflow, you only write JavaScript.
-
 ### Linking to other docs
 
 Link the appropriate text rather than using the word "here". The linked text should describe the destination page and act as a Call to Action (CTA):
@@ -240,6 +235,14 @@ To avoid inconsistency when referencing to install global packages with a packag
 ### For collapsible components
 
 When a collapsible component has a single item or a paragraph to represent text, do not use a list item (or a bullet point) to emphasize it. It is unnecessary.
+
+### Avoiding using outdated workflows
+
+Avoid mentioning or using the terms to represent outdated/archived workflows: managed or bare workflow.
+
+To avoid using the term "managed workflow", use "using Expo" to represent the current state of the Expo ecosystem. This is now the default way of explaining things.
+
+When offering guidance for projects that require manually editing native code/directories, put those instructions in a drop down saying "manual setup" or "usage in bare React Native projects"
 
 ## Tools to use when using visualization or interactivity to communicate
 
