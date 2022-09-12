@@ -31,7 +31,7 @@ To use Expo CLI, you need to have the following tools installed on your develope
 
 ### Using Expo CLI
 
-To use Expo CLI, you can use it with `npx` &mdash; a Node.js package runner. For example, to see a list of available commands in Expo CLI, open the terminal on your development machine and run the following command:
+You can use Expo CLI without installation by leveraging `npx` &mdash; a Node.js package runner. For example, to see a list of available commands in Expo CLI, open the terminal on your development machine and run the following command:
 
 <Terminal cmd={[
 '# See a list of available commands in Expo CLI',
