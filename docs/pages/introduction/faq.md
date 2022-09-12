@@ -8,13 +8,13 @@ In addition to the questions below, see the [forums](https://forums.expo.dev/) f
 
 <Collapsible summary="What is Expo used for?">
 
-Expo is an [open-source framework](https://github.com/expo/expo/) for React Native that allows you to develop cross-platform mobile applications using both JavaScript and React. Learn more about [what Expo offers](/introduction).
+Expo is an [open-source framework](https://github.com/expo/expo/) for React Native that allows you to develop cross-platform mobile applications and web applications using both JavaScript and React. Learn more about [what Expo offers](/introduction).
 
 </Collapsible>
 
 <Collapsible summary="Do companies use Expo?">
 
-Yes, Expo is used by top companies all around the world, serving hundreds of millions of end users. See our [showcase](https://expo.dev/customers) to learn more.
+Yes, Expo is used by top companies worldwide, serving hundreds of millions of end users. See our [showcase](https://expo.dev/customers) to learn more.
 
 </Collapsible>
 
@@ -26,29 +26,29 @@ Yes, the source for Expo Go can be found in the [expo/expo GitHub repository](ht
 
 <Collapsible summary="Who created Expo?">
 
-Expo and Expo Application Services are developed by [650 industries](https://expo.dev/about). 650 industries a is a California-based company that was founded by [Charlie Cheever](https://en.wikipedia.org/wiki/Charlie_Cheever) and [James Ide](https://jameside.com/).
+Expo and Expo Application Services (EAS) are developed by [650 industries](https://expo.dev/about). 650 industries is a California-based company that was founded by [Charlie Cheever](https://en.wikipedia.org/wiki/Charlie_Cheever) and [James Ide](https://jameside.com/).
 
 </Collapsible>
 
 <Collapsible summary="Why does Expo have its own SDK?">
 
-When Expo was first created, React Native had yet to be publicly released, meaning there were no third-party packages. In order to make the developer experience of React Native reasonable, we created a number of libraries for common functionality. Many of these libraries have since been forked and modified to meet various needs, we welcome users to mix and match whichever custom native code they need to make their app great.
+When Expo was first created, React Native had yet to be publicly released. This means there were no third-party packages. To make the developer experience of React Native reasonable, we created several libraries to achieve common functionalities. Many of these libraries have since been forked and modified to meet various needs. We welcome users to mix and match whichever custom native code they need to make their app great.
 
-The Expo SDK is well tested, written in TypeScript, documented, and built for iOS, Android, and web. Every module in the Expo SDK works together to ensure versioning always matches, this creates a nice upgrading experience.
+The Expo SDK is well tested, written in TypeScript, documented, and built for Android, iOS, and the web. Every module in the Expo SDK works together to ensure versioning always matches. This creates a nice upgrading experience.
 
-The Expo SDK is also written with the [Expo native API](/modules) to make it easier to contribute, maintain, and understand.
+The Expo SDK is also written with the [Expo native API](/modules) to make contributing, maintaining, and understanding easier.
 
 </Collapsible>
 
 <Collapsible summary="Can I use Expo with this web library?">
 
-Many popular web packages like three.js or Firebase work with Expo and React Native. Check out the [Expo examples](https://github.com/expo/examples) to learn more.
+Many popular web packages such as three.js or Firebase work with Expo and React Native. Check out the [Expo examples](https://github.com/expo/examples) to learn more.
 
 </Collapsible>
 
 <Collapsible summary="Can I use Expo with my native library?">
 
-You can use native iOS and Android libraries with Expo by creating a [custom native module](/modules/) with Swift and Kotlin. Many popular libraries already have custom native modules, check out our [React Native directory](https://reactnative.directory/) to learn more.
+You can use native iOS and Android libraries with Expo by creating a [custom native module](/modules/) with Swift and Kotlin. Many popular libraries already have custom native modules. Check out our [React Native directory](https://reactnative.directory/) to learn more.
 
 </Collapsible>
 
@@ -57,10 +57,10 @@ You can use native iOS and Android libraries with Expo by creating a [custom nat
 Expo is a framework for React Native, which is a library for building iOS and Android apps. React Native is similar to `react-dom` for web development, enabling you to run React on a particular platform, but it has a few key differences:
 
 - React Native does not support HTML or CSS.
-- Instead of using the DOM, React Native uses native components. `<View />` instead of `<div />`, for example. Native components are more performant than the DOM and provide a much nicer user experience.
+- Instead of using the DOM, React Native uses native components. For example, `<View />` instead of `<div />`. Native components are more performant than the DOM and provide a much nicer user experience.
 - Unlike React.js which has access to browser APIs, React Native uses custom native APIs. For example, instead of `navigator.geolocation`, you use `expo-location` to access the user's location. Custom native APIs are similar to browser APIs except you have full control over them. This means you can access new features before they are available in the browser.
 
-In the same way React.js frameworks help users create larger websites with ease, Expo helps users create larger apps with ease. Expo provides a suite of well-tested React Native modules that run on iOS, Android, and web. Expo also provides a suite of tools for building, deploying, and updating your app.
+In the same way React.js frameworks help users create larger websites with ease, Expo helps users create larger apps with ease. Expo provides a suite of well-tested React Native modules that run on Android, iOS, and the web. Expo also provides a suite of tools for building, deploying, and updating your app.
 
 </Collapsible>
 
@@ -94,7 +94,7 @@ Yes! All Expo tools and services work great in any React Native app. For example
 
 The fastest way to share your project is to publish with [EAS Update](/eas-update/introduction) and launch in a [development build](/development/introduction). This gives your app a URL; you can share this URL with anybody who has the Expo Go app for Android or the [development build](/development/introduction.md) for iOS or Android.
 
-When you're ready, you can create a production build (**.ipa** and **.aab**) to submit to the app stores. You can build your app in a single command with [EAS Build](/build/introduction) and submit to the stores with [EAS Submit](/submit/introduction).
+When ready, you can create a production build (**.ipa** and **.aab**) to submit to the app stores. You can build your app in a single command with [EAS Build](/build/introduction) and submit it to the stores with [EAS Submit](/submit/introduction).
 
 You can also use [internal distribution](/build/internal-distribution) to share your app with ad-hoc or enterprise provisioning on iOS and an APK on Android.
 
@@ -124,7 +124,7 @@ Expo adds [features and functionality](/introduction/) to React Native projects,
 
 Expo eject was replaced by the popular [`npx expo prebuild`](/workflow/prebuild) command which continuously generates native projects for you based on the libraries in your project and the Expo config (**app.json**). Learn more in the [Expo Prebuild documentation](/workflow/prebuild).
 
-Unlike `expo eject` library authors can configure their libraries to work with Expo Prebuild by creating a [config plugin](/guides/config-plugins). This means you can use any library with Expo Prebuild. You can also use any custom native code with Expo Prebuild by creating a [development build](/development/introduction).
+Unlike the `expo eject` library, authors can configure their libraries to work with Expo Prebuild by creating a [config plugin](/guides/config-plugins). This means you can use any library with Expo Prebuild. You can also use any custom native code with Expo Prebuild by creating a [development build](/development/introduction).
 
 </Collapsible>
 
@@ -138,4 +138,4 @@ Regardless of which CLI you use, you can use any part of the [Expo SDK](/version
 
 ## Up next
 
-The time has come to write some code. Almost. First, we need to install a couple tools. [Continue to "Installation"](/get-started/installation).
+The time has come to write some code. First, we need to install a couple of tools. Continue to [Installation](/get-started/installation) to get started.
