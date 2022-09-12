@@ -3,6 +3,10 @@ import { parse } from 'url';
 import { CommandError } from '../../../utils/errors';
 import { ServerRequest } from './server.types';
 
+const debug = require('debug')(
+  'expo:start:server:middleware:resolvePlatform'
+) as typeof console.log;
+
 /** Supported platforms */
 export type RuntimePlatform = 'ios' | 'android';
 
@@ -23,14 +27,16 @@ export function parsePlatformHeader(req: ServerRequest): string | null {
 
 /** Guess the platform from the user-agent header. */
 export function resolvePlatformFromUserAgentHeader(req: ServerRequest): string | null {
+  let platform = null;
   const userAgent = req.headers['user-agent'];
   if (userAgent?.match(/Android/i)) {
-    return 'android';
+    platform = 'android';
   }
   if (userAgent?.match(/iPhone|iPad/i)) {
-    return 'ios';
+    platform = 'ios';
   }
-  return null;
+  debug(`Resolved platform ${platform} from user-agent header: ${userAgent}`);
+  return platform;
 }
 
 /** Assert if the runtime platform is not included. */

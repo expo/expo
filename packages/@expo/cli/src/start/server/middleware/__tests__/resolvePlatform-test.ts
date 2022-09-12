@@ -74,6 +74,11 @@ describe(parsePlatformHeader, () => {
   });
 });
 
+/**
+ * To update the user-agent values in these tests, turn on EXPO_DEBUG and make a
+ * request to load an interstitial page without the `platform` query param or
+ * 'expo-platform' header
+ */
 describe(resolvePlatformFromUserAgentHeader, () => {
   it(`resolves ios from user-agent string`, () => {
     expect(
@@ -82,6 +87,7 @@ describe(resolvePlatformFromUserAgentHeader, () => {
           url: 'http://localhost:3000',
           headers: {
             'user-agent':
+              // user-agent value from iPhone 15.2 simulator
               'Mozilla/5.0 (iPhone; CPU iPhone OS 15_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.2 Mobile/15E148 Safari/604.1',
           },
         })
@@ -95,18 +101,23 @@ describe(resolvePlatformFromUserAgentHeader, () => {
           url: 'http://localhost:3000',
           headers: {
             'user-agent':
+              // user-agent value from a Google Pixel 2
               'Mozilla/5.0 (Linux; Android 11; Pixel 2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Mobile Safari/537.36',
           },
         })
       )
     );
   });
-  it(`returns null`, () => {
+  it(`returns null from a non-matching user-agent string`, () => {
     expect(
       resolvePlatformFromUserAgentHeader(
         asRequest({
           url: 'http://localhost:3000',
-          headers: {},
+          headers: {
+            'user-agent':
+              // user-agent value from Firefox on macOS
+              'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:104.0) Gecko/20100101 Firefox/104.0',
+          },
         })
       )
     );
