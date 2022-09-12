@@ -9,4 +9,11 @@ export declare function createProxyForNativeModules(NativeModules: any): any;
  * error. If this parameter is omitted, the error will be disabled globally.
  */
 export declare function disableMissingNativeModuleErrors(moduleNames?: string[] | string): void;
+/**
+ * Access a native module without throwing an error if it doesn't exist.
+ *
+ * @param moduleName Name of module to access
+ * @returns Corresponding native module object, or null if it doesn't exist
+ */
+export declare function getNativeModuleIfExists(moduleName: string): any;
 //# sourceMappingURL=NativeModules.d.ts.map
