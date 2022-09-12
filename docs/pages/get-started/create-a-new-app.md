@@ -7,10 +7,10 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Before creating a new Expo app, you have to make sure that:
 
-- Expo CLI is installed on your development machine
+- Expo CLI is working on your development machine
 - Expo Go app is installed on your iOS or Android physical device or emulator
 
-If you have not installed any of these tools, go back to the [Installation](/get-started/installation) guide before proceeding.
+> If you need help making these tools work on your end, go back to the [Installation](/get-started/installation) guide before proceeding.
 
 ## Initializing the project
 
@@ -26,16 +26,16 @@ If you have not installed any of these tools, go back to the [Installation](/get
 
 Start the development server by running the following command:
 
-<Terminal cmd={['$ expo start']} />
+<Terminal cmd={['$ npx expo start']} />
 
-When you run `expo start` (or `npm start`), Expo CLI starts [Metro Bundler](/guides/how-expo-works/#metro-bundler). This bundler is an HTTP server that compiles the JavaScript code of your app using [Babel](https://babeljs.io/) and serves it to the Expo app. Learn more about how [Expo Development Server](/guides/how-expo-works/#expo-development-server) works.
+When you run `npx expo start` (or `yarn expo start`), Expo CLI starts [Metro Bundler](/guides/how-expo-works/#metro-bundler). This bundler is an HTTP server that compiles the JavaScript code of your app using [Babel](https://babeljs.io/) and serves it to the Expo app. Learn more about how [Expo Development Server](/guides/how-expo-works/#expo-development-server) works.
 
 ## Opening the app on your phone/tablet
 
 To open the app:
 
-- On your iPhone or iPad, open the default Apple "Camera" app and scan the QR code you see in the terminal.
 - On your Android device, press "Scan QR Code" on the "Home" tab of the Expo Go app and scan the QR code you see in the terminal.
+- On your iPhone or iPad, open the default Apple "Camera" app and scan the QR code you see in the terminal.
 
 You can open the project on multiple devices simultaneously. Go ahead and try it on an iPhone and Android phone at the same time if you have both handy.
 
@@ -45,7 +45,7 @@ First, make sure you are on the same Wi-Fi network on your computer and your dev
 
 If it still doesn't work, it may be due to the router configuration &mdash; this is common for public networks. You can work around this by choosing the "Tunnel" connection type when starting the development server, then scanning the QR code again.
 
-<Terminal cmd={['$ expo start --tunnel']} cmdCopy="expo start --tunnel" />
+<Terminal cmd={['$ npx expo start --tunnel']} />
 
 > Using the "Tunnel" connection type will make app reloads considerably slower than on "LAN" or "Local", so it's best to avoid tunnel when possible. You may want to install a simulator/emulator to speed up development if "Tunnel" is required for accessing your machine from another device on your network.
 
@@ -55,9 +55,9 @@ If it still doesn't work, it may be due to the router configuration &mdash; this
 
 If you are using a simulator or emulator, you may find the following Expo CLI keyboard shortcuts to be useful to open the app on any of the following platforms:
 
-- Pressing <kbd>I</kbd> will open in an [iOS simulator](/workflow/ios-simulator).
-- Pressing <kbd>A</kbd> will open in an [Android Emulator or connected device](/workflow/android-studio-emulator).
-- Pressing <kbd>W</kbd> will open in a web browser. Expo supports all major browsers.
+- Pressing <kbd>a</kbd> will open in an [Android Emulator or connected device](/workflow/android-studio-emulator).
+- Pressing <kbd>i</kbd> will open in an [iOS simulator](/workflow/ios-simulator).
+- Pressing <kbd>w</kbd> will open in a web browser. Expo supports all major browsers.
 
 </Collapsible>
 
@@ -71,7 +71,7 @@ Expo Go is configured by default to automatically reload the app whenever a file
 
 - Make sure the you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
 - Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS or <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android.
+- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>m</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>d</kbd> for iOS .
 - If you see `Enable Fast Refresh`, press it. If you see `Disable Fast Refresh`, dismiss the developer menu. Now try making another change.
 
   ![In-app developer menu](/static/images/developer-menu.png)
