@@ -5,6 +5,7 @@ import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
 import remarkGFM from 'remark-gfm';
 import remarkMDX from 'remark-mdx';
+import remarkMdxDisableExplicitJsx from 'remark-mdx-disable-explicit-jsx';
 import remarkMDXFrontmatter from 'remark-mdx-frontmatter';
 import semver from 'semver';
 
@@ -49,6 +50,7 @@ export default {
             remarkPlugins: [
               remarkMDX,
               remarkGFM,
+              [remarkMdxDisableExplicitJsx, { whiteList: ['kbd'] }],
               remarkFrontmatter,
               [remarkMDXFrontmatter, { name: 'meta' }],
               remarkExportHeadings,
