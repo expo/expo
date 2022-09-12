@@ -30,6 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)facebookAppId;
 - (nullable NSString *)facebookApplicationName;
 - (BOOL)facebookAutoInitEnabled;
+- (NSString *)jsEngine;
 
 - (BOOL)isDevelopmentMode;
 - (BOOL)isDevelopmentSilentLaunch;

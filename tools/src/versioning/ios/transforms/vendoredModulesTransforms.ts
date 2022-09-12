@@ -115,17 +115,8 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         {
           // versioning reacthermes import
           paths: 'NativeProxy.mm',
-          find: new RegExp(
-            `(#if\\s+__has_include\\(|#import\\s+)<reacthermes\\/${prefix}HermesExecutorFactory.h>`,
-            'g'
-          ),
+          find: new RegExp(`(#import\\s+)<reacthermes\\/${prefix}HermesExecutorFactory.h>`, 'g'),
           replaceWith: `$1<${prefix}reacthermes/${prefix}HermesExecutorFactory.h>`,
-        },
-        {
-          // remove the `#elif __has_include(<hermes/hermes.h>)` code block
-          paths: 'NativeProxy.mm',
-          find: /#elif __has_include\(<hermes\/hermes.h>\)\n.+(#import|makeHermesRuntime).+\n/gm,
-          replaceWith: '',
         },
       ],
     },

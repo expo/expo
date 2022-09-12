@@ -549,14 +549,15 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   [eventDispatcher setValue:bridge forKey:@"_bridge"];
   [eventDispatcher initialize];
   [bridge updateModuleWithInstance:eventDispatcher];
+  BOOL useHermes = [self.manifest.jsEngine isEqualToString:@"hermes"];
 
   EX_WEAKIFY(self);
-  const auto executor = [EXWeak_self, bridge](facebook::jsi::Runtime &runtime) {
+  const auto executor = [EXWeak_self, bridge, useHermes](facebook::jsi::Runtime &runtime) {
     if (!bridge) {
       return;
     }
     EX_ENSURE_STRONGIFY(self);
-    auto reanimatedModule = reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker);
+    auto reanimatedModule = reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker, useHermes);
     auto workletRuntimeValue = runtime
         .global()
         .getProperty(runtime, "ArrayBuffer")
@@ -576,7 +577,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
          jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
          jsi::Object::createFromHostObject(runtime, reanimatedModule));
   };
-  return new facebook::react::HermesExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
+  if (useHermes) {
+    return new facebook::react::HermesExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
+  }
+  return new facebook::react::JSCExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
 }
 
 @end
