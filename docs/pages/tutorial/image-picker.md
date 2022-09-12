@@ -32,15 +32,8 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 
 export default function App() {
-  /* @info Request permissions to access the "camera roll", then launch the picker and log the result. */
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
-
+  /* @info Launch the picker and log the result. */
+  let openImagePickerAsync = async () => {    
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
     console.log(pickerResult);
   }
@@ -80,6 +73,7 @@ Now we will take the data that we get from the image picker and use it to show t
 <!-- prettier-ignore -->
 ```js
 /* @info Import React to use useState */import React from 'react';/* @end */
+
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -88,13 +82,6 @@ export default function App() {
 
 
   let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
-    }
-
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
 
     /* @info Stop running the function here if the user cancelled the dialog */
