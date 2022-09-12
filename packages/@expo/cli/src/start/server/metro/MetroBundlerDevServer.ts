@@ -72,6 +72,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     middleware.use(
       new InterstitialPageMiddleware(this.projectRoot, {
+        // TODO: Prevent this from becoming stale.
         scheme: options.location.scheme ?? null,
       }).getHandler()
     );
