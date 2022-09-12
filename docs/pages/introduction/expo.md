@@ -42,4 +42,4 @@ The team behind Expo also provides **Expo Application Services**, deeply integra
 [snack]: https://snack.expo.dev
 [tunnel]: /workflow/expo-cli/#tunneling
 
-<!-- TODO: Link to migration docs. -->
+{/* TODO: Link to migration docs. */}
