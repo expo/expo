@@ -75,7 +75,7 @@ export default [
     name: 'metadataPath',
     type: 'string',
     description: [
-      'The path to your store configuration file. [Learn more](https://docs.expo.dev/eas-metadata/introduction/).'
+      'The path to your store configuration file. [Learn more](https://docs.expo.dev/eas/metadata/).'
     ],
   }
 ];

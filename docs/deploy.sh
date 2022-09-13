@@ -117,7 +117,9 @@ redirects[modules]=modules/overview/
 redirects[module-api]=modules/module-api/
 redirects[module-config]=modules/module-config/
 # EAS Metadata
-redirects[eas-metadata]=eas-metadata/introduction/
+redirects[eas-metadata]=eas/metadata/
+redirects[eas-metadata/introduction]=eas/metadata/
+redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
 
 redirects[introduction/walkthrough]=tutorial/planning/
 
