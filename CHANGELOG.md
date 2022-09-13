@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@stripe/stripe-react-native` from `0.13.1` to `0.18.1` on iOS. ([#19055](https://github.com/expo/expo/pull/19055) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
