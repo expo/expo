@@ -6,6 +6,8 @@ import { LATEST_VERSION } from '~/constants/versions.cjs';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { DocSearchStyles } from '~/ui/components/Search/styles';
 
+const env = process.env.NODE_ENV;
+
 export const Search = () => {
   const { version } = usePageApiVersion();
   return (
@@ -20,10 +22,16 @@ export const Search = () => {
         }}
         transformItems={items =>
           items.map(item => {
-            if (item.url.includes(LATEST_VERSION)) {
-              return { ...item, url: item.url.replace(LATEST_VERSION, 'latest') };
-            }
-            return item;
+            const envUrl =
+              env === 'development'
+                ? item.url.replace('https://docs.expo.dev/', 'http://localhost:3002/')
+                : item.url;
+            return {
+              ...item,
+              url: envUrl.includes(LATEST_VERSION)
+                ? envUrl.replace(LATEST_VERSION, 'latest')
+                : envUrl,
+            };
           })
         }
       />
