@@ -121,7 +121,7 @@ export default class SnackInline extends React.Component<Props> {
               theme="ghost"
               disabled={!this.state.ready}
               icon={<SnackLogo height={iconSize.regular} />}
-              iconRight={<ArrowUpRightIcon size={iconSize.small} />}
+              iconRight={<ArrowUpRightIcon size={iconSize.small} color={theme.icon.secondary} />}
               type="submit"
               css={snackButtonStyle}>
               <FOOTNOTE>{this.props.buttonTitle || 'Open in Snack'}</FOOTNOTE>
@@ -153,7 +153,7 @@ const inlineSnackHeaderStyle = css({
   display: 'flex',
   border: `1px solid ${theme.border.default}`,
   alignItems: 'center',
-  padding: `${spacing[2]}px ${spacing[4]}px`,
+  padding: `${spacing[2]}px ${spacing[2.5]}px ${spacing[2]}px ${spacing[4]}px`,
   borderTopLeftRadius: borderRadius.small,
   borderTopRightRadius: borderRadius.small,
   justifyContent: 'space-between',
@@ -169,9 +169,10 @@ const inlineSnackTitleStyle = css({
 });
 
 const snackButtonStyle = css({
-  border: 0,
+  borderColor: 'transparent',
 
   ':hover': {
+    borderColor: theme.border.default,
     boxShadow: shadows.button,
   },
 });
