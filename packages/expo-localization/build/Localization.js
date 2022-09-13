@@ -74,8 +74,8 @@ export const timezone = ExpoLocalization.timezone;
  */
 export const region = ExpoLocalization.region;
 /**
- * List of user's preffered locales, returned as an array of objects of type `PreferredLocale`.
- * Guarranteed to contain at least 1 element.
+ * List of user's preferred locales, returned as an array of objects of type `PreferredLocale`.
+ * Guaranteed to contain at least 1 element.
  * These are returned in the order the user defines in their device settings.
  * On the web currency and measurements systems are not provided, instead returned as null.
  * If needed, you can infer them from the current region using a lookup table.
@@ -93,7 +93,7 @@ export const region = ExpoLocalization.region;
  */
 export const getPreferredLocales = ExpoLocalization.getPreferredLocales;
 /**
- * List of user's preffered calendars, returned as an array of objects of type `PreferredCalendar`.
+ * List of user's preferred calendars, returned as an array of objects of type `PreferredCalendar`.
  * For now always returns a single element. The calendar field does't include aliases, such as "gregorian" for "gregory",
  * so it can differ per platform.
  * @example `[
