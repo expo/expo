@@ -12,9 +12,9 @@ This guide explains how you can install the iOS simulator on your Mac and use it
 
 ## Step 1: Install Xcode
 
-This step is very easy but it takes a while. Open up the Mac App Store, search for [Xcode](https://apps.apple.com/us/app/xcode/id497799835), and hit install (or update if you have it already). 
-If you're not able to update because your operating system is out of date, we recommend updating your operating system to the latest version and then updating Xcode. 
-You may run into issues further down the line if your Xcode version is out of date, for example you may not be able to submit your app to the App Store.
+Open up the Mac App Store, search for [Xcode](https://apps.apple.com/us/app/xcode/id497799835), and hit install (or update if you have it already).
+If you're unable to update, it is because your operating system might be out of date. We recommend updating your operating system to the latest version and then updating Xcode. 
+You may run into issues further down the line if your Xcode version is out of date. For example, you may not be able to submit your app to the App Store.
 
 ## Step 2: Install Xcode Command Line Tools
 
@@ -26,9 +26,10 @@ Open Xcode, then choose **Preferences...** from the Xcode menu (or press <kbd>Cm
 
 Run your app with `npx expo start` and press <kbd>I</kbd> from the command line. 
 
-You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again, success! Or no? 
-If no, please seek help on StackOverflow, Google, or the [Expo Development Tools section of the forums](https://forums.expo.dev/c/expo-dev-tools). 
-The troubleshooting tips below may be helpful too.
+You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again to see if it was successful.
+If not, check the [troubleshooting](#troubleshooting) tips below.
+
+If the troubleshooting tips are not helpful, seek help on [Expo Development Tools section of the forums](https://forums.expo.dev/c/expo-dev-tools), StackOverflow, or Google. 
 
 <Video file="open-in-ios-simulator.mp4" />
 
@@ -51,7 +52,7 @@ It should also be noted that Simulator suspends background apps and processes on
 
 ### The CLI seems to be stuck when opening a Simulator
 
-Sometimes the iOS simulator doesn't respond to commands to open. If it seems to be stuck on this prompt, you can open the iOS simulator manually (`open -a Simulator`) and then in the macOS toolbar choose **Hardware** &rarr; **Device** and select an iOS version and device that you'd like to open.
+Sometimes the iOS simulator doesn't respond to the open command. If it seems stuck on this prompt, you can open the iOS simulator manually (`open -a Simulator`) and then in the macOS toolbar, choose **Hardware** &rarr; **Device**, and select an iOS version and device that you'd like to open.
 
 <ImageSpotlight alt="Hardware > Device toolbar in Xcode" src="/static/images/open-simulator-manually.png" />
 
