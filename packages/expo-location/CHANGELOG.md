@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-				- Fix altitude on iPhone to use WGS184. ([#19084](https://github.com/expo/expo/pull/19084) by [@pwellner](https://github.com/pwellner))
+- Fix altitude on iPhone to use WGS184. ([#19084](https://github.com/expo/expo/pull/19084) by [@pwellner](https://github.com/pwellner))
 				
 ### 💡 Others
 
