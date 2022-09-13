@@ -115,7 +115,10 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         {
           // versioning reacthermes import
           paths: 'NativeProxy.mm',
-          find: new RegExp(`(#import\\s+)<reacthermes\\/${prefix}HermesExecutorFactory.h>`, 'g'),
+          find: new RegExp(
+            `(#if\\s+__has_include\\(|#import\\s+)<reacthermes\\/${prefix}HermesExecutorFactory.h>`,
+            'g'
+          ),
           replaceWith: `$1<${prefix}reacthermes/${prefix}HermesExecutorFactory.h>`,
         },
       ],

@@ -17,8 +17,11 @@
 #import <dlfcn.h>
 #endif
 
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
+#else
 #import <jsi/JSCRuntime.h>
+#endif
 
 namespace reanimated {
 
@@ -133,8 +136,7 @@ static NSSet *convertProps(jsi::Runtime &rt, const jsi::Value &props)
 
 std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     RCTBridge *bridge,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    BOOL useHermes)
+    std::shared_ptr<CallInvoker> jsInvoker)
 {
   REAModule *reanimatedModule = [bridge moduleForClass:[REAModule class]];
 
@@ -176,12 +178,11 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
     return val;
   };
 
-  std::shared_ptr<jsi::Runtime> animatedRuntime;
-  if (useHermes) {
-    animatedRuntime = facebook::hermes::makeHermesRuntime();
-  } else {
-    animatedRuntime = facebook::jsc::makeJSCRuntime();
-  }
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
+  std::shared_ptr<jsi::Runtime> animatedRuntime = facebook::hermes::makeHermesRuntime();
+#else
+  std::shared_ptr<jsi::Runtime> animatedRuntime = facebook::jsc::makeJSCRuntime();
+#endif
 
   std::shared_ptr<Scheduler> scheduler = std::make_shared<REAIOSScheduler>(jsInvoker);
   std::shared_ptr<ErrorHandler> errorHandler = std::make_shared<REAIOSErrorHandler>(scheduler);

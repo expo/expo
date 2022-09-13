@@ -94,63 +94,11 @@ const config: VendoringTargetConfig = {
               find: /^#import "React\/RCT(.*).h"$/gm,
               replaceWith: '#import <React/RCT$1.h>',
             },
-
-            // Add `useHermes` option to create specific js runtime
             {
-              paths: 'NativeProxy.h',
-              find: `\
-std::shared_ptr<reanimated::NativeReanimatedModule> createReanimatedModule(
-    RCTBridge *bridge,
-    std::shared_ptr<facebook::react::CallInvoker> jsInvoker);`,
-              replaceWith: `\
-std::shared_ptr<reanimated::NativeReanimatedModule> createReanimatedModule(
-    RCTBridge *bridge,
-    std::shared_ptr<facebook::react::CallInvoker> jsInvoker,
-    BOOL useHermes = NO);`,
-            },
-            {
+              // remove the `#elif __has_include(<hermes/hermes.h>)` code block
               paths: 'NativeProxy.mm',
-              find: `\
-#if __has_include(<reacthermes/HermesExecutorFactory.h>)
-#import <reacthermes/HermesExecutorFactory.h>
-#elif __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
-#else
-#import <jsi/JSCRuntime.h>
-#endif`,
-              replaceWith: `\
-#import <reacthermes/HermesExecutorFactory.h>
-#import <jsi/JSCRuntime.h>`,
-            },
-            {
-              paths: 'NativeProxy.mm',
-              find: `\
-std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
-    RCTBridge *bridge,
-    std::shared_ptr<CallInvoker> jsInvoker)`,
-              replaceWith: `\
-std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
-    RCTBridge *bridge,
-    std::shared_ptr<CallInvoker> jsInvoker,
-    BOOL useHermes)`,
-            },
-            {
-              paths: 'NativeProxy.mm',
-              find: `\
-#if __has_include(<reacthermes/HermesExecutorFactory.h>)
-  std::shared_ptr<jsi::Runtime> animatedRuntime = facebook::hermes::makeHermesRuntime();
-#elif __has_include(<hermes/hermes.h>)
-  std::shared_ptr<jsi::Runtime> animatedRuntime = facebook::hermes::makeHermesRuntime();
-#else
-  std::shared_ptr<jsi::Runtime> animatedRuntime = facebook::jsc::makeJSCRuntime();
-#endif`,
-              replaceWith: `\
-  std::shared_ptr<jsi::Runtime> animatedRuntime;
-  if (useHermes) {
-    animatedRuntime = facebook::hermes::makeHermesRuntime();
-  } else {
-    animatedRuntime = facebook::jsc::makeJSCRuntime();
-  }`,
+              find: /#elif __has_include\(<hermes\/hermes.h>\)\n.*(#import|makeHermesRuntime).*\n/gm,
+              replaceWith: '',
             },
           ],
         },
