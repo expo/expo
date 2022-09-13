@@ -43,170 +43,185 @@ const general = [
   makeSection(
     'Get started',
     [
-      makeGroup(
-        'Set up',
-        [
-          makePage('get-started/installation.md'),
-          makePage('get-started/create-a-new-app.md'),
-          makePage('get-started/errors.md'),
-        ],
-      ),
-      makeGroup(
-        'Tutorial',
-        [
-          makePage('tutorial/planning.md'),
-          makePage('tutorial/text.md'),
-          makePage('tutorial/image.md'),
-          makePage('tutorial/button.md'),
-          makePage('tutorial/image-picker.md'),
-          makePage('tutorial/sharing.md'),
-          // makePage('tutorial/platform-differences.md'),
-          makePage('tutorial/configuration.md'),
-          makePage('tutorial/follow-up.md'),
-        ],
-        { expanded: true }
-      ),
-      makeGroup(
-        'Conceptual overview',
-        [
-          makePage('introduction/expo.md'),
-          makePage('introduction/managed-vs-bare.md'),
-          // makePage('introduction/walkthrough.md'),
-          makePage('introduction/why-not-expo.md'),
-          makePage('introduction/faq.md'),
-        ],
-        { expanded: true }
-      ),
-      makeGroup(
-        'Next steps',
-        [makePage('next-steps/community.md'), makePage('next-steps/additional-resources.md')],
-        { expanded: true }
-      ),
+      makeGroup('Set up', [
+        makePage('get-started/installation.md'),
+        makePage('get-started/create-a-new-app.md'),
+        makePage('get-started/errors.md'),
+      ]),
+      makeGroup('Tutorial', [
+        makePage('tutorial/planning.md'),
+        makePage('tutorial/text.md'),
+        makePage('tutorial/image.md'),
+        makePage('tutorial/button.md'),
+        makePage('tutorial/image-picker.md'),
+        makePage('tutorial/sharing.md'),
+        // makePage('tutorial/platform-differences.md'),
+        makePage('tutorial/configuration.md'),
+        makePage('tutorial/follow-up.md'),
+      ]),
+      makeGroup('Conceptual overview', [
+        makePage('introduction/managed-vs-bare.md'),
+        // makePage('introduction/walkthrough.md'),
+        makePage('introduction/why-not-expo.md'),
+        makePage('introduction/faq.md'),
+      ]),
+      makeGroup('Next steps', [
+        makePage('next-steps/community.md'),
+        makePage('next-steps/additional-resources.md'),
+      ]),
     ],
     { expanded: true }
   ),
   makeSection('Fundamentals', [
-    makePage('workflow/expo-cli.md'),
-    makePage('workflow/using-libraries.md'),
-    makePage('workflow/logging.md'),
-    makePage('workflow/development-mode.md'),
-    makePage('workflow/ios-simulator.md'),
-    makePage('workflow/android-studio-emulator.md'),
-    makePage('workflow/run-on-device.md'),
-    makePage('workflow/debugging.md'),
-    makePage('workflow/configuration.md'),
-    makePage('workflow/upgrading-expo-sdk-walkthrough.md'),
-    makePage('workflow/web.md'),
-    makePage('workflow/snack.md'),
-    makePage('workflow/customizing.md'),
-    makePage('workflow/glossary-of-terms.md'),
-    makePage('workflow/already-used-react-native.md'),
-    makePage('workflow/common-development-errors.md'),
+    makeGroup('Fundamentals', [
+      makePage('workflow/expo-cli.md'),
+      makePage('workflow/using-libraries.md'),
+      makePage('workflow/logging.md'),
+      makePage('workflow/development-mode.md'),
+      makePage('workflow/ios-simulator.md'),
+      makePage('workflow/android-studio-emulator.md'),
+      makePage('workflow/run-on-device.md'),
+      makePage('workflow/debugging.md'),
+      makePage('workflow/configuration.md'),
+      makePage('workflow/customizing.md'),
+      makePage('workflow/upgrading-expo-sdk-walkthrough.md'),
+      makePage('workflow/web.md'),
+      makePage('workflow/snack.md'),
+      makePage('workflow/prebuild.md'),
+      makePage('workflow/glossary-of-terms.md'),
+      makePage('workflow/already-used-react-native.md'),
+      makePage('workflow/common-development-errors.md'),
+    ]),
   ]),
   makeSection('Distributing your app', [
-    makePage('distribution/introduction.md'),
-    makePage('distribution/app-stores.md'),
-    makePage('distribution/runtime-versions.md'),
-    makePage('distribution/custom-updates-server.md'),
-    makePage('distribution/app-transfers.md'),
-    makePage('distribution/publishing-websites.md'),
+    makeGroup('Distributing your app', [
+      makePage('distribution/introduction.md'),
+      makePage('distribution/app-stores.md'),
+      makePage('distribution/runtime-versions.md'),
+      makePage('distribution/custom-updates-server.md'),
+      makePage('distribution/app-transfers.md'),
+      makePage('distribution/publishing-websites.md'),
+    ]),
   ]),
   makeSection('Development builds', [
-    makePage('development/introduction.md'),
-    makePage('development/getting-started.md'),
-    makePage('development/build.md'),
-    makePage('development/installation.md'),
-    makePage('development/development-workflows.md'),
-    makePage('development/extensions.md'),
-    makePage('development/compatibility.md'),
-    makePage('development/upgrading.md'),
-    makePage('development/troubleshooting.md'),
+    makeGroup('Development builds', [
+      makePage('development/introduction.md'),
+      makePage('development/getting-started.md'),
+      makePage('development/build.md'),
+      makePage('development/installation.md'),
+      makePage('development/development-workflows.md'),
+      makePage('development/extensions.md'),
+      makePage('development/compatibility.md'),
+      makePage('development/upgrading.md'),
+      makePage('development/troubleshooting.md'),
+    ]),
   ]),
   makeSection('Integrations', [
-    makePage('guides/using-firebase.md'),
-    makePage('guides/setup-native-firebase.md'),
-    makePage('guides/using-sentry.md'),
-    makePage('guides/using-bugsnag.md'),
-    makePage('guides/using-clojurescript.md'),
-    makePage('guides/using-graphql.md'),
-    makePage('guides/using-styled-components.md'),
-    makePage('guides/using-nextjs.md'),
-    makePage('guides/typescript.md'),
+    makeGroup('Integrations', [
+      makePage('guides/using-firebase.md'),
+      makePage('guides/setup-native-firebase.md'),
+      makePage('guides/using-sentry.md'),
+      makePage('guides/using-bugsnag.md'),
+      makePage('guides/using-clojurescript.md'),
+      makePage('guides/using-graphql.md'),
+      makePage('guides/using-styled-components.md'),
+      makePage('guides/using-electron.md'),
+      makePage('guides/using-nextjs.md'),
+      makePage('guides/using-preact.md'),
+      makePage('guides/typescript.md'),
+    ]),
   ]),
   makeSection('Assorted guides', [
-    makePage('guides/routing-and-navigation.md'),
-    makePage('guides/permissions.md'),
-    makePage('guides/authentication.md'),
-    makePage('guides/environment-variables.md'),
-    makePage('guides/customizing-metro.md'),
-    makePage('guides/customizing-webpack.md'),
-    makePage('guides/progressive-web-apps.md'),
-    makePage('guides/web-performance.md'),
-    makePage('guides/delaying-code.md'),
-    makePage('guides/errors.md'),
-    makePage('guides/testing-with-jest.md'),
-    makePage('guides/education.md'),
-    makePage('guides/how-expo-works.md'),
-    makePage('guides/linking.md'),
-    makePage('guides/deep-linking.md'),
-    makePage('guides/troubleshooting-proxies.md'),
-    makePage('guides/config-plugins.md'),
-    makePage('guides/monorepos.md'),
-    makePage('guides/sharing-preview-releases.md'),
-    makePage('guides/using-hermes.md'),
-    makePage('guides/adopting-prebuild.md'),
-    makePage('guides/ios-developer-mode.md'),
+    makeGroup('Assorted guides', [
+      makePage('guides/routing-and-navigation.md'),
+      makePage('guides/permissions.md'),
+      makePage('guides/authentication.md'),
+      makePage('guides/environment-variables.md'),
+      makePage('guides/customizing-metro.md'),
+      makePage('guides/customizing-webpack.md'),
+      makePage('guides/progressive-web-apps.md'),
+      makePage('guides/web-performance.md'),
+      makePage('guides/delaying-code.md'),
+      makePage('guides/errors.md'),
+      makePage('guides/testing-with-jest.md'),
+      makePage('guides/education.md'),
+      makePage('guides/how-expo-works.md'),
+      makePage('guides/linking.md'),
+      makePage('guides/deep-linking.md'),
+      makePage('guides/setting-up-continuous-integration.md'),
+      makePage('guides/troubleshooting-proxies.md'),
+      makePage('guides/config-plugins.md'),
+      makePage('guides/monorepos.md'),
+      makePage('guides/sharing-preview-releases.md'),
+      makePage('guides/using-hermes.md'),
+      makePage('guides/adopting-prebuild.md'),
+      makePage('guides/ios-developer-mode.md'),
+    ]),
   ]),
   makeSection('Expo accounts', [
-    makePage('accounts/account-types.md'),
-    makePage('accounts/two-factor.md'),
-    makePage('accounts/programmatic-access.md'),
-    makePage('accounts/working-together.md'),
+    makeGroup('Expo accounts', [
+      makePage('accounts/account-types.md'),
+      makePage('accounts/two-factor.md'),
+      makePage('accounts/programmatic-access.md'),
+      makePage('accounts/working-together.md'),
+    ]),
   ]),
   makeSection('Bare workflow', [
-    makePage('bare/hello-world.md'),
-    makePage('bare/installing-expo-modules.md'),
-    makePage('bare/installing-updates.md'),
-    makePage('bare/using-expo-client.md'),
-    makePage('bare/updating-your-app.md'),
-    makePage('bare/error-recovery.md'),
+    makeGroup('Bare workflow', [
+      makePage('bare/hello-world.md'),
+      makePage('bare/installing-expo-modules.md'),
+      makePage('bare/installing-updates.md'),
+      makePage('bare/using-expo-client.md'),
+      makePage('bare/updating-your-app.md'),
+      makePage('bare/error-recovery.md'),
+    ]),
   ]),
   makeSection('Push notifications', [
-    makePage('push-notifications/overview.md'),
-    makePage('push-notifications/push-notifications-setup.md'),
-    makePage('push-notifications/sending-notifications.md'),
-    makePage('push-notifications/sending-notifications-custom.md'),
-    makePage('push-notifications/receiving-notifications.md'),
-    makePage('push-notifications/using-fcm.md'),
-    makePage('push-notifications/faq.md'),
+    makeGroup('Push notifications', [
+      makePage('push-notifications/overview.md'),
+      makePage('push-notifications/push-notifications-setup.md'),
+      makePage('push-notifications/sending-notifications.md'),
+      makePage('push-notifications/sending-notifications-custom.md'),
+      makePage('push-notifications/receiving-notifications.md'),
+      makePage('push-notifications/using-fcm.md'),
+      makePage('push-notifications/faq.md'),
+    ]),
   ]),
-  makeSection('UI programming', [
-    makePage('guides/assets.md'),
-    makePage('guides/icons.md'),
-    makePage('guides/app-icons.md'),
-    makePage('guides/splash-screens.md'),
-    makePage('guides/configuring-statusbar.md'),
-    makePage('guides/color-schemes.md'),
-    makePage('guides/using-custom-fonts.md'),
-    makePage('ui-programming/image-background.md'),
-    makePage('ui-programming/implementing-a-checkbox.md'),
-    makePage('ui-programming/z-index.md'),
-    makePage('ui-programming/using-svgs.md'),
-    makePage('ui-programming/react-native-toast.md'),
-    makePage('ui-programming/react-native-styling-buttons.md'),
-    makePage('guides/userinterface.md'),
+  makeSection('UI Programming', [
+    makeGroup('UI Programming', [
+      makePage('guides/assets.md'),
+      makePage('guides/icons.md'),
+      makePage('guides/app-icons.md'),
+      makePage('guides/splash-screens.md'),
+      makePage('guides/configuring-statusbar.md'),
+      makePage('guides/color-schemes.md'),
+      makePage('guides/using-custom-fonts.md'),
+      makePage('ui-programming/image-background.md'),
+      makePage('ui-programming/implementing-a-checkbox.md'),
+      makePage('ui-programming/z-index.md'),
+      makePage('ui-programming/using-svgs.md'),
+      makePage('ui-programming/react-native-toast.md'),
+      makePage('ui-programming/react-native-styling-buttons.md'),
+      makePage('guides/userinterface.md'),
+    ]),
   ]),
   makeSection('Expo Module API (Alpha)', [
-    makePage('modules/overview.md'),
-    makePage('modules/module-api.md'),
-    makePage('modules/android-lifecycle-listeners.md'),
-    makePage('modules/appdelegate-subscribers.md'),
-    makePage('modules/module-config.md'),
+    makeGroup('Expo Module API (Alpha)', [
+      makePage('modules/overview.md'),
+      makePage('modules/module-api.md'),
+      makePage('modules/android-lifecycle-listeners.md'),
+      makePage('modules/appdelegate-subscribers.md'),
+      makePage('modules/module-config.md'),
+    ]),
   ]),
-  makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
+  makeSection('Regulatory compliance', [
+    makeGroup('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance'))),
+  ]),
   makeSection('Technical specs', [
-    makePage('technical-specs/expo-updates-0.md'),
-    makePage('technical-specs/expo-sfv-0.md'),
+    makeGroup('Technical specs', [
+      makePage('technical-specs/expo-updates-0.md'),
+      makePage('technical-specs/expo-sfv-0.md'),
+    ]),
   ]),
   makeSection('Deprecated', [
     makeGroup('ExpoKit', [
@@ -221,7 +236,11 @@ const general = [
 ];
 
 const eas = [
-  makeSection('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], { expanded: true }),
+  makeSection(
+    'EAS',
+    [makeGroup('EAS', [makePage('eas/index.md'), makePage('eas/webhooks.md')], './pages/eas/')],
+    { expanded: true }
+  ),
   makeSection(
     'EAS Build',
     [
@@ -236,6 +255,7 @@ const eas = [
           makePage('build/updates.md'),
           makePage('build/building-on-ci.md'),
         ],
+        './pages/build/'
       ),
       makeGroup('App Signing', [
         makePage('app-signing/app-credentials.md'),
@@ -274,11 +294,13 @@ const eas = [
   makeSection(
     'EAS Submit',
     [
-      makePage('submit/introduction.md'),
-      makePage('submit/eas-json.md'),
-      makePage('submit/android.md'),
-      makePage('submit/ios.md'),
-      makePage('submit/classic-builds.md'),
+      makeGroup('EAS Submit', [
+        makePage('submit/introduction.md'),
+        makePage('submit/eas-json.md'),
+        makePage('submit/android.md'),
+        makePage('submit/ios.md'),
+        makePage('submit/classic-builds.md'),
+      ]),
     ],
     { expanded: true }
   ),
@@ -308,9 +330,11 @@ const eas = [
   makeSection(
     'EAS Metadata',
     [
-      makePage('eas-metadata/introduction.md'),
-      makePage('eas-metadata/getting-started.md'),
-      // makePage('eas-metadata/store-json.md'), Disabled due to missing config overview
+      makeGroup('EAS Metadata', [
+        makePage('eas-metadata/introduction.md'),
+        makePage('eas-metadata/getting-started.md'),
+        // makePage('eas-metadata/store-json.md'), Disabled due to missing config overview
+      ]),
     ],
     { expanded: true }
   ),
@@ -318,9 +342,7 @@ const eas = [
 
 const preview = [
   makeSection('Preview', [
-    makePage('preview/introduction.md'),
-    makePage('preview/support.md'),
-    { expanded: true },
+    makeGroup('Preview', [makePage('preview/introduction.md'), makePage('preview/support.md')]),
   ]),
 ];
 
@@ -358,19 +380,23 @@ const archive = [
 
 const featurePreview = [];
 
-const versionsReference = VERSIONS.reduce(
+const reference = VERSIONS.reduce(
   (all, version) => ({
     ...all,
     [version]: [
-      makeSection('Configuration files', pagesFromDir(`versions/${version}/config`), { expanded: true }),
-      makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
+      makeSection(
+        'Configuration Files',
+        [makeGroup('Configuration Files', pagesFromDir(`versions/${version}/config`))],
+        { expanded: true }
+      ),
+      makeSection('Expo SDK', [makeGroup('Expo SDK', pagesFromDir(`versions/${version}/sdk`))], {
+        expanded: true,
+      }),
       makeSection('React Native', sortLegacyReactNative(version), { expanded: true }),
     ],
   }),
   {}
 );
-
-const reference = { ...versionsReference, latest: versionsReference[LATEST_VERSION] };
 
 module.exports = {
   general,
@@ -378,7 +404,8 @@ module.exports = {
   preview,
   archive,
   featurePreview,
-  reference,
+  /** @type {any} */
+  reference: { ...reference, latest: reference[LATEST_VERSION] },
   generalDirectories,
   previewDirectories,
   easDirectories,
@@ -447,14 +474,11 @@ function pagesFromDir(dir) {
  * Create the page url using the absolute file path.
  * This parses the URL, relatively from PAGES_DIR.
  * It also strips the file extension, and name if its `index`.
- * These urls are pathnames, without trailing slashes.
  */
 function pageUrl(file) {
   const filePath = path.parse(file);
   const { pathname } = new URL(path.relative(PAGES_DIR, file), 'https://docs.expo.dev');
-  return pathname
-    .replace(filePath.base, filePath.name === 'index' ? '' : filePath.name)
-    .replace(/\/$/, '');
+  return pathname.replace(filePath.base, filePath.name === 'index' ? '' : filePath.name);
 }
 
 /**
