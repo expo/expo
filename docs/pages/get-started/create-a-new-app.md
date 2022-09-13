@@ -28,7 +28,7 @@ Start the development server by running the following command:
 
 <Terminal cmd={['$ npx expo start']} />
 
-When you run `npx expo start` (or `yarn expo start`), Expo CLI starts [Metro Bundler](/guides/how-expo-works/#metro-bundler). This bundler is an HTTP server that compiles the JavaScript code of your app using [Babel](https://babeljs.io/) and serves it to the Expo app. Learn more about how [Expo Development Server](/guides/how-expo-works/#expo-development-server) works.
+When you run `npx expo start` (or `yarn expo start`), Expo CLI starts [Metro Bundler](/guides/customizing-metro). This bundler is an HTTP server that compiles the JavaScript code of your app using [Babel](https://babeljs.io/) and serves it to the Expo app. Learn more about how [Expo Development Server](/workflow/expo-cli#develop) works.
 
 ## Opening the app on your phone/tablet
 

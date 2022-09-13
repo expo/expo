@@ -75,6 +75,7 @@ const general = [
   makeSection('Fundamentals', [
     makeGroup('Fundamentals', [
       makePage('workflow/expo-cli.md'),
+      makePage('workflow/expo-go.md'),
       makePage('workflow/using-libraries.md'),
       makePage('workflow/logging.md'),
       makePage('workflow/development-mode.md'),
@@ -145,7 +146,6 @@ const general = [
       makePage('guides/errors.md'),
       makePage('guides/testing-with-jest.md'),
       makePage('guides/education.md'),
-      makePage('guides/how-expo-works.md'),
       makePage('guides/linking.md'),
       makePage('guides/deep-linking.md'),
       makePage('guides/setting-up-continuous-integration.md'),
