@@ -33,10 +33,6 @@ class AddToWalletButtonView: UIView {
         }
     }
 
-    func canAddPaymentPass() -> Bool {
-        return self.testEnv ? STPFakeAddPaymentPassViewController.canAddPaymentPass() : PKAddPaymentPassViewController.canAddPaymentPass()
-    }
-
     override func didSetProps(_ changedProps: [String]!) {
         if let addToWalletButton = addToWalletButton {
             addToWalletButton.removeFromSuperview()
@@ -53,7 +49,7 @@ class AddToWalletButtonView: UIView {
     }
 
     @objc func beginPushProvisioning() {
-        if (!canAddPaymentPass()) {
+        if (!PushProvisioningUtils.canAddPaymentPass(primaryAccountIdentifier: cardDetails?["primaryAccountIdentifier"] as? String ?? "", isTestMode: self.testEnv)) {
             onCompleteAction!(
                 Errors.createError(
                     ErrorType.Failed,
