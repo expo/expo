@@ -85,7 +85,7 @@ export default class SnackInline extends React.Component<Props> {
     return (
       <div css={inlineSnackWrapperStyle}>
         <div css={[inlineSnackHeaderStyle, this.props.contentHidden && inlineSnackSoleHeaderStyle]}>
-          <span css={inlineSnackTitleStyle}>{this.props.label || 'Snack'}</span>
+          <span css={inlineSnackTitleStyle}>{this.props.label || 'Example'}</span>
           <form action={SNACK_URL} method="POST" target="_blank">
             <input
               type="hidden"
