@@ -3,7 +3,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
-import { EXPO_DIR } from '../../Constants';
+import { EXPO_DIR, REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
 import { GitDirectory } from '../../Git';
 import logger from '../../Logger';
 import { transformFilesAsync } from '../../Transforms';
@@ -21,7 +21,6 @@ const TRANSFORM_HEADERS_PUBLIC = [
 ];
 
 const VERSIONED_JSI_DIR = 'versioned-jsi';
-const REACT_NATIVE_FORK_DIR = path.join(EXPO_DIR, 'react-native-lab', 'react-native');
 
 interface VersionHermesOptions {
   // true to show verbose building log
@@ -207,7 +206,7 @@ export async function createVersionedHermesTarball(
 ): Promise<string> {
   const hermesGitRef =
     options?.hermesGitRef ??
-    (await fs.readFile(path.join(REACT_NATIVE_FORK_DIR, 'sdks', '.hermesversion'), 'utf8'));
+    (await fs.readFile(path.join(REACT_NATIVE_SUBMODULE_DIR, 'sdks', '.hermesversion'), 'utf8'));
   if (!hermesGitRef) {
     throw new Error('Cannot get bundled hermes version from react-native.');
   }
