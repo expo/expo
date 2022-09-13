@@ -84,7 +84,7 @@ type Props = {
   tabs?: string[];
 };
 
-export function CodeBlocksTable({ children, tabs }: Props) {
+export function CodeBlocksTable({ children, tabs, ...rest }: Props) {
   const childrenArray = Array.isArray(children) ? children : [children];
   const codeBlocks = childrenArray.filter(
     ({ props }) => props.mdxType === 'pre' && props.children.props.className
@@ -97,7 +97,7 @@ export function CodeBlocksTable({ children, tabs }: Props) {
     });
 
   return (
-    <div css={CodeSamplesCSS}>
+    <div css={CodeSamplesCSS} {...rest}>
       {codeBlocks.map((codeBlock, index) => (
         <div key={index} className="code-block-column">
           <div className="code-block-header">
