@@ -1,49 +1,67 @@
 ---
-title: Using Expo Go in Bare Workflow
+title: Custom native code in Expo Go
 sidebar_title: Using Expo Go
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { InlineCode } from '~/components/base/code';
+import SnackInline from '~/components/plugins/SnackInline'
 
-It's not currently possible to include your own native code in Expo Go, so it might surprise you to learn that it is still possible to run your bare project in the Expo Go app.
+The [Expo Go][expo-go] app is capable of running most React Native apps regardless of how they are bootstrapped. Developing any React Native app in Expo Go is useful because you can distribute your project instantly to the members of your [organization](/accounts/account-types/#organizations), and no native build or provisioning is required.
 
-Inside a freshly initialized bare project, run `npx expo start`, and you can now run it in the client. Read this documentation to learn more about the limitations, why you might want to still use the client despite the limitations, and patterns you can apply to make this work well for you.
+The main drawback of developing in Expo Go is that it is impossible to send custom native code over-the-air to the Expo Go app. This means you will need to do one of the following:
 
-## What are the limitations?
+1. Create a [development build](/development/introduction) to use custom native code, and distribute it with [internal distribution](/build/internal-distribution) or TestFlight.
+2. Conditionally disable unsupported native features and distribute with Expo Go.
 
-You will not be able to use the parts of your app that require custom native code. To run your bare app in Expo Go, you need to avoid calling any custom native code (native code that isn't included in the Expo SDK). For some apps this may mean that you won't be able to use the Expo Go app almost at all &mdash; for example, if your app depends on custom native code for something as fundamental as navigation or state management (eg: Realm or the Firebase native SDK) then not much of your app will be usable in the client. If your app only has some in app purchases, analytics, a custom map view, an AR view, and so on, then this may actually work great for you &mdash; that particular functionality would not be usable in Expo Go but the rest of the app still would be.
+This guide will demonstrate achieving the second option by compatible library versions, detecting whether the code is running in an Expo Go app at run time, native module detection, and so on.
 
-## Why might you want to do this?
+## Usage
 
-There are a number of benefits to keeping your project runnable in the Expo Go app.
+Inside any React Native app, start a [development server with Expo CLI](/workflow/expo-cli#develop):
 
-- Share your progress with stakeholders by publishing or sharing the development URL to see changes live
-- Continuously deploy builds from pull requests
-- No need to do native builds for iOS and Android in development because you use the Expo Go app instead
-- Develop the JavaScript side of your app from any machine of your choice, eg: use Windows for iOS development if you have an iOS device
-- Easily get new contributors set up on the project, only Node.js and a phone are required
-- You can use [Expo CLI](/workflow/expo-cli) for a great development experience
+<Terminal cmd={["$ npx expo start"]} />
 
-## Practical patterns for client-compatible bare apps
+<BoxLink title={<>Don't have <InlineCode>npx expo start</InlineCode>?</>} href="/bare/installing-expo-modules" description={<>Install and configure the <InlineCode>expo</InlineCode> package in your project.</>} />
 
-### Prefer `npx expo install` over `npm install` to add Expo SDK packages
+Then, launch your app in Expo Go by pressing <kbd>i</kbd> or <kbd>a</kbd> in the Terminal UI. Some features may cause your app to throw errors because certain native code is missing, continue reading to learn how you can conditionally skip unsupported APIs.
 
-This will ensure that you get a version of the package that is compatible with the SDK version in your app. If you use `npm install` directly instead, you may end up with a newer version of the package that isn't supported in Expo Go yet.
+> Unlike `npx react-native start` the command `npx expo start` hosts an app manifest that dev clients like Expo Go can use to load arbitrary projects. Think of an app manifest like the `<head />` element of an `index.html` but for React Native apps. To view this manifest, visit the dev server URL in your web browser.
 
-### Use conditional inline requires to provide fallbacks
+## Installing libraries
 
-Picture this scenario: you need a beautiful map in your app and Google Maps just won't cut it, so you add '@react-native-mapbox-gl/maps'. Expo doesn't include this in the SDK, so you can't run any code that imports it in the Expo Go app. You can handle this by wrapping `MapView` access with a wrapper that provides a fallback in Expo Go, and otherwise uses the native Mapbox library:
+Ensure your app uses the most compatible library versions for the project's `react-native` version. This means that use `npx expo install` instead of `npm install` to install libraries. Read more about [`npx expo install`](/workflow/expo-cli#install).
+
+## Runtime detection
+
+The easiest way to detect where the JavaScript bundle is running is to check the [`Constants.executionEnvironment`](/versions/latest/sdk/constants/#nativeconstants--properties).
+
+<Terminal cmd={[ "$ npx expo install expo-constants"]} />
+
+```tsx
+import Constants, { ExecutionEnvironment } from 'expo-constants';
+
+// `true` when running in Expo Go.
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+```
+
+You can use this boolean to conditionally require custom native code. Here's an example using the library `react-native-blurhash` which is not available in the Expo Go app:
+
+<SnackInline dependencies={['expo-constants', 'react-native-blurhash']}>
 
 ```js
-// MapView.js
-import * as React from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import Constants from 'expo-constants';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 
-let MapView;
+// `true` when running in Expo Go.
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
 
-if (Constants.appOwnership === 'expo') {
-  MapView = props => (
+let Blurhash;
+// Create a fallback for Expo Go
+if (isExpoGo) {
+  Blurhash = props => (
     <View
       style={[
         {
@@ -53,121 +71,67 @@ if (Constants.appOwnership === 'expo') {
         },
         props.style,
       ]}>
-      <Text>🗺 (Mapbox not available)</Text>
+      <Text>(Blurhash not available)</Text>
     </View>
   );
 } else {
-  const Mapbox = require('@react-native-mapbox-gl/maps').default;
-  Mapbox.setAccessToken('access-token-here');
-  MapView = Mapbox.MapView;
+  // Conditionally require this module to prevent Metro from throwing warnings.
+  Blurhash = require('react-native-blurhash').Blurhash;
 }
-
-export default MapView;
-```
-
-By moving the `require` directive inline we only actually execute the `MyMap` module code when we enter the `else` clause, and so we prevent ever importing the `@react-native-mapbox-gl/maps` package, which would likely throw an error due to the native module being missing in the client runtime environment.
-
-```js
-// App.js
-import * as React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import MapView from './MapView';
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 20, marginBottom: 10, fontWeight: '600' }}>Behold, a map! ✨</Text>
-      <MapView
-        style={{
-          height: 300,
-          width: 300,
-          borderRadius: 20,
-          overflow: 'hidden',
-        }}
-      />
-      <StatusBar style="default" />
-    </View>
-  );
+  return <Blurhash blurhash="LGFFaXYk^6#M@-5c,1J5@[or[Q6." style={{ flex: 1 }} />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 ```
 
-Problem solved! Now when we render the `<MapView />` component in the client, we'll fallback to a plain `View` placeholder. When we build the app in Xcode/Android Studio, we'll use the Mapbox map. You could also alternatively fallback to a map provided from `react-native-maps`, since it's included in the Expo SDK.
+</SnackInline>
 
-<ImageSpotlight alt="MapView working in an app built with Xcode and falling back to a placeholder in Expo Go" src="/static/images/expo-go-fallback.png" />
+If you run this code in the Expo Go app, you'll see the fallback view. If you are able to build this locally with the [Expo CLI run commands](/workflow/expo-cli#compiling) then you'll see the native blur hash view.
 
-As you may have already guessed, you can apply this concept for more than just third party dependencies. For example, maybe you wrote a native module to wrap your favorite analytics library and you want to provide a mock for it within the client.
+## Native module detection
+
+Native modules are added to the JavaScript global object at the runtime. This means you can conditionally check if they exist to ensure functionality:
 
 ```js
-// MyAnalytics.js
 import { NativeModules } from 'react-native';
 
-// Generic way of logging calls to MyAnalytics when module isn't available
-const makeLogger = name => options =>
-  console.log(`Called MyAnalytics.${name} with: ${JSON.stringify(options)}`);
-
-// Get native module or use fallback logger
-const MyAnalytics = NativeModules.MyAnalytics ?? {
-  logEvent: makeLogger('logEvent'),
-  setUser: makeLogger('setUser'),
-};
-
-// You usually want to wrap native function calls in functions on the JS side to
-// provide TypeScript typing and validation.
-
-export function logEvent(options) {
-  MyAnalytics.logEvent(options);
-}
-
-export function setUser(options) {
-  MyAnalytics.setUser(options);
-}
+const isAvailable = !!NativeModules.MyAnalytics;
 ```
 
-### Alternatively, use optional imports
+The above code snippet ensures the native module _must_ be installed and linked. However, there are two issues with this solution:
 
-An alternative approach to using `expo-constants` as described above in the [conditional inline requires section](#use-conditional-inline-requires-to-provide-fallbacks) is to use `try/catch` around `require`. There's not any particularly good reason for you to use this in your application code, and it may lead to warning messages when the library throws an error on importing, but it is listed here in case you find yourself with a fitting use case.
+1. You need to know the native module name ahead of time.
+2. You likely want an error to be thrown when a native module is missing in a custom build. This helps you determine if there is a native linking issue.
 
-The above **MapView.js** would change to look like the following:
+## Optional imports
+
+Optional imports are supported by [Metro bundler](/guides/customizing-metro). They refer to wrapping a `require` statement with a `try/catch` to prevent an error from being thrown when the requested module is missing:
+
+<SnackInline dependencies={['expo-constants', 'react-native-blurhash']}>
 
 ```js
-import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { View } from 'react-native';
 
-let MapView;
+let Blurhash;
 
 try {
-  const Mapbox = require('@react-native-mapbox-gl/maps').default;
-  Mapbox.setAccessToken('access-token-here');
-  MapView = Mapbox.MapView;
+  Blurhash = require('react-native-blurhash').Blurhash;
 } catch {
-  MapView = props => (
-    <View
-      style={[
-        {
-          backgroundColor: 'lightblue',
-          alignItems: 'center',
-          justifyContent: 'center',
-        },
-        props.style,
-      ]}>
-      <Text>🗺 (Mapbox not available)</Text>
-    </View>
-  );
+  Blurhash = View;
 }
 
-export default MapView;
+export default function App() {
+  return <Blurhash blurhash="LGFFaXYk^6#M@-5c,1J5@[or[Q6." style={{ flex: 1 }} />;
+}
 ```
 
-### **Deprecated**: use the `.expo.[js/json/ts/tsx]` extension to provide Expo Go specific fallbacks
+</SnackInline>
 
-The `.expo` extension is removed in SDK 41. Consider using [conditional inline requires](#use-conditional-inline-requires-to-provide-fallbacks) instead, and read [expo.fyi/expo-extension-migration](https://expo.fyi/expo-extension-migration) for specific guidance on migrating away.
+This method is the least reliable because there are several reasons that a `require` statement might throw an error. For example, there could be an internal error, the module could be missing, the native module could be linked incorrectly, and so on. You should avoid using this method.
+
+## **Deprecated**: use the `.expo.[js/json/ts/tsx]` extension to provide Expo Go specific fallbacks
+
+The `.expo` extension is removed in SDK 41. Instead, consider using [conditional inline requires](#use-conditional-inline-requires-to-provide-fallbacks), and read [expo.fyi/expo-extension-migration](https://expo.fyi/expo-extension-migration) for specific guidance on migration.
+
+[expo-go]: https://expo.dev/expo-go

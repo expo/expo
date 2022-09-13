@@ -100,8 +100,8 @@ EAS Update adds a new type of object called a "branch". A branch is a list of up
 ## Additional possible migration steps
 
 - If you have any scripts that run `expo publish`, you can replace those with `eas update`. You can view all the options for publishing with `eas update --help`
-- If you have any code that references `Updates.releaseChannel` from the `expo-updates` library, you'll have to remove those. Currently, EAS Update does not expose the `channel` of a build. Instead, you can use [environment variables](/build-reference/variables).
-- Remove any code that references `Constants.manifest`. That will now always return `null`.
+- If you have any code that references `Updates.releaseChannel` from the `expo-updates` library, replace them with `Updates.channel`.
+- Remove any code that references `Constants.manifest`. That will now always return `null`. If you're using SDK 46 or above, you can access most properties you'll need with `Constants.expoConfig`.
 
 ## Known issues
 

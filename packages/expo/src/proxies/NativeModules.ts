@@ -1,4 +1,7 @@
 import { ExecutionEnvironment } from 'expo-constants';
+import { NativeModules } from 'react-native';
+
+const originalNativeModules = NativeModules;
 
 const PROPS_TO_IGNORE: Set<string> = new Set([
   /**
@@ -13,6 +16,7 @@ const PROPS_TO_IGNORE: Set<string> = new Set([
    * Other modules that are accessed via packages in the Expo SDK but have built-in fallbacks
    */
   'ExpoImageModule',
+  'ExpoRandom',
   'PlatformLocalStorage',
   'RNC_AsyncSQLiteDBStorage',
   'RNCAsyncStorage',
@@ -99,4 +103,14 @@ export function disableMissingNativeModuleErrors(moduleNames?: string[] | string
   } else {
     enabled = false;
   }
+}
+
+/**
+ * Access a native module without throwing an error if it doesn't exist.
+ *
+ * @param moduleName Name of module to access
+ * @returns Corresponding native module object, or null if it doesn't exist
+ */
+export function getNativeModuleIfExists(moduleName: string): any {
+  return originalNativeModules[moduleName];
 }

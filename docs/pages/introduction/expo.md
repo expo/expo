@@ -1,0 +1,45 @@
+---
+title: What is Expo
+---
+
+import { InlineCode } from '~/components/base/code';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+Expo is an npm package that enables a suite of incredible features for React Native apps. The `expo` package can be installed in nearly **any React Native project**.
+
+## Features
+
+<BoxLink title="Expo Go" description="Share your development app instantly with your team from anywhere in the world." href="/workflow/expo-go" />
+<BoxLink title="Expo SDK" description="Comprehensive suite of well tested React Native modules that run on iOS, Android, and web." href="/versions/latest" />
+<BoxLink title="Native API" description="Write highly performant native code with modern Swift & Kotlin API." href="/modules/overview" />
+<BoxLink title="Prebuild" description="Separate React from Native to develop from any computer, upgrade easily, white label apps, and maintain larger projects." href="/workflow/prebuild" />
+<BoxLink title="Expo CLI" description="Manage dependencies, compile native apps, develop for web, and connect to any device with a powerful dev server." href="/workflow/expo-cli" />
+
+> All features are free, optional, and can be used independently of each other. Unused features add no additional bloat to your app.
+
+| Feature                                                           | <YesIcon /> With `expo` | <NoIcon /> Without `expo` (bare React Native) |
+| ----------------------------------------------------------------- | ----------------------- | --------------------------------------------- |
+| Instantly share and test your app with your team from anywhere.   | <YesIcon />             | <NoIcon />                                    |
+| Develop complex apps **entirely** in JavaScript.                  | <YesIcon />             | <NoIcon />                                    |
+| Write JSI native modules with Swift & Kotlin.                     | <YesIcon />             | <NoIcon />                                    |
+| Develop apps without Xcode or Android Studio.                     | <YesIcon />             | <NoIcon />                                    |
+| Create and share example apps in the browser with [Snack][snack]. | <YesIcon />             | <NoIcon />                                    |
+| Major upgrades without native changes.                            | <YesIcon />             | <NoIcon />                                    |
+| First-class TypeScript support.                                   | <YesIcon />             | <NoIcon />                                    |
+| Install natively compatible libraries from the command line.      | <YesIcon />             | <NoIcon />                                    |
+| Develop performant websites with the same codebase.               | <YesIcon />             | <NoIcon />                                    |
+| [Tunnel][tunnel] your dev server to any device.                   | <YesIcon />             | <NoIcon />                                    |
+
+## Services
+
+The team behind Expo also provides **Expo Application Services**, deeply integrated cloud services for building, submitting, and updating your React Native app.
+
+<BoxLink title="Expo Application Services" description="The easiest way to build, deploy, and update native apps." href="/eas" />
+
+> Expo Application Services (EAS) can be used with **any React Native app**, regardless of whether it uses `expo` or not.
+
+[snack]: https://snack.expo.dev
+[tunnel]: /workflow/expo-cli/#tunneling
+
+<!-- TODO: Link to migration docs. -->

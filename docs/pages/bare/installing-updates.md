@@ -6,7 +6,7 @@ import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-expo-updates fetches and manages updates to your app stored on a remote server.
+`expo-updates` fetches and manages updates to your app stored on a remote server.
 
 > If you are creating a new project, we recommend using `npx create-react-native-app` instead of `npx react-native init` because it will handle the following configuration for you automatically.
 
@@ -15,8 +15,6 @@ expo-updates fetches and manages updates to your app stored on a remote server.
 Like most Expo modules, **this package requires that you have already [installed and configured Expo modules](/bare/installing-expo-modules.md). Be sure to install it before continuing.**
 
 <InstallSection packageName="expo-updates" cmd={["expo install expo-updates", "npx pod-install"]} hideBareInstructions />
-
-<br />
 
 Once installation is complete, apply the changes from the following diffs to configure expo-updates in your project. This is expected to take about five minutes, and you may need to adapt it slightly depending on how customized your project is.
 

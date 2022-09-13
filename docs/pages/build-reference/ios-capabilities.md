@@ -85,7 +85,9 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 
 The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value. Here are all of the [official Apple capabilities][apple-all-capabilities].
 
-Partially supported capabilities have extra configuration which EAS Build currently does not support. This includes Apple merchant IDs, App Group IDs, and iCloud container IDs. These values must all be [configured manually](https://expo.fyi/provisioning-profile-missing-capabilities) for the time being. You can also refer to this [Apple doc](https://developer.apple.com/documentation/xcode/adding-capabilities-to-your-app) for more information on manual setup.
+## Capability identifiers
+
+Merchant IDs, App Groups, and CloudKit Containers can all be automatically registered and assigned to your app. These assignments require Apple cookies authentication (running locally) as the official App Store Connect API does not support these operations.
 
 ## Debugging
 
