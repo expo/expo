@@ -118,7 +118,7 @@ async function transformHermesAsync(
       'utils/build-mac-framework.sh',
     ].map((file) =>
       fs.copy(
-        path.join(REACT_NATIVE_FORK_DIR, 'sdks', 'hermes-engine', file),
+        path.join(REACT_NATIVE_SUBMODULE_DIR, 'sdks', 'hermes-engine', file),
         path.join(hermesRoot, file)
       )
     )
