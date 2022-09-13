@@ -5,7 +5,6 @@ import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
-import expo.modules.kotlin.jni.SingleType
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -53,12 +52,5 @@ class ArrayTypeConverter(
     ) as Array<Any?>
   }
 
-  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(
-    SingleType(
-      CppType.READABLE_ARRAY,
-      arrayOf(
-        arrayElementConverter.getCppRequiredTypes()
-      )
-    )
-  )
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forPrimitiveArray(arrayElementConverter.getCppRequiredTypes())
 }

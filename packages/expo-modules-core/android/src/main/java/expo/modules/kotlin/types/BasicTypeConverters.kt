@@ -84,7 +84,7 @@ class PrimitiveIntArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeConv
   }
 
   override fun convertFromAny(value: Any): IntArray = value as IntArray
-  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forPrimitiveArray(CppType.INT)
 }
 
 class PrimitiveDoubleArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<DoubleArray>(isOptional) {
@@ -96,7 +96,7 @@ class PrimitiveDoubleArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeC
   }
 
   override fun convertFromAny(value: Any): DoubleArray = value as DoubleArray
-  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forPrimitiveArray(CppType.DOUBLE)
 }
 
 class PrimitiveFloatArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<FloatArray>(isOptional) {
@@ -108,7 +108,19 @@ class PrimitiveFloatArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeCo
   }
 
   override fun convertFromAny(value: Any): FloatArray = value as FloatArray
-  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forPrimitiveArray(CppType.FLOAT)
+}
+
+class PrimitiveBooleanArrayTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<BooleanArray>(isOptional) {
+  override fun convertFromDynamic(value: Dynamic): BooleanArray {
+    val jsArray = value.asArray()
+    return BooleanArray(jsArray.size()) { index ->
+      jsArray.getBoolean(index)
+    }
+  }
+
+  override fun convertFromAny(value: Any): BooleanArray = value as BooleanArray
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forPrimitiveArray(CppType.BOOLEAN)
 }
 
 class JavaScriptValueTypeConvert(isOptional: Boolean) : TypeConverter<JavaScriptValue>(isOptional) {

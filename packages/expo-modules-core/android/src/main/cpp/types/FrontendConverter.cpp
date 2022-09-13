@@ -1,6 +1,8 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "FrontendConverter.h"
+#include "ExpectedType.h"
+#include "FrontendConverterProvider.h"
 #include "../JavaReferencesCache.h"
 #include "../Exceptions.h"
 #include "../JavaScriptTypedArray.h"
@@ -240,5 +242,83 @@ jobject PolyFrontendConverter::convert(
     UnexpectedException::create(
       "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
   );
+}
+
+PrimitiveArrayFrontendConverter::PrimitiveArrayFrontendConverter(
+  jni::local_ref<ExpectedType::javaobject> expectedType
+) {
+  auto parameterExpectedType = expectedType->getFirstType()->getFirstParameterType();
+  parameterType = parameterExpectedType->getCombinedTypes();
+  parameterConverter = FrontendConverterProvider::instance()->obtainConverter(
+    parameterExpectedType
+  );
+  javaType = parameterExpectedType->getJClassString();
+}
+
+jobject PrimitiveArrayFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &value
+) const {
+  auto jsArray = value.asObject(rt).asArray(rt);
+  size_t size = jsArray.size(rt);
+  if (parameterType == CppType::INT) {
+    std::vector<jint> tmpVector(size);
+    for (size_t i = 0; i < size; i++) {
+      tmpVector[i] = (jint) jsArray.getValueAtIndex(rt, i).asNumber();
+    }
+    auto result = env->NewIntArray(size);
+    env->SetIntArrayRegion(result, 0, size, tmpVector.data());
+    return result;
+  }
+
+  if (parameterType == CppType::DOUBLE) {
+    std::vector<jdouble> tmpVector(size);
+    for (size_t i = 0; i < size; i++) {
+      tmpVector[i] = (jdouble) jsArray.getValueAtIndex(rt, i).asNumber();
+    }
+    auto result = env->NewDoubleArray(size);
+    env->SetDoubleArrayRegion(result, 0, size, tmpVector.data());
+    return result;
+  }
+
+  if (parameterType == CppType::FLOAT) {
+    std::vector<jfloat> tmpVector(size);
+    for (size_t i = 0; i < size; i++) {
+      tmpVector[i] = (jfloat) jsArray.getValueAtIndex(rt, i).asNumber();
+    }
+    auto result = env->NewFloatArray(size);
+    env->SetFloatArrayRegion(result, 0, size, tmpVector.data());
+    return result;
+  }
+
+  if (parameterType == CppType::BOOLEAN) {
+    std::vector<jboolean> tmpVector(size);
+    for (size_t i = 0; i < size; i++) {
+      tmpVector[i] = (jboolean) jsArray.getValueAtIndex(rt, i).asBool();
+    }
+    auto result = env->NewBooleanArray(size);
+    env->SetBooleanArrayRegion(result, 0, size, tmpVector.data());
+    return result;
+  }
+
+  auto result = env->NewObjectArray(
+    size,
+    JavaReferencesCache::instance()->getOrLoadJClass(env, javaType).clazz,
+    nullptr
+  );
+  for (size_t i = 0; i < size; i++) {
+    auto convertedElement = parameterConverter->convert(
+      rt, env, moduleRegistry, jsArray.getValueAtIndex(rt, i)
+    );
+    env->SetObjectArrayElement(result, i, convertedElement);
+    env->DeleteLocalRef(convertedElement);
+  }
+  return result;
+}
+
+bool PrimitiveArrayFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  return value.isObject() && value.asObject(rt).isArray(rt);
 }
 } // namespace expo
