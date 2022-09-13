@@ -6,6 +6,7 @@ import { BasicButton } from '../components/BasicButton';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { FlatList } from '../components/FlatList';
+import { ScreenContainer } from '../components/ScreenContainer';
 import { getRecentRuntime } from '../functions/getRecentRuntime';
 import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
@@ -127,21 +128,23 @@ export function BranchesScreen({ navigation }: BranchesScreenProps) {
   }
 
   return (
-    <View flex="1" px="medium">
-      <FlatList
-        isLoading={isLoading}
-        isRefreshing={isRefreshing}
-        onRefresh={() => refetch()}
-        ListHeaderComponent={Header}
-        extraData={{ length: branches.length, hasNextPage, loadingUpdateId }}
-        data={branches}
-        ItemSeparatorComponent={Divider}
-        renderItem={renderBranch}
-        keyExtractor={(item) => item?.id}
-        ListFooterComponent={Footer}
-        ListEmptyComponent={EmptyList}
-      />
-    </View>
+    <ScreenContainer>
+      <View flex="1" px="medium">
+        <FlatList
+          isLoading={isLoading}
+          isRefreshing={isRefreshing}
+          onRefresh={() => refetch()}
+          ListHeaderComponent={Header}
+          extraData={{ length: branches.length, hasNextPage, loadingUpdateId }}
+          data={branches}
+          ItemSeparatorComponent={Divider}
+          renderItem={renderBranch}
+          keyExtractor={(item) => item?.id}
+          ListFooterComponent={Footer}
+          ListEmptyComponent={EmptyList}
+        />
+      </View>
+    </ScreenContainer>
   );
 }
 
