@@ -8,6 +8,7 @@ import {
   iconSize,
   SnackLogo,
   shadows,
+  breakpoints,
 } from '@expo/styleguide';
 import * as React from 'react';
 
@@ -157,6 +158,12 @@ const inlineSnackHeaderStyle = css({
   borderTopLeftRadius: borderRadius.small,
   borderTopRightRadius: borderRadius.small,
   justifyContent: 'space-between',
+
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: spacing[1],
+  },
 });
 
 const inlineSnackSoleHeaderStyle = css({
@@ -164,6 +171,7 @@ const inlineSnackSoleHeaderStyle = css({
 });
 
 const inlineSnackTitleStyle = css({
+  ...typography.fontSizes[16],
   fontFamily: typography.fontFaces.semiBold,
   color: theme.text.default,
 });
