@@ -9,7 +9,7 @@
   "@react-native-firebase/app": "~15.4.0",
   "@react-native-picker/picker": "2.4.2",
   "@react-native-segmented-control/segmented-control": "2.4.0",
-  "@stripe/stripe-react-native": "0.13.1",
+  "@stripe/stripe-react-native": "0.18.1",
   "expo-analytics-amplitude": "~11.3.0",
   "expo-app-auth": "~11.1.0",
   "expo-app-loader-provider": "~8.0.0",

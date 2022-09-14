@@ -12,15 +12,7 @@ const PAGES_DIR = path.resolve(dirname, '../pages');
 // TODO(cedric): refactor docs to get rid of the directory lists
 
 /** Manual list of directories to categorize as "EAS content" */
-const easDirectories = [
-  'eas',
-  'build',
-  'app-signing',
-  'build-reference',
-  'submit',
-  'eas-update',
-  'eas-metadata',
-];
+const easDirectories = ['eas', 'build', 'app-signing', 'build-reference', 'submit', 'eas-update'];
 /** Manual list of directories to categorize as "Archive" */
 const archiveDirectories = ['archive'];
 /** Private preview section which isn't linked in the documentation */
@@ -84,6 +76,7 @@ const general = [
   ),
   makeSection('Fundamentals', [
     makePage('workflow/expo-cli.md'),
+    makePage('workflow/expo-go.md'),
     makePage('workflow/using-libraries.md'),
     makePage('workflow/logging.md'),
     makePage('workflow/development-mode.md'),
@@ -143,7 +136,6 @@ const general = [
     makePage('guides/errors.md'),
     makePage('guides/testing-with-jest.md'),
     makePage('guides/education.md'),
-    makePage('guides/how-expo-works.md'),
     makePage('guides/linking.md'),
     makePage('guides/deep-linking.md'),
     makePage('guides/troubleshooting-proxies.md'),
@@ -302,9 +294,11 @@ const eas = [
   makeSection(
     'EAS Metadata',
     [
-      makePage('eas-metadata/introduction.md'),
-      makePage('eas-metadata/getting-started.md'),
-      // makePage('eas-metadata/store-json.md'), Disabled due to missing config overview
+      makePage('eas/metadata/index.md'),
+      makePage('eas/metadata/getting-started.md'),
+      makePage('eas/metadata/config.md'),
+      makePage('eas/metadata/schema.md'),
+      makePage('eas/metadata/faq.md'),
     ],
     { expanded: true }
   ),
