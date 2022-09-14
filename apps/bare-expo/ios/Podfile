@@ -3,7 +3,7 @@ install! 'cocoapods',
          :incremental_installation => true,
          :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
-platform :ios, '12.4'
+platform :ios, '13.0'
 inhibit_all_warnings!
 
 # Import the auto-linking packages
@@ -57,7 +57,7 @@ abstract_target 'BareExpoMain' do
           # See https://github.com/react-native-community/upgrade-support/issues/91 and https://github.com/facebook/flipper/issues/834
           config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
         else
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
         end
       end
     end

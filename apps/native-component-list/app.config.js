@@ -21,8 +21,6 @@ export default ({ config }) => {
     './plugins/withDevMenu',
     // Add AsyncStorage
     './plugins/withExpoAsyncStorage',
-    // Set the minimum version to 12 for Amplitude support
-    ['./plugins/withPodfileMinVersion', '12.0'],
 
     // Android plugins
 

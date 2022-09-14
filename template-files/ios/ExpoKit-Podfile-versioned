@@ -1,4 +1,4 @@
-platform :ios, '12.0'
+platform :ios, '13.0'
 
 # Disable expo-updates auto create manifest in podspec script_phase
 $expo_updates_create_manifest = false
