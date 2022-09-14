@@ -70,68 +70,68 @@ public final class CameraViewModule: Module {
         "onFacesDetected"
       )
 
-      Prop("type") { (view: EXCamera, type: Int) in
+      Prop("type") { (view, type: Int) in
         if view.presetCamera != type {
           view.presetCamera = type
           view.updateType()
         }
       }
 
-      Prop("flashMode") { (view: EXCamera, flashMode: Int) in
+      Prop("flashMode") { (view, flashMode: Int) in
         if let flashMode = EXCameraFlashMode(rawValue: flashMode), view.flashMode != flashMode {
           view.flashMode = flashMode
           view.updateFlashMode()
         }
       }
 
-      Prop("faceDetectorSettings") { (view: EXCamera, settings: [String: Any]) in
+      Prop("faceDetectorSettings") { (view, settings: [String: Any]) in
         view.updateFaceDetectorSettings(settings)
       }
 
-      Prop("barCodeScannerSettings") { (view: EXCamera, settings: [String: Any]) in
+      Prop("barCodeScannerSettings") { (view, settings: [String: Any]) in
         view.setBarCodeScannerSettings(settings)
       }
 
-      Prop("autoFocus") { (view: EXCamera, autoFocus: Int) in
+      Prop("autoFocus") { (view, autoFocus: Int) in
         if view.autoFocus != autoFocus {
           view.autoFocus = autoFocus
           view.updateFocusMode()
         }
       }
 
-      Prop("focusDepth") { (view: EXCamera, focusDepth: Float) in
+      Prop("focusDepth") { (view, focusDepth: Float) in
         if fabsf(view.focusDepth - focusDepth) > Float.ulpOfOne {
           view.focusDepth = focusDepth
           view.updateFocusDepth()
         }
       }
 
-      Prop("zoom") { (view: EXCamera, zoom: Double) in
+      Prop("zoom") { (view, zoom: Double) in
         if fabs(view.zoom - zoom) > Double.ulpOfOne {
           view.zoom = zoom
           view.updateZoom()
         }
       }
 
-      Prop("whiteBalance") { (view: EXCamera, whiteBalance: Int) in
+      Prop("whiteBalance") { (view, whiteBalance: Int) in
         if view.whiteBalance != whiteBalance {
           view.whiteBalance = whiteBalance
           view.updateWhiteBalance()
         }
       }
 
-      Prop("pictureSize") { (view: EXCamera, pictureSize: String) in
+      Prop("pictureSize") { (view, pictureSize: String) in
         view.pictureSize = pictureSizesDict[pictureSize]?.rawValue as NSString?
         view.updatePictureSize()
       }
 
-      Prop("faceDetectorEnabled") { (view: EXCamera, detectFaces: Bool) in
+      Prop("faceDetectorEnabled") { (view, detectFaces: Bool) in
         if view.isDetectingFaces != detectFaces {
           view.isDetectingFaces = detectFaces
         }
       }
 
-      Prop("barCodeScannerEnabled") { (view: EXCamera, scanBarCodes: Bool) in
+      Prop("barCodeScannerEnabled") { (view, scanBarCodes: Bool) in
         if view.isScanningBarCodes != scanBarCodes {
           view.isScanningBarCodes = scanBarCodes
         }
