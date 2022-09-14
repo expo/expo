@@ -41,15 +41,19 @@ export function transformString(
 
 async function getTransformedFileContentAsync(
   filePath: string,
-  transforms: FileTransform[]
+  transforms: FileTransform[],
+  options?: {
+    // File path to match the `transforms.paths` pattern, e.g. use relative path here
+    transformMatchPath?: string;
+  }
 ): Promise<string> {
   // Filter out transforms that don't match paths patterns.
-  const filteredContentTransforms =
-    transforms.filter(
-      ({ paths }) =>
-        !paths ||
-        arrayize(paths).some((pattern) => minimatch(filePath, pattern, { matchBase: true }))
-    ) ?? [];
+  const sourceFile = options?.transformMatchPath ?? filePath;
+  const filteredContentTransforms = transforms.filter(
+    ({ paths }) =>
+      !paths ||
+      arrayize(paths).some((pattern) => minimatch(sourceFile, pattern, { matchBase: true }))
+  );
 
   // Transform source content.
   let result = await fs.readFile(filePath, 'utf8');
@@ -137,7 +141,9 @@ export async function copyFileWithTransformsAsync(
   const targetPath = path.join(targetDirectory, targetFile);
 
   // Transform source content.
-  const content = await getTransformedFileContentAsync(sourcePath, transforms.content ?? []);
+  const content = await getTransformedFileContentAsync(sourcePath, transforms.content ?? [], {
+    transformMatchPath: sourceFile,
+  });
 
   // Save transformed source file at renamed target path.
   await fs.outputFile(targetPath, content);
