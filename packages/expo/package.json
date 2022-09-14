@@ -25,6 +25,7 @@
     "expo-module.config.json",
     "metro-config.js",
     "config-plugins.js",
+    "config-plugins.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
     "tsconfig.base.json"
