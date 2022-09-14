@@ -17,6 +17,11 @@ class SingleType(
    * The representation of the type.
    */
   val cppType: Int = expectedCppType.value
+
+  /**
+   * A convenient property to return the type of the first parameter.
+   */
+  val firstParameterType = parameterTypes?.get(0)
 }
 
 /**
@@ -34,4 +39,33 @@ class ExpectedType(
    * A convenient property to return combined int value of expected types.
    */
   val combinedTypes: Int = possibleTypes.fold(0) { acc, current -> acc or current.cppType }
+
+  /**
+   * A convenient property to return the first of possible types.
+   */
+  val firstType = possibleTypes.first()
+
+  companion object {
+    fun forPrimitiveArray(parameterType: CppType) = ExpectedType(
+      SingleType(CppType.PRIMITIVE_ARRAY, arrayOf(ExpectedType(parameterType)))
+    )
+
+    fun forPrimitiveArray(parameterType: ExpectedType) = ExpectedType(
+      SingleType(CppType.PRIMITIVE_ARRAY, arrayOf(parameterType))
+    )
+
+    // We are not using all types here to provide a similar behaviour to the bridge implementation
+    fun forAny() = ExpectedType(
+      CppType.READABLE_MAP,
+      CppType.READABLE_ARRAY,
+      CppType.STRING,
+      CppType.BOOLEAN,
+      CppType.DOUBLE
+    )
+
+    fun forEnum() = ExpectedType(
+      CppType.STRING,
+      CppType.INT
+    )
+  }
 }

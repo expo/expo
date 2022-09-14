@@ -18,5 +18,6 @@ enum class CppType(val value: Int = nextValue()) {
   JS_VALUE,
   READABLE_ARRAY,
   READABLE_MAP,
-  TYPED_ARRAY;
+  TYPED_ARRAY,
+  PRIMITIVE_ARRAY;
 }

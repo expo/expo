@@ -130,6 +130,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       IntArray::class.createType(nullable = isOptional) to PrimitiveIntArrayTypeConverter(isOptional),
       DoubleArray::class.createType(nullable = isOptional) to PrimitiveDoubleArrayTypeConverter(isOptional),
       FloatArray::class.createType(nullable = isOptional) to PrimitiveFloatArrayTypeConverter(isOptional),
+      BooleanArray::class.createType(nullable = isOptional) to PrimitiveBooleanArrayTypeConverter(isOptional),
 
       JavaScriptValue::class.createType(nullable = isOptional) to JavaScriptValueTypeConvert(isOptional),
       JavaScriptObject::class.createType(nullable = isOptional) to JavaScriptObjectTypeConverter(isOptional),

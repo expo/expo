@@ -18,6 +18,7 @@ enum CppType {
   JS_VALUE = 1 << 6,
   READABLE_ARRAY = 1 << 7,
   READABLE_MAP = 1 << 8,
-  TYPED_ARRAY = 1 << 9
+  TYPED_ARRAY = 1 << 9,
+  PRIMITIVE_ARRAY = 1 << 10
 };
 } // namespace expo

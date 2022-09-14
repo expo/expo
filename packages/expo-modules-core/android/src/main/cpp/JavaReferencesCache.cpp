@@ -30,6 +30,12 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
   });
 
   loadJClass(env, "java/lang/Object", {});
+  loadJClass(env, "java/lang/String", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptObject", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptValue", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptTypedArray", {});
+  loadJClass(env, "com/facebook/react/bridge/ReadableNativeArray", {});
+  loadJClass(env, "com/facebook/react/bridge/ReadableNativeMap", {});
 }
 
 void JavaReferencesCache::loadJClass(
@@ -59,6 +65,19 @@ JavaReferencesCache::CachedJClass &JavaReferencesCache::getJClass(
   const std::string &className
 ) {
   return jClassRegistry.at(className);
+}
+
+JavaReferencesCache::CachedJClass &JavaReferencesCache::getOrLoadJClass(
+  JNIEnv *env,
+  const std::string &className
+) {
+  auto result = jClassRegistry.find(className);
+  if (result == jClassRegistry.end()) {
+    loadJClass(env, className, {});
+    return jClassRegistry.at(className);
+  }
+
+  return result->second;
 }
 
 jmethodID JavaReferencesCache::CachedJClass::getMethod(
