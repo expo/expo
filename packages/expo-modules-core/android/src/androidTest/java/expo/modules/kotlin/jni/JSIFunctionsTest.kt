@@ -317,4 +317,94 @@ class JSIFunctionsTest {
   ) {
     evaluateScript("ExpoModules.TestModule.f(Symbol())")
   }
+
+  @Test
+  fun int_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("intArray") { a: IntArray -> a }
+    }
+  ) {
+    val array = evaluateScript("ExpoModules.TestModule.intArray([1, 2, 3])").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getDouble().toInt()
+    val e2 = array[1].getDouble().toInt()
+    val e3 = array[2].getDouble().toInt()
+
+    Truth.assertThat(e1).isEqualTo(1)
+    Truth.assertThat(e2).isEqualTo(2)
+    Truth.assertThat(e3).isEqualTo(3)
+  }
+
+  @Test
+  fun string_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("stringArray") { a: Array<String> -> a }
+    }
+  ) {
+    val array = evaluateScript("ExpoModules.TestModule.stringArray(['a', 'b', 'c'])").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getString()
+    val e2 = array[1].getString()
+    val e3 = array[2].getString()
+
+    Truth.assertThat(e1).isEqualTo("a")
+    Truth.assertThat(e2).isEqualTo("b")
+    Truth.assertThat(e3).isEqualTo("c")
+  }
+
+  @Test
+  fun int_array_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("array") { a: Array<IntArray> -> a }
+    }
+  ) {
+    val array = evaluateScript("ExpoModules.TestModule.array([[1,2], [3, 4]])").getArray()
+    Truth.assertThat(array.size).isEqualTo(2)
+
+    val a1 = array[0].getArray()
+    val a2 = array[1].getArray()
+
+    Truth.assertThat(a1.size).isEqualTo(2)
+    Truth.assertThat(a2.size).isEqualTo(2)
+
+    val e1 = a1[0].getDouble().toInt()
+    val e2 = a1[1].getDouble().toInt()
+    val e3 = a2[0].getDouble().toInt()
+    val e4 = a2[1].getDouble().toInt()
+
+    Truth.assertThat(e1).isEqualTo(1)
+    Truth.assertThat(e2).isEqualTo(2)
+    Truth.assertThat(e3).isEqualTo(3)
+    Truth.assertThat(e4).isEqualTo(4)
+  }
+
+  @Test
+  fun js_object_array_should_be_convertible() {
+    var wasCalled = false
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Function("jsObjectArray") { a: Array<JavaScriptObject> ->
+          wasCalled = true
+
+          val e1 = a[0]
+          val e2 = a[1]
+
+          val foo = e1.getProperty("foo").getString()
+          Truth.assertThat(foo).isEqualTo("foo")
+
+          val bar = e2.getProperty("bar").getString()
+          Truth.assertThat(bar).isEqualTo("bar")
+        }
+      }
+    ) {
+      evaluateScript("ExpoModules.TestModule.jsObjectArray([{'foo':'foo'}, {'bar':'bar'}])")
+      Truth.assertThat(wasCalled).isTrue()
+    }
+  }
 }
