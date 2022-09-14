@@ -153,44 +153,48 @@ public final class CameraViewModule: Module {
     AsyncFunction("record") { (options: [String: Any], viewTag: Int, promise: Promise) in
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
-      #endif
+      #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
         throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
       }
       view.record(options, resolve: promise.resolver, reject: promise.legacyRejecter)
+      #endif
     }
     .runOnQueue(.main)
 
     AsyncFunction("stopRecording") { (viewTag: Int) in
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
-      #endif
+      #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
         throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
       }
       view.stopRecording()
+      #endif
     }
     .runOnQueue(.main)
 
     AsyncFunction("resumePreview") { (viewTag: Int) in
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
-      #endif
+      #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
         throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
       }
       view.resumePreview()
+      #endif
     }
     .runOnQueue(.main)
 
     AsyncFunction("pausePreview") { (viewTag: Int) in
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
-      #endif
+      #else
       guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
         throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
       }
       view.pausePreview()
+      #endif
     }
     .runOnQueue(.main)
 
