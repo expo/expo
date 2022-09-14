@@ -43,8 +43,17 @@ async function getTransformedFileContentAsync(
   filePath: string,
   transforms: FileTransform[]
 ): Promise<string> {
+  // Filter out transforms that don't match paths patterns.
+  const filteredContentTransforms =
+    transforms.filter(
+      ({ paths }) =>
+        !paths ||
+        arrayize(paths).some((pattern) => minimatch(filePath, pattern, { matchBase: true }))
+    ) ?? [];
+
+  // Transform source content.
   let result = await fs.readFile(filePath, 'utf8');
-  for (const transform of transforms) {
+  for (const transform of filteredContentTransforms) {
     const beforeTransformation = result;
     result = applySingleTransform(result, transform);
     await maybePrintDebugInfoAsync(beforeTransformation, result, filePath, transform);
@@ -106,17 +115,10 @@ export async function transformFileAsync(
  */
 export async function transformFilesAsync(files: string[], transforms: FileTransform[]) {
   for (const file of files) {
-    // Filter out transforms that don't match paths patterns.
-    const filteredContentTransforms =
-      transforms.filter(
-        ({ paths }) =>
-          !paths || arrayize(paths).some((pattern) => minimatch(file, pattern, { matchBase: true }))
-      ) ?? [];
-
     // Transform source content.
-    const content = await getTransformedFileContentAsync(file, filteredContentTransforms);
+    const content = await getTransformedFileContentAsync(file, transforms);
 
-    // Save transformed source file at renamed target path.
+    // Save transformed content
     await fs.outputFile(file, content);
   }
 }
@@ -134,16 +136,8 @@ export async function copyFileWithTransformsAsync(
   const targetFile = transformString(sourceFile, transforms.path);
   const targetPath = path.join(targetDirectory, targetFile);
 
-  // Filter out transforms that don't match paths patterns.
-  const filteredContentTransforms =
-    transforms.content?.filter(
-      ({ paths }) =>
-        !paths ||
-        arrayize(paths).some((pattern) => minimatch(sourceFile, pattern, { matchBase: true }))
-    ) ?? [];
-
   // Transform source content.
-  const content = await getTransformedFileContentAsync(sourcePath, filteredContentTransforms);
+  const content = await getTransformedFileContentAsync(sourcePath, transforms.content ?? []);
 
   // Save transformed source file at renamed target path.
   await fs.outputFile(targetPath, content);
