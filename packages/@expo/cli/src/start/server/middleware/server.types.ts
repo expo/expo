@@ -4,7 +4,10 @@ import http from 'http';
 /** Headers */
 export type ServerHeaders = Map<string, number | string | readonly string[]>;
 /** Request */
-export type ServerRequest = express.Request | http.IncomingMessage;
+export type ServerRequest = (express.Request | http.IncomingMessage) & {
+  // Added by `body-parser`
+  rawBody?: string;
+};
 /** Response */
 export type ServerResponse = express.Response | http.ServerResponse;
 /** Next function */
