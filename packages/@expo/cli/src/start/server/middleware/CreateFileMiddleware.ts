@@ -17,14 +17,30 @@ export class CreateFileMiddleware extends ExpoMiddleware {
       res.end('Method Not Allowed');
       return;
     }
-    if (!req.rawBody) {
+
+    let properties: { path: string; contents: string };
+
+    try {
+      const rawBody = await new Promise<string>((resolve, reject) => {
+        let body = '';
+        req.on('data', (chunk) => {
+          body += chunk.toString();
+        });
+        req.on('end', () => {
+          resolve(body);
+        });
+        req.on('error', (err) => {
+          reject(err);
+        });
+      });
+
+      properties = JSON.parse(rawBody);
+    } catch (e) {
+      debug('Error parsing request body', e);
       res.statusCode = 400;
-      res.end(
-        'Missing results of body-parser (`rawBody` property). This is a bug in the Expo CLI.'
-      );
+      res.end('Bad Request');
       return;
     }
-    const properties = JSON.parse(req.rawBody) as { contents: string; path: string };
 
     debug(`Requested: %O`, properties);
     if (properties.contents == null || properties.path == null) {
