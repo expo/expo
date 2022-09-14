@@ -216,7 +216,7 @@ export interface ExpoConfig {
       keyid?: string;
     };
     /**
-     * Headers for `requestHeadersKey`
+     * Extra HTTP headers to include in HTTP requests made by expo-updates. These may override preset headers.
      */
     requestHeaders?: Record<string, string>;
   };
