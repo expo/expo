@@ -91,7 +91,7 @@ export function setUpdatesConfig(
   if (requestHeaders) {
     newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders;
   } else {
-    delete newExpoPlist[Config.CODE_SIGNING_METADATA];
+    delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
   }
 
   return setVersionsConfig(config, newExpoPlist);
