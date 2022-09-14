@@ -76,7 +76,6 @@ const selectStyle = css`
   appearance: none;
   background-color: ${theme.background.default};
   cursor: pointer;
-  outline: none;
 `;
 
 const selectIconStyle = css`
