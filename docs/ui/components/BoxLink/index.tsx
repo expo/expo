@@ -1,5 +1,13 @@
 import { css } from '@emotion/react';
-import { borderRadius, spacing, theme, ArrowRightIcon, iconSize, shadows } from '@expo/styleguide';
+import {
+  borderRadius,
+  spacing,
+  theme,
+  ArrowRightIcon,
+  iconSize,
+  shadows,
+  ArrowUpRightIcon,
+} from '@expo/styleguide';
 import type { IconProps } from '@expo/styleguide/dist/types';
 import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
 
@@ -14,8 +22,10 @@ type BoxLinkProps = PropsWithChildren<{
 }>;
 
 export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps) {
+  const isExternal = Boolean(href && href.startsWith('http'));
+  const ArrowIcon = isExternal ? ArrowUpRightIcon : ArrowRightIcon;
   return (
-    <A href={href} css={tileContainerStyle} data-testid={testID}>
+    <A href={href} css={tileContainerStyle} data-testid={testID} openInNewTab={isExternal}>
       <div css={tileContentWrapperStyle}>
         {Icon && (
           <div css={tileIconBackgroundStyle}>
@@ -27,7 +37,7 @@ export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps
           <P>{description}</P>
         </div>
       </div>
-      <ArrowRightIcon css={arrowIconStyle} color={theme.icon.secondary} />
+      <ArrowIcon css={arrowIconStyle} color={theme.icon.secondary} />
     </A>
   );
 }
