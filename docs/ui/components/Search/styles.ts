@@ -91,7 +91,6 @@ export const DocSearchStyles = css`
   .DocSearch-Button:active,
   .DocSearch-Button:focus {
     color: var(--docsearch-text-color);
-    outline: none;
   }
 
   .DocSearch-Button-Container {
