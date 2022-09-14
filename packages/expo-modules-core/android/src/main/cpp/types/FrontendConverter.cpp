@@ -255,6 +255,24 @@ PrimitiveArrayFrontendConverter::PrimitiveArrayFrontendConverter(
   javaType = parameterExpectedType->getJClassString();
 }
 
+template<typename T, typename A>
+jobject createPrimitiveArray(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  const jsi::Array &jsArray,
+  A (JNIEnv::*arrayConstructor)(jsize),
+  void (JNIEnv::*setRegion)(A, jsize, jsize, const T *)
+) {
+  size_t size = jsArray.size(rt);
+  std::vector<T> tmpVector(size);
+  for (size_t i = 0; i < size; i++) {
+    tmpVector[i] = (T) jsArray.getValueAtIndex(rt, i).asNumber();
+  }
+  auto result = std::invoke(arrayConstructor, env, size);
+  std::invoke(setRegion, env, result, 0, size, tmpVector.data());
+  return result;
+}
+
 jobject PrimitiveArrayFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
@@ -262,47 +280,38 @@ jobject PrimitiveArrayFrontendConverter::convert(
   const jsi::Value &value
 ) const {
   auto jsArray = value.asObject(rt).asArray(rt);
-  size_t size = jsArray.size(rt);
+  auto _createPrimitiveArray = [&rt, env, &jsArray](
+    auto arrayConstructor, auto setRegion
+  ) -> jobject {
+    return createPrimitiveArray(rt, env, jsArray, arrayConstructor, setRegion);
+  };
+
   if (parameterType == CppType::INT) {
-    std::vector<jint> tmpVector(size);
-    for (size_t i = 0; i < size; i++) {
-      tmpVector[i] = (jint) jsArray.getValueAtIndex(rt, i).asNumber();
-    }
-    auto result = env->NewIntArray(size);
-    env->SetIntArrayRegion(result, 0, size, tmpVector.data());
-    return result;
+    return _createPrimitiveArray(
+      &JNIEnv::NewIntArray,
+      &JNIEnv::SetIntArrayRegion
+    );
   }
-
   if (parameterType == CppType::DOUBLE) {
-    std::vector<jdouble> tmpVector(size);
-    for (size_t i = 0; i < size; i++) {
-      tmpVector[i] = (jdouble) jsArray.getValueAtIndex(rt, i).asNumber();
-    }
-    auto result = env->NewDoubleArray(size);
-    env->SetDoubleArrayRegion(result, 0, size, tmpVector.data());
-    return result;
+    return _createPrimitiveArray(
+      &JNIEnv::NewDoubleArray,
+      &JNIEnv::SetDoubleArrayRegion
+    );
   }
-
   if (parameterType == CppType::FLOAT) {
-    std::vector<jfloat> tmpVector(size);
-    for (size_t i = 0; i < size; i++) {
-      tmpVector[i] = (jfloat) jsArray.getValueAtIndex(rt, i).asNumber();
-    }
-    auto result = env->NewFloatArray(size);
-    env->SetFloatArrayRegion(result, 0, size, tmpVector.data());
-    return result;
+    return _createPrimitiveArray(
+      &JNIEnv::NewFloatArray,
+      &JNIEnv::SetFloatArrayRegion
+    );
   }
-
   if (parameterType == CppType::BOOLEAN) {
-    std::vector<jboolean> tmpVector(size);
-    for (size_t i = 0; i < size; i++) {
-      tmpVector[i] = (jboolean) jsArray.getValueAtIndex(rt, i).asBool();
-    }
-    auto result = env->NewBooleanArray(size);
-    env->SetBooleanArrayRegion(result, 0, size, tmpVector.data());
-    return result;
+    return _createPrimitiveArray(
+      &JNIEnv::NewBooleanArray,
+      &JNIEnv::SetBooleanArrayRegion
+    );
   }
 
+  size_t size = jsArray.size(rt);
   auto result = env->NewObjectArray(
     size,
     JavaReferencesCache::instance()->getOrLoadJClass(env, javaType).clazz,

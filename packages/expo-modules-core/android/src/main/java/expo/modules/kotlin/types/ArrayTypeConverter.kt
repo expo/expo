@@ -3,7 +3,6 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
-import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KClass
