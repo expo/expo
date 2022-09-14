@@ -3,11 +3,11 @@ import { theme, iconSize, spacing, ChevronDownIcon, borderRadius, shadows } from
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
 
+import { ButtonBase } from '../Button';
 import { CALLOUT } from '../Text';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { NavigationRoute } from '~/types/common';
-import { ButtonBase } from '../Button';
 
 if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
   window.sidebarState = {};
