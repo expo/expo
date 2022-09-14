@@ -94,6 +94,12 @@ const config: VendoringTargetConfig = {
               find: /^#import "React\/RCT(.*).h"$/gm,
               replaceWith: '#import <React/RCT$1.h>',
             },
+            {
+              // remove the `#elif __has_include(<hermes/hermes.h>)` code block
+              paths: 'NativeProxy.mm',
+              find: /#elif __has_include\(<hermes\/hermes.h>\)\n.*(#import|makeHermesRuntime).*\n/gm,
+              replaceWith: '',
+            },
           ],
         },
       },

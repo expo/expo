@@ -19,8 +19,6 @@
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
-#elif __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
 #else
 #import <jsi/JSCRuntime.h>
 #endif
@@ -181,8 +179,6 @@ std::shared_ptr<NativeReanimatedModule> createReanimatedModule(
   };
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
-  std::shared_ptr<jsi::Runtime> animatedRuntime = facebook::hermes::makeHermesRuntime();
-#elif __has_include(<hermes/hermes.h>)
   std::shared_ptr<jsi::Runtime> animatedRuntime = facebook::hermes::makeHermesRuntime();
 #else
   std::shared_ptr<jsi::Runtime> animatedRuntime = facebook::jsc::makeJSCRuntime();

@@ -1,4 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
 import chalk from 'chalk';
 import { PromisyClass, TaskQueue } from 'cwait';
 import fs from 'fs-extra';
@@ -25,6 +26,7 @@ import {
   MODULES_PROVIDER_POD_NAME,
   versionExpoModulesProviderAsync,
 } from './versionExpoModulesProvider';
+import { createVersionedHermesTarball } from './versionHermes';
 import {
   versionVendoredModulesAsync,
   removeVersionedVendoredModulesAsync,
@@ -114,6 +116,24 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
         }
       );
 
+      // [hermes] the transform above will replace
+      // #include "hermes/inspector/detail/Thread.h" -> #include "hermes/ABIX_0_0inspector/detail/Thread.h"
+      // that is not correct.
+      // because hermes podspec doesn't use header_dir, we only use the header basename for versioning.
+      // this transform would replace
+      // #include "hermes/ABIX_0_0inspector/detail/Thread.h" -> #include "hermes/inspector/detail/ABIX_0_0Thread.h"
+      // note that the rule should be placed after the "rename misc imports" transform.
+      fileString = fileString.replace(
+        new RegExp(`^(#import|#include\\s+["<])(${versionPrefix}hermes\\/.+\\.h)([">])$`, 'gm'),
+        (match, prefix, header, suffix) => {
+          const headers = header.split('/').map((part) => part.replace(versionPrefix, ''));
+          assert(headers.length > 1);
+          const lastPart = headers[headers.length - 1];
+          headers[headers.length - 1] = `${versionPrefix}${lastPart}`;
+          return `${prefix}${headers.join('/')}${suffix}`;
+        }
+      );
+
       // restore EX_UNVERSIONED contents
       if (unversionedCaptures) {
         let index = 0;
@@ -193,6 +213,8 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
     'ReactCommon/ReactCommon.podspec',
     'ReactCommon/React-Fabric.podspec',
     'ReactCommon/React-bridging.podspec',
+    'ReactCommon/hermes/React-hermes.podspec',
+    'sdks/hermes-engine/hermes-engine.podspec',
     'package.json',
   ];
 
@@ -238,6 +260,12 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
       path.join(versionedReactNativePath, 'ReactCommon', library.libName)
     );
   }
+  // remove hermes test files in ReactCommon/hermes copied above
+  const hermesTestFiles = await glob('**/{cli,tests,tools}', {
+    cwd: path.join(versionedReactNativePath, 'ReactCommon', 'hermes'),
+    absolute: true,
+  });
+  await Promise.all(hermesTestFiles.map((file) => fs.remove(file)));
 
   await generateReactNativePodScriptAsync(versionedReactNativePath, versionName);
   await generateReactNativePodspecsAsync(versionedReactNativePath, versionName);
@@ -348,6 +376,13 @@ async function generateReactNativePodScriptAsync(
       ),
       replaceWith: `"${versionName}$1":$2`,
     },
+    // hermes
+    { find: /^\s+prepare_hermes[.\s\S]*abort unless prep_status == 0\n$/gm, replaceWith: '' },
+    {
+      find: `pod '${versionName}hermes-engine', :podspec => "#{prefix}/sdks/hermes/hermes-engine.podspec"`,
+      replaceWith: `pod '${versionName}hermes-engine', :path => "#{prefix}/sdks/hermes-engine", :project_name => '${versionName}'`,
+    },
+    { find: new RegExp(`\\b${versionName}(libevent)\\b`, 'g'), replaceWith: '$1' },
   ];
 
   const transforms: FileTransforms = {
@@ -504,6 +539,7 @@ async function generateExpoKitPodspecAsync(
     ss.dependency         "${versionedReactPodName}Common"
     ss.dependency         "${versionName}RCTRequired"
     ss.dependency         "${versionName}RCTTypeSafety"
+    ss.dependency         "${versionName}React-hermes"
     ${universalModulesDependencies}
     ${externalDependencies}
     ss.dependency         "${versionName}${MODULES_PROVIDER_POD_NAME}"
@@ -654,7 +690,11 @@ async function generatePodfileSubscriptsAsync(
 
 require './${relativeReactNativePath}/scripts/react_native_pods.rb'
 
-use_react_native_${versionName}! path: './${relativeReactNativePath}'
+use_react_native_${versionName}!(
+  :path => './${relativeReactNativePath}',
+  :hermes_enabled => true,
+  :fabric_enabled => false,
+)
 
 pod '${getVersionedExpoKitPodName(versionName)}',
   :path => './${relativeExpoKitPath}',
@@ -904,6 +944,9 @@ function getCppLibrariesToVersion() {
     {
       libName: 'logger',
     },
+    {
+      libName: 'hermes',
+    },
   ];
 }
 
@@ -993,7 +1036,34 @@ export async function addVersionAsync(versionNumber: string, packages: Package[]
     );
   }
 
+  logger.info('\n💿 Starting to build versioned Hermes tarball');
+  const versionedReactNativeRoot = getVersionedReactNativePath(versionName);
+  const hermesTarball = await createVersionedHermesTarball(versionedReactNativeRoot, versionName, {
+    verbose: true,
+  });
+  await spawnAsync('tar', ['xfz', hermesTarball], {
+    cwd: path.join(versionedReactNativeRoot, 'sdks', 'hermes-engine'),
+  });
+
   console.log('Finished creating new version.');
+
+  console.log(
+    '\n' +
+      chalk.yellow(
+        '################################################################################################################'
+      ) +
+      `\nIf you want to commit the versioned code to git, please also upload the versioned Hermes tarball at ${chalk.cyan(
+        hermesTarball
+      )} to:\n` +
+      chalk.cyan(
+        `https://github.com/expo/react-native/releases/download/sdk-${sdkNumber}.0.0/${versionName}hermes.tar.gz`
+      ) +
+      '\n' +
+      chalk.yellow(
+        '################################################################################################################'
+      ) +
+      '\n'
+  );
 }
 
 async function askToReinstallPodsAsync(): Promise<boolean> {
@@ -1195,12 +1265,17 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
       // It must be applied before versioning `namespace facebook` so
       // `using namespace facebook::` don't get versioned twice.
       flags: '-Ei',
-      pattern: `s/(facebook|JS)::/${versionPrefix}\\1::/g`,
+      pattern: `s/(facebook|JS|hermes)::/${versionPrefix}\\1::/g`,
     },
     {
       // Prefixes facebook namespace.
       flags: '-Ei',
-      pattern: `s/namespace (facebook|JS)/namespace ${versionPrefix}\\1/g`,
+      pattern: `s/namespace (facebook|JS|hermes)/namespace ${versionPrefix}\\1/g`,
+    },
+    {
+      // Prefixes for `namespace h = ::facebook::hermes;`
+      flags: '-Ei',
+      pattern: `s/namespace (.+::)(hermes)/namespace \\1${versionPrefix}\\2/g`,
     },
     {
       // For UMReactNativeAdapter

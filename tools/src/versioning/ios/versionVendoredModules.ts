@@ -115,15 +115,13 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `${prefix}$1$2`,
       },
       {
-        find: /facebook::/g,
-        replaceWith: `${prefix}facebook::`,
+        find: /(facebook|react|hermes)::/g,
+        replaceWith: (_, p1) => {
+          return `${prefix}${p1 === 'react' ? 'React' : p1}::`;
+        },
       },
       {
-        find: /react::/g,
-        replaceWith: `${prefix}React::`,
-      },
-      {
-        find: /namespace (facebook|react)/g,
+        find: /namespace (facebook|react|hermes)/g,
         replaceWith: (_, p1) => {
           return `namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
         },
@@ -178,6 +176,11 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         paths: '*.podspec.json',
         find: new RegExp(`${prefix}React-${prefix}RCT`, 'g'),
         replaceWith: `${prefix}React-RCT`,
+      },
+      {
+        paths: '*.podspec.json',
+        find: /\b(hermes-engine)\b/g,
+        replaceWith: `${prefix}$1`,
       },
       {
         paths: '*.podspec.json',

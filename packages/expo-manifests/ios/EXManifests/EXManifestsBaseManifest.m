@@ -152,6 +152,22 @@
   return enabledNumber != nil && [enabledNumber boolValue];
 }
 
+- (NSString *)jsEngine {
+  NSString *result = nil;
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (expoClientConfig) {
+    result = [[self class] getStringFromManifest:expoClientConfig
+                                         paths:@[
+                                           @[@"ios", @"jsEngine"],
+                                           @[@"jsEngine"],
+                                         ]];
+  }
+  if (!result) {
+    result = @"jsc";
+  }
+  return result;
+}
+
 # pragma mark - Derived Methods
 
 - (BOOL)isDevelopmentMode {
