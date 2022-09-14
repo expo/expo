@@ -23,15 +23,18 @@ object DevMenuDevSettings {
         putBoolean("isElementInspectorAvailable", devSettings.isJSDevModeEnabled)
         putBoolean("isHotLoadingAvailable", devSettings.isJSDevModeEnabled)
         putBoolean("isPerfMonitorAvailable", devSettings.isJSDevModeEnabled)
-        putBoolean("isJSInspectorAvailable", run {
-          val packageName = reactInstanceManager.currentReactContext?.packageName
-            ?: return@run false
-          val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
-          runBlocking {
-            DevMenuManager.metroClient
-              .queryJSInspectorAvailability(metroHost, packageName)
+        putBoolean(
+          "isJSInspectorAvailable",
+          run {
+            val packageName = reactInstanceManager.currentReactContext?.packageName
+              ?: return@run false
+            val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"
+            runBlocking {
+              DevMenuManager.metroClient
+                .queryJSInspectorAvailability(metroHost, packageName)
+            }
           }
-        })
+        )
       }
     }
 

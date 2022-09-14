@@ -19,6 +19,7 @@
 
 - Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
 - Switched uncaught exception logging to use metro websocket instead of expo-cli logUrl. ([#18787](https://github.com/expo/expo/pull/18787) by [@esamelson](https://github.com/esamelson))
+- Disable onboarding popup with URL query param. ([#19024](https://github.com/expo/expo/pull/19024) by [@douglowder](https://github.com/douglowder))
 
 ## 1.2.1 — 2022-08-16
 
