@@ -61,15 +61,7 @@ public final class CameraViewModule: Module {
       ]
     ])
 
-    ViewManager {
-      // TODO: For some unknown reason, the below line doesn't compile when used within the `View` component.
-      // That's probably fine as a workaround, since we plan to get rid of custom view factories anyway.
-      let legacyModuleRegistry = self.appContext?.legacyModuleRegistry
-
-      View {
-        return EXCamera(moduleRegistry: legacyModuleRegistry)
-      }
-
+    View(EXCamera.self) {
       Events(
         "onCameraReady",
         "onMountError",
