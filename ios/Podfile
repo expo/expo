@@ -45,7 +45,11 @@ abstract_target 'Expo Go' do
   use_pods! 'vendored/unversioned/**/*.podspec.json'
 
   # Unversioned React Native
-  use_react_native! path: '../react-native-lab/react-native'
+  use_react_native!(
+    :path => '../react-native-lab/react-native',
+    :hermes_enabled => true,
+    :fabric_enabled => false,
+  )
 
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled

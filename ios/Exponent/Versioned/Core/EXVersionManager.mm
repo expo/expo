@@ -54,6 +54,7 @@
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/CoreModulesPlugins.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
+#import <reacthermes/HermesExecutorFactory.h>
 #import <React/JSCExecutorFactory.h>
 #import <strings.h>
 
@@ -575,6 +576,9 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
          jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
          jsi::Object::createFromHostObject(runtime, reanimatedModule));
   };
+  if ([self.manifest.jsEngine isEqualToString:@"hermes"]) {
+    return new facebook::react::HermesExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
+  }
   return new facebook::react::JSCExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
 }
 

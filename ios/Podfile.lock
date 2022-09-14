@@ -1637,7 +1637,9 @@ PODS:
     - AppAuth/Core (~> 1.4)
     - GTMSessionFetcher/Core (~> 1.5)
   - GTMSessionFetcher/Core (1.7.2)
+  - hermes-engine (0.69.1)
   - JKBigInteger (0.0.6)
+  - libevent (2.1.12)
   - lottie-ios (3.2.3)
   - lottie-react-native (5.1.3):
     - lottie-ios (~> 3.2.3)
@@ -1686,6 +1688,12 @@ PODS:
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
+  - RCT-Folly/Futures (2021.06.28.00-v2):
+    - boost
+    - DoubleConversion
+    - fmt (~> 6.2.1)
+    - glog
+    - libevent
   - RCTRequired (0.69.1)
   - RCTTypeSafety (0.69.1):
     - FBLazyVector (= 0.69.1)
@@ -1863,6 +1871,17 @@ PODS:
     - React-logger (= 0.69.1)
     - React-perflogger (= 0.69.1)
     - React-runtimeexecutor (= 0.69.1)
+  - React-hermes (0.69.1):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2021.06.28.00-v2)
+    - RCT-Folly/Futures (= 2021.06.28.00-v2)
+    - React-cxxreact (= 0.69.1)
+    - React-jsi (= 0.69.1)
+    - React-jsiexecutor (= 0.69.1)
+    - React-jsinspector (= 0.69.1)
+    - React-perflogger (= 0.69.1)
   - React-jsi (0.69.1):
     - boost (= 1.76.0)
     - DoubleConversion
@@ -2362,7 +2381,9 @@ DEPENDENCIES:
   - Google-Maps-iOS-Utils (~> 2.1.0)
   - GoogleMaps (~> 3.6)
   - GoogleUtilities
+  - hermes-engine (from `../react-native-lab/react-native/sdks/hermes/hermes-engine.podspec`)
   - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
+  - libevent (~> 2.1.12)
   - lottie-react-native (from `./vendored/unversioned/lottie-react-native`)
   - MBProgressHUD (~> 1.2.0)
   - Nimble (from `./Nimble.podspec`)
@@ -2378,6 +2399,7 @@ DEPENDENCIES:
   - React-Core/RCTWebSocket (from `../react-native-lab/react-native/`)
   - React-CoreModules (from `../react-native-lab/react-native/React/CoreModules`)
   - React-cxxreact (from `../react-native-lab/react-native/ReactCommon/cxxreact`)
+  - React-hermes (from `../react-native-lab/react-native/ReactCommon/hermes`)
   - React-jsi (from `../react-native-lab/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../react-native-lab/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../react-native-lab/react-native/ReactCommon/jsinspector`)
@@ -2439,6 +2461,7 @@ SPEC REPOS:
     - GoogleUtilitiesComponents
     - GTMAppAuth
     - GTMSessionFetcher
+    - libevent
     - lottie-ios
     - MBProgressHUD
     - MLImage
@@ -3031,6 +3054,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/glog.podspec"
+  hermes-engine:
+    :podspec: "../react-native-lab/react-native/sdks/hermes/hermes-engine.podspec"
   JKBigInteger:
     :podspec: vendored/common/JKBigInteger.podspec.json
   lottie-react-native:
@@ -3057,6 +3082,8 @@ EXTERNAL SOURCES:
     :path: "../react-native-lab/react-native/React/CoreModules"
   React-cxxreact:
     :path: "../react-native-lab/react-native/ReactCommon/cxxreact"
+  React-hermes:
+    :path: "../react-native-lab/react-native/ReactCommon/hermes"
   React-jsi:
     :path: "../react-native-lab/react-native/ReactCommon/jsi"
   React-jsiexecutor:
@@ -3432,7 +3459,9 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMAppAuth: 4d8f864896f3646f0c33baf38a28362f4c601e15
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
+  hermes-engine: ece2bfa9bdb7f77f393cb2b41edf638eb086ec1a
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
+  libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
   lottie-react-native: a501112fa980529ccb80b9f3ee117a7f98c6af3a
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
@@ -3457,6 +3486,7 @@ SPEC CHECKSUMS:
   React-Core: 6177b1f2dd794fe202a5042d3678b2ddfcbfb7d4
   React-CoreModules: c74e6b155f9876b1947fc8a13f0cb437cc7f6dcd
   React-cxxreact: a07b7d90c4c71dd38c7383c7344b34d0a1336aee
+  React-hermes: 7e3687d19af44c3c53ad6acfad4f8fa53009d11b
   React-jsi: d762c410d10830b7579225c78f2fd881c29649ca
   React-jsiexecutor: 758e70947c232828a66b5ddc42d02b4d010fa26e
   React-jsinspector: 55605caf04e02f9b0e05842b786f1c12dde08f4b
@@ -3493,6 +3523,6 @@ SPEC CHECKSUMS:
   Yoga: 7ab6e3ee4ce47d7b789d1cb520163833e515f452
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 6483c1e689a3160897702671c753bc72581559e4
+PODFILE CHECKSUM: 28c4f8c13981ced803a02a1c9a3fad0365f4da31
 
 COCOAPODS: 1.11.2
