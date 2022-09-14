@@ -7,6 +7,7 @@ import { CALLOUT } from '../Text';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { NavigationRoute } from '~/types/common';
+import { ButtonBase } from '../Button';
 
 if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
   window.sidebarState = {};
@@ -60,7 +61,7 @@ export function SidebarCollapsible(props: Props) {
 
   return (
     <>
-      <a css={titleStyle} onClick={toggleIsOpen}>
+      <ButtonBase css={titleStyle} aria-expanded={isOpen ? 'true' : 'false'} onClick={toggleIsOpen}>
         <div css={chevronContainerStyle}>
           <ChevronDownIcon
             size={iconSize.tiny}
@@ -68,8 +69,8 @@ export function SidebarCollapsible(props: Props) {
           />
         </div>
         <CALLOUT weight="medium">{info.name}</CALLOUT>
-      </a>
-      {isOpen && <div>{children}</div>}
+      </ButtonBase>
+      {isOpen && <div aria-hidden={!isOpen ? 'true' : 'false'}>{children}</div>}
     </>
   );
 }
@@ -83,6 +84,7 @@ const titleStyle = css({
   userSelect: 'none',
   transition: '100ms',
   padding: `${spacing[1.5]}px ${spacing[3]}px`,
+  width: '100%',
 
   ':hover': {
     cursor: 'pointer',
