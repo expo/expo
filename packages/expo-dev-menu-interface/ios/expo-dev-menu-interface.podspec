@@ -24,7 +24,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.platform     = :ios, '12.0'
+    test_spec.platform     = :ios, '13.0'
     test_spec.source_files = 'Tests/**/*.{h,m,swift}'
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
