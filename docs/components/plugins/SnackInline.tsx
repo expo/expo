@@ -1,9 +1,21 @@
-import { spacing, theme, ArrowUpRightIcon } from '@expo/styleguide';
+import { css } from '@emotion/react';
+import {
+  spacing,
+  theme,
+  ArrowUpRightIcon,
+  typography,
+  borderRadius,
+  iconSize,
+  SnackLogo,
+  shadows,
+  breakpoints,
+} from '@expo/styleguide';
 import * as React from 'react';
 
 import { SNACK_URL, getSnackFiles } from '~/common/snack';
 import { PageApiVersionContext, PageApiVersionContextType } from '~/providers/page-api-version';
 import { Button } from '~/ui/components/Button';
+import { FOOTNOTE } from '~/ui/components/Text';
 
 const DEFAULT_PLATFORM = 'android';
 const LATEST_VERSION = `v${require('../../package.json').version}`;
@@ -72,46 +84,103 @@ export default class SnackInline extends React.Component<Props> {
 
   render() {
     return (
-      <div style={{ marginBottom: spacing[4] }}>
-        <div
-          ref={this.contentRef}
-          style={this.props.contentHidden ? { display: 'none' } : undefined}>
-          {this.props.children}
-        </div>
-        <form action={SNACK_URL} method="POST" target="_blank">
-          <input
-            type="hidden"
-            name="platform"
-            value={this.props.defaultPlatform || DEFAULT_PLATFORM}
-          />
-          <input type="hidden" name="name" value={this.props.label || 'Example'} />
-          <input type="hidden" name="dependencies" value={this.getDependencies()} />
-          <input type="hidden" name="sdkVersion" value={this.getSnackSdkVersion()} />
-          {this.props.platforms && (
-            <input type="hidden" name="supportedPlatforms" value={this.props.platforms.join(',')} />
-          )}
-          {this.state.ready && (
+      <div css={inlineSnackWrapperStyle}>
+        <div css={[inlineSnackHeaderStyle, this.props.contentHidden && inlineSnackSoleHeaderStyle]}>
+          <span css={inlineSnackTitleStyle}>{this.props.label || 'Example'}</span>
+          <form action={SNACK_URL} method="POST" target="_blank">
             <input
               type="hidden"
-              name="files"
-              value={JSON.stringify(
-                getSnackFiles({
-                  templateId: this.props.templateId,
-                  code: this.getCode(),
-                  files: this.props.files,
-                  baseURL: this.getExamplesPath(),
-                })
-              )}
+              name="platform"
+              value={this.props.defaultPlatform || DEFAULT_PLATFORM}
             />
-          )}
-          <Button
-            disabled={!this.state.ready}
-            iconRight={<ArrowUpRightIcon color={theme.palette.white} />}
-            type="submit">
-            {this.props.buttonTitle || 'Try this example on Snack'}
-          </Button>
-        </form>
+            <input type="hidden" name="name" value={this.props.label || 'Example'} />
+            <input type="hidden" name="dependencies" value={this.getDependencies()} />
+            <input type="hidden" name="sdkVersion" value={this.getSnackSdkVersion()} />
+            {this.props.platforms && (
+              <input
+                type="hidden"
+                name="supportedPlatforms"
+                value={this.props.platforms.join(',')}
+              />
+            )}
+            {this.state.ready && (
+              <input
+                type="hidden"
+                name="files"
+                value={JSON.stringify(
+                  getSnackFiles({
+                    templateId: this.props.templateId,
+                    code: this.getCode(),
+                    files: this.props.files,
+                    baseURL: this.getExamplesPath(),
+                  })
+                )}
+              />
+            )}
+            <Button
+              size="mini"
+              theme="ghost"
+              disabled={!this.state.ready}
+              icon={<SnackLogo height={iconSize.regular} />}
+              iconRight={<ArrowUpRightIcon size={iconSize.small} color={theme.icon.secondary} />}
+              type="submit"
+              css={snackButtonStyle}>
+              <FOOTNOTE>{this.props.buttonTitle || 'Open in Snack'}</FOOTNOTE>
+            </Button>
+          </form>
+        </div>
+        <div ref={this.contentRef} css={this.props.contentHidden && css({ display: 'none' })}>
+          {this.props.children}
+        </div>
       </div>
     );
   }
 }
+
+const inlineSnackWrapperStyle = css({
+  display: 'flex',
+  flexDirection: 'column',
+  marginBottom: spacing[3],
+
+  pre: {
+    marginTop: 0,
+    borderTop: 0,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+  },
+});
+
+const inlineSnackHeaderStyle = css({
+  display: 'flex',
+  border: `1px solid ${theme.border.default}`,
+  alignItems: 'center',
+  padding: `${spacing[2]}px ${spacing[2.5]}px ${spacing[2]}px ${spacing[4]}px`,
+  borderTopLeftRadius: borderRadius.small,
+  borderTopRightRadius: borderRadius.small,
+  justifyContent: 'space-between',
+
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    gap: spacing[1],
+  },
+});
+
+const inlineSnackSoleHeaderStyle = css({
+  borderRadius: borderRadius.small,
+});
+
+const inlineSnackTitleStyle = css({
+  ...typography.fontSizes[16],
+  fontFamily: typography.fontFaces.semiBold,
+  color: theme.text.default,
+});
+
+const snackButtonStyle = css({
+  borderColor: 'transparent',
+
+  ':hover': {
+    borderColor: theme.border.default,
+    boxShadow: shadows.button,
+  },
+});
