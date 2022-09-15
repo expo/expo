@@ -12,7 +12,6 @@ const jestConfig = {
   },
   transform: {},
   extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  snapshotSerializers: ['@emotion/jest/serializer'],
 };
 
 export default nextJest({ dir: './' })(jestConfig);

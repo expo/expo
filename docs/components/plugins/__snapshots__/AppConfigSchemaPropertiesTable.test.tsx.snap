@@ -1,394 +1,26 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
-.emotion-0 {
-  border: 1px solid var(--expo-theme-border-default);
-  border-radius: 6px;
-  overflow-y: hidden;
-  overflow-x: auto;
-  margin-bottom: 16px;
-  box-shadow: var(--expo-theme-shadows-micro);
-}
-
-.emotion-0::-webkit-scrollbar {
-  height: 6px;
-}
-
-.emotion-0::-webkit-scrollbar-track {
-  background: var(--expo-theme-background-default);
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
-}
-
-.emotion-0::-webkit-scrollbar-thumb {
-  background: var(--expo-theme-background-tertiary);
-  border-radius: 6px;
-}
-
-.emotion-0::-webkit-scrollbar-thumb:hover {
-  background: var(--expo-theme-background-quaternary);
-}
-
-.emotion-1 {
-  font-size: 0.875rem;
-  line-height: 1.5714286;
-  letter-spacing: -0.006rem;
-  width: 100%;
-  border: 0;
-  border-radius: 0;
-  margin-bottom: 0;
-  border-collapse: collapse;
-  color: var(--expo-theme-text-default);
-  table-layout: auto;
-}
-
-.emotion-1 blockquote,
-.emotion-1 li {
-  font-size: 0.875rem;
-  line-height: 1.5714286;
-  letter-spacing: -0.006rem;
-}
-
-.emotion-2 {
-  background-color: var(--expo-theme-background-secondary);
-  border-bottom: 1px solid var(--expo-theme-border-default);
-}
-
-.emotion-3:nth-of-type(2n) {
-  background-color: var(--expo-theme-background-secondary);
-}
-
-.emotion-3:nth-of-type(2n) blockquote,
-.emotion-3:nth-of-type(2n) summary {
-  background-color: var(--expo-theme-background-tertiary);
-}
-
-.emotion-4 {
-  padding: 16px;
-  font-family: Inter-Medium;
-  vertical-align: middle;
-  border-right: 1px solid var(--expo-theme-border-default);
-  text-align: left;
-}
-
-.emotion-4:last-child {
-  border-right: 0;
-}
-
-.emotion-7 {
-  padding: 16px;
-  vertical-align: middle;
-  border-right: 1px solid var(--expo-theme-border-default);
-  text-align: left;
-  width: -webkit-fit-content;
-  width: -moz-fit-content;
-  width: fit-content;
-}
-
-.emotion-7:last-child {
-  border-right: 0;
-}
-
-.emotion-7>*:last-child {
-  margin-bottom: 0;
-}
-
-.emotion-8 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  margin-bottom: 16px;
-  display: block;
-}
-
-.emotion-8.is-wider {
-  max-width: 1200px;
-}
-
-@media screen and (max-width:1024px) {
-  .emotion-8.is-wider {
-    max-width: 100%;
-    width: 100%;
-  }
-}
-
-.emotion-9 {
-  position: relative;
-}
-
-.emotion-10 {
-  display: block;
-  position: absolute;
-  top: -100px;
-  visibility: hidden;
-}
-
-.emotion-11 {
-  color: inherit;
-  -webkit-text-decoration: inherit;
-  text-decoration: inherit;
-}
-
-details .emotion-11 {
-  pointer-events: none;
-}
-
-.emotion-12 {
-  display: inline;
-}
-
-.emotion-13 {
-  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 0.8125rem;
-  line-height: 1.6153846;
-  letter-spacing: -0.003rem;
-  color: var(--expo-theme-text-default);
-  white-space: pre-wrap;
-  display: inline;
-  padding: 2px 4px;
-  max-width: 100%;
-  word-wrap: break-word;
-  background-color: var(--expo-theme-background-secondary);
-  border: 1px solid var(--expo-theme-border-default);
-  border-radius: 4px;
-  vertical-align: middle;
-  overflow-x: auto;
-}
-
-a .emotion-13 {
-  border-color: var(--expo-theme-border-default);
-}
-
-h2 .emotion-13,
-h3 .emotion-13,
-h4 .emotion-13 {
-  position: relative;
-  top: -2px;
-}
-
-.emotion-14 {
-  cursor: pointer;
-  vertical-align: text-top;
-  display: inline-block;
-  width: 1.2em;
-  height: 1.2em;
-  padding: 0 0.2em;
-  visibility: hidden;
-}
-
-a:hover .emotion-14 {
-  visibility: visible;
-}
-
-.emotion-14 svg {
-  width: 100%;
-  height: auto;
-}
-
-.emotion-15 {
-  padding: 16px;
-  vertical-align: middle;
-  border-right: 1px solid var(--expo-theme-border-default);
-  text-align: left;
-}
-
-.emotion-15:last-child {
-  border-right: 0;
-}
-
-.emotion-15>*:last-child {
-  margin-bottom: 0;
-}
-
-.emotion-16 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  margin-bottom: 16px;
-}
-
-.emotion-17 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  margin-bottom: 16px;
-  font-size: inherit;
-  font-family: Inter-SemiBold;
-}
-
-.emotion-18 {
-  overflow: hidden;
-  background: var(--expo-theme-background-default);
-  border: 1px solid var(--expo-theme-border-default);
-  border-radius: 6px;
-  padding: 0;
-  margin-bottom: 12px;
-}
-
-.emotion-18[open] {
-  box-shadow: var(--expo-theme-shadows-micro);
-}
-
-h4+.emotion-18,
-li>.emotion-18 {
-  margin-top: 12px;
-}
-
-.emotion-19 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
-  flex-direction: row;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  list-style: none;
-  background-color: var(--expo-theme-background-secondary);
-  padding: 6px;
-  padding-right: 12px;
-  margin: 0;
-  cursor: pointer;
-}
-
-.emotion-19:hover span {
-  color: var(--expo-theme-text-secondary);
-}
-
-.emotion-19::-webkit-details-marker {
-  display: none;
-}
-
-.emotion-20 {
-  -webkit-align-self: baseline;
-  -ms-flex-item-align: baseline;
-  align-self: baseline;
-  margin-top: 5px;
-  margin-left: 6px;
-  margin-right: 8px;
-}
-
-.emotion-21 {
-  -webkit-transform: rotate(-90deg);
-  -moz-transform: rotate(-90deg);
-  -ms-transform: rotate(-90deg);
-  transform: rotate(-90deg);
-  -webkit-transition: -webkit-transform 200ms;
-  transition: transform 200ms;
-}
-
-details[open] .emotion-21 {
-  -webkit-transform: rotate(0);
-  -moz-transform: rotate(0);
-  -ms-transform: rotate(0);
-  transform: rotate(0);
-}
-
-.emotion-22 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  font-family: Inter-Medium,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-}
-
-.emotion-23 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  padding: 16px 20px 0;
-}
-
-.emotion-23 p {
-  margin-left: 0;
-}
-
-.emotion-23 pre>pre {
-  margin-top: 0;
-}
-
-.emotion-115 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-gap: 12px;
-  padding: 12px;
-  margin-bottom: 16px;
-  border-left: 4px solid var(--expo-theme-border-default);
-  background: var(--expo-theme-background-secondary);
-  border-radius: 4;
-}
-
-.emotion-115 div {
-  margin: 0;
-}
-
-.emotion-115 code {
-  background-color: var(--expo-theme-background-tertiary);
-}
-
-table .emotion-115 {
-  margin: 8px 0;
-}
-
-table .emotion-115:first-of-type {
-  margin-top: 0;
-}
-
-table .emotion-115:last-child {
-  margin-bottom: 0;
-}
-
 <div>
   <div
-    class="emotion-0"
+    class="css-rufzkc-Table"
   >
     <table
-      class="emotion-1"
+      class="css-1gg2jm1-Table"
     >
       <thead
-        class="emotion-2"
+        class="css-3b8qij-TableHead"
       >
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <th
-            class="emotion-4"
+            class="css-1p6k6di-HeaderCell"
           >
             Property
           </th>
           <th
-            class="emotion-4"
+            class="css-1p6k6di-HeaderCell"
           >
             Description
           </th>
@@ -396,41 +28,41 @@ table .emotion-115:last-child {
       </thead>
       <tbody>
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <td
-            class="emotion-7"
+            class="css-1i3ovdz-Cell"
           >
             <div
               data-testid="name"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" emotion-8"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
-                  class="emotion-9"
+                  class="css-79elbk"
                 >
                   <span
-                    class="emotion-10"
+                    class="css-120d683"
                     id="name"
                   />
                   <a
-                    class="emotion-11"
+                    class="css-8y2kaf"
                     href="#name"
                   >
                     <span
-                      class="emotion-12"
+                      class="css-6n7j50"
                     >
                       <code
-                        class="inline emotion-13"
+                        class="inline css-ov7own-InlineCode"
                       >
                         name
                       </code>
                     </span>
                     <span
-                      class="emotion-14"
+                      class="css-1eysgws"
                     >
                       <svg
                         aria-label="permalink"
@@ -463,30 +95,30 @@ table .emotion-115:last-child {
             </div>
           </td>
           <td
-            class="emotion-15"
+            class="css-4ul8tm-Cell"
           >
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
-                class="emotion-17"
+                class="css-1qx481h-B"
               >
                 (string)
               </strong>
                - Name of your app.
             </p>
             <details
-              class="emotion-18"
+              class="css-1nmf69-Collapsible"
             >
               <summary
-                class="emotion-19"
+                class="css-1xw7x0v-Collapsible"
               >
                 <div
-                  class="emotion-20"
+                  class="css-166ujkg-Collapsible"
                 >
                   <svg
-                    class="emotion-21"
+                    class="css-1wgpnk4-Collapsible"
                     fill="none"
                     height="16"
                     role="img"
@@ -504,16 +136,16 @@ table .emotion-115:last-child {
                   </svg>
                 </div>
                 <span
-                  class="emotion-22"
+                  class="css-x1nydd-TextComponent"
                 >
                   Bare Workflow
                 </span>
               </summary>
               <div
-                class="emotion-23"
+                class="css-1gk6nru-Collapsible"
               >
                 <p
-                  class="emotion-16"
+                  class="css-6jxvia-P"
                   data-text="true"
                 >
                   Edit the 'Display Name' field in Xcode
@@ -523,41 +155,41 @@ table .emotion-115:last-child {
           </td>
         </tr>
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <td
-            class="emotion-7"
+            class="css-1i3ovdz-Cell"
           >
             <div
               data-testid="androidNavigationBar"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" emotion-8"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
-                  class="emotion-9"
+                  class="css-79elbk"
                 >
                   <span
-                    class="emotion-10"
+                    class="css-120d683"
                     id="androidnavigationbar"
                   />
                   <a
-                    class="emotion-11"
+                    class="css-8y2kaf"
                     href="#androidnavigationbar"
                   >
                     <span
-                      class="emotion-12"
+                      class="css-6n7j50"
                     >
                       <code
-                        class="inline emotion-13"
+                        class="inline css-ov7own-InlineCode"
                       >
                         androidNavigationBar
                       </code>
                     </span>
                     <span
-                      class="emotion-14"
+                      class="css-1eysgws"
                     >
                       <svg
                         aria-label="permalink"
@@ -590,30 +222,30 @@ table .emotion-115:last-child {
             </div>
           </td>
           <td
-            class="emotion-15"
+            class="css-4ul8tm-Cell"
           >
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
-                class="emotion-17"
+                class="css-1qx481h-B"
               >
                 (object)
               </strong>
                - Configuration for the bottom navigation bar on Android.
             </p>
             <details
-              class="emotion-18"
+              class="css-1nmf69-Collapsible"
             >
               <summary
-                class="emotion-19"
+                class="css-1xw7x0v-Collapsible"
               >
                 <div
-                  class="emotion-20"
+                  class="css-166ujkg-Collapsible"
                 >
                   <svg
-                    class="emotion-21"
+                    class="css-1wgpnk4-Collapsible"
                     fill="none"
                     height="16"
                     role="img"
@@ -631,16 +263,16 @@ table .emotion-115:last-child {
                   </svg>
                 </div>
                 <span
-                  class="emotion-22"
+                  class="css-x1nydd-TextComponent"
                 >
                   ExpoKit
                 </span>
               </summary>
               <div
-                class="emotion-23"
+                class="css-1gk6nru-Collapsible"
               >
                 <p
-                  class="emotion-16"
+                  class="css-6jxvia-P"
                   data-text="true"
                 >
                   Set this property using AppConstants.java.
@@ -648,16 +280,16 @@ table .emotion-115:last-child {
               </div>
             </details>
             <details
-              class="emotion-18"
+              class="css-1nmf69-Collapsible"
             >
               <summary
-                class="emotion-19"
+                class="css-1xw7x0v-Collapsible"
               >
                 <div
-                  class="emotion-20"
+                  class="css-166ujkg-Collapsible"
                 >
                   <svg
-                    class="emotion-21"
+                    class="css-1wgpnk4-Collapsible"
                     fill="none"
                     height="16"
                     role="img"
@@ -675,16 +307,16 @@ table .emotion-115:last-child {
                   </svg>
                 </div>
                 <span
-                  class="emotion-22"
+                  class="css-x1nydd-TextComponent"
                 >
                   Bare Workflow
                 </span>
               </summary>
               <div
-                class="emotion-23"
+                class="css-1gk6nru-Collapsible"
               >
                 <p
-                  class="emotion-16"
+                  class="css-6jxvia-P"
                   data-text="true"
                 >
                   Set this property using just Xcode
@@ -694,41 +326,41 @@ table .emotion-115:last-child {
           </td>
         </tr>
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <td
-            class="emotion-7"
+            class="css-1i3ovdz-Cell"
           >
             <div
               data-testid="visible"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
-                class=" emotion-8"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
-                  class="emotion-9"
+                  class="css-79elbk"
                 >
                   <span
-                    class="emotion-10"
+                    class="css-120d683"
                     id="visible"
                   />
                   <a
-                    class="emotion-11"
+                    class="css-8y2kaf"
                     href="#visible"
                   >
                     <span
-                      class="emotion-12"
+                      class="css-6n7j50"
                     >
                       <code
-                        class="inline emotion-13"
+                        class="inline css-ov7own-InlineCode"
                       >
                         visible
                       </code>
                     </span>
                     <span
-                      class="emotion-14"
+                      class="css-1eysgws"
                     >
                       <svg
                         aria-label="permalink"
@@ -761,30 +393,30 @@ table .emotion-115:last-child {
             </div>
           </td>
           <td
-            class="emotion-15"
+            class="css-4ul8tm-Cell"
           >
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
-                class="emotion-17"
+                class="css-1qx481h-B"
               >
                 (enum)
               </strong>
                - Determines how and when the navigation bar is shown.
             </p>
             <details
-              class="emotion-18"
+              class="css-1nmf69-Collapsible"
             >
               <summary
-                class="emotion-19"
+                class="css-1xw7x0v-Collapsible"
               >
                 <div
-                  class="emotion-20"
+                  class="css-166ujkg-Collapsible"
                 >
                   <svg
-                    class="emotion-21"
+                    class="css-1wgpnk4-Collapsible"
                     fill="none"
                     height="16"
                     role="img"
@@ -802,16 +434,16 @@ table .emotion-115:last-child {
                   </svg>
                 </div>
                 <span
-                  class="emotion-22"
+                  class="css-x1nydd-TextComponent"
                 >
                   ExpoKit
                 </span>
               </summary>
               <div
-                class="emotion-23"
+                class="css-1gk6nru-Collapsible"
               >
                 <p
-                  class="emotion-16"
+                  class="css-6jxvia-P"
                   data-text="true"
                 >
                   Set this property using Xcode.
@@ -821,41 +453,41 @@ table .emotion-115:last-child {
           </td>
         </tr>
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <td
-            class="emotion-7"
+            class="css-1i3ovdz-Cell"
           >
             <div
               data-testid="always"
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" emotion-8"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
-                  class="emotion-9"
+                  class="css-79elbk"
                 >
                   <span
-                    class="emotion-10"
+                    class="css-120d683"
                     id="always"
                   />
                   <a
-                    class="emotion-11"
+                    class="css-8y2kaf"
                     href="#always"
                   >
                     <span
-                      class="emotion-12"
+                      class="css-6n7j50"
                     >
                       <code
-                        class="inline emotion-13"
+                        class="inline css-ov7own-InlineCode"
                       >
                         always
                       </code>
                     </span>
                     <span
-                      class="emotion-14"
+                      class="css-1eysgws"
                     >
                       <svg
                         aria-label="permalink"
@@ -888,14 +520,14 @@ table .emotion-115:last-child {
             </div>
           </td>
           <td
-            class="emotion-15"
+            class="css-4ul8tm-Cell"
           >
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
-                class="emotion-17"
+                class="css-1qx481h-B"
               >
                 (boolean)
               </strong>
@@ -904,41 +536,41 @@ table .emotion-115:last-child {
           </td>
         </tr>
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <td
-            class="emotion-7"
+            class="css-1i3ovdz-Cell"
           >
             <div
               data-testid="backgroundColor"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
-                class=" emotion-8"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
-                  class="emotion-9"
+                  class="css-79elbk"
                 >
                   <span
-                    class="emotion-10"
+                    class="css-120d683"
                     id="backgroundcolor"
                   />
                   <a
-                    class="emotion-11"
+                    class="css-8y2kaf"
                     href="#backgroundcolor"
                   >
                     <span
-                      class="emotion-12"
+                      class="css-6n7j50"
                     >
                       <code
-                        class="inline emotion-13"
+                        class="inline css-ov7own-InlineCode"
                       >
                         backgroundColor
                       </code>
                     </span>
                     <span
-                      class="emotion-14"
+                      class="css-1eysgws"
                     >
                       <svg
                         aria-label="permalink"
@@ -971,14 +603,14 @@ table .emotion-115:last-child {
             </div>
           </td>
           <td
-            class="emotion-15"
+            class="css-4ul8tm-Cell"
           >
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
-                class="emotion-17"
+                class="css-1qx481h-B"
               >
                 (string)
               </strong>
@@ -987,12 +619,12 @@ table .emotion-115:last-child {
             
 
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               6 character long hex color string, eg: 
               <code
-                class="inline emotion-13"
+                class="inline css-ov7own-InlineCode"
               >
                 '#000000'
               </code>
@@ -1000,41 +632,41 @@ table .emotion-115:last-child {
           </td>
         </tr>
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <td
-            class="emotion-7"
+            class="css-1i3ovdz-Cell"
           >
             <div
               data-testid="intentFilters"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" emotion-8"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
-                  class="emotion-9"
+                  class="css-79elbk"
                 >
                   <span
-                    class="emotion-10"
+                    class="css-120d683"
                     id="intentfilters"
                   />
                   <a
-                    class="emotion-11"
+                    class="css-8y2kaf"
                     href="#intentfilters"
                   >
                     <span
-                      class="emotion-12"
+                      class="css-6n7j50"
                     >
                       <code
-                        class="inline emotion-13"
+                        class="inline css-ov7own-InlineCode"
                       >
                         intentFilters
                       </code>
                     </span>
                     <span
-                      class="emotion-14"
+                      class="css-1eysgws"
                     >
                       <svg
                         aria-label="permalink"
@@ -1067,30 +699,30 @@ table .emotion-115:last-child {
             </div>
           </td>
           <td
-            class="emotion-15"
+            class="css-4ul8tm-Cell"
           >
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
-                class="emotion-17"
+                class="css-1qx481h-B"
               >
                 (array)
               </strong>
                - Configuration for setting an array of custom intent filters in Android manifest.
             </p>
             <details
-              class="emotion-18"
+              class="css-1nmf69-Collapsible"
             >
               <summary
-                class="emotion-19"
+                class="css-1xw7x0v-Collapsible"
               >
                 <div
-                  class="emotion-20"
+                  class="css-166ujkg-Collapsible"
                 >
                   <svg
-                    class="emotion-21"
+                    class="css-1wgpnk4-Collapsible"
                     fill="none"
                     height="16"
                     role="img"
@@ -1108,16 +740,16 @@ table .emotion-115:last-child {
                   </svg>
                 </div>
                 <span
-                  class="emotion-22"
+                  class="css-x1nydd-TextComponent"
                 >
                   Bare Workflow
                 </span>
               </summary>
               <div
-                class="emotion-23"
+                class="css-1gk6nru-Collapsible"
               >
                 <p
-                  class="emotion-16"
+                  class="css-6jxvia-P"
                   data-text="true"
                 >
                   This is set in AndroidManifest.xml directly.
@@ -1125,7 +757,7 @@ table .emotion-115:last-child {
               </div>
             </details>
             <blockquote
-              class="emotion-115"
+              class="css-1nn217x-Quote"
               data-text="true"
             >
               <div
@@ -1159,41 +791,41 @@ table .emotion-115:last-child {
           </td>
         </tr>
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <td
-            class="emotion-7"
+            class="css-1i3ovdz-Cell"
           >
             <div
               data-testid="autoVerify"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
-                class=" emotion-8"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
-                  class="emotion-9"
+                  class="css-79elbk"
                 >
                   <span
-                    class="emotion-10"
+                    class="css-120d683"
                     id="autoverify"
                   />
                   <a
-                    class="emotion-11"
+                    class="css-8y2kaf"
                     href="#autoverify"
                   >
                     <span
-                      class="emotion-12"
+                      class="css-6n7j50"
                     >
                       <code
-                        class="inline emotion-13"
+                        class="inline css-ov7own-InlineCode"
                       >
                         autoVerify
                       </code>
                     </span>
                     <span
-                      class="emotion-14"
+                      class="css-1eysgws"
                     >
                       <svg
                         aria-label="permalink"
@@ -1226,14 +858,14 @@ table .emotion-115:last-child {
             </div>
           </td>
           <td
-            class="emotion-15"
+            class="css-4ul8tm-Cell"
           >
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
-                class="emotion-17"
+                class="css-1qx481h-B"
               >
                 (boolean)
               </strong>
@@ -1242,41 +874,41 @@ table .emotion-115:last-child {
           </td>
         </tr>
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <td
-            class="emotion-7"
+            class="css-1i3ovdz-Cell"
           >
             <div
               data-testid="data"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
-                class=" emotion-8"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
-                  class="emotion-9"
+                  class="css-79elbk"
                 >
                   <span
-                    class="emotion-10"
+                    class="css-120d683"
                     id="data"
                   />
                   <a
-                    class="emotion-11"
+                    class="css-8y2kaf"
                     href="#data"
                   >
                     <span
-                      class="emotion-12"
+                      class="css-6n7j50"
                     >
                       <code
-                        class="inline emotion-13"
+                        class="inline css-ov7own-InlineCode"
                       >
                         data
                       </code>
                     </span>
                     <span
-                      class="emotion-14"
+                      class="css-1eysgws"
                     >
                       <svg
                         aria-label="permalink"
@@ -1309,14 +941,14 @@ table .emotion-115:last-child {
             </div>
           </td>
           <td
-            class="emotion-15"
+            class="css-4ul8tm-Cell"
           >
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
-                class="emotion-17"
+                class="css-1qx481h-B"
               >
                 (array || object)
               </strong>
@@ -1324,41 +956,41 @@ table .emotion-115:last-child {
           </td>
         </tr>
         <tr
-          class="emotion-3"
+          class="css-1cjtxd5-Row"
         >
           <td
-            class="emotion-7"
+            class="css-1i3ovdz-Cell"
           >
             <div
               data-testid="host"
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
               <div
-                class=" emotion-8"
+                class=" css-19f55nd-PDIV"
                 data-text="true"
               >
                 <div
-                  class="emotion-9"
+                  class="css-79elbk"
                 >
                   <span
-                    class="emotion-10"
+                    class="css-120d683"
                     id="host"
                   />
                   <a
-                    class="emotion-11"
+                    class="css-8y2kaf"
                     href="#host"
                   >
                     <span
-                      class="emotion-12"
+                      class="css-6n7j50"
                     >
                       <code
-                        class="inline emotion-13"
+                        class="inline css-ov7own-InlineCode"
                       >
                         host
                       </code>
                     </span>
                     <span
-                      class="emotion-14"
+                      class="css-1eysgws"
                     >
                       <svg
                         aria-label="permalink"
@@ -1391,14 +1023,14 @@ table .emotion-115:last-child {
             </div>
           </td>
           <td
-            class="emotion-15"
+            class="css-4ul8tm-Cell"
           >
             <p
-              class="emotion-16"
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
-                class="emotion-17"
+                class="css-1qx481h-B"
               >
                 (string)
               </strong>

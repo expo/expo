@@ -1,19 +1,9 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
-.emotion-0 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  margin-bottom: 16px;
-}
-
 <div>
   <p
-    class="emotion-0"
+    class="css-6jxvia-P"
     data-text="true"
   >
     This is the basic comment.
@@ -31,181 +21,24 @@ exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
 `;
 
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
-.emotion-0 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  margin-bottom: 16px;
-}
-
-.emotion-1 {
-  font-family: Inter-Regular,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  margin-bottom: 16px;
-  font-size: inherit;
-  font-family: Inter-SemiBold;
-}
-
-.emotion-2 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-2:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-2 code {
-  color: var(--expo-theme-link-default);
-}
-
-.emotion-3 {
-  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 0.8125rem;
-  line-height: 1.6153846;
-  letter-spacing: -0.003rem;
-  color: var(--expo-theme-text-default);
-  white-space: pre-wrap;
-  display: inline;
-  padding: 2px 4px;
-  max-width: 100%;
-  word-wrap: break-word;
-  background-color: var(--expo-theme-background-secondary);
-  border: 1px solid var(--expo-theme-border-default);
-  border-radius: 4px;
-  vertical-align: middle;
-  overflow-x: auto;
-}
-
-a .emotion-3 {
-  border-color: var(--expo-theme-border-default);
-}
-
-h2 .emotion-3,
-h3 .emotion-3,
-h4 .emotion-3 {
-  position: relative;
-  top: -2px;
-}
-
-.emotion-4 {
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  border-top: 1px solid var(--expo-theme-border-default);
-  border-bottom: 1px solid var(--expo-theme-border-default);
-  margin: 24px -20px 16px;
-  padding: 10px 20px;
-  background-color: var(--expo-theme-background-secondary);
-}
-
-.emotion-4 h4 {
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  font-family: Inter-Medium;
-  margin-bottom: 0;
-  margin-top: 0;
-  color: var(--expo-theme-text-secondary);
-}
-
-.emotion-5 {
-  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 500;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  margin-top: 24px;
-  margin-bottom: 4px;
-}
-
-.emotion-5 code {
-  font-family: Inter-SemiBold,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,'Noto Sans',sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 500;
-  font-size: 1rem;
-  line-height: 1.625;
-  letter-spacing: -0.011rem;
-  color: var(--expo-theme-text-default);
-  font-family: Menlo-Regular;
-  padding: 1px 6px;
-  border-radius: 4px;
-}
-
-.emotion-6 {
-  border: 1px solid var(--expo-theme-border-default);
-  padding: 16px;
-  margin: 16px 0;
-  white-space: pre;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-  background-color: var(--expo-theme-background-secondary);
-  line-height: 120%;
-  border-radius: 4px;
-}
-
-.emotion-7 {
-  font-family: Menlo-Regular,Monaco,Consolas,'Liberation Mono','Courier New',monospace,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji';
-  font-weight: 400;
-  font-size: 0.8125rem;
-  line-height: 1.6153846;
-  letter-spacing: -0.003rem;
-  color: var(--expo-theme-text-default);
-  white-space: inherit;
-  padding: 0;
-  margin: 0;
-}
-
-.emotion-7 .code-annotation {
-  -webkit-transition: 200ms ease all;
-  transition: 200ms ease all;
-  transition-property: text-shadow,opacity;
-  text-shadow: var(--expo-theme-highlight-emphasis) 0 0 10px,var(--expo-theme-highlight-emphasis) 0 0 10px,var(--expo-theme-highlight-emphasis) 0 0 10px,var(--expo-theme-highlight-emphasis) 0 0 10px;
-}
-
-.emotion-7 .code-annotation.with-tooltip:hover {
-  cursor: pointer;
-  -webkit-animation: none;
-  animation: none;
-  opacity: 0.8;
-}
-
-.emotion-7 .code-hidden {
-  display: none;
-}
-
-.emotion-7 .code-placeholder {
-  opacity: 0.5;
-}
-
 <div>
   <p
-    class="emotion-0"
+    class="css-6jxvia-P"
     data-text="true"
   >
     <strong
-      class="emotion-1"
+      class="css-1qx481h-B"
     >
       Android only.
     </strong>
      Gets the referrer URL of the installed app with the 
     <a
-      class="emotion-2"
+      class="css-ccg2mn-ExternalLink"
       href="https://developer.android.com/google/play/installreferrer"
       rel="noopener noreferrer"
     >
       <code
-        class="inline emotion-3"
+        class="inline css-ov7own-InlineCode"
       >
         Install Referrer API
       </code>
@@ -214,10 +47,10 @@ h4 .emotion-3 {
 from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
   </p>
   <div
-    class="emotion-4"
+    class="css-1o90nzw"
   >
     <h4
-      class="emotion-5"
+      class="css-uucypz-H4"
       data-heading="true"
     >
       Example
@@ -225,11 +58,11 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
   </div>
   <pre>
     <pre
-      class="emotion-6"
+      class="css-1kjja91"
       data-text="true"
     >
       <code
-        class="emotion-7"
+        class="css-3rj4bb"
       >
         <span
           class="token keyword"
@@ -285,23 +118,9 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
 exports[`APISectionUtils.CommentTextBlock component no comment 1`] = `<div />`;
 
 exports[`APISectionUtils.resolveTypeName Promise 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   <a
-    class="emotion-0"
+    class="css-ccg2mn-ExternalLink"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
   >
@@ -316,37 +135,9 @@ exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
-.emotion-1 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-1:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-1 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   <a
-    class="emotion-0"
+    class="css-ccg2mn-ExternalLink"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
   >
@@ -355,7 +146,7 @@ exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
   &lt;
   <span>
     <a
-      class="emotion-1"
+      class="css-153g748-InternalLink"
       href="/#appleauthenticationcredential"
     >
       AppleAuthenticationCredential
@@ -412,23 +203,9 @@ exports[`APISectionUtils.resolveTypeName alternative generic object notation 1`]
 `;
 
 exports[`APISectionUtils.resolveTypeName custom type 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   <a
-    class="emotion-0"
+    class="css-153g748-InternalLink"
     href="/#speechsynthesisevent"
   >
     SpeechSynthesisEvent
@@ -437,23 +214,9 @@ exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName custom type array 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   <a
-    class="emotion-0"
+    class="css-153g748-InternalLink"
     href="/#appleauthenticationscope"
   >
     AppleAuthenticationScope
@@ -469,37 +232,9 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
-.emotion-1 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-1:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-1 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   <a
-    class="emotion-0"
+    class="css-ccg2mn-ExternalLink"
     href="https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys"
     rel="noopener noreferrer"
   >
@@ -508,7 +243,7 @@ exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
   &lt;
   <span>
     <a
-      class="emotion-1"
+      class="css-153g748-InternalLink"
       href="/#fontresource"
     >
       FontResource
@@ -523,20 +258,6 @@ exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName function 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   () =&gt;
    
@@ -546,7 +267,7 @@ exports[`APISectionUtils.resolveTypeName function 1`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="css-153g748-InternalLink"
       href="/#speecheventcallback"
     >
       SpeechEventCallback
@@ -556,41 +277,13 @@ exports[`APISectionUtils.resolveTypeName function 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
-.emotion-1 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-1:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-1 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   (
   <span>
     error
     : 
     <a
-      class="emotion-0"
+      class="css-ccg2mn-ExternalLink"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
     >
@@ -606,7 +299,7 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
   </span>
   <span>
     <a
-      class="emotion-1"
+      class="css-153g748-InternalLink"
       href="/#speecheventcallback"
     >
       SpeechEventCallback
@@ -616,27 +309,13 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   (
   <span>
     error
     : 
     <a
-      class="emotion-0"
+      class="css-ccg2mn-ExternalLink"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
     >
@@ -657,23 +336,9 @@ exports[`APISectionUtils.resolveTypeName generic type 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName generic type 2`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   <a
-    class="emotion-0"
+    class="css-153g748-InternalLink"
     href="/#pagedinfo"
   >
     PagedInfo
@@ -681,7 +346,7 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
   &lt;
   <span>
     <a
-      class="emotion-0"
+      class="css-153g748-InternalLink"
       href="/#asset"
     >
       Asset
@@ -692,37 +357,9 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
-.emotion-1 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-1:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-1 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   <a
-    class="emotion-0"
+    class="css-ccg2mn-ExternalLink"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
   >
@@ -731,7 +368,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
   &lt;
   <span>
     <a
-      class="emotion-1"
+      class="css-153g748-InternalLink"
       href="/#pagedinfo"
     >
       PagedInfo
@@ -739,7 +376,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
     &lt;
     <span>
       <a
-        class="emotion-1"
+        class="css-153g748-InternalLink"
         href="/#asset"
       >
         Asset
@@ -775,40 +412,12 @@ exports[`APISectionUtils.resolveTypeName object reflection 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
-.emotion-1 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-1:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-1 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   StyleProp
   &lt;
   <span>
     <a
-      class="emotion-0"
+      class="css-ccg2mn-ExternalLink"
       href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
       rel="noopener noreferrer"
     >
@@ -817,7 +426,7 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
     &lt;
     <span>
       <a
-        class="emotion-1"
+        class="css-153g748-InternalLink"
         href="/versions/latest/react-native/view-style-props"
       >
         ViewStyle
@@ -851,25 +460,11 @@ exports[`APISectionUtils.resolveTypeName query type 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   [
   <span>
     <a
-      class="emotion-0"
+      class="css-153g748-InternalLink"
       href="/#sortbykey"
     >
       SortByKey
@@ -884,24 +479,10 @@ exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName union 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   <span>
     <a
-      class="emotion-0"
+      class="css-153g748-InternalLink"
       href="/#speecheventcallback"
     >
       SpeechEventCallback
@@ -915,25 +496,11 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   (
   <span>
     <a
-      class="emotion-0"
+      class="css-153g748-InternalLink"
       href="/#resultseterror"
     >
       ResultSetError
@@ -942,7 +509,7 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="css-153g748-InternalLink"
       href="/#resultset"
     >
       ResultSet
@@ -966,24 +533,10 @@ exports[`APISectionUtils.resolveTypeName union with array 1`] = `
 `;
 
 exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = `
-.emotion-0 {
-  color: var(--expo-theme-link-default);
-  font-size: inherit;
-}
-
-.emotion-0:hover {
-  -webkit-text-decoration: underline;
-  text-decoration: underline;
-}
-
-.emotion-0 code {
-  color: var(--expo-theme-link-default);
-}
-
 <div>
   <span>
     <a
-      class="emotion-0"
+      class="css-153g748-InternalLink"
       href="/#assetref"
     >
       AssetRef
@@ -993,7 +546,7 @@ exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = 
   </span>
   <span>
     <a
-      class="emotion-0"
+      class="css-153g748-InternalLink"
       href="/#assetref"
     >
       AssetRef
