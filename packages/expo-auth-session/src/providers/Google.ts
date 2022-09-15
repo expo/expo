@@ -263,7 +263,7 @@ export function useAuthRequest(
 
   const responseType = useMemo(() => {
     // Allow overrides.
-    if (typeof config.responseType !== 'undefined') {
+    if (typeof config.responseType !== undefined) {
       return config.responseType;
     }
     // You can only use `response_token=code` on installed apps (iOS, Android without proxy).
@@ -278,7 +278,7 @@ export function useAuthRequest(
   }, [config.responseType, config.clientSecret, useProxy]);
 
   const redirectUri = useMemo((): string => {
-    if (typeof config.redirectUri !== 'undefined') {
+    if (typeof config.redirectUri !== undefined) {
       return config.redirectUri;
     }
 
@@ -326,7 +326,7 @@ export function useAuthRequest(
 
   const shouldAutoExchangeCode = useMemo(() => {
     // allow overrides
-    if (typeof config.shouldAutoExchangeCode !== 'undefined') {
+    if (typeof config.shouldAutoExchangeCode !== undefined) {
       return config.shouldAutoExchangeCode;
     }
 
