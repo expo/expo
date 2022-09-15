@@ -539,11 +539,10 @@ Packages should attempt to use the built-in **AndroidManifest.xml** [merging sys
 Here is an example of a package's AndroidManifest.xml, which injects a required permission:
 
 ```xml
-{/* @info Include <code>xmlns:android="..."</code> to use <code>android:*</code> properties like <code>android:name</code> in your manifest. */}
-<manifest package="expo.modules.filesystem"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    {/* @end */}
-    <uses-permission android:name="android.permission.INTERNET"/>
+<!-- @info Include <code>xmlns:android="..."</code> to use <code>android:*</code> properties like <code>android:name</code> in your manifest. -->
+<manifest package="expo.modules.filesystem" xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- @end -->
+  <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>
 ```
 
