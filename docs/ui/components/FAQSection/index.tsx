@@ -44,7 +44,10 @@ export function FAQSection({ name, children }: PropsWithChildren<{ name: string 
   return (
     <>
       <Head>
-        <script type="application/ld+json">{JSON.stringify(ldJson)}</script>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(ldJson) }}
+        />
       </Head>
       {children}
     </>
