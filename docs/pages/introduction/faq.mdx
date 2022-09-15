@@ -8,7 +8,7 @@ In addition to the questions below, see the [forums](https://forums.expo.dev/) f
 
 <Collapsible summary="What is Expo used for?">
 
-Expo is an [open-source npm package](https://github.com/expo/expo/) and framework for React Native projects. The `expo` package enables many important features for building and scaling an app like OTA updates, instantly sharing your app, and web support. Learn more about [what Expo offers](/introduction).
+Expo is an [open-source framework](https://github.com/expo/expo/) for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app like live updates, instantly sharing your app, and web support. The `expo` npm package is compatible with all React Native projects. Learn more about [what Expo offers](/introduction).
 
 </Collapsible>
 
