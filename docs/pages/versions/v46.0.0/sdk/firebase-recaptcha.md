@@ -200,7 +200,7 @@ export default function App() {
 
 <SnackInline
 contentHidden
-buttonTitle='Or try the Full Phone Authentication on Snack'
+buttonTitle='Try the Full Phone Authentication on Snack'
 label='Firebase Full Phone Auth'
 dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}>
 

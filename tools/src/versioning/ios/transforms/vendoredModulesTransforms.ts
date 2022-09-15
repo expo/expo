@@ -112,6 +112,15 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           find: /\b(ComponentUpdate)\b/g,
           replaceWith: `${prefix}$1`,
         },
+        {
+          // versioning reacthermes import
+          paths: 'NativeProxy.mm',
+          find: new RegExp(
+            `(#if\\s+__has_include\\(|#import\\s+)<reacthermes\\/${prefix}HermesExecutorFactory.h>`,
+            'g'
+          ),
+          replaceWith: `$1<${prefix}reacthermes/${prefix}HermesExecutorFactory.h>`,
+        },
       ],
     },
     'react-native-gesture-handler': {
