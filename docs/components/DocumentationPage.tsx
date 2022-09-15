@@ -4,8 +4,6 @@ import some from 'lodash/some';
 import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
 
-import { AppJSBanner } from './AppJSBanner.tsx';
-
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
@@ -193,7 +191,6 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     const pageContent = (
       <>
         {this.props.title && <H1>{this.props.title}</H1>}
-        <AppJSBanner />
         {this.props.children}
         {this.props.title && (
           <DocumentationFooter
