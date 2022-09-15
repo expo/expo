@@ -793,4 +793,11 @@ tasks.whenTaskAdded { task ->
   }
 }
 
+def hermesAAR = new File("${reactNative}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar")
+if (hermesAAR.exists()) {
+  dependencies {
+    compileOnly(files(hermesAAR))
+  }
+}
+
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
