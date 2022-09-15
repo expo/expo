@@ -25,13 +25,13 @@ Additionally, you'll also need to install the webview using `npx expo install re
 
 ### With native Firebase SDK
 
-If you are using `expo-firebase-recaptcha` with React Native Firebase SDK (`react-native-firebase`), you'll have to install the native Firebase SDK using the `npx expo install` command:
+If you are using `expo-firebase-recaptcha` with React Native Firebase, you'll have to install the native SDK using the `npx expo install` command:
 
 <Terminal cmd={["$ npx expo install @react-native-firebase/app"]} />
 
-This will ensure that the `react-native-firebase` dependency version is compatible with the Expo SDK version your project uses.
+This will ensure that the `@react-native-firebase/app` dependency version is compatible with the Expo SDK version your project uses.
 
-Also, make sure that you have the `react-native-firebase` library set up correctly in your project. For more information on how to configure native Firebase SDK, see [using the native Firebase SDK.](/guides/setup-native-firebase/#setup).
+Also, make sure that you have React Native Firebase set up correctly in your project. For more information on how to configure it, see [using the native Firebase SDK](/guides/setup-native-firebase/#setup).
 
 ### Basic usage
 
