@@ -52,7 +52,8 @@ Some plugins can be customized by passing an array, where the second argument is
       "expo-camera",
       {
         /* Values passed to the plugin */
-        "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to access your location"
+        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
       }
     ]
   ]
