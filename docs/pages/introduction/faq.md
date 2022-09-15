@@ -3,8 +3,11 @@ title: Common questions
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQSection } from '~/ui/components/FAQSection';
 
 In addition to the questions below, see the [forums](https://forums.expo.dev/) for more common questions and answers. Some of this information is repeated from earlier sections of the introduction but we include it here for comprehensiveness.
+
+<FAQSection name="Expo frequently asked questions">
 
 <Collapsible summary="What is Expo used for?">
 
@@ -135,6 +138,8 @@ Expo CLI can be used simultaneously with React Native CLI. Expo CLI provides the
 Regardless of which CLI you use, you can use any part of the [Expo SDK](/versions/latest/) and [Expo Application Services](/eas/index) with your project.
 
 </Collapsible>
+
+</FAQSection>
 
 ## Up next
 
