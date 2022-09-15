@@ -53,7 +53,7 @@ Some plugins can be customized by passing an array, where the second argument is
       {
         /* Values passed to the plugin */
         "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
       }
     ]
   ]
