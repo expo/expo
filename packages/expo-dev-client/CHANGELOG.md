@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Remove default scheme from intent filters that specify `autoVerify=true`. ([#18963](https://github.com/expo/expo/pull/18963) by [@ajsmth](https://github.com/ajsmth))
-
 ### 💡 Others
+
+## 1.3.0 — 2022-09-16
+
+### 🐛 Bug fixes
+
+- Remove default scheme from intent filters that specify `autoVerify=true`. ([#18963](https://github.com/expo/expo/pull/18963) by [@ajsmth](https://github.com/ajsmth))
 
 ## 1.2.1 — 2022-08-16
 
