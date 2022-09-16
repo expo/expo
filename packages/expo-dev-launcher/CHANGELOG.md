@@ -9,6 +9,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.3.0 — 2022-09-16
+
+### 🎉 New features
+
 - Better support for landscape orientation. ([#19010](https://github.com/expo/expo/pull/19010) by [@ajsmth](https://github.com/ajsmth))
 
 ### 🐛 Bug fixes
