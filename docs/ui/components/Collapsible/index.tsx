@@ -74,6 +74,11 @@ const summaryStyle = css({
   '::-webkit-details-marker': {
     display: 'none',
   },
+
+  h4: {
+    marginTop: 0,
+    marginBottom: 0,
+  },
 });
 
 const markerWrapperStyle = css({
