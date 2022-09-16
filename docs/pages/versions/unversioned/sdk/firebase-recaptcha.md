@@ -7,8 +7,9 @@ packageName: 'expo-firebase-recaptcha'
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
+import { Terminal } from '~/ui/components/Snippet';
 
-**`expo-firebase-recaptcha`** provides a set of building blocks for creating a reCAPTCHA verifier and using that with your Firebase Phone authentication workflow.
+`expo-firebase-recaptcha` provides a set of building blocks for creating a reCAPTCHA verifier and using that with your Firebase Phone authentication workflow.
 
 > Firebase phone authentication is not possible out of the box using the Firebase JS SDK. This because an Application Verifier object (reCAPTCHA) is needed as an additional security measure to verify that the user is real and not a bot.
 
@@ -18,13 +19,23 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <APIInstallSection />
 
-Additionally, you'll also need to install the webview using `npx expo install react-native-webview`
+Additionally, you'll also need to install the webview using `npx expo install react-native-webview`.
 
 ## Usage
 
+### With native Firebase SDK
+
+If you are using `expo-firebase-recaptcha` with React Native Firebase, you'll have to install the native SDK using the `npx expo install` command:
+
+<Terminal cmd={["$ npx expo install @react-native-firebase/app"]} />
+
+This will ensure that the `@react-native-firebase/app` dependency version is compatible with the Expo SDK version your project uses.
+
+Also, make sure that you have React Native Firebase set up correctly in your project. For more information on how to configure it, see [using the native Firebase SDK](/guides/setup-native-firebase/#setup).
+
 ### Basic usage
 
-To get started, [read the official Firebase phone-auth guide and **ignore all steps** that cover the reCAPTCHA configuration.](https://firebase.google.com/docs/auth/web/phone-auth)
+To get started, [read the official Firebase phone-auth guide and **ignore all steps** that cover the reCAPTCHA configuration](https://firebase.google.com/docs/auth/web/phone-auth).
 
 Instead of using the standard `firebase.auth.RecaptchaVerifier` class, we will be using our own verifier which creates a reCAPTCHA widget inside a web-browser.
 
@@ -57,7 +68,7 @@ const authResult = await firebase.auth().signInWithCredential(credential);
 
 ### Phone authentication example
 
-The examples below assumes that you are using `firebase@9.x.x`.
+The examples below assumes that you are using `firebase@9.x.x` JS SDK.
 
 <SnackInline
 label='Firebase Phone Auth'
