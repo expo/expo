@@ -18,15 +18,15 @@ This guide explains how to run E2E tests with Detox in a bare workflow project. 
 
 ### 0. Initialize a new Bare Workflow project
 
-Let's start by initializing a new Expo project and running `expo prebuild` to generate the native projects.
+Let's start by initializing a new Expo project and running `npx expo prebuild` to generate the native projects.
 
 <Terminal cmd={[
 '# Initialize a new project',
-'$ yarn create expo-app eas-tests-example',
+'$ npx create-expo-app eas-tests-example',
 '# cd into the project directory',
 '$ cd eas-tests-example',
 '# Generate native code',
-'$ yarn expo prebuild --platform ios'
+'$ npx expo prebuild --platform ios'
 ]} />
 
 ### 1. Make home screen interactive
@@ -101,16 +101,16 @@ Let's add two development dependencies to the project - `jest` and `detox`. `jes
 
 <Terminal cmd={[
 '# Install jest & detox',
-'$ yarn add -D jest detox',
+'$ npm install --save-dev jest detox',
 '# Create Detox configuration files',
-'$ yarn detox init -r jest',
+'$ npx detox init -r jest',
 ]} />
 
 > See the official Detox docs at https://wix.github.io/Detox/docs/introduction/getting-started/ and https://wix.github.io/Detox/docs/guide/jest to learn about any potential updates to this process.
 
 #### Configure Detox
 
-Detox requires you to specify both the build command and path to the binary produced by it. Technically, the build command is not necessary when running tests on EAS Build, but allows you to run tests locally (using `yarn detox build --configuration ios`).
+Detox requires you to specify both the build command and path to the binary produced by it. Technically, the build command is not necessary when running tests on EAS Build, but allows you to run tests locally (using `npx detox build --configuration ios`).
 
 Edit **.detoxrc.json** and replace the `ios` configuration with:
 
