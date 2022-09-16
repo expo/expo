@@ -9,13 +9,15 @@ import com.facebook.react.bridge.JSBundleLoader
 import expo.interfaces.devmenu.annotations.ContainsDevMenuExtension
 import expo.modules.devlauncher.react.DevLauncherDevSupportManagerSwapper
 import expo.modules.devlauncher.react.DevLauncherInternalSettings
+import okhttp3.HttpUrl
 
 fun injectReactInterceptor(
   context: Context,
   reactNativeHost: ReactNativeHost,
   url: Uri
 ): Boolean {
-  val debugServerHost = url.host + ":" + url.port
+  val port = if (url.port != -1) url.port else HttpUrl.defaultPort(url.scheme)
+  val debugServerHost = url.host + ":" + port
   // We need to remove "/" which is added to begin of the path by the Uri
   // and the bundle type
   val appBundleName = if (url.path.isNullOrEmpty()) {
