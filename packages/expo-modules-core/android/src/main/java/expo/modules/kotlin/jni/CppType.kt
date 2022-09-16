@@ -19,5 +19,7 @@ enum class CppType(val value: Int = nextValue()) {
   READABLE_ARRAY,
   READABLE_MAP,
   TYPED_ARRAY,
-  PRIMITIVE_ARRAY;
+  PRIMITIVE_ARRAY,
+  LIST,
+  MAP;
 }

@@ -2,11 +2,11 @@ package expo.modules.kotlin.types
 
 import android.graphics.Color
 import com.facebook.react.bridge.Dynamic
-import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.SingleType
 
 /**
  * Color components for named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color)
@@ -174,7 +174,7 @@ class ColorTypeConverter(
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
       ReadableType.String -> colorFromString(value.asString())
       ReadableType.Array -> {
-        val colorsArray = value.asArray().toArrayList().map { it as Double }.toTypedArray()
+        val colorsArray = value.asArray().toArrayList().map { it as Double }.toDoubleArray()
         colorFromDoubleArray(colorsArray)
       }
       else -> throw UnexpectedException("Unknown argument type: ${value.type}")
@@ -189,15 +189,14 @@ class ColorTypeConverter(
       is String -> {
         colorFromString(value)
       }
-      is ReadableArray -> {
-        val colorsArray = value.toArrayList().map { it as Double }.toTypedArray()
-        colorFromDoubleArray(colorsArray)
+      is DoubleArray -> {
+        colorFromDoubleArray(value)
       }
       else -> throw UnexpectedException("Unknown argument type: ${value::class}")
     }
   }
 
-  private fun colorFromDoubleArray(value: Array<Double>): Color {
+  private fun colorFromDoubleArray(value: DoubleArray): Color {
     val alpha = value.getOrNull(3) ?: 1.0
     return Color.valueOf(value[0].toFloat(), value[1].toFloat(), value[2].toFloat(), alpha.toFloat())
   }
@@ -222,8 +221,13 @@ class ColorTypeConverter(
 
   override fun getCppRequiredTypes(): ExpectedType =
     ExpectedType(
-      CppType.INT,
-      CppType.STRING,
-      CppType.READABLE_ARRAY
+      SingleType(CppType.INT),
+      SingleType(CppType.STRING),
+      SingleType(
+        CppType.PRIMITIVE_ARRAY,
+        arrayOf(ExpectedType(CppType.DOUBLE))
+      )
     )
+
+  override fun isTrivial() = false
 }

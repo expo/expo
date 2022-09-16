@@ -22,6 +22,8 @@ public:
   CppType getCppType();
 
   jni::local_ref<jni::JavaClass<ExpectedType>::javaobject> getFirstParameterType();
+
+  jni::local_ref<jni::JavaClass<ExpectedType>::javaobject> getSecondParameterType();
 };
 
 /**

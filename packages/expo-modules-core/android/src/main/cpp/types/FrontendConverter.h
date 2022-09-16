@@ -263,4 +263,52 @@ private:
    */
   std::shared_ptr<FrontendConverter> parameterConverter;
 };
+
+/**
+ * Converter from js array object to [java.utils.ArrayList].
+ */
+class ListFrontendConverter : public FrontendConverter {
+public:
+  ListFrontendConverter(
+    jni::local_ref<jni::JavaClass<ExpectedType>::javaobject> expectedType
+  );
+
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+private:
+  /**
+   * Converter used to convert array elements.
+   */
+  std::shared_ptr<FrontendConverter> parameterConverter;
+};
+
+/**
+ * Converter from js object to [java.utils.LinkedHashMap].
+ */
+class MapFrontendConverter : public FrontendConverter {
+public:
+  MapFrontendConverter(
+    jni::local_ref<jni::JavaClass<ExpectedType>::javaobject> expectedType
+  );
+
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+private:
+  /**
+   * Converter used to convert values.
+   */
+  std::shared_ptr<FrontendConverter> valueConverter;
+};
 } // namespace expo
