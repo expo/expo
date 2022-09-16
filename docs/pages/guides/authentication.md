@@ -2355,7 +2355,8 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - Bare workflow
     - `npx create-react-native-app` or `expo prebuild`
   - Standalone builds in the App or Play Store
-    - `expo build:ios` or `expo build:android`
+    - iOS: `eas build` or `expo build:ios`
+    - Android: `eas build` or `expo build:android`
   - Standalone builds for local testing
     - `expo build:ios -t simulator` or `expo build:android -t apk`
 
