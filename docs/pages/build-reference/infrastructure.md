@@ -162,6 +162,22 @@ When selecting an image for the build you can use the full name provided below o
   enableImmutableInstalls: false
   ```
 
+#### Image `macos-monterey-12.6-xcode-14.0`
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.6
+- Xcode 14.0 (14A309)
+- Node.js 16.13.2
+- Yarn 1.22.17
+- pnpm 7.11.0
+- npm 8.1.2
+- fastlane 2.210.0
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
 #### Image `macos-monterey-12.4-xcode-13.4` (alias `latest`)
 
 <Collapsible summary="Details">
