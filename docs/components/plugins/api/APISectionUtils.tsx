@@ -86,6 +86,11 @@ export const mdInlineComponents: MDComponents = {
   p: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
+export const mdInlineComponentsNoValidation: MDComponents = {
+  ...mdInlineComponents,
+  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+};
+
 const nonLinkableTypes = [
   'ColorValue',
   'Component',
