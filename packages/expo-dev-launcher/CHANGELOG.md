@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Remove the deprecated `Linking.removeEventListener` in expo-dev-launcher bundle. ([#18939](https://github.com/expo/expo/pull/18939) by [@kudo](https://github.com/kudo))
+- Fixed the incompatibility with react-native-v8 on Android. ([#19117](https://github.com/expo/expo/pull/19117) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
