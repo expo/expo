@@ -87,4 +87,10 @@ std::string ExpectedType::getJClassString(bool allowsPrimitives) {
   }
   return "java/lang/Object";
 }
+
+jni::local_ref<jni::JArrayClass<SingleType>::javaobject> ExpectedType::getPossibleTypes() {
+  static const auto method = getClass()->getMethod<jni::local_ref<jni::JArrayClass<SingleType>::javaobject>()>(
+    "getPossibleTypes");
+  return method(self());
+}
 } // namespace expo

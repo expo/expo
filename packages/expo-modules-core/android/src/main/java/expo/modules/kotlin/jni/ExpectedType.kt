@@ -7,7 +7,7 @@ import expo.modules.core.interfaces.DoNotStrip
  */
 @DoNotStrip
 class SingleType(
-  expectedCppType: CppType,
+  internal val expectedCppType: CppType,
   /**
    * Types of generic parameters.
    */
@@ -16,7 +16,7 @@ class SingleType(
   /**
    * The representation of the type.
    */
-  val cppType: Int = expectedCppType.value
+  val cppType get() = expectedCppType.value
 
   /**
    * A convenient property to return the type of the first parameter.
@@ -49,6 +49,12 @@ class ExpectedType(
    * A convenient property to return the first of possible types.
    */
   val firstType = possibleTypes.first()
+
+  operator fun plus(other: ExpectedType): ExpectedType {
+    return ExpectedType(
+      *this.possibleTypes, *other.possibleTypes
+    )
+  }
 
   companion object {
     fun forPrimitiveArray(parameterType: CppType) = ExpectedType(
