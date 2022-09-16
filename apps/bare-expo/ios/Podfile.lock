@@ -46,11 +46,11 @@ PODS:
     - MLKitVision (= 3.0.0)
   - EXFileSystem (14.1.0):
     - ExpoModulesCore
-  - EXFirebaseAnalytics (7.1.1):
+  - EXFirebaseAnalytics (7.2.0):
     - EXFirebaseCore
     - ExpoModulesCore
     - Firebase/Core (= 9.5.0)
-  - EXFirebaseCore (5.1.1):
+  - EXFirebaseCore (5.2.0):
     - ExpoModulesCore
     - Firebase/Core (= 9.5.0)
   - EXFont (10.2.0):
@@ -1256,8 +1256,8 @@ SPEC CHECKSUMS:
   EXErrorRecovery: 68d5f8102234058762687d320580d9b4402cc278
   EXFaceDetector: a5578b7abadcf7a17f446486a3e47b269544bd17
   EXFileSystem: b2b6629924e5b4b6f870c05af23c2c7a4551acc0
-  EXFirebaseAnalytics: fa8f0e792f819f338bcdae7033eeccfec5c979bc
-  EXFirebaseCore: 3264e78c540580ba12e4e13f8f9e3dfc7c4ed367
+  EXFirebaseAnalytics: 8cd886bb057c858c1836dbf094bb5b39157a1149
+  EXFirebaseCore: 4e86a77accaa3363b07e483f46eea34417c2bbdb
   EXFont: a83065d483208782d16aa8b72fa094a410d968cd
   EXGL: eaf094308ed1a3ea8259b0ceeef41363edf20eb2
   EXImage: dc8a7ec5389a7184dbffcf02e28b8648ccc0734d
@@ -1272,9 +1272,9 @@ SPEC CHECKSUMS:
   EXNotifications: ea68b24a6b66fafcfcf913b2ce1367f605f6dcc1
   EXPermissions: 5cc17993ce2bf8377b40ebae47d54a88c41c4480
   Expo: f35ce9004f13fe930476bd8e667eeb170166ca4e
-  expo-dev-client: 258dd6da471e23b8671a3634003e4c0ff55aaeda
-  expo-dev-launcher: 0033ec737f7f979748bfc9aa09042f366bc366cd
-  expo-dev-menu: e46aed10d3f7b4251cf0483e9659cc33cc046f96
+  expo-dev-client: 4aea43e3e4495cd676c7954c33bd3bd604cfab3a
+  expo-dev-launcher: 54354885ddd62fd30d2a47b642368ed6609e5dfe
+  expo-dev-menu: 3a45a0a94cacf26f9cf2c0a509fd6a9e162785e6
   expo-dev-menu-interface: 3629393147ac495c03ef22bdcef66e6fa42b78c3
   ExpoCellular: 5cd085987f010055ab92c81d60e948ce0c4b5a89
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
