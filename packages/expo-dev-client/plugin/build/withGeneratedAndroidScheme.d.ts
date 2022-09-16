@@ -7,7 +7,7 @@ export declare function setGeneratedAndroidScheme(config: Pick<ExpoConfig, 'sche
  * The custom scheme `<data android:scheme="exp+<slug>"/>` seems to block verification for these intent filters.
  * This plugin makes sure there is no scheme in the autoVerify intent filters, that starts with `exp+`.
  
- * Iterate over all `autoVerify=true` intent filters, and pull out schemes starting with `exp+`.
+ * Iterate over all `autoVerify=true` intent filters, and pull out schemes matching with `exp+<slug>`.
  *
  * @param {AndroidManifest} androidManifest
  */
