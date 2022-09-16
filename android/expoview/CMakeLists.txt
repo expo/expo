@@ -74,7 +74,6 @@ target_include_directories(
         "${REACT_NATIVE_PATH}/ReactCommon/jsi"
         "${REACT_NATIVE_PATH}/ReactCommon/turbomodule/core"
         "${REACT_NATIVE_PATH}/ReactCommon/turbomodule"
-        "${NODE_MODULES_DIR}/hermes-engine/android/include/"
         "./src/main/Common/cpp/headers/Tools"
         "./src/main/Common/cpp/headers/SpecTools"
         "./src/main/Common/cpp/headers/NativeModules"
@@ -89,7 +88,6 @@ target_include_directories(
 # find libraries
 
 file (GLOB LIBRN_DIR "${RN_SO_DIR}/${ANDROID_ABI}")
-file (GLOB HERMES_DIR "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}")
 
 find_library(
         LOG_LIB
@@ -101,12 +99,7 @@ find_library(
         PATHS ${LIBRN_DIR}
         NO_CMAKE_FIND_ROOT_PATH
 )
-find_library(
-        HERMES_LIB
-        hermes
-        PATHS ${HERMES_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-)
+find_package(hermes-engine REQUIRED CONFIG)
 find_library(
         JSEXECUTOR_LIB
         jscexecutor
@@ -159,7 +152,7 @@ if(${FOR_HERMES})
             ${PACKAGE_NAME}
             ${LOG_LIB}
             ${JSI_LIB}
-            ${HERMES_LIB}
+            hermes-engine::libhermes
             ${GLOG_LIB}
             ${FBJNI_LIB}
             ${FOLLY_LIB}
