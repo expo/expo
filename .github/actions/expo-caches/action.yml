@@ -98,6 +98,7 @@ runs:
           ${{ steps.yarn-cache-dir-path.outputs.dir }}
           node_modules
           apps/*/node_modules
+          apps/*/__generated__/AppEntry.js
           home/node_modules
           packages/*/node_modules
           packages/@expo/*/node_modules
