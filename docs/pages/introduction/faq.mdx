@@ -26,7 +26,7 @@ Yes, the source for Expo Go can be found in the [expo/expo GitHub repository](ht
 
 <Collapsible summary="Who created Expo?">
 
-Expo and Expo Application Services (EAS) are developed by [650 industries](https://expo.dev/about). 650 industries is a California-based company that was founded by [Charlie Cheever](https://en.wikipedia.org/wiki/Charlie_Cheever) and [James Ide](https://jameside.com/).
+Expo and Expo Application Services (EAS) are developed by [650 Industries](https://expo.dev/about). 650 Industries is a California-based company that was founded by [Charlie Cheever](https://en.wikipedia.org/wiki/Charlie_Cheever) and [James Ide](https://jameside.com/).
 
 </Collapsible>
 
@@ -70,6 +70,12 @@ The `expo` package provides a suite of features that make it easier to develop, 
 
 </Collapsible>
 
+<Collapsible summary="Do I need to switch from React Native to use Expo?">
+
+No, the `expo` npm package and CLI work with any React Native app. [Expo Application Services](/eas/index) also works with all React Native apps with first-class support for builds, updates, app store submissions, and more.
+
+</Collapsible>
+
 <Collapsible summary="How much does Expo cost?">
 
 The Expo platform is [free and open source](https://blog.expo.dev/exponent-is-free-as-in-and-as-in-1d6d948a60dc). This includes the libraries that make up the [Expo SDK](/versions/latest/) and the [Expo CLI](/workflow/expo-cli/) used for development. The Expo Go app, the easiest way to get started, is also free from the app stores.
@@ -108,7 +114,7 @@ Traditionally you needed a Mac to develop iOS apps, but you can use [EAS Build](
 
 <Collapsible summary="What version of Android and iOS are supported by the Expo SDK?">
 
-Expo SDK supports Android 5+ and iOS 11+.
+Expo SDK supports Android 5+ and iOS 13+.
 
 </Collapsible>
 
