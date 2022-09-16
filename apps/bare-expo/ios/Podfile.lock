@@ -47,11 +47,11 @@ PODS:
     - MLKitVision (= 3.0.0)
   - EXFileSystem (14.1.0):
     - ExpoModulesCore
-  - EXFirebaseAnalytics (7.1.1):
+  - EXFirebaseAnalytics (7.2.0):
     - EXFirebaseCore
     - ExpoModulesCore
     - Firebase/Core (= 9.5.0)
-  - EXFirebaseCore (5.1.1):
+  - EXFirebaseCore (5.2.0):
     - ExpoModulesCore
     - Firebase/Core (= 9.5.0)
   - EXFont (10.2.0):
@@ -1294,8 +1294,8 @@ SPEC CHECKSUMS:
   EXErrorRecovery: 74d71ee59f6814315457b09d68e86aa95cc7d05d
   EXFaceDetector: 6e4d4a8ce54ebe3c939b287bd111a6c151dfbc43
   EXFileSystem: 5733242b9545bfebb5584769083de35d21578853
-  EXFirebaseAnalytics: 8713dd05a7d30100571517270b844c40ccc1b467
-  EXFirebaseCore: 7ca84e92f9c27949114c240918e164d2558c6a8b
+  EXFirebaseAnalytics: 2e478758e153b908b67477dff7adf99ffbf37a1b
+  EXFirebaseCore: cb1e6afad20c4c32a4966432c78ebfff29d8db6b
   EXFont: a5d80bd9b3452b2d5abbce2487da89b0150e6487
   EXGL: 764f418a6ea75d59903f870842af2cf28947b86d
   EXGL_CPP: 6017ec1a6828afcb76a68f8ed77c22bf472b6aac
@@ -1425,6 +1425,6 @@ SPEC CHECKSUMS:
   Yoga: c2b1f2494060865ac1f27e49639e72371b1205fa
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 8a469077ac39b3a18e077c4f4da370423300396b
+PODFILE CHECKSUM: d81e925e2193cc92df94f7d20263f5b400cdfa4b
 
 COCOAPODS: 1.11.2
