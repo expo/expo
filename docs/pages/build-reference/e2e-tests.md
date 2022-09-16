@@ -357,3 +357,15 @@ Run a build with `eas build -p ios --profile test` and wait for the build to fin
 ## Repository
 
 The full example from this guide is available at https://github.com/expo/eas-tests-example.
+
+## Alternative Approaches
+
+### Using development builds to speed up test run time
+
+The above guide explains how to run E2E tests against a release build of your project, which requires executing a full native build before each test run. Re-building the native app each time you run E2E tests may not be desirable if only the project JavaScript or assets have changed, but this is necessary for release builds because the app JavaScript bundle is embedded into the binary.
+
+We can use [development builds](/development/introduction/) to load from a local development server or from [published updates](/eas-update/introduction/) instead, and save time and CI resources. This can be done by having your E2E test runner invoke the app with a URL that points to a specific update bundle URL, as described in the [development builds deep linking URLs guide](/development/development-workflows/#deep-linking-urls).
+
+Development builds typically display an onboarding welcome screen when an app is launched for the first time — this is intended to provide context about the expo-dev-client UI for developers, but it can interfere with your E2E tests (which expect to interact with your app and not an onboarding screen).  In order to skip the onboarding screen in a test environment, the query parameter `disableOnboarding=1` can be appended to the project URL (an EAS Update URL or a local development server URL).
+
+An example of a Detox test using this technique is available on the [eas-tests-example repository](https://github.com/expo/eas-tests-example).
