@@ -66,4 +66,6 @@ class PairTypeConverter(
       )
     )
   )
+
+  override fun isTrivial() = false
 }

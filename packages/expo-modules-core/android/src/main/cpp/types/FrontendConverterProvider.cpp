@@ -49,7 +49,6 @@ void FrontendConverterProvider::createConverters() {
                         });
 }
 
-
 std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
   jni::local_ref<ExpectedType> expectedType
 ) {
@@ -61,6 +60,14 @@ std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
 
   if (combinedType == CppType::PRIMITIVE_ARRAY) {
     return std::make_shared<PrimitiveArrayFrontendConverter>(expectedType);
+  }
+
+  if (combinedType == CppType::LIST) {
+    return std::make_shared<ListFrontendConverter>(expectedType);
+  }
+
+  if (combinedType == CppType::MAP) {
+    return std::make_shared<MapFrontendConverter>(expectedType);
   }
 
   // We don't have a converter for the expected type. That's why we used an UnknownFrontendConverter.

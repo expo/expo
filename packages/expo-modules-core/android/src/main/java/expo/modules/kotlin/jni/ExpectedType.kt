@@ -21,7 +21,12 @@ class SingleType(
   /**
    * A convenient property to return the type of the first parameter.
    */
-  val firstParameterType = parameterTypes?.get(0)
+  val firstParameterType get() = parameterTypes?.get(0)
+
+  /**
+   * A convenient property to return the type of the second parameter.
+   */
+  val secondParameterType get() = parameterTypes?.get(1)
 }
 
 /**
@@ -66,6 +71,22 @@ class ExpectedType(
     fun forEnum() = ExpectedType(
       CppType.STRING,
       CppType.INT
+    )
+
+    fun forList(parameterType: CppType) = ExpectedType(
+      SingleType(CppType.LIST, arrayOf(ExpectedType(parameterType)))
+    )
+
+    fun forList(parameterType: ExpectedType) = ExpectedType(
+      SingleType(CppType.LIST, arrayOf(parameterType))
+    )
+
+    fun forMap(valueType: CppType) = ExpectedType(
+      SingleType(CppType.MAP, arrayOf(ExpectedType(valueType)))
+    )
+
+    fun forMap(valueType: ExpectedType) = ExpectedType(
+      SingleType(CppType.MAP, arrayOf(valueType))
     )
   }
 }
