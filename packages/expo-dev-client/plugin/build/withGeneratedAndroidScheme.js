@@ -28,7 +28,7 @@ exports.setGeneratedAndroidScheme = setGeneratedAndroidScheme;
  * The custom scheme `<data android:scheme="exp+<slug>"/>` seems to block verification for these intent filters.
  * This plugin makes sure there is no scheme in the autoVerify intent filters, that starts with `exp+`.
  
- * Iterate over all `autoVerify=true` intent filters, and pull out schemes starting with `exp+`.
+ * Iterate over all `autoVerify=true` intent filters, and pull out schemes matching with `exp+<slug>`.
  *
  * @param {AndroidManifest} androidManifest
  */
@@ -40,7 +40,7 @@ function removeExpoSchemaFromVerifiedIntentFilters(config, androidManifest) {
         for (const activity of application.activity || []) {
             if (activityHasSingleTaskLaunchMode(activity)) {
                 for (const intentFilter of activity['intent-filter'] || []) {
-                    if (intentFilterHasAutoVerification(intentFilter) && intentFilter?.data) {
+                    if (intentFilterHasAutoVerification(intentFilter) && (intentFilter === null || intentFilter === void 0 ? void 0 : intentFilter.data)) {
                         intentFilter.data = intentFilterRemoveSchemeFromData(intentFilter, (scheme) => scheme === defaultScheme);
                     }
                 }
@@ -57,17 +57,20 @@ exports.removeExpoSchemaFromVerifiedIntentFilters = removeExpoSchemaFromVerified
  * @see https://github.com/expo/expo-cli/blob/f1624c75b52cc1c4f99354ec4021494e0eff74aa/packages/config-plugins/src/android/Scheme.ts#L166
  */
 function activityHasSingleTaskLaunchMode(activity) {
-    return activity?.$?.['android:launchMode'] === 'singleTask';
+    var _a;
+    return ((_a = activity === null || activity === void 0 ? void 0 : activity.$) === null || _a === void 0 ? void 0 : _a['android:launchMode']) === 'singleTask';
 }
 /**
  * Determine if the intent filter has `autoVerify=true`.
  */
 function intentFilterHasAutoVerification(intentFilter) {
-    return intentFilter?.$?.['android:autoVerify'] === 'true';
+    var _a;
+    return ((_a = intentFilter === null || intentFilter === void 0 ? void 0 : intentFilter.$) === null || _a === void 0 ? void 0 : _a['android:autoVerify']) === 'true';
 }
 /**
  * Remove schemes from the intent filter that matches the function.
  */
 function intentFilterRemoveSchemeFromData(intentFilter, schemeMatcher) {
-    return intentFilter?.data?.filter((entry) => !schemeMatcher(entry?.$['android:scheme'] || ''));
+    var _a;
+    return (_a = intentFilter === null || intentFilter === void 0 ? void 0 : intentFilter.data) === null || _a === void 0 ? void 0 : _a.filter((entry) => !schemeMatcher((entry === null || entry === void 0 ? void 0 : entry.$['android:scheme']) || ''));
 }
