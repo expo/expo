@@ -8,7 +8,7 @@
 #include <string>
 
 #if FOR_HERMES
-#include <jsi/JSCRuntime.h>
+#include <hermes/hermes.h>
 #else
 #include <jsi/JSCRuntime.h>
 #endif

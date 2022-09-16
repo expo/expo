@@ -87,30 +87,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   const JNIOldPackagePrefix = firstStep.sourceAndroidPackage!.split('.').join('/');
   const JNINewPackagePrefix = firstStep.targetAndroidPackage!.split('.').join('/');
 
-  const replaceHermesByJSC = async () => {
-    const nativeProxyPath = path.join(
-      clonedProjectPath,
-      'android',
-      'src',
-      'main',
-      'cpp',
-      'NativeProxy.cpp'
-    );
-    const runtimeCreatingLineJSC = 'jsc::makeJSCRuntime();';
-    const jscImportingLine = '#include <jsi/JSCRuntime.h>';
-    const runtimeCreatingLineHermes = 'facebook::hermes::makeHermesRuntime();';
-    const hermesImportingLine = '#include <hermes/hermes.h>';
-
-    const content = await fs.readFile(nativeProxyPath, 'utf8');
-    let transformedContent = content.replace(runtimeCreatingLineHermes, runtimeCreatingLineJSC);
-    transformedContent = transformedContent.replace(
-      new RegExp(hermesImportingLine, 'g'),
-      jscImportingLine
-    );
-
-    await fs.writeFile(nativeProxyPath, transformedContent, 'utf8');
-  };
-
   const replaceJNIPackages = async () => {
     const cppPattern = path.join(androidMainPathReanimated, 'cpp', '**', '*.@(h|cpp)');
     const androidCpp = await glob(cppPattern);
@@ -195,7 +171,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   };
 
   await applyRNVersionPatches();
-  await replaceHermesByJSC();
   await replaceJNIPackages();
   await copyCPP();
   await prepareIOSNativeFiles();

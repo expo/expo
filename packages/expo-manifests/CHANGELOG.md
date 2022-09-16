@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Replace `getAndroidJsEngine` as `jsEngine` lazy kotlin property. ([#19116](https://github.com/expo/expo/pull/19116) by [@kudo](https://github.com/kudo))
+
 ## 0.3.1 — 2022-07-16
 
 _This version does not introduce any user-facing changes._

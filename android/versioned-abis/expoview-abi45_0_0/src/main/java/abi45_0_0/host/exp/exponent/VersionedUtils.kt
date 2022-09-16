@@ -287,7 +287,7 @@ object VersionedUtils {
       KernelProvider.instance.handleError(RuntimeException(message))
       return null
     }
-    val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.getAndroidJsEngine()
+    val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.jsEngine
     return if (jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
       appName,
       deviceName
