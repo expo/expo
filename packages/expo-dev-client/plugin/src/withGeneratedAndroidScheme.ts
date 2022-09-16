@@ -8,7 +8,7 @@ import {
   ManifestActivity,
   ManifestIntentFilter,
 } from '@expo/config-plugins/build/android/Manifest';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
 
 import getDefaultScheme from './getDefaultScheme';
 
