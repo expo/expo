@@ -3,6 +3,8 @@ import { MetroDevServerOptions } from '@expo/dev-server';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
+import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
@@ -44,9 +46,18 @@ export async function instantiateMetroAsync(
   let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true });
+  const { exp } = getConfig(projectRoot, {
+    skipSDKVersionRequirement: true,
+    skipPlugins: true,
+  });
   const platformBundlers = getPlatformBundlers(exp);
   metroConfig = withMetroMultiPlatform(projectRoot, metroConfig, platformBundlers);
+
+  // Auto pick App entry
+  const routerEntry = resolveFrom(projectRoot, 'expo-router/entry');
+  const appFolder = path.join(projectRoot, 'app');
+  process.env.EXPO_APP_ROOT = path.relative(path.dirname(routerEntry), appFolder);
+  console.log('routerEntry', routerEntry, appFolder, process.env.EXPO_APP_ROOT);
 
   const {
     middleware,
