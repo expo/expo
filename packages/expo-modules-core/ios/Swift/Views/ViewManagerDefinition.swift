@@ -3,7 +3,7 @@ import UIKit
 /**
  The definition of the view manager. It's part of the module definition to scope only view-related definitions.
  */
-public final class ViewManagerDefinition: ObjectDefinition {
+public class ViewManagerDefinition: ObjectDefinition {
   /**
    The view factory that lets us create views.
    */
@@ -42,7 +42,7 @@ public final class ViewManagerDefinition: ObjectDefinition {
   /**
    Creates a new view using the view factory. Returns `nil` if the definition doesn't use the `view` function.
    */
-  func createView() -> UIView? {
+  func createView(appContext: AppContext) -> UIView? {
     return factory?.create()
   }
 

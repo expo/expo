@@ -111,21 +111,19 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `$1${prefix}$2`,
       },
       {
-        find: /\b(RCT|RNC|RNG|RNR|REA|RNS)(\w+)\b/g,
+        find: /\b(RCT|RNC|RNG|RNR|REA|RNS|YG)(\w+)\b/g,
         replaceWith: `${prefix}$1$2`,
       },
       {
-        find: /facebook::/g,
-        replaceWith: `${prefix}facebook::`,
-      },
-      {
-        find: /react::/g,
-        replaceWith: `${prefix}React::`,
-      },
-      {
-        find: /using namespace (facebook|react)/g,
+        find: /(facebook|react|hermes)::/g,
         replaceWith: (_, p1) => {
-          return `using namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
+          return `${prefix}${p1 === 'react' ? 'React' : p1}::`;
+        },
+      },
+      {
+        find: /namespace (facebook|react|hermes)/g,
+        replaceWith: (_, p1) => {
+          return `namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
         },
       },
       {
@@ -139,6 +137,14 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         paths: '*.swift',
         find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex)/gi,
         replaceWith: (_, p1) => `${prefix.toLowerCase()}R${p1}`,
+      },
+      {
+        // Modules written in Swift are registered using `RCT_EXTERN_MODULE` macro in Objective-C.
+        // These modules are usually unprefixed at this point as they don't include any common prefixes (e.g. RCT, RNC).
+        // We have to remap them to prefixed names. It's necessary for at least Stripe, Lottie and FlashList.
+        paths: '*.m',
+        find: new RegExp(`RCT_EXTERN_MODULE\\((?!${prefix})(\\w+)`, 'g'),
+        replaceWith: `RCT_EXTERN_REMAP_MODULE($1, ${prefix}$1`,
       },
       {
         find: /<jsi\/(.*)\.h>/,
@@ -170,6 +176,11 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         paths: '*.podspec.json',
         find: new RegExp(`${prefix}React-${prefix}RCT`, 'g'),
         replaceWith: `${prefix}React-RCT`,
+      },
+      {
+        paths: '*.podspec.json',
+        find: /\b(hermes-engine)\b/g,
+        replaceWith: `${prefix}$1`,
       },
       {
         paths: '*.podspec.json',

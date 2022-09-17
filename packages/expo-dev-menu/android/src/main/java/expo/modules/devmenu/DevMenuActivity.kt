@@ -1,7 +1,5 @@
 package expo.modules.devmenu
 
-import android.content.Context
-import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
@@ -78,18 +76,6 @@ class DevMenuActivity : ReactActivity() {
         return rootView
       }
     }
-  }
-
-  override fun onCreate(savedInstanceState: Bundle?) {
-    // Due to a bug in API 26, we can't set the orientation in translucent activity.
-    // See https://stackoverflow.com/questions/48072438/java-lang-illegalstateexception-only-fullscreen-opaque-activities-can-request-o
-    requestedOrientation = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
-      ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-    } else {
-      ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-    }
-
-    super.onCreate(savedInstanceState)
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {

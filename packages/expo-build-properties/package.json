@@ -31,7 +31,6 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/build-properties",
   "dependencies": {
-    "@expo/config-plugins": "~5.0.0",
     "ajv": "^8.11.0",
     "semver": "^7.3.5"
   },

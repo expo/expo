@@ -6,17 +6,15 @@ import InstallSection from '~/components/plugins/InstallSection';
 import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-expo-updates fetches and manages updates to your app stored on a remote server.
+`expo-updates` fetches and manages updates to your app stored on a remote server.
 
-> 💡 If you are creating a new project, we recommend using `npx create-react-native-app` instead of `npx react-native init` because it will handle the following configuration for you automatically.
+> If you are creating a new project, we recommend using `npx create-react-native-app` instead of `npx react-native init` because it will handle the following configuration for you automatically.
 
 ## Installation
 
 Like most Expo modules, **this package requires that you have already [installed and configured Expo modules](/bare/installing-expo-modules.md). Be sure to install it before continuing.**
 
 <InstallSection packageName="expo-updates" cmd={["expo install expo-updates", "npx pod-install"]} hideBareInstructions />
-
-<br />
 
 Once installation is complete, apply the changes from the following diffs to configure expo-updates in your project. This is expected to take about five minutes, and you may need to adapt it slightly depending on how customized your project is.
 
@@ -26,19 +24,19 @@ We need to modify **index.js** to import `expo-asset` early in your app, in orde
 
 <ConfigurationDiff source="/static/diffs/expo-updates-js.diff" />
 
-<Collapsible summary="💡 What is the SDK version field for?">
+<Collapsible summary="What is the SDK version field for?">
 
 Currently, all apps published to Expo's servers must be configured with a valid SDK version. We use the SDK version to determine which app binaries a particular update is compatible with. If your app has the `expo` package installed in package.json, your SDK version should match the major version number of this package. Otherwise, you can just use the latest Expo SDK version number (at least `38.0.0`).
 
 </Collapsible>
 
-<Collapsible summary="💡 How do I customize which assets are included in an update bundle?">
+<Collapsible summary="How do I customize which assets are included in an update bundle?">
 
 If you have assets (such as images or other media) that are imported in your application code, and you would like these to be downloaded atomically as part of an update, add the `assetBundlePatterns` field under the `expo` key in your project's app.json. This field should be an array of file glob strings which point to the assets you want bundled. For example: `"assetBundlePatterns": ["**/*"]`
 
 </Collapsible>
 
-<Collapsible summary="💡 Migrating from an ExpoKit project?">
+<Collapsible summary="Migrating from an ExpoKit project?">
 
 If you're migrating from an ExpoKit project to the bare workflow with `expo-updates`, remove the `ios.publishBundlePath`, `ios.publishManifestPath`, `android.publishBundlePath`, and `android.publishManifestPath` keys from your app.json.
 

@@ -12,6 +12,7 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
 import expo.modules.kotlin.types.toAnyType
+import io.mockk.mockk
 import org.junit.Test
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -20,12 +21,12 @@ class AnyFunctionTest {
   class MockedAnyFunction(
     desiredArgsTypes: Array<KType>
   ) : AsyncFunction("my-method", desiredArgsTypes.map { it.toAnyType() }.toTypedArray()) {
-    override fun call(args: ReadableArray, promise: Promise) {
+    override fun callUserImplementation(args: ReadableArray, promise: Promise) {
       convertArgs(args)
       throw NullPointerException()
     }
 
-    override fun call(args: Array<Any?>, promise: Promise) {
+    override fun callUserImplementation(args: Array<Any?>, promise: Promise) {
       error("Not implemented.")
     }
   }
@@ -37,6 +38,7 @@ class AnyFunctionTest {
 
     assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected.") {
       method.call(
+        mockk(),
         JavaOnlyArray().apply {
           pushInt(1)
           pushInt(2)
@@ -55,6 +57,7 @@ class AnyFunctionTest {
 
     assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected.") {
       method.call(
+        mockk(),
         JavaOnlyArray().apply {
           pushInt(1)
         },
@@ -77,6 +80,7 @@ class AnyFunctionTest {
       """.trimIndent()
     ) {
       method.call(
+        mockk(),
         JavaOnlyArray().apply {
           pushString("STRING")
         },
@@ -94,6 +98,7 @@ class AnyFunctionTest {
 
     assertThrows<NullPointerException> {
       method.call(
+        mockk(),
         JavaOnlyArray(),
         promise
       )

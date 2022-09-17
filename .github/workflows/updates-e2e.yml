@@ -66,9 +66,13 @@ jobs:
           yarn-workspace: 'true'
           avd: 'true'
           avd-api: ${{ matrix.api-level }}
+          react-native-gradle-downloads: 'true'
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
+      - name: 🛠 Build local Expo CLI
+        working-directory: packages/@expo/cli
+        run: yarn prepare
       - name: Build expo-updates CLI
         working-directory: packages/expo-updates
         run: yarn build:cli
@@ -95,7 +99,7 @@ jobs:
       - name: 🍏 Run iOS tests
         timeout-minutes: 30
         working-directory: packages/expo-updates
-        run: yarn test --config e2e/jest.config.ios.js
+        run: yarn test --config e2e/jest.config.ios.js --runInBand
       - name: 🤖 Start Android emulator and run tests
         timeout-minutes: 30
         uses: reactivecircus/android-emulator-runner@v2
@@ -104,5 +108,5 @@ jobs:
           avd-name: avd-${{ matrix.api-level }}
           arch: x86_64
           force-avd-creation: false
-          script: yarn test --config e2e/jest.config.android.js
+          script: yarn test --config e2e/jest.config.android.js --runInBand
           working-directory: packages/expo-updates

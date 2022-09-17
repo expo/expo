@@ -8,6 +8,10 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTEventDispatcherProtocol.h>
 
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTComponentViewFactory.h>
+#endif
+
 #import <jsi/jsi.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
@@ -201,9 +205,10 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
 
 - (void)setBridge:(RCTBridge *)bridge
 {
-  _appContext = [(ExpoBridgeModule *)[bridge moduleForClass:ExpoBridgeModule.class] appContext];
-  [_appContext setLegacyModuleRegistry:_exModuleRegistry];
-  [_appContext setLegacyModulesProxy:self];
+  ExpoBridgeModule* expoBridgeModule = [bridge moduleForClass:ExpoBridgeModule.class];
+  [expoBridgeModule legacyProxyDidSetBridgeWithLegacyModulesProxy:self
+                                             legacyModuleRegistry:_exModuleRegistry];
+  _appContext = [expoBridgeModule appContext];
 
   if (!_bridge) {
     // The `setBridge` can be called during module setup or after. Registering more modules
@@ -378,6 +383,12 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
                                                                   managerClass:wrappedViewModuleClass
                                                                         bridge:bridge];
   componentDataByName[className] = componentData;
+
+#ifdef RN_FABRIC_ENABLED
+  Class viewClass = [ExpoFabricView makeClassForAppContext:_appContext className:className];
+  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+#endif
+
   return wrappedViewModuleClass;
 }
 
@@ -389,12 +400,19 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 {
   // Hacky way to get a dictionary with `RCTComponentData` from UIManager.
   NSMutableDictionary<NSString *, RCTComponentData *> *componentDataByName = [bridge.uiManager valueForKey:@"_componentDataByName"];
-  NSString *className = NSStringFromClass(moduleClass);
+  NSString *className = [moduleClass moduleName] ?: NSStringFromClass(moduleClass);
 
   if ([moduleClass isSubclassOfClass:[RCTViewManager class]] && !componentDataByName[className]) {
     RCTComponentData *componentData = [[RCTComponentData alloc] initWithManagerClass:moduleClass bridge:bridge eventDispatcher:bridge.eventDispatcher];
     componentDataByName[className] = componentData;
   }
+
+#ifdef RN_FABRIC_ENABLED
+  if ([className hasPrefix:@"ViewManagerAdapter_"]) {
+    Class viewClass = [ExpoFabricView makeClassForAppContext:_appContext className:className];
+    [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+  }
+#endif
 }
 
 - (void)assignExportedMethodsKeys:(NSMutableArray<NSMutableDictionary<const NSString *, id> *> *)exportedMethods forModuleName:(const NSString *)moduleName

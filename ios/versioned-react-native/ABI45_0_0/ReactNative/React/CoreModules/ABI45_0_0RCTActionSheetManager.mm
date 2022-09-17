@@ -56,7 +56,7 @@ ABI45_0_0RCT_EXPORT_MODULE()
 }
 
 ABI45_0_0RCT_EXPORT_METHOD(showActionSheetWithOptions
-                  : (JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options callback
+                  : (ABI45_0_0JS::NativeActionSheetManager::SpecShowActionSheetWithOptionsOptions &)options callback
                   : (ABI45_0_0RCTResponseSenderBlock)callback)
 {
   if (ABI45_0_0RCTRunningInAppExtension()) {
@@ -183,7 +183,7 @@ ABI45_0_0RCT_EXPORT_METHOD(showActionSheetWithOptions
 }
 
 ABI45_0_0RCT_EXPORT_METHOD(showShareActionSheetWithOptions
-                  : (JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options failureCallback
+                  : (ABI45_0_0JS::NativeActionSheetManager::SpecShowShareActionSheetWithOptionsOptions &)options failureCallback
                   : (ABI45_0_0RCTResponseSenderBlock)failureCallback successCallback
                   : (ABI45_0_0RCTResponseSenderBlock)successCallback)
 {

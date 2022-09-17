@@ -21,7 +21,9 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration
 
-In managed apps, scanning barcodes with the camera requires the [`Permission.CAMERA`](permissions.md#permissionscamera) permission. See the [usage example](#usage) below.
+<!-- TODO: Replace with config format from tracking-transparency -->
+
+Scanning barcodes with the camera requires the [`Permission.CAMERA`](permissions.md#permissionscamera) permission. See the [usage example](#usage) below.
 
 ## Supported formats
 
@@ -47,7 +49,8 @@ In managed apps, scanning barcodes with the camera requires the [`Permission.CAM
 | upc_ean         | No    | Yes         |
 | qr              | Yes   | Yes         |
 
-> __Notes:__
+> **Notes:**
+>
 > - When an ITF-14 barcode is recognized, it's type can sometimes be set to `interleaved2of5`.
 > - Scanning for either `PDF417` and/or `Code39` formats can result in a noticeable increase in battery consumption on iOS. It is recommended to provide only the bar code formats you expect to scan to the `barCodeTypes` prop.
 
@@ -70,9 +73,9 @@ export default function App() {
     const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
-    });
-    
-    getBarCodeScannerPermissions();  
+    };
+
+    getBarCodeScannerPermissions();
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {

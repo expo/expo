@@ -4,13 +4,53 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- [iOS] fix use_frameworks! compilation. ([#18073](https://github.com/expo/expo/pull/18073) by [@douglowder](https://github.com/douglowder))
+### 💡 Others
+
+## 1.3.0 — 2022-09-16
 
 ### 💡 Others
+
+- Disable onboarding popup with URL query param. ([#19024](https://github.com/expo/expo/pull/19024) by [@douglowder](https://github.com/douglowder))
+
+## 1.2.1 — 2022-08-16
+
+### 🐛 Bug fixes
+
+- Fixes `PanGestureHandler` does not get active when it has a `simultaneousHandler` on iOS. ([#18657](https://github.com/expo/expo/pull/18657) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.2.0 — 2022-08-11
+
+### 🎉 New features
+
+- Add landscape orienation support. ([#18509](https://github.com/expo/expo/pull/18509)) by [@ajsmth](https://github.com/ajsmth)
+
+### 🐛 Bug fixes
+
+- Fix the duplicated `DevMenuRNGestureHandlerStateManager.h` output file compilation error on iOS. ([#18562](https://github.com/expo/expo/pull/18562) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.1.1 — 2022-07-20
+
+### 🐛 Bug fixes
+
+- Fixed compatibility with the `react-native-reanimated` on iOS. ([#18306](https://github.com/expo/expo/pull/18306) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.1.0 — 2022-07-18
+
+### 🎉 New features
+
+- Added support for React Native 0.69.X. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo) & [#18182](https://github.com/expo/expo/pull/18182) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.0.1 — 2022-07-14
+
+### 🐛 Bug fixes
+
+- [iOS] fix use_frameworks! compilation. ([#18073](https://github.com/expo/expo/pull/18073) by [@douglowder](https://github.com/douglowder))
 
 ## 1.0.0 — 2022-06-09
 

@@ -93,34 +93,4 @@ import { Video } from 'expo-av';
 
 ## Unified API
 
-The rest of the API on the `Video` component `ref` is the same as the API for `Audio.Sound` - see the [AV documentation](av.md#playback-api) for further information:
-
-- `videoRef.loadAsync(source, initialStatus = {}, downloadFirst = true)`
-
-- `videoRef.unloadAsync()`
-
-- `videoRef.getStatusAsync()`
-
-- `videoRef.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate)`
-
-- `videoRef.setStatusAsync(statusToSet)`
-
-- `videoRef.playAsync()`
-
-- `videoRef.replayAsync()`
-
-- `videoRef.pauseAsync()`
-
-- `videoRef.stopAsync()`
-
-- `videoRef.setPositionAsync(millis)`
-
-- `videoRef.setRateAsync(value, shouldCorrectPitch, pitchCorrectionQuality)`
-
-- `videoRef.setVolumeAsync(value)`
-
-- `videoRef.setIsMutedAsync(value)`
-
-- `videoRef.setIsLoopingAsync(value)`
-
-- `videoRef.setProgressUpdateIntervalAsync(millis)`
+The rest of the API on the `Video` component `ref` is the same as the API for `Audio.Sound` - see the [AV documentation](av/#playback) for further information.

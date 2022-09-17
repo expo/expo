@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
 import * as Log from '../../../log';
-import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
+import { isInteractive } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
 import { selectAsync } from '../../../utils/prompts';
 import * as Security from './Security';
@@ -58,7 +58,7 @@ export async function resolveCertificateSigningIdentityAsync(
   //  One ID available 🤝 Program is not interactive
   //
   //     using the the first available option
-  if (ids.length === 1 || env.CI) {
+  if (ids.length === 1 || !isInteractive()) {
     // This method is cheaper than `resolveIdentitiesAsync` and checking the
     // cached user preference so we should use this as early as possible.
     return Security.resolveCertificateSigningInfoAsync(ids[0]);

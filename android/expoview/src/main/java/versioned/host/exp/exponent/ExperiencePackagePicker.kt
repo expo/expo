@@ -1,17 +1,14 @@
 package versioned.host.exp.exponent
 
-import expo.modules.ads.admob.AdMobPackage
-import expo.modules.ads.facebook.AdsFacebookPackage
-import expo.modules.analytics.amplitude.AmplitudePackage
-import expo.modules.analytics.segment.SegmentPackage
 import expo.modules.application.ApplicationPackage
 import expo.modules.av.AVPackage
+import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchPackage
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryPackage
 import expo.modules.brightness.BrightnessPackage
 import expo.modules.calendar.CalendarPackage
-import expo.modules.camera.CameraPackage
+import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsPackage
@@ -22,7 +19,6 @@ import expo.modules.device.DevicePackage
 import expo.modules.documentpicker.DocumentPickerPackage
 import expo.modules.easclient.EASClientModule
 import expo.modules.errorrecovery.ErrorRecoveryPackage
-import expo.modules.facebook.FacebookPackage
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.firebase.analytics.FirebaseAnalyticsPackage
@@ -69,22 +65,17 @@ import expo.modules.webbrowser.WebBrowserModule
 object ExperiencePackagePicker : ModulesProvider {
   private val EXPO_MODULES_PACKAGES = listOf(
     AVPackage(),
-    AdMobPackage(),
-    AdsFacebookPackage(),
     ApplicationPackage(),
-    AmplitudePackage(),
     BatteryPackage(),
     BackgroundFetchPackage(),
     BarCodeScannerPackage(),
     BrightnessPackage(),
     CalendarPackage(),
-    CameraPackage(),
     ConstantsPackage(),
     ContactsPackage(),
     DevicePackage(),
     DocumentPickerPackage(),
     ErrorRecoveryPackage(),
-    FacebookPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
     FirebaseCorePackage(),
@@ -111,7 +102,6 @@ object ExperiencePackagePicker : ModulesProvider {
     ScreenCapturePackage(),
     ScreenOrientationPackage(),
     SecureStorePackage(),
-    SegmentPackage(),
     SensorsPackage(),
     SharingPackage(),
     SpeechPackage(),
@@ -138,6 +128,7 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    CameraViewModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,
@@ -146,6 +137,7 @@ object ExperiencePackagePicker : ModulesProvider {
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
     RandomModule::class.java,
+    VideoViewModule::class.java,
     WebBrowserModule::class.java,
   )
 }

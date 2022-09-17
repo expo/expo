@@ -10,6 +10,33 @@
 
 ### 💡 Others
 
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+## 1.3.0 — 2022-09-16
+
+### 🐛 Bug fixes
+
+- Remove default scheme from intent filters that specify `autoVerify=true`. ([#18963](https://github.com/expo/expo/pull/18963) by [@ajsmth](https://github.com/ajsmth))
+
+## 1.2.1 — 2022-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.2.0 — 2022-08-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.1 — 2022-07-20
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.0 — 2022-07-18
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.1 — 2022-07-14
+
+_This version does not introduce any user-facing changes._
+
 ## 1.0.0 — 2022-06-09
 
 _This version does not introduce any user-facing changes._

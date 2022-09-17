@@ -1,9 +1,10 @@
 import { css } from '@emotion/react';
-import { StatusFailedIcon, StatusSuccessIcon, StatusWaitingIcon, theme } from '@expo/styleguide';
+import { StatusWaitingIcon, theme } from '@expo/styleguide';
 import * as React from 'react';
 
 import { H4 } from '~/components/base/headings';
 import { ElementType } from '~/types/common';
+import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
 
 const STYLES_TITLE = css`
@@ -33,7 +34,7 @@ type IsSupported = boolean | undefined | { pending: string };
 function getInfo(isSupported: IsSupported, { title }: Platform) {
   if (isSupported === true) {
     return {
-      children: <StatusSuccessIcon color={theme.status.success} />,
+      children: <YesIcon />,
       title: `${title} is supported`,
     };
   } else if (typeof isSupported === 'object') {
@@ -48,7 +49,7 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
   }
 
   return {
-    children: <StatusFailedIcon color={theme.status.error} />,
+    children: <NoIcon />,
     title: `${title} is not supported`,
   };
 }

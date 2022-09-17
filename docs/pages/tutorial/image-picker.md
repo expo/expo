@@ -12,19 +12,11 @@ So far we have been using code from React and React Native in our app. React giv
 
 ## Installing expo-image-picker
 
-To use expo-image-picker in our project, we first need to install it.
+To use `expo-image-picker` in our project, we first need to install it. In your project directory, run the following command:
 
-In your project directory, run the following command:
+<Terminal cmd={['$ npx expo install expo-image-picker']} />
 
-<Terminal cmd={['$ expo install expo-image-picker']} /> 
-
-This will tell npm (or yarn) to install a version of the `expo-image-picker` library that is compatible with your project. That's it!
-
-<Video file={"tutorial/cli-install.mp4"} />
-
-> 🔢 The version numbers you see here may be different depending on when you do this tutorial.
-
-> 🧶 expo-cli used yarn in this video instead of npm. The installation text will be slightly different if you do not have yarn installed. It's fine.
+This will tell npm (or yarn) to install a version of the `expo-image-picker` library that is compatible with your project.
 
 ## Picking an image
 
@@ -40,15 +32,8 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 
 export default function App() {
-  /* @info Request permissions to access the "camera roll", then launch the picker and log the result. */
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
-
+  /* @info Launch the picker and log the result. */
+  let openImagePickerAsync = async () => {    
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
     console.log(pickerResult);
   }
@@ -77,7 +62,7 @@ You should see something like this when you run your app and use the picker:
 
 <Video file="tutorial/cli-logs.mp4" />
 
-> 💡 You can see the logs in your expo-cli terminal session or in the browser-based developer tools if you prefer it. To see the logs in Snack, press "Logs" in the footer.
+> You can see the logs in your expo-cli terminal session or in the browser-based developer tools if you prefer it. To see the logs in Snack, press "Logs" in the footer.
 
 ## Using the selected image
 
@@ -87,18 +72,16 @@ Now we will take the data that we get from the image picker and use it to show t
 
 <!-- prettier-ignore -->
 ```js
+/* @info Import React to use useState */import React from 'react';/* @end */
+
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+
 export default function App() {
   /* @info Initialize a variable to hold our selected image data */const [selectedImage, setSelectedImage] = React.useState(null);/* @end */
 
 
   let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
-    }
-
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
 
     /* @info Stop running the function here if the user cancelled the dialog */
@@ -153,4 +136,4 @@ Your app should now look and behave like this:
 
 > 👀 You might expect that because we gave our image an equal width and height it would be a square, but in the above video it's rectangular. This is because of `resizeMode`, an image style property that lets us control how the image is resized to fit the given dimensions. Try switching it from `contain` to `stretch` or `cover` to see other behaviors.
 
-🥳 We have made great progress! Up next, [let's make it possible to share the image](/tutorial/sharing).
+We have made great progress! Up next, [let's make it possible to share the image](/tutorial/sharing).

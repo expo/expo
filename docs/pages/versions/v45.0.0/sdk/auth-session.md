@@ -13,7 +13,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import SnackInline from '~/components/plugins/SnackInline';
 import { InlineCode } from '~/components/base/code';
 
-`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.md), [Crypto](crypto.md), and [Random](random.md). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](../../../guides/authentication.md).
+`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.md), [Crypto](crypto.md), and [Random](random.md). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -31,13 +31,9 @@ To make your native app handle `mycoolredirect://` simply run:
 
 <Terminal cmd={['$ npx uri-scheme add mycoolredirect']} />
 
-<br />
-
 You should now be able to see a list of all your project's schemes by running:
 
 <Terminal cmd={['$ npx uri-scheme list']} />
-
-<br />
 
 You can test it to ensure it works like this:
 

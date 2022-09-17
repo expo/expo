@@ -3,6 +3,8 @@
 #pragma once
 
 #include "JSIObjectWrapper.h"
+#include "WeakRuntimeHolder.h"
+#include "JavaScriptTypedArray.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -17,6 +19,8 @@ class JavaScriptRuntime;
 
 class JavaScriptObject;
 
+class JavaScriptTypedArray;
+
 /**
  * Represents any JavaScript value. Its purpose is to expose the `jsi::Value` API back to Kotlin.
  */
@@ -30,6 +34,11 @@ public:
 
   JavaScriptValue(
     std::weak_ptr<JavaScriptRuntime> runtime,
+    std::shared_ptr<jsi::Value> jsValue
+  );
+
+  JavaScriptValue(
+    WeakRuntimeHolder runtime,
     std::shared_ptr<jsi::Value> jsValue
   );
 
@@ -55,6 +64,8 @@ public:
 
   bool isObject();
 
+  bool isTypedArray();
+
   bool getBool();
 
   double getDouble();
@@ -65,10 +76,12 @@ public:
 
   jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> getArray();
 
+  jni::local_ref<JavaScriptTypedArray::javaobject> getTypedArray();
+
 private:
   friend HybridBase;
 
-  std::weak_ptr<JavaScriptRuntime> runtimeHolder;
+  WeakRuntimeHolder runtimeHolder;
   std::shared_ptr<jsi::Value> jsValue;
 
   jni::local_ref<jstring> jniKind();

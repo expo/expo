@@ -7,14 +7,14 @@
 
 #import <React/UIView+React.h>
 
-@interface UIGestureRecognizer (GestureHandler)
-@property (nonatomic, readonly) DevMenuRNGestureHandler *gestureHandler;
+@interface UIGestureRecognizer (DevMenuGestureHandler)
+@property (nonatomic, readonly) DevMenuRNGestureHandler *devMenuGestureHandler;
 @end
 
 
-@implementation UIGestureRecognizer (GestureHandler)
+@implementation UIGestureRecognizer (DevMenuGestureHandler)
 
-- (DevMenuRNGestureHandler *)gestureHandler
+- (DevMenuRNGestureHandler *)devMenuGestureHandler
 {
     id delegate = self.delegate;
     if ([delegate isKindOfClass:[DevMenuRNGestureHandler class]]) {
@@ -327,7 +327,7 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
 
 + (DevMenuRNGestureHandler *)findGestureHandlerByRecognizer:(UIGestureRecognizer *)recognizer
 {
-    DevMenuRNGestureHandler *handler = recognizer.gestureHandler;
+    DevMenuRNGestureHandler *handler = recognizer.devMenuGestureHandler;
     if (handler != nil) {
         return handler;
     }
@@ -341,7 +341,7 @@ static NSHashTable<DevMenuRNGestureHandler *> *allGestureHandlers;
 
     for (UIGestureRecognizer *recognizer in reactView.gestureRecognizers) {
         if ([recognizer isKindOfClass:[DevMenuRNDummyGestureRecognizer class]]) {
-            return recognizer.gestureHandler;
+            return recognizer.devMenuGestureHandler;
         }
     }
 

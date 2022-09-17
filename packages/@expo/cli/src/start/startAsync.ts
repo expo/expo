@@ -3,9 +3,9 @@ import chalk from 'chalk';
 
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
-import { logEvent } from '../utils/analytics/rudderstackClient';
-import { env } from '../utils/env';
+import { logEventAsync } from '../utils/analytics/rudderstackClient';
 import { installExitHooks } from '../utils/exit';
+import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { TypeScriptProjectPrerequisite } from './doctor/typescript/TypeScriptProjectPrerequisite';
@@ -103,7 +103,7 @@ export async function startAsync(
   // Some tracking thing
 
   if (options.devClient) {
-    track(projectRoot, exp);
+    await trackAsync(projectRoot, exp);
   }
 
   await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
@@ -112,7 +112,7 @@ export async function startAsync(
   await profile(openPlatformsAsync)(devServerManager, options);
 
   // Present the Terminal UI.
-  if (!env.CI) {
+  if (isInteractive()) {
     await profile(startInterfaceAsync)(devServerManager, {
       platforms: exp.platforms ?? ['ios', 'android', 'web'],
     });
@@ -128,18 +128,18 @@ export async function startAsync(
   const logLocation = settings.webOnly ? 'in the browser console' : 'below';
   Log.log(
     chalk`Logs for your project will appear ${logLocation}.${
-      env.CI ? '' : chalk.dim(` Press Ctrl+C to exit.`)
+      isInteractive() ? chalk.dim(` Press Ctrl+C to exit.`) : ''
     }`
   );
 }
 
-function track(projectRoot: string, exp: ExpoConfig) {
-  logEvent('dev client start command', {
+async function trackAsync(projectRoot: string, exp: ExpoConfig): Promise<void> {
+  await logEventAsync('dev client start command', {
     status: 'started',
     ...getDevClientProperties(projectRoot, exp),
   });
-  installExitHooks(() => {
-    logEvent('dev client start command', {
+  installExitHooks(async () => {
+    await logEventAsync('dev client start command', {
       status: 'finished',
       ...getDevClientProperties(projectRoot, exp),
     });

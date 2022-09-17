@@ -55,12 +55,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     // Overriding expo-updates UpdatesService
     moduleRegistry.registerInternalModule(UpdatesBinding(scopedContext, experienceProperties))
 
-    // Overriding expo-facebook
-    moduleRegistry.registerExportedModule(ScopedFacebookModule(scopedContext))
-
-    // Scoping Amplitude
-    moduleRegistry.registerExportedModule(ScopedAmplitudeModule(scopedContext, experienceKey))
-
     // Overriding expo-firebase-core
     moduleRegistry.registerInternalModule(ScopedFirebaseCoreService(scopedContext, manifest, experienceKey))
 

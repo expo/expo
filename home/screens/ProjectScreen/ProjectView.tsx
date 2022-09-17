@@ -55,16 +55,39 @@ export function ProjectView({ loading, error, data, navigation }: Props) {
       <ScrollView style={{ flex: 1 }}>
         <ProjectHeader app={app} />
         <View padding="medium">
-          {appHasLegacyUpdate(app) && <LegacyLaunchSection app={app} />}
-          {appHasEASUpdates(app) && <EASUpdateLaunchSection app={app} />}
-          {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && <EmptySection />}
-          <Spacer.Vertical size="xl" />
+          {appHasEASUpdates(app) && (
+            <>
+              <EASUpdateLaunchSection app={app} />
+              <Spacer.Vertical size="xl" />
+            </>
+          )}
+          {appHasLegacyUpdate(app) && (
+            <>
+              <LegacyLaunchSection app={app} />
+              <Spacer.Vertical size="xl" />
+            </>
+          )}
+          {!appHasLegacyUpdate(app) && !appHasEASUpdates(app) && (
+            <>
+              <EmptySection />
+              <Spacer.Vertical size="xl" />
+            </>
+          )}
           <View bg="default" border="default" overflow="hidden" rounded="large">
             <ConstantItem title="Owner" value={app.username} />
             {app.sdkVersion !== '0.0.0' && (
               <>
                 <Divider style={{ height: 1 }} />
                 <ConstantItem title="SDK Version" value={app.sdkVersion} />
+              </>
+            )}
+            {app.latestReleaseForReleaseChannel?.runtimeVersion && (
+              <>
+                <Divider style={{ height: 1 }} />
+                <ConstantItem
+                  title="Runtime Version"
+                  value={app.latestReleaseForReleaseChannel?.runtimeVersion}
+                />
               </>
             )}
           </View>

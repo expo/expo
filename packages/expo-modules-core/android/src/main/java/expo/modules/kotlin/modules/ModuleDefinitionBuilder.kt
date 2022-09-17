@@ -4,6 +4,7 @@ package expo.modules.kotlin.modules
 
 import android.app.Activity
 import android.content.Intent
+import android.view.View
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -11,8 +12,10 @@ import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
+import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
+import kotlin.reflect.KClass
 
 @DefinitionMarker
 class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null) : ObjectDefinitionBuilder() {
@@ -45,12 +48,24 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   /**
    * Creates the view manager definition that scopes other view-related definitions.
    */
+  @Deprecated(message = "Use a `View` component instead.")
   inline fun ViewManager(body: ViewManagerDefinitionBuilder.() -> Unit) {
     require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
 
     val viewManagerDefinitionBuilder = ViewManagerDefinitionBuilder()
     body.invoke(viewManagerDefinitionBuilder)
     viewManagerDefinition = viewManagerDefinitionBuilder.build()
+  }
+
+  /**
+   * Creates the view manager definition that scopes other view-related definitions.
+   */
+  inline fun <T : View> View(viewType: KClass<T>, body: ViewDefinitionBuilder<T>.() -> Unit) {
+    require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
+
+    val viewDefinitionBuilder = ViewDefinitionBuilder(viewType)
+    body.invoke(viewDefinitionBuilder)
+    viewManagerDefinition = viewDefinitionBuilder.build()
   }
 
   /**

@@ -1,10 +1,9 @@
 import { spacing } from '@expo/styleguide-native';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, View as RNView } from 'react-native';
+import { FlatList, ActivityIndicator, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
-import { FlatList } from '../../components/FlatList';
 import { SnacksListItem } from '../../components/SnacksListItem';
 import { CommonSnackDataFragment } from '../../graphql/types';
 
@@ -47,12 +46,12 @@ export function SnackListView(props: Props) {
   return <SnackList {...props} />;
 }
 
+const extractKey = (item: CommonSnackDataFragment) => item.id;
+
 function SnackList({ data, loadMoreAsync }: Props) {
   const [isLoadingMore, setLoadingMore] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
-
-  const extractKey = React.useCallback((item: CommonSnackDataFragment) => item.slug, []);
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -85,7 +84,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
     ({ item: snack, index }: { item: CommonSnackDataFragment; index: number }) => {
       return (
         <SnacksListItem
-          key={index.toString()}
+          key={snack.id}
           url={snack.fullName}
           name={snack.name}
           description={snack.description}
@@ -95,7 +94,7 @@ function SnackList({ data, loadMoreAsync }: Props) {
         />
       );
     },
-    []
+    [data]
   );
 
   return (

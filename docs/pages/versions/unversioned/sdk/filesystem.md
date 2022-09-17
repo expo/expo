@@ -194,6 +194,8 @@ So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the
 
 Expo APIs that create files generally operate within these directories. This includes `Audio` recordings, `Camera` photos, `ImagePicker` results, `SQLite` databases and `takeSnapShotAsync()` results. This allows their use with the `FileSystem` API.
 
+Some `FileSystem` functions are able to read from (but not write to) other locations.
+
 ## Constants
 
 ### `FileSystem.EncodingType`
@@ -427,24 +429,22 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 #### Example
 
 **client**
+
 ```javascript
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system';
 
 try {
-  const response = await FileSystem.uploadAsync(
-    `http://192.168.0.1:1234/binary-upload`,
-    fileUri,
-    {
-      fieldName: "file",
-      httpMethod: "PATCH",
-      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
-    }
-  )
-  console.log(JSON.stringify(response, null, 4))
-} catch(error) {
-  console.log(error)
+  const response = await FileSystem.uploadAsync(`http://192.168.0.1:1234/binary-upload`, fileUri, {
+    fieldName: 'file',
+    httpMethod: 'PATCH',
+    uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+  });
+  console.log(JSON.stringify(response, null, 4));
+} catch (error) {
+  console.log(error);
 }
 ```
+
 **server**
 
 Please refer to the "[how to handle such requests](#how-to-handle-such-requests)" section - there is code for a simple Node.js server.

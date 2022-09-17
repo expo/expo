@@ -78,7 +78,7 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI45_0_0EXFirebaseAnalytics"
     ss.dependency         "ABI45_0_0EXFirebaseCore"
     ss.dependency         "ABI45_0_0EXFont"
-    ss.dependency         "EXGL_CPP"
+    ss.dependency         "ABI45_0_0EXGL_CPP"
     ss.dependency         "ABI45_0_0EXGL"
     ss.dependency         "ABI45_0_0EXGoogleSignIn"
     ss.dependency         "ABI45_0_0ExpoHaptics"
@@ -131,7 +131,6 @@ Pod::Spec.new do |s|
     ss.dependency         "lottie-ios"
     ss.dependency         "JKBigInteger"
     ss.dependency         "Branch"
-    ss.dependency         "Google-Mobile-Ads-SDK"
     ss.dependency         "RCT-Folly"
     ss.dependency         "ABI45_0_0ExpoModulesProvider"
   end

@@ -3,10 +3,10 @@ package host.exp.exponent
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.util.Log
 import expo.modules.jsonutils.getNullable
 import expo.modules.manifests.core.LegacyManifest
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.DatabaseHolder
@@ -413,10 +413,13 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       return headers
     }
 
+  private val isRunningOnEmulator: Boolean
+    get() = EmulatorUtilities.isRunningOnEmulator()
+
   private val clientEnvironment: String
     get() = if (Constants.isStandaloneApp()) {
       "STANDALONE"
-    } else if (Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")) {
+    } else if (EmulatorUtilities.isRunningOnEmulator()) {
       "EXPO_SIMULATOR"
     } else {
       "EXPO_DEVICE"

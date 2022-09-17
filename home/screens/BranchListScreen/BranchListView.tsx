@@ -1,11 +1,10 @@
 import { spacing } from '@expo/styleguide-native';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator, View as RNView } from 'react-native';
+import { FlatList, ActivityIndicator, View as RNView } from 'react-native';
 import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import { BranchListItem } from '../../components/BranchListItem';
-import { FlatList } from '../../components/FlatList';
 import { BranchesForProjectQuery } from '../../graphql/types';
 
 type BranchManifest = {
@@ -61,7 +60,7 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
 
-  const extractKey = React.useCallback((item: BranchManifest) => item.id, []);
+  const extractKey = (item: BranchManifest) => item.id;
 
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
@@ -99,7 +98,7 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
         />
       );
     },
-    []
+    [appId, data]
   );
 
   return (

@@ -1,7 +1,7 @@
 #import "DevMenuREAClockNodes.h"
-#import "DevMenuREAUtils.h"
 #import "DevMenuREANodesManager.h"
 #import "DevMenuREAParamNode.h"
+#import "DevMenuREAUtils.h"
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 
@@ -13,7 +13,7 @@
 
 @implementation DevMenuREAClockNode
 
-- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _isRunning = NO;
@@ -23,7 +23,8 @@
 
 - (void)start
 {
-  if (_isRunning) return;
+  if (_isRunning)
+    return;
   _isRunning = YES;
 
   __block __weak void (^weak_animationClb)(CADisplayLink *displayLink);
@@ -31,7 +32,8 @@
   __weak DevMenuREAClockNode *weakSelf = self;
 
   weak_animationClb = animationClb = ^(CADisplayLink *displayLink) {
-    if (!weakSelf.isRunning) return;
+    if (!weakSelf.isRunning)
+      return;
     [weakSelf markUpdated];
     [weakSelf.nodesManager postOnAnimation:weak_animationClb];
   };
@@ -55,18 +57,19 @@
   NSNumber *_clockNodeID;
 }
 
-- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _clockNodeID = [RCTConvert NSNumber:config[@"clock"]];
-    DevMenuREA_LOG_ERROR_IF_NIL(_clockNodeID, @"Reanimated: First argument passed to clock node is either of wrong type or is missing.");
+    DevMenuREA_LOG_ERROR_IF_NIL(
+        _clockNodeID, @"DevMenuReanimated: First argument passed to clock node is either of wrong type or is missing.");
   }
   return self;
 }
 
-- (DevMenuREANode*)clockNode
+- (DevMenuREANode *)clockNode
 {
-  return (DevMenuREANode*)[self.nodesManager findNodeByID:_clockNodeID];
+  return (DevMenuREANode *)[self.nodesManager findNodeByID:_clockNodeID];
 }
 
 @end
@@ -75,11 +78,11 @@
 
 - (id)evaluate
 {
-  DevMenuREANode* node = [self clockNode];
+  DevMenuREANode *node = [self clockNode];
   if ([node isKindOfClass:[DevMenuREAParamNode class]]) {
-    [(DevMenuREAParamNode* )node start];
+    [(DevMenuREAParamNode *)node start];
   } else {
-    [(DevMenuREAClockNode* )node start];
+    [(DevMenuREAClockNode *)node start];
   }
   return @(0);
 }
@@ -90,15 +93,14 @@
 
 - (id)evaluate
 {
-  DevMenuREANode* node = [self clockNode];
+  DevMenuREANode *node = [self clockNode];
   if ([node isKindOfClass:[DevMenuREAParamNode class]]) {
-    [(DevMenuREAParamNode* )node stop];
+    [(DevMenuREAParamNode *)node stop];
   } else {
-    [(DevMenuREAClockNode* )node stop];
+    [(DevMenuREAClockNode *)node stop];
   }
   return @(0);
 }
-
 
 @end
 
@@ -106,11 +108,11 @@
 
 - (id)evaluate
 {
-  DevMenuREANode* node = [self clockNode];
+  DevMenuREANode *node = [self clockNode];
   if ([node isKindOfClass:[DevMenuREAParamNode class]]) {
-    return @(((DevMenuREAParamNode* )node).isRunning ? 1 : 0);
+    return @(((DevMenuREAParamNode *)node).isRunning ? 1 : 0);
   }
-  return @([(DevMenuREAClockNode* )node isRunning] ? 1 : 0);
+  return @([(DevMenuREAClockNode *)node isRunning] ? 1 : 0);
 }
 
 @end

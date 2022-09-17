@@ -7,7 +7,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo app when in development.
+Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo Go app when in development.
 
 ## Splash screen
 
@@ -17,7 +17,7 @@ After telling our designers that we need a 1242px width by 2436px height splash 
 
 <br />
 
-> 🐜 **What is this? A splash screen for ants?!** No, it's just scaled down here to fit more easily on this page 😅
+> **What is this? A splash screen for ants?!** No, it's just scaled down here to fit more easily on this page 😅
 
 Save this image to the **assets** directory inside of your project and call it **splash.png** &mdash; replace the existing file. Reload your app and you should see something like this:
 
@@ -27,7 +27,7 @@ Save this image to the **assets** directory inside of your project and call it *
 
 We can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready.
 
-First, run `expo install expo-splash-screen`.
+First, run `npx expo install expo-splash-screen`.
 
 Next, add the following code to delay hiding the splash screen for five seconds.
 
@@ -38,7 +38,7 @@ SplashScreen.preventAutoHideAsync();
 setTimeout(SplashScreen.hideAsync, 5000);
 ```
 
-🚨 _Don't forget to remove this code when you are done testing your splash screen!_
+_Don't forget to remove this code when you are done testing your splash screen!_
 
 </Collapsible>
 

@@ -70,9 +70,8 @@ export declare function openBrowserAsync(url: string, browserParams?: WebBrowser
 export declare function dismissBrowser(): void;
 /**
  * # On iOS:
- * Opens the url with Safari in a modal using `SFAuthenticationSession` on iOS 11 and greater,
- * and falling back on a `SFSafariViewController`. The user will be asked whether to allow the app
- * to authenticate using the given url.
+ * Opens the url with Safari in a modal using `ASWebAuthenticationSession`. The user will be asked
+ * whether to allow the app to authenticate using the given url.
  *
  * # On Android:
  * This will be done using a "custom Chrome tabs" browser, [AppState](../react-native/appstate/),
@@ -87,7 +86,7 @@ export declare function dismissBrowser(): void;
  *
  * How this works on web:
  * - A crypto state will be created for verifying the redirect.
- *   - This means you need to run with `expo start:web --https`
+ *   - This means you need to run with `npx expo start --https`
  * - The state will be added to the window's `localstorage`. This ensures that auth cannot complete
  *   unless it's done from a page running with the same origin as it was started.
  *   Ex: if `openAuthSessionAsync` is invoked on `https://localhost:19006`, then `maybeCompleteAuthSession`

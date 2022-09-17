@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
+import { PageApiVersionContext } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -29,43 +30,60 @@ const STYLES_LINK = css`
   }
 `;
 
-type Props = {
+type InstallSectionProps = React.PropsWithChildren<{
   packageName: string;
   hideBareInstructions?: boolean;
   cmd?: string[];
   href?: string;
-};
+}>;
 
 const getPackageLink = (packageNames: string) =>
   `https://github.com/expo/expo/tree/main/packages/${packageNames.split(' ')[0]}`;
 
-const InstallSection: React.FC<Props> = ({
+function getInstallCmd(packageName: string) {
+  return `$ npx expo install ${packageName}`;
+}
+
+const InstallSection = ({
   packageName,
   hideBareInstructions = false,
-  cmd = [`$ expo install ${packageName}`],
+  cmd = [getInstallCmd(packageName)],
   href = getPackageLink(packageName),
-}) => (
-  <>
-    <Terminal cmd={cmd} />
-    {hideBareInstructions ? null : (
-      <p css={STYLES_P}>
-        If you're installing this in a{' '}
-        <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
-          bare React Native app
-        </a>
-        , you should also follow{' '}
-        <a css={STYLES_BOLD} href={href}>
-          these additional installation instructions
-        </a>
-        .
-      </p>
-    )}
-  </>
-);
+}: InstallSectionProps) => {
+  const { sourceCodeUrl } = usePageMetadata();
+  const { version } = React.useContext(PageApiVersionContext);
+
+  // Recommend just `expo install` for SDK 43, 44, and 45.
+  // TODO: remove this when we drop SDK 45 from docs
+  if (version.startsWith('v43') || version.startsWith('v44') || version.startsWith('v45')) {
+    if (cmd[0] === getInstallCmd(packageName)) {
+      cmd[0] = cmd[0].replace('npx expo', 'expo');
+    }
+  }
+
+  return (
+    <>
+      <Terminal cmd={cmd} />
+      {hideBareInstructions ? null : (
+        <p css={STYLES_P}>
+          If you're installing this in a{' '}
+          <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
+            bare React Native app
+          </a>
+          , you should also follow{' '}
+          <a css={STYLES_BOLD} href={sourceCodeUrl ?? href}>
+            these additional installation instructions
+          </a>
+          .
+        </p>
+      )}
+    </>
+  );
+};
 
 export default InstallSection;
 
-export const APIInstallSection: React.FC<Props> = props => {
+export const APIInstallSection = (props: InstallSectionProps) => {
   const { packageName } = usePageMetadata();
   return <InstallSection {...props} packageName={props.packageName ?? packageName} />;
 };

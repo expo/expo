@@ -10,13 +10,15 @@ import {
   replaceVersionInPath,
 } from './page-api-version';
 
-jest.mock('next/router');
+jest.mock('next/router', () => ({
+  useRouter: jest.fn(),
+}));
 
 const mockedRouter = jest.mocked(Router);
 
 function renderContext(router = Router) {
   return renderHook(usePageApiVersion, {
-    wrapper: props => (
+    wrapper: (props: React.PropsWithChildren<object>) => (
       <PageApiVersionProvider router={router}>{props.children}</PageApiVersionProvider>
     ),
   });
@@ -57,16 +59,13 @@ describe(PageApiVersionProvider, () => {
 
   it('updates router and version when setting version', () => {
     mockedRouter.pathname = '/versions/latest/sdk';
-    mockedRouter.push.mockImplementation(url => {
-      mockedRouter.pathname = String(url);
-      return Promise.resolve(true);
-    });
+    mockedRouter.push = jest.fn();
 
     const { result, rerender } = renderContext();
     expect(result.current).toMatchObject({ version: 'latest', hasVersion: true });
     act(() => result.current.setVersion('unversioned'));
     rerender();
-    expect(result.current).toMatchObject({ version: 'unversioned', hasVersion: true });
+    expect(mockedRouter.push).toBeCalledWith('/versions/unversioned/sdk');
   });
 });
 

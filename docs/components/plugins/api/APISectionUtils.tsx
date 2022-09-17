@@ -4,6 +4,8 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+import { APIDataType } from './APIDataType';
+
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
 import Link from '~/components/base/link';
@@ -17,11 +19,11 @@ import {
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
-import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import * as Constants from '~/constants/theme';
-import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
+import { A } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -34,6 +36,7 @@ export enum TypeDocKind {
   Interface = 256,
   Property = 1024,
   Method = 2048,
+  Parameter = 32768,
   TypeAlias = 4194304,
 }
 
@@ -87,11 +90,9 @@ export const mdInlineComponents: MDComponents = {
 const nonLinkableTypes = [
   'ColorValue',
   'Component',
+  'ComponentClass',
   'E',
   'EventSubscription',
-  'File',
-  'FileList',
-  'Manifest',
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
@@ -125,13 +126,17 @@ const replaceableTypes: Partial<Record<string, string>> = {
 };
 
 const hardcodedTypeLinks: Record<string, string> = {
-  AVPlaybackSource: '/versions/latest/sdk/av/#playback-api',
-  AVPlaybackStatus: '/versions/latest/sdk/av/#playback-status',
-  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#default-initial--avplaybackstatustoset',
+  AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
+  AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
+  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
+  Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
-  ExpoConfig: 'https://github.com/expo/expo-cli/blob/main/packages/config-types/src/ExpoConfig.ts',
+  ExpoConfig:
+    'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
+  File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
+  FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
@@ -141,6 +146,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   View: '/versions/latest/react-native/view',
   ViewProps: '/versions/latest/react-native/view#props',
   ViewStyle: '/versions/latest/react-native/view-style-props',
+  WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
+  WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
 
 const renderWithLink = (name: string, type?: string) => {
@@ -159,27 +166,37 @@ const renderWithLink = (name: string, type?: string) => {
 };
 
 const renderUnion = (types: TypeDefinitionData[]) =>
-  types.map(resolveTypeName).map((valueToRender, index) => (
-    <span key={`union-type-${index}`}>
-      {valueToRender}
-      {index + 1 !== types.length && ' | '}
-    </span>
-  ));
+  types
+    .map(type => resolveTypeName(type))
+    .map((valueToRender, index) => (
+      <span key={`union-type-${index}`}>
+        {valueToRender}
+        {index + 1 !== types.length && ' | '}
+      </span>
+    ));
 
-export const resolveTypeName = ({
-  elements,
-  elementType,
-  name,
-  type,
-  types,
-  typeArguments,
-  declaration,
-  value,
-  queryType,
-  operator,
-  objectType,
-  indexType,
-}: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
+export const resolveTypeName = (
+  typeDefinition: TypeDefinitionData
+): string | JSX.Element | (string | JSX.Element)[] => {
+  if (!typeDefinition) {
+    return 'undefined';
+  }
+
+  const {
+    elements,
+    elementType,
+    name,
+    type,
+    types,
+    typeArguments,
+    declaration,
+    value,
+    queryType,
+    operator,
+    objectType,
+    indexType,
+  } = typeDefinition;
+
   try {
     if (name) {
       if (type === 'reference') {
@@ -267,14 +284,17 @@ export const resolveTypeName = ({
     } else if (type === 'reflection' && declaration?.children) {
       return (
         <>
-          {'{ '}
+          {'{\n'}
           {declaration?.children.map((child: PropData, i) => (
             <span key={`reflection-${name}-${i}`}>
-              {child.name + ': ' + resolveTypeName(child.type)}
+              {'  '}
+              {child.name + ': '}
+              {resolveTypeName(child.type)}
               {i + 1 !== declaration?.children?.length ? ', ' : null}
+              {'\n'}
             </span>
           ))}
-          {' }'}
+          {'}'}
         </>
       );
     } else if (type === 'tuple' && elements) {
@@ -321,22 +341,28 @@ export const resolveTypeName = ({
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const renderParamRow = ({ comment, name, type, flags }: MethodParamData): JSX.Element => {
-  const defaultValue = parseCommentContent(getTagData('default', comment)?.text);
+export const renderParamRow = ({
+  comment,
+  name,
+  type,
+  flags,
+  defaultValue,
+}: MethodParamData): JSX.Element => {
+  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   return (
     <Row key={`param-${name}`}>
       <Cell>
         <B>{parseParamName(name)}</B>
-        {renderFlags(flags)}
+        {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
-        <InlineCode>{resolveTypeName(type)}</InlineCode>
+        <APIDataType typeDefinition={type} />
       </Cell>
       <Cell>
         <CommentTextBlock
           comment={comment}
           components={mdInlineComponents}
-          afterContent={renderDefaultValue(defaultValue)}
+          afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />
       </Cell>
@@ -365,7 +391,7 @@ export const listParams = (parameters: MethodParamData[]) =>
   parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
 
 export const renderDefaultValue = (defaultValue?: string) =>
-  defaultValue ? (
+  defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
       <B>Default:</B> <InlineCode>{defaultValue}</InlineCode>
     </div>
@@ -373,7 +399,8 @@ export const renderDefaultValue = (defaultValue?: string) =>
 
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
-  signatures?: MethodSignatureData[]
+  signatures?: MethodSignatureData[],
+  allowBlock: boolean = false
 ) => {
   if (signatures && signatures.length) {
     return (
@@ -396,18 +423,35 @@ export const renderTypeOrSignatureType = (
       </InlineCode>
     );
   } else if (type) {
+    if (allowBlock) {
+      return <APIDataType typeDefinition={type} />;
+    }
     return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   }
   return undefined;
 };
 
-export const renderFlags = (flags?: TypePropertyDataFlags) =>
-  flags?.isOptional ? (
+export const renderFlags = (flags?: TypePropertyDataFlags, defaultValue?: string) =>
+  (flags?.isOptional || defaultValue) && (
     <>
       <br />
       <span css={STYLES_OPTIONAL}>(optional)</span>
     </>
-  ) : undefined;
+  );
+
+export const renderIndexSignature = (kind: TypeDocKind) =>
+  kind === TypeDocKind.Parameter && (
+    <>
+      <br />
+      <A
+        css={STYLES_OPTIONAL}
+        href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures"
+        openInNewTab
+        isStyled>
+        (index signature)
+      </A>
+    </>
+  );
 
 export type CommentTextBlockProps = {
   comment?: CommentData;
@@ -432,6 +476,13 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
   comment?.tags?.filter(tag => tag.tag === tagName);
+
+export const getTagNamesList = (comment?: CommentData) =>
+  comment && [
+    ...(getAllTagData('platform', comment)?.map(platformData => platformData.text) || []),
+    ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
+    ...(getTagData('experimental', comment) ? ['experimental'] : []),
+  ];
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
@@ -475,20 +526,6 @@ export const CommentTextBlock = ({
     </React.Fragment>
   ));
 
-  const deprecation = getTagData('deprecated', comment);
-  const deprecationNote = deprecation ? (
-    <div css={deprecationNoticeStyle}>
-      <Callout type="warning" key="deprecation-note">
-        {deprecation.text.trim().length ? (
-          <ReactMarkdown
-            components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
-        ) : (
-          <B>Deprecated</B>
-        )}
-      </Callout>
-    </div>
-  ) : null;
-
   const see = getTagData('see', comment);
   const seeText = see ? (
     <Quote>
@@ -502,12 +539,11 @@ export const CommentTextBlock = ({
   return (
     <>
       {!withDash && includePlatforms && hasPlatforms && (
-        <PlatformTags comment={comment} prefix="Only for:" />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
       )}
-      {deprecationNote}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
-      {withDash && includePlatforms && <PlatformTags comment={comment} />}
+      {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
       {shortText}
       {text}
       {afterContent}
@@ -537,6 +573,11 @@ export const STYLES_APIBOX = css({
     marginTop: spacing[4],
   },
 
+  th: {
+    color: theme.text.secondary,
+    padding: `${spacing[3]}px ${spacing[4]}px`,
+  },
+
   [`.css-${tableWrapperStyle.name}`]: {
     boxShadow: 'none',
   },
@@ -548,6 +589,10 @@ export const STYLES_APIBOX = css({
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
+
+  h4: {
+    marginTop: 0,
+  },
 });
 
 export const STYLES_NESTED_SECTION_HEADER = css({
@@ -560,7 +605,10 @@ export const STYLES_NESTED_SECTION_HEADER = css({
 
   h4: {
     ...typography.fontSizes[16],
+    fontFamily: typography.fontFaces.medium,
     marginBottom: 0,
+    marginTop: 0,
+    color: theme.text.secondary,
   },
 });
 
@@ -584,10 +632,6 @@ export const STYLES_SECONDARY = css({
 
 const defaultValueContainerStyle = css({
   marginTop: spacing[2],
-});
-
-const deprecationNoticeStyle = css({
-  marginBottom: spacing[2],
 });
 
 const STYLES_EXAMPLE_IN_TABLE = css({

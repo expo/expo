@@ -1,5 +1,5 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { AppState, Linking, Platform } from 'react-native';
+import { AppState, Linking, Platform, processColor, } from 'react-native';
 import ExponentWebBrowser from './ExpoWebBrowser';
 import { WebBrowserResultType, WebBrowserPresentationStyle, } from './WebBrowser.types';
 export { WebBrowserResultType, WebBrowserPresentationStyle, };
@@ -130,7 +130,7 @@ export async function openBrowserAsync(url, browserParams = {}) {
     browserLocked = true;
     let result;
     try {
-        result = await ExponentWebBrowser.openBrowserAsync(url, browserParams);
+        result = await ExponentWebBrowser.openBrowserAsync(url, _processOptions(browserParams));
     }
     finally {
         // WebBrowser session complete, unset lock
@@ -154,9 +154,8 @@ export function dismissBrowser() {
 // @needsAudit
 /**
  * # On iOS:
- * Opens the url with Safari in a modal using `SFAuthenticationSession` on iOS 11 and greater,
- * and falling back on a `SFSafariViewController`. The user will be asked whether to allow the app
- * to authenticate using the given url.
+ * Opens the url with Safari in a modal using `ASWebAuthenticationSession`. The user will be asked
+ * whether to allow the app to authenticate using the given url.
  *
  * # On Android:
  * This will be done using a "custom Chrome tabs" browser, [AppState](../react-native/appstate/),
@@ -171,7 +170,7 @@ export function dismissBrowser() {
  *
  * How this works on web:
  * - A crypto state will be created for verifying the redirect.
- *   - This means you need to run with `expo start:web --https`
+ *   - This means you need to run with `npx expo start --https`
  * - The state will be added to the window's `localstorage`. This ensures that auth cannot complete
  *   unless it's done from a page running with the same origin as it was started.
  *   Ex: if `openAuthSessionAsync` is invoked on `https://localhost:19006`, then `maybeCompleteAuthSession`
@@ -204,7 +203,7 @@ export async function openAuthSessionAsync(url, redirectUrl, options = {}) {
             throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
         }
         if (['ios', 'web'].includes(Platform.OS)) {
-            return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, options);
+            return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, _processOptions(options));
         }
         return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
     }
@@ -261,6 +260,14 @@ export function maybeCompleteAuthSession(options = {}) {
         return ExponentWebBrowser.maybeCompleteAuthSession(options);
     }
     return { type: 'failed', message: 'Not supported on this platform' };
+}
+function _processOptions(options) {
+    return {
+        ...options,
+        controlsColor: processColor(options.controlsColor),
+        toolbarColor: processColor(options.toolbarColor),
+        secondaryToolbarColor: processColor(options.secondaryToolbarColor),
+    };
 }
 /* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
 function _authSessionIsNativelySupported() {

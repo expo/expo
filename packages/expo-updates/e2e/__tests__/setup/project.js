@@ -2,13 +2,73 @@ const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs/promises');
 const path = require('path');
 
-async function setupAsync(workingDir, repoRoot, runtimeVersion) {
+async function prepareLocalUpdatesModule(repoRoot) {
+  // copy UpdatesE2ETest exported module into the local package
+  await fs.copyFile(
+    path.resolve(__dirname, '..', 'fixtures', 'EXUpdatesE2ETestModule.h'),
+    path.join(repoRoot, 'packages', 'expo-updates', 'ios', 'EXUpdates', 'EXUpdatesE2ETestModule.h')
+  );
+  await fs.copyFile(
+    path.resolve(__dirname, '..', 'fixtures', 'EXUpdatesE2ETestModule.m'),
+    path.join(repoRoot, 'packages', 'expo-updates', 'ios', 'EXUpdates', 'EXUpdatesE2ETestModule.m')
+  );
+  await fs.copyFile(
+    path.resolve(__dirname, '..', 'fixtures', 'UpdatesE2ETestModule.kt'),
+    path.join(
+      repoRoot,
+      'packages',
+      'expo-updates',
+      'android',
+      'src',
+      'main',
+      'java',
+      'expo',
+      'modules',
+      'updates',
+      'UpdatesE2ETestModule.kt'
+    )
+  );
+
+  // export module from UpdatesPackage on Android
+  const updatesPackageFilePath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'android',
+    'src',
+    'main',
+    'java',
+    'expo',
+    'modules',
+    'updates',
+    'UpdatesPackage.kt'
+  );
+  let updatesPackageFileContents = await fs.readFile(updatesPackageFilePath, 'utf8');
+  if (!updatesPackageFileContents) {
+    throw new Error('Failed to read UpdatesPackage.kt; was the file renamed or moved?');
+  }
+  updatesPackageFileContents = updatesPackageFileContents.replace(
+    'UpdatesModule(context) as ExportedModule',
+    'UpdatesModule(context) as ExportedModule, UpdatesE2ETestModule(context)'
+  );
+  // make sure the insertion worked
+  if (!updatesPackageFileContents.includes('UpdatesE2ETestModule(context)')) {
+    throw new Error('Failed to modify UpdatesPackage.kt to insert UpdatesE2ETestModule');
+  }
+  await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
+}
+
+async function initAsync(workingDir, repoRoot, runtimeVersion) {
+  const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
+
   // initialize project
   await spawnAsync('expo-cli', ['init', 'updates-e2e', '--yes'], {
     cwd: workingDir,
     stdio: 'inherit',
   });
   const projectRoot = path.join(workingDir, 'updates-e2e');
+
+  await prepareLocalUpdatesModule(repoRoot);
 
   // add local dependencies
   let packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf-8'));
@@ -25,6 +85,7 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
       'expo-json-utils': 'file:../expo/packages/expo-json-utils',
       'expo-keep-awake': 'file:../expo/packages/expo-keep-awake',
       'expo-manifests': 'file:../expo/packages/expo-manifests',
+      'expo-modules-autolinking': 'file:../expo/packages/expo-modules-autolinking',
       'expo-modules-core': 'file:../expo/packages/expo-modules-core',
       'expo-structured-headers': 'file:../expo/packages/expo-structured-headers',
       'expo-updates-interface': 'file:../expo/packages/expo-updates-interface',
@@ -106,8 +167,9 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
     stdio: 'inherit',
   });
   const templateVersion = require(path.join(localTemplatePath, 'package.json')).version;
+
   await spawnAsync(
-    'expo-cli',
+    localCliBin,
     ['prebuild', '--template', `expo-template-bare-minimum-${templateVersion}.tgz`],
     {
       cwd: projectRoot,
@@ -122,6 +184,10 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
     'utf-8'
   );
 
+  return projectRoot;
+}
+
+async function setupBasicAppAsync(projectRoot) {
   // copy App.js from test fixtures
   const appJsSourcePath = path.resolve(__dirname, '..', 'fixtures', 'App.js');
   const appJsDestinationPath = path.resolve(projectRoot, 'App.js');
@@ -132,19 +198,57 @@ async function setupAsync(workingDir, repoRoot, runtimeVersion) {
   await fs.writeFile(appJsDestinationPath, appJsFileContents, 'utf-8');
 
   // export update for test server to host
+  await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
   await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
 
   // copy exported update to artifacts
-  await fs.cp(path.join(projectRoot, 'dist'), path.join(process.env.ARTIFACTS_DEST, 'dist'), {
+  await fs.cp(path.join(projectRoot, 'dist'), path.join(process.env.ARTIFACTS_DEST, 'dist-basic'), {
     recursive: true,
   });
+}
 
-  return projectRoot;
+async function setupAssetsAppAsync(projectRoot) {
+  // copy App-assets.js from test fixtures
+  const appJsSourcePath = path.resolve(__dirname, '..', 'fixtures', 'App-assets.js');
+  const appJsDestinationPath = path.resolve(projectRoot, 'App.js');
+  let appJsFileContents = await fs.readFile(appJsSourcePath, 'utf-8');
+  appJsFileContents = appJsFileContents
+    .replace('UPDATES_HOST', process.env.UPDATES_HOST)
+    .replace('UPDATES_PORT', process.env.UPDATES_PORT);
+  await fs.writeFile(appJsDestinationPath, appJsFileContents, 'utf-8');
+
+  // copy png assets and install extra package
+  await fs.copyFile(
+    path.resolve(__dirname, '..', 'fixtures', 'test.png'),
+    path.join(projectRoot, 'test.png')
+  );
+  await spawnAsync('expo-cli', ['install', '@expo-google-fonts/inter'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // export update for test server to host
+  await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
+  await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // copy exported update to artifacts
+  await fs.cp(
+    path.join(projectRoot, 'dist'),
+    path.join(process.env.ARTIFACTS_DEST, 'dist-assets'),
+    {
+      recursive: true,
+    }
+  );
 }
 
 module.exports = {
-  setupAsync,
+  initAsync,
+  setupBasicAppAsync,
+  setupAssetsAppAsync,
 };

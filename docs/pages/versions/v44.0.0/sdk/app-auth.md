@@ -10,7 +10,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { H3 } from '~/components/plugins/Headings';
 import { InlineCode } from '~/components/base/code';
 
-> ⚠️ This package is deprecated in favor of [**AuthSession**](auth-session.md). Check out the [authentication guides](../../../guides/authentication.md) to learn how to migrate your existing authentication today.
+> ⚠️ This package is deprecated in favor of [**AuthSession**](auth-session.md). Check out the [authentication guides](/guides/authentication) to learn how to migrate your existing authentication today.
 
 **`expo-app-auth`** allows you to authenticate and authorize your users through the native OAuth library AppAuth by [OpenID](https://github.com/openid).
 
@@ -64,7 +64,7 @@ For more customization (like https redirects) please refer to the native docs: [
 
 ## Usage
 
-> ⚠️ Use the dedicated [Authentication guides](../../../guides/authentication.md) instead.
+> ⚠️ Use the dedicated [Authentication guides](/guides/authentication) instead.
 
 Below is a set of example functions that demonstrate how to use `expo-app-auth` with the Google OAuth sign in provider.
 

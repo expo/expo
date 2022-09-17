@@ -63,10 +63,13 @@ internal protocol SelectedMediaInfo {
  Represents a single selected image
  */
 internal struct ImageInfo: SelectedMediaInfo {
+  let assetId: String?
   let type: String = "image"
   let uri: String
   let width: Double
   let height: Double
+  let fileName: String?
+  let fileSize: Int?
   let base64: String?
   let exif: ExifInfo?
 
@@ -74,8 +77,11 @@ internal struct ImageInfo: SelectedMediaInfo {
     var result: [String: Any] = [
       "type": type,
       "uri": uri,
+      "assetId": assetId,
       "width": width,
-      "height": height
+      "height": height,
+      "fileName": fileName,
+      "fileSize": fileSize
     ]
     if base64 != nil {
       result["base64"] = base64
@@ -91,18 +97,24 @@ internal struct ImageInfo: SelectedMediaInfo {
  Represents a single selected video
  */
 internal struct VideoInfo: SelectedMediaInfo {
+  let assetId: String?
   let type: String = "video"
   let uri: String
   let width: Double
   let height: Double
+  let fileName: String?
+  let fileSize: Int?
   let duration: Double
 
   var dictionary: [String: Any] {
     [
       "type": type,
       "uri": uri,
+      "assetId": assetId,
       "width": width,
       "height": height,
+      "fileName": fileName,
+      "fileSize": fileSize,
       "duration": duration
     ]
   }

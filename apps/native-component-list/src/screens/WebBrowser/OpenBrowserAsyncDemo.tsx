@@ -30,6 +30,10 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
               name: `"${Colors.tintColor}"`,
               value: Colors.tintColor,
             },
+            {
+              name: '"pink"',
+              value: 'pink',
+            },
           ],
         },
         {
@@ -45,6 +49,10 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
               name: `"${Colors.highlightColor}"`,
               value: Colors.highlightColor,
             },
+            {
+              name: '"blue"',
+              value: 'blue',
+            },
           ],
         },
         {
@@ -56,6 +64,10 @@ const FUNCTIONS_DESCRIPTION: FunctionDescription = {
               value: undefined,
             },
             { name: `"${Colors.headerTitle}"`, value: Colors.headerTitle },
+            {
+              name: '"red"',
+              value: 'red',
+            },
           ],
         },
         {

@@ -1038,17 +1038,16 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 {
   return self.screenView.homeIndicatorHidden;
 }
-
-- (int)getIndexOfView:(UIView *)view
-{
-  return (int)[[self.screenView.reactSuperview reactSubviews] indexOfObject:view];
-}
-
 - (int)getParentChildrenCount
 {
   return (int)[[self.screenView.reactSuperview reactSubviews] count];
 }
 #endif
+
+- (int)getIndexOfView:(UIView *)view
+{
+  return (int)[[self.screenView.reactSuperview reactSubviews] indexOfObject:view];
+}
 
 // since on Fabric the view of controller can be a snapshot of type `UIView`,
 // when we want to check props of ScreenView, we need to get them from _initialView

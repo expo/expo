@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 
 import { InlineCode } from '~/components/base/code';
 import { UL, LI } from '~/components/base/list';
@@ -11,6 +11,7 @@ import {
   TypeGeneralData,
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import {
   mdInlineComponents,
   resolveTypeName,
@@ -23,7 +24,9 @@ import {
   renderParams,
   renderTableHeadRow,
   renderDefaultValue,
+  renderIndexSignature,
   STYLES_APIBOX,
+  getTagNamesList,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 
@@ -46,10 +49,16 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   return null;
 };
 
-const renderTypeDeclarationTable = ({ children }: TypeDeclarationContentData): JSX.Element => (
+const renderTypeDeclarationTable = ({
+  children,
+  indexSignature,
+}: TypeDeclarationContentData): JSX.Element => (
   <Table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     {renderTableHeadRow()}
-    <tbody>{children?.map(renderTypePropertyRow)}</tbody>
+    <tbody>
+      {children?.map(renderTypePropertyRow)}
+      {indexSignature?.parameters && indexSignature.parameters.map(renderTypePropertyRow)}
+    </tbody>
   </Table>
 );
 
@@ -60,22 +69,26 @@ const renderTypePropertyRow = ({
   comment,
   defaultValue,
   signatures,
+  kind,
 }: PropData): JSX.Element => {
   const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   const commentData = getCommentOrSignatureComment(comment, signatures);
+  const hasDeprecationNote = Boolean(getTagData('deprecated', comment));
   return (
     <Row key={name}>
       <Cell fitContent>
         <B>{name}</B>
-        {renderFlags(flags)}
+        {renderFlags(flags, initValue)}
+        {kind && renderIndexSignature(kind)}
       </Cell>
-      <Cell fitContent>{renderTypeOrSignatureType(type, signatures)}</Cell>
+      <Cell fitContent>{renderTypeOrSignatureType(type, signatures, true)}</Cell>
       <Cell fitContent>
+        <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
           comment={commentData}
           components={mdInlineComponents}
           afterContent={renderDefaultValue(initValue)}
-          emptyCommentFallback="-"
+          emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
       </Cell>
     </Row>
@@ -92,7 +105,8 @@ const renderType = ({
     // Object Types
     return (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
-        <H3Code>
+        <APISectionDeprecationNote comment={comment} />
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>
             {name}
             {type.declaration.signatures ? '()' : ''}
@@ -118,28 +132,33 @@ const renderType = ({
     if (propTypes.length) {
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
-          <H3Code>
+          <APISectionDeprecationNote comment={comment} />
+          <H3Code tags={getTagNamesList(comment)}>
             <InlineCode>{name}</InlineCode>
           </H3Code>
           <CommentTextBlock comment={comment} />
           {type.type === 'intersection' ? (
             <P>
-              <InlineCode>
-                {type.types.filter(type => type.type === 'reference').map(resolveTypeName)}
-              </InlineCode>{' '}
+              {type.types
+                .filter(type => type.type === 'reference')
+                .map(validType => (
+                  <Fragment key={`intersection-type-${validType.name}`}>
+                    <InlineCode>{resolveTypeName(validType)}</InlineCode>{' '}
+                  </Fragment>
+                ))}
               extended by:
             </P>
           ) : null}
           {propTypes.map(
-            propType =>
-              propType?.declaration?.children && renderTypeDeclarationTable(propType.declaration)
+            propType => propType.declaration && renderTypeDeclarationTable(propType.declaration)
           )}
         </div>
       );
     } else if (literalTypes.length) {
       return (
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
-          <H3Code>
+          <APISectionDeprecationNote comment={comment} />
+          <H3Code tags={getTagNamesList(comment)}>
             <InlineCode>{name}</InlineCode>
           </H3Code>
           <CommentTextBlock comment={comment} />
@@ -159,7 +178,8 @@ const renderType = ({
   } else if ((type.name === 'Record' && type.typeArguments) || type.type === 'reference') {
     return (
       <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
-        <H3Code>
+        <APISectionDeprecationNote comment={comment} />
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <UL>
@@ -173,7 +193,8 @@ const renderType = ({
   } else if (type.type === 'intrinsic') {
     return (
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
-        <H3Code>
+        <APISectionDeprecationNote comment={comment} />
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>{name}</InlineCode>
         </H3Code>
         <CommentTextBlock comment={comment} />
@@ -186,7 +207,8 @@ const renderType = ({
   } else if (type.type === 'conditional' && type.checkType) {
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
-        <H3Code>
+        <APISectionDeprecationNote comment={comment} />
+        <H3Code tags={getTagNamesList(comment)}>
           <InlineCode>
             {name}&lt;{type.checkType.name}&gt;
           </InlineCode>

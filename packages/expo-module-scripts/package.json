@@ -1,9 +1,8 @@
 {
   "name": "expo-module-scripts",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "A private package for various tasks for Expo module packages like compiling and testing",
   "main": "index.js",
-  "private": true,
   "bin": {
     "expo-module": "bin/expo-module.js"
   },
@@ -30,7 +29,7 @@
     "@babel/cli": "^7.1.2",
     "@expo/npm-proofread": "^1.0.1",
     "@testing-library/react-hooks": "^7.0.1",
-    "@tsconfig/node12": "^1.0.9",
+    "@tsconfig/node14": "^1.0.3",
     "@types/jest": "^26.0.24",
     "babel-preset-expo": "~9.2.0",
     "commander": "^2.19.0",

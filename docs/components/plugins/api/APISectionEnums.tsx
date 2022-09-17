@@ -5,8 +5,13 @@ import React from 'react';
 import { InlineCode } from '~/components/base/code';
 import { H2, H3Code, H4Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
-import { PlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import { CommentTextBlock, STYLES_APIBOX } from '~/components/plugins/api/APISectionUtils';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import {
+  CommentTextBlock,
+  getTagNamesList,
+  STYLES_APIBOX,
+} from '~/components/plugins/api/APISectionUtils';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -25,19 +30,21 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
 
 const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
   <div key={`enum-definition-${name}`} css={[STYLES_APIBOX, enumContentStyles]}>
-    <H3Code>
+    <APISectionDeprecationNote comment={comment} />
+    <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
+    <H3Code tags={getTagNamesList(comment)}>
       <InlineCode>{name}</InlineCode>
     </H3Code>
-    <CommentTextBlock comment={comment} />
+    <CommentTextBlock comment={comment} includePlatforms={false} />
     {children.sort(sortByValue).map((enumValue: EnumValueData) => (
       <div css={[STYLES_APIBOX, enumContainerStyle]} key={enumValue.name}>
-        <PlatformTags comment={enumValue.comment} prefix="Only for:" firstElement />
+        <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" firstElement />
         <div css={enumValueNameStyle}>
           <H4Code>
             <InlineCode>{enumValue.name}</InlineCode>
           </H4Code>
         </div>
-        <InlineCode customCss={enumValueStyles}>
+        <InlineCode css={enumValueStyles}>
           {name}.{enumValue.name}
           {enumValue?.defaultValue ? ` ＝ ${enumValue?.defaultValue}` : ''}
         </InlineCode>
@@ -62,6 +69,10 @@ const enumContainerStyle = css({
 
 const enumValueNameStyle = css({
   marginTop: spacing[3],
+
+  h4: {
+    marginTop: 0,
+  },
 });
 
 const enumValueStyles = css({

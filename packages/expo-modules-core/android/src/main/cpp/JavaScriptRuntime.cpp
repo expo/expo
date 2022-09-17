@@ -5,7 +5,9 @@
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
 
-#if FOR_HERMES
+#if UNIT_TEST
+
+#if USE_HERMES
 
 #include <hermes/hermes.h>
 
@@ -16,6 +18,8 @@
 #include <jsi/JSCRuntime.h>
 
 #endif
+
+#endif // UNIT_TEST
 
 namespace jsi = facebook::jsi;
 
@@ -32,7 +36,10 @@ void SyncCallInvoker::invokeSync(std::function<void()> &&func) {
 JavaScriptRuntime::JavaScriptRuntime()
   : jsInvoker(std::make_shared<SyncCallInvoker>()),
     nativeInvoker(std::make_shared<SyncCallInvoker>()) {
-#if FOR_HERMES
+#if !UNIT_TEST
+  throw std::logic_error("The JavaScriptRuntime constructor is only avaiable when UNIT_TEST is defined.");
+#else
+#if USE_HERMES
   auto config = ::hermes::vm::RuntimeConfig::Builder()
     .withEnableSampleProfiling(false);
   runtime = facebook::hermes::makeHermesRuntime(config.build());
@@ -67,6 +74,22 @@ JavaScriptRuntime::JavaScriptRuntime()
     jsi::PropNameID::forUtf8(*runtime, "global"),
     runtime->global()
   );
+
+  // Mock the CodedError that in a typical scenario will be defined by the `expo-modules-core`.
+  // Note: we can't use `class` syntax here, because Hermes doesn't support it.
+  runtime->evaluateJavaScript(
+    std::make_shared<jsi::StringBuffer>(
+      "function CodedError(code, message) {\n"
+      "    this.code = code;\n"
+      "    this.message = message;\n"
+      "    this.stack = (new Error).stack;\n"
+      "}\n"
+      "CodedError.prototype = new Error;\n"
+      "global.ExpoModulesCore_CodedError = CodedError"
+    ),
+    "<<evaluated>>"
+  );
+#endif // !UNIT_TEST
 }
 
 JavaScriptRuntime::JavaScriptRuntime(
@@ -80,17 +103,17 @@ JavaScriptRuntime::JavaScriptRuntime(
   this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
 }
 
-jsi::Runtime *JavaScriptRuntime::get() {
-  return runtime.get();
+jsi::Runtime &JavaScriptRuntime::get() const {
+  return *runtime;
 }
 
 jni::local_ref<JavaScriptValue::javaobject>
 JavaScriptRuntime::evaluateScript(const std::string &script) {
   auto scriptBuffer = std::make_shared<jsi::StringBuffer>(script);
-  std::shared_ptr<jsi::Value> result;
   try {
-    result = std::make_shared<jsi::Value>(
-      runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>")
+    return JavaScriptValue::newObjectCxxArgs(
+      weak_from_this(),
+      std::make_shared<jsi::Value>(runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"))
     );
   } catch (const jsi::JSError &error) {
     jni::throwNewJavaException(
@@ -107,8 +130,6 @@ JavaScriptRuntime::evaluateScript(const std::string &script) {
       ).get()
     );
   }
-
-  return JavaScriptValue::newObjectCxxArgs(weak_from_this(), result);
 }
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() {

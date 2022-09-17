@@ -19,7 +19,7 @@ internal class OSLogHandler: LogHandler {
   private let osLogger: os.Logger
 
   required init(category: String) {
-    osLogger = os.Logger(subsystem: "dev.expo.modules", category: category)
+    osLogger = os.Logger(subsystem: Logger.EXPO_MODULES_LOG_SUBSYSTEM, category: category)
   }
 
   func log(type: LogType, _ message: String) {
@@ -35,5 +35,20 @@ internal class PrintLogHandler: LogHandler {
 
   func log(type: LogType, _ message: String) {
     print(message)
+  }
+}
+
+/**
+ Log handler that writes all logs to a file using PersistentFileLog
+ */
+internal class PersistentFileLogHandler: LogHandler {
+  private let persistentLog: PersistentFileLog
+
+  required init(category: String) {
+    self.persistentLog = PersistentFileLog(category: category)
+  }
+
+  func log(type: LogType, _ message: String) {
+    persistentLog.appendEntry(entry: message)
   }
 }

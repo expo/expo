@@ -4,7 +4,7 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
-import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KType
 
@@ -24,18 +24,34 @@ class ListTypeConverter(
   }
 
   override fun convertFromAny(value: Any): List<*> {
-    if (value is ReadableArray) {
-      return convertFromReadableArray(value)
+    return if (elementConverter.isTrivial()) {
+      value as List<*>
+    } else {
+      (value as List<*>).map {
+        exceptionDecorator({ cause ->
+          CollectionElementCastException(
+            listType,
+            listType.arguments.first().type!!,
+            it!!::class,
+            cause
+          )
+        }) {
+          elementConverter.convert(it)
+        }
+      }
     }
-
-    return value as List<*>
   }
 
   private fun convertFromReadableArray(jsArray: ReadableArray): List<*> {
     return List(jsArray.size()) { index ->
       jsArray.getDynamic(index).recycle {
         exceptionDecorator({ cause ->
-          CollectionElementCastException(listType, listType.arguments.first().type!!, type, cause)
+          CollectionElementCastException(
+            listType,
+            listType.arguments.first().type!!,
+            type,
+            cause
+          )
         }) {
           elementConverter.convert(this)
         }
@@ -43,5 +59,9 @@ class ListTypeConverter(
     }
   }
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType {
+    return ExpectedType.forList(elementConverter.getCppRequiredTypes())
+  }
+
+  override fun isTrivial() = elementConverter.isTrivial()
 }

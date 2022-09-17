@@ -8,7 +8,7 @@ import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
 
-The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or Bare project. To add a the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
+The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or Bare project. To add the `expo-dev-client` library to an existing managed project, see our [Getting Started guide](getting-started.md).
 
 If you're just starting your project, you can create a new project from our template with:
 
@@ -30,7 +30,7 @@ Add the `expo-dev-client` library to your package.json.
 
 <InstallSection packageName="expo-development-client" cmd={["npm install expo-dev-client"]} hideBareInstructions />
 
-### 🍏 iOS
+### iOS
 
 <Tabs tabs={["SDK 45+", "SDK below 45"]}>
 
@@ -62,9 +62,9 @@ To do that, open Xcode and go to General > Deployment Info, and select an iOS ve
 
 </Tabs >
 
-### 🤖 Android
+### Android
 
-No additional changes are needed to install the package on Android. 🎉
+No additional changes are needed to install the package on Android.
 
 ## 2. Basic configuration
 
@@ -74,13 +74,13 @@ Development builds use deep links to open projects from the QR code. If you have
 
 See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more information.
 
-### 🍏 iOS
+### iOS
 
 <Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
 
-No additional changes are needed to configure the package on iOS. 🎉
+No additional changes are needed to configure the package on iOS.
 
 </Tab >
 
@@ -100,13 +100,13 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 
 </Tabs>
 
-### 🤖 Android
+### Android
 
 <Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
 
 <Tab >
 
-No additional changes are needed to configure the package on Android. 🎉
+No additional changes are needed to configure the package on Android.
 
 </Tab >
 
@@ -138,7 +138,7 @@ Expo CLI requires you to have the `expo` package installed so it can maintain co
 
 ### Disable packager autostart when building for iOS
 
-When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to "Build Phases" and remove the "Start Packager" action.
+When you start your project on iOS, the metro bundler will be started automatically. This behavior might not be ideal when you want to use `npx expo start`. Our recommended solution is to remove the `Start Packager` action from building scripts. To do that you need to open the Xcode, go to "Build Phases" and remove the "Start Packager" action.
 
 <img src="/static/images/client/remove_start_packager.png" style={{maxWidth: "100%" }}/>
 

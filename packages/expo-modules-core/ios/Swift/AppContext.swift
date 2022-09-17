@@ -28,11 +28,9 @@ public final class AppContext: NSObject {
   /**
    The legacy module registry with modules written in the old-fashioned way.
    */
-  @objc
   public weak var legacyModuleRegistry: EXModuleRegistry?
 
-  @objc
-  public weak var legacyModulesProxy: LegacyNativeModulesProxy?
+  internal weak var legacyModulesProxy: LegacyNativeModulesProxy?
 
   /**
    React bridge of the context's app. Can be `nil` when the bridge
@@ -79,6 +77,15 @@ public final class AppContext: NSObject {
     moduleRegistry.register(fromProvider: provider)
     return self
   }
+
+  // MARK: - UI
+
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
+    let view: UIView? = reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag))
+    return view as? ViewType
+  }
+
+  // MARK: - Legacy modules
 
   /**
    Returns a legacy module implementing given protocol/interface.
@@ -344,14 +351,10 @@ public final class AppContext: NSObject {
 
 // MARK: - Public exceptions
 
-public final class AppContextLostException: Exception {
-  override public var reason: String {
-    "The app context has been lost"
-  }
-}
+// Deprecated since v1.0.0
+@available(*, deprecated, renamed: "Exceptions.AppContextLost")
+public typealias AppContextLostException = Exceptions.AppContextLost
 
-public final class RuntimeLostException: Exception {
-  override public var reason: String {
-    "The JavaScript runtime has been lost"
-  }
-}
+// Deprecated since v1.0.0
+@available(*, deprecated, renamed: "Exceptions.RuntimeLost")
+public typealias RuntimeLostException = Exceptions.RuntimeLost

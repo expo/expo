@@ -3,8 +3,13 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.typedarray.Float32Array
+import expo.modules.kotlin.typedarray.Int32Array
+import expo.modules.kotlin.typedarray.Int8Array
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
@@ -77,8 +82,55 @@ class JSIFunctionsTest {
     Truth.assertThat(e1).hasLength(3)
     Truth.assertThat(e2).hasLength(3)
     val newArray = arrayOf(*e1, *e2)
-    newArray.forEachIndexed { index, it ->
-      Truth.assertThat(it.getDouble().toInt()).isEqualTo(index + 1)
+    newArray.forEachIndexed { index, element ->
+      Truth.assertThat(element.getDouble().toInt()).isEqualTo(index + 1)
+    }
+  }
+
+  @Test
+  fun enum_list_should_be_convertible() {
+    var wasCalled = false
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Function("list") { a: List<SimpleEnumClass> ->
+          wasCalled = true
+
+          Truth.assertThat(a).hasSize(2)
+          Truth.assertThat(a[0]).isEqualTo(SimpleEnumClass.V1)
+          Truth.assertThat(a[1]).isEqualTo(SimpleEnumClass.V2)
+        }
+      }
+    ) {
+      evaluateScript("ExpoModules.TestModule.list(['V1', 'V2'])")
+      Truth.assertThat(wasCalled).isTrue()
+    }
+  }
+
+  @Test
+  fun js_object_list_should_be_convertible() {
+    var wasCalled = false
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Function("list") { a: List<JavaScriptObject> ->
+          wasCalled = true
+
+          Truth.assertThat(a).hasSize(2)
+
+          val e1 = a[0]
+          val e2 = a[1]
+
+          val foo = e1.getProperty("foo").getString()
+          Truth.assertThat(foo).isEqualTo("foo")
+
+          val bar = e2.getProperty("bar").getString()
+          Truth.assertThat(bar).isEqualTo("bar")
+        }
+      }
+    ) {
+      evaluateScript("ExpoModules.TestModule.list([{'foo':'foo'}, {'bar':'bar'}])")
+      Truth.assertThat(wasCalled).isTrue()
     }
   }
 
@@ -192,6 +244,216 @@ class JSIFunctionsTest {
 
       Truth.assertThat(x).isEqualTo(123)
       Truth.assertThat(s).isEqualTo("expo")
+    }
+  }
+
+  @Test
+  fun coded_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw CodedException("Code", "Message", null)
+      }
+    }
+  ) {
+    val exception = evaluateScript(
+      """
+      let exception = null;
+      try {
+        ExpoModules.TestModule.f()
+      } catch (e) {
+        if (e instanceof global.ExpoModulesCore_CodedError) {
+          exception = e;
+        }
+      }
+      exception
+      """.trimIndent()
+    ).getObject()
+
+    Truth.assertThat(exception.getProperty("code").getString()).isEqualTo("Code")
+    Truth.assertThat(exception.getProperty("message").getString()).contains("Message")
+  }
+
+  @Test
+  fun arbitrary_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw IllegalStateException()
+      }
+    }
+  ) {
+    val exception = evaluateScript(
+      """
+      let exception = null;
+      try {
+        ExpoModules.TestModule.f()
+      } catch (e) {
+        if (e instanceof global.ExpoModulesCore_CodedError) {
+          exception = e;
+        }
+      }
+      exception
+      """.trimIndent()
+    ).getObject()
+
+    Truth.assertThat(exception.getProperty("code").getString()).isEqualTo("ERR_UNEXPECTED")
+    Truth.assertThat(exception.getProperty("message").getString()).contains("java.lang.IllegalStateException")
+  }
+
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun uncaught_error_should_be_piped_to_host_language() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw IllegalStateException()
+      }
+    }
+  ) {
+    evaluateScript("ExpoModules.TestModule.f()")
+  }
+
+  @Test
+  fun typed_arrays_should_be_obtainable_as_function_argument() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { intArray: Int32Array, floatArray: Float32Array, byteArray: Int8Array ->
+        Truth.assertThat(intArray[0]).isEqualTo(1)
+        Truth.assertThat(intArray[1]).isEqualTo(2)
+        Truth.assertThat(intArray[2]).isEqualTo(3)
+
+        Truth.assertThat(floatArray[0]).isEqualTo(1f)
+        Truth.assertThat(floatArray[1]).isEqualTo(2f)
+        Truth.assertThat(floatArray[2]).isEqualTo(3f)
+
+        Truth.assertThat(byteArray[0]).isEqualTo(1.toByte())
+        Truth.assertThat(byteArray[1]).isEqualTo(2.toByte())
+        Truth.assertThat(byteArray[2]).isEqualTo(3.toByte())
+      }
+    }
+  ) {
+    evaluateScript("ExpoModules.TestModule.f(new Int32Array([1,2,3]), new Float32Array([1.0,2.0,3.0]), new Int8Array([1,2,3]))")
+  }
+
+  @Test
+  fun typed_arrays_should_not_copy_content() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { intArray: Int32Array ->
+        intArray[1] = 999
+      }
+    }
+  ) {
+    evaluateScript(
+      """
+      const typedArray = new Int32Array([1,2,3]);
+      ExpoModules.TestModule.f(typedArray);
+      if (typedArray[0] !== 1 || typedArray[1] !== 999 || typedArray[2] !== 3) {
+        throw new Error("Array was copied")
+      }
+      """.trimIndent()
+    )
+  }
+
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun should_throw_if_js_value_cannnot_be_passed() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { _: Int -> }
+    }
+  ) {
+    evaluateScript("ExpoModules.TestModule.f(Symbol())")
+  }
+
+  @Test
+  fun int_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("intArray") { a: IntArray -> a }
+    }
+  ) {
+    val array = evaluateScript("ExpoModules.TestModule.intArray([1, 2, 3])").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getDouble().toInt()
+    val e2 = array[1].getDouble().toInt()
+    val e3 = array[2].getDouble().toInt()
+
+    Truth.assertThat(e1).isEqualTo(1)
+    Truth.assertThat(e2).isEqualTo(2)
+    Truth.assertThat(e3).isEqualTo(3)
+  }
+
+  @Test
+  fun string_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("stringArray") { a: Array<String> -> a }
+    }
+  ) {
+    val array = evaluateScript("ExpoModules.TestModule.stringArray(['a', 'b', 'c'])").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getString()
+    val e2 = array[1].getString()
+    val e3 = array[2].getString()
+
+    Truth.assertThat(e1).isEqualTo("a")
+    Truth.assertThat(e2).isEqualTo("b")
+    Truth.assertThat(e3).isEqualTo("c")
+  }
+
+  @Test
+  fun int_array_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("array") { a: Array<IntArray> -> a }
+    }
+  ) {
+    val array = evaluateScript("ExpoModules.TestModule.array([[1,2], [3, 4]])").getArray()
+    Truth.assertThat(array.size).isEqualTo(2)
+
+    val a1 = array[0].getArray()
+    val a2 = array[1].getArray()
+
+    Truth.assertThat(a1.size).isEqualTo(2)
+    Truth.assertThat(a2.size).isEqualTo(2)
+
+    val e1 = a1[0].getDouble().toInt()
+    val e2 = a1[1].getDouble().toInt()
+    val e3 = a2[0].getDouble().toInt()
+    val e4 = a2[1].getDouble().toInt()
+
+    Truth.assertThat(e1).isEqualTo(1)
+    Truth.assertThat(e2).isEqualTo(2)
+    Truth.assertThat(e3).isEqualTo(3)
+    Truth.assertThat(e4).isEqualTo(4)
+  }
+
+  @Test
+  fun js_object_array_should_be_convertible() {
+    var wasCalled = false
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Function("jsObjectArray") { a: Array<JavaScriptObject> ->
+          wasCalled = true
+
+          Truth.assertThat(a).hasLength(2)
+
+          val e1 = a[0]
+          val e2 = a[1]
+
+          val foo = e1.getProperty("foo").getString()
+          Truth.assertThat(foo).isEqualTo("foo")
+
+          val bar = e2.getProperty("bar").getString()
+          Truth.assertThat(bar).isEqualTo("bar")
+        }
+      }
+    ) {
+      evaluateScript("ExpoModules.TestModule.jsObjectArray([{'foo':'foo'}, {'bar':'bar'}])")
+      Truth.assertThat(wasCalled).isTrue()
     }
   }
 }

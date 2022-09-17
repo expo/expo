@@ -1,5 +1,15 @@
 import { css } from '@emotion/react';
-import { borderRadius, palette, shadows, spacing, theme, typography } from '@expo/styleguide';
+import {
+  ArrowRightIcon,
+  ArrowUpRightIcon,
+  borderRadius,
+  iconSize,
+  palette,
+  shadows,
+  spacing,
+  theme,
+  typography,
+} from '@expo/styleguide';
 import React, { PropsWithChildren } from 'react';
 import { Col, ColProps } from 'react-grid-system';
 
@@ -47,7 +57,7 @@ export const APIGridCell = ({
       <div css={cellIconWrapperStyle}>{icon}</div>
       <div css={cellTitleWrapperStyle}>
         {title}
-        <span css={cellTitleArrow}>{'->'}</span>
+        <ArrowRightIcon color={theme.icon.secondary} />
       </div>
     </a>
   </Col>
@@ -68,14 +78,15 @@ export const CommunityGridCell = ({
   md = 6,
 }: CommunityGridCellProps) => (
   <Col css={cellWrapperStyle} md={md}>
-    <a href={link} css={[cellStyle, cellCommunityStyle, cellHoverStyle]} style={style}>
+    <a href={link} css={[cellStyle, cellCommunityStyle, cellCommunityHoverStyle]} style={style}>
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>
         {icon}
       </div>
-      <div>
+      <div css={cellCommunityContentStyle}>
         <span css={cellCommunityTitleStyle}>{title}</span>
         <P css={cellCommunityDescriptionStyle}>{description}</P>
       </div>
+      <ArrowUpRightIcon color={theme.icon.secondary} css={cellCommunityLinkIconStyle} />
     </a>
   </Col>
 );
@@ -88,10 +99,22 @@ const cellWrapperStyle = css`
 const cellHoverStyle = css`
   & {
     transition: box-shadow 200ms;
+
+    svg {
+      transition: transform 200ms;
+    }
   }
 
   &:hover {
     box-shadow: ${shadows.tiny};
+
+    svg {
+      transform: scale(1.05);
+    }
+
+    svg[role='img'] {
+      transform: none;
+    }
   }
 `;
 
@@ -132,18 +155,12 @@ const cellTitleWrapperStyle = css({
   fontFamily: typography.fontStacks.medium,
   lineHeight: '30px',
   color: theme.text.default,
-});
-
-const cellTitleArrow = css({
-  ...typography.fontSizes[18],
-  float: 'right',
-  color: theme.icon.secondary,
-  letterSpacing: 0,
+  alignItems: 'center',
 });
 
 const cellCommunityStyle = css({
   display: 'flex',
-  minHeight: 'auto',
+  minHeight: `calc(100% - (2 * ${spacing[3]}px}))`,
   padding: spacing[4],
   margin: `${spacing[3]}px ${spacing[4]}px`,
   flexDirection: 'row',
@@ -151,14 +168,18 @@ const cellCommunityStyle = css({
 });
 
 const cellCommunityIconWrapperStyle = css({
-  height: 32,
-  width: 32,
-  minWidth: 32,
+  height: 48,
+  width: 48,
+  minWidth: 48,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
   borderRadius: borderRadius.large,
   marginRight: spacing[3],
+});
+
+const cellCommunityContentStyle = css({
+  flexGrow: 1,
 });
 
 const cellCommunityTitleStyle = css({
@@ -173,3 +194,27 @@ const cellCommunityDescriptionStyle = css({
   ...typography.fontSizes[14],
   color: theme.text.secondary,
 });
+
+const cellCommunityLinkIconStyle = css({
+  marginLeft: spacing[1.5],
+  alignSelf: 'center',
+  minWidth: iconSize.regular,
+});
+
+const cellCommunityHoverStyle = css`
+  & {
+    transition: box-shadow 200ms;
+
+    svg {
+      transition: transform 200ms;
+    }
+  }
+
+  &:hover {
+    box-shadow: ${shadows.tiny};
+
+    svg {
+      transform: scale(1.075);
+    }
+  }
+`;

@@ -3,9 +3,12 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import org.junit.Assert
 import org.junit.Test
 
 class JSIAsyncFunctionsTest {
@@ -158,5 +161,114 @@ class JSIAsyncFunctionsTest {
       Truth.assertThat(x).isEqualTo(123)
       Truth.assertThat(s).isEqualTo("expo")
     }
+  }
+
+  @Test
+  fun coded_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("f") { ->
+        throw CodedException("Code", "Message", null)
+      }
+    }
+  ) { methodQueue ->
+    val exception = Assert.assertThrows(PromiseException::class.java) {
+      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+    }
+
+    Truth.assertThat(exception.code).isEqualTo("Code")
+    Truth.assertThat(exception.message).contains("Message")
+  }
+
+  @Test
+  fun arbitrary_error_should_be_converted() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("f") { ->
+        throw IllegalStateException()
+      }
+    }
+  ) { methodQueue ->
+    val exception = Assert.assertThrows(PromiseException::class.java) {
+      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+    }
+
+    Truth.assertThat(exception.code).isEqualTo("ERR_UNEXPECTED")
+    Truth.assertThat(exception.message).contains("java.lang.IllegalStateException")
+  }
+
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun should_throw_if_js_value_cannnot_be_passed() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("f") { _: Int -> }
+    }
+  ) { methodQueue ->
+    waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f(Symbol())")
+  }
+
+  @Test
+  fun int_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("intArray") { a: IntArray -> a }
+    }
+  ) { methodQueue ->
+    val array = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.intArray([1, 2, 3])").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getDouble().toInt()
+    val e2 = array[1].getDouble().toInt()
+    val e3 = array[2].getDouble().toInt()
+
+    Truth.assertThat(e1).isEqualTo(1)
+    Truth.assertThat(e2).isEqualTo(2)
+    Truth.assertThat(e3).isEqualTo(3)
+  }
+
+  @Test
+  fun string_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("stringArray") { a: Array<String> -> a }
+    }
+  ) { methodQueue ->
+    val array = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.stringArray(['a', 'b', 'c'])").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getString()
+    val e2 = array[1].getString()
+    val e3 = array[2].getString()
+
+    Truth.assertThat(e1).isEqualTo("a")
+    Truth.assertThat(e2).isEqualTo("b")
+    Truth.assertThat(e3).isEqualTo("c")
+  }
+
+  @Test
+  fun int_array_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("array") { a: Array<IntArray> -> a }
+    }
+  ) { methodQueue ->
+    val array = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.array([[1,2], [3, 4]])").getArray()
+    Truth.assertThat(array.size).isEqualTo(2)
+
+    val a1 = array[0].getArray()
+    val a2 = array[1].getArray()
+
+    Truth.assertThat(a1.size).isEqualTo(2)
+    Truth.assertThat(a2.size).isEqualTo(2)
+
+    val e1 = a1[0].getDouble().toInt()
+    val e2 = a1[1].getDouble().toInt()
+    val e3 = a2[0].getDouble().toInt()
+    val e4 = a2[1].getDouble().toInt()
+
+    Truth.assertThat(e1).isEqualTo(1)
+    Truth.assertThat(e2).isEqualTo(2)
+    Truth.assertThat(e3).isEqualTo(3)
+    Truth.assertThat(e4).isEqualTo(4)
   }
 }

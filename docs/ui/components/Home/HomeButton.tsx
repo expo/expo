@@ -11,11 +11,11 @@ export const HomeButton = ({ children, style, href, ...rest }: ButtonProps) => (
     style={{
       ...typography.fontSizes[14],
       height: 36,
-      paddingLeft: spacing[3],
-      paddingRight: spacing[3],
+      paddingLeft: spacing[3.5],
+      paddingRight: spacing[3.5],
       position: 'absolute',
       bottom: 28,
-      zIndex: 10,
+      zIndex: 1,
       ...style,
     }}>
     {children}

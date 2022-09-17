@@ -155,5 +155,5 @@ export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 export declare const Constants: {
     BarCodeType: any;
     Type: any;
-}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>], scanFromURLAsync: typeof BarCodeScanner.scanFromURLAsync;
+}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, scanFromURLAsync: typeof BarCodeScanner.scanFromURLAsync;
 //# sourceMappingURL=BarCodeScanner.d.ts.map

@@ -1,7 +1,9 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXJSIInstaller.h>
+#import <ExpoModulesCore/EXJavaScriptRuntime.h>
 #import <ExpoModulesCore/ExpoModulesHostObject.h>
+#import <ExpoModulesCore/LazyObject.h>
 #import <ExpoModulesCore/Swift.h>
 
 namespace jsi = facebook::jsi;
@@ -14,6 +16,7 @@ static NSString *expoModulesHostObjectPropertyName = @"ExpoModules";
 @interface RCTBridge (ExpoBridgeWithRuntime)
 
 - (void *)runtime;
+- (std::shared_ptr<facebook::react::CallInvoker>)jsCallInvoker;
 
 @end
 

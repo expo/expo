@@ -13,12 +13,8 @@ function validateURL(url) {
 function getHostUri() {
     if (Constants.manifest?.hostUri) {
         return Constants.manifest.hostUri;
-        // @ts-ignore: hostUri isn't defined on the expoClient type, because
-        // Constants.manifest is of type AppManifest while
-        // Constants.manifest2.extra.expoClient is of type ExpoConfig
     }
     else if (Constants.manifest2?.extra?.expoClient?.hostUri) {
-        // @ts-ignore
         return Constants.manifest2.extra.expoClient.hostUri;
     }
     else if (!hasCustomScheme()) {
@@ -317,7 +313,7 @@ export async function openURL(url) {
  * `false` if not.
  *
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
- * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#opening-links-to-other-apps).
+ * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#linking-from-your-app).
  */
 export async function canOpenURL(url) {
     validateURL(url);

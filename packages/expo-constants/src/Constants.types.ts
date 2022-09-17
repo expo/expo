@@ -104,7 +104,12 @@ export type Manifest = {
 
 // @docsMissing
 export type ManifestExtra = ClientScopingConfig & {
-  expoClient?: ExpoConfig;
+  expoClient?: ExpoConfig & {
+    /**
+     * Only present during development using @expo/cli.
+     */
+    hostUri?: string;
+  };
   expoGo?: ExpoGoConfig;
   eas?: EASConfig;
 };
@@ -182,15 +187,13 @@ export type ExpoClientConfig = ExpoConfig & {
 };
 
 /**
- * @hidden
- * A classic manifest https://docs.expo.dev/guides/how-expo-works/#expo-manifest
+ * Represents an intersection of all possible Config types.
  */
 export type AppManifest = ExpoClientConfig &
   ExpoGoConfig &
   EASConfig &
-  ClientScopingConfig & {
-    [key: string]: any;
-  };
+  ClientScopingConfig &
+  Record<string, any>;
 
 // @needsAudit @docsMissing
 export interface PlatformManifest {

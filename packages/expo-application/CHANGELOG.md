@@ -4,11 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 4.2.2 — 2022-07-19
+
+_This version does not introduce any user-facing changes._
+
+## 4.2.1 — 2022-07-18
+
+### 💡 Others
+
+- Clarify that `getIosPushNotificationServiceEnvironmentAsync` returns `null` on the simulator. ([#18282](https://github.com/expo/expo/pull/18282) by [@tsapeta](https://github.com/tsapeta))
 
 ## 4.2.0 — 2022-07-07
 

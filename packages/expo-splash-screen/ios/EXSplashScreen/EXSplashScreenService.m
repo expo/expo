@@ -36,9 +36,11 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 }
 
 - (void)showSplashScreenFor:(UIViewController *)viewController
+                    options:(EXSplashScreenOptions)options
 {
   id<EXSplashScreenViewProvider> splashScreenViewProvider = [EXSplashScreenViewNativeProvider new];
   return [self showSplashScreenFor:viewController
+                           options:options
           splashScreenViewProvider:splashScreenViewProvider
                    successCallback:^{}
                    failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
@@ -46,11 +48,12 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 
 - (void)showSplashScreenFor:(UIViewController *)viewController
+                    options:(EXSplashScreenOptions)options
    splashScreenViewProvider:(id<EXSplashScreenViewProvider>)splashScreenViewProvider
             successCallback:(void (^)(void))successCallback
             failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
-  if ([self.splashScreenControllers objectForKey:viewController]) {
+  if ((options & EXSplashScreenForceShow) == 0 && [self.splashScreenControllers objectForKey:viewController]) {
     return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
   }
   
@@ -61,17 +64,19 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
                                                                                                splashScreenView:splashScreenView];
   
   [self showSplashScreenFor:viewController
+                    options:options
      splashScreenController:splashScreenController
             successCallback:successCallback
             failureCallback:failureCallback];
 }
 
 - (void)showSplashScreenFor:(UIViewController *)viewController
+                    options:(EXSplashScreenOptions)options
      splashScreenController:(EXSplashScreenViewController *)splashScreenController
             successCallback:(void (^)(void))successCallback
             failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
-  if ([self.splashScreenControllers objectForKey:viewController]) {
+  if ((options & EXSplashScreenForceShow) == 0 && [self.splashScreenControllers objectForKey:viewController]) {
     return failureCallback(@"'SplashScreen.show' has already been called for given view controller.");
   }
   
@@ -81,6 +86,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 }
 
 - (void)preventSplashScreenAutoHideFor:(UIViewController *)viewController
+                               options:(EXSplashScreenOptions)options
                        successCallback:(void (^)(BOOL hasEffect))successCallback
                        failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
@@ -93,6 +99,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 }
 
 - (void)hideSplashScreenFor:(UIViewController *)viewController
+                    options:(EXSplashScreenOptions)options
             successCallback:(void (^)(BOOL hasEffect))successCallback
             failureCallback:(void (^)(NSString * _Nonnull))failureCallback
 {
@@ -113,6 +120,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   BOOL needsHide = [[self.splashScreenControllers objectForKey:viewController] needsHideOnAppContentDidAppear];
   if (needsHide) {
     [self hideSplashScreenFor:viewController
+                      options:EXSplashScreenDefault
               successCallback:^(BOOL hasEffect){}
               failureCallback:^(NSString *message){}];
   }
@@ -125,7 +133,9 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
   }
   BOOL needsShow = [[self.splashScreenControllers objectForKey:viewController] needsShowOnAppContentWillReload];
   if (needsShow) {
+    // For reloading apps, specify `EXSplashScreenForceShow` to show splash screen again
     [self showSplashScreenFor:viewController
+                      options:EXSplashScreenForceShow
        splashScreenController:[self.splashScreenControllers objectForKey:viewController]
               successCallback:^{}
               failureCallback:^(NSString *message){}];
@@ -138,7 +148,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   UIViewController *rootViewController = [[application keyWindow] rootViewController];
   if (rootViewController) {
-    [self showSplashScreenFor:rootViewController];
+    [self showSplashScreenFor:rootViewController options:EXSplashScreenDefault];
   }
 
   [self addRootViewControllerListener];
@@ -178,9 +188,12 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   if (object == UIApplication.sharedApplication.keyWindow && [keyPath isEqualToString:kRootViewController]) {
     UIViewController *newRootViewController = change[@"new"];
-    if (newRootViewController != nil) {
+    // For unknown reasons, this function may be sometimes called twice with the same changes.
+    // What leads to warnings like this one: `'SplashScreen.show' has already been called for given view controller`.
+    // To prevent this weird behaviour, we check if the value was really changed.
+    if (newRootViewController != nil && newRootViewController != self.observingRootViewController) {
       [self removeRootViewControllerListener];
-      [self showSplashScreenFor:newRootViewController];
+      [self showSplashScreenFor:newRootViewController options:EXSplashScreenDefault];
       [self addRootViewControllerListener];
     }
   }
@@ -190,9 +203,9 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
       UIViewController *viewController = (UIViewController *)newView.nextResponder;
       // To show splash screen as soon as possible, we do not wait for hiding callback and call showSplashScreen immediately.
       // GCD main queue should keep the calls in sequence.
-      [self hideSplashScreenFor:viewController successCallback:^(BOOL hasEffect){} failureCallback:^(NSString *message){}];
+      [self hideSplashScreenFor:viewController options:EXSplashScreenDefault successCallback:^(BOOL hasEffect){} failureCallback:^(NSString *message){}];
       [self.splashScreenControllers removeObjectForKey:viewController];
-      [self showSplashScreenFor:viewController];
+      [self showSplashScreenFor:viewController options:EXSplashScreenDefault];
     }
   }
 }

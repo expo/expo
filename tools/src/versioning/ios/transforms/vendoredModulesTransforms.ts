@@ -9,11 +9,6 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     '@stripe/stripe-react-native': {
       content: [
         {
-          paths: '*.m',
-          find: /RCT_EXTERN_MODULE\((ApplePayButtonManager|CardFieldManager|AuBECSDebitFormManager|StripeSdk|StripeContainerManager|CardFormManager)/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE($1, ${prefix}$1`,
-        },
-        {
           paths: '',
           find: /\.reactFocus\(/,
           replaceWith: `.${prefix.toLowerCase()}ReactFocus(`,
@@ -22,11 +17,6 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     },
     'lottie-react-native': {
       content: [
-        {
-          paths: 'LRNAnimationViewManagerObjC.m',
-          find: /RCT_EXTERN_MODULE\(/,
-          replaceWith: `RCT_EXTERN_REMAP_MODULE(LottieAnimationView, ${prefix}`,
-        },
         {
           paths: 'ContainerView.swift',
           find: /\breactSetFrame/g,
@@ -122,6 +112,15 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           find: /\b(ComponentUpdate)\b/g,
           replaceWith: `${prefix}$1`,
         },
+        {
+          // versioning reacthermes import
+          paths: 'NativeProxy.mm',
+          find: new RegExp(
+            `(#if\\s+__has_include\\(|#import\\s+)<reacthermes\\/${prefix}HermesExecutorFactory.h>`,
+            'g'
+          ),
+          replaceWith: `$1<${prefix}reacthermes/${prefix}HermesExecutorFactory.h>`,
+        },
       ],
     },
     'react-native-gesture-handler': {
@@ -139,9 +138,19 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         {
           // `RNG*` symbols are already prefixed at this point,
           // but there are some new symbols in RNGH that don't have "G".
-          paths: '*.{h,m}',
+          paths: '*.{h,m,mm}',
           find: /\bRN(\w+?)\b/g,
           replaceWith: `${prefix}RN$1`,
+        },
+        {
+          paths: 'RNGestureHandler.m',
+          find: /UIGestureRecognizer \(GestureHandler\)/g,
+          replaceWith: `UIGestureRecognizer (${prefix}GestureHandler)`,
+        },
+        {
+          paths: 'RNGestureHandler.m',
+          find: /gestureHandler/g,
+          replaceWith: `${prefix}gestureHandler`,
         },
       ],
     },

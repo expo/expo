@@ -16,7 +16,11 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 > Migrating from Expo's `LegacyNotifications` module? [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
 
-### Features
+<PlatformsSection title="Push notifications Platform Compatibility" android ios />
+
+<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator />
+
+## Features
 
 - 📣 schedule a one-off notification for a specific date, or some time from now,
 - 🔁 schedule a notification repeating in some time interval (or a calendar date match on iOS),
@@ -29,10 +33,6 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 - 🔕 imperatively dismiss notifications from Notification Center/tray,
 - 🗂 create, update, delete Android notification channels,
 - 🎨 set custom icon and color for notifications on Android.
-
-<PlatformsSection title="Push notifications Platform Compatibility" android ios />
-
-<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator />
 
 ## Installation
 
@@ -214,8 +214,7 @@ export default function App() {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-around',
-      }}
-    >
+      }}>
       <Text>Your expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>
@@ -263,7 +262,7 @@ async function registerForPushNotificationsAsync() {
   }
 
   if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
+    await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
@@ -405,7 +404,7 @@ Returns an Expo token that can be used to send a push notification to the device
 
 This method makes a request to Expo's servers, so it can reject in cases where the request itself fails (like due to the device being offline, experiencing a network timeout, or other HTTPS request failures). To provide offline support to your users, you should `try/catch` this method and implement retry logic to attempt to get the push token later, once the device is back online.
 
-> **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](../../../push-notifications/push-notifications-setup.md#credentials).
+> **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using EAS CLI (`eas credentials`). [Read more in the “Upload notifications credentials” guide](../../../push-notifications/push-notifications-setup.md#credentials).
 
 #### Arguments
 
@@ -1064,7 +1063,7 @@ async function scheduleAndCancel() {
     content: {
       title: 'Hey!',
     },
-    trigger: { seconds: 5, repeats: true },
+    trigger: { seconds: 60, repeats: true },
   });
   await Notifications.cancelScheduledNotificationAsync(identifier);
 }
@@ -1756,6 +1755,8 @@ export type DateTriggerInput = Date | number | { channelId?: string; date: Date 
 #### `TimeIntervalTriggerInput`
 
 A trigger that will cause the notification to be delivered once or many times (depends on the `repeats` field) after `seconds` time elapse.
+
+> **On iOS**, when `repeats` is `true`, the time interval must be 60 seconds or greater. Otherwise, the notification won't be triggered.
 
 ```ts
 export interface TimeIntervalTriggerInput {

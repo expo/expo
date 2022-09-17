@@ -65,11 +65,18 @@ def REACT_NATIVE_PATH = reactNative.absolutePath
 def CMAKE_OUTPUT_DIR = "$buildDir/reanimated-ndk/all"
 def RN_SO_DIR = "$reactNative/ReactAndroid/build/intermediates/library_*/*/jni"
 def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
-def FOR_HERMES = false
+def FOR_HERMES = true
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
+
+def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${project(':ReactAndroid').projectDir}/prebuiltHermes")
+def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
+def currentHermesVersion = file("${rootDir}/sdks/.hermesversion").exists() ? file("${rootDir}/sdks/.hermesversion").text : null
+def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
+logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
+
 // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
 
@@ -192,12 +199,16 @@ android {
     extractHeaders
     extractSO
   }
+
+  buildFeatures {
+      prefab true
+  }
+
   // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
   buildTypes {
     release {
-      minifyEnabled false
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      consumerProguardFiles('proguard-rules.pro')
     }
   }
 
@@ -229,12 +240,12 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
         it.toLowerCase().contains("release")
       } ? "release" : "debug"
 
-      workingDir '../../tools/bin'
+      workingDir '../../bin'
 
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine 'cmd.exe', '/c', "expotools.js android-generate-dynamic-macros --configuration ${configuration}"
+        commandLine 'cmd.exe', '/c', "expotools android-generate-dynamic-macros --configuration ${configuration}"
       } else {
-        commandLine "./expotools.js", "android-generate-dynamic-macros", "--configuration", configuration
+        commandLine "./expotools", "android-generate-dynamic-macros", "--configuration", configuration
       }
     }
   }
@@ -283,9 +294,14 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
-  def hermesPath = "../../node_modules/hermes-engine/android/";
-  debugImplementation files(hermesPath + "hermes-debug.aar")
-  releaseImplementation files(hermesPath + "hermes-release.aar")
+  if (!buildHermesSource) {
+    debugImplementation(files("${prebuiltHermesDir}/hermes-engine-debug.aar"))
+    releaseImplementation(files("${prebuiltHermesDir}/hermes-engine-release.aar"))
+  } else {
+    implementation(project(':ReactAndroid:hermes-engine')) {
+      exclude(group:'com.facebook.fbjni', module: 'fbjni')
+    }
+  }
 
   // Expo modules
   api project(':expo')
@@ -296,15 +312,12 @@ dependencies {
   // Versioned react native
   // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_46
+  versionedApi 'host.exp:reactandroid-abi46_0_0:1.0.0'
+  // END_SDK_46
   // BEGIN_SDK_45
   versionedApi 'host.exp:reactandroid-abi45_0_0:1.0.0'
   // END_SDK_45
-  // BEGIN_SDK_44
-  versionedApi 'host.exp:reactandroid-abi44_0_0:1.0.0'
-  // END_SDK_44
-  // BEGIN_SDK_43
-  versionedApi 'host.exp:reactandroid-abi43_0_0:1.0.0'
-  // END_SDK_43
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -346,7 +359,7 @@ dependencies {
   releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
   api 'commons-io:commons-io:2.6'
   api 'me.leolin:ShortcutBadger:1.1.4@aar'
-  implementation "com.github.CanHub:Android-Image-Cropper:1.1.1"
+  implementation "com.github.CanHub:Android-Image-Cropper:4.3.0"
   api 'commons-codec:commons-codec:1.10'
   api 'net.openid:appauth:0.7.1'
   api 'com.airbnb.android:lottie:3.4.0'
@@ -432,7 +445,8 @@ useVendoredModulesForExpoView('unversioned')
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
 // After that we build native code from src/main/jni with module path pointing at third-party-ndk.
 
-def downloadsDir = new File("$buildDir/downloads")
+def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
+def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 def reactNativeThirdParty = new File("$reactNative/ReactAndroid/src/main/jni/third-party")
@@ -668,26 +682,6 @@ def getCmakeToolchainFile() {
   return "-DCMAKE_TOOLCHAIN_FILE=${getNdkBuildFullPath()}/../build/cmake/android.toolchain.cmake"
 }
 
-task prepareHermes() {
-  def hermesPackagePath = findNodeModulePath(projectDir, "hermes-engine")
-  if (!hermesPackagePath) {
-    throw new GradleScriptException("Could not find the hermes-engine npm package", null)
-  }
-
-  def hermesAAR = file("$hermesPackagePath/android/hermes-debug.aar")
-  if (!hermesAAR.exists()) {
-    throw new GradleScriptException("The hermes-engine npm package is missing \"android/hermes-debug.aar\"", null)
-  }
-
-  def soFiles = zipTree(hermesAAR).matching({ it.include "**/*.so" })
-
-  copy {
-    from soFiles
-    from "$reactNative/ReactAndroid/src/main/jni/first-party/hermes/Android.mk"
-    into "$thirdPartyNdkDir/hermes"
-  }
-}
-
 // Create Android.mk library module based on jsc from npm
 task prepareJSC {
   doLast {
@@ -750,8 +744,8 @@ task extractSOFiles {
 }
 
 project.afterEvaluate {
-  def nativeBuildTask = tasks.findByName("copyUnversionedReleaseJniLibsProjectOnly")  // for expoview
-                        ?: tasks.findByName("copyReleaseJniLibsProjectOnly") // for expoview-${abiName}
+  def nativeBuildTask = tasks.findByName("copyUnversionedReleaseJniLibsProjectAndLocalJars")  // for expoview
+                        ?: tasks.findByName("copyReleaseJniLibsProjectAndLocalJars") // for expoview-${abiName}
   if (nativeBuildTask) {
     packageNdkLibs.dependsOn nativeBuildTask
   }
@@ -772,8 +766,8 @@ project.afterEvaluate {
 }
 
 task packageNdkLibs(type: Copy) {
-  from("$buildDir/intermediates/library_jni/unversionedRelease/jni") // for expoview
-  from("$buildDir/intermediates/library_jni/release/jni") // for expoview-${abiName}
+  from("$buildDir/intermediates/stripped_native_libs/unversionedRelease/out/lib") // for expoview
+  from("$buildDir/intermediates/stripped_native_libs/release/out/lib") // for expoview-${abiName}
   include("**/libreanimated*.so")
   into("$projectDir/src/main/jniLibs")
 }
@@ -796,6 +790,13 @@ tasks.whenTaskAdded { task ->
   } else if (task.name.startsWith('generateJsonModel')) {
     def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
     task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
+  }
+}
+
+def hermesAAR = new File("${reactNative}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar")
+if (hermesAAR.exists()) {
+  dependencies {
+    compileOnly(files(hermesAAR))
   }
 }
 

@@ -15,21 +15,6 @@ open class DevMenuModule: NSObject {
   }
 
   @objc
-  func openSettings() {
-    DevMenuManager.shared.openMenu("Settings")
-  }
-
-  @objc
-  func openProfile() {
-    DevMenuManager.shared.openMenu("Profile")
-  }
-
-  @objc
-  func isLoggedInAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    resolve(DevMenuManager.shared.expoApiClient.isLoggedIn())
-  }
-  
-  @objc
   func addDevMenuCallbacks(_ names: [String], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
     DevMenuManager.shared.registeredCallbacks = names
     return resolve(nil)

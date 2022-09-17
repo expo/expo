@@ -12,11 +12,6 @@ export declare type MediaLibraryPermissionResponse = PermissionResponse & {
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
-/**
- * An alias for the `MediaLibraryPermissionResponse` object.
- * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse` instead.
- */
-export declare type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
 export declare enum MediaTypeOptions {
     /**
      * Images and videos.
@@ -206,6 +201,17 @@ export declare type ImageInfo = {
      */
     uri: string;
     /**
+     * The unique ID that represents the picked image or video, if picked from the library. It can be used
+     * by [expo-media-library](./media-library) to manage the picked asset.
+     *
+     * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
+     * > On Android, the ID is unavailable when the user selects a photo by directly browsing file system.
+     *
+     * @platform ios
+     * @platform android
+     */
+    assetId?: string | null;
+    /**
      * Width of the image or video.
      */
     width: number;
@@ -217,6 +223,19 @@ export declare type ImageInfo = {
      * The type of the asset.
      */
     type?: 'image' | 'video';
+    /**
+     * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
+     * or user gave limited permission to access the media library.
+     *
+     * @platform ios
+     */
+    fileName?: string | null;
+    /**
+     * File size of the picked image or video, in bytes.
+     *
+     * @platform ios
+     */
+    fileSize?: number;
     /**
      * The `exif` field is included if the `exif` option is truthy, and is an object containing the
      * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
@@ -338,6 +357,7 @@ export declare type ImagePickerOptions = {
      *
      * @default false
      * @platform ios 14+
+     * @platform android
      * @platform web
      */
     allowsMultipleSelection?: boolean;

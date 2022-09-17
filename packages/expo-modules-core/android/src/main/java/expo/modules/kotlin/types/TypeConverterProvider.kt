@@ -2,14 +2,29 @@
 
 package expo.modules.kotlin.types
 
+import android.graphics.Color
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
+import expo.modules.kotlin.typedarray.BigInt64Array
+import expo.modules.kotlin.typedarray.BigUint64Array
+import expo.modules.kotlin.typedarray.Float32Array
+import expo.modules.kotlin.typedarray.Float64Array
+import expo.modules.kotlin.typedarray.Int16Array
+import expo.modules.kotlin.typedarray.Int32Array
+import expo.modules.kotlin.typedarray.Int8Array
+import expo.modules.kotlin.typedarray.TypedArray
+import expo.modules.kotlin.typedarray.Uint16Array
+import expo.modules.kotlin.typedarray.Uint32Array
+import expo.modules.kotlin.typedarray.Uint8Array
+import expo.modules.kotlin.typedarray.Uint8ClampedArray
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -91,10 +106,18 @@ object TypeConverterProviderImpl : TypeConverterProvider {
   }
 
   private fun createCashedConverters(isOptional: Boolean): Map<KType, TypeConverter<*>> {
-    val intTypeConverter = IntTypeConverter(isOptional)
-    val doubleTypeConverter = DoubleTypeConverter(isOptional)
-    val floatTypeConverter = FloatTypeConverter(isOptional)
-    val boolTypeConverter = BoolTypeConverter(isOptional)
+    val intTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.INT)
+    ) { it.asDouble().toInt() }
+    val doubleTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.DOUBLE)
+    ) { it.asDouble() }
+    val floatTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.FLOAT)
+    ) { it.asDouble().toFloat() }
+    val boolTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.BOOLEAN)
+    ) { it.asBoolean() }
 
     return mapOf(
       Int::class.createType(nullable = isOptional) to intTypeConverter,
@@ -109,17 +132,71 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       Boolean::class.createType(nullable = isOptional) to boolTypeConverter,
       java.lang.Boolean::class.createType(nullable = isOptional) to boolTypeConverter,
 
-      String::class.createType(nullable = isOptional) to StringTypeConverter(isOptional),
+      String::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.STRING)
+      ) { it.asString() },
 
-      ReadableArray::class.createType(nullable = isOptional) to ReadableArrayTypeConverter(isOptional),
-      ReadableMap::class.createType(nullable = isOptional) to ReadableMapTypeConverter(isOptional),
+      ReadableArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.READABLE_ARRAY)
+      ) { it.asArray() },
+      ReadableMap::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.READABLE_MAP)
+      ) { it.asMap() },
 
-      IntArray::class.createType(nullable = isOptional) to PrimitiveIntArrayTypeConverter(isOptional),
-      DoubleArray::class.createType(nullable = isOptional) to PrimitiveDoubleArrayTypeConverter(isOptional),
-      FloatArray::class.createType(nullable = isOptional) to PrimitiveFloatArrayTypeConverter(isOptional),
+      IntArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.INT)
+      ) {
+        val jsArray = it.asArray()
+        IntArray(jsArray.size()) { index ->
+          jsArray.getInt(index)
+        }
+      },
+      DoubleArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.DOUBLE)
+      ) {
+        val jsArray = it.asArray()
+        DoubleArray(jsArray.size()) { index ->
+          jsArray.getDouble(index)
+        }
+      },
+      FloatArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.FLOAT)
+      ) {
+        val jsArray = it.asArray()
+        FloatArray(jsArray.size()) { index ->
+          jsArray.getDouble(index).toFloat()
+        }
+      },
+      BooleanArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.BOOLEAN)
+      ) {
+        val jsArray = it.asArray()
+        BooleanArray(jsArray.size()) { index ->
+          jsArray.getBoolean(index)
+        }
+      },
 
-      JavaScriptValue::class.createType(nullable = isOptional) to JavaScriptValueTypeConvert(isOptional),
-      JavaScriptObject::class.createType(nullable = isOptional) to JavaScriptObjectTypeConverter(isOptional),
+      JavaScriptValue::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.JS_VALUE)
+      ),
+      JavaScriptObject::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.JS_OBJECT)
+      ),
+
+      Int8Array::class.createType(nullable = isOptional) to Int8ArrayTypeConverter(isOptional),
+      Int16Array::class.createType(nullable = isOptional) to Int16ArrayTypeConverter(isOptional),
+      Int32Array::class.createType(nullable = isOptional) to Int32ArrayTypeConverter(isOptional),
+      Uint8Array::class.createType(nullable = isOptional) to Uint8ArrayTypeConverter(isOptional),
+      Uint8ClampedArray::class.createType(nullable = isOptional) to Uint8ClampedArrayTypeConverter(isOptional),
+      Uint16Array::class.createType(nullable = isOptional) to Uint16ArrayTypeConverter(isOptional),
+      Uint32Array::class.createType(nullable = isOptional) to Uint32ArrayTypeConverter(isOptional),
+      Float32Array::class.createType(nullable = isOptional) to Float32ArrayTypeConverter(isOptional),
+      Float64Array::class.createType(nullable = isOptional) to Float64ArrayTypeConverter(isOptional),
+      BigInt64Array::class.createType(nullable = isOptional) to BigInt64ArrayTypeConverter(isOptional),
+      BigUint64Array::class.createType(nullable = isOptional) to BigUint64ArrayTypeConverter(isOptional),
+      TypedArray::class.createType(nullable = isOptional) to TypedArrayTypeConverter(isOptional),
+
+      Color::class.createType(nullable = isOptional) to ColorTypeConverter(isOptional),
 
       Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )
