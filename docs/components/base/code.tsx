@@ -133,7 +133,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
           )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
         }
       )
-      .replace(/<span class="token comment">&lt;!-- @end --><\/span>(\n *)?/g, '</span></span>');
+      .replace(/\s*<span class="token comment">&lt;!-- @end --><\/span>(\n *)?/g, '</span>');
   }
 
   private replaceHashCommentsWithAnnotations(value: string) {
@@ -150,7 +150,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
           content
         )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
       })
-      .replace(/<span class="token comment"># @end #<\/span>(\n *)?/g, '</span></span>');
+      .replace(/\s*<span class="token comment"># @end #<\/span>(\n *)?/g, '</span>');
   }
 
   private replaceSlashCommentsWithAnnotations(value: string) {
@@ -167,7 +167,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
           content
         )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
       })
-      .replace(/<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span></span>');
+      .replace(/\s*<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span>');
   }
 
   render() {
@@ -202,12 +202,6 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
       } else {
         html = this.replaceSlashCommentsWithAnnotations(html);
       }
-    }
-
-    // Remove leading newline if it exists (because inside <pre> all whitespace is displayed as is by the browser, and
-    // sometimes, Prism adds a newline before the code)
-    if (html.startsWith('\n')) {
-      html = html.replace('\n', '');
     }
 
     return (
