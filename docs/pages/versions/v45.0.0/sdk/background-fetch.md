@@ -113,14 +113,13 @@ export default function BackgroundFetchScreen() {
   );
 }
 
-/* @hide */
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   textContainer: {
     margin: 10,
   },
@@ -128,7 +127,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
 /* @end */
 ```
 
