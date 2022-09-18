@@ -128,27 +128,48 @@ public class ExpoFabricView: ExpoFabricViewObjC {
 
   // MARK: - Statics
 
+  internal static var viewClassesRegistry = [String: AnyClass]()
+
   /**
    Dynamically creates a subclass of the `ExpoFabricView` class with injected app context and name of the associated module.
+   The new subclass is saved in the registry, so when asked for the next time, it's returned from cache with the updated app context.
    - Note: Apple's documentation says that classes created with `objc_allocateClassPair` should then be registered using `objc_registerClassPair`,
-   but we can't do that as there might be more than one class with the same name and allocating another one would return `nil`.
+   but we can't do that as there might be more than one class with the same name (Expo Go) and allocating another one would return `nil`.
    */
   @objc
-  public static func makeClass(forAppContext appContext: AppContext, className: String) -> AnyClass? {
-    return className.withCString { classNamePtr in
-      guard let classCopy = objc_allocateClassPair(ExpoFabricView.self, classNamePtr, 0) else {
-        fatalError("Cannot allocate a Fabric view class for '\(className)'")
-      }
-      let appContextBlock: @convention(block) () -> AppContext? = { appContext }
-      let appContextBlockImp: IMP = imp_implementationWithBlock(appContextBlock)
-      class_replaceMethod(classCopy, #selector(__injectedAppContext), appContextBlockImp, "@@:")
-
-      let moduleName = String(className.dropFirst(ViewModuleWrapper.viewManagerAdapterPrefix.count))
-      let moduleNameBlock: @convention(block) () -> String = { moduleName }
-      let moduleNameBlockImp: IMP = imp_implementationWithBlock(moduleNameBlock)
-      class_replaceMethod(classCopy, #selector(__injectedModuleName), moduleNameBlockImp, "@@:")
-
-      return classCopy
+  public static func makeViewClass(forAppContext appContext: AppContext, className: String) -> AnyClass? {
+    if let viewClass = viewClassesRegistry[className] {
+      // When requested for a new class, make sure to update the injected app context.
+      // We assume that the module name doesn't change, since it's based on the class name.
+      inject(appContext: appContext, toViewClass: viewClass)
+      return viewClass
     }
+    guard let viewClass = objc_allocateClassPair(ExpoFabricView.self, className, 0) else {
+      fatalError("Cannot allocate a Fabric view class for '\(className)'")
+    }
+
+    inject(appContext: appContext, toViewClass: viewClass)
+
+    let moduleName = String(className.dropFirst(ViewModuleWrapper.viewManagerAdapterPrefix.count))
+    inject(moduleName: moduleName, toViewClass: viewClass)
+
+    // Save the allocated view class in the registry for the later use (e.g. when the app is reloaded).
+    viewClassesRegistry[className] = viewClass
+
+    return viewClass
+  }
+
+  internal static func inject(appContext: AppContext, toViewClass viewClass: AnyClass) {
+    // Keep it weak so we don't leak the app context.
+    weak var weakAppContext = appContext
+    let appContextBlock: @convention(block) () -> AppContext? = { weakAppContext }
+    let appContextBlockImp: IMP = imp_implementationWithBlock(appContextBlock)
+    class_replaceMethod(viewClass, #selector(__injectedAppContext), appContextBlockImp, "@@:")
+  }
+
+  internal static func inject(moduleName: String, toViewClass viewClass: AnyClass) {
+    let moduleNameBlock: @convention(block) () -> String = { moduleName }
+    let moduleNameBlockImp: IMP = imp_implementationWithBlock(moduleNameBlock)
+    class_replaceMethod(viewClass, #selector(__injectedModuleName), moduleNameBlockImp, "@@:")
   }
 }
