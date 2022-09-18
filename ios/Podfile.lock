@@ -1338,11 +1338,11 @@ PODS:
     - MLKitVision (= 3.0.0)
   - EXFileSystem (14.1.0):
     - ExpoModulesCore
-  - EXFirebaseAnalytics (7.1.1):
+  - EXFirebaseAnalytics (7.2.0):
     - EXFirebaseCore
     - ExpoModulesCore
     - Firebase/Core (= 9.5.0)
-  - EXFirebaseCore (5.1.1):
+  - EXFirebaseCore (5.2.0):
     - ExpoModulesCore
     - Firebase/Core (= 9.5.0)
   - EXFont (10.2.0):
@@ -3387,8 +3387,8 @@ SPEC CHECKSUMS:
   EXErrorRecovery: 68d5f8102234058762687d320580d9b4402cc278
   EXFaceDetector: a5578b7abadcf7a17f446486a3e47b269544bd17
   EXFileSystem: b2b6629924e5b4b6f870c05af23c2c7a4551acc0
-  EXFirebaseAnalytics: fa8f0e792f819f338bcdae7033eeccfec5c979bc
-  EXFirebaseCore: 3264e78c540580ba12e4e13f8f9e3dfc7c4ed367
+  EXFirebaseAnalytics: 8cd886bb057c858c1836dbf094bb5b39157a1149
+  EXFirebaseCore: 4e86a77accaa3363b07e483f46eea34417c2bbdb
   EXFont: a83065d483208782d16aa8b72fa094a410d968cd
   EXGL: eaf094308ed1a3ea8259b0ceeef41363edf20eb2
   EXImageLoader: cb886583dae1f3320c72146480c97a3ec71f1e60
