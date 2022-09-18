@@ -214,16 +214,7 @@ dependencies={['expo-firebase-recaptcha', 'firebase', 'react-native-webview']}>
 
 ```jsx
 import * as React from 'react';
-import {
-  Text,
-  View,
-  StyleSheet,
-  TextInput,
-  Button,
-  Alert,
-  ActivityIndicator,
-  Platform,
-} from 'react-native';
+import { Text, View, StyleSheet, TextInput, Button, Alert, ActivityIndicator } from 'react-native';
 import * as FirebaseRecaptcha from 'expo-firebase-recaptcha';
 import { initializeApp, getApp } from 'firebase/app';
 import { getAuth, PhoneAuthProvider, signInWithCredential } from 'firebase/auth';
@@ -421,20 +412,17 @@ const styles = StyleSheet.create({
 />
 ```
 
-If you want a custom look & feel, then create your own `<Modal>` or display the `<FirebaseRecaptcha>` component inline in your screen. Make sure to reserve enough space for the widget as it can not only display the compact "I'm not a robot" UI but also the **full verification UI requiring users to select images**.
+If you want a custom look and feel, then create your own `<Modal>` or display the `<FirebaseRecaptcha>` component inline in your screen. Make sure to reserve enough space for the widget as it can not only display the compact "I'm not a robot" UI but also the **full verification UI requiring users to select images**.
 
-```tsx
+```jsx
 import { FirebaseRecaptcha, FirebaseRecaptchaVerifier } from 'expo-firebase-recaptcha';
 
-class CustomPhoneAuthScreen extends React.Component {
-  state = {
-    recaptchaToken: ''
-  };
+function CustomPhoneAuthScreen () {
+  const [recaptchaToken, setRecaptchaToken] = React.useState('');
 
-  onPressSendVerificationCode = async () => {
+  async function onPressSendVerificationCode () {
 
     // Create an application verifier from the reCAPTCHA token
-    const { recaptchaToken } = this.state;
     if (!recaptchaToken) return;
     const applicationVerifier = new FirebaseRecaptchaVerifier(recaptchaToken);
 
@@ -446,18 +434,15 @@ class CustomPhoneAuthScreen extends React.Component {
     );
   };
 
-  render() {
-    return (
-      <FirebaseRecaptcha
-        style={...}
-        firebaseConfig={...}
+  return (
+    <FirebaseRecaptcha
+      style={...}
+      firebaseConfig={...}
 
-        // Store the reCAPTCHA token when it has been verified
-        onVerify={recaptchaToken => this.setState({
-          recaptchaToken
-        })} />
-    );
-  }
+      // Store the reCAPTCHA token when it has been verified
+      onVerify={token => setRecaptchaToken(token)}
+      />
+  );
 }
 ```
 
@@ -499,7 +484,7 @@ The reCAPTCHA v3 widget displayed inside a web-view.
 - **languageCode (string)** -- Language to display the reCAPTCHA challenge in. For a list of possible languages, see [reCAPTCHA Language Codes](https://developers.google.com/recaptcha/docs/language).
 - **onLoad (function)** -- A callback that is invoked when the widget has been loaded.
 - **onError (function)** -- A callback that is invoked when the widget failed to load.
-- **onVerify (function)** -- A callback that is invoked when reCAPTCHA has verified that the user is not a bot. The callback is provided with the reCAPTCHA token string. Example `onVerify={(recaptchaToken: string) => this.setState({recaptchaToken})}`.
+- **onVerify (function)** -- A callback that is invoked when reCAPTCHA has verified that the user is not a bot. The callback is provided with the reCAPTCHA token string. Example `onVerify={token => setRecaptchaToken(token)}`.
 - **onFullChallenge (function)** -- A callback that is invoked when reCAPTCHA shows the full challenge experience.
 - **invisible (boolean)** -- When `true` renders an `invisible` reCAPTCHA widget. The widget can then be triggered to verify invisibly by setting the `verify` prop to `true`.
 - **verify (boolean)** -- Use this in combination with `invisible=true` so start the verification process.
