@@ -90,19 +90,19 @@ class LocalizationModule : Module() {
 
   private fun getMeasurementSystem(locale: Locale): String? {
     return if (VERSION.SDK_INT >= VERSION_CODES.P) {
-      mapOf<LocaleData.MeasurementSystem, String>(
-        LocaleData.MeasurementSystem.SI to "metric",
-        LocaleData.MeasurementSystem.UK to "uk",
-        LocaleData.MeasurementSystem.US to "us"
-      )[LocaleData.getMeasurementSystem(ULocale.forLocale(locale))]
+      when (LocaleData.getMeasurementSystem(ULocale.forLocale(locale))) {
+        LocaleData.MeasurementSystem.SI -> "metric"
+        LocaleData.MeasurementSystem.UK -> "uk",
+        LocaleData.MeasurementSystem.US -> "us"
+      }
     } else {
-      if (getRegionCode(locale).equals("uk")) return "uk"
-      if (USES_IMPERIAL.contains(getRegionCode(locale))) return "us" else return "metric"
+      if (getRegionCode(locale).equals("uk")) "uk"
+      else if (USES_IMPERIAL.contains(getRegionCode(locale))) "us" 
+      else "metric"      
     }
   }
 
   private fun getPreferredLocales(): List<Map<String, Any?>> {
-
     val locales = mutableListOf<Map<String, Any?>>()
     val localeList: LocaleListCompat = LocaleListCompat.getDefault()
     for (i in 0 until localeList.size()) {
@@ -144,7 +144,7 @@ class LocalizationModule : Module() {
   }
 
   private fun getPreferredCalendars(): List<Map<String, Any?>> {
-    return listOf<Map<String, Any?>>(
+    return listOf(
       mapOf(
         "calendar" to getCalendarType(),
         "uses24hourClock" to uses24HourClock(), // we ideally would use hourCycle (one of h12, h23, h11, h24) instead, but not sure how to get it on android and ios
