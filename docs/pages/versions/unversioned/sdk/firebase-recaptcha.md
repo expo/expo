@@ -241,7 +241,7 @@ try {
 }
 
 // Firebase references
-let app = getApp();
+const app = getApp();
 const auth = getAuth(app);
 
 export default function PhoneAuthScreen() {
@@ -274,7 +274,7 @@ export default function PhoneAuthScreen() {
           textContentType="telephoneNumber"
           placeholder="+1 999 999 9999"
           editable={!verificationId}
-          onChangeText={phoneNumber => setPhoneNumber(phoneNumber)}
+          onChangeText={setPhoneNumber}
         />
         <Button
           title={`${verificationId ? 'Resend' : 'Send'} Verification Code`}
@@ -420,7 +420,7 @@ import { FirebaseRecaptcha, FirebaseRecaptchaVerifier } from 'expo-firebase-reca
 function CustomPhoneAuthScreen () {
   const [recaptchaToken, setRecaptchaToken] = React.useState('');
 
-  async function onPressSendVerificationCode () {
+  async function onPressSendVerificationCode() {
 
     // Create an application verifier from the reCAPTCHA token
     if (!recaptchaToken) return;
