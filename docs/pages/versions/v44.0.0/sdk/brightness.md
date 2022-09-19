@@ -5,6 +5,8 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-44/packages/expo-brightnes
 
 import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
+import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -17,6 +19,50 @@ On Android, there is a global system-wide brightness setting, and each app has i
 ## Installation
 
 <InstallSection packageName="expo-brightness" />
+
+## Configuration in app.json / app.config.js
+
+You can configure `expo-brightness` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`).
+
+<ConfigClassic>
+
+Add the [`WRITE_SETTINGS`](#permissions) permissions to the [`permissions`](../config/app.md#permissions) list in the app manifest.
+
+</ConfigClassic>
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-brightness` repository](https://github.com/expo/expo/tree/main/packages/expo-brightness#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
+
+<ConfigPluginExample>
+
+```json
+{
+  "expo": {
+    "plugins": [
+      "expo-brightness"
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties properties={[]} />
+
+## Permissions
+
+### Android
+
+- On Android, the module requires permission to change the system-wide brightness. You can omit this permission if you are not using the `setSystemBrightness*` methods.
+
+<AndroidPermissions permissions={['WRITE_SETTINGS']} />
+
+### iOS
+
+_No usage description required._
 
 ## Usage
 
