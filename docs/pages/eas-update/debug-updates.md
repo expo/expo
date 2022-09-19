@@ -311,4 +311,4 @@ While this will prevent all new users from seeing the bad update, users who've a
 
 ## Wrap up
 
-Still having issues with EAS Update? Provide us with a reproduction repo in our [forums](https://forums.expo.dev/c/expo-application-services/56). Also, feel free to ask in the **#updates** channel on our [community Discord](https://chat.expo.dev/), or [contact us](https://expo.dev/contact) directly.
+Still having issues with EAS Update? Provide us with a reproduction repo in our [forums](https://forums.expo.dev/c/expo-application-services/56). Also, feel free to ask in the **#update** channel on our [community Discord](https://chat.expo.dev/), or [contact us](https://expo.dev/contact) directly.
