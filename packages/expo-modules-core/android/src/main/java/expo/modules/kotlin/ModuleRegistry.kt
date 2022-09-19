@@ -74,5 +74,6 @@ class ModuleRegistry(
     forEach {
       it.cleanUp()
     }
+    registry.clear()
   }
 }

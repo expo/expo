@@ -3,6 +3,7 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
@@ -12,6 +13,7 @@ import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.JavaScriptContextProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -98,7 +100,8 @@ class AppContext(
   fun installJSIInterop() {
     jsiInterop = JSIInteropModuleRegistry(this)
     val reactContext = reactContextHolder.get() ?: return
-    reactContext.javaScriptContextHolder?.get()
+    val jsContextHolder = legacyModule<JavaScriptContextProvider>()?.javaScriptContextRef
+    jsContextHolder
       ?.takeIf { it != 0L }
       ?.let {
         jsiInterop.installJSI(
@@ -106,6 +109,7 @@ class AppContext(
           reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
           reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
         )
+        Log.i("ExpoModulesCore", "✅ JSI interop was installed")
       }
   }
 
