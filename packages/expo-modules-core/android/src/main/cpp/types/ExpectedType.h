@@ -43,5 +43,7 @@ public:
    * If the allowsPrimitives is set to true type like int will be represented as a primitives.
    */
   std::string getJClassString(bool allowsPrimitives = false);
+
+  jni::local_ref<jni::JArrayClass<SingleType>::javaobject> getPossibleTypes();
 };
 } // namespace expo

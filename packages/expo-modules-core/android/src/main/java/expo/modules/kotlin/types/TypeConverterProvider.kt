@@ -102,6 +102,16 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return converter
     }
 
+    if (kClass.isSubclassOf(Either::class)) {
+      if (kClass.isSubclassOf(EitherOfFour::class)) {
+        return EitherOfFourTypeConverter<Any, Any, Any, Any>(this, type)
+      }
+      if (kClass.isSubclassOf(EitherOfThree::class)) {
+        return EitherOfThreeTypeConverter<Any, Any, Any>(this, type)
+      }
+      return EitherTypeConverter<Any, Any>(this, type)
+    }
+
     throw MissingTypeConverter(type)
   }
 
