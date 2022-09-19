@@ -7,41 +7,45 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 type Props = PropsWithChildren<{
-  properties: PluginProperty[];
+  properties?: PluginProperty[];
 }>;
 
 export const ConfigPluginProperties = ({ children, properties }: Props) => (
   <>
     <H3>Configurable properties</H3>
     {!!children && <P>{children}</P>}
-    <Table>
-      <TableHead>
-        <Row>
-          <HeaderCell>Name</HeaderCell>
-          <HeaderCell>Default</HeaderCell>
-          <HeaderCell>Description</HeaderCell>
-        </Row>
-      </TableHead>
-      <tbody>
-        {properties.map(property => (
-          <Row key={property.name}>
-            <Cell fitContent>
-              <InlineCode>{property.name}</InlineCode>
-            </Cell>
-            <Cell>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</Cell>
-            <Cell>
-              {!!property.platform && (
-                <APISectionPlatformTags
-                  prefix="Only for:"
-                  platforms={[{ text: property.platform, tag: 'platform' }]}
-                />
-              )}
-              {property.description}
-            </Cell>
+
+    {properties && properties.length === 0 && <P>No configurable properties.</P>}
+    {properties && properties.length > 0 && (
+      <Table>
+        <TableHead>
+          <Row>
+            <HeaderCell>Name</HeaderCell>
+            <HeaderCell>Default</HeaderCell>
+            <HeaderCell>Description</HeaderCell>
           </Row>
-        ))}
-      </tbody>
-    </Table>
+        </TableHead>
+        <tbody>
+          {properties.map(property => (
+            <Row key={property.name}>
+              <Cell fitContent>
+                <InlineCode>{property.name}</InlineCode>
+              </Cell>
+              <Cell>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</Cell>
+              <Cell>
+                {!!property.platform && (
+                  <APISectionPlatformTags
+                    prefix="Only for:"
+                    platforms={[{ text: property.platform, tag: 'platform' }]}
+                  />
+                )}
+                {property.description}
+              </Cell>
+            </Row>
+          ))}
+        </tbody>
+      </Table>
+    )}
   </>
 );
 
