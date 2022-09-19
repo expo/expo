@@ -80,8 +80,6 @@ module.exports = {
 ``` 
 - You can then run `npx expo prebuild` and your symlinked native module will be auto-linked correctly 🎉
 
-For example you might scaffold a new custom native module with  to add a native module in a `libs` folder within your project using the following command: `cd ./libs/ && npx create-react-native-library react-native-module`. You can then run `yarn link` within the `reac-native-module` directory and then symlink this to your project by running `yarn link react-native-module` in your project directory. 
-
 ## Releasing apps with custom native code to production
 
 When you're ready to ship your app, you can [build it with EAS Build](/build/introduction) exactly the same as you were building it before adding custom native code. Alternatively, you can archive and sign it locally. Unsurprisingly, we recommend EAS Build!
