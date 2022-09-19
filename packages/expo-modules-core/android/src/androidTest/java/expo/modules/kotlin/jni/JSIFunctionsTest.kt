@@ -3,7 +3,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import expo.modules.kotlin.apifetures.EitherType
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field

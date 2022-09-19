@@ -2,7 +2,7 @@
 
 package expo.modules.kotlin.types
 
-import expo.modules.kotlin.apifetures.EitherType
+import expo.modules.kotlin.apifeatures.EitherType
 import kotlin.reflect.KClass
 
 @EitherType

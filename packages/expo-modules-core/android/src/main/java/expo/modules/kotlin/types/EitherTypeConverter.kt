@@ -1,6 +1,6 @@
 package expo.modules.kotlin.types
 
-import expo.modules.kotlin.apifetures.EitherType
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
 import kotlin.reflect.KType
