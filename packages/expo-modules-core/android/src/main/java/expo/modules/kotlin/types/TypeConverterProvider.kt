@@ -91,16 +91,6 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EnumTypeConverter(kClass as KClass<Enum<*>>, type.isMarkedNullable)
     }
 
-    if (kClass.isSubclassOf(Either::class)) {
-      if (kClass.isSubclassOf(EitherOfFour::class)) {
-        return EitherOfFourTypeConverter<Any, Any, Any, Any>(this, type)
-      }
-      if (kClass.isSubclassOf(EitherOfThree::class)) {
-        return EitherOfThreeTypeConverter<Any, Any, Any>(this, type)
-      }
-      return EitherTypeConverter<Any, Any>(this, type)
-    }
-
     val cachedConverter = cachedRecordConverters[kClass]
     if (cachedConverter != null) {
       return cachedConverter
@@ -110,6 +100,16 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       val converter = RecordTypeConverter<Record>(this, type)
       cachedRecordConverters[kClass] = converter
       return converter
+    }
+
+    if (kClass.isSubclassOf(Either::class)) {
+      if (kClass.isSubclassOf(EitherOfFour::class)) {
+        return EitherOfFourTypeConverter<Any, Any, Any, Any>(this, type)
+      }
+      if (kClass.isSubclassOf(EitherOfThree::class)) {
+        return EitherOfThreeTypeConverter<Any, Any, Any>(this, type)
+      }
+      return EitherTypeConverter<Any, Any>(this, type)
     }
 
     throw MissingTypeConverter(type)
