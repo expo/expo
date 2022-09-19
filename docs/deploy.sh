@@ -128,6 +128,7 @@ redirects[guides/using-gatsby]=guides/
 redirects[guides/testing-on-devices]=workflow/run-on-device
 redirects[distribution/uploading-apps]=submit/introduction
 redirects[distribution/uploading-apps]=submit/introduction
+redirects[guides/setup-native-firebase/]=guides/using-firebase
 
 # We should change this redirect to a more general EAS guide later
 redirects[guides/setting-up-continuous-integration]=build/building-on-ci

@@ -250,4 +250,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/security/': '/app-signing/security/',
   '/distribution/uploading-apps/': '/submit/introduction/',
   '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
+
+  // Deleted or removed guides
+  '/guides/setup-native-firebase/': '/guides/using-firebase/',
 };

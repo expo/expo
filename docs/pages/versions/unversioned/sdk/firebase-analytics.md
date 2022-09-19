@@ -8,12 +8,10 @@ import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Terminal } from '~/ui/components/Snippet';
-import { InlineCode } from '~/components/base/code';
 
 > **This is the only Firebase Analytics package for React Native that has universal platform support (iOS, Android, Web, and Electron).**
 
-`expo-firebase-analytics` enables the use of native Google Analytics for Firebase. Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
-Learn more in the official [Firebase Docs](https://firebase.google.com/docs/analytics/).
+`expo-firebase-analytics` enables using native Google Analytics for Firebase. Google Analytics for Firebase is a free app measurement solution that provides insight into app usage and user engagement. For more information, see [Firebase Docs](https://firebase.google.com/docs/analytics/).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -21,29 +19,29 @@ Learn more in the official [Firebase Docs](https://firebase.google.com/docs/anal
 
 <APIInstallSection />
 
-When using the web platform, you'll also need to run `npx expo install firebase`, which installs the Firebase JS SDK.
+When using the [web platform](/workflow/web/), you'll also need to run the `npx expo install firebase`, to install the Firebase JS SDK.
 
 ## Configuration
 
-### With native Firebase SDK
+### With React Native Firebase
 
-If you are using `expo-firebase-analytics` with React Native Firebase, you'll have to install the native Firebase SDK using the `npx expo install` command:
+If you are using `expo-firebase-analytics` with [React Native Firebase](https://rnfirebase.io/) library, you'll have to install the library using the following command:
 
 <Terminal cmd={["$ npx expo install @react-native-firebase/app"]} />
 
 This will ensure that the `@react-native-firebase/app` dependency version is compatible with the Expo SDK version your project uses.
 
-Also, make sure that you have React Native Firebase set up correctly in your project. For more information on how to configure it, see [using the native Firebase SDK](/guides/setup-native-firebase/#setup).
+Also, make sure that you have React Native Firebase set up correctly in your project. For more information on how to set it up, see [Install and initialize React Native Firebase](/guides/using-firebase/#install-and-initialize-react-native-firebase).
 
 ### Expo Go: Limitations & configuration
 
-The use of Native Firebase Analytics requires that the google-services configuration is bundled and linked into your app. Since Expo Go loads projects on demand, it does not have the google-services configuration linked into its app-bundle.
+The use of native Firebase Analytics requires that the [Google services configuration](/guides/using-firebase/#step-4-provide-google-services-configuration) is bundled and linked into your app. Since Expo Go loads projects on demand, it does not have the Google services configuration linked into the app bundle.
 
-Instead, Expo Go relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native life-cycle events are not recorded in the standard client, but you can still use `logEvent` to record events.
+Expo Go relies on a JavaScript-based implementation of Firebase Analytics to log events. This means that certain native life-cycle events are not recorded in the standard client, but you can still use [`logEvent()`](#analyticslogeventname-properties) method to record events.
 
-You may want to use Firebase Analytics in Expo Go to verify that you are logging events at the time you intend to and with the data that you want to attach without having to do a standalone app build. To set this up, ensure that the Firebase web configuration is set in **app.json** and that `measurementId` exists in your firebase config. If `measurementId` doesn't exist, then you need to enable or update Google Analytics in your Firebase project.
+You can use Firebase Analytics in Expo Go to verify that you are logging events when you intend to, and with the data you want to attach without having to build an application binary that can be submitted to app stores. To set this up, ensure that the Firebase web configuration is set in **app.json** and that `measurementId` exists in your firebase config.
 
-**app.json**
+Here is an example of how to configure **app.json** to add `measurementId`:
 
 ```json
 {
@@ -61,27 +59,15 @@ You may want to use Firebase Analytics in Expo Go to verify that you are logging
 }
 ```
 
+If `measurementId` doesn't exist, then you need to [enable or update Google Analytics](https://firebase.google.com/docs/analytics/get-started?platform=web) in your Firebase project.
+
 > This limitation only applies to the Expo Go app in the App and Play stores; standalone builds, custom clients & bare apps support the full native Firebase Analytics experience.
-
-### Optional: Enable AdSupport in Bare Workflow
-
-To get extra features like `audiences`, `campaign attribution`, and some `user properties`, such as `Age` and `Interests`, you will need to include AdSupport. This is currently only possible in the Bare Workflow and not enabled by default because Apple & Google are strict with allowing apps to use this library.
-
-To enable the AdSupport framework:
-
-- In your Xcode project, select your project's target
-- Select the General tab for your target
-- Expand the Linked Frameworks and Libraries section
-- Click `+` to add a framework
-- Select `AdSupport.framework`
-
-[Learn more in the Firebase Docs](https://firebase.google.com/support/guides/analytics-adsupport)
 
 ## Usage
 
 ### Logging event
 
-You can gain deeper insight into what works and what doesn't by using the `logEvent` property. Also it's just a lot of fun to see that people actually use the features you work hard on! 😍
+You can gain deeper insight into what works and what doesn't by using the `logEvent` property.
 
 ```ts
 /*
@@ -115,54 +101,12 @@ onPressProfileButton = uid => {
 
 ### React Navigation
 
-You can track the screens your users are interacting with by integrating the best navigation library: `react-navigation`
-
-[Read more about how this works](https://reactnavigation.org/docs/en/screen-tracking.html)
-
-```js
-import React from 'react';
-// Import Navigation
-import { createBottomTabNavigator } from 'react-navigation';
-// Import Firebase
-import * as Analytics from 'expo-firebase-analytics';
-// Import some screens
-import HomeScreen from '../screens/HomeScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-// Create a generic Navigator
-const AppNavigator = createBottomTabNavigator({
-  // The name `Profile` or `Home` are what will appear in Firebase Analytics.
-  Profile: ProfileScreen,
-  Home: HomeScreen,
-});
-// Get the current screen from the navigation state
-function getActiveRouteName(navigationState) {
-  if (!navigationState) return null;
-  const route = navigationState.routes[navigationState.index];
-  // Parse the nested navigators
-  if (route.routes) return getActiveRouteName(route);
-  return route.routeName;
-}
-
-export default () => (
-  <AppNavigator
-    onNavigationStateChange={(prevState, currentState) => {
-      const currentScreen = getActiveRouteName(currentState);
-      const prevScreen = getActiveRouteName(prevState);
-      if (prevScreen !== currentScreen) {
-        // Update Firebase with the name of your screen
-        await Analytics.logEvent('screen_view', { currentScreen });
-      }
-    }}
-  />
-);
-```
+You can track the screens your users are interacting with by integrating our recommend navigation library: `react-navigation`. To see an example of how this works, see [Screen tracking](https://reactnavigation.org/docs/en/screen-tracking.html) in React Navigation.
 
 ## API
 
 ```js
 import * as Analytics from 'expo-firebase-analytics';
 ```
-
-To use web analytics, you'll also need to install the peer dependency **firebase** with `npx expo install firebase`.
 
 <APISection packageName="expo-firebase-analytics" apiName="Analytics" />

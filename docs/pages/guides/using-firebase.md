@@ -3,28 +3,58 @@ title: Using Firebase
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
 
-[Firebase](https://firebase.google.com/) gives you functionality like analytics, databases, messaging and crash reporting so you can move quickly and focus on your users. Firebase is built on Google infrastructure and scales automatically, for even the largest apps.
+[Firebase](https://firebase.google.com/) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as realtime database, cloud storage, authentication, crash reporting, analytics, and so on. It is built on Google's infrastructure and scales automatically.
 
-> This guide uses `firebase@9.1.0`. As of SDK 43, the Expo SDK no longer enforces or recommends any specific version of Firebase to use in your app. If you are using an older version of the `firebase` library in your project you may have to adapt the code examples below to match the version that you are using, with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
+There are two different ways you can use Firebase in your projects:
 
-## Usage with Expo Go
+- Using [Firebase JS SDK](#using-firebase-js-sdk)
+- Using [React Native Firebase](#react-native-firebase)
 
-If you'd like to use Firebase in the Expo Go app, we recommend using the [Firebase JS SDK](https://github.com/firebase/firebase-js-sdk). It supports Authentication, Firestore & Realtime databases, Storage, and Functions on React Native. Other modules like Analytics are [not supported through the Firebase JS SDK](https://firebase.google.com/support/guides/environments_js-sdk), but you can use [`expo-firebase-analytics`](/versions/latest/sdk/firebase-analytics) for that.
+React Native supports both the native SDK and the JS SDK. The following sections will guide you through when to use which SDK and all configuration steps required to use Firebase in your Expo projects.
 
-If you'd like access to the full suite of native firebase tools, we recommend using the [React Native Firebase](https://rnfirebase.io/#expo) with a [development build](/development/introduction). React Native Firebase is not supported in the [Expo Go](https://expo.dev/expo-go) app.
+## Create a Firebase project
 
-> **Note:** This guide mostly covers Firebase Realtime Database (and some Firestore as well). For more background on why some Firebase services are not supported, please refer to the ["What goes into the Expo SDK?" FYI page](https://expo.fyi/whats-in-the-sdk).
+Before proceeding, make sure you have created a Firebase app using the [Firebase console](https://console.firebase.google.com/).
 
-## Firebase SDK Setup
+## Using Firebase JS SDK
 
-First we need to setup a Firebase Account and create a new project. We will be using the JavaScript SDK provided by Firebase, so pull it into your Expo project.
+[Firebase JS SDK](https://firebase.google.com/docs/web/setup) is a JavaScript library that allows you to interact with Firebase services in your project. It supports services such as [Authentication](https://firebase.google.com/docs/auth), [Firestore](https://firebase.google.com/docs/firestore), [Realtime Database](https://firebase.google.com/docs/database) and [Storage](https://firebase.google.com/docs/storage) in a React Native app.
 
-<Terminal cmd={['$ npx expo install firebase']} />
+### When to use Firebase JS SDK
 
-[Firebase Console](http://console.firebase.google.com/) provides you with an API key, and other identifiers for your project needed for initialization. [firebase-web-start](https://firebase.google.com/docs/database/web/start) has a detailed description of what each field means and where to find them in your console.
+You can consider using Firebase JS SDK:
 
-```javascript
+- Use Firebase services such as Authentication, Firestore, Realtime Database, and Storage in your app and develop your app with [**Expo Go**](/workflow/expo-go/).
+- Want an easy setup and quickly get started with Firebase services.
+- Want to create a universal app for Android, iOS, and the web.
+
+#### Caveats
+
+Firebase JS SDK does not support all services for mobile apps. Some of these services are Dynamic Links and Crashlytics. See the [React Native Firebase](#react-native-firebase) section if you want to use these services.
+
+### Install and initialize Firebase JS SDK
+
+> The following sub-sections use `firebase@9.x.x`. As of SDK 43, the Expo SDK no longer enforces or recommends any specific version of Firebase to use in your app.
+>
+> If you are using an older version of the firebase library in your project, you may have to adapt the code examples to match the version that you are using with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
+
+#### Step 1: Install the SDK
+
+After you have created your [Expo project](/get-started/create-a-new-app/), you can install the Firebase JS SDK using the following command:
+
+<Terminal cmd={["$ npx expo install firebase"]} />
+
+#### Step 2: Initialize the SDK in your project
+
+To initialize the Firebase instance in your Expo project, you must create a config object and pass it to the `initializeApp()` method imported from the `firebase/app` module.
+
+The config object requires an API key and other unique identifiers. To obtain these values, you must register a new web app in your Firebase console. You can find these instructions in the [Firebase documentation](https://firebase.google.com/docs/web/setup#register-app).
+
+After you have the API key and other identifiers, you can paste the following code snippet by creating a new **firebaseConfig.js** file in your project's root folder or any other folder where you keep the configuration files.
+
+```js
 import { initializeApp } from 'firebase/app';
 
 // Optionally import the services that you want to use
@@ -46,215 +76,189 @@ const firebaseConfig = {
   measurementId: 'G-measurement-id',
 };
 
-let myApp = initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+
+// For more information on how to access Firebase in your project,
+// see the Firebase documentation: https://firebase.google.com/docs/web/setup#access-firebase
 ```
 
-### Temporarily Bypass Default Security Rules
+You do not have to install other plugins or configurations to use Firebase JS SDK.
 
-By default Firebase Realtime Database (RTDB) has a security rule setup such that all devices accessing your data must be authenticated. We obviously haven't setup any authentication yet, so we can disable it for now while we setup the rest of our app.
+Firebase version 9 provides a modular API. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
 
-Go into Firebase Console >> _Realtime Database_, and under the Rules tab you should see a default set of rules already provided for you. Change the rules to:
+#### Step 3: Configure Metro
 
-```javascript
+Expo CLI uses [Metro](https://facebook.github.io/metro/) to bundle your JavaScript code and assets, and add support for more file extensions.
+
+If you are using Firebase version `9.7.x` and above, you need to add the following configuration to a **metro.config.js** file to make sure that the Firebase JS SDK is bundled correctly.
+
+Start by generating the template file **metro.config.js** in your project's root folder using the following command:
+
+<Terminal cmd={["$ npx expo customize metro.config.js"]} />
+
+Then, update the file with the following configuration:
+
+```js
+const { getDefaultConfig } = require('@expo/metro-config');
+
+const defaultConfig = getDefaultConfig(__dirname);
+
+defaultConfig.resolver.assetExts.push('cjs');
+
+module.exports = defaultConfig;
+```
+
+For more information, see [Customizing Metro](/guides/customizing-metro/).
+
+### Authentication
+
+Firebase JS SDK provides the `firebase/auth` module to authenticate users in your app. You can use it to authenticate users differently using Firebase services such as email and password, and phone number sign-in. Firebase also provides sign-in providers such as Google, Facebook, Twitter, GitHub, and so on.
+
+<BoxLink title="Getting started with auth module" description="Learn how to initialize use Authentication from Firebase." href="https://firebase.google.com/docs/auth/web/start" />
+
+#### Phone authentication
+
+To use [phone authentication](https://firebase.google.com/docs/auth/web/phone-auth) with Firebase JS SDK, you'll to use [`expo-firebase-recaptcha`](/versions/latest/sdk/firebase-recaptcha/) module. It provides a reCAPTCHA widget which is necessary to verify that the app user trying to sign in is not a bot.
+
+- To install the `expo-firebase-recaptcha` module, see the [installation instructions](/versions/latest/sdk/firebase-recaptcha/#installation).
+- To learn more on how to use `expo-firebase-recaptcha`, see [basic usage](/versions/latest/sdk/firebase-recaptcha/#basic-usage).
+- For a complete working example, see [Phone authentication example](/versions/latest/sdk/firebase-recaptcha/#phone-authentication-example).
+
+### Analytics
+
+To use and record Google analytics events for Firebase, use the `expo-firebase-analytics` module. For more information, see [Firebase Analytics](/versions/latest/sdk/firebase-analytics/).
+
+> **Expo Go relies on a JavaScript-based implementation of Firebase Analytics** to log events. This means that certain native life-cycle events are not recorded in the standard client. For more information, see [Expo Go: Limitations & configuration](/versions/latest/sdk/firebase-analytics/#expo-go-limitations--configuration) in `expo-firebase-analytics`.
+
+<BoxLink title="Analytics - recommended events" description="For more information on getting started with events using Firebase analytics, see Log events ." href="https://firebase.google.com/docs/analytics/events?platform=web" />
+
+### Next
+
+<BoxLink title="Firestore" description="For more information on how to use Firestore database in your project, see Firebase documentation." href="https://firebase.google.com/docs/firestore/quickstart" />
+
+<BoxLink title="Realtime Database" description="For more information on how to use Realtime Database in your project, see Firebase documentation." href="https://firebase.google.com/docs/database" />
+
+<BoxLink title="Storage" description="For more information on how to use Storage, see Firebase documentation." href="https://firebase.google.com/docs/storage/web/start" />
+
+<BoxLink title="Firebase Storage example" description="Learn how to use Firebase Storage in an Expo project with our example." href="https://github.com/expo/examples/tree/master/with-firebase-storage-upload" />
+
+<BoxLink title="Managing API keys for Firebase projects" description="For more information about managing API Key and unique identifiers in a Firebase project." href="https://firebase.google.com/docs/projects/api-keys" />
+
+## Using React Native Firebase
+
+[React Native Firebase](https://rnfirebase.io/) provides access to native code by wrapping the native SDKs for Android and iOS into a JavaScript API. Each Firebase service is available as a module that can be added as a dependency to your project. For example, the `auth` module provides access to the Firebase Authentication service.
+
+### When to use React Native Firebase
+
+You can consider using React Native Firebase:
+
+- Your app requires access to Firebase services that are not supported by the Firebase JS SDK, such as [Dynamic Links](https://rnfirebase.io/dynamic-links/usage), [Crashlytics](https://rnfirebase.io/crashlytics/usage) and so on. For more information, see [React Native Firebase documentation](https://rnfirebase.io/faqs-and-tips#why-react-native-firebase-over-firebase-js-sdk).
+- Want to use native SDKs in your app.
+- You have a bare React Native app with React Native Firebase already configured but are migrating to use Expo SDK.
+- Want to add [Performance Monitoring](https://rnfirebase.io/perf/usage) into your app.
+
+#### Caveats
+
+React Native Firebase requires [custom native code and cannot be used with Expo Go](/workflow/expo-go/#custom-native-code).
+
+### Install and initialize React Native Firebase
+
+#### Step 1: Install expo-dev-client
+
+Since React Native Firebase requires custom native code and it cannot be used with Expo Go, you need to install `expo-dev-client` in your project. The development client allows you to create a custom Expo Go app that is completely configured for your project. It also allows configuring any native code required by React Native Firebase using [Config plugins](/guides/config-plugins/) without writing native code yourself.
+
+To install `expo-dev-client`, run the following command in your project:
+
+<Terminal cmd={["$ npx expo install expo-dev-client"]} />
+
+For more information, see [Getting started with `expo-dev-client`](/development/getting-started/#installing--expo-dev-client--in-your-project).
+
+#### Step 2: Install React Native Firebase
+
+To use React Native Firebase, it is necessary to install the `@react-native-firebase/app` module. This module provides the core functionality for all other modules. You can install it using the following command:
+
+<Terminal cmd={["$ npx expo install @react-native-firebase/app"]} />
+
+#### Step 3: Add a config plugin
+
+The `@react-native-firebase/app` require customizing native code in your project. It provides a [config plugin](https://docs.expo.dev/guides/config-plugins/#quick-facts) that you can add to your project.
+
+Add `@react-native-firebase/app` as a config plugin to the [`plugins`](/guides/config-plugins/#using-a-plugin-in-your-app) array in **app.json** or **app.config.js**:
+
+```js
 {
-  "rules": {
-    ".read": true,
-    ".write": true
-  }
+  "plugins": [
+      "@react-native-firebase/app",
+    ]
 }
 ```
 
-[See Sample RTDB Rules](https://firebase.google.com/docs/database/security/quickstart#sample-rules) for good sets of rules for your data, including unauthenticated.
+#### Step 4: Provide google services configuration
 
-> **Note** It is important to note that this is temporary for development, and these rules should be thoroughly assessed before releasing an application.
+React Native Firebase requires **google-services.json** for Android and **GoogleService-Info.plist** for iOS to configure your project. These files contain credentials such as API key and other unique identifiers of your Firebase project.
 
-## Storing Data and Receiving Updates
+You can get these credentials from the Firebase console. For Android and iOS, you will have to create two new apps from **Firebase console > Project Settings > General > Your apps**. During this process, the Firebase console will provide them as files. Download and save them at the root of your project.
 
-Storing data through Firebase RTDB is pretty simple. Imagine we're creating a game where highscores are stored in RTDB for everyone to see. We could create a `users` bucket that is referenced by each user. Setting their highscore is straightforward:
+After downloading them, provide paths for these files in **app.json** or **app.config.js** as shown in the example below:
 
-```javascript
-import { getDatabase, ref, onValue, set } from 'firebase/database';
-
-function storeHighScore(userId, score) {
-  const db = getDatabase();
-  const reference = ref(db, 'users/' + userId);
-  set(reference, {
-    highscore: score,
-  });
-}
-```
-
-Now let's say we want another client to listen to updates to the high score of a specific user. Firebase allows us to set a listener on a specific data reference and get notified each time there is an update to the data. In the example below, every time a highscore is updated for the given user, it will print it to console.
-
-```javascript
-import { getDatabase, ref, onValue } from 'firebase/database';
-
-setupHighscoreListener(userId) {
-  const db = getDatabase();
-  const reference = ref(db, 'users/' + userId);
-  onValue(reference, (snapshot) => {
-    const highscore = snapshot.val().highscore;
-    console.log("New high score: " + highscore);
-  });
-}
-```
-
-## User Authentication
-
-This was all pretty simple and works fairly out of the box for what Firebase JavaScript SDK provides. There is one caveat however. We skipped the authentication rules for simplicity at the beginning. Firebase SDKs provide authentication methods for developers, so they don't have to reimplement common login systems such as Google or Facebook login.
-
-This includes UI elements in the Web, Android, and iOS SDK versions for Firebase, however, these UI components do not work with React Native and **should not** be called. Thankfully, Firebase gives us ways to authenticate our data access given that we provide user authentication ourselves.
-
-### Login Methods
-
-We can choose different login methods that make sense to our application. The login method choice is orthogonal to the Firebase RTDB access, however, we do need to let Firebase know how we have setup our login system so that it can correctly assign authentication tokens that match our user accounts for data access control. You can use anything you want, roll your own custom login system, or even forego it altogether if all your users can have unrestricted access - though unrestricted access is strongly discouraged and instead Firebase recommends using their [_Anonymous_ authentication provider](https://firebase.google.com/docs/auth/web/anonymous-auth).
-
-### Facebook Login
-
-<!-- TODO: Mention third-party facebook packages -->
-
-A common login system many developers opt for is a simple Facebook login that users are already familiar with.
-
-See the Facebook section of our docs for information on how to set this up. This works just as well with Google and [several others](<https://firebase.google.com/docs/reference/android/com/google/firebase/auth/AuthCredential#getProvider()>).
-
-### Tying Sign-In Providers with Firebase
-
-Once you have added Facebook login to your React Native app, we need to adjust the Firebase console to check for it. Go to [Firebase Console](http://console.firebase.google.com/) >> _Authentication_ >> _Sign-In method_ tab to enable Facebook as a sign-in provider.
-
-You can add whichever provider makes sense for you, or even add multiple providers.
-
-### Phone Authentication
-
-To use phone authentication, you'll need the `expo-firebase-recaptcha` package. It provides a reCAPTCHA widget which is necessary to verify that you are not a bot.
-
-Please follow the instructions for the [expo-firebase-recaptcha](/versions/latest/sdk/firebase-recaptcha) package on how to use phone auth.
-
-### Re-enable Data Access Security Rule
-
-We need to re-enable the Data Security Rule in Firebase Console again to check for user authentication. This time our rules will be slightly more complicated.
-
-For our example, let's say we want everyone to be able to read the high score for any user, but we want to restrict writes to only the user who the score belongs to. You wouldn't want anyone overwriting your highscore, would you?
-
-```javascript
+```js
 {
-  "rules": {
-    "users": {
-      "$uid": {
-        ".read": true,
-        ".write": "$uid === auth.uid"
-      }
+  "expo": {
+    "ios": {
+      "googleServicesFile": "./GoogleService-Info.plist"
+    },
+    "android": {
+      "googleServicesFile": "./google-services.json"
     }
   }
 }
 ```
 
-### Listening for Authentication
+#### Step 5: Alter CocoaPods to use frameworks (iOS only)
 
-We are now ready to connect the Facebook login code in our app with our Firebase Realtime Database implementation.
+For iOS, React Native Firebase requires [altering CocoaPods to use frameworks](https://rnfirebase.io/#altering-cocoapods-to-use-frameworks). The [`expo-build-properties`](/versions/latest/sdk/build-properties/) plugin allows you to override the default native build properties and configure to use frameworks.
 
-```javascript
-import { initializeApp } from 'firebase/app';
-import {
-  getAuth,
-  onAuthStateChanged,
-  FacebookAuthProvider,
-  signInWithCredential,
-} from 'firebase/auth';
-import * as Facebook from 'expo-facebook';
+Start by installing the `expo-build-properties` plugin:
 
-let myApp = initializeApp(config);
+<Terminal cmd={["$ npx expo install expo-build-properties"]} />
 
-const auth = getAuth(myApp);
+Then, update the config plugin array in **app.json** or **app.config.js**:
 
-// Listen for authentication state to change.
-onAuthStateChanged(auth, user => {
-  if (user != null) {
-    console.log('We are authenticated now!');
-  }
-
-  // Do other things
-});
-
-async function loginWithFacebook() {
-  await Facebook.initializeAsync('<FACEBOOK_APP_ID>');
-
-  const { type, token } = await Facebook.logInWithReadPermissionsAsync({
-    permissions: ['public_profile'],
-  });
-
-  if (type === 'success') {
-    // Build Firebase credential with the Facebook access token.
-    const facebookAuthProvider = new FacebookAuthProvider();
-    const credential = facebookAuthProvider.credential(token);
-
-    // Sign in with credential from the Facebook user.
-    signInWithCredential(auth, credential).catch(error => {
-      // Handle Errors here.
-    });
-  }
+```js
+{
+  "plugins": [
+      "@react-native-firebase/app",
+      [
+         "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
 }
 ```
 
-The Facebook login method is similar to what you see in the Facebook login guide, however, the token we receive from a successful login can be passed to the Firebase SDK to provide us with a Firebase credential via `FacebookAuthProvider.credential`. We can then sign-in with this credential via `signInWithCredential`.
+#### Step 6: Run the project
 
-The `onAuthStateChanged` event allows us to set a listener when the authentication state has changed, so in our case, when the Facebook credential is used to successfully sign in to Firebase, we are given a user object that can be used for authenticated data access.
+If you are using **[EAS Build](/build/introduction/), you can create and install a development build** on your devices. You do not need to run the project locally before creating the development build. For more information on creating a development build, see [Getting Started with Development builds](/development/getting-started/#creating-and-installing-your-first-development-build).
 
-### Authenticated Data Updates with Firebase Realtime Database
+To run the project locally:
 
-Now that we have a user object for our authenticated user, we can adapt our previous `storeHighScore()` method to use the uid of the user object as our user reference. Since the `user.uid`'s are generated by Firebase automatically for authenticated users, this is a good way to reference our users bucket.
+- You need Android Studio, and Xcode installed and configured on your computer.
+- Then, you can run the project using `npx expo run:android` or `npx expo run:ios` command.
 
-```javascript
-import { getDatabase, ref, set } from 'firebase/database';
+If a particular React Native Firebase module requires custom native configuration steps, you must add it as a `plugin` to **app.json** or **app.config.js**. Then, to run the project locally, you will have to run the `npx expo prebuild --clean` command to apply the native changes before the `npx expo run` commands.
 
-function storeHighScore(user, score) {
-  if (user != null) {
-    const database = getDatabase();
-    set(ref(db, 'users/' + user.uid), {
-      highscore: score,
-    });
-  }
-}
-```
+### Analytics
 
-## Using Expo with Firestore
+**For SDK 46 and above**, to use and record Google analytics events for Firebase, use [`expo-firebase-analytics`](/versions/latest/sdk/firebase-analytics/) since it is compatible with `@react-native-firebase/app` module.
 
-[Firestore](https://firebase.google.com/docs/firestore/) a second database service in Firebase, the other being Realtime Database. Realtime Database can be thought of as a "JSON tree in the cloud" where your app can listen to and modify different portions of the tree. On the other hand, Firestore is a "document store" database. Your application will store and retrieve entire "documents" at a time, where a "document" is essentially a JavaScript object. Each have their advantages, and sometimes applications will end up using both. See [the comparison chart](https://firebase.google.com/docs/firestore/rtdb-vs-firestore) and [take the survey](https://firebase.google.com/docs/firestore/rtdb-vs-firestore#key_considerations).
+**For SDK 45 and below**, use the [`@react-native-firebase/analytics`](https://rnfirebase.io/analytics/usage) module provided by React Native Firebase library.
 
-Here's is an example of storing a document named "mario" inside of a collection named "characters" in Firestore:
+### Next
 
-```javascript
-import { initializeApp } from 'firebase/app';
-import { getFirestore, setDoc, doc } from 'firebase/firestore';
+After configuring React Native Firebase, you can use any of the modules it provides.
 
-const firebaseConfig = { ... }  // apiKey, authDomain, etc. (see above)
-
-let myApp = initializeApp(firebaseConfig);
-
-const firestore = getFirestore(myApp);
-
-await setDoc(doc(firestore, "characters", "mario"), {
-  employment: "plumber",
-  outfitColor: "red",
-  specialAttack: "fireball"
-});
-```
-
-This sample was borrowed and edited from [this forum post](https://forums.expo.dev/t/open-when-an-expo-firebase-firestore-platform/4126/29).
-
-## Recording events with Analytics
-
-In order to record analytics events, the Expo Firebase Core and Analytics packages needs to be installed.
-
-<Terminal cmd={['$ npx expo install expo-firebase-analytics']} />
-
-This package uses a JavaScript-based implementation in Expo Go, and the native Firebase SDK everywhere else.
-
-To configure native Firebase, please follow the configuration instructions for the [`expo-firebase-analytics`](/versions/latest/sdk/firebase-analytics) package.
-
-```javascript
-import * as Analytics from 'expo-firebase-analytics';
-
-Analytics.logEvent('hero_spotted', {
-  hero_name: 'Saitama',
-});
-```
+<BoxLink title="React Native Firebase documentation" description="For more information to install and use a certain module from React Native Firebase, we recommend you to check their documentation." href="https://rnfirebase.io/" />

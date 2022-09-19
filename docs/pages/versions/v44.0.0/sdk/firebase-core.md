@@ -7,27 +7,15 @@ import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-firebase-core`** provides access to the Firebase configuration and performs initialisation
-of the native Firebase App.
+`expo-firebase-core` provides access to the Firebase configuration and performs initialization of the native Firebase App.
+
+> You do not have to configure or include this library directly in your project to use [Firebase](/guides/using-firebase). It is used as a dependency for `expo-firebase-analytics` module when used with [React Native Firebase](/versions/latest/sdk/firebase-analytics/#with-native-firebase-sdk).
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-<InstallSection packageName="expo-firebase-core" />
-
-## Configuration
-
-To use this package, Firebase needs to be configured for your app.
-[Please follow this guide on how to configure native Firebase.](/guides/setup-native-firebase)
-
-> No explicit calls to `expo-firebase-core` are required to initialize Firebase. This library will auto-initialize the Firebase app when a valid configuration exists.
-
-## Native Firebase packages
-
-At the moment, only Firebase Analytics is supported natively. We are working on bringing more native Firebase packages to Expo, stay tuned :)
-
-- [expo-firebase-analytics](firebase-analytics)
+<APIInstallSection />
 
 ## API
 

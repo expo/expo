@@ -120,7 +120,6 @@ const general = [
   makeSection('Integrations', [
     makeGroup('Integrations', [
       makePage('guides/using-firebase.md'),
-      makePage('guides/setup-native-firebase.md'),
       makePage('guides/using-sentry.md'),
       makePage('guides/using-bugsnag.md'),
       makePage('guides/using-clojurescript.md'),
