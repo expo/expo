@@ -15,7 +15,7 @@ The expo-updates library runs inside an end-user's app and makes requests to an 
 
 When we set up EAS Update, we likely ran `eas update:configure` to configure expo-updates to work with EAS Update. This command makes changes to our app config (**app.json**/**app.config.js**). Here are the fields we'd expect to see:
 
-- `runtimeVersion` should be set. By default it is `{ "policy": "sdkVersion" }`. If our project has **android** and **ios** directories, we'll have to set the `runtimeVersion` manually.
+- `runtimeVersion` should be set. By default, it is `{ "policy": "sdkVersion" }`. If our project has **android** and **ios** directories, we'll have to set the `runtimeVersion` manually.
 - `updates.url` should be a value like `https://u.expo.dev/your-project-id`, where `your-project-id` matches the ID of our project. We can see this ID on [our website](https://expo.dev/accounts/[account]/projects/[project]).
 - `updates.enabled` should not be `false`. It's `true` by default if it is not specified.
 
@@ -59,7 +59,7 @@ To debug the state of EAS Update in our project, we'll need to look at multiple 
 
 ### 1. Verify a channel
 
-Builds have a property named _channel_, which EAS Update uses to link to a branch. A channel is often given to multiple platform-specific builds. For instance, we might have an Android build and an iOS build, both with a channel named "production".
+Builds have a property named `channel`, which EAS Update uses to link to a branch. A channel is often given to multiple platform-specific builds. For instance, we might have an Android build and an iOS build, both with a channel named `"production"`.
 
 #### Configuring channels
 
@@ -85,27 +85,27 @@ Then, we can run a command like `eas build --profile preview` to create a build 
 
 Once a build has a channel name, we can make sure that EAS' servers know about the channel by running the following commands:
 
-```bash
-eas channel:list
-```
+<Terminal cmd={['$ eas channel:list']} />
 
 or
 
-```bash
-eas channel:view [channel-name]
-
-# Example
-eas channel:view production
-```
+<Terminal cmd={[
+'# eas channel:view [channel-name]',
+'',
+'',
+'# Example',
+'$ eas channel:view production',
+]} />
 
 We'd expect the output of these commands to display the same channel name that our build has. If it's not there, we can create the channel on EAS' servers with:
 
-```bash
-eas channel:create [channel-name]
-
-# Example
-eas channel:create production
-```
+<Terminal cmd={[
+'# eas channel:create [channel-name]',
+'',
+'',
+'# Example',
+'eas channel:create production',
+]} />
 
 ### 2. Verify the channel/branch mapping
 
@@ -113,21 +113,23 @@ There is a link that is defined by the developer between a channel and a branch.
 
 To verify which branch is linked to a channel, we can run:
 
-```bash
-eas channel:view [channel-name]
-
-# Example
-eas channel:view production
-```
+<Terminal cmd={[
+'# eas channel:view [channel-name]',
+'',
+'',
+'# Example',
+'eas channel:view production',
+]} />
 
 If the channel is not linked to the branch we expect, we can change the link with:
 
-```bash
-eas channel:edit [channel-name] --branch [branch-name]
-
-# Example
-eas channel:edit production --branch release-1.0
-```
+<Terminal cmd={[
+'# eas channel:edit [channel-name] --branch [branch-name]',
+'',
+'',
+'# Example',
+'eas channel:edit production --branch release-1.0',
+]} />
 
 ### 3. Verify the update
 
@@ -135,12 +137,13 @@ Every branch contains a list of updates. When a build makes a call for an update
 
 To inspect which updates are on a branch, we can run:
 
-```bash
-eas branch:view [branch-name]
-
-# Example
-eas branch:view production
-```
+<Terminal cmd={[
+'# eas branch:view [branch-name]',
+'',
+'',
+'# Example',
+'eas branch:view production',
+]} />
 
 The output of this command will show us a list of updates and their runtime versions and platforms. From this list, we should be able to figure out which update should apply to a given build, by matching the build's runtime version and platform to update's runtime version and platform. The most recent update that is compatible will be available for a build to download and execute.
 
@@ -196,7 +199,7 @@ function App() {
 
 ### Viewing network requests
 
-Another way to identify the root cause of an issue is to look at the network requests that the app is making to EAS servers, then viewing the responses. We recommend using a progam like [Proxyman](https://proxyman.io/) or [Charles Proxy](https://www.charlesproxy.com/) to watch network requests from our app.
+Another way to identify the root cause of an issue is to look at the network requests that the app is making to EAS servers, then viewing the responses. We recommend using a program like [Proxyman](https://proxyman.io/) or [Charles Proxy](https://www.charlesproxy.com/) to watch network requests from our app.
 
 With either program, we'll need to follow their instructions for installing an SSL certificate, so that the program can decode HTTPS requests. Once that's set up in a simulator or on an actual device, we can open our app and watch requests.
 
@@ -210,7 +213,7 @@ When inspecting the request to https://u.expo.dev, we can look for the following
 
 As for all requests, we expect to see either `200` response codes, or `304` if nothing has changed.
 
-Below is a screenshot showing the request of a successful update manfiest request:
+Below is a screenshot showing the request of a successful update manifest request:
 
 <ImageSpotlight alt="Successful manifest request" src="/static/images/eas-update/network-request.png" />
 
@@ -283,12 +286,13 @@ updates: [
 
 If "update 2" turned out to be a bad update, we can re-publish "update 1" with a command like this:
 
-```bash
-eas update --branch [branch-name] --republish --group [update-group-id]
-
-# Example
-eas update --branch production --republish --group abc1
-```
+<Terminal cmd={[
+'# eas update --branch [branch-name] --republish --group [update-group-id]',
+'',
+'',
+'# Example',
+'$ eas update --branch production --republish --group abc1',
+]} />
 
 The example command above would result in a branch that now appears like this:
 
@@ -307,4 +311,4 @@ While this will prevent all new users from seeing the bad update, users who've a
 
 ## Wrap up
 
-Still having issues with EAS Update? Provide us with a reproduction repo in our [forums](https://forums.expo.dev/c/expo-application-services/56). Also, feel free to ask in the #updates channel on our [community Discord](https://chat.expo.dev/), or [contact us](https://expo.dev/contact) directly.
+Still having issues with EAS Update? Provide us with a reproduction repo in our [forums](https://forums.expo.dev/c/expo-application-services/56). Also, feel free to ask in the **#update** channel on our [community Discord](https://chat.expo.dev/), or [contact us](https://expo.dev/contact) directly.
