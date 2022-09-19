@@ -1,4 +1,5 @@
 import React from 'react';
+import 'expo/disable-missing-native-module-errors';
 
 import MainNavigator, { optionalRequire } from './MainNavigator';
 import { createProxy, startAsync, addListener } from './relapse/client';
