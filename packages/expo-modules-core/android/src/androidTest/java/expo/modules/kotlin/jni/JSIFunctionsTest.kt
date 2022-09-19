@@ -3,6 +3,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
@@ -458,6 +459,7 @@ class JSIFunctionsTest {
     }
   }
 
+  @OptIn(EitherType::class)
   @Test
   fun either_should_be_convertible() = withJSIInterop(
     inlineModule {
