@@ -60,7 +60,11 @@ export function SidebarCollapsible(props: Props) {
     if (containsActiveChild) {
       const isBasePage = router.pathname.split('/').length < 3;
       if (!hasCachedState && !isBasePage && !window.__sidebarScroll) {
-        ref?.current?.scrollIntoView({ behavior: 'smooth' });
+        if (ref?.current && ref?.current.offsetTop > 32) {
+          // note(simek): fix for URLs with '#' where we also scroll page content,
+          // probably can remove that workaround after refs refactor
+          setTimeout(() => ref?.current && ref.current.scrollIntoView({ behavior: 'smooth' }), 100);
+        }
       }
       window.sidebarState[info.name] = true;
     }
