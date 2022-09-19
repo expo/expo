@@ -5,12 +5,7 @@ import * as rtlDetect from 'rtl-detect';
 import { Localization, PreferredCalendar, PreferredLocale } from './Localization.types';
 
 const getNavigatorLocales = () => {
-  return Platform.isDOMAvailable
-    ? navigator.languages || [
-        // Need to use navigator.userLanguage for IE and navigator.language for others
-        navigator.language || (navigator as unknown as { userLanguage: string }).userLanguage,
-      ]
-    : [];
+  return Platform.isDOMAvailable ? navigator.languages || [navigator.language] : [];
 };
 
 type ExtendedLocale = Intl.Locale &

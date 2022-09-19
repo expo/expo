@@ -35,7 +35,7 @@ public class LocalizationModule: Module {
 
   static func getPreferredLocales() -> [[String: Any?]] {
     return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages)
-    .map { (languageTag) -> [String: Any?] in
+    .map { languageTag -> [String: Any?] in
       var locale = Locale.init(identifier: languageTag)
       return [
         "languageTag": languageTag,
@@ -47,7 +47,7 @@ public class LocalizationModule: Module {
         "measurementSystem": locale.usesMetricSystem ? "metric" : "us",
         "currencyCode": locale.currencyCode,
         "currencySymbol": locale.currencySymbol
-      ] as [String: Any?]
+      ]
     }
   }
 
@@ -58,20 +58,18 @@ public class LocalizationModule: Module {
     return dateFormat.firstIndex(of: "a") == nil
   }
 
-  // Alternatively we could separate into several functions (getCalendar, getTimeZone, getUses24hourClock),
-  // but I think it's better to return grouped vs singular values
   static func getPreferredCalendars() -> [[String: Any?]] {
     var calendar = Locale.current.calendar
     return [
-        [
-          "calendar": "\(calendar.identifier)",
-          "timeZone": "\(calendar.timeZone.identifier)",
-          "uses24hourClock": uses24HourClock(),
-          // we might want to subtract 1 to avoid confusion with 1..7 indexing, 1 is sunday
-          "firstWeekday": calendar.firstWeekday
-          // timezone
-        ]
+      [
+        "calendar": "\(calendar.identifier)",
+        "timeZone": "\(calendar.timeZone.identifier)",
+        "uses24hourClock": uses24HourClock(),
+        // we might want to subtract 1 to avoid confusion with 1..7 indexing, 1 is sunday
+        "firstWeekday": calendar.firstWeekday
+        // timezone
       ]
+    ]
   }
 
   static func getCurrentLocalization() -> [String: Any?] {
