@@ -6,6 +6,7 @@ import android.graphics.Color
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
@@ -102,6 +103,11 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return converter
     }
 
+    return handelEither(type, kClass) ?: throw MissingTypeConverter(type)
+  }
+
+  @OptIn(EitherType::class)
+  private fun handelEither(type: KType, kClass: KClass<*>): TypeConverter<*>? {
     if (kClass.isSubclassOf(Either::class)) {
       if (kClass.isSubclassOf(EitherOfFour::class)) {
         return EitherOfFourTypeConverter<Any, Any, Any, Any>(this, type)
@@ -112,7 +118,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return EitherTypeConverter<Any, Any>(this, type)
     }
 
-    throw MissingTypeConverter(type)
+    return null
   }
 
   private fun createCashedConverters(isOptional: Boolean): Map<KType, TypeConverter<*>> {

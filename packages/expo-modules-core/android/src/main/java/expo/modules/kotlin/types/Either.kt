@@ -2,8 +2,10 @@
 
 package expo.modules.kotlin.types
 
+import expo.modules.kotlin.apifeatures.EitherType
 import kotlin.reflect.KClass
 
+@EitherType
 open class Either<FirstType : Any, SecondType : Any>(
   @PublishedApi
   internal val value: Any
@@ -29,6 +31,7 @@ open class Either<FirstType : Any, SecondType : Any>(
   fun second() = value as SecondType
 }
 
+@EitherType
 open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
   value: Any
 ) : Either<FirstType, SecondType>(value) {
@@ -43,6 +46,7 @@ open class EitherOfThree<FirstType : Any, SecondType : Any, ThirdType : Any>(
   fun third() = value as ThirdType
 }
 
+@EitherType
 class EitherOfFour<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   value: Any
 ) : EitherOfThree<FirstType, SecondType, ThirdType>(value) {

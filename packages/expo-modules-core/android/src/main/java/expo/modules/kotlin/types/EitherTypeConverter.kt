@@ -1,9 +1,11 @@
 package expo.modules.kotlin.types
 
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
 import kotlin.reflect.KType
 
+@EitherType
 class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   converterProvider: TypeConverterProvider,
   eitherType: KType,
@@ -46,6 +48,7 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   override fun getCppRequiredTypes(): ExpectedType = firstType + secondType
 }
 
+@EitherType
 class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any>(
   converterProvider: TypeConverterProvider,
   eitherType: KType,
@@ -96,6 +99,7 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
   override fun getCppRequiredTypes(): ExpectedType = firstType + secondType + thirdType
 }
 
+@EitherType
 class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   converterProvider: TypeConverterProvider,
   eitherType: KType,
