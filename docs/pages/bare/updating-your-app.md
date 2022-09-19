@@ -39,16 +39,24 @@ Inside **eas.json**, we'll want to add `channel` properties to each build profil
 
 ```json
 {
+  "cli": {
+    "version": ">= 2.1.0"
+  },
   "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
     "preview": {
-      "channel": "preview",
-      ...
+      "distribution": "internal",
+      "channel": "preview"
     },
     "production": {
-      "channel": "production",
-      ...
+      "channel": "production"
     }
-    ...
+  },
+  "submit": {
+    "production": {}
   }
 }
 ```
