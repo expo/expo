@@ -23,7 +23,7 @@ Additionally, you'll also need to install the webview using `npx expo install re
 
 ## Usage
 
-### With native Firebase SDK
+### With React Native Firebase
 
 If you are using `expo-firebase-recaptcha` with React Native Firebase, you'll have to install the native SDK using the `npx expo install` command:
 
@@ -125,7 +125,7 @@ export default function App() {
     <View style={{ padding: 20, marginTop: 50 }}>
       <FirebaseRecaptchaVerifierModal
         ref={recaptchaVerifier}
-        firebaseConfig={app.options}
+        firebaseConfig={firebaseConfig}
         // attemptInvisibleVerification
       />
       <Text style={{ marginTop: 20 }}>Enter phone number</Text>
@@ -136,7 +136,7 @@ export default function App() {
         autoCompleteType="tel"
         keyboardType="phone-pad"
         textContentType="telephoneNumber"
-        onChangeText={phoneNumber => setPhoneNumber(phoneNumber)}
+        onChangeText={setPhoneNumber}
       />
       <Button
         title="Send Verification Code"
@@ -309,7 +309,7 @@ export default function PhoneAuthScreen() {
           style={styles.textInput}
           editable={!!verificationId}
           placeholder="123456"
-          onChangeText={verificationCode => setVerificationCode(verificationCode)}
+          onChangeText={setVerificationCode}
         />
         <Button
           title="Confirm Verification Code"
