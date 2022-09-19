@@ -49,6 +49,39 @@ If you've decided that you want to roll your app back to being fully managed (no
 
 Once you have customized the native code in your project, you can use the [`expo-dev-client`](/development/introduction) package to create a development build and retain the convenience of working with just JavaScript and/or TypeScript in Expo Go. You can create a development build for your managed or bare workflow by following [our guide](/development/getting-started).
 
+### Integrating project-specific, symlinked native modules
+
+In some cases you may want to add a custom native module specific to you project. Ideally this custom native module should live within your project, however, if you are using the managed workflow you cannot safely add the project-specific module's native code in the `ios` or `android` directories. Instead the solution is to house any project-specific native module within a local `libs` folder and then symlink this module to your project. This can be achieved as follows:
+
+- First of all create a folder to house your modules under e.g. `mkdir libs`
+- `cd ./libs` and then use [React Native Builder Bob](https://github.com/callstack/react-native-builder-bob) to scaffold a native module with the following command: `npx create-react-native-library react-native-module`
+- Follow the CLI setup for your native module and remove any unecessary parts of the native module e.g. the `example` project, `lefthook` and its `.git` folder
+- Once complete you can symlink this to your project by running `cd ./libs/react-native-module && yarn link && cd ../.. && yarn link react-native-module`
+- Within your project you should now be able to import `react-native-module`
+- However, in order for auto-linking to work correctly you need to specify the location of your native module's podspec file in a `react-native.config.js` file as follows:
+```js
+// react-native.config.js
+const path = require("path");
+
+module.exports = {
+  dependencies: {
+    "react-native-module": {
+      platforms: {
+        ios: {
+          podspecPath: path.join(
+            __dirname,
+            "./libs/react-native-module/react-native-module.podspec"
+          ),
+        },
+      },
+    },
+  },
+};
+``` 
+- You can then run `npx expo prebuild` and your symlinked native module will be auto-linked correctly 🎉
+
+For example you might scaffold a new custom native module with  to add a native module in a `libs` folder within your project using the following command: `cd ./libs/ && npx create-react-native-library react-native-module`. You can then run `yarn link` within the `reac-native-module` directory and then symlink this to your project by running `yarn link react-native-module` in your project directory. 
+
 ## Releasing apps with custom native code to production
 
 When you're ready to ship your app, you can [build it with EAS Build](/build/introduction) exactly the same as you were building it before adding custom native code. Alternatively, you can archive and sign it locally. Unsurprisingly, we recommend EAS Build!
