@@ -193,6 +193,8 @@ Add `@react-native-firebase/app` as a config plugin to the [`plugins`](/guides/c
 }
 ```
 
+> Not all React Native Firebase modules require adding a config plugin. Other modules that require are [Crashlytics](https://rnfirebase.io/crashlytics/usage) and [Performance Monitoring](https://rnfirebase.io/perf/usage#add-the-performance-monitoring-plugin).
+
 #### Step 4: Provide google services configuration
 
 React Native Firebase requires **google-services.json** for Android and **GoogleService-Info.plist** for iOS to configure your project. These files contain credentials such as API key and other unique identifiers of your Firebase project.
