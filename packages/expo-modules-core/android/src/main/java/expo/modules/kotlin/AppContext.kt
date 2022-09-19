@@ -97,20 +97,25 @@ class AppContext(
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
-  fun installJSIInterop() {
-    jsiInterop = JSIInteropModuleRegistry(this)
-    val reactContext = reactContextHolder.get() ?: return
-    val jsContextHolder = legacyModule<JavaScriptContextProvider>()?.javaScriptContextRef
-    jsContextHolder
-      ?.takeIf { it != 0L }
-      ?.let {
-        jsiInterop.installJSI(
-          it,
-          reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
-          reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
-        )
-        Log.i("ExpoModulesCore", "✅ JSI interop was installed")
-      }
+  fun installJSIInterop() = synchronized<Unit>(this) {
+    try {
+      jsiInterop = JSIInteropModuleRegistry(this)
+      val reactContext = reactContextHolder.get() ?: return
+      val jsContextHolder = legacyModule<JavaScriptContextProvider>()?.javaScriptContextRef
+      val catalystInstance = reactContext.catalystInstance ?: return
+      jsContextHolder
+        ?.takeIf { it != 0L }
+        ?.let {
+          jsiInterop.installJSI(
+            it,
+            catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
+            catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+          )
+          Log.i("ExpoModulesCore", "✅ JSI interop was installed")
+        }
+    } catch (e: Throwable) {
+      Log.e("ExpoModulesCore", "Cannot install JSI interop: $e", e)rrrr
+    }
   }
 
   /**
