@@ -3,6 +3,7 @@
 package expo.modules.kotlin.types
 
 import android.graphics.Color
+import android.net.Uri
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -26,6 +27,15 @@ import expo.modules.kotlin.typedarray.Uint16Array
 import expo.modules.kotlin.typedarray.Uint32Array
 import expo.modules.kotlin.typedarray.Uint8Array
 import expo.modules.kotlin.typedarray.Uint8ClampedArray
+import expo.modules.kotlin.types.io.FileTypeConverter
+import expo.modules.kotlin.types.io.PathTypeConverter
+import expo.modules.kotlin.types.net.JavaURITypeConverter
+import expo.modules.kotlin.types.net.URLTypConverter
+import expo.modules.kotlin.types.net.UriTypeConverter
+import java.io.File
+import java.net.URI
+import java.net.URL
+import java.nio.file.Path
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -213,6 +223,13 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       TypedArray::class.createType(nullable = isOptional) to TypedArrayTypeConverter(isOptional),
 
       Color::class.createType(nullable = isOptional) to ColorTypeConverter(isOptional),
+
+      URL::class.createType(nullable = isOptional) to URLTypConverter(isOptional),
+      Uri::class.createType(nullable = isOptional) to UriTypeConverter(isOptional),
+      URI::class.createType(nullable = isOptional) to JavaURITypeConverter(isOptional),
+
+      File::class.createType(nullable = isOptional) to FileTypeConverter(isOptional),
+      Path::class.createType(nullable = isOptional) to PathTypeConverter(isOptional),
 
       Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )
