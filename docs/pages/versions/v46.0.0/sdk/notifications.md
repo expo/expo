@@ -1,6 +1,6 @@
 ---
 title: Notifications
-sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-notifications'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-45/packages/expo-notifications'
 packageName: 'expo-notifications'
 ---
 
