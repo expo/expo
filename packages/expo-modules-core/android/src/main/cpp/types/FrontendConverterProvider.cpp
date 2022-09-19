@@ -50,9 +50,46 @@ void FrontendConverterProvider::createConverters() {
 }
 
 std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverter(
-  jni::local_ref<ExpectedType> expectedType
+  jni::local_ref<ExpectedType::javaobject> expectedType
 ) {
   CppType combinedType = expectedType->getCombinedTypes();
+  auto result = simpleConverters.find(combinedType);
+  if (result != simpleConverters.end()) {
+    return result->second;
+  }
+
+  if (combinedType == CppType::PRIMITIVE_ARRAY) {
+    return std::make_shared<PrimitiveArrayFrontendConverter>(expectedType->getFirstType());
+  }
+
+  if (combinedType == CppType::LIST) {
+    return std::make_shared<ListFrontendConverter>(expectedType->getFirstType());
+  }
+
+  if (combinedType == CppType::MAP) {
+    return std::make_shared<MapFrontendConverter>(expectedType->getFirstType());
+  }
+
+  std::vector<std::shared_ptr<FrontendConverter>> converters;
+  auto singleTypes = expectedType->getPossibleTypes();
+  size_t size = singleTypes->size();
+  for (size_t i = 0; i < size; i++) {
+    jni::local_ref<SingleType> singleType = singleTypes->getElement(i);
+    converters.push_back(this->obtainConverterForSingleType(singleType));
+  }
+
+  if (converters.empty()) {
+    // We don't have a converter for the expected type. That's why we used an UnknownFrontendConverter.
+    return simpleConverters.at(CppType::NONE);
+  }
+
+  return std::make_shared<PolyFrontendConverter>(converters);
+}
+
+std::shared_ptr<FrontendConverter> FrontendConverterProvider::obtainConverterForSingleType(
+  jni::local_ref<SingleType::javaobject> expectedType
+) {
+  CppType combinedType = expectedType->getCppType();
   auto result = simpleConverters.find(combinedType);
   if (result != simpleConverters.end()) {
     return result->second;
