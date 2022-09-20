@@ -104,7 +104,7 @@ Learn how push notification credentials can be automatically generated or upload
 
 - Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**. You can read more about the exact alarm permission [here](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
 
-- On devices running Android 13, users must be opt-in to receiving notifications via a permissions prompt automatically triggered by the operating system. This prompt will not appear until at least one notification channel is created. Therefore, `setNotificationChannelAsync` must be called prior to `getDevicePushTokenAsync` or `getExpoPushTokenAsync` in order to obtain a push token. You can read more about the new notification permission behavior for Android 13 [in the official documentation](https://developer.android.com/develop/ui/views/notifications/notification-permission#new-apps).
+- On Android 13, app users must opt-in to receive notifications via a permissions prompt automatically triggered by the operating system. This prompt will not appear until at least one notification channel is created. Therefore, `setNotificationChannelAsync` must be called prior to `getDevicePushTokenAsync` or `getExpoPushTokenAsync` in order to obtain a push token. You can read more about the new notification permission behavior for Android 13 [in the official documentation](https://developer.android.com/develop/ui/views/notifications/notification-permission#new-apps).
 
 <AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED', 'SCHEDULE_EXACT_ALARM']} />
 
