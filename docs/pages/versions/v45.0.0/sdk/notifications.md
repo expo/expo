@@ -40,7 +40,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ## Configuration in app.json / app.config.js
 
-You can configure `expo-notifications` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+To configure `expo-notifications`, use the built-in [config plugin](/guides/config-plugins) in the **app.json** or **app.config.js** for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 
