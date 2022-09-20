@@ -61,10 +61,11 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   componentDidMount() {
     Router.events.on('routeChangeStart', url => {
       if (this.layoutRef.current) {
-        window.__sidebarScroll =
-          this.getActiveTopLevelSection() !== this.getActiveTopLevelSection(url)
-            ? 0
-            : this.layoutRef.current.getSidebarScrollTop();
+        if (this.getActiveTopLevelSection() !== this.getActiveTopLevelSection(url)) {
+          window.__sidebarScroll = 0;
+        } else {
+          window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
+        }
       }
     });
     window.addEventListener('resize', this.handleResize);
@@ -143,14 +144,14 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   private getActiveTopLevelSection = (path?: string) => {
     if (this.isReferencePath(path)) {
       return 'reference';
+    } else if (this.isEasPath(path)) {
+      return 'eas';
     } else if (this.isGeneralPath()) {
       return 'general';
     } else if (this.isFeaturePreviewPath(path)) {
       return 'featurePreview';
     } else if (this.isPreviewPath()) {
       return 'preview';
-    } else if (this.isEasPath(path)) {
-      return 'eas';
     } else if (this.isArchivePath()) {
       return 'archive';
     }
@@ -159,9 +160,9 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   };
 
   render() {
-    const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
     const routes = this.getRoutes();
     const sidebarActiveGroup = this.getActiveTopLevelSection();
+    const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
 
     const sidebarElement = <Sidebar routes={routes} />;
     const headerElement = (

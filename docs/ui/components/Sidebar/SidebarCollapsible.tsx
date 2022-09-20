@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, iconSize, spacing, ChevronDownIcon, borderRadius, shadows } from '@expo/styleguide';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { ButtonBase } from '../Button';
 import { CALLOUT } from '../Text';
@@ -20,6 +20,7 @@ type Props = React.PropsWithChildren<{
 export function SidebarCollapsible(props: Props) {
   const { info, children } = props;
   const router = useRouter();
+  const ref = useRef<HTMLButtonElement>(null);
 
   const isChildRouteActive = () => {
     let result = false;
@@ -36,10 +37,10 @@ export function SidebarCollapsible(props: Props) {
       }
     };
 
-    let posts: NavigationRoute[] = [];
-    sections?.forEach(section => {
-      posts = [...posts, ...(section?.children ?? [])];
-    });
+    const posts: NavigationRoute[] =
+      sections
+        ?.map(section => (section.type === 'page' ? [section] : section?.children ?? []))
+        .flat() ?? [];
 
     posts.forEach(isSectionActive);
     return result;
@@ -48,11 +49,26 @@ export function SidebarCollapsible(props: Props) {
   const hasCachedState =
     typeof window !== 'undefined' && window.sidebarState[info.name] !== undefined;
 
+  const containsActiveChild = isChildRouteActive();
   const initState = hasCachedState
     ? window.sidebarState[info.name]
-    : isChildRouteActive() || info.expanded;
+    : containsActiveChild || info.expanded;
 
   const [isOpen, setOpen] = useState(initState);
+
+  useEffect(() => {
+    if (containsActiveChild) {
+      const isBasePage = router.pathname.split('/').length < 3;
+      if (!hasCachedState && !isBasePage && !window.__sidebarScroll) {
+        if (ref?.current && ref?.current.offsetTop > 32) {
+          // note(simek): fix for URLs with '#' where we also scroll page content,
+          // probably can remove that workaround after refs refactor
+          setTimeout(() => ref?.current && ref.current.scrollIntoView({ behavior: 'smooth' }), 100);
+        }
+      }
+      window.sidebarState[info.name] = true;
+    }
+  }, []);
 
   const toggleIsOpen = () => {
     setOpen(prevState => !prevState);
@@ -61,7 +77,12 @@ export function SidebarCollapsible(props: Props) {
 
   return (
     <>
-      <ButtonBase css={titleStyle} aria-expanded={isOpen ? 'true' : 'false'} onClick={toggleIsOpen}>
+      <ButtonBase
+        ref={ref}
+        css={titleStyle}
+        aria-expanded={isOpen ? 'true' : 'false'}
+        onClick={toggleIsOpen}
+        data-collapsible-active={containsActiveChild || undefined}>
         <div css={chevronContainerStyle}>
           <ChevronDownIcon
             size={iconSize.tiny}
