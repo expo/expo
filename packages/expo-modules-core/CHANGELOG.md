@@ -27,6 +27,10 @@
 - Lazy load building the module's JavaScript object from the definition on iOS (already implemented on Android). ([#18863](https://github.com/expo/expo/pull/18863) by [@tsapeta](https://github.com/tsapeta))
 - Inferring the view type in `Prop` setter closure. ([#19004](https://github.com/expo/expo/pull/19004) by [@tsapeta](https://github.com/tsapeta))
 - [core] Added `REACT_NATIVE_DOWNLOADS_DIR` environment variable to specify custom third party libraries download location. ([#19015](https://github.com/expo/expo/pull/19015) by [@kudo](https://github.com/kudo))
+- Add support for the `android.graphics.Color` class as the function parameter. ([#19054](https://github.com/expo/expo/pull/19054) by [@lukmccall](https://github.com/lukmccall))
+- Add support for `android.net.Uri`, `java.io.File`, `java.net.URI` and `java.nio.file.Path` classes as function parameters. ([#19169](https://github.com/expo/expo/pull/19169) by [@lukmccall](https://github.com/lukmccall))
+- Add the `RegisterActivityContracts` component to register all of activity result contracts on Android. ([#19180](https://github.com/expo/expo/pull/19180) by [@lukmccall](https://github.com/lukmccall))
+- Improves JSI/JNI type conversion to support complex function arguments on Android. ([#19120](https://github.com/expo/expo/pull/19120) & [#19094](https://github.com/expo/expo/pull/19094) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
