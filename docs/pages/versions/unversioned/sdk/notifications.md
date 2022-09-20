@@ -40,7 +40,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ## Configuration in app.json / app.config.js
 
-You can configure `expo-notifications` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+To configure `expo-notifications`, use the built-in [config plugin](/guides/config-plugins) in the **app.json** or **app.config.js** for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 
@@ -104,7 +104,7 @@ Learn how push notification credentials can be automatically generated or upload
 
 - Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**. You can read more about the exact alarm permission [here](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
 
-- On devices running Android 13, users must be opt-in to receiving notifications via a permissions prompt automatically triggered by the operating system. This prompt will not appear until at least one notification channel is created. Therefore, `setNotificationChannelAsync` must be called prior to `getDevicePushTokenAsync` or `getExpoPushTokenAsync` in order to obtain a push token. You can read more about the new notification permission behavior for Android 13 [in the official documentation](https://developer.android.com/develop/ui/views/notifications/notification-permission#new-apps).
+- On Android 13, app users must opt-in to receive notifications via a permissions prompt automatically triggered by the operating system. This prompt will not appear until at least one notification channel is created. Therefore, `setNotificationChannelAsync` must be called prior to `getDevicePushTokenAsync` or `getExpoPushTokenAsync` in order to obtain a push token. You can read more about the new notification permission behavior for Android 13 [in the official documentation](https://developer.android.com/develop/ui/views/notifications/notification-permission#new-apps).
 
 <AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED', 'SCHEDULE_EXACT_ALARM']} />
 
@@ -280,9 +280,9 @@ async function registerForPushNotificationsAsync() {
 
 ## Custom notification icon and colors (Android only)
 
-[Expo Prebuild](/workflow/prebuild) users can configure the [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in the project's **app.json** or by using the [`expo-notifications` config plugin directly](#optional-setup). These are build-time setting so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
+You can configure  the [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#optional-setup). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
-Bare react native apps can follow [this guide](https://documentation.onesignal.com/docs/customize-notification-icons) to manually configure Android notification icons in Android Studio.
+For Bare react native apps, see [Customize Notification Icons](https://documentation.onesignal.com/docs/customize-notification-icons) to manually configure Android notification icons in Android Studio.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles) (the icon must be all white with a transparent background) or else it may not be displayed as intended.
 
@@ -841,7 +841,7 @@ An optional object of conforming to the following interface:
 }
 ```
 
-Each option corresponds to a different native platform authorization option. A list of iOS options is available [in the official documentation](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions). On Android, all available permissions are granted by default, and if a user declines any permission, an app cannot prompt the user to change.
+Each option corresponds to a different native platform authorization option. To see a list of available options on iOS, see [UNAuthorizationOptions](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions). On Android, all available permissions are granted by default, and if a user declines any permission, an app cannot prompt the user to change.
 
 #### Returns
 

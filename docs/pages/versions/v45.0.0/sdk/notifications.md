@@ -40,7 +40,7 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 ## Configuration in app.json / app.config.js
 
-You can configure `expo-notifications` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+To configure `expo-notifications`, use the built-in [config plugin](/guides/config-plugins) in the **app.json** or **app.config.js** for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 
@@ -104,6 +104,8 @@ Learn how push notification credentials can be automatically generated or upload
 
 - Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**. You can read more about the exact alarm permission [here](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
 
+- On Android 13, app users must opt-in to receive notifications via a permissions prompt automatically triggered by the operating system. This prompt will not appear until at least one notification channel is created. Therefore, `setNotificationChannelAsync` must be called prior to `getDevicePushTokenAsync` or `getExpoPushTokenAsync` in order to obtain a push token. You can read more about the new notification permission behavior for Android 13 [in the official documentation](https://developer.android.com/develop/ui/views/notifications/notification-permission#new-apps).
+
 <AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED', 'SCHEDULE_EXACT_ALARM']} />
 
 ### iOS
@@ -131,8 +133,7 @@ Here are a few ways people claim to have solved this problem, maybe one of these
 Go read the Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This the single most reliable source of information on this problem. To help you grasp what they're suggesting:
 
 - Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
-- Make sure your app configuration is set properly for registering for push notifications (for bare workflow check out [this guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6), for managed workflow this is done automatically for you by `expo-cli`) as also suggested by [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156).
-- If you're in bare workflow you may want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
+- **Bare React Native apps** must [manually enable the **Push Notifications** capability](/build-reference/ios-capabilities#manual-setup). If you have trouble setting this up, refer to [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156). You may also want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
 
 </Collapsible>
 
@@ -169,7 +170,7 @@ import * as Notifications from 'expo-notifications';
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
-<SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-permissions', 'expo-notifications']}>
+<SnackInline label='Push Notifications' dependencies={['expo-device', 'expo-permissions', 'expo-notifications']}>
 
 ```js
 import * as Device from 'expo-device';
@@ -244,6 +245,16 @@ async function schedulePushNotification() {
 
 async function registerForPushNotificationsAsync() {
   let token;
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
   if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
@@ -261,15 +272,6 @@ async function registerForPushNotificationsAsync() {
     alert('Must use physical device for Push Notifications');
   }
 
-  if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-
   return token;
 }
 ```
@@ -278,13 +280,13 @@ async function registerForPushNotificationsAsync() {
 
 ## Custom notification icon and colors (Android only)
 
-In the managed workflow, set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in **app.json**, rebuild your app, and you're good to go!
+You can configure  the [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#optional-setup). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
-For bare workflow **and EAS Build users**, the configuration is also done in **app.json**, but you'll use the [`expo-notifications` config plugin instead](#optional-setup).
+For Bare react native apps, see [Customize Notification Icons](https://documentation.onesignal.com/docs/customize-notification-icons) to manually configure Android notification icons in Android Studio.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles) (the icon must be all white with a transparent background) or else it may not be displayed as intended.
 
-In both the managed and bare workflow, you can also set a custom notification color _per-notification_ directly in your [`NotificationContentInput`](#notificationcontentinput) under the `color` attribute.
+You can also set a custom notification color _per-notification_ directly in your [`NotificationContentInput`](#notificationcontentinput) under the `color` attribute.
 
 ## Setting custom notification sounds
 
@@ -839,7 +841,7 @@ An optional object of conforming to the following interface:
 }
 ```
 
-Each option corresponds to a different native platform authorization option (a list of iOS options is available [here](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions), on Android all available permissions are granted by default and if a user declines any permission an app can't prompt the user to change).
+Each option corresponds to a different native platform authorization option. To see a list of available options on iOS, see [UNAuthorizationOptions](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions). On Android, all available permissions are granted by default, and if a user declines any permission, an app cannot prompt the user to change.
 
 #### Returns
 
@@ -1746,7 +1748,7 @@ export type ChannelAwareTriggerInput = {
 
 #### `DateTriggerInput`
 
-A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a UNIX timestamp.
+A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a Unix timestamp.
 
 ```ts
 export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
