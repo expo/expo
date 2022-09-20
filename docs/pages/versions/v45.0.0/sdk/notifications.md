@@ -280,7 +280,7 @@ async function registerForPushNotificationsAsync() {
 
 ## Custom notification icon and colors (Android only)
 
-[Expo Prebuild](/workflow/prebuild) users can configure the [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in the project's **app.json** or by using the [`expo-notifications` config plugin directly](#optional-setup). These are build-time setting so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
+You can configure  the [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#optional-setup). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
 Bare react native apps can follow [this guide](https://documentation.onesignal.com/docs/customize-notification-icons) to manually configure Android notification icons in Android Studio.
 
