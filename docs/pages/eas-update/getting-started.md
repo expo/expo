@@ -34,7 +34,7 @@ Install EAS and Expo CLIs by running:
 
 Create a project by running:
 
-<Terminal cmd={['$ npx create-expo-app && ']} />
+<Terminal cmd={['$ npx create-expo-app']} />
 
 ## Configure your project
 
@@ -51,7 +51,7 @@ To configure your project, run the following commands in the order they are spec
 '$ eas build:configure',
 ]} cmdCopy="expo install expo-updates && eas update:configure && eas build:configure" />
 
-After running these commands, **eas.json** is created in the root directory of your project.
+After running these commands, **eas.json** file will be created in the root directory of your project.
 
 Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
 
