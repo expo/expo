@@ -29,7 +29,12 @@ class Logger(
       this.add(OSLogHandler(category))
     }
     if (options.contains(LoggerOptions.logToFile)) {
-      this.add(PersistentFileLogHandler(category, context!!))
+      this.add(
+        PersistentFileLogHandler(
+          category,
+          requireNotNull(context) { "You have to provide the `Context` to create a file logger" }
+        )
+      )
     }
   }.toList()
 
