@@ -5,6 +5,7 @@ package expo.modules.kotlin.modules
 import android.app.Activity
 import android.content.Intent
 import android.view.View
+import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -27,6 +28,9 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   @PublishedApi
   internal val eventListeners = mutableMapOf<EventName, EventListener>()
 
+  @PublishedApi
+  internal var registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null
+
   fun buildModule(): ModuleDefinitionData {
     val moduleName = name ?: module?.javaClass?.simpleName
 
@@ -34,7 +38,8 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
       requireNotNull(moduleName),
       buildObject(),
       viewManagerDefinition,
-      eventListeners
+      eventListeners,
+      registerContracts
     )
   }
 
@@ -73,6 +78,13 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
    */
   inline fun OnCreate(crossinline body: () -> Unit) {
     eventListeners[EventName.MODULE_CREATE] = BasicEventListener(EventName.MODULE_CREATE) { body() }
+  }
+
+  /**
+   * Allows registration of activity contracts. It's run after `OnCreate` block.
+   */
+  fun RegisterActivityContracts(body: suspend AppContextActivityResultCaller.() -> Unit) {
+    registerContracts = body
   }
 
   /**
