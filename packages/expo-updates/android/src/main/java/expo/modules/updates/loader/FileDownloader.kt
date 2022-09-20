@@ -29,8 +29,8 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.*
 import java.security.cert.CertificateException
 
-open class FileDownloader(context: Context) {
-  private val client = OkHttpClient.Builder().cache(getCache(context)).build()
+open class FileDownloader(context: Context, private val client: OkHttpClient) {
+  constructor(context: Context) : this(context, OkHttpClient.Builder().cache(getCache(context)).build())
   private val logger = UpdatesLogger(context)
 
   interface FileDownloadCallback {
