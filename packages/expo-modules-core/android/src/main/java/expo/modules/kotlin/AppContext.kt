@@ -3,6 +3,7 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
@@ -12,6 +13,7 @@ import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.JavaScriptContextProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -94,18 +96,25 @@ class AppContext(
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
-  fun installJSIInterop() {
-    jsiInterop = JSIInteropModuleRegistry(this)
-    val reactContext = reactContextHolder.get() ?: return
-    reactContext.javaScriptContextHolder?.get()
-      ?.takeIf { it != 0L }
-      ?.let {
-        jsiInterop.installJSI(
-          it,
-          reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
-          reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
-        )
-      }
+  fun installJSIInterop() = synchronized<Unit>(this) {
+    try {
+      jsiInterop = JSIInteropModuleRegistry(this)
+      val reactContext = reactContextHolder.get() ?: return
+      val jsContextHolder = legacyModule<JavaScriptContextProvider>()?.javaScriptContextRef
+      val catalystInstance = reactContext.catalystInstance ?: return
+      jsContextHolder
+        ?.takeIf { it != 0L }
+        ?.let {
+          jsiInterop.installJSI(
+            it,
+            catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
+            catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+          )
+          Log.i("ExpoModulesCore", "✅ JSI interop was installed")
+        }
+    } catch (e: Throwable) {
+      Log.e("ExpoModulesCore", "Cannot install JSI interop: $e", e)
+    }
   }
 
   /**
