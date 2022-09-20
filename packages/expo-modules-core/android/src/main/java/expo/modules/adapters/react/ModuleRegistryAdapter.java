@@ -117,7 +117,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
     ReactApplicationContext reactContext,
     @Nullable ModuleRegistry moduleRegistry
   ) {
-    if (mModulesProxy != null && mModulesProxy.getKotlinInteropModuleRegistry().getWasDestroyed()) {
+    if (mModulesProxy != null && mModulesProxy.getKotlinInteropModuleRegistry().shouldBeRecreated(reactContext)) {
       mModulesProxy = null;
     }
     if (mModulesProxy == null) {
@@ -127,6 +127,8 @@ public class ModuleRegistryAdapter implements ReactPackage {
       } else {
         mModulesProxy = new NativeModulesProxy(reactContext, registry);
       }
+
+      mModulesProxy.getKotlinInteropModuleRegistry().setLegacyModulesProxy(mModulesProxy);
     }
 
     if (moduleRegistry != null && moduleRegistry != mModulesProxy.getModuleRegistry()) {
