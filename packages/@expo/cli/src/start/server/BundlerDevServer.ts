@@ -418,14 +418,7 @@ export abstract class BundlerDevServer {
     isDevelopmentBuildInstalled: boolean = true
   ): string | null {
     if (this.shouldUseInterstitialPage(isDevelopmentBuildInstalled)) {
-      if (platform) {
-        const loadingUrl =
-          platform === 'emulator'
-            ? this.urlCreator?.constructLoadingUrl({}, 'android')
-            : this.urlCreator?.constructLoadingUrl({}, 'ios');
-        return loadingUrl ?? null;
-      }
-      return this.urlCreator?.constructLoadingUrl({}, null) ?? null;
+      return this.getInterstitialPageUrl(platform, isDevelopmentBuildInstalled);
     }
 
     // Log a warning if no development build is available on the device, but the
@@ -444,6 +437,23 @@ export abstract class BundlerDevServer {
     }
 
     return this.urlCreator?.constructUrl({ scheme: 'exp' }) ?? null;
+  }
+
+  public getInterstitialPageUrl(
+    platform: keyof typeof PLATFORM_MANAGERS | null = null,
+    isDevelopmentBuildInstalled: boolean = true
+  ): string | null {
+    if (!this.shouldUseInterstitialPage(isDevelopmentBuildInstalled)) {
+      return null;
+    }
+    if (platform) {
+      const loadingUrl =
+        platform === 'emulator'
+          ? this.urlCreator?.constructLoadingUrl({}, 'android')
+          : this.urlCreator?.constructLoadingUrl({}, 'ios');
+      return loadingUrl ?? null;
+    }
+    return this.urlCreator?.constructLoadingUrl({}, null) ?? null;
   }
 
   protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {
