@@ -59,7 +59,7 @@ void JSIInteropModuleRegistry::installJSI(
 
 void JSIInteropModuleRegistry::installJSIForTests() {
 #if !UNIT_TEST
-  throw std::logic_error("The function is only avaiable when UNIT_TEST is defined.");
+  throw std::logic_error("The function is only available when UNIT_TEST is defined.");
 #else
   runtimeHolder = std::make_shared<JavaScriptRuntime>();
   jsi::Runtime &jsiRuntime = *runtimeHolder->get();

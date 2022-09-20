@@ -1,5 +1,6 @@
 package expo.modules.adapters.react;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Dynamic;
@@ -127,6 +128,9 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     constants.put(MODULES_CONSTANTS_KEY, modulesConstants);
     constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
     constants.put(VIEW_MANAGERS_METADATA_KEY, viewManagersMetadata);
+
+    Log.i("ExpoModulesCore", "✅ Constants was exported");
+
     return constants;
   }
 
