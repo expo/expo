@@ -50,8 +50,7 @@ class AppContext(
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
 ) : CurrentActivityProvider, AppContextActivityResultCaller {
-  val registry = ModuleRegistry(WeakReference(this)).apply {
-  }
+  val registry = ModuleRegistry(WeakReference(this))
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
@@ -292,6 +291,7 @@ class AppContext(
    * what parts of the application outlives the Activity destruction (especially [AppContext] and other [Bridge]-related parts).
    */
   @MainThread
+  @Deprecated(message = "`registerForActivityResult` was deprecated. Please use `RegisterActivityContracts` component instead.")
   override suspend fun <I : Serializable, O> registerForActivityResult(
     contract: AppContextActivityResultContract<I, O>,
     fallbackCallback: AppContextActivityResultFallbackCallback<I, O>

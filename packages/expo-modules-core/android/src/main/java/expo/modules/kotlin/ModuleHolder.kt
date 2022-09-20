@@ -11,6 +11,7 @@ import expo.modules.kotlin.exception.MethodNotFoundException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
+import kotlinx.coroutines.launch
 
 class ModuleHolder(val module: Module) {
   val definition = module.definition()
@@ -79,6 +80,14 @@ class ModuleHolder(val module: Module) {
   fun <Sender, Payload> post(eventName: EventName, sender: Sender, payload: Payload) {
     val listener = definition.eventListeners[eventName] ?: return
     (listener as? EventListenerWithSenderAndPayload<Sender, Payload>)?.call(sender, payload)
+  }
+
+  fun registerContracts() {
+    definition.registerContracts?.let {
+      module.appContext.mainQueue.launch {
+        it.invoke(module.appContext)
+      }
+    }
   }
 
   fun cleanUp() {
