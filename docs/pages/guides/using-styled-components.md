@@ -3,6 +3,7 @@ title: Using Styled Components
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { DiffBlock } from '~/ui/components/Snippet';
 
 Styled Components is a CSS-in-JS solution that enables you to create React components with a given style very easily. Using `styled-components` with Expo, you can create universal styles that'll work the same across web, mobile, and desktop!
 
@@ -50,12 +51,16 @@ Usage with Next.js is a little different because we need to apply the React Nati
 
 - Use the Babel plugin in your **babel.config.js** file:
 
-```diff
-module.exports = {
+<DiffBlock raw={`
+diff --git a/babel.config.js b/babel.config.js
+--- a/babel.config.js
++++ b/babel.config.js
+@@ -1,3 +1,4 @@
+  module.exports = {
     presets: ['@expo/next-adapter/babel'],
 +   plugins: [['styled-components', { ssr: true }]]
-};
-```
+  };
+`} />
 
 - Now you can use `styled-components/native` just like you would in a regular Expo project!
 
@@ -69,14 +74,18 @@ Styled Components imports all of `react-native-web` which [breaks React Native w
 
 Technically you can use `styled-components` directly like this:
 
-```diff
+<DiffBlock raw={`
+diff --git a/Container.jsx b/Container.jsx
+--- a/Container.jsx
++++ b/Container.jsx
+@@ -1,5 +1,5 @@
 - import styled from 'styled-components/native';
 + import styled from 'styled-components';
-
-- const Container = styled.View`
-+ const Container = styled(View)`
+  
+- const Container = styled.View\`
++ const Container = styled(View)\`
     background-color: #fff;
-`
-```
+  \`
+`} />
 
 But doing this in the browser will throw the error: `Warning: Using the "className" prop on <View> is deprecated.`.

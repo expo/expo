@@ -5,20 +5,29 @@ import React, { PropsWithChildren } from 'react';
 type SnippetContentProps = PropsWithChildren<{
   alwaysDark?: boolean;
   hideOverflow?: boolean;
+  skipPadding?: boolean;
 }>;
 
 export const SnippetContent = ({
   children,
   alwaysDark = false,
   hideOverflow = false,
+  skipPadding = false,
 }: SnippetContentProps) => (
-  <div css={[contentStyle, alwaysDark && contentDarkStyle, hideOverflow && contentHideOverflow]}>
+  <div
+    css={[
+      contentStyle,
+      alwaysDark && contentDarkStyle,
+      hideOverflow && contentHideOverflow,
+      skipPadding && skipPaddingStyle,
+    ]}>
     {children}
   </div>
 );
 
 const contentStyle = css`
-  background-color: ${theme.palette.black};
+  color: ${theme.text.default};
+  background-color: ${theme.background.secondary};
   border: 1px solid ${theme.border.default};
   border-bottom-left-radius: ${borderRadius.medium}px;
   border-bottom-right-radius: ${borderRadius.medium}px;
@@ -32,6 +41,7 @@ const contentStyle = css`
 `;
 
 const contentDarkStyle = css`
+  background-color: ${theme.palette.black};
   border-color: transparent;
   white-space: nowrap;
 `;
@@ -43,3 +53,7 @@ const contentHideOverflow = css`
     white-space: nowrap;
   }
 `;
+
+const skipPaddingStyle = css({
+  padding: 0,
+});
