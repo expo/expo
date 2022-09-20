@@ -24,7 +24,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Configuration in app.json / app.config.js
 
-You can configure `expo-image-picker` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-image-picker` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 
@@ -113,11 +113,11 @@ When you run this example and pick an image, you will see the image that you pic
 }
 ```
 
-## Using ImagePicker with AWS S3
+### Using with AWS S3
 
 Please refer to the [with-aws-storage-upload example](https://github.com/expo/examples/tree/master/with-aws-storage-upload). Follow [Amplify docs](https://docs.amplify.aws/) to set your project up correctly.
 
-## Using ImagePicker with Firebase
+### Using with Firebase
 
 Please refer to the [with-firebase-storage-upload example](https://github.com/expo/examples/tree/master/with-firebase-storage-upload). Make sure you follow the ["Using Firebase"](/guides/using-firebase/) docs to set your project up correctly.
 

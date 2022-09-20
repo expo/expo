@@ -6,7 +6,7 @@ If you are behind a couple of versions, upgrading your project's Expo SDK versio
 
 Expo maintains ~6 months of backward compatibility. Once an SDK version has been deprecated, you will no longer be able to use the Expo Go app for development or build new binaries via `expo build`. However, you will still be able to publish updates via `eas update`, and build using `eas build`. Deprecations **will not** affect standalone apps you have in production.
 
-> **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is deprecated and is no longer supported after SDK 38. We recommend [migrating existing ExpoKit projects to the bare workflow](/bare/migrating-from-expokit).
+> **Note**: If you are running ExpoKit inside a native project, upgrading will require extra steps. ExpoKit is deprecated and is no longer supported after SDK 38.
 
 ## SDK 46
 

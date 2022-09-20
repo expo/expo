@@ -519,7 +519,7 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 #### Custom Apps
 
-Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for native auth as it supports some nonstandard OAuth features implemented by Facebook.
+Consider using the [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next) module with [Config Plugins](/guides/config-plugins/) for native auth as it supports some nonstandard OAuth features implemented by Facebook.
 
 - The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
 - Add `facebookScheme: 'fb<YOUR FBID>'` to your **app.config.js** or **app.json**. Example: `{ facebookScheme: "fb145668956753819" }` (notice the `fb` prefix).
@@ -2314,7 +2314,7 @@ https://auth.expo.io/@johnsample/my-app
 
 - **Environment:** Development or production projects in Expo Go, or in a standalone build.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: true })` to create this URI.
-  - The link is constructed from your Expo username and the Expo app name, which are appended to the proxy website.
+  - The link is constructed from your Expo username and the Expo config (**app.json**) `slug`, which are appended to the proxy website.
   - For custom apps, you'll need to rebuild the native app if you change users or if you reassign your `slug`, or `owner` properties in the app.json. We highly recommend **not** using the proxy in custom apps (standalone, bare, custom).
 - **Usage:** `promptAsync({ useProxy: true, redirectUri })`
 
@@ -2330,7 +2330,7 @@ exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime
 
 - **Environment:** Production projects that you `eas update`'d and opened in the Expo Go app.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
-  - The link is constructed from your Expo username and the Expo app name, which are appended to the Expo Go app URI scheme.
+  - The link is constructed from your Expo username and the Expo config (**app.json**) `slug`, which are appended to the Expo Go app URI scheme.
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
 - **Usage:** `promptAsync({ redirectUri })`
 
@@ -2355,7 +2355,8 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - Bare workflow
     - `npx create-react-native-app` or `expo prebuild`
   - Standalone builds in the App or Play Store
-    - `expo build:ios` or `expo build:android`
+    - iOS: `eas build` or `expo build:ios`
+    - Android: `eas build` or `expo build:android`
   - Standalone builds for local testing
     - `expo build:ios -t simulator` or `expo build:android -t apk`
 

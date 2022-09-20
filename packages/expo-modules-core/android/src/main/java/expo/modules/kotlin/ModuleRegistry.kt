@@ -25,6 +25,7 @@ class ModuleRegistry(
       )
     }
     holder.post(EventName.MODULE_CREATE)
+    holder.registerContracts()
     registry[holder.name] = holder
   }
 
@@ -74,5 +75,6 @@ class ModuleRegistry(
     forEach {
       it.cleanUp()
     }
+    registry.clear()
   }
 }

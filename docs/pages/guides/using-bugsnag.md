@@ -26,7 +26,7 @@ With Bugsnag, developers and engineering organizations can:
 
 ### Get Started
 
-Add Bugsnag to your Expo apps to automatically capture and report JavaScript errors. Follow the guide below and read the [blog post](https://www.bugsnag.com/blog/build-apps-in-expo-with-bugsnag) announcing Bugsnag’s Expo integration. If you’re new to Bugsnag, you can [create an account](https://app.bugsnag.com/user/new/) or [request a demo](https://www.bugsnag.com/demo-request).
+Add Bugsnag to your native apps to automatically capture and report JavaScript errors. Follow the guide below and read the [blog post](https://www.bugsnag.com/blog/build-apps-in-expo-with-bugsnag) announcing Bugsnag’s Expo integration. If you’re new to Bugsnag, you can [create an account](https://app.bugsnag.com/user/new/) or [request a demo](https://www.bugsnag.com/demo-request).
 
 ## Add Bugsnag to your Expo project
 

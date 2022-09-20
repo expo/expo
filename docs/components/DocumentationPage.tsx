@@ -4,8 +4,6 @@ import some from 'lodash/some';
 import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
 
-import { AppJSBanner } from './AppJSBanner.tsx';
-
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
 import DocumentationFooter from '~/components/DocumentationFooter';
@@ -15,7 +13,7 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
-import navigation from '~/constants/navigation-deprecated.cjs';
+import navigation from '~/constants/navigation.cjs';
 import * as Constants from '~/constants/theme';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { NavigationRoute } from '~/types/common';
@@ -63,10 +61,11 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   componentDidMount() {
     Router.events.on('routeChangeStart', url => {
       if (this.layoutRef.current) {
-        window.__sidebarScroll =
-          this.getActiveTopLevelSection() !== this.getActiveTopLevelSection(url)
-            ? 0
-            : this.layoutRef.current.getSidebarScrollTop();
+        if (this.getActiveTopLevelSection() !== this.getActiveTopLevelSection(url)) {
+          window.__sidebarScroll = 0;
+        } else {
+          window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
+        }
       }
     });
     window.addEventListener('resize', this.handleResize);
@@ -102,7 +101,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   };
 
   private isFeaturePreviewPath = (path?: string) => {
-    return navigation.featurePreview.some(name => this.pathStartsWith(name, path));
+    return navigation.featurePreview.some((name: string) => this.pathStartsWith(name, path));
   };
 
   private isPreviewPath = () => {
@@ -136,23 +135,23 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
 
   private getRoutes = (): NavigationRoute[] => {
     if (this.isReferencePath()) {
-      return navigation.reference[this.props.version];
+      return (navigation as any).reference[this.props.version];
     } else {
-      return navigation[this.getActiveTopLevelSection()];
+      return (navigation as any)[this.getActiveTopLevelSection()];
     }
   };
 
   private getActiveTopLevelSection = (path?: string) => {
     if (this.isReferencePath(path)) {
       return 'reference';
+    } else if (this.isEasPath(path)) {
+      return 'eas';
     } else if (this.isGeneralPath()) {
       return 'general';
     } else if (this.isFeaturePreviewPath(path)) {
       return 'featurePreview';
     } else if (this.isPreviewPath()) {
       return 'preview';
-    } else if (this.isEasPath(path)) {
-      return 'eas';
     } else if (this.isArchivePath()) {
       return 'archive';
     }
@@ -161,9 +160,9 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   };
 
   render() {
-    const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
     const routes = this.getRoutes();
     const sidebarActiveGroup = this.getActiveTopLevelSection();
+    const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
 
     const sidebarElement = <Sidebar routes={routes} />;
     const headerElement = (
@@ -193,7 +192,6 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     const pageContent = (
       <>
         {this.props.title && <H1>{this.props.title}</H1>}
-        <AppJSBanner />
         {this.props.children}
         {this.props.title && (
           <DocumentationFooter

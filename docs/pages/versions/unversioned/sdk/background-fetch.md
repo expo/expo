@@ -47,7 +47,8 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
   return BackgroundFetch.BackgroundFetchResult.NewData;
 });
 
-// 2. Register the task at some point in your app by providing the same name, and some configuration options for how the background fetch should behave
+// 2. Register the task at some point in your app by providing the same name,
+// and some configuration options for how the background fetch should behave
 // Note: This does NOT need to be in the global scope and CAN be used in your React components!
 async function registerBackgroundFetchAsync() {
   return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
@@ -114,14 +115,13 @@ export default function BackgroundFetchScreen() {
   );
 }
 
-/* @hide */
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   textContainer: {
     margin: 10,
   },
@@ -129,7 +129,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
 /* @end */
 ```
 
@@ -161,7 +160,7 @@ async function registerBackgroundFetchAsync() {
 
 ## Configuration
 
-In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration-for-standalone-apps) for more details.
+In order to use `BackgroundFetch` API in standalone, bare apps on iOS, your app has to include background mode in the **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration-for-standalone-apps) for more details.
 
 On Android, this module might listen when the device is starting up. It's necessary to continue working on tasks started with `startOnBoot`. It also keeps devices "awake" that are going idle and asleep fast, to improve reliability of the tasks. Because of this both the `RECEIVE_BOOT_COMPLETED` and `WAKE_LOCK` permissions are added automatically.
 

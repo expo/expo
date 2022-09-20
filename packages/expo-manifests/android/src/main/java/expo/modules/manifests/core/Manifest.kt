@@ -167,12 +167,10 @@ abstract class Manifest(protected val json: JSONObject) {
     return expoClientConfig.getNullable("androidNavigationBar")
   }
 
-  fun getAndroidJsEngine(): String? {
-    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val sharedJsEngine = expoClientConfig.getNullable<String>("jsEngine")
-    val androidJsEngine = expoClientConfig
-      .getNullable<JSONObject>("android")?.getNullable<String>("jsEngine")
-    return androidJsEngine ?: sharedJsEngine
+  val jsEngine: String by lazy {
+    val expoClientConfig = getExpoClientConfigRootObject()
+    expoClientConfig
+      ?.getNullable<JSONObject>("android")?.getNullable<String>("jsEngine") ?: expoClientConfig?.getNullable<String>("jsEngine") ?: "jsc"
   }
 
   fun getIconUrl(): String? {

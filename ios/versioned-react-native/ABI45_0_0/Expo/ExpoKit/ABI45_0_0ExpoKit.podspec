@@ -131,7 +131,6 @@ Pod::Spec.new do |s|
     ss.dependency         "lottie-ios"
     ss.dependency         "JKBigInteger"
     ss.dependency         "Branch"
-    ss.dependency         "Google-Mobile-Ads-SDK"
     ss.dependency         "RCT-Folly"
     ss.dependency         "ABI45_0_0ExpoModulesProvider"
   end

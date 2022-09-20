@@ -199,6 +199,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // Fundamentals had too many things
   '/workflow/linking/': '/guides/linking/',
   '/workflow/how-expo-works/': '/guides/how-expo-works/',
+  '/guides/how-expo-works/': '/workflow/expo-go/',
 
   // Archive unused pages
   '/guides/notification-channels/': '/archived/notification-channels/',
@@ -236,4 +237,17 @@ const RENAMED_PAGES: Record<string, string> = {
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+
+  // Redirect bare guides to unified workflow guides
+  '/bare/using-libraries/': '/workflow/using-libraries/',
+  '/bare/exploring-bare-workflow/': '/bare/hello-world/',
+  '/bare/existing-apps/': '/bare/installing-expo-modules/',
+  '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
+  '/bare/using-web/': '/workflow/web/',
+  '/guides/running-in-the-browser/': '/workflow/web/',
+
+  // Consolidate distribution
+  '/distribution/security/': '/app-signing/security/',
+  '/distribution/uploading-apps/': '/submit/introduction/',
+  '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
 };

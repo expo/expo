@@ -2,7 +2,7 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
-firebase_sdk_version = '8.14.0'
+firebase_sdk_version = '9.5.0'
 if defined? $FirebaseSDKVersion
   firebase_sdk_version = $FirebaseSDKVersion
 end
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '12.0'
+  s.platform       = :ios, '13.0'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 

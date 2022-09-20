@@ -21,7 +21,7 @@ We made some significant changes with Expo SDK 43 to improve support for monorep
 
 In this example, we will set up a monorepo using yarn workspaces without the [nohoist](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/) option. We will assume some familiar names, but you can fully customize them. After this guide, our basic structure should look like this:
 
-- **apps/** - Contains multiple projects, including Expo apps.
+- **apps/** - Contains multiple projects, including React Native apps.
 - **packages/** - Contains different packages used by our apps.
 - **package.json** - Root package file, containing yarn workspaces config.
 
@@ -45,10 +45,7 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
   "private": true,
   "name": "monorepo",
   "version": "1.0.0",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+  "workspaces": ["apps/*", "packages/*"]
 }
 ```
 
@@ -56,7 +53,7 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
 
 ### Create our first app
 
-Now that we have the basic monorepo structure set up, let's add our first app. Before we can create our app, we have to create the **apps/** folder. This folder can contain all separate apps or websites that belong to this monorepo. Inside this **apps/** folder, we can create a subfolder that contains the actual Expo app. 
+Now that we have the basic monorepo structure set up, let's add our first app. Before we can create our app, we have to create the **apps/** folder. This folder can contain all separate apps or websites that belong to this monorepo. Inside this **apps/** folder, we can create a subfolder that contains the React Native app.
 
 <Terminal cmd={["$ yarn create expo-app apps/cool-app"]} cmdCopy="yarn create expo-app apps/cool-app" />
 
@@ -117,10 +114,10 @@ const path = require('path');
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 
-// If your monorepo tooling can give you the list of monorepo workspaces linked 
+// If your monorepo tooling can give you the list of monorepo workspaces linked
 // in your app workspace, you can automate this list instead of hardcoding them.
 const monorepoPackages = {
-  '@acme/api': path.resolve(workspaceRoot, 'packages/api'), 
+  '@acme/api': path.resolve(workspaceRoot, 'packages/api'),
   '@acme/components': path.resolve(workspaceRoot, 'packages/components'),
 };
 
@@ -161,17 +158,18 @@ We have to tell Metro to look in these two folders. The order is important here 
 This option is important for certain edge cases, such as a monorepo that includes multiple versions of the `react` package. For example, let's say you have the following monorepo:
 
 1. **apps/marketing** - A simple Next.js website to attract new users. (uses `react@17.x.x`)
-2. **apps/mobile** - Your awesome Expo app. (uses `react@18.x.x`)
-3. **apps/web** - Your awesome Next.js website. (uses `react@17.x.x`)
+2. **apps/mobile** - Your Expo app. (uses `react@18.x.x`)
+3. **apps/web** - Your Next.js website. (uses `react@17.x.x`)
 
 With monorepo tooling like Yarn, React is installed in two different **node_modules** folders.
+
 1. **node_modules** - The root folder, contains `react@17.x.x`.
-2. **apps/mobile/node_modules** - The Expo app's folder, contains `react@18.x.x`. 
+2. **apps/mobile/node_modules** - The app's folder, contains `react@18.x.x`.
 
 Expo modules and React Native libraries usually don't add `react` as a peer dependency. As a result, monorepo tooling, like Yarn, will install these dependencies to the root **node_modules** directory, for example:
 
 1. **node_modules** - The root folder, contains `expo@...` and `react@17.x.x`.
-2. **apps/mobile/node_modules** - The Expo app's folder, contains `react@18.x.x`. 
+2. **apps/mobile/node_modules** - The app's folder, contains `react@18.x.x`.
 
 With hierarchical lookup enabled, whenever `expo` imports `react`, Metro will resolve to `react@17.x.x` and not `react@18.x.x`. This causes "multiple React versions" errors in your app.
 
@@ -211,14 +209,13 @@ Monorepos can help us group code in a single repository. That includes apps but 
 
 Let's go back to the root and create the **packages/** folder. This folder can contain all the separate packages that you want to make. Once you are inside this folder, we need to add a new subfolder. The subfolder is a separate package that we can use inside our app. In the example below, we named it **cool-package**.
 
-
 <Terminal cmd={[
-  "# Create our new package folder",
-  "mkdir -p packages/cool-package",
-  "cd packages/cool-package",
-  "",
-  "# And create the new package",
-  "yarn init"
+"# Create our new package folder",
+"mkdir -p packages/cool-package",
+"cd packages/cool-package",
+"",
+"# And create the new package",
+"yarn init"
 ]} cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && yarn init" />
 
 We won't go into too much detail in creating a package. If you are not familiar with this, please consider using a simple app without monorepos. But, to make the example complete, let's add an **index.js** file with the following content:
@@ -239,7 +236,7 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web",
+    "web": "expo start --web"
   },
   "dependencies": {
     "cool-package": "*",
@@ -346,4 +343,3 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
 In the snippets above, you can see that we use Node's own [`require.resolve()`](https://nodejs.org/api/modules.html#requireresolverequest-options) method to find the package location. We explicitly refer to `package.json` because we want to find the root location of the package, not the location of the entry point. And with that root location, we can resolve to the expected relative path within the package. [Learn more about these references here](https://github.com/expo/expo/blob/4633ab2364e30ea87ca2da968f3adaf5cdde9d8b/packages/expo-modules-core/README.md#importing-native-dependencies---autolinking).
 
 All Expo SDK modules and templates, starting from SDK 43, have these dynamic references and work with monorepos. But, occasionally, you might run into packages that still use the hardcoded path. You can manually edit it with [patch-package](https://github.com/ds300/patch-package#readme) or mention this to the package maintainers.
-

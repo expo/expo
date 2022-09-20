@@ -110,7 +110,7 @@ class PrintPDFRenderTask(private val context: Context, private val options: Map<
       callbacks.onRenderFinished(document, outputFile, numberOfPages)
     }
 
-    override fun onWriteFailed(error: CharSequence) {
+    override fun onWriteFailed(error: CharSequence?) {
       callbacks.onRenderError("E_PRINT_FAILED", "An error occurred while writing PDF data.", null)
     }
   }

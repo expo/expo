@@ -117,13 +117,20 @@ redirects[modules]=modules/overview/
 redirects[module-api]=modules/module-api/
 redirects[module-config]=modules/module-config/
 # EAS Metadata
-redirects[eas-metadata]=eas-metadata/introduction/
+redirects[eas-metadata]=eas/metadata/
+redirects[eas-metadata/introduction]=eas/metadata/
+redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
 
 redirects[introduction/walkthrough]=tutorial/planning/
 
 # Guides that have been deleted
 redirects[guides/using-gatsby]=guides/
 redirects[guides/testing-on-devices]=workflow/run-on-device
+redirects[distribution/uploading-apps]=submit/introduction
+redirects[distribution/uploading-apps]=submit/introduction
+
+# We should change this redirect to a more general EAS guide later
+redirects[guides/setting-up-continuous-integration]=build/building-on-ci
 
 # Moved classic updates
 redirects[distribution/release-channels]=archive/classic-updates/release-channels

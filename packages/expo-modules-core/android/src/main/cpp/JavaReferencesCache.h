@@ -58,6 +58,11 @@ public:
   CachedJClass &getJClass(const std::string &className);
 
   /**
+   * Gets a cached Java class entry or loads it to the registry.
+   */
+  CachedJClass &getOrLoadJClass(JNIEnv *env, const std::string &className);
+
+  /**
    * Loads predefined set of Java classes and stores them
    */
   void loadJClasses(JNIEnv *env);

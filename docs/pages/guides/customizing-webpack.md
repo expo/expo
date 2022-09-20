@@ -1,5 +1,6 @@
 ---
-title: Customizing Webpack
+title: Webpack bundler
+sidebar_title: Bundling with Webpack
 ---
 
 When you run `npx expo start --web` or `expo export:web` the CLI will check to see if your project has a **webpack.config.js** in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
