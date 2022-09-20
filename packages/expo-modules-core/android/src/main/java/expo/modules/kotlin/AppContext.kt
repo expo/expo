@@ -114,7 +114,7 @@ class AppContext(
           Log.i("ExpoModulesCore", "✅ JSI interop was installed")
         }
     } catch (e: Throwable) {
-      Log.e("ExpoModulesCore", "Cannot install JSI interop: $e", e)rrrr
+      Log.e("ExpoModulesCore", "Cannot install JSI interop: $e", e)
     }
   }
 
