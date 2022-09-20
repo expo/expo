@@ -368,4 +368,83 @@ We can use [development builds](/development/introduction/) to load from a local
 
 Development builds typically display an onboarding welcome screen when an app is launched for the first time — this is intended to provide context about the expo-dev-client UI for developers, but it can interfere with your E2E tests (which expect to interact with your app and not an onboarding screen).  In order to skip the onboarding screen in a test environment, the query parameter `disableOnboarding=1` can be appended to the project URL (an EAS Update URL or a local development server URL).
 
-An example of a Detox test using this technique is available on the [eas-tests-example repository](https://github.com/expo/eas-tests-example).
+An example of such a Detox test is shown below.  Full example code is available on the [eas-tests-example repository](https://github.com/expo/eas-tests-example).
+
+_homeScreen.e2e.js_:
+
+```js
+const {
+  sleepAsync,
+  getConfigurationName,
+  // getDevLauncherPackagerUrl,
+  getLatestUpdateUrl,
+  getDeepLinkUrl,
+} = require('./utils');
+
+describe('Home screen', () => {
+  beforeEach(async () => {
+    await device.launchApp({
+      newInstance: true,
+    });
+    if (getConfigurationName().indexOf('debug') !== -1) {
+      await device.openURL({
+        // Local testing with packager
+        //url: getDeepLinkUrl(getDevLauncherPackagerUrl(platform)),
+        // Testing latest published EAS update for the test_debug channel
+        url: getDeepLinkUrl(getLatestUpdateUrl()),
+      });
+    }
+    await sleepAsync(3000);
+  });
+
+  it('"Click me" button should be visible', async () => {
+    await expect(element(by.id('click-me-button'))).toBeVisible();
+  });
+
+  it('shows "Hi!" after tapping "Click me"', async () => {
+    await element(by.id('click-me-button')).tap();
+    await expect(element(by.text('Hi!'))).toBeVisible();
+  });
+});
+```
+
+_utils.js_:
+```js
+const {exec} = require('child_process');
+const argparse = require('detox/src/utils/argparse');
+const appConfig = require('../app.json');
+
+//////////// General util methods //////////////
+
+// Async wait for n milliseconds
+const sleepAsync = t => new Promise(res => setTimeout(res, t));
+
+// Get Detox configuration being used
+const getConfigurationName = () => argparse.getArgValue('configuration');
+
+// Get EAS app ID
+const getAppId = () => appConfig?.expo?.extra?.eas?.projectId || "";
+
+///////////// Methods to construct test URLs ///////////////
+
+// For local dev testing, returns the packager URL with the disable onboarding query param
+const getDevLauncherPackagerUrl = (platform) => {
+  return `http://localhost:8081/index.bundle?platform=${platform}&dev=true&minify=false&disableOnboarding=1`;
+};
+
+// Returns the URL for the most recent update for the 'test_debug' EAS update channel
+const getLatestUpdateUrl = () => `https://u.expo.dev/${getAppId()}?channel-name=test_debug&disableOnboarding=1`;
+
+// Wraps a React Native bundle URL in the deep link form required by expo-dev-launcher for this app
+const getDeepLinkUrl = (url) =>   `eastestsexample://expo-development-client/?url=${encodeURIComponent(url)}`;
+
+module.exports = {
+  sleepAsync,
+  getConfigurationName,
+  getAppId,
+  getDevLauncherPackagerUrl,
+  getLatestUpdateUrl,
+  getDeepLinkUrl,
+  invokeDevLauncherUrl,
+};
+```
