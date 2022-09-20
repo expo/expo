@@ -402,24 +402,12 @@ export abstract class BundlerDevServer {
 
   /** Should use the interstitial page for selecting which runtime to use. */
   protected shouldUseInterstitialPage(isDevelopmentBuildInstalled: boolean = true): boolean {
-    if (
-      !env.EXPO_ENABLE_INTERSTITIAL_PAGE ||
+    return (
+      env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
+      isDevelopmentBuildInstalled &&
       // Checks if dev client is installed.
-      !resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
-    ) {
-      return false;
-    }
-    if (!isDevelopmentBuildInstalled) {
-      Log.warn(
-        `\u203A The 'expo-dev-client' package is installed, but a development build isn't ` +
-          `available.\nYour app will open in Expo Go instead. If you want to use a ` +
-          `development build, you need to make and install one first.\n${learnMore(
-            'https://docs.expo.dev/development/build/'
-          )}`
-      );
-      return false;
-    }
-    return true;
+      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
+    );
   }
 
   /** Get the URL for opening in Expo Go. */
@@ -433,6 +421,21 @@ export abstract class BundlerDevServer {
           ? this.urlCreator?.constructLoadingUrl({}, 'android')
           : this.urlCreator?.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
       return loadingUrl ?? null;
+    }
+
+    // Log a warning if no development build is available on the device, but the
+    // interstitial page would otherwise be opened (i.e.
+    // `shouldUseInterstitialPage(true)` is true). Do this here to avoid side
+    // effects in `shouldUseInterstitialPage` since it's called in multiple
+    // places.
+    if (!isDevelopmentBuildInstalled && this.shouldUseInterstitialPage(true)) {
+      Log.warn(
+        `\u203A The 'expo-dev-client' package is installed, but a development build isn't ` +
+          `available.\nYour app will open in Expo Go instead. If you want to use a ` +
+          `development build, you need to make and install one first.\n${learnMore(
+            'https://docs.expo.dev/development/build/'
+          )}`
+      );
     }
 
     return this.urlCreator?.constructUrl({ scheme: 'exp' }) ?? null;
