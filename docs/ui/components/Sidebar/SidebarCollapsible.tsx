@@ -58,14 +58,6 @@ export function SidebarCollapsible(props: Props) {
 
   useEffect(() => {
     if (containsActiveChild) {
-      const isBasePage = router.pathname.split('/').length < 3;
-      if (!hasCachedState && !isBasePage && !window.__sidebarScroll) {
-        if (ref?.current && ref?.current.offsetTop > 32) {
-          // note(simek): fix for URLs with '#' where we also scroll page content,
-          // probably can remove that workaround after refs refactor
-          setTimeout(() => ref?.current && ref.current.scrollIntoView({ behavior: 'smooth' }), 100);
-        }
-      }
       window.sidebarState[info.name] = true;
     }
   }, []);
@@ -75,6 +67,10 @@ export function SidebarCollapsible(props: Props) {
     window.sidebarState[info.name] = !isOpen;
   };
 
+  const customDataAttributes = containsActiveChild && {
+    'data-collapsible-active': true,
+  };
+
   return (
     <>
       <ButtonBase
@@ -82,7 +78,7 @@ export function SidebarCollapsible(props: Props) {
         css={titleStyle}
         aria-expanded={isOpen ? 'true' : 'false'}
         onClick={toggleIsOpen}
-        data-collapsible-active={containsActiveChild || undefined}>
+        {...customDataAttributes}>
         <div css={chevronContainerStyle}>
           <ChevronDownIcon
             size={iconSize.tiny}
