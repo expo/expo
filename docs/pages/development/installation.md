@@ -4,7 +4,7 @@ sidebar_title: Bare React Native Installation
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
-import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
+import { DiffBlock } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -47,7 +47,7 @@ To do that, open Xcode and go to General > Deployment Info, and select an iOS ve
 
 Add the following lines to your **Podfile**:
 
-<ConfigurationDiff source="/static/diffs/client/podfile.diff" />
+<DiffBlock source="/static/diffs/client/podfile.diff" />
 
 Run the following command to install native code for the Dev Launcher via CocoaPods.
 
@@ -88,14 +88,14 @@ No additional changes are needed to configure the package on iOS.
 
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
-<ConfigurationDiff source="/static/diffs/client/app-delegate-expo-modules.diff" />
+<DiffBlock source="/static/diffs/client/app-delegate-expo-modules.diff" />
 </Tab>
 
 <Tab >
 
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
-<ConfigurationDiff source="/static/diffs/client/app-delegate.diff" />
+<DiffBlock source="/static/diffs/client/app-delegate.diff" />
 </Tab>
 
 </Tabs>
@@ -114,14 +114,14 @@ No additional changes are needed to configure the package on Android.
 
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
-<ConfigurationDiff source="/static/diffs/client/main-activity-and-application-expo-modules.diff" />
+<DiffBlock source="/static/diffs/client/main-activity-and-application-expo-modules.diff" />
 </Tab>
 
 <Tab >
 
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
-<ConfigurationDiff source="/static/diffs/client/main-activity-and-application.diff" />
+<DiffBlock source="/static/diffs/client/main-activity-and-application.diff" />
 </Tab>
 
 </Tabs>
@@ -162,9 +162,9 @@ Development builds can also open and preview published updates to your app. To a
 2. [Install `expo-updates` in your project](../bare/installing-updates.md).
 3. Make the following changes to complete the integration with `expo-updates`:
 
-<ConfigurationDiff source="/static/diffs/client/app-delegate-updates.diff" />
+<DiffBlock source="/static/diffs/client/app-delegate-updates.diff" />
 
-<ConfigurationDiff source="/static/diffs/client/main-application-updates.diff" />
+<DiffBlock source="/static/diffs/client/main-application-updates.diff" />
 
 ## 4. Build and Install
 

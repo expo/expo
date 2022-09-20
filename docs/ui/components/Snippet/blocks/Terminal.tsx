@@ -24,7 +24,7 @@ export const Terminal = ({
   includeMargin = true,
   title = 'Terminal',
 }: TerminalProps) => (
-  <Snippet style={wrapperStyle} includeMargin={includeMargin}>
+  <Snippet css={wrapperStyle} includeMargin={includeMargin}>
     <SnippetHeader alwaysDark title={title}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>

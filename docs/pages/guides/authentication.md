@@ -519,7 +519,7 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 #### Custom Apps
 
-Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for native auth as it supports some nonstandard OAuth features implemented by Facebook.
+Consider using the [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next) module with [Config Plugins](/guides/config-plugins/) for native auth as it supports some nonstandard OAuth features implemented by Facebook.
 
 - The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
 - Add `facebookScheme: 'fb<YOUR FBID>'` to your **app.config.js** or **app.json**. Example: `{ facebookScheme: "fb145668956753819" }` (notice the `fb` prefix).
@@ -2355,7 +2355,8 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - Bare workflow
     - `npx create-react-native-app` or `expo prebuild`
   - Standalone builds in the App or Play Store
-    - `expo build:ios` or `expo build:android`
+    - iOS: `eas build` or `expo build:ios`
+    - Android: `eas build` or `expo build:android`
   - Standalone builds for local testing
     - `expo build:ios -t simulator` or `expo build:android -t apk`
 

@@ -19,6 +19,8 @@ enum CppType {
   READABLE_ARRAY = 1 << 7,
   READABLE_MAP = 1 << 8,
   TYPED_ARRAY = 1 << 9,
-  PRIMITIVE_ARRAY = 1 << 10
+  PRIMITIVE_ARRAY = 1 << 10,
+  LIST = 1 << 11,
+  MAP = 1 << 12
 };
 } // namespace expo

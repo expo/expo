@@ -1,11 +1,23 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+#import <objc/runtime.h>
 #import <ExpoModulesCore/ExpoFabricViewObjC.h>
 
 #import <react/renderer/componentregistry/ComponentDescriptorProvider.h>
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/ExpoViewComponentDescriptor.h>
 #import <ExpoModulesCore/Swift.h>
+
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTSurfacePresenter.h>
+#import <React/RCTMountingManager.h>
+#import <React/RCTComponentViewRegistry.h>
+#import <butter/map.h>
+#endif
+
+#ifdef __cplusplus
+#import <string.h>
+#endif
 
 using namespace expo;
 
@@ -67,6 +79,12 @@ static NSString *normalizeEventName(NSString *eventName)
   return eventName;
 }
 
+/**
+ Cache for component flavors, where the key is a view class name and value is the flavor.
+ Flavors must be cached in order to keep using the same component handle after app reloads.
+ */
+static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _componentFlavorsCache;
+
 @implementation ExpoFabricViewObjC {
   ExpoViewEventEmitter::Shared _eventEmitter;
 }
@@ -86,14 +104,37 @@ static NSString *normalizeEventName(NSString *eventName)
 
 + (facebook::react::ComponentDescriptorProvider)componentDescriptorProvider
 {
-  auto flavor = std::make_shared<std::string const>([NSStringFromClass([self class]) UTF8String]);
-  auto componentName = facebook::react::ComponentName{flavor->c_str()};
-  return facebook::react::ComponentDescriptorProvider {
-    reinterpret_cast<facebook::react::ComponentHandle>(componentName),
+  std::string className([NSStringFromClass([self class]) UTF8String]);
+
+  // We're caching the flavor pointer so that the component handle stay the same for the same class name.
+  // Otherwise, the component handle would change after reload which may cause memory leaks and unexpected view recycling behavior.
+  ExpoViewComponentDescriptor::Flavor flavor = _componentFlavorsCache[className];
+
+  if (flavor == nullptr) {
+    flavor = _componentFlavorsCache[className] = std::make_shared<std::string const>(className);
+  }
+
+  ComponentName componentName = ComponentName { flavor->c_str() };
+  ComponentHandle componentHandle = reinterpret_cast<ComponentHandle>(componentName);
+
+  return ComponentDescriptorProvider {
+    componentHandle,
     componentName,
     flavor,
     &facebook::react::concreteComponentDescriptorConstructor<expo::ExpoViewComponentDescriptor>
   };
+}
+
+- (void)mountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  // The `contentView` should always be at the back. Shifting the index makes sure that child components are mounted on top of it.
+  [super mountChildComponentView:childComponentView index:index + 1];
+}
+
+- (void)unmountChildComponentView:(UIView<RCTComponentViewProtocol> *)childComponentView index:(NSInteger)index
+{
+  // All child components are mounted on top of `contentView`, so the index needs to be shifted by one.
+  [super unmountChildComponentView:childComponentView index:index + 1];
 }
 
 - (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps

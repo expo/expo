@@ -80,20 +80,18 @@ class ImagePickerModule : Module() {
 
     // endregion
 
-    OnCreate {
-      coroutineScope.launch {
-        withContext(Dispatchers.Main) {
-          cameraLauncher = appContext.registerForActivityResult(
-            CameraContract(this@ImagePickerModule),
-          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
-          imageLibraryLauncher = appContext.registerForActivityResult(
-            ImageLibraryContract(this@ImagePickerModule),
-          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
-          cropImageLauncher = appContext.registerForActivityResult(
-            CropImageContract(this@ImagePickerModule),
-          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
-        }
-      }
+    RegisterActivityContracts {
+      cameraLauncher = registerForActivityResult(
+        CameraContract(this@ImagePickerModule),
+      ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
+
+      imageLibraryLauncher = registerForActivityResult(
+        ImageLibraryContract(this@ImagePickerModule),
+      ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
+
+      cropImageLauncher = registerForActivityResult(
+        CropImageContract(this@ImagePickerModule),
+      ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
     }
   }
 

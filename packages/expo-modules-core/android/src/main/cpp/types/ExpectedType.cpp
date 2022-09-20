@@ -10,6 +10,12 @@ jni::local_ref<ExpectedType::javaobject> SingleType::getFirstParameterType() {
   return method(self());
 }
 
+jni::local_ref<ExpectedType::javaobject> SingleType::getSecondParameterType() {
+  static const auto method = getClass()->getMethod<jni::local_ref<ExpectedType::javaobject>()>(
+    "getSecondParameterType");
+  return method(self());
+}
+
 CppType SingleType::getCppType() {
   static const auto method = getClass()->getMethod<int()>("getCppType");
   return static_cast<CppType>(method(self()));
@@ -76,6 +82,15 @@ std::string ExpectedType::getJClassString(bool allowsPrimitives) {
 
     return "[L" + innerType + ";";
   }
+  if (type == CppType::LIST) {
+    return "java/util/ArrayList";
+  }
   return "java/lang/Object";
+}
+
+jni::local_ref<jni::JArrayClass<SingleType>::javaobject> ExpectedType::getPossibleTypes() {
+  static const auto method = getClass()->getMethod<jni::local_ref<jni::JArrayClass<SingleType>::javaobject>()>(
+    "getPossibleTypes");
+  return method(self());
 }
 } // namespace expo
