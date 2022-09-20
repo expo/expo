@@ -292,6 +292,7 @@ const eas = [
         makePage('eas-update/environment-variables.md'),
         makePage('eas-update/expo-dev-client.md'),
         makePage('eas-update/known-issues.md'),
+        makePage('eas-update/rollouts.md'),
         makePage('eas-update/faq.md'),
       ]),
     ],
