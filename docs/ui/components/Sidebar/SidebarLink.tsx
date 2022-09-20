@@ -3,6 +3,7 @@ import { theme, typography, spacing } from '@expo/styleguide';
 import NextLink from 'next/link';
 import { useRouter } from 'next/router';
 import * as React from 'react';
+import { useEffect, useRef } from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { NavigationRoute } from '~/types/common';
@@ -11,12 +12,21 @@ type SidebarLinkProps = React.PropsWithChildren<{
   info: NavigationRoute;
 }>;
 
+const HEAD_NAV_HEIGHT = 160;
+
+const isLinkInViewport = (element: HTMLAnchorElement) => {
+  const rect = element.getBoundingClientRect();
+  return (
+    rect.top - HEAD_NAV_HEIGHT >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+  );
+};
+
 export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
   const { asPath, pathname } = useRouter();
-
-  if (info.hidden) {
-    return null;
-  }
+  const ref = useRef<HTMLAnchorElement>(null);
 
   const checkSelection = () => {
     // Special case for root url
@@ -32,16 +42,27 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
 
   const isSelected = checkSelection();
 
-  const customDataAttributes = isSelected
-    ? {
-        'data-sidebar-anchor-selected': true,
-      }
-    : {};
+  useEffect(() => {
+    if (isSelected && ref?.current && !isLinkInViewport(ref?.current)) {
+      setTimeout(() => ref?.current && ref.current.scrollIntoView({ behavior: 'smooth' }), 50);
+    }
+  }, []);
+
+  if (info.hidden) {
+    return null;
+  }
+
+  const customDataAttributes = isSelected && {
+    'data-sidebar-anchor-selected': true,
+  };
 
   return (
     <div css={STYLES_CONTAINER}>
       <NextLink href={info.href as string} as={info.as || info.href} passHref>
-        <a {...customDataAttributes} css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}>
+        <a
+          {...customDataAttributes}
+          ref={ref}
+          css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}>
           {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
           {children}
         </a>
@@ -59,6 +80,7 @@ const STYLES_LINK = css`
   transition: 50ms ease color;
   align-items: flex-start;
   padding-left: ${spacing[4] + spacing[0.5]}px;
+  scroll-margin: 60px;
 
   &:hover {
     color: ${theme.link.default};
