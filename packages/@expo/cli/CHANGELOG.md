@@ -24,7 +24,7 @@
 
 ### 💡 Others
 
-- Update text when running `npx expo start --dev-client`.
+- Update text when running `npx expo start --dev-client`. ([#19212](https://github.com/expo/expo/pull/19212) by [@EvanBacon](https://github.com/EvanBacon))
 - Hide server rate limiting warning during `npx expo start`. ([#19038](https://github.com/expo/expo/pull/19038) by [@EvanBacon](https://github.com/EvanBacon))
 - Update the README file. ([#18663](https://github.com/expo/expo/pull/18663) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `prebuild` e2e tests. ([#18612](https://github.com/expo/expo/pull/18612) by [@EvanBacon](https://github.com/EvanBacon))
