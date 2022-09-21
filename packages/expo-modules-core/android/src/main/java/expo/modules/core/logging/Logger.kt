@@ -17,7 +17,7 @@ class Logger(
   /**
    * Android context is required if logging to a file
    */
-  context: Context,
+  context: Context? = null,
   /**
    * One of the predefined LoggerOptions values
    */
@@ -29,7 +29,12 @@ class Logger(
       this.add(OSLogHandler(category))
     }
     if (options.contains(LoggerOptions.logToFile)) {
-      this.add(PersistentFileLogHandler(category, context))
+      this.add(
+        PersistentFileLogHandler(
+          category,
+          requireNotNull(context) { "You have to provide the `Context` to create a file logger" }
+        )
+      )
     }
   }.toList()
 
@@ -68,29 +73,29 @@ class Logger(
    * Used to log an unwanted state that has not much impact on the process so it can be continued,
    * but could potentially become an error.
    * */
-  fun warn(message: String) {
-    log(LogType.Warn, message)
+  fun warn(message: String, cause: Throwable? = null) {
+    log(LogType.Warn, message, cause)
   }
 
   /**
    * Logs unwanted state that has an impact on the currently running process, but the entire app
    * can continue to run.
    */
-  fun error(message: String) {
-    log(LogType.Error, message)
+  fun error(message: String, cause: Throwable? = null) {
+    log(LogType.Error, message, cause)
   }
 
   /**
    * Logs critical error due to which the entire app cannot continue to run.
    */
-  fun fatal(message: String) {
-    log(LogType.Fatal, message)
+  fun fatal(message: String, cause: Throwable? = null) {
+    log(LogType.Fatal, message, cause)
   }
 
-  private fun log(type: LogType, message: String) {
+  private fun log(type: LogType, message: String, cause: Throwable? = null) {
     if (LogType.toOSLogType(type) >= minOSLevel) {
       handlers.forEach { handler ->
-        handler.log(type, message)
+        handler.log(type, message, cause)
       }
     }
   }

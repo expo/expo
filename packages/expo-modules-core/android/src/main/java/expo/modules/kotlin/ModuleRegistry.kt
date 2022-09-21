@@ -76,5 +76,6 @@ class ModuleRegistry(
       it.cleanUp()
     }
     registry.clear()
+    logger.info("✅ ModuleRegistry was destroyed")
   }
 }

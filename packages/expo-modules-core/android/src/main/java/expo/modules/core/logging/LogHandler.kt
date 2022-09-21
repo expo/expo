@@ -10,5 +10,5 @@ abstract class LogHandler(
   val category: String
 ) {
 
-  internal abstract fun log(type: LogType, message: String)
+  internal abstract fun log(type: LogType, message: String, cause: Throwable? = null)
 }

@@ -84,12 +84,11 @@ class KotlinInteropModuleRegistry(
   fun viewManagersMetadata(): Map<String, Map<String, Any>> {
     return registry
       .filter { it.definition.viewManagerDefinition != null }
-      .map { holder ->
+      .associate { holder ->
         holder.name to mapOf(
           "propsNames" to (holder.definition.viewManagerDefinition?.propsNames ?: emptyList())
         )
       }
-      .toMap()
   }
 
   fun extractViewManagersDelegateHolders(viewManagers: List<ViewManager<*, *>>): List<ViewWrapperDelegateHolder> =
@@ -116,6 +115,7 @@ class KotlinInteropModuleRegistry(
   fun onDestroy() {
     appContext.onDestroy()
     wasDestroyed = true
+    logger.info("✅ KotlinInteropModuleRegistry was destroyed")
   }
 
   fun installJSIInterop() {

@@ -3,7 +3,6 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
@@ -94,6 +93,8 @@ class AppContext(
       registry.register(ErrorManagerModule())
       registry.register(NativeModulesProxyModule())
       registry.register(modulesProvider)
+
+      logger.info("✅ AppContext was initialized")
     }
   }
 
@@ -116,10 +117,10 @@ class AppContext(
             jsContextProvider.jsCallInvokerHolder,
             catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
           )
-          Log.i("ExpoModulesCore", "✅ JSI interop was installed")
+          logger.info("✅ JSI interop was installed")
         }
     } catch (e: Throwable) {
-      Log.e("ExpoModulesCore", "Cannot install JSI interop: $e", e)
+      logger.error("❌ Cannot install JSI interop: $e", e)
     }
   }
 
@@ -231,6 +232,7 @@ class AppContext(
     registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
+    logger.info("✅ AppContext was destroyed")
   }
 
   internal fun onHostResume() {
