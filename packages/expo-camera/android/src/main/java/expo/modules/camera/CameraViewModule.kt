@@ -256,9 +256,6 @@ class CameraViewModule : Module() {
   private val scopedDirectories: ScopedDirectories
     get() = appContext.scopedDirectories?.scopedDirectories ?: throw ModuleNotFoundException("ScopedDirectories")
 
-  private val reactContext: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
 
