@@ -672,7 +672,7 @@ export default function App() {
         async getInitialURL() {
           // First, you may want to do the default deep link handling
           // Check if app was opened from a deep link
-          const url = await Linking.getInitialURL();
+          let url = await Linking.getInitialURL();
 
           if (url != null) {
             return url;
@@ -680,7 +680,7 @@ export default function App() {
 
           // Handle URL from expo push notifications
           const response = await Notifications.getLastNotificationResponseAsync();
-          const url = response?.notification.request.content.data.url;
+          url = response?.notification.request.content.data.url;
 
           return url;
         }
@@ -688,7 +688,7 @@ export default function App() {
           const onReceiveURL = ({ url }: { url: string }) => listener(url);
 
           // Listen to incoming links from deep linking
-          Linking.addEventListener('url', onReceiveURL);
+          const linkingEventListener = Linking.addEventListener('url', onReceiveURL);
 
           // Listen to expo push notifications
           const subscription = Notifications.addNotificationResponseReceivedListener(response => {
@@ -703,7 +703,7 @@ export default function App() {
 
           return () => {
             // Clean up the event listeners
-            Linking.removeEventListener('url', onReceiveURL);
+            linkingEventListener.remove();
             subscription.remove();
           };
         },
