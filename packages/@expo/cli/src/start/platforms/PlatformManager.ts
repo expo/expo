@@ -37,7 +37,10 @@ export class PlatformManager<
       getDevServerUrl: () => string | null;
       /** Expo Go URL. */
       getExpoGoUrl: () => string;
-      /** Get redirect URL for native disambiguation. */
+      /**
+       * Get redirect URL for native disambiguation.
+       * @returns a URL like `http://localhost:19000/_expo/loading`
+       */
       getRedirectUrl: () => string | null;
       /** Dev Client */
       getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
@@ -58,7 +61,7 @@ export class PlatformManager<
    * The CLI will check if the project has a custom dev client and if the redirect page feature is enabled.
    * If both are true, the CLI will return the redirect page URL.
    */
-  private async getExpoGoOrCustomRuntimeUrlAsync(
+  protected async getExpoGoOrCustomRuntimeUrlAsync(
     deviceManager: DeviceManager<IDevice>
   ): Promise<string> {
     // Determine if the redirect page feature is enabled first since it's the cheapest to check.
