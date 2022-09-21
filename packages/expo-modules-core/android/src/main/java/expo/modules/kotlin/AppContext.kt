@@ -3,7 +3,6 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
@@ -11,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
+import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.JavaScriptContextProvider
@@ -29,6 +29,7 @@ import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
+import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.KEventEmitterWrapper
@@ -75,6 +76,8 @@ class AppContext(
       CoroutineName("expo.modules.MainQueue")
   )
 
+  internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
+
   private val activityResultsManager = ActivityResultsManager(this)
 
   init {
@@ -88,7 +91,10 @@ class AppContext(
       // `AppContext` during their initialisation (or during `OnCreate` method), so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
       registry.register(ErrorManagerModule())
+      registry.register(NativeModulesProxyModule())
       registry.register(modulesProvider)
+
+      logger.info("✅ AppContext was initialized")
     }
   }
 
@@ -100,20 +106,21 @@ class AppContext(
     try {
       jsiInterop = JSIInteropModuleRegistry(this)
       val reactContext = reactContextHolder.get() ?: return
-      val jsContextHolder = legacyModule<JavaScriptContextProvider>()?.javaScriptContextRef
+      val jsContextProvider = legacyModule<JavaScriptContextProvider>() ?: return
+      val jsContextHolder = jsContextProvider.javaScriptContextRef
       val catalystInstance = reactContext.catalystInstance ?: return
       jsContextHolder
-        ?.takeIf { it != 0L }
+        .takeIf { it != 0L }
         ?.let {
           jsiInterop.installJSI(
             it,
-            catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
+            jsContextProvider.jsCallInvokerHolder,
             catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
           )
-          Log.i("ExpoModulesCore", "✅ JSI interop was installed")
+          logger.info("✅ JSI interop was installed")
         }
     } catch (e: Throwable) {
-      Log.e("ExpoModulesCore", "Cannot install JSI interop: $e", e)
+      logger.error("❌ Cannot install JSI interop: $e", e)
     }
   }
 
@@ -225,6 +232,7 @@ class AppContext(
     registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
+    logger.info("✅ AppContext was destroyed")
   }
 
   internal fun onHostResume() {
