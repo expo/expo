@@ -148,6 +148,16 @@ You can compile your app locally with the `run` commands:
 - Smart log parsing show you warnings and errors from your project source code, unlike Xcode which surfaces hundreds of benign warnings from your node modules.
 - Fatal errors causing your app to crash will be surfaced to the terminal preventing the need to reproduce in Xcode.
 
+## Autocomplete
+
+You can get IDE-style autocompletions for Expo with <a href="https://fig.io/" target="_blank"><img src="https://fig.io/badges/Logo.svg" width="15" height="15"/></a> [Fig](https://fig.io/). It works in bash, zsh, and fish.
+
+To install, run:
+
+```shell
+brew install fig
+```
+
 ---
 
 `expo run:ios` can only be run on a Mac, and Xcode must be installed. You can build the app in the cloud from any computer using `eas build -p ios`. Similarly, `expo run:android` requires Android Studio and Java to be installed and configured on your computer.
