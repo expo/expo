@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix images taken with `launchCameraAsync` being translated incorrectly on some camera orientations. ([#19185](https://github.com/expo/expo/pull/19185) by [@jacobjaffe](https://github.com/JacobJaffe) and [@reececox](https://github.com/reececox))
+
 ### 💡 Others
 
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))

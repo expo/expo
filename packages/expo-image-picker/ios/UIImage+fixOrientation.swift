@@ -15,7 +15,7 @@ extension UIImage {
     case .down,
          .downMirrored:
       transform = transform
-        .translatedBy(x: self.size.width, y: self.size.width)
+        .translatedBy(x: self.size.width, y: self.size.height)
         .rotated(by: .pi)
     case .left,
          .leftMirrored:
