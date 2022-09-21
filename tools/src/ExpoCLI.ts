@@ -17,7 +17,7 @@ export async function runExpoCliAsync(
   process.on('SIGINT', () => {});
   process.on('SIGTERM', () => {});
 
-  await spawnAsync('expo', [command, ...args], {
+  await spawnAsync('npx', ['expo', command, ...args], {
     cwd: options.cwd || EXPO_DIR,
     stdio: options.stdio || 'inherit',
     env: {

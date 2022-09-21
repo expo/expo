@@ -6,6 +6,7 @@ import path from 'path';
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
 import { runExpoCliAsync } from '../ExpoCLI';
 import { GitDirectory } from '../Git';
+import { createFileTransform } from '../utils/createFileTransform';
 
 export type GenerateBareAppOptions = {
   name?: string;
@@ -92,7 +93,11 @@ async function createProjectDirectory({
   if (localTemplate) {
     const pathToBareTemplate = path.resolve(EXPO_DIR, 'templates', 'expo-template-bare-minimum');
     const pathToWorkspace = path.resolve(workspaceDir, appName);
-    return fs.copy(pathToBareTemplate, pathToWorkspace, { recursive: true });
+    return fs.copy(pathToBareTemplate, pathToWorkspace, {
+      recursive: true,
+      transformer: createFileTransform(appName),
+      resolver: createEntryResolver(appName)
+    });
   }
 
   return await runExpoCliAsync('init', [appName, '--no-install', '--template', template], {
