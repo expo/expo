@@ -24,7 +24,7 @@ Remote assets are not bundled into binaries at build time. They are also not con
 
 ## Customizing supported asset extensions
 
-If you need to import a file type that is not recognized by Metro by default, you can modify the Metro configuration. For example, you may want to use the `.db` to import a database into your app. Read more about how to customize the asset extensions supported by Metro for iOS and Android in [Customizing Metro](../guides/customizing-metro.md) and learn about how you can customize Webpack for Web in [Customizing Webpack](../guides/customizing-webpack.md).
+If you need to import a file type that is not recognized by Metro by default, you can modify the Metro configuration. For example, you may want to use the `.db` to import a database into your app. Read more about how to customize the asset extensions supported by Metro for iOS and Android in [Customizing Metro](/guides/customizing-metro.md) and learn about how you can customize Webpack for Web in [Customizing Webpack](../guides/customizing-webpack.md).
 
 ## Optimization
 

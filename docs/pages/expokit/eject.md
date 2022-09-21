@@ -26,7 +26,7 @@ We call this "ejecting" because you still depend on the Expo SDK, but your proje
 
 ### You should not eject if:
 
-- All you need is to distribute your app in the iTunes Store or Google Play. Expo can [build binaries for you](../distribution/building-standalone-apps.md) in that case. If you eject, we can't automatically build for you any more.
+- All you need is to distribute your app in the iTunes Store or Google Play. Expo can [build binaries for you](/archive/classic-updates/building-standalone-apps) in that case. If you eject, we can't automatically build for you any more.
 - You are uncomfortable writing native code. Ejected apps will require you to manage Xcode and Android Studio projects.
 - You enjoy the painless React Native upgrades that come with Expo. After your app is ejected, breaking changes in React Native will affect your project differently, and you may need to figure them out for your particular situation.
 - You require Expo's push notification services. After ejecting, since Expo no longer manages your push credentials, you'll need to manage your own push notification pipeline.
@@ -54,7 +54,7 @@ If you haven't used Expo CLI with an Expo account before, the eject command will
 
 ### 2. Make sure you have the necessary configuration options in app.json
 
-Ejecting requires the same configuration options as building a standalone app. [Follow these instructions before continuing to the next step](../distribution/building-standalone-apps.md#2-configure-appjson).
+Ejecting requires the same configuration options as building a standalone app. [Follow these instructions before continuing to the next step](/archive/classic-updates/building-standalone-apps#2-configure-appjson).
 
 ### 3. Eject
 
