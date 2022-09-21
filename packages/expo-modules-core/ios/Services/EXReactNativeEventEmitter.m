@@ -16,6 +16,8 @@
 
 @implementation EXReactNativeEventEmitter
 
+RCT_EXPORT_MODULE(EXReactNativeEventEmitter)
+
 - (instancetype)init
 {
   if (self = [super init]) {
@@ -23,11 +25,6 @@
     _modulesListenersCounts = [NSMutableDictionary dictionary];
   }
   return self;
-}
-
-+ (NSString *)moduleName
-{
-  return @"EXReactNativeEventEmitter";
 }
 
 + (BOOL)requiresMainQueueSetup
