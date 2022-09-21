@@ -11,6 +11,13 @@ internal class OSLogHandler(
   category
 ) {
   override fun log(type: LogType, message: String, cause: Throwable?) {
+    if (!isAndroid) {
+      println("[${type.type}] $category\t$message")
+      cause?.let {
+        println("${it.localizedMessage}\n${cause.stackTraceToString()}")
+      }
+      return
+    }
     when (LogType.toOSLogType(type)) {
       Log.DEBUG -> Log.d(category, message, cause)
       Log.INFO -> Log.i(category, message, cause)
@@ -20,3 +27,5 @@ internal class OSLogHandler(
     }
   }
 }
+
+private val isAndroid = "The Android Project" == System.getProperty("java.specification.vendor")
