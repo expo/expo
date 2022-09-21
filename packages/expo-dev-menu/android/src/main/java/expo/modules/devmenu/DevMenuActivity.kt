@@ -1,7 +1,5 @@
 package expo.modules.devmenu
 
-import android.content.Context
-import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent

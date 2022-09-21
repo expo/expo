@@ -29,7 +29,7 @@ You should read **all** the relevant guides (this won't take longer than 10 minu
 
 ### Do I have to use Expo's push notification service?
 
-No, you can use any push notification service for both managed and bare workflow apps. The [`getDevicePushTokenAsync` method from `expo-notifications`](/versions/v40.0.0/sdk/notifications.md#getdevicepushtokenasync-devicepushtoken) allows you to get the native device push token, which you can then use with other services, or even [send your notifications through APNs and FCM directly](/push-notifications/sending-notifications-custom.md).
+No, you can use any push notification service for both managed and bare workflow apps. The [`getDevicePushTokenAsync` method from `expo-notifications`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken) allows you to get the native device push token, which you can then use with other services, or even [send your notifications through APNs and FCM directly](/push-notifications/sending-notifications-custom.md).
 
 That being said, we think sending notifications through Expo is the fastest and easiest way to do it, and millions of notifications are sent through Expo every day.
 
@@ -37,7 +37,7 @@ That being said, we think sending notifications through Expo is the fastest and 
 
 Push notifications have a lot of moving parts, so this can be due to a wide variety of reasons. To narrow things down, check the [push ticket](/push-notifications/sending-notifications.md#push-tickets) and [push receipt](/push-notifications/sending-notifications.md#push-receipts) for error messages. This information (and maybe a little bit of Googling) will help narrow down the problem so that you can solve it.
 
-You can also narrow things even further by testing [local notifications](/versions/v40.0.0/sdk/notifications.md#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
+You can also narrow things even further by testing [local notifications](/versions/latest/sdk/notifications/#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
 
 <Collapsible summary="See here for some quick terminal commands you can use to get the push receipt">
 

@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license         = package['license']
   s.author          = package['author']
   s.homepage        = package['homepage']
-  s.platform        = :ios, '12.0'
+  s.platform        = :ios, '13.0'
   s.source          = { git: 'https://github.com/expo/expo-gl.git' }
   s.static_framework = true
 
@@ -26,6 +26,6 @@ Pod::Spec.new do |s|
     s.source_files = "ios/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = "ios/**/*.{h,m,mm}", "common/**/*.{h,cpp}"
+    s.source_files = "ios/**/*.{h,m,mm}", "common/**/*.{h,cpp,def}"
   end
 end

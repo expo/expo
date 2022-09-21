@@ -52,7 +52,8 @@ Some plugins can be customized by passing an array, where the second argument is
       "expo-camera",
       {
         /* Values passed to the plugin */
-        "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to access your location"
+        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
       }
     ]
   ]
@@ -235,7 +236,7 @@ module.exports = {
 - The compiler iterates over all of the mods and asynchronously evaluates them, providing some base props like the `projectRoot`.
   - After each mod, error handling asserts if the mod chain was corrupted by an invalid mod.
 
-<!-- TODO: Move to a section about mod compiler -->
+{/* TODO: Move to a section about mod compiler */}
 
 ### Default mods
 
@@ -515,7 +516,7 @@ We highly recommend installing the [Expo config VS Code plugin](https://marketpl
 
 ### Setting up a playground environment
 
-You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you're gonna want a monorepo.
+You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you will want a monorepo.
 
 A monorepo will enable you to work on a node module and import it in your Expo config like you would if it were published to NPM. Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
 
@@ -540,10 +541,9 @@ Here is an example of a package's AndroidManifest.xml, which injects a required 
 
 ```xml
 <!-- @info Include <code>xmlns:android="..."</code> to use <code>android:*</code> properties like <code>android:name</code> in your manifest. -->
-<manifest package="expo.modules.filesystem"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- @end -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+<manifest package="expo.modules.filesystem" xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- @end -->
+  <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>
 ```
 
@@ -685,7 +685,7 @@ When Expo SDK upgrades to a new version of React Native for instance, the templa
 
 If your plugin is mostly using [static modifications](#static-modification) then it will work well across versions. If it's using a regular expression to transform application code, then you'll definitely want to document which Expo SDK version your plugin is intended for. Expo releases a new version quarterly (every 3 months), and there is a [beta period][expo-beta-docs] where you can test if your plugin works with the new version before it's released.
 
-<!-- TODO: versioned plugin wrapper -->
+{/* TODO: versioned plugin wrapper */}
 
 ### Plugin properties
 
@@ -871,7 +871,7 @@ Introspection works by creating custom base mods that work like the default base
 
 As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
-<!-- TODO: Link to VS Code extension after preview feature lands -->
+{/* TODO: Link to VS Code extension after preview feature lands */}
 
 ## Legacy plugins
 
@@ -1118,7 +1118,4 @@ Please add the following to your Expo config
 [expo-plist]: https://www.npmjs.com/package/@expo/plist
 [memfs]: https://www.npmjs.com/package/memfs
 [emc]: https://github.com/expo/expo/tree/main/packages/expo-modules-core
-
-<!-- TODO: Better link for Expo autolinking docs -->
-
-[autolinking]: /bare/installing-unimodules/
+[autolinking]: /workflow/glossary-of-terms#autolinking

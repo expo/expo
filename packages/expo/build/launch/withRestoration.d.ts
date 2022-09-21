@@ -2,7 +2,6 @@ import * as React from 'react';
 export declare type InitialProps = {
     exp: {
         notification?: any;
-        errorRecovery?: any;
         manifestString?: string;
         [key: string]: any;
     };

@@ -5,6 +5,7 @@ title: Using libraries
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
+import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -52,8 +53,6 @@ At the top of the page you will see a description of the library and a platform 
 After the platform compatibility table, there will be an Installation section, with instructions that look like this:
 
 <InstallSection packageName="expo-device" hideBareInstructions />
-
-<br />
 
 The `npx expo install` command will pick a version of the library that is compatible with your project and then use your JavaScript package manager (such as npm) to install it.
 

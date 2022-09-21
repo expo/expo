@@ -82,6 +82,12 @@ public final class AppContext: NSObject {
 
   public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
     let view: UIView? = reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag))
+
+    #if RN_FABRIC_ENABLED
+    if let view = view as? ExpoFabricViewObjC {
+      return view.contentView as? ViewType
+    }
+    #endif
     return view as? ViewType
   }
 

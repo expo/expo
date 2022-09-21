@@ -22,25 +22,42 @@ public final class ViewDefinition<ViewType: UIView>: ViewManagerDefinition {
     }
     return ViewType(frame: .zero)
   }
-}
 
-/**
- A result builder for the view elements such as prop setters or view events.
- */
-@resultBuilder
-public struct ViewDefinitionElementsBuilder {
-  // TODO: Restrict the element types to only these that are handled by the ViewComponent
-  public static func buildBlock(_ elements: AnyDefinition...) -> [AnyDefinition] {
-    return elements
+  /**
+   A result builder for the view elements such as prop setters or view events.
+   */
+  @resultBuilder
+  public struct ElementsBuilder {
+    public static func buildBlock(_ elements: AnyViewDefinitionElement...) -> [AnyDefinition] {
+      return elements
+    }
+
+    /**
+     Accepts `Events` component as a definition element of `View`.
+     */
+    public static func buildExpression(_ element: EventsDefinition) -> AnyViewDefinitionElement {
+      return element
+    }
+
+    /**
+     Accepts `Prop` component as a definition element and lets to skip defining the view type — it's inferred from the `View` component.
+     */
+    public static func buildExpression<PropType: AnyArgument>(_ element: ConcreteViewProp<ViewType, PropType>) -> AnyViewDefinitionElement {
+      return element
+    }
   }
 }
+
+public protocol AnyViewDefinitionElement: AnyDefinition {}
+extension ConcreteViewProp: AnyViewDefinitionElement {}
+extension EventsDefinition: AnyViewDefinitionElement {}
 
 /**
  Creates a view definition describing the native view exported to React.
  */
 public func View<ViewType: UIView>(
   _ viewType: ViewType.Type,
-  @ViewDefinitionElementsBuilder _ elements: @escaping () -> [AnyDefinition]
+  @ViewDefinition<ViewType>.ElementsBuilder _ elements: @escaping () -> [AnyDefinition]
 ) -> ViewDefinition<ViewType> {
   return ViewDefinition(viewType, elements: elements())
 }
