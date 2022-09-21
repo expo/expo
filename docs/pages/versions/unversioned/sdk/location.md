@@ -77,7 +77,7 @@ export default function App() {
   const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
-    (async () => {
+    const grabCurrentLocation = async () => {
       /* @hide */
       if (Platform.OS === 'android' && !Device.isDevice) {
         setErrorMsg(
@@ -94,7 +94,9 @@ export default function App() {
 
       let location = await Location.getCurrentPositionAsync({});
       setLocation(location);
-    })();
+    });
+  
+    grabCurrentLocation();
   }, []);
 
   let text = 'Waiting..';

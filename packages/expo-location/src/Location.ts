@@ -246,7 +246,7 @@ export async function requestPermissionsAsync(): Promise<LocationPermissionRespo
 // @needsAudit
 /**
  * Checks user's permissions for accessing location while the app is in the foreground.
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
  */
 export async function getForegroundPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.getForegroundPermissionsAsync();
@@ -255,7 +255,7 @@ export async function getForegroundPermissionsAsync(): Promise<LocationPermissio
 // @needsAudit
 /**
  * Asks the user to grant permissions for location while the app is in the foreground.
- * @return A promise that fulfills with an object of type [PermissionResponse](#permissionresponse).
+ * @return A promise that fulfills with an object of type [LocationPermissionResponse](#locationpermissionresponse).
  */
 export async function requestForegroundPermissionsAsync(): Promise<LocationPermissionResponse> {
   return await ExpoLocation.requestForegroundPermissionsAsync();
