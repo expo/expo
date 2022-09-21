@@ -5,9 +5,11 @@ import android.content.Context
 import com.google.android.cameraview.AspectRatio
 import com.google.android.cameraview.Size
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
+import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
+import expo.modules.interfaces.filesystem.ScopedDirectories
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -68,7 +70,7 @@ class CameraViewModule : Module() {
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("takePicture") { options: PictureOptions, viewTag: Int, promise: Promise ->
-      val cacheDirectory = reactContext.cacheDir
+      val cacheDirectory = scopedDirectories.cacheDir
       val view = findView(viewTag)
 
       if (!EmulatorUtilities.isRunningOnEmulator()) {
@@ -88,7 +90,7 @@ class CameraViewModule : Module() {
         throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
       }
 
-      val cacheDirectory = reactContext.cacheDir
+      val cacheDirectory = scopedDirectories.cacheDir
       val view = findView(viewTag)
 
       if (!view.cameraView.isCameraOpened) {
@@ -250,6 +252,9 @@ class CameraViewModule : Module() {
       }
     }
   }
+
+  private val scopedDirectories: ScopedDirectories
+    get() = appContext.scopedDirectories?.scopedDirectories ?: throw ModuleNotFoundException("ScopedDirectories")
 
   private val reactContext: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()

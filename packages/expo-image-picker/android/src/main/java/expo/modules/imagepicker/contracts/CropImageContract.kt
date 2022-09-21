@@ -10,12 +10,14 @@ import androidx.core.os.bundleOf
 import com.canhub.cropper.CropImage
 import com.canhub.cropper.CropImageActivity
 import com.canhub.cropper.CropImageOptions
+import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.imagepicker.ImagePickerOptions
 import expo.modules.imagepicker.MediaType
 import expo.modules.imagepicker.copyExifData
 import expo.modules.imagepicker.createOutputFile
 import expo.modules.imagepicker.toBitmapCompressFormat
 import expo.modules.imagepicker.toImageFileExtension
+import expo.modules.interfaces.filesystem.ScopedDirectories
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.providers.AppContextProvider
 import kotlinx.coroutines.runBlocking
@@ -27,7 +29,10 @@ internal class CropImageContract(
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, CropImageActivity::class.java).apply {
     val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri)
     val compressFormat = mediaType.toBitmapCompressFormat()
-    val outputUri = createOutputFile(context.cacheDir, compressFormat.toImageFileExtension()).toUri()
+    val scopedDirectoriesModule = appContextProvider.appContext.scopedDirectories ?: throw ModuleNotFoundException("ScopedDirectories")
+    val scopedDirectories: ScopedDirectories = scopedDirectoriesModule.scopedDirectories;
+
+    val outputUri = createOutputFile(scopedDirectories.cacheDir, compressFormat.toImageFileExtension()).toUri()
 
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,
