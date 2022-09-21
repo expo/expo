@@ -8,7 +8,7 @@ import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video'
 
-<!-- todo: add video -->
+{/* todo: add video */}
 
 A component that provides access to the system UI for a slider control, that allows users to pick among a range of values by dragging an anchor.
 

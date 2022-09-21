@@ -6,6 +6,9 @@ import tippy, { roundArrow } from 'tippy.js';
 
 import { installLanguages } from './languages';
 
+// @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
+const { default: testTippy } = tippy;
+
 installLanguages(Prism);
 
 const attributes = {
@@ -94,7 +97,8 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
   }
 
   private runTippy() {
-    tippy('.code-annotation.with-tooltip', {
+    const tippyFunc = testTippy || tippy;
+    tippyFunc('.code-annotation.with-tooltip', {
       allowHTML: true,
       theme: 'expo',
       placement: 'top',
@@ -129,7 +133,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
           )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
         }
       )
-      .replace(/<span class="token comment">&lt;!-- @end --><\/span>(\n *)?/g, '</span></span>');
+      .replace(/\s*<span class="token comment">&lt;!-- @end --><\/span>(\n *)?/g, '</span>');
   }
 
   private replaceHashCommentsWithAnnotations(value: string) {
@@ -146,7 +150,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
           content
         )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
       })
-      .replace(/<span class="token comment"># @end #<\/span>(\n *)?/g, '</span></span>');
+      .replace(/\s*<span class="token comment"># @end #<\/span>(\n *)?/g, '</span>');
   }
 
   private replaceSlashCommentsWithAnnotations(value: string) {
@@ -163,14 +167,20 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
           content
         )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
       })
-      .replace(/<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span></span>');
+      .replace(/\s*<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span>');
   }
 
   render() {
-    let html = this.props.children?.toString() || '';
+    // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
+    // which results in this nesting mess, we should fix it in the future
+    const child = this.props.className
+      ? this
+      : (React.Children.toArray(this.props.children)[0] as JSX.Element);
+    let html = child?.props?.children?.toString() || '';
+
     // mdx will add the class `language-foo` to codeblocks with the tag `foo`
     // if this class is present, we want to slice out `language-`
-    let lang = this.props.className && this.props.className.slice(9).toLowerCase();
+    let lang = child.props.className && child.props.className.slice(9).toLowerCase();
 
     // Allow for code blocks without a language.
     if (lang) {
@@ -192,12 +202,6 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
       } else {
         html = this.replaceSlashCommentsWithAnnotations(html);
       }
-    }
-
-    // Remove leading newline if it exists (because inside <pre> all whitespace is displayed as is by the browser, and
-    // sometimes, Prism adds a newline before the code)
-    if (html.startsWith('\n')) {
-      html = html.replace('\n', '');
     }
 
     return (

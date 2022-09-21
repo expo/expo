@@ -661,9 +661,9 @@ If `true`, the text input obscures the text entered so that sensitive text like 
 
 The start and end of the text input's selection. Set start and end to the same value to position the cursor.
 
-| Type                                |
-| ----------------------------------- |
-| object: {start: number,end: number} |
+| Type                                              |
+|---------------------------------------------------|
+| object: &lbrace;start: number,end: number&rbrace; |
 
 ---
 
@@ -810,7 +810,7 @@ see [Issue#7070](https://github.com/facebook/react-native/issues/7070) for more 
 
 ### `textBreakStrategy` **(Android)**
 
-<!-- alex disable simple -->
+{/* alex disable simple */}
 
 Set text break strategy on Android API Level 23+, possible values are `simple`, `highQuality`, `balanced` The default value is `simple`.
 
@@ -818,7 +818,7 @@ Set text break strategy on Android API Level 23+, possible values are `simple`, 
 | ----------------------------------------- |
 | enum('simple', 'highQuality', 'balanced') |
 
-<!-- alex enable simple -->
+{/* alex enable simple */}
 
 ---
 

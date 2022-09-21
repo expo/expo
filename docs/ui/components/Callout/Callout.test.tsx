@@ -1,7 +1,10 @@
+import { matchers } from '@emotion/jest';
 import { theme, CheckIcon } from '@expo/styleguide';
 import { render, screen } from '@testing-library/react';
 
 import { Callout } from '.';
+
+expect.extend(matchers);
 
 describe(Callout, () => {
   it('renders callout with icon emoji', () => {
