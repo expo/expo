@@ -1,44 +1,11 @@
 // NOTE(jim):
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
-import { Global, css } from '@emotion/react';
+import { css } from '@emotion/react';
 import { breakpoints, theme } from '@expo/styleguide';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
 import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
-
-const STYLES_GLOBAL = css`
-  html {
-    background: ${theme.background.default};
-  }
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    html {
-      /* width */
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      /* Track */
-      ::-webkit-scrollbar-track {
-        backgroundColor: transparent,
-        cursor: pointer,
-      }
-
-      /* Handle */
-      ::-webkit-scrollbar-thumb {
-        background: ${theme.background.tertiary};
-        border-radius: 10px;
-      }
-
-      /* Handle on hover */
-      ::-webkit-scrollbar-thumb:hover {
-        background: ${theme.background.quaternary};
-      }
-    }
-  }
-`;
 
 const STYLES_CONTAINER = css`
   width: 100%;
@@ -255,7 +222,6 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
 
     return (
       <div css={STYLES_CONTAINER}>
-        <Global styles={STYLES_GLOBAL} />
         <div css={STYLES_HEADER}>{header}</div>
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
