@@ -15,6 +15,7 @@ import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.kotlin.CoreLoggerKt;
 import expo.modules.kotlin.ExpoModulesHelper;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
 import expo.modules.kotlin.KPromiseWrapper;
@@ -134,7 +135,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
     constants.put(VIEW_MANAGERS_METADATA_KEY, viewManagersMetadata);
 
-    Log.i("ExpoModulesCore", "✅ Constants was exported");
+    CoreLoggerKt.getLogger().info("✅ Constants was exported");
 
     cachedConstants = constants;
 
