@@ -3,13 +3,12 @@ import { MetroDevServerOptions } from '@expo/dev-server';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
-import path from 'path';
-import resolveFrom from 'resolve-from';
 
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
+import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroMultiPlatform } from './withMetroMultiPlatform';
 
 // From expo/dev-server but with ability to use custom logger.
@@ -53,11 +52,8 @@ export async function instantiateMetroAsync(
   const platformBundlers = getPlatformBundlers(exp);
   metroConfig = withMetroMultiPlatform(projectRoot, metroConfig, platformBundlers);
 
-  // Auto pick App entry
-  const routerEntry = resolveFrom(projectRoot, 'expo-router/entry');
-  const appFolder = path.join(projectRoot, 'app');
-  process.env.EXPO_APP_ROOT = path.relative(path.dirname(routerEntry), appFolder);
-  console.log('routerEntry', routerEntry, appFolder, process.env.EXPO_APP_ROOT);
+  // Auto pick App entry: this is injected with Babel.
+  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
 
   const {
     middleware,
