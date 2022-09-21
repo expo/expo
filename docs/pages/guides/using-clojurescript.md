@@ -67,7 +67,7 @@ lein figwheel
 
 ### Cursive REPL
 
-Learn more about [Cursive](https://cursive-ide.com/)
+Learn more about [Cursive](https://cursive-ide.com/).
 
 The first time you connect to the repl, you'll need to create a Leiningen nREPL Configuration unless you have one already.
 

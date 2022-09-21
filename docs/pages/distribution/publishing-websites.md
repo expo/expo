@@ -103,7 +103,7 @@ With this setup Netlify will build and deploy when you push to git or open a new
 
 ## GitHub Pages
 
-Learn more about [GitHub Pages](https://pages.github.com/)
+Learn more about [GitHub Pages](https://pages.github.com/).
 
 > We'll use `yarn` but you can use `npm` if you want.
 
@@ -202,7 +202,7 @@ Here are the formal instructions for deploying to GitHub Pages:
 
 ## Firebase Hosting
 
-Learn more about [Firebase Hosting](https://console.firebase.google.com/)
+Learn more about [Firebase Hosting](https://console.firebase.google.com/).
 
 ### Setup Firebase
 
