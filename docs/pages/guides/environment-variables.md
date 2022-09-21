@@ -15,7 +15,7 @@ In the app config, there is an `extra` property. This property is available when
 
 ### Dynamic app config
 
-The following is an example of a [dynamic app config](/workflow/configuration#app-config) that reads from [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env) to set an environment variable on the `extra` field.
+The following is an example of a [dynamic app config](/versions/latest/config/app/#app-config) that reads from [`process.env`](https://nodejs.org/dist/latest/docs/api/process.html#process_process_env) to set an environment variable on the `extra` field.
 
 ```js
 // app.config.js
