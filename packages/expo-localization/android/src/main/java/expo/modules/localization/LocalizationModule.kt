@@ -92,13 +92,14 @@ class LocalizationModule : Module() {
     return if (VERSION.SDK_INT >= VERSION_CODES.P) {
       when (LocaleData.getMeasurementSystem(ULocale.forLocale(locale))) {
         LocaleData.MeasurementSystem.SI -> "metric"
-        LocaleData.MeasurementSystem.UK -> "uk",
+        LocaleData.MeasurementSystem.UK -> "uk"
         LocaleData.MeasurementSystem.US -> "us"
+        else -> "metric"
       }
     } else {
       if (getRegionCode(locale).equals("uk")) "uk"
-      else if (USES_IMPERIAL.contains(getRegionCode(locale))) "us" 
-      else "metric"      
+      else if (USES_IMPERIAL.contains(getRegionCode(locale))) "us"
+      else "metric"
     }
   }
 
