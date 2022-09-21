@@ -22,7 +22,7 @@ export class DevServerManagerActions {
       const devServer = this.devServerManager.getDefaultDevServer();
       try {
         const nativeRuntimeUrl = devServer.getNativeRuntimeUrl()!;
-        const interstitialPageUrl = devServer.getInterstitialPageUrl();
+        const interstitialPageUrl = devServer.getRedirectUrl();
 
         printQRCode(interstitialPageUrl ?? nativeRuntimeUrl);
 
