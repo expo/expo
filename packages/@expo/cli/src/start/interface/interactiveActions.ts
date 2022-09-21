@@ -24,8 +24,13 @@ export class DevServerManagerActions {
 
         printQRCode(url);
         Log.log(printItem(chalk`Metro waiting on {underline ${url}}`));
-        // TODO: if development build, change this message!
-        Log.log(printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)'));
+        if (options.devClient) {
+          Log.log(printItem('Scan the QR code to open the project URL'));
+        } else {
+          Log.log(
+            printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)')
+          );
+        }
       } catch (error) {
         // @ts-ignore: If there is no development build scheme, then skip the QR code.
         if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
