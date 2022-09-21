@@ -76,9 +76,6 @@
     "pretty-format": "^26.5.2",
     "uuid": "^3.4.0"
   },
-  "optionalDependencies": {
-    "expo-error-recovery": "~3.2.0"
-  },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.33",
