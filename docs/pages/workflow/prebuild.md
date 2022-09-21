@@ -79,7 +79,7 @@ The purpose of the prompt is to encourage managed workflow users to add the `/io
 
 There are cases where developers may want to swap between workflows often. For example, you may want to build custom functionality natively in Xcode and Android Studio, and then move that functionality into local config plugins.
 
-<!-- It is also theoretically possible to make clean builds take seconds rather than minutes, meaning `--clean` could become the default behavior in the future. -->
+{/* It is also theoretically possible to make clean builds take seconds rather than minutes, meaning `--clean` could become the default behavior in the future. */}
 
 ## Templates
 

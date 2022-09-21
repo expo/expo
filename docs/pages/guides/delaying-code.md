@@ -34,7 +34,7 @@ You may need to update a component's state at the end of your computation. A few
 <Tab label="With Hooks">
 <SnackInline>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```jsx
 import React, { useState, useEffect } from 'react';
 import { Text } from 'react-native';
@@ -64,7 +64,7 @@ export default App;
 <Tab label="With Class Components">
 <SnackInline>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```jsx
 import React from 'react';
 import { Text } from 'react-native';

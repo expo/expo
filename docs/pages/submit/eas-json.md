@@ -37,7 +37,7 @@ The JSON object under the `submit` key can contain multiple submit profiles. Eve
 
 The schema of this file looks like this:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```json
 {
   "cli": {

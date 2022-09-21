@@ -2,7 +2,7 @@
 title: Installing app variants on the same device
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 When creating [development, preview, and production builds](../eas-json.md#common-use-cases), it's common to want to install one of each build on your device at the same time. This allows you to do development work, preview the next version of your app, and run the production version all on the same device, without needing to uninstall and reinstall the app.
 
@@ -178,7 +178,7 @@ The rest of the configuration at this point is not specific to EAS, it's the sam
   </resources>
   ```
 - To change the icon of the app built with the development profile, create `android/app/src/development/res/mipmap-*` directories with appropriate assets (you can copy them from **android/app/src/main/res** and replace the icon files).
-- To specify **google-services.json** for a specific flavor put it in a **android/app/src/{flavor}/google-services.json** file.
+- To specify **google-services.json** for a specific flavor put it in a **android/app/src/&lbrace;flavor&rbrace;/google-services.json** file.
 - To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (e.g. **android/sentry-production-release.properties**)
 
 ### iOS

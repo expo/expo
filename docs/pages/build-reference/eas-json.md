@@ -134,7 +134,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 
 ## Schema
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```json
 {
   "cli": {
@@ -171,12 +171,12 @@ This document is a reference that outlines the schema for the `"build"` key in *
 
 ## Options common to both platforms
 
-<EasJsonPropertiesTable schema={commonSchema}/>
+<EasJsonPropertiesTable schema={commonSchema} />
 
 ## Android-specific options
 
-<EasJsonPropertiesTable schema={androidSchema}/>
+<EasJsonPropertiesTable schema={androidSchema} />
 
 ## iOS-specific options
 
-<EasJsonPropertiesTable schema={iosSchema}/>
+<EasJsonPropertiesTable schema={iosSchema} />

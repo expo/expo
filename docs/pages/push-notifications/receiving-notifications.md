@@ -6,7 +6,7 @@ You can now successfully send a notification to your app! If all you wanted was 
 
 Like most things with Expo, handling notifications is simple and straightforward across all platforms. All you need to do is add a listener using the [`Notifications` API](../versions/latest/sdk/notifications.md).
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```javascript
 import React from 'react';
 import { Text, View } from 'react-native';

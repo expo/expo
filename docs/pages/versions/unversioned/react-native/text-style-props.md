@@ -227,13 +227,13 @@ const CustomSwitch = ({ label, handleValueChange, value }) => {
 };
 
 const CustomSlider = ({
-  label,
-  handleValueChange,
-  step = 1,
-  minimumValue = 0,
-  maximumValue = 10,
-  value,
-}) => {
+                        label,
+                        handleValueChange,
+                        step = 1,
+                        minimumValue = 0,
+                        maximumValue = 10,
+                        value,
+                      }) => {
   return (
     <>
       {label && <Text style={styles.title}>{`${label} (${value.toFixed(2)})`}</Text>}
@@ -473,9 +473,9 @@ Specifies text alignment. On Android, the value 'justify' is only supported on O
 
 ### `textShadowOffset`
 
-| Type                                        |
-| ------------------------------------------- |
-| object: { width?: number, height?: number } |
+| Type                                                      |
+|-----------------------------------------------------------|
+| object: &lbrace; width?: number, height?: number &rbrace; |
 
 ---
 

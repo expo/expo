@@ -27,7 +27,7 @@ Then make these changes to your app:
 
 <SnackInline label="Sharing web workaround" templateId="tutorial/sharing-web-workaround" dependencies={['expo-image-picker', 'expo-sharing', 'anonymous-files']} defaultPlatform="web">
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { Image, /* @info Import Platform, you can order imports however you like, here we did it alphabetically. */Platform,/* @end */ StyleSheet, Text, TouchableOpacity, View } from 'react-native';

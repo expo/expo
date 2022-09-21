@@ -67,7 +67,7 @@ Your application's keystore should be kept private. **Under no circumstances sho
 
 Your app binary needs to be signed with a keystore. Since we're building the project on a remote server, we had to come up with a way to provide Gradle with credentials which aren't, for security reasons, checked in to your repository. In one of the remote steps, we inject the signing configuration into your **build.gradle**. EAS Build creates the **android/app/eas-build.gradle** file with the following contents:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```groovy
 // Build integration with EAS
 

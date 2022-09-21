@@ -15,7 +15,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-file-system`** provides access to a file system stored locally on the device. Within Expo Go, each project has a separate file system and has no access to the file system of other Expo projects. However, it can save content shared by other projects to the local filesystem, as well as share local files with other projects. It is also capable of uploading and downloading files from network URLs.
 
-<!-- TODO: update this image so we don't have to force a white background on it -->
+{/* TODO: update this image so we don't have to force a white background on it */}
 
 <ImageSpotlight alt="Diagram of the various pieces of expo-file-system and how they interact with different resources" src="/static/images/sdk/file-system/file-system-diagram.png" style={{ maxWidth: 850, maxHeight: 600 }} containerStyle={{ backgroundColor: "#fff" }} />
 
@@ -174,7 +174,7 @@ export async function deleteAllGifs() {
 import * as FileSystem from 'expo-file-system';
 ```
 
-### [Supported URI schemes](#supported-uri-schemes-1)
+### Supported URI schemes
 
 ## Directories
 
@@ -448,7 +448,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
   - **mimeType (_string_)** -- The MIME type of the provided file. If not provided, the module will try to guess it based on the extension.
 
-  - **parameters (_Record<string, string>_)** -- Additional form properties. They will be located in the request body.
+  - **parameters (_Record&lt;string, string&gt;_)** -- Additional form properties. They will be located in the request body.
 
 #### Returns
 
@@ -797,21 +797,21 @@ Alias to [FileSystem.copyAsync(options)](#filesystemcopyasyncoptions)
 
 In this table, you can see what type of URI can be handled by each method. For example, if you have an URI, which begins with `content://`, you cannot use `FileSystem.readAsStringAsync()`, but you can use `FileSystem.copyAsync()` which supports this scheme.
 
-| Method name               | Android                                                                                                                                    | iOS                                                                                             |
-| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- | --- |
-| `getInfoAsync`            | `file:///`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***                                                                          | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
-| `readAsStringAsync`       | `file:///`,<br/>`asset://`,<br/>[SAF URI](#saf-uri)                                                                                        | `file://`                                                                                       |
-| `writeAsStringAsync`      | `file:///`,<br/>[SAF URI](#saf-uri)                                                                                                        | `file://`                                                                                       |
-| `deleteAsync`             | `file:///`,<br/>[SAF URI](#saf-uri)                                                                                                        | `file://`                                                                                       |
-| `moveAsync`               | Source:<br/>`file:///`,<br/>[SAF URI](#saf-uri)<br/><br/>Destination:<br/>`file://`                                                        | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                       |
-| `copyAsync`               | Source:<br/>`file:///`,<br/>`content://`,<br/>`asset://`,<br/>[SAF URI](#saf-uri),<br/>no scheme**\***<br/><br/>Destination:<br/>`file://` | Source:<br/>`file://`,<br/>`ph://`,<br/>`assets-library://`<br/><br/>Destination:<br/>`file://` |
-| `makeDirectoryAsync`      | `file:///`                                                                                                                                 | `file://`                                                                                       |
-| `readDirectoryAsync`      | `file:///`                                                                                                                                 | `file://`                                                                                       |
-| `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file:///`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
-| `uploadAsync`             | Source:<br/>`file:///`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                                                  | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
-| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file:///`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |     |
+| Method name               | Android                                                                                                                              | iOS                                                                                             |
+| ------------------------- |--------------------------------------------------------------------------------------------------------------------------------------| ----------------------------------------------------------------------------------------------- |
+| `getInfoAsync`            | `file:///`,<br/>`content://`,<br/>`asset://`,<br/>no scheme                                                                          | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
+| `readAsStringAsync`       | `file:///`,<br/>`asset://`,<br/>[SAF URI](#saf-uri)                                                                                  | `file://`                                                                                       |
+| `writeAsStringAsync`      | `file:///`,<br/>[SAF URI](#saf-uri)                                                                                                  | `file://`                                                                                       |
+| `deleteAsync`             | `file:///`,<br/>[SAF URI](#saf-uri)                                                                                                  | `file://`                                                                                       |
+| `moveAsync`               | Source:<br/>`file:///`,<br/>[SAF URI](#saf-uri)<br/><br/>Destination:<br/>`file://`                                                  | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                       |
+| `copyAsync`               | Source:<br/>`file:///`,<br/>`content://`,<br/>`asset://`,<br/>[SAF URI](#saf-uri),<br/>no scheme<br/><br/>Destination:<br/>`file://` | Source:<br/>`file://`,<br/>`ph://`,<br/>`assets-library://`<br/><br/>Destination:<br/>`file://` |
+| `makeDirectoryAsync`      | `file:///`                                                                                                                           | `file://`                                                                                       |
+| `readDirectoryAsync`      | `file:///`                                                                                                                           | `file://`                                                                                       |
+| `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file:///`                                                           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
+| `uploadAsync`             | Source:<br/>`file:///`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                                            | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
+| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file:///`                                                           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
 
-**\***On Android _no scheme_ defaults to a bundled resource.
+> On Android **no scheme** defaults to a bundled resource.
 
 ## Permissions
 

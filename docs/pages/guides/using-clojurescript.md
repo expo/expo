@@ -65,7 +65,9 @@ lein figwheel
 1.  Invoke cider-jack-in.
 2.  Run `(start-figwheel)` in the connected REPL.
 
-### [Cursive](https://cursive-ide.com/) REPL
+### Cursive REPL
+
+Learn more about [Cursive](https://cursive-ide.com/).
 
 The first time you connect to the repl, you'll need to create a Leiningen nREPL Configuration unless you have one already.
 
@@ -108,7 +110,7 @@ lein prod-build
 eas update
 ```
 
-This will publish your app to a persistent URL on Expo, for example: <https://expo.dev/@community/startr>
+This will publish your app to a persistent URL on Expo, for example: `https://expo.dev/@community/startr`
 
 ## FAQ
 

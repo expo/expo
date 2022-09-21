@@ -8,7 +8,7 @@ import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video'
 
-<!-- todo: add video -->
+{/* todo: add video */}
 
 A component that provides access to the system UI for picking between several options.
 

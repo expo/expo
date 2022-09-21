@@ -1,11 +1,15 @@
+import { jest } from '@jest/globals';
 import { render, Screen, screen } from '@testing-library/react';
 import fs from 'fs-extra';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 import { DiffBlock } from '.';
 
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+
 const DIFF_PATH = '/static/diffs/expo-updates-js.diff';
-const DIFF_CONTENT = fs.readFileSync(path.join(__dirname, '../../../public', DIFF_PATH)).toString();
+const DIFF_CONTENT = fs.readFileSync(path.join(dirname, '../../../public', DIFF_PATH)).toString();
 
 const validateDiffContent = (screen: Screen) => {
   expect(screen.getByText('app.json')).toBeInTheDocument();
@@ -21,9 +25,11 @@ const validateDiffContent = (screen: Screen) => {
 
 describe(DiffBlock, () => {
   it('renders diff from file correctly', async () => {
-    global.fetch = jest.fn().mockImplementation(() => ({
-      text: async () => DIFF_CONTENT,
-    }));
+    global.fetch = jest.fn(() =>
+      Promise.resolve({
+        text: async () => DIFF_CONTENT,
+      } as Response)
+    );
 
     render(<DiffBlock source={DIFF_PATH} />);
 

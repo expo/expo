@@ -1,7 +1,13 @@
-import MDX from '@mdx-js/runtime';
 import * as React from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import * as components from '~/common/translate-markdown';
+import { InlineCode } from '../base/code';
+
+import { createPermalinkedComponent } from '~/common/create-permalinked-component';
+import { HeadingType } from '~/common/headingManager';
+import { PDIV } from '~/components/base/paragraph';
+import { mdComponents, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 type PropertyMeta = {
@@ -34,11 +40,26 @@ type FormattedProperty = {
   name: string;
   description: string;
   nestingLevel: number;
+  type?: string;
+  example?: string;
+  expoKit?: string;
+  bareWorkflow?: string;
 };
 
 type AppConfigSchemaProps = {
   schema: Record<string, Property>;
 };
+
+const Anchor = createPermalinkedComponent(PDIV, {
+  baseNestingLevel: 3,
+  sidebarType: HeadingType.InlineCode,
+});
+
+const PropertyName = ({ name, nestingLevel }: Pick<FormattedProperty, 'name' | 'nestingLevel'>) => (
+  <Anchor level={nestingLevel}>
+    <InlineCode>{name}</InlineCode>
+  </Anchor>
+);
 
 export function formatSchema(rawSchema: [string, Property][]) {
   const formattedSchema: FormattedProperty[] = [];
@@ -50,7 +71,7 @@ export function formatSchema(rawSchema: [string, Property][]) {
   return formattedSchema;
 }
 
-//appends a property and recursivley appends sub-properties
+// Appends a property and recursively appends sub-properties
 function appendProperty(
   formattedSchema: FormattedProperty[],
   property: [string, Property],
@@ -65,11 +86,13 @@ function appendProperty(
   }
 
   formattedSchema.push({
-    name: nestingLevel
-      ? `<subpropertyAnchor level={${nestingLevel}}><inlineCode>${propertyKey}</inlineCode></subpropertyAnchor>`
-      : `<propertyAnchor level={0}><inlineCode>${propertyKey}</inlineCode></propertyAnchor>`,
+    name: propertyKey,
     description: createDescription(property),
     nestingLevel,
+    type: _getType(propertyValue),
+    example: propertyValue.exampleString,
+    expoKit: propertyValue?.meta?.expoKit,
+    bareWorkflow: propertyValue?.meta?.bareWorkflow,
   });
 
   nestingLevel++;
@@ -104,15 +127,6 @@ export function createDescription(propertyEntry: [string, Property]) {
   if (propertyValue.meta && propertyValue.meta.regexHuman) {
     propertyDescription += `\n\n` + propertyValue.meta.regexHuman;
   }
-  if (propertyValue.meta && propertyValue.meta.expoKit) {
-    propertyDescription += `<expokitDetails>${propertyValue.meta.expoKit}</expokitDetails>`;
-  }
-  if (propertyValue.meta && propertyValue.meta.bareWorkflow) {
-    propertyDescription += `<bareworkflowDetails>${propertyValue.meta.bareWorkflow}</bareworkflowDetails>`;
-  }
-  if (propertyValue.exampleString) {
-    propertyDescription += `\n\n>` + propertyValue.exampleString;
-  }
 
   return propertyDescription;
 }
@@ -130,25 +144,42 @@ const AppConfigSchemaPropertiesTable = ({ schema }: AppConfigSchemaProps) => {
         </Row>
       </TableHead>
       <tbody>
-        {formattedSchema.map(({ name, description, nestingLevel }, index) => (
-          <Row key={index}>
-            <Cell fitContent>
-              <div
-                data-testid={name}
-                style={{
-                  marginLeft: `${nestingLevel * 32}px`,
-                  display: nestingLevel ? 'list-item' : 'block',
-                  listStyleType: nestingLevel % 2 ? 'default' : 'circle',
-                  overflowX: 'visible',
-                }}>
-                <MDX components={components}>{name}</MDX>
-              </div>
-            </Cell>
-            <Cell>
-              <MDX components={components}>{description}</MDX>
-            </Cell>
-          </Row>
-        ))}
+        {formattedSchema.map(
+          ({ name, description, nestingLevel, type, example, expoKit, bareWorkflow }, index) => (
+            <Row key={index}>
+              <Cell fitContent>
+                <div
+                  data-testid={name}
+                  style={{
+                    marginLeft: `${nestingLevel * 32}px`,
+                    display: nestingLevel ? 'list-item' : 'block',
+                    listStyleType: nestingLevel % 2 ? 'default' : 'circle',
+                    overflowX: 'visible',
+                  }}>
+                  <PropertyName name={name} nestingLevel={nestingLevel} />
+                </div>
+              </Cell>
+              <Cell>
+                <ReactMarkdown components={mdComponents}>{description}</ReactMarkdown>
+                {expoKit && (
+                  <Collapsible summary="ExpoKit">
+                    <ReactMarkdown components={mdComponents}>{expoKit}</ReactMarkdown>
+                  </Collapsible>
+                )}
+                {bareWorkflow && (
+                  <Collapsible summary="Bare Workflow">
+                    <ReactMarkdown components={mdComponents}>{bareWorkflow}</ReactMarkdown>
+                  </Collapsible>
+                )}
+                {example && (
+                  <ReactMarkdown components={mdInlineComponents}>
+                    {`> ${example.replaceAll('\n', '')}`}
+                  </ReactMarkdown>
+                )}
+              </Cell>
+            </Row>
+          )
+        )}
       </tbody>
     </Table>
   );

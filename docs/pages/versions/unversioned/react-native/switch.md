@@ -109,9 +109,9 @@ Custom colors for the switch track.
 
 _iOS_: When the switch value is `false`, the track shrinks into the border. If you want to change the color of the background exposed by the shrunken track, use [`ios_backgroundColor`](#ios_backgroundColor-ios).
 
-| Type                                                                                                                          |
-| ----------------------------------------------------------------------------------------------------------------------------- |
-| object: { false: [color](https://reactnative.dev/docs/0.64/colors), true: [color](https://reactnative.dev/docs/0.64/colors) } |
+| Type                                                                                                                                        |
+|---------------------------------------------------------------------------------------------------------------------------------------------|
+| object: &lbrace; false: [color](https://reactnative.dev/docs/0.64/colors), true: [color](https://reactnative.dev/docs/0.64/colors) &rbrace; |
 
 ---
 

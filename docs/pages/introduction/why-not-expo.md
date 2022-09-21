@@ -90,7 +90,7 @@ The following list is therefore specifically oriented towards the limitations th
 
 <Collapsible summary={<span><span className="strike">Build service only works in the managed workflow</span> (✅ Resolved in December 2020)</span>}>
 
-<span className="strike">To build your app binaries for distribution on the Apple App Store and Google Play Store you will need to follow the same steps that you would in any native project, the Expo build service can't handle it for you. We are working on bringing bare workflow support to the build service in the near future.</span>
+~~To build your app binaries for distribution on the Apple App Store and Google Play Store you will need to follow the same steps that you would in any native project, the Expo build service can't handle it for you. We are working on bringing bare workflow support to the build service in the near future.~~
 
 You can now use [EAS Build](/build/introduction) to build and sign your apps just as easily as in the managed workflow! [Read the announcement blog post](https://blog.expo.dev/expo-application-services-eas-build-and-submit-fc1d1476aa2e).
 

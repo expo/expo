@@ -12,14 +12,16 @@ import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import { getComponentName, TypeDocKind } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
 
-const LATEST_VERSION = `v${require('~/package.json').version}`;
+const { LATEST_VERSION } = versions;
 
 type Props = {
   packageName: string;
   apiName?: string;
   forceVersion?: string;
   strictTypes?: boolean;
+  testRequire?: any;
 };
 
 const filterDataByKind = (
@@ -68,12 +70,11 @@ const renderAPI = (
   version: string = 'unversioned',
   apiName?: string,
   strictTypes: boolean = false,
-  isTestMode: boolean = false
+  testRequire: any = undefined
 ): JSX.Element => {
   try {
-    // note(simek): When the path prefix is interpolated Next or Webpack fails to locate the file
-    const { children: data } = isTestMode
-      ? require(`../../public/static/data/${version}/${packageName}.json`)
+    const { children: data } = testRequire
+      ? testRequire(`~/public/static/data/${version}/${packageName}.json`)
       : require(`~/public/static/data/${version}/${packageName}.json`);
 
     const methods = filterDataByKind(
@@ -198,12 +199,18 @@ const renderAPI = (
   }
 };
 
-const APISection = ({ packageName, apiName, forceVersion, strictTypes = false }: Props) => {
+const APISection = ({
+  packageName,
+  apiName,
+  forceVersion,
+  strictTypes = false,
+  testRequire = undefined,
+}: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
-  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, !!forceVersion);
+  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, testRequire);
 };
 
 export default APISection;

@@ -6,9 +6,7 @@ sidebar_title: store.config.json
 import { Callout } from '~/ui/components/Callout';
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-<Callout type="warning">
-  EAS Metadata is in beta and subject to breaking changes.
-</Callout>
+<Callout type="warning">EAS Metadata is in beta and subject to breaking changes.</Callout>
 <br />
 
 EAS Metadata is configured by a **store.config.json** file at the _root of your project_.

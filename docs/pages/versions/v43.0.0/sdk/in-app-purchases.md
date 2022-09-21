@@ -1,10 +1,12 @@
 ---
 title: InAppPurchases
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-in-app-purchases'
+packageName: 'expo-in-app-purchases'
 ---
 
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 
 **`expo-in-app-purchases`** provides an API to accept payments for in-app products. Internally this relies on the [Google Play Billing](https://developer.android.com/google/play/billing/billing_library_overview) library on Android and the [Storekit](https://developer.apple.com/documentation/storekit?language=objc) framework on iOS.
 

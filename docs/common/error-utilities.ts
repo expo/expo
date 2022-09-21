@@ -1,4 +1,4 @@
-import { VERSIONS } from '~/constants/versions.cjs';
+import versions from '~/public/static/constants/versions.json';
 
 export function getRedirectPath(redirectPath: string): string {
   // index.html is no longer a thing in our docs
@@ -73,7 +73,7 @@ function getVersionFromPath(path: string) {
 }
 
 // Filter unversioned and latest out, so we end up with v34, etc.
-const supportedVersions = VERSIONS.filter(v => v.match(/^v/));
+const supportedVersions = versions.VERSIONS.filter(v => v.match(/^v/));
 
 // Return true if the version is still included in documentation
 function isVersionDocumented(path: string) {

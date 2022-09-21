@@ -173,14 +173,14 @@ For example, when working with horizontal scrolling gestures, you would do the f
 
 ```js
  onScroll={Animated.event(
-   // scrollX = e.nativeEvent.contentOffset.x
-   [{ nativeEvent: {
+    // scrollX = e.nativeEvent.contentOffset.x
+    [{ nativeEvent: {
         contentOffset: {
           x: scrollX
         }
       }
     }]
- )}
+  )}
 ```
 
 ---
@@ -389,13 +389,13 @@ Takes an array of mappings and extracts values from each arg accordingly, then c
 
 ```js
 onScroll={Animated.event(
-  [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
-  {listener: (event) => console.log(event)}, // Optional async listener
-)}
+    [{nativeEvent: {contentOffset: {x: this._scrollX}}}],
+    {listener: (event) => console.log(event)}, // Optional async listener
+  )}
 ...
 onPanResponderMove: Animated.event([
-  null,                // raw event arg ignored
-  {dx: this._panX}],    // gestureState arg
+    null,                // raw event arg ignored
+    {dx: this._panX}],    // gestureState arg
   {listener: (event, gestureState) => console.log(event, gestureState)}, // Optional async listener
 ),
 ```
@@ -435,9 +435,9 @@ Animations are started by calling start() on your animation. start() takes a com
 
 **Parameters:**
 
-| Name     | Type                            | Required | Description                                                                                                                                                     |
-| -------- | ------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| callback | ?(result?: {finished: boolean}) | No       | Function that will be called after the animation finished running normally or when the animation is done because stop() was called on it before it could finish |
+| Name     | Type                                          | Required | Description                                                                                                                                                     |
+| -------- |-----------------------------------------------| -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| callback | ?(result?: &lbrace;finished: boolean&rbrace;) | No       | Function that will be called after the animation finished running normally or when the animation is done because stop() was called on it before it could finish |
 
 Start example with callback:
 

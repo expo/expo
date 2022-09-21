@@ -18,7 +18,7 @@ A limitation with JavaScriptCore is that the debugger does not work with modules
 
 To get started, open your **app.json** and add `jsEngine` field:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 {
   "expo": {
@@ -37,7 +37,7 @@ Now you can build an APK or AAB through `eas build` and your app will run with H
 
 To get started, open your **app.json** and add `jsEngine` field:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 {
   "expo": {
@@ -101,7 +101,7 @@ Reinstall Pods and clean Xcode build cache:
 
 You may want to use Hermes on one platform and JSC on another. One way to do this is to set the `"jsEngine"` to `"hermes"` at the top level and then override it with `"jsc"` under the `"ios"` key. You may alternatively prefer to explicitly set `"hermes"` on just the `"android"` key in this case.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 {
   "expo": {

@@ -45,7 +45,7 @@ This particular error means that the app is importing `./src/Routes` and it is n
 
 It's important to note that with iOS builds the build details page only displays an abridged version of the logs, because the full output from `xcodebuild` can be in the order of 10MB. Sometimes it's necessary to open the full Xcode logs in order to find the information that you need; for example, if the JavaScript build failed but you don't see any useful information on the build details page. To open the full Xcode logs, scroll to the bottom of the build details page when the build has completed and either click to view or download them.
 
-<!-- TODO: native and js build phases should be separate in eas build logs, this is too much work for people to figure out -->
+{/* TODO: native and js build phases should be separate in eas build logs, this is too much work for people to figure out */}
 
 If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/guides/config-plugins.md) or a dependency in your project. Keep an eye out in the logs for any new packages that you've added since your previous successful build. Run `expo doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
 
@@ -59,7 +59,7 @@ With EAS Build, it's necessary to upload the entire monorepo to the build worker
 
 EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations.md).
 
-<!-- TODO: link to monorepos guide when ready -->
+{/* TODO: link to monorepos guide when ready */}
 
 </Collapsible>
 

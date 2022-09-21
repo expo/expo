@@ -15,10 +15,6 @@ import { Col, ColProps } from 'react-grid-system';
 
 import { P } from '~/ui/components/Text';
 
-export type GridCellProps = ColProps & {
-  style?: object;
-};
-
 export const GridCell = ({
   children,
   sm,
@@ -26,17 +22,16 @@ export const GridCell = ({
   lg,
   xl,
   xxl,
-  style,
-  css,
-}: PropsWithChildren<GridCellProps>) => (
-  <Col css={[cellWrapperStyle, css]} sm={sm} md={md} lg={lg} xl={xl} xxl={xxl}>
-    <div css={cellStyle} style={style}>
+  className,
+}: PropsWithChildren<ColProps>) => (
+  <Col css={cellWrapperStyle} sm={sm} md={md} lg={lg} xl={xl} xxl={xxl}>
+    <div css={cellStyle} className={className}>
       {children}
     </div>
   </Col>
 );
 
-type APIGridCellProps = GridCellProps & {
+type APIGridCellProps = ColProps & {
   icon?: string | JSX.Element;
   title?: string;
   link?: string;
@@ -46,14 +41,14 @@ export const APIGridCell = ({
   icon,
   title,
   link,
-  style,
+  className,
   sm = 6,
   md = 6,
   lg = 6,
   xl = 3,
 }: APIGridCellProps) => (
   <Col css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
-    <a href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} style={style}>
+    <a href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} className={className}>
       <div css={cellIconWrapperStyle}>{icon}</div>
       <div css={cellTitleWrapperStyle}>
         {title}
@@ -74,11 +69,14 @@ export const CommunityGridCell = ({
   title,
   link,
   description,
-  style,
+  className,
   md = 6,
 }: CommunityGridCellProps) => (
   <Col css={cellWrapperStyle} md={md}>
-    <a href={link} css={[cellStyle, cellCommunityStyle, cellCommunityHoverStyle]} style={style}>
+    <a
+      href={link}
+      css={[cellStyle, cellCommunityStyle, cellCommunityHoverStyle]}
+      className={className}>
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>
         {icon}
       </div>

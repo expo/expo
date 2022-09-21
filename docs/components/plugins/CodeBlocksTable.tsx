@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
-import * as React from 'react';
+import { PropsWithChildren } from 'react';
 
 const MDX_CLASS_NAME_TO_TAB_NAME: Record<string, string> = {
   'language-swift': 'Swift',
@@ -79,15 +79,15 @@ const CodeSamplesCSS = css`
   }
 `;
 
-type Props = {
-  children: JSX.Element[];
+type Props = PropsWithChildren<{
   tabs?: string[];
-};
+}>;
 
 export function CodeBlocksTable({ children, tabs, ...rest }: Props) {
   const childrenArray = Array.isArray(children) ? children : [children];
   const codeBlocks = childrenArray.filter(
-    ({ props }) => props.mdxType === 'pre' && props.children.props.className
+    ({ props }) =>
+      props.children.props.className && props.children.props.className.startsWith('language-')
   );
   const tabNames =
     tabs ||

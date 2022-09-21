@@ -19,7 +19,7 @@ import * as Linking from 'expo-linking';
 Linking.openURL('https://expo.dev');
 ```
 
-<!-- TODO(EvanBacon): Maybe we should move `<A />` to `expo-linking`. -->
+{/* TODO(EvanBacon): Maybe we should move `<A />` to `expo-linking`. */}
 
 Web browsers have additional link functionality like right-click to copy, and hover to preview. You can use the package [`@expo/html-elements`](https://www.npmjs.com/package/@expo/html-elements) to get a universal `<A />` element:
 

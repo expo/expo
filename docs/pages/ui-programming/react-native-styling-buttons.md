@@ -13,7 +13,7 @@ To create a button with a custom style, we can to turn to the [`<Pressable />`](
 
 <SnackInline>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```jsx
 import React from 'react';
 import { Text, View, StyleSheet, Pressable } from 'react-native';

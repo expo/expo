@@ -58,7 +58,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 - If `offline_access` isn't included then no refresh token will be returned.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import { Button, Text, View } from 'react-native';
@@ -103,7 +103,7 @@ export default function App() {
 }
 ```
 
-<!-- End IdentityServer 4 -->
+{/* End IdentityServer 4 */}
 
 ### Azure
 
@@ -115,7 +115,7 @@ export default function App() {
 
 [c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -159,7 +159,7 @@ export default function App() {
 }
 ```
 
-<!-- End Azure -->
+{/* End Azure */}
 
 ### Coinbase
 
@@ -189,7 +189,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import {
   exchangeCodeAsync,
@@ -332,7 +332,7 @@ function useMounted() {
 </Tab>
 </Tabs>
 
-<!-- End Coinbase -->
+{/* End Coinbase */}
 
 ### Dropbox
 
@@ -355,7 +355,7 @@ function useMounted() {
 
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -423,7 +423,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -488,7 +488,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Dropbox -->
+{/* End Dropbox */}
 
 ### Facebook
 
@@ -598,7 +598,7 @@ Then add `<data android:scheme="fb<YOUR ID>"/>` to the `.MainActivity` `intent-f
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -643,7 +643,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -690,7 +690,7 @@ export default function App() {
 - 🔥 Create a new Firebase project
 - Enable Facebook auth, save the project.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -752,7 +752,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Facebook -->
+{/* End Facebook */}
 
 ### FitBit
 
@@ -774,7 +774,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -834,7 +834,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -901,7 +901,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End FitBit -->
+{/* End FitBit */}
 
 ### GitHub
 
@@ -924,7 +924,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -990,7 +990,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End GitHub -->
+{/* End GitHub */}
 
 ### Google
 
@@ -1081,7 +1081,7 @@ Expo web client ID for use in the browser.
 <Tabs tabs={["Standard", "Firebase"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1144,7 +1144,7 @@ export default function App() {
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1207,7 +1207,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Google -->
+{/* End Google */}
 
 ### Imgur
 
@@ -1346,7 +1346,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Imgur -->
+{/* End Imgur */}
 
 ### Okta
 
@@ -1364,7 +1364,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1429,7 +1429,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Okta -->
+{/* End Okta */}
 
 ### Reddit
 
@@ -1452,7 +1452,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1512,7 +1512,7 @@ export default function App() {
 
 - You must select the `installed` option for your app on Reddit to use implicit grant.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1573,7 +1573,7 @@ export default function App() {
 </Tab>
 </Tabs>
 
-<!-- End Reddit -->
+{/* End Reddit */}
 
 ### Slack
 
@@ -1596,7 +1596,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1661,7 +1661,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Slack -->
+{/* End Slack */}
 
 ### Spotify
 
@@ -1690,7 +1690,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1752,7 +1752,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1816,7 +1816,7 @@ export default function App() {
 </Tab>
 </Tabs>
 
-<!-- End Spotify -->
+{/* End Spotify */}
 
 ### Strava
 
@@ -1835,7 +1835,7 @@ export default function App() {
 <Tabs tabs={["Auth Code"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1894,7 +1894,7 @@ export default function App() {
 Strava doesn't provide an implicit auth flow, you should send the code to a server or serverless function to perform the access token exchange.
 For **debugging** purposes, you can perform the exchange client-side using the following method:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 const { accessToken } = await AuthSession.exchangeCodeAsync(
   {
@@ -1915,7 +1915,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 </Tabs>
 
-<!-- End Strava -->
+{/* End Strava */}
 
 ### Twitch
 
@@ -1934,7 +1934,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1994,7 +1994,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2057,7 +2057,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Twitch -->
+{/* End Twitch */}
 
 ### Twitter
 
@@ -2086,7 +2086,7 @@ You must use the proxy service in the Expo Go app because `exp://localhost:19000
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2152,7 +2152,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Twitter -->
+{/* End Twitter */}
 
 ### Uber
 
@@ -2171,7 +2171,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2231,7 +2231,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2294,9 +2294,9 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Uber -->
+{/* End Uber */}
 
-<!-- End Guides -->
+{/* End Guides */}
 
 ## Redirect URI patterns
 
@@ -2380,7 +2380,7 @@ Here are a few tips you can use to make authentication quick, easy, and secure f
 
 On Android you can optionally warm up the web browser before it's used. This allows the browser app to pre-initialize itself in the background. Doing this can significantly speed up prompting the user for authentication.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2408,7 +2408,7 @@ You should never store your client secret locally in your bundle because there's
 
 Here is an example of logging into Spotify without using a client secret.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2458,7 +2458,7 @@ On native platforms like iOS, and Android you can secure things like access toke
 
 You can store your authentication results and rehydrate them later to avoid having to prompt the user to login again.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as SecureStore from 'expo-secure-store';
 

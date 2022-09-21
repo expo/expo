@@ -19,7 +19,7 @@ This is useful to download and cache fonts, logos, icon images and other assets 
 
 ## Usage
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```javascript
 import React from 'react';
 import { Image, Text, View } from 'react-native';

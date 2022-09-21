@@ -190,7 +190,7 @@ Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 
 ## Sourcemaps
 
-<!-- TODO: Drop `expo publish` mention -->
+{/* TODO: Drop `expo publish` mention */}
 
 With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release.
 

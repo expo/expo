@@ -28,8 +28,8 @@ Learn how to [build standalone apps on your CI with our classic build service](/
 
 ## Configure your app for CI
 
-<!-- We can probably leave this out -- users can figure out on their own if they want to do this or use npx -->
-<!-- ### Make EAS CLI available in your CI environment
+{/* We can probably leave this out -- users can figure out on their own if they want to do this or use npx */}
+{/* ### Make EAS CLI available in your CI environment
 
 To interact with the EAS API, we need to install EAS CLI. You can use an environment with this library preinstalled, or you can add it to the project as a development dependency.
 
@@ -42,7 +42,7 @@ To install EAS CLI in your project, run:
 npm install --save-dev eas-cli
 ```
 
-> 💡 Make sure to update this dependency frequently to stay up to date with the EAS API interface. -->
+> 💡 Make sure to update this dependency frequently to stay up to date with the EAS API interface. */}
 
 ### Provide a personal access token to authenticate with your Expo account on CI
 

@@ -14,7 +14,7 @@ export const TableHeaders = ({ headers, headersAlign = [] }: TableHeadersProps) 
   <TableHead>
     <Row>
       {headers.map((header, i) => (
-        <HeaderCell key={`table-header-${i}`} textAlign={headersAlign[i]}>
+        <HeaderCell key={`table-header-${i}`} align={headersAlign[i]}>
           {header}
         </HeaderCell>
       ))}

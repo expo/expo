@@ -54,7 +54,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </div>
   </h2>
   <div
-    class="css-excx5x-APISectionComponents"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -331,7 +331,7 @@ for more details.
     </h2>
     <div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="css-g8zh0a"
       >
         <h3
           class="css-m417je-H3"
@@ -393,7 +393,7 @@ for more details.
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Type:
           </span>
@@ -417,7 +417,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="css-g8zh0a"
       >
         <h3
           class="css-m417je-H3"
@@ -479,7 +479,7 @@ for more details.
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Type:
           </span>
@@ -503,7 +503,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="css-g8zh0a"
       >
         <h3
           class="css-m417je-H3"
@@ -565,12 +565,12 @@ for more details.
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Optional • 
           </span>
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Type:
           </span>
@@ -596,7 +596,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="css-g8zh0a"
       >
         <h3
           class="css-m417je-H3"
@@ -658,12 +658,12 @@ for more details.
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Optional • 
           </span>
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Type:
           </span>
@@ -726,7 +726,7 @@ properties.
         </p>
       </div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="css-g8zh0a"
       >
         <h3
           class="css-m417je-H3"
@@ -788,7 +788,7 @@ properties.
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Type:
           </span>
@@ -945,7 +945,7 @@ in here.
     </div>
   </h2>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -1036,7 +1036,7 @@ in here.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -1045,7 +1045,7 @@ in here.
               </strong>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -1054,7 +1054,7 @@ in here.
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <span>
                 The unique identifier for the user whose credential state you'd like to check.
@@ -1122,7 +1122,7 @@ This should come from the user field of an
       </div>
     </blockquote>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1185,7 +1185,7 @@ This should come from the user field of an
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -1245,7 +1245,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -1309,7 +1309,7 @@ value depending on the state of the credential.
       Determine if the current device's operating system supports Apple authentication.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1372,7 +1372,7 @@ value depending on the state of the credential.
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -1427,7 +1427,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -1518,7 +1518,7 @@ value depending on the state of the credential.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -1527,7 +1527,7 @@ value depending on the state of the credential.
               </strong>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -1541,7 +1541,7 @@ value depending on the state of the credential.
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <span>
                 An 
@@ -1570,7 +1570,7 @@ value depending on the state of the credential.
 Calling this method will show the sign in modal before actually refreshing the user credentials.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1633,7 +1633,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -1700,7 +1700,7 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -1791,7 +1791,7 @@ refresh operation.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -1800,13 +1800,13 @@ refresh operation.
               </strong>
               <br />
               <span
-                class="css-1sme59g-APISectionMethods"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -1820,7 +1820,7 @@ refresh operation.
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <span>
                 An optional 
@@ -1887,7 +1887,7 @@ You can use
 the user, since this remains the same for apps released by the same developer.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1950,7 +1950,7 @@ the user, since this remains the same for apps released by the same developer.
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -2017,7 +2017,7 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -2108,7 +2108,7 @@ sign-in operation.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2117,7 +2117,7 @@ sign-in operation.
               </strong>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2131,7 +2131,7 @@ sign-in operation.
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <span>
                 An 
@@ -2190,7 +2190,7 @@ from using
        methods.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -2253,7 +2253,7 @@ from using
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -2371,7 +2371,7 @@ sign-out operation.
     </div>
   </h2>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -2462,7 +2462,7 @@ sign-out operation.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2471,7 +2471,7 @@ sign-out operation.
               </strong>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2482,7 +2482,7 @@ sign-out operation.
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               -
             </td>
@@ -2491,7 +2491,7 @@ sign-out operation.
       </table>
     </div>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -2554,7 +2554,7 @@ sign-out operation.
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -2636,7 +2636,7 @@ sign-out operation.
     </div>
   </h2>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -2812,7 +2812,7 @@ for more details.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2821,7 +2821,7 @@ for more details.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2836,7 +2836,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 A short-lived session token used by your app for proof of authorization when interacting with
@@ -2854,7 +2854,7 @@ the app's server counterpart. Unlike
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2863,7 +2863,7 @@ the app's server counterpart. Unlike
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2878,7 +2878,7 @@ the app's server counterpart. Unlike
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The user's email address. Might not be present if you didn't request the 
@@ -2898,7 +2898,7 @@ an Apple domain.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2907,7 +2907,7 @@ an Apple domain.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2927,7 +2927,7 @@ an Apple domain.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The user's name. May be 
@@ -2958,7 +2958,7 @@ your app.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2967,7 +2967,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2982,7 +2982,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 A JSON Web Token (JWT) that securely communicates information about the user to your app.
@@ -2993,7 +2993,7 @@ your app.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3002,7 +3002,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3016,7 +3016,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 A value that indicates whether the user appears to the system to be a real person.
@@ -3027,7 +3027,7 @@ your app.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3036,7 +3036,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3051,7 +3051,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 An arbitrary string that your app provided as 
@@ -3083,7 +3083,7 @@ will be
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3092,7 +3092,7 @@ will be
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3101,7 +3101,7 @@ will be
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 An identifier associated with the authenticated user. You can use this to check if the user is
@@ -3116,7 +3116,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -3220,7 +3220,7 @@ may be
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3229,7 +3229,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3244,7 +3244,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -3253,7 +3253,7 @@ may be
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3262,7 +3262,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3277,7 +3277,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -3286,7 +3286,7 @@ may be
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3295,7 +3295,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3310,7 +3310,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -3319,7 +3319,7 @@ may be
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3328,7 +3328,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3343,7 +3343,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -3352,7 +3352,7 @@ may be
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3361,7 +3361,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3376,7 +3376,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -3385,7 +3385,7 @@ may be
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3394,7 +3394,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3409,7 +3409,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -3419,7 +3419,7 @@ may be
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -3572,7 +3572,7 @@ for more details.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3581,13 +3581,13 @@ for more details.
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3602,7 +3602,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3635,7 +3635,7 @@ requests they will be
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3644,13 +3644,13 @@ requests they will be
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3659,7 +3659,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -3681,7 +3681,7 @@ OAuth 2.0 protocol
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3690,7 +3690,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3699,7 +3699,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -3709,7 +3709,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -3862,7 +3862,7 @@ for more details.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3871,13 +3871,13 @@ for more details.
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3886,7 +3886,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
@@ -3906,7 +3906,7 @@ for more details.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3915,13 +3915,13 @@ for more details.
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3936,7 +3936,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3969,7 +3969,7 @@ requests they will be
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3978,13 +3978,13 @@ requests they will be
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3993,7 +3993,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4016,7 +4016,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -4169,7 +4169,7 @@ for more details.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -4178,13 +4178,13 @@ for more details.
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -4193,7 +4193,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4215,7 +4215,7 @@ OAuth 2.0 protocol
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -4224,7 +4224,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -4233,7 +4233,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -4243,7 +4243,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -4334,7 +4334,7 @@ OAuth 2.0 protocol
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -4343,7 +4343,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -4355,7 +4355,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 A method to unsubscribe the listener.
@@ -4418,7 +4418,7 @@ OAuth 2.0 protocol
     </div>
   </h2>
   <div
-    class="css-eskewv-APISectionEnums"
+    class="css-ii449t"
   >
     <h3
       class="css-m417je-H3"
@@ -4493,10 +4493,10 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4556,7 +4556,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4571,10 +4571,10 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4634,7 +4634,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4649,10 +4649,10 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4712,7 +4712,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4728,7 +4728,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-eskewv-APISectionEnums"
+    class="css-ii449t"
   >
     <h3
       class="css-m417je-H3"
@@ -4803,10 +4803,10 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4866,7 +4866,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationButtonType
         .
@@ -4881,10 +4881,10 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4944,7 +4944,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationButtonType
         .
@@ -4959,7 +4959,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <strong
         class="css-1qx481h-B"
@@ -4995,7 +4995,7 @@ OAuth 2.0 protocol
       </div>
       <br />
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5055,7 +5055,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationButtonType
         .
@@ -5071,7 +5071,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-eskewv-APISectionEnums"
+    class="css-ii449t"
   >
     <h3
       class="css-m417je-H3"
@@ -5190,10 +5190,10 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5253,7 +5253,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationCredentialState
         .
@@ -5262,10 +5262,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5325,7 +5325,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationCredentialState
         .
@@ -5334,10 +5334,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5397,7 +5397,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationCredentialState
         .
@@ -5406,10 +5406,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5469,7 +5469,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationCredentialState
         .
@@ -5479,7 +5479,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-eskewv-APISectionEnums"
+    class="css-ii449t"
   >
     <h3
       class="css-m417je-H3"
@@ -5537,10 +5537,10 @@ for more details.
       </div>
     </h3>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5600,7 +5600,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationOperation
         .
@@ -5615,10 +5615,10 @@ for more details.
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5678,7 +5678,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationOperation
         .
@@ -5687,10 +5687,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5750,7 +5750,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationOperation
         .
@@ -5759,10 +5759,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5822,7 +5822,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationOperation
         .
@@ -5832,7 +5832,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-eskewv-APISectionEnums"
+    class="css-ii449t"
   >
     <h3
       class="css-m417je-H3"
@@ -5984,10 +5984,10 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6047,7 +6047,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationScope
         .
@@ -6056,10 +6056,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6119,7 +6119,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationScope
         .
@@ -6129,7 +6129,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-eskewv-APISectionEnums"
+    class="css-ii449t"
   >
     <h3
       class="css-m417je-H3"
@@ -6237,10 +6237,10 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6300,7 +6300,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6315,10 +6315,10 @@ for more details.
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6378,7 +6378,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6393,10 +6393,10 @@ for more details.
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6456,7 +6456,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6528,7 +6528,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </div>
   </h2>
   <div
-    class="css-excx5x-APISectionComponents"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -6664,7 +6664,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="css-g8zh0a"
       >
         <h3
           class="css-m417je-H3"
@@ -6726,12 +6726,12 @@ exports[`APISection expo-barcode-scanner 1`] = `
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Optional • 
           </span>
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Type:
           </span>
@@ -6784,7 +6784,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="css-g8zh0a"
       >
         <h3
           class="css-m417je-H3"
@@ -6846,12 +6846,12 @@ minimize battery usage.
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Optional • 
           </span>
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Type:
           </span>
@@ -6936,7 +6936,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="css-1k62do8-APISectionProps"
+        class="css-g8zh0a"
       >
         <h3
           class="css-m417je-H3"
@@ -6998,12 +6998,12 @@ data has been retrieved.
           data-text="true"
         >
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Optional • 
           </span>
           <span
-            class="css-5s9hp0-APISectionProps"
+            class="css-1lk0cux"
           >
             Type:
           </span>
@@ -7025,7 +7025,7 @@ data has been retrieved.
           </code>
           <span>
             <span
-              class="css-5s9hp0-APISectionProps"
+              class="css-1lk0cux"
             >
                • Default:
             </span>
@@ -7194,7 +7194,7 @@ Same as
     </div>
   </h2>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -7285,7 +7285,7 @@ Same as
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -7294,13 +7294,13 @@ Same as
               </strong>
               <br />
               <span
-                class="css-1sme59g-APISectionMethods"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -7319,7 +7319,7 @@ Same as
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               -
             </td>
@@ -7335,7 +7335,7 @@ Same as
 This can be used to quickly create specific permission hooks in every module.
     </p>
     <div
-      class="css-12a4dfj-CommentTextBlock"
+      class="css-1o90nzw"
     >
       <h4
         class="css-uucypz-H4"
@@ -7418,7 +7418,7 @@ This can be used to quickly create specific permission hooks in every module.
       </pre>
     </pre>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -7481,7 +7481,7 @@ This can be used to quickly create specific permission hooks in every module.
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -7601,7 +7601,7 @@ This can be used to quickly create specific permission hooks in every module.
     </div>
   </h2>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -7666,7 +7666,7 @@ This can be used to quickly create specific permission hooks in every module.
       Checks user's permissions for accessing the camera.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -7729,7 +7729,7 @@ This can be used to quickly create specific permission hooks in every module.
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -7788,7 +7788,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -7871,7 +7871,7 @@ This can be used to quickly create specific permission hooks in every module.
       .
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -7934,7 +7934,7 @@ This can be used to quickly create specific permission hooks in every module.
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -7993,7 +7993,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -8085,7 +8085,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8094,7 +8094,7 @@ This can be used to quickly create specific permission hooks in every module.
               </strong>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8103,7 +8103,7 @@ This can be used to quickly create specific permission hooks in every module.
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <span>
                 URL to get the image from.
@@ -8114,7 +8114,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8123,13 +8123,13 @@ This can be used to quickly create specific permission hooks in every module.
               </strong>
               <br />
               <span
-                class="css-1sme59g-APISectionMethods"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8138,7 +8138,7 @@ This can be used to quickly create specific permission hooks in every module.
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <span>
                 An array of bar code types. Defaults to all supported bar code types on
@@ -8195,7 +8195,7 @@ the platform.
       Scan bar codes from the image given by the URL.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -8258,7 +8258,7 @@ the platform.
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -8366,7 +8366,7 @@ code.
     </div>
   </h2>
   <div
-    class="css-dox4n0-APISectionInterfaces"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -8430,7 +8430,7 @@ code.
       An object obtained by permissions get and request functions.
     </p>
     <div
-      class="css-sr97iy-APISectionInterfaces"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -8520,7 +8520,7 @@ code.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8529,7 +8529,7 @@ code.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8538,7 +8538,7 @@ code.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 Indicates if user can be asked again for specific permission.
@@ -8551,7 +8551,7 @@ in order to enable/disable the permission.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8560,7 +8560,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8574,7 +8574,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 Determines time when the permission expires.
@@ -8585,7 +8585,7 @@ in order to enable/disable the permission.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8594,7 +8594,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8603,7 +8603,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 A convenience boolean that indicates if the permission is granted.
@@ -8614,7 +8614,7 @@ in order to enable/disable the permission.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8623,7 +8623,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8637,7 +8637,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 Determines the status of the permission.
@@ -8700,7 +8700,7 @@ in order to enable/disable the permission.
     </div>
   </h2>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -8791,7 +8791,7 @@ in order to enable/disable the permission.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8800,7 +8800,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8814,7 +8814,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The origin point of the bounding box.
@@ -8825,7 +8825,7 @@ in order to enable/disable the permission.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8834,7 +8834,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8848,7 +8848,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The size of the bounding box.
@@ -8860,7 +8860,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -8968,7 +8968,7 @@ in order to enable/disable the permission.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8977,13 +8977,13 @@ in order to enable/disable the permission.
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8992,7 +8992,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -9002,7 +9002,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -9093,7 +9093,7 @@ in order to enable/disable the permission.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9102,7 +9102,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9116,7 +9116,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -9126,7 +9126,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -9224,7 +9224,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9233,7 +9233,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9242,7 +9242,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The 
@@ -9259,7 +9259,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9268,7 +9268,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9277,7 +9277,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The 
@@ -9295,7 +9295,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -9388,7 +9388,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-1cjtxd5-Row"
             >
               <td
-                class="css-t44xva-Cell"
+                class="css-4ul8tm-Cell"
               >
                 <strong
                   class="css-1qx481h-B"
@@ -9397,7 +9397,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 </strong>
               </td>
               <td
-                class="css-t44xva-Cell"
+                class="css-4ul8tm-Cell"
               >
                 <code
                   class="inline css-ov7own-InlineCode"
@@ -9411,7 +9411,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 </code>
               </td>
               <td
-                class="css-t44xva-Cell"
+                class="css-4ul8tm-Cell"
               >
                 -
               </td>
@@ -9422,7 +9422,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -9576,7 +9576,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9585,13 +9585,13 @@ For some types, they will represent the area used by the scanner.
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9605,7 +9605,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The 
@@ -9623,7 +9623,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9632,13 +9632,13 @@ For some types, they will represent the area used by the scanner.
               </strong>
               <br />
               <span
-                class="css-b2doyv-APISectionTypes"
+                class="css-1g95u6x"
               >
                 (optional)
               </span>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9653,7 +9653,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 Corner points of the bounding box.
@@ -9664,7 +9664,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9673,7 +9673,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9682,7 +9682,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The information encoded in the bar code.
@@ -9693,7 +9693,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9702,7 +9702,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9711,7 +9711,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The barcode type.
@@ -9723,7 +9723,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -9814,7 +9814,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9823,7 +9823,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9832,7 +9832,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The height value.
@@ -9843,7 +9843,7 @@ For some types, they will represent the area used by the scanner.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9852,7 +9852,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9861,7 +9861,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 The width value.
@@ -9873,7 +9873,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -10006,7 +10006,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </h2>
   <div
-    class="css-eskewv-APISectionEnums"
+    class="css-ii449t"
   >
     <h3
       class="css-m417je-H3"
@@ -10064,10 +10064,10 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -10127,7 +10127,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         PermissionStatus
         .
@@ -10142,10 +10142,10 @@ For some types, they will represent the area used by the scanner.
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -10205,7 +10205,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         PermissionStatus
         .
@@ -10220,10 +10220,10 @@ For some types, they will represent the area used by the scanner.
       </p>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -10283,7 +10283,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         PermissionStatus
         .
@@ -10355,7 +10355,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </h2>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -10413,7 +10413,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h3>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -10476,7 +10476,7 @@ exports[`APISection expo-pedometer 1`] = `
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -10518,7 +10518,7 @@ exports[`APISection expo-pedometer 1`] = `
     </ul>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -10609,7 +10609,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -10618,7 +10618,7 @@ exports[`APISection expo-pedometer 1`] = `
               </strong>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -10633,7 +10633,7 @@ exports[`APISection expo-pedometer 1`] = `
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <span>
                 A date indicating the start of the range over which to measure steps.
@@ -10644,7 +10644,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -10653,7 +10653,7 @@ exports[`APISection expo-pedometer 1`] = `
               </strong>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -10668,7 +10668,7 @@ exports[`APISection expo-pedometer 1`] = `
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <span>
                 A date indicating the end of the range over which to measure steps.
@@ -10685,7 +10685,7 @@ exports[`APISection expo-pedometer 1`] = `
       Get the step count between two dates.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -10748,7 +10748,7 @@ exports[`APISection expo-pedometer 1`] = `
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -10858,7 +10858,7 @@ a start date that is more than seven days in the past returns only the available
     </blockquote>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -10922,7 +10922,7 @@ a start date that is more than seven days in the past returns only the available
       Returns whether the pedometer is enabled on the device.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -10985,7 +10985,7 @@ a start date that is more than seven days in the past returns only the available
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -11035,7 +11035,7 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -11093,7 +11093,7 @@ available on this device.
       </div>
     </h3>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11156,7 +11156,7 @@ available on this device.
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -11198,7 +11198,7 @@ available on this device.
     </ul>
   </div>
   <div
-    class="css-eu2n2e-APISectionMethods"
+    class="css-g8zh0a"
   >
     <h3
       class="css-m417je-H3"
@@ -11289,7 +11289,7 @@ available on this device.
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11298,7 +11298,7 @@ available on this device.
               </strong>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11312,7 +11312,7 @@ available on this device.
               </code>
             </td>
             <td
-              class="css-t44xva-Cell"
+              class="css-4ul8tm-Cell"
             >
               <span>
                 A callback that is invoked when new step count data is available. The callback is
@@ -11341,7 +11341,7 @@ provided with a single argument that is
       Subscribe to pedometer updates.
     </p>
     <div
-      class="css-1dfa5yf-APISectionMethods"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11404,7 +11404,7 @@ provided with a single argument that is
         class="docs-list-item css-1yzgz3v-LI"
       >
         <svg
-          class="css-1xa9dbk-APISectionMethods"
+          class="css-1a9xr20"
           color="var(--expo-theme-icon-secondary)"
           fill="none"
           height="16"
@@ -11510,7 +11510,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-dox4n0-APISectionInterfaces"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -11568,7 +11568,7 @@ provided with a single argument that is
       </div>
     </h3>
     <div
-      class="css-sr97iy-APISectionInterfaces"
+      class="css-1o90nzw"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11658,7 +11658,7 @@ provided with a single argument that is
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11667,7 +11667,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11676,7 +11676,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -11685,7 +11685,7 @@ provided with a single argument that is
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11694,7 +11694,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11708,7 +11708,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -11717,7 +11717,7 @@ provided with a single argument that is
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11726,7 +11726,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11735,7 +11735,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -11744,7 +11744,7 @@ provided with a single argument that is
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11753,7 +11753,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11767,7 +11767,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               -
             </td>
@@ -11828,7 +11828,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -11919,7 +11919,7 @@ provided with a single argument that is
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11928,7 +11928,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11937,7 +11937,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 Number of steps taken between the given dates.
@@ -11949,7 +11949,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -12042,7 +12042,7 @@ provided with a single argument that is
               class="css-1cjtxd5-Row"
             >
               <td
-                class="css-t44xva-Cell"
+                class="css-4ul8tm-Cell"
               >
                 <strong
                   class="css-1qx481h-B"
@@ -12051,7 +12051,7 @@ provided with a single argument that is
                 </strong>
               </td>
               <td
-                class="css-t44xva-Cell"
+                class="css-4ul8tm-Cell"
               >
                 <code
                   class="inline css-ov7own-InlineCode"
@@ -12065,7 +12065,7 @@ provided with a single argument that is
                 </code>
               </td>
               <td
-                class="css-t44xva-Cell"
+                class="css-4ul8tm-Cell"
               >
                 -
               </td>
@@ -12076,7 +12076,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -12158,7 +12158,7 @@ provided with a single argument that is
     </p>
   </div>
   <div
-    class="css-16qd3rn-APISectionTypes"
+    class="css-6fgdpv"
   >
     <h3
       class="css-m417je-H3"
@@ -12249,7 +12249,7 @@ provided with a single argument that is
             class="css-1cjtxd5-Row"
           >
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -12258,7 +12258,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -12270,7 +12270,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1uzovlc-Cell"
+              class="css-1i3ovdz-Cell"
             >
               <span>
                 A method to unsubscribe the listener.
@@ -12333,7 +12333,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-eskewv-APISectionEnums"
+    class="css-ii449t"
   >
     <h3
       class="css-m417je-H3"
@@ -12391,10 +12391,10 @@ provided with a single argument that is
       </div>
     </h3>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -12454,7 +12454,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         PermissionStatus
         .
@@ -12463,10 +12463,10 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -12526,7 +12526,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         PermissionStatus
         .
@@ -12535,10 +12535,10 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-1xaswp1-APISectionEnums"
+      class="css-xlf1x8"
     >
       <div
-        class="css-6gai93-APISectionEnums"
+        class="css-14s291h"
       >
         <h4
           class="  css-uucypz-H4"
@@ -12598,7 +12598,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-1rann0c-APISectionEnums"
+        class="inline css-17lv2s9-InlineCode"
       >
         PermissionStatus
         .

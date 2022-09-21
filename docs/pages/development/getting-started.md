@@ -91,7 +91,7 @@ First, install the library as you normally would:
 
 then register the plugin in your `app.json`. Using this module will require new permissions, and the plugin can optionally customize the message displayed to users in the permission prompt.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```json
 "expo": {
   "plugins": [
@@ -112,7 +112,7 @@ Once you've generated new builds with EAS build or the `expo run:ios`/`expo run:
 
 Add the following code to your **App.tsx**, run `npx expo start --dev-client`, and load your JavaScript. Now you can convert speech to text in your app!
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React, { useState, useEffect } from "react";
 import { Button, StyleSheet, Text, View } from "react-native";

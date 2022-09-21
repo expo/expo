@@ -2,9 +2,11 @@ import { css } from '@emotion/react';
 import { borderRadius, iconSize, shadows, spacing, theme, ChevronDownIcon } from '@expo/styleguide';
 import React from 'react';
 
-import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions.cjs';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
 import { LABEL } from '~/ui/components/Text';
+
+const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
 
 // TODO(cedric): move this to a generic select input, so we can reuse it in the color scheme selector
 
@@ -45,8 +47,8 @@ function versionToText(version: string): string {
     return 'Unversioned';
   } else if (version === 'latest') {
     return `${versionToText(LATEST_VERSION)} (latest)`;
-  } else if (version === BETA_VERSION) {
-    return `${versionToText(BETA_VERSION)} (beta)`;
+  } else if (BETA_VERSION && version === BETA_VERSION.toString()) {
+    return `${versionToText(BETA_VERSION.toString())} (beta)`;
   }
   return `SDK ${version.substring(1, 3)}`;
 }

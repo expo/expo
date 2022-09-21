@@ -131,9 +131,9 @@ Describes the current state of a component to the user of an assistive technolog
 
 See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibilitystate-ios-android) for more information.
 
-| Type                                                                                           | Required |
-| ---------------------------------------------------------------------------------------------- | -------- |
-| object: {disabled: bool, selected: bool, checked: bool or 'mixed', busy: bool, expanded: bool} | No       |
+| Type                                                                                                         | Required |
+|--------------------------------------------------------------------------------------------------------------| -------- |
+| object: &lbrace;disabled: bool, selected: bool, checked: bool or 'mixed', busy: bool, expanded: bool&rbrace; | No       |
 
 ---
 
@@ -143,9 +143,9 @@ Represents the current value of a component. It can be a textual description of 
 
 See the [Accessibility guide](https://reactnative.dev/docs/0.64/accessibility#accessibilityvalue-ios-android) for more information.
 
-| Type                                                          | Required |
-| ------------------------------------------------------------- | -------- |
-| object: {min: number, max: number, now: number, text: string} | No       |
+| Type                                                                        | Required |
+|-----------------------------------------------------------------------------| -------- |
+| object: &lbrace;min: number, max: number, now: number, text: string&rbrace; | No       |
 
 ---
 
@@ -282,9 +282,9 @@ For example, if a touchable view has a height of 20 the touchable height can be 
 
 > The touch area never extends past the parent view bounds and the Z-index of sibling views always takes precedence if a touch hits two overlapping views.
 
-| Type                                                               | Required |
-| ------------------------------------------------------------------ | -------- |
-| object: {top: number, left: number, bottom: number, right: number} | No       |
+| Type                                                                             | Required |
+|----------------------------------------------------------------------------------| -------- |
+| object: &lbrace;top: number, left: number, bottom: number, right: number&rbrace; | No       |
 
 ---
 

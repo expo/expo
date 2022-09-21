@@ -8,9 +8,7 @@ import { Callout } from '~/ui/components/Callout';
 import { Terminal } from '~/ui/components/Snippet';
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-<Callout type="warning">
-  EAS Metadata is in beta and subject to breaking changes.
-</Callout>
+<Callout type="warning">EAS Metadata is in beta and subject to breaking changes.</Callout>
 <br />
 
 EAS Metadata enables you to automate and maintain your app store presence from the command line. It uses a [**store.config.json**](./config.md#static-store-config) file containing all required app information instead of going through multiple different forms. It also tries to find common pitfalls that could cause app rejections with built-in validation.

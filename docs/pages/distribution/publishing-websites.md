@@ -9,7 +9,7 @@ title: Publishing Websites
   - Uses Webpack to [optimize the project.][webpack-optimize]
   - If you make any changes to your project, you'll need to re-build for production.
   - For more help use `npx expo export:web --help`
-  <!-- - To speed up builds you can skip the PWA asset generation with `expo build:web --no-pwa` -->
+  {/* - To speed up builds you can skip the PWA asset generation with `expo build:web --no-pwa` */}
 - You can now deploy or host this anywhere you like.
 
 **Tips**
@@ -35,9 +35,9 @@ title: Publishing Websites
 
 ---
 
-## [AWS Amplify Console](https://console.amplify.aws)
+## AWS Amplify Console
 
-The AWS Amplify Console provides a Git-based workflow for continuously deploying and hosting full-stack serverless web apps. Amplify deploys your PWA from a repository instead of from your computer. In this guide, we'll use a GitHub repository. Before starting, [create a new repo on GitHub](https://github.com/new).
+The [AWS Amplify Console](https://console.amplify.aws) provides a Git-based workflow for continuously deploying and hosting full-stack serverless web apps. Amplify deploys your PWA from a repository instead of from your computer. In this guide, we'll use a GitHub repository. Before starting, [create a new repo on GitHub](https://github.com/new).
 
 1. Add the [amplify-explicit.yml](https://github.com/expo/amplify-demo/blob/master/amplify-explicit.yml) file to the root of your repo.
 
@@ -49,9 +49,9 @@ The AWS Amplify Console provides a Git-based workflow for continuously deploying
 
 5. Review your settings and choose **Save and deploy**. Your app will now be deployed to a `https://branchname.xxxxxx.amplifyapp.com` URL.
 
-## [Vercel](https://vercel.com/)
+## Vercel
 
-Vercel has a single-command zero-config deployment flow. You can use `vercel` to deploy your app for free!
+[Vercel](https://vercel.com/) has a single-command zero-config deployment flow. You can use `vercel` to deploy your app for free!
 
 > For more information on unlimited hosting, check out their [pricing](https://vercel.com/pricing).
 
@@ -67,9 +67,9 @@ Vercel has a single-command zero-config deployment flow. You can use `vercel` to
 
 Paste that URL into your browser when the build is complete, and you will see your deployed app!
 
-## [Surge](https://surge.sh/)
+## Surge
 
-Install the Surge CLI if you haven’t already by running `npm install -g surge`.
+Install the [Surge](https://surge.sh/) CLI if you haven’t already by running `npm install -g surge`.
 Run the `surge` command, then promptly log in or create a new account.
 
 When asked about the project path, make sure to specify the `web-build` folder, for example:
@@ -80,7 +80,9 @@ project path: /path/to/expo-project/web-build
 
 > To support routers that use the HTML 5 `pushState` API, you'll need to rename the **web-build/index.html** to **web/200.html** before deploying.
 
-## [Netlify](https://www.netlify.com/)
+## Netlify
+
+Learn more about [Netlify](https://www.netlify.com/).
 
 ### Manual deployment with the Netlify CDN
 
@@ -99,7 +101,9 @@ With this setup Netlify will build and deploy when you push to git or open a new
 2. Pick your Git hosting service and select your repository
 3. Click `Build your site`
 
-## [GitHub Pages](https://pages.github.com/)
+## GitHub Pages
+
+Learn more about [GitHub Pages](https://pages.github.com/).
 
 > We'll use `yarn` but you can use `npm` if you want.
 
@@ -196,7 +200,9 @@ Here are the formal instructions for deploying to GitHub Pages:
 
    > When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
 
-## [Firebase Hosting](https://console.firebase.google.com/)
+## Firebase Hosting
+
+Learn more about [Firebase Hosting](https://console.firebase.google.com/).
 
 ### Setup Firebase
 

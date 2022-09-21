@@ -1,13 +1,13 @@
-// @preval
+import frontmatter from 'front-matter';
+import fs from 'fs';
+import path from 'path';
+import { u as make } from 'unist-builder';
+import { URL, fileURLToPath } from 'url';
 
-const frontmatter = require('front-matter');
-const fs = require('fs');
-const path = require('path');
-const make = require('unist-builder');
-const { URL } = require('url');
+import { LATEST_VERSION, VERSIONS } from './versions.js';
 
-const { LATEST_VERSION, VERSIONS } = require('./versions.cjs');
-const PAGES_DIR = path.resolve(__dirname, '../pages');
+const dirname = path.dirname(fileURLToPath(import.meta.url));
+const PAGES_DIR = path.resolve(dirname, '../pages');
 
 // TODO(cedric): refactor docs to get rid of the directory lists
 
@@ -35,14 +35,11 @@ const general = [
   makeSection(
     'Get started',
     [
-      makeGroup(
-        'Set up',
-        [
-          makePage('get-started/installation.md'),
-          makePage('get-started/create-a-new-app.md'),
-          makePage('get-started/errors.md'),
-        ],
-      ),
+      makeGroup('Set up', [
+        makePage('get-started/installation.md'),
+        makePage('get-started/create-a-new-app.md'),
+        makePage('get-started/errors.md'),
+      ]),
       makeGroup(
         'Tutorial',
         [
@@ -217,18 +214,15 @@ const eas = [
   makeSection(
     'EAS Build',
     [
-      makeGroup(
-        'Start Building',
-        [
-          makePage('build/introduction.md'),
-          makePage('build/setup.md'),
-          makePage('build/eas-json.md'),
-          makePage('build/internal-distribution.md'),
-          makePage('build/automating-submissions.md'),
-          makePage('build/updates.md'),
-          makePage('build/building-on-ci.md'),
-        ],
-      ),
+      makeGroup('Start Building', [
+        makePage('build/introduction.md'),
+        makePage('build/setup.md'),
+        makePage('build/eas-json.md'),
+        makePage('build/internal-distribution.md'),
+        makePage('build/automating-submissions.md'),
+        makePage('build/updates.md'),
+        makePage('build/building-on-ci.md'),
+      ]),
       makeGroup('App Signing', [
         makePage('app-signing/app-credentials.md'),
         makePage('app-signing/managed-credentials.md'),
@@ -357,7 +351,9 @@ const versionsReference = VERSIONS.reduce(
   (all, version) => ({
     ...all,
     [version]: [
-      makeSection('Configuration files', pagesFromDir(`versions/${version}/config`), { expanded: true }),
+      makeSection('Configuration files', pagesFromDir(`versions/${version}/config`), {
+        expanded: true,
+      }),
       makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
       makeSection('React Native', sortLegacyReactNative(version), { expanded: true }),
     ],
@@ -367,7 +363,7 @@ const versionsReference = VERSIONS.reduce(
 
 const reference = { ...versionsReference, latest: versionsReference[LATEST_VERSION] };
 
-module.exports = {
+export default {
   general,
   eas,
   preview,
@@ -377,6 +373,7 @@ module.exports = {
   generalDirectories,
   previewDirectories,
   easDirectories,
+  archiveDirectories,
 };
 
 // --- MDX methods ---
