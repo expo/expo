@@ -173,7 +173,7 @@ export async function deleteAllGifs() {
 import * as FileSystem from 'expo-file-system';
 ```
 
-### [Supported URI schemes](#supported-uri-schemes-1)
+### Supported URI schemes
 
 ## Directories
 
