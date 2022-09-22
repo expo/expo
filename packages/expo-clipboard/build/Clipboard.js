@@ -74,6 +74,10 @@ export async function getUrlAsync() {
 /**
  * Sets a URL in the user's clipboard.
  *
+ * This function behaves the same as [`setStringAsync()`](#setstringasynctext-options), except that
+ * it sets the clipboard content type to be a URL. It lets your app or other apps know that the
+ * clipboard contains a URL and behave accordingly.
+ *
  * @param url The URL to save to the clipboard.
  * @platform ios
  */

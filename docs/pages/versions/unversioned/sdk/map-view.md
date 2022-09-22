@@ -151,7 +151,6 @@ To use this in web, add the following script to your **web/index.html**. This sc
 <html lang="en">
   <head>
     <!-- At the end of the <head/> element... -->
-
     <script
       async
       defer
@@ -160,8 +159,7 @@ To use this in web, add the following script to your **web/index.html**. This sc
 
     <!-- Use your web API Key in place of API_KEY: https://developers.google.com/maps/documentation/javascript/get-api-key -->
   </head>
-
-  <!-- <body /> -->
+  <body />
 </html>
 ```
 

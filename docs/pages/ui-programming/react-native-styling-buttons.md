@@ -19,7 +19,7 @@ Here's an example of using`<Pressable />` to create a button component:
 
 <SnackInline>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```jsx
 import React from 'react';
 import { Text, View, StyleSheet, Pressable } from 'react-native';

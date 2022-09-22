@@ -9,11 +9,21 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.3.0 — 2022-09-16
+
+### 🎉 New features
+
 - Better support for landscape orientation. ([#19010](https://github.com/expo/expo/pull/19010) by [@ajsmth](https://github.com/ajsmth))
 
 ### 🐛 Bug fixes
 
 - Remove the deprecated `Linking.removeEventListener` in expo-dev-launcher bundle. ([#18939](https://github.com/expo/expo/pull/18939) by [@kudo](https://github.com/kudo))
+- Fixed the incompatibility with react-native-v8 on Android. ([#19117](https://github.com/expo/expo/pull/19117) by [@kudo](https://github.com/kudo))
+- Fixed crash when loading bundle without explicit port on Android. ([#19136](https://github.com/expo/expo/pull/19136) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

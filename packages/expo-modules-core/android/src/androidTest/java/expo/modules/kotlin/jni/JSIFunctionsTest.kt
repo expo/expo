@@ -3,6 +3,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
@@ -10,6 +11,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.typedarray.Float32Array
 import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
+import expo.modules.kotlin.types.Either
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
@@ -82,8 +84,55 @@ class JSIFunctionsTest {
     Truth.assertThat(e1).hasLength(3)
     Truth.assertThat(e2).hasLength(3)
     val newArray = arrayOf(*e1, *e2)
-    newArray.forEachIndexed { index, it ->
-      Truth.assertThat(it.getDouble().toInt()).isEqualTo(index + 1)
+    newArray.forEachIndexed { index, element ->
+      Truth.assertThat(element.getDouble().toInt()).isEqualTo(index + 1)
+    }
+  }
+
+  @Test
+  fun enum_list_should_be_convertible() {
+    var wasCalled = false
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Function("list") { a: List<SimpleEnumClass> ->
+          wasCalled = true
+
+          Truth.assertThat(a).hasSize(2)
+          Truth.assertThat(a[0]).isEqualTo(SimpleEnumClass.V1)
+          Truth.assertThat(a[1]).isEqualTo(SimpleEnumClass.V2)
+        }
+      }
+    ) {
+      evaluateScript("ExpoModules.TestModule.list(['V1', 'V2'])")
+      Truth.assertThat(wasCalled).isTrue()
+    }
+  }
+
+  @Test
+  fun js_object_list_should_be_convertible() {
+    var wasCalled = false
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Function("list") { a: List<JavaScriptObject> ->
+          wasCalled = true
+
+          Truth.assertThat(a).hasSize(2)
+
+          val e1 = a[0]
+          val e2 = a[1]
+
+          val foo = e1.getProperty("foo").getString()
+          Truth.assertThat(foo).isEqualTo("foo")
+
+          val bar = e2.getProperty("bar").getString()
+          Truth.assertThat(bar).isEqualTo("bar")
+        }
+      }
+    ) {
+      evaluateScript("ExpoModules.TestModule.list([{'foo':'foo'}, {'bar':'bar'}])")
+      Truth.assertThat(wasCalled).isTrue()
     }
   }
 
@@ -392,6 +441,8 @@ class JSIFunctionsTest {
         Function("jsObjectArray") { a: Array<JavaScriptObject> ->
           wasCalled = true
 
+          Truth.assertThat(a).hasLength(2)
+
           val e1 = a[0]
           val e2 = a[1]
 
@@ -406,5 +457,27 @@ class JSIFunctionsTest {
       evaluateScript("ExpoModules.TestModule.jsObjectArray([{'foo':'foo'}, {'bar':'bar'}])")
       Truth.assertThat(wasCalled).isTrue()
     }
+  }
+
+  @OptIn(EitherType::class)
+  @Test
+  fun either_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("eitherFirst") { either: Either<Int, String> ->
+        Truth.assertThat(either.`is`(Int::class)).isTrue()
+        either.get(Int::class)
+      }
+      Function("eitherSecond") { either: Either<Int, String> ->
+        Truth.assertThat(either.`is`(String::class)).isTrue()
+        either.get(String::class)
+      }
+    }
+  ) {
+    val int = evaluateScript("ExpoModules.TestModule.eitherFirst(123)").getDouble().toInt()
+    val string = evaluateScript("ExpoModules.TestModule.eitherSecond('expo')").getString()
+
+    Truth.assertThat(int).isEqualTo(123)
+    Truth.assertThat(string).isEqualTo("expo")
   }
 }

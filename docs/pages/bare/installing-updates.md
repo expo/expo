@@ -3,7 +3,7 @@ title: Installing expo-updates
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
-import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
+import { DiffBlock } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
 
 `expo-updates` fetches and manages updates to your app stored on a remote server.
@@ -22,7 +22,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 We need to modify **index.js** to import `expo-asset` early in your app, in order to be able to update assets with updates. We'll also need to update **metro.config.js** for the same reason. And we'll need to add some Expo-specific configuration to **app.json**.
 
-<ConfigurationDiff source="/static/diffs/expo-updates-js.diff" />
+<DiffBlock source="/static/diffs/expo-updates-js.diff" />
 
 <Collapsible summary="What is the SDK version field for?">
 
@@ -44,7 +44,7 @@ If you're migrating from an ExpoKit project to the bare workflow with `expo-upda
 
 ## Configuration for iOS
 
-- Add the `"Supporting"` directory containing `"Expo.plist"` to your project in Xcode with the following content.
+Add the **"Supporting"** directory containing **Expo.plist** to your project in Xcode with the following content:
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -61,9 +61,10 @@ If you're migrating from an ExpoKit project to the bare workflow with `expo-upda
 
 ## Configuration for Android
 
-- Apply the following change to your AndroidManifest.xml.
+Apply the following change to your **AndroidManifest.xml** file:
 
-```diff
+<DiffBlock raw={`
+diff --git a/apps/bare-update/android/app/src/main/AndroidManifest.xml b/apps/bare-update/android/app/src/main/AndroidManifest.xml
 --- a/apps/bare-update/android/app/src/main/AndroidManifest.xml
 +++ b/apps/bare-update/android/app/src/main/AndroidManifest.xml
 @@ -5,6 +5,8 @@
@@ -75,19 +76,19 @@ If you're migrating from an ExpoKit project to the bare workflow with `expo-upda
      <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
-```
+`} />
 
 ## Customizing Automatic Setup for iOS
 
 By default, `expo-updates` requires no additional setup. If you want to customize the installation, e.g. to enable updates only in some build variants, you can instead follow these manual setup steps and then apply any customizations.
 
-<ConfigurationDiff source="/static/diffs/expo-updates-ios.diff" />
+<DiffBlock source="/static/diffs/expo-updates-ios.diff" />
 
 ## Customizing Automatic Setup for Android
 
 By default, `expo-updates` requires no additional setup. If you want to customize the installation, e.g. to enable updates only in some build variants, you can instead follow these manual setup steps and then apply any customizations.
 
-<ConfigurationDiff source="/static/diffs/expo-updates-android.diff" />
+<DiffBlock source="/static/diffs/expo-updates-android.diff" />
 
 ## Usage
 

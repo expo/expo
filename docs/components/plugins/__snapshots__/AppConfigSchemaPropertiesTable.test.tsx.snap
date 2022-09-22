@@ -31,10 +31,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1cjtxd5-Row"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="css-1i3ovdz-Cell"
           >
             <div
-              data-testid="<propertyAnchor level={0}><inlineCode>name</inlineCode></propertyAnchor>"
+              data-testid="name"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
               <div
@@ -95,10 +95,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="css-4ul8tm-Cell"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
@@ -107,60 +107,61 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 (string)
               </strong>
                - Name of your app.
-              <div
-                class="css-1wra0b6-BareWorkflowCollapsible"
+            </p>
+            <details
+              class="css-1nmf69-Collapsible"
+            >
+              <summary
+                class="css-15fupqd-Collapsible"
               >
-                <details
-                  class="css-1nmf69-Collapsible"
+                <div
+                  class="css-166ujkg-Collapsible"
                 >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
+                  <svg
+                    class="css-1wgpnk4-Collapsible"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
                   >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      Bare Workflow
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    Edit the 'Display Name' field in Xcode
-                  </div>
-                </details>
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="css-x1nydd-TextComponent"
+                >
+                  Bare Workflow
+                </span>
+              </summary>
+              <div
+                class="css-1gk6nru-Collapsible"
+              >
+                <p
+                  class="css-6jxvia-P"
+                  data-text="true"
+                >
+                  Edit the 'Display Name' field in Xcode
+                </p>
               </div>
-            </div>
+            </details>
           </td>
         </tr>
         <tr
           class="css-1cjtxd5-Row"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="css-1i3ovdz-Cell"
           >
             <div
-              data-testid="<propertyAnchor level={0}><inlineCode>androidNavigationBar</inlineCode></propertyAnchor>"
+              data-testid="androidNavigationBar"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
               <div
@@ -221,10 +222,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="css-4ul8tm-Cell"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
@@ -233,103 +234,105 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 (object)
               </strong>
                - Configuration for the bottom navigation bar on Android.
-              <div
-                class="css-1r2rajm-ExpoKitCollapsible"
+            </p>
+            <details
+              class="css-1nmf69-Collapsible"
+            >
+              <summary
+                class="css-15fupqd-Collapsible"
               >
-                <details
-                  class="css-1nmf69-Collapsible"
+                <div
+                  class="css-166ujkg-Collapsible"
                 >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
+                  <svg
+                    class="css-1wgpnk4-Collapsible"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
                   >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      ExpoKit
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    Set this property using AppConstants.java.
-                  </div>
-                </details>
-              </div>
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="css-x1nydd-TextComponent"
+                >
+                  ExpoKit
+                </span>
+              </summary>
               <div
-                class="css-1wra0b6-BareWorkflowCollapsible"
+                class="css-1gk6nru-Collapsible"
               >
-                <details
-                  class="css-1nmf69-Collapsible"
+                <p
+                  class="css-6jxvia-P"
+                  data-text="true"
                 >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
-                  >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      Bare Workflow
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    Set this property using just Xcode
-                  </div>
-                </details>
+                  Set this property using AppConstants.java.
+                </p>
               </div>
-            </div>
+            </details>
+            <details
+              class="css-1nmf69-Collapsible"
+            >
+              <summary
+                class="css-15fupqd-Collapsible"
+              >
+                <div
+                  class="css-166ujkg-Collapsible"
+                >
+                  <svg
+                    class="css-1wgpnk4-Collapsible"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
+                  >
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="css-x1nydd-TextComponent"
+                >
+                  Bare Workflow
+                </span>
+              </summary>
+              <div
+                class="css-1gk6nru-Collapsible"
+              >
+                <p
+                  class="css-6jxvia-P"
+                  data-text="true"
+                >
+                  Set this property using just Xcode
+                </p>
+              </div>
+            </details>
           </td>
         </tr>
         <tr
           class="css-1cjtxd5-Row"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="css-1i3ovdz-Cell"
           >
             <div
-              data-testid="<subpropertyAnchor level={1}><inlineCode>visible</inlineCode></subpropertyAnchor>"
+              data-testid="visible"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
@@ -390,10 +393,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="css-4ul8tm-Cell"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
@@ -402,60 +405,61 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 (enum)
               </strong>
                - Determines how and when the navigation bar is shown.
-              <div
-                class="css-1r2rajm-ExpoKitCollapsible"
+            </p>
+            <details
+              class="css-1nmf69-Collapsible"
+            >
+              <summary
+                class="css-15fupqd-Collapsible"
               >
-                <details
-                  class="css-1nmf69-Collapsible"
+                <div
+                  class="css-166ujkg-Collapsible"
                 >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
+                  <svg
+                    class="css-1wgpnk4-Collapsible"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
                   >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      ExpoKit
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    Set this property using Xcode.
-                  </div>
-                </details>
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="css-x1nydd-TextComponent"
+                >
+                  ExpoKit
+                </span>
+              </summary>
+              <div
+                class="css-1gk6nru-Collapsible"
+              >
+                <p
+                  class="css-6jxvia-P"
+                  data-text="true"
+                >
+                  Set this property using Xcode.
+                </p>
               </div>
-            </div>
+            </details>
           </td>
         </tr>
         <tr
           class="css-1cjtxd5-Row"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="css-1i3ovdz-Cell"
           >
             <div
-              data-testid="<subpropertyAnchor level={2}><inlineCode>always</inlineCode></subpropertyAnchor>"
+              data-testid="always"
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
               <div
@@ -516,10 +520,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="css-4ul8tm-Cell"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
@@ -528,17 +532,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 (boolean)
               </strong>
                - Test sub-sub-property
-            </div>
+            </p>
           </td>
         </tr>
         <tr
           class="css-1cjtxd5-Row"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="css-1i3ovdz-Cell"
           >
             <div
-              data-testid="<subpropertyAnchor level={1}><inlineCode>backgroundColor</inlineCode></subpropertyAnchor>"
+              data-testid="backgroundColor"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
@@ -599,10 +603,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="css-4ul8tm-Cell"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
@@ -610,10 +614,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               >
                 (string)
               </strong>
-               - Specifies the background color of the navigation bar. 
-            </div>
-            <div
-              class=" css-19f55nd-PDIV"
+               - Specifies the background color of the navigation bar.
+            </p>
+            
+
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               6 character long hex color string, eg: 
@@ -622,17 +628,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               >
                 '#000000'
               </code>
-            </div>
+            </p>
           </td>
         </tr>
         <tr
           class="css-1cjtxd5-Row"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="css-1i3ovdz-Cell"
           >
             <div
-              data-testid="<propertyAnchor level={0}><inlineCode>intentFilters</inlineCode></propertyAnchor>"
+              data-testid="intentFilters"
               style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
             >
               <div
@@ -693,10 +699,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="css-4ul8tm-Cell"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
@@ -705,50 +711,51 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 (array)
               </strong>
                - Configuration for setting an array of custom intent filters in Android manifest.
-              <div
-                class="css-1wra0b6-BareWorkflowCollapsible"
+            </p>
+            <details
+              class="css-1nmf69-Collapsible"
+            >
+              <summary
+                class="css-15fupqd-Collapsible"
               >
-                <details
-                  class="css-1nmf69-Collapsible"
+                <div
+                  class="css-166ujkg-Collapsible"
                 >
-                  <summary
-                    class="css-1xw7x0v-Collapsible"
+                  <svg
+                    class="css-1wgpnk4-Collapsible"
+                    fill="none"
+                    height="16"
+                    role="img"
+                    size="16"
+                    viewBox="0 0 20 20"
+                    width="16"
                   >
-                    <div
-                      class="css-166ujkg-Collapsible"
-                    >
-                      <svg
-                        class="css-1wgpnk4-Collapsible"
-                        fill="none"
-                        height="16"
-                        role="img"
-                        size="16"
-                        viewBox="0 0 20 20"
-                        width="16"
-                      >
-                        <title>
-                          Triangle-down-icon
-                        </title>
-                        <path
-                          d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                          fill="var(--expo-theme-icon-default)"
-                        />
-                      </svg>
-                    </div>
-                    <span
-                      class="css-x1nydd-TextComponent"
-                    >
-                      Bare Workflow
-                    </span>
-                  </summary>
-                  <div
-                    class="css-1gk6nru-Collapsible"
-                  >
-                    This is set in AndroidManifest.xml directly.
-                  </div>
-                </details>
+                    <title>
+                      Triangle-down-icon
+                    </title>
+                    <path
+                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                      fill="var(--expo-theme-icon-default)"
+                    />
+                  </svg>
+                </div>
+                <span
+                  class="css-x1nydd-TextComponent"
+                >
+                  Bare Workflow
+                </span>
+              </summary>
+              <div
+                class="css-1gk6nru-Collapsible"
+              >
+                <p
+                  class="css-6jxvia-P"
+                  data-text="true"
+                >
+                  This is set in AndroidManifest.xml directly.
+                </p>
               </div>
-            </div>
+            </details>
             <blockquote
               class="css-1nn217x-Quote"
               data-text="true"
@@ -774,17 +781,11 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 </svg>
               </div>
               <div>
-                <div
-                  class=" css-19f55nd-PDIV"
-                  data-text="true"
-                >
-                   
-                  [{
-"autoVerify": true,
-"data": {"host": "*.example.com"
-}
-}]
-                </div>
+                
+
+                [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
+                
+
               </div>
             </blockquote>
           </td>
@@ -793,10 +794,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1cjtxd5-Row"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="css-1i3ovdz-Cell"
           >
             <div
-              data-testid="<subpropertyAnchor level={1}><inlineCode>autoVerify</inlineCode></subpropertyAnchor>"
+              data-testid="autoVerify"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
@@ -857,10 +858,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="css-4ul8tm-Cell"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
@@ -869,17 +870,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 (boolean)
               </strong>
                - You may also use an intent filter to set your app as the default handler for links
-            </div>
+            </p>
           </td>
         </tr>
         <tr
           class="css-1cjtxd5-Row"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="css-1i3ovdz-Cell"
           >
             <div
-              data-testid="<subpropertyAnchor level={1}><inlineCode>data</inlineCode></subpropertyAnchor>"
+              data-testid="data"
               style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
             >
               <div
@@ -940,10 +941,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="css-4ul8tm-Cell"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
@@ -951,17 +952,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               >
                 (array || object)
               </strong>
-            </div>
+            </p>
           </td>
         </tr>
         <tr
           class="css-1cjtxd5-Row"
         >
           <td
-            class="css-1uzovlc-Cell"
+            class="css-1i3ovdz-Cell"
           >
             <div
-              data-testid="<subpropertyAnchor level={2}><inlineCode>host</inlineCode></subpropertyAnchor>"
+              data-testid="host"
               style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
             >
               <div
@@ -1022,10 +1023,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             </div>
           </td>
           <td
-            class="css-t44xva-Cell"
+            class="css-4ul8tm-Cell"
           >
-            <div
-              class=" css-19f55nd-PDIV"
+            <p
+              class="css-6jxvia-P"
               data-text="true"
             >
               <strong
@@ -1033,7 +1034,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               >
                 (string)
               </strong>
-            </div>
+            </p>
           </td>
         </tr>
       </tbody>

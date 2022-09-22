@@ -124,5 +124,10 @@ function reanimatedCmakeTransforms(abiVersion: string): FileTransform[] {
       find: 'set (PACKAGE_NAME "reanimated")',
       replaceWith: `set (PACKAGE_NAME "reanimated_${abiVersion}")`,
     },
+    {
+      paths: 'CMakeLists.txt',
+      find: /\b(libhermes)\b/,
+      replaceWith: `$1_${abiVersion}`,
+    },
   ];
 }

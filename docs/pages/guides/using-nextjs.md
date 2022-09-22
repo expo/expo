@@ -371,7 +371,7 @@ If you have any problems rendering a certain component with SSR then you can sub
 
 - [Expo SDK packages][expo-packages]
 
-<!-- Footer -->
+{/* Footer */}
 
 [expo-packages]: https://github.com/expo/expo/tree/main/packages
 [nextjs]: https://nextjs.org/

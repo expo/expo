@@ -7,7 +7,6 @@ packageName: 'expo-firebase-analytics'
 import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
 import { InlineCode } from '~/components/base/code';
 
 > **This is the only Firebase Analytics package for React Native that has universal platform support (iOS, Android, Web, and Electron).**
@@ -21,11 +20,13 @@ Learn more in the official [Firebase Docs](https://firebase.google.com/docs/anal
 
 <APIInstallSection />
 
-When using the web platform, you'll also need to run `npx expo install firebase`, which installs the Firebase JS SDK.
+When using the web platform, you'll also need to run `expo install firebase`, which installs the Firebase JS SDK.
 
 ## Configuration
 
-> If you are using [`react-native-firebase`](https://rnfirebase.io/) library in your project, you should use [`@react-native-firebase/analytics`](https://rnfirebase.io/analytics/usage) package provided by the library. For more information on how to configure native Firebase library, see [using the native Firebase SDK](/guides/setup-native-firebase/).
+### With native Firebase SDK
+
+If you are using [React Native Firebase](https://rnfirebase.io/) in your project, you should use [`@react-native-firebase/analytics`](https://rnfirebase.io/analytics/usage) package provided by the library. For more information on how to configure the native Firebase, see [using the native Firebase SDK](/guides/setup-native-firebase/).
 
 ### Expo Go: Limitations & configuration
 

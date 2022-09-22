@@ -130,8 +130,8 @@ export default function App() {
 
 This method is the least reliable because there are several reasons that a `require` statement might throw an error. For example, there could be an internal error, the module could be missing, the native module could be linked incorrectly, and so on. You should avoid using this method.
 
-## **Deprecated**: use the `.expo.[js/json/ts/tsx]` extension to provide Expo Go specific fallbacks
+## Deprecated `.expo` extensions
 
-The `.expo` extension is removed in SDK 41. Instead, consider using [conditional inline requires](#use-conditional-inline-requires-to-provide-fallbacks), and read [expo.fyi/expo-extension-migration](https://expo.fyi/expo-extension-migration) for specific guidance on migration.
+The `.expo.[js/json/ts/tsx]` extensions to provide Expo Go specific fallbacks are removed in favor of optional imports syntax. For more information, see [Migration off the expo file extension](https://github.com/expo/fyi/blob/main/expo-extension-migration.md#after).
 
 [expo-go]: https://expo.dev/expo-go

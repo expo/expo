@@ -38,21 +38,22 @@ Create a project by running:
 
 ## Configure your project
 
-1. Install the latest `expo-updates` library with:
+To configure your project, run the following commands in the order they are specified:
 
-   <Terminal cmd={['$ npx expo install expo-updates']} />
+<Terminal cmd={[
+'# Install the latest `expo-updates` library',
+'$ npx expo install expo-updates',
+'',
+'# Initialize your project with EAS Update',
+'$ eas update:configure',
+'',
+'# Set up the configuration file for builds',
+'$ eas build:configure',
+]} cmdCopy="expo install expo-updates && eas update:configure && eas build:configure" />
 
-2. Initialize your project with EAS Update:
+After running these commands, **eas.json** file will be created in the root directory of your project.
 
-   <Terminal cmd={['$ eas update:configure']} />
-
-3. To set up the configuration file for builds, run:
-
-   <Terminal cmd={['$ eas build:configure']} />
-
-This command will create a file named **eas.json**.
-
-4. Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
+Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
 
 ```json
 {
@@ -71,7 +72,7 @@ This command will create a file named **eas.json**.
 
 The `channel` allows you to point updates at builds. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update that will be available to builds with the channel "production".
 
-5. Optional: If your project is a bare React Native project, [read the doc](/bare/updating-your-app) on additional configuration you may need.
+**Optional**: If your project is a bare React Native project, see [Updating bare app](/bare/updating-your-app) for any additional configuration.
 
 ## Create a build for the project
 
