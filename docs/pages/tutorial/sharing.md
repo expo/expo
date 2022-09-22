@@ -19,7 +19,7 @@ You can install expo-sharing in the same way as you installed expo-image-picker.
 
 <SnackInline label="Sharing" templateId="tutorial/sharing-simple" dependencies={['expo-image-picker', 'expo-sharing']}>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View, /* @info This is required to determine which platform the code is going to run */ Platform /* @end */ } from 'react-native';
@@ -102,13 +102,13 @@ Sharing didn't work here because the desktop Chrome browser doesn't yet implemen
 
 It's time to shift our focus towards the purely aesthetic. In the next step of this tutorial we will [customize our app icon and splash screen](/tutorial/configuration).
 
-<!-- TODO(brentvatne): when we have a better workflow for https in expo-cli and a way to open Snack web on mobile we should revisit this -->
+{/* TODO(brentvatne): when we have a better workflow for https in expo-cli and a way to open Snack web on mobile we should revisit this */}
 
-<!-- ### Getting it working with another browser
+{/* ### Getting it working with another browser
 
 Sharing is supported on the following browsers at the time of writing:
 
 - Recent versions of mobile and desktop Safari.
 - Recent versions of Chrome for Android.
 
-There is just one small catch &mdash; we need to use `https`. Close `expo-cli` and run it again with `expo start --https`. Now we can copy and paste the URL into Safari and try again. -->
+There is just one small catch &mdash; we need to use `https`. Close `expo-cli` and run it again with `expo start --https`. Now we can copy and paste the URL into Safari and try again. */}

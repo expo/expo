@@ -11,8 +11,10 @@ import {
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
-import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions.cjs';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
+
+const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
 
 const STYLES_CONTAINER = css({
   position: 'relative',
@@ -67,7 +69,11 @@ export const VersionSelector = () => {
         onChange={e => setVersion(e.target.value)}>
         {VERSIONS.map(version => (
           <option key={version} value={version}>
-            {Utilities.getUserFacingVersionString(version, LATEST_VERSION, BETA_VERSION)}
+            {Utilities.getUserFacingVersionString(
+              version,
+              LATEST_VERSION,
+              typeof BETA_VERSION === 'boolean' ? undefined : BETA_VERSION
+            )}
           </option>
         ))}
       </select>

@@ -65,7 +65,7 @@ In order for Expo to send notifications from our servers using your credentials,
 
 3. Copy the token listed next to **Server key**.
 
-> ** Note:** Server Key is only available in **Cloud Messaging API (Legacy)**, which may be Disabled by default. Enable it by clicking the 3-dot menu > Manage API in Google Cloud Console and follow the flow there. Once the legacy messaging API is enabled, you should see Server Key in that section.
+> **Note:** Server Key is only available in **Cloud Messaging API (Legacy)**, which may be Disabled by default. Enable it by clicking the 3-dot menu > Manage API in Google Cloud Console and follow the flow there. Once the legacy messaging API is enabled, you should see Server Key in that section.
 
 4. Run `expo push:android:upload --api-key <your-token-here>`, replacing `<your-token-here>` with the string you just copied. We'll store your token securely on our servers, where it will only be accessed when you send a push notification.
 
