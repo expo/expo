@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Marked exports as deprecated in Expo SDK 46.
+- Marked exports as deprecated in Expo SDK 46. ([#19214](https://github.com/expo/expo/pull/19214) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.2.0 — 2022-07-07
 
