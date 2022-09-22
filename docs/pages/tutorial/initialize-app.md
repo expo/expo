@@ -5,16 +5,16 @@ title: Create your first app
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-In this chapter, you'll learn how to create a new Expo project and how to get it running.
+In this chapter, let’s learn how to create a new Expo project and how to get it running.
 
 ## Prerequisites
 
-You'll need the following tools to get started:
+We’ll need the following tools to get started:
 
-- Install [Expo Go](https://expo.dev/client) on your physical device.
-- Prepare your computer by [installing the required tools and dependencies](https://docs.expo.dev/get-started/installation/#requirements).
+- Install [Expo Go](https://expo.dev/client) on a physical device.
+- Prepare for development by [installing the required tools and dependencies](https://docs.expo.dev/get-started/installation/#requirements).
 
-This tutorial also assumes you have basic knowledge of JavaScript and React or React Native. If you have never written React code, go through [the official React tutorial](https://reactjs.org/tutorial/tutorial.html) first. For more resources, see [additional resources](https://docs.expo.dev/next-steps/additional-resources/).
+This tutorial also assumes that you have a basic knowledge of JavaScript and React or React Native. If you have never written React code, go through [the official React tutorial](https://reactjs.org/tutorial/tutorial.html) first. For more resources, see [additional resources](https://docs.expo.dev/next-steps/additional-resources/).
 
 ## Step 1: Initialize a new Expo app
 
@@ -23,7 +23,7 @@ We provide two different ways to get started:
 - [Initialize with the starter template](#initialize-with-the-starter-template)
 - [Manually initialize with `create-expo-app`](#alternate-manually-initialize-with--create-expo-app)
 
-Choose a way to initialize your app and open the project repository in your favorite code editor or IDE after initializing it. Throughout this tutorial, we use VS Code for our examples.
+Choose a way to initialize the app and open the project repository in your favorite code editor or IDE after initializing it. Throughout this tutorial, we use VS Code for our examples.
 
 ### Initialize with the starter template
 
@@ -31,13 +31,13 @@ In the directory of your choice with your preferred terminal, download the start
 
 <Terminal cmd={['$ npx create-expo-app -t expo-tutorial-template']} />
 
-The starter template you are downloading is an Expo project that comes with:
+The starter template we are downloading is an Expo project that comes with:
 
-- All dependencies pre-installed that you can use to build and run the app
+- All dependencies pre-installed that can be used to build and run the app
 - All the assets available in the **assets** directory
 - Splash screen and app icon already configured
 
-The starter template uses [`create-expo-app`](/workflow/glossary-of-terms/#create-expo-app). It is a command line tool that allows you to create a new React Native project with `expo` package installed. The template you are using for this tutorial is a special version created from the basic template that `create-expo-app` produces.
+The starter template uses [`create-expo-app`](/workflow/glossary-of-terms/#create-expo-app). It is a command line tool that allows creating a new React Native project with `expo` package installed. The template we are using for this tutorial is a special version created from the basic template that `create-expo-app` produces.
 
 ### Alternate: manually initialize with `create-expo-app`
 
