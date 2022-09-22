@@ -31,6 +31,7 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View, /* @info This is required to determine which platform the code is going to run */ Platform /* @end */ } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 /* @info As always, we must import it to use it */ import * as Sharing from 'expo-sharing'; /* @end */
+
 /* @info As always, we must import it to use it */ import * as ImageManipulator from "expo-image-manipulator"; /* @end */
 
 export default function App() {
