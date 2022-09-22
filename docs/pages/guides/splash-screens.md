@@ -2,6 +2,8 @@
 title: Create a Splash Screen
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 
 A splash screen, also known as a launch screen, is the first screen that a user sees when opening your app, and it stays visible while the app is loading. You can control when the splash screen disappears by using the native [SplashScreen API](/versions/latest/sdk/splash-screen).
@@ -14,11 +16,7 @@ The default splash screen is a blank white screen, this can be customized using 
 
 Create an app icon and splash image with the [Figma template](https://www.figma.com/file/ddc0glVeILssZl0Dcn1lSS/App-Icon-and-Splash?node-id=0%3A1) and video below:
 
-<object width="100%" height="400">
-   <param name="movie" value="https://youtube.com/embed/mVOFvLSiJ_s" />
-   <param name="wmode" value="transparent" />
-   <embed src="https://youtube.com/embed/mVOFvLSiJ_s" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
- </object>
+<Video url="https://youtube.com/embed/mVOFvLSiJ_s" />
 
 ### Make a splash image
 
@@ -28,7 +26,7 @@ Android screen sizes vary greatly with the massive variety of devices on the mar
 
 You can work off of [this Sketch template](https://github.com/expo/files/blob/b264c7f7bf2cacfbdb45640063988ab61dfbbe23/splash-template.sketch?raw=true) if you like. I did, and I changed the background color to a faint yellow and put a Noodle emoji in the middle. It's worth noting that the splash image supports transparency, although we didn't use it here.
 
-![](/static/images/splash-example.png)
+<ImageSpotlight alt="Splash screen example" src="/static/images/splash-example.png" />
 
 Export the image as a PNG and put it in your project directory. I'll assume it's in the **assets** directory and named **splash.png**.
 
@@ -65,13 +63,13 @@ If you set a background color other than white for your splash image, you may se
 }
 ```
 
-![backgroundColor Example](/static/images/backgroundColor-noodles.png)
+<ImageSpotlight alt="Splash screen with background color" src="/static/images/backgroundColor-noodles.png" />
 
 ### `splash.resizeMode`
 
 Any splash image that you provide will be resized to maintain its aspect ratio and to fit the resolution of the user's device. There are two strategies that can be used for resizing: `contain` (default) and `cover`. In both cases, the splash image is within the splash screen. These work the same as the React Native `Image` component's [`resizeMode`](/versions/latest/react-native/image/#resizemode), as demonstrated in the following diagram.
 
-![resizeMode](/static/images/resizeMode.png)
+<ImageSpotlight alt="Splash screen resize mode" src="/static/images/resizeMode.png" />
 
 Applying this to our noodles example, let's remove the `backgroundColor` and try it out:
 
@@ -86,7 +84,7 @@ Applying this to our noodles example, let's remove the `backgroundColor` and try
 }
 ```
 
-![resizeMode Example](/static/images/resizeMode-noodles.png)
+<ImageSpotlight alt="Splash screen resize mode with logo" src="/static/images/resizeMode-noodles.png" />
 
 Notice that in the last example, we stretched the image to fill the entire width, while maintaining the aspect ratio, and so the noodles emoji ended up being larger than it was when `resizeMode` was set to `contain`. If you are still unclear about the difference between contain and cover, [this blog post describes precisely what they mean](http://blog.vjeux.com/2013/image/css-container-and-cover.html).
 
@@ -105,7 +103,7 @@ We recommend displaying a `SplashScreen` when [pre-loading and caching assets](/
 
 Your app can be opened from the [Expo Go][expo-go] app or in a standalone app, and it can be either published or in development. There are slight differences in the splash screen behavior between these environments.
 
-![](https://media.giphy.com/media/l378l98EI0VQdwRzy/giphy.gif)
+<ImageSpotlight alt="iOS splash screen bechaviour" src="https://media.giphy.com/media/l378l98EI0VQdwRzy/giphy.gif" />
 
 - **On the left**, we are in the [Expo Go][expo-go] app and loading an app that is currently in development. Notice that on the bottom of the splash screen you see an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears, because the background color is set immediately but the image needs to be downloaded.
 - **In the middle**, we are in the [Expo Go][expo-go] app and we are loading a published app. Notice that again the splash image does not appear immediately.
