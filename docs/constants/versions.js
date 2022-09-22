@@ -29,16 +29,6 @@ export const BETA_VERSION = betaVersion ? `v${betaVersion}` : false;
  */
 export const VERSIONS = versionDirectories
   .filter(dir => {
-    // show all versions in dev mode
-    if (process.env.NODE_ENV !== 'production') {
-      return true;
-    }
-
-    // hide unversioned in production
-    if (dir === 'unversioned') {
-      return false;
-    }
-
     // show all other versions in production except
     // those greater than the package.json version number
     const dirVersion = semver.clean(dir);
