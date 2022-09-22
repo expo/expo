@@ -8,7 +8,7 @@ On devices running iOS 16 and above, you will need to enable a special OS-level 
 
 This does not apply to builds signed using enterprise provisioning, nor to any builds installed on an iOS simulator.
 
-To enable Developer Mode on your iOS 16+ device, follow these instructions (once per device):
+To enable Developer Mode on your iOS 16+ device, follow the instructions below (once per device). On some devices, the option to enable it might not show until the build is installed.
 
 - In the Settings app, navigate to "Privacy & Security" > "Developer Mode".
 
