@@ -12,8 +12,6 @@ If your app encounters a fatal JavaScript error, native runtime will report the 
 
 **In Production:** If your published app encounters a fatal JavaScript error, the native app will immediately reload your JavaScript bundle. If the error happens very quickly after reloading, your native app will crash.
 
-The native runtime can also report custom information back to you after your app reloads. If you use `ErrorRecovery.setRecoveryProps`, and the app later encounters a fatal JavaScript error, the contents of that method call will be passed back into your app's initial props upon reloading. See [ErrorRecovery](/versions/latest/sdk/error-recovery).
-
 ## Tracking JavaScript Errors
 
 We recommend using [Sentry](/guides/using-sentry) to track JavaScript errors in production and configuring a [post-publish hook](/versions/latest/config/app/#postpublish) to keep your exported source maps up to date.

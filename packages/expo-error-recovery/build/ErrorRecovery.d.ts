@@ -1,7 +1,11 @@
 import './ErrorRecovery.fx';
+/** @deprecated This package only works with the deprecated classic Expo build service. */
 export declare const recoveredProps: ErrorRecoveryProps | null;
+/** @deprecated This package only works with the deprecated classic Expo build service. */
 export declare type ErrorRecoveryProps = Record<string, any>;
 /**
+ * @deprecated This package only works with the deprecated classic Expo build service.
+ *
  * Set arbitrary error recovery props. If your project crashes in production as a result of a fatal
  * JS error, Expo will reload your project. If you've set these props, they'll be passed to your
  * reloaded project's initial props under `exp.errorRecovery`. Access to `localStorage` is required

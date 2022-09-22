@@ -11,8 +11,6 @@ While we cannot stress enough the importance of testing updates in a staging env
 
 > Disclaimer: the behavior documented below is subject to change and should not be relied upon. Always test your code carefully and thoroughly in production-like environments before publishing updates.
 
-> The behavior documented on this page applies to bare apps as well as apps built with EAS Build, **not** apps built with `expo build:ios` or `expo build:android` (which have a separate error recovery mechanism that uses [`expo-error-recovery`](/versions/latest/sdk/error-recovery)).
-
 ## Help! I published a broken update to production. What should I do?
 
 First of all, don't panic. Mistakes happen; most likely, everything will be fine.
@@ -118,9 +116,3 @@ On Android, the stacktrace of the original exception is preserved. Depending on 
 </Tab>
 
 </Tabs>
-
-## Note about `expo-error-recovery`
-
-Currently, the error recovery behavior of Expo apps differs between apps built with `expo build:ios`/`expo build:android` and apps built with EAS Build or locally.
-
-The `expo-error-recovery` package is intended for use only for the former case and does not currently integrate with bare apps or apps built with EAS Build.

@@ -1,5 +1,7 @@
 # expo-error-recovery
 
+> **Deprecated.** This module will be removed in SDK 47. This package is not utilized in projects built outside of the deprecated classic build system (`expo build:ios` & `expo build:android`). For similar functionality, use the built-in [error handling of `expo-updates`](https://docs.expo.dev/bare/error-recovery). You can also use a third-party crash reporting service like [Sentry](https://docs.expo.dev/guides/using-sentry/) or [Bugsnag](https://docs.expo.dev/guides/using-bugsnag/) with EAS Build.
+
 `expo-error-recovery` helps you gracefully handle crashes caused by fatal JavaScript errors.
 
 # API documentation
