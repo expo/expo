@@ -47,7 +47,9 @@ type VideoProps = React.PropsWithChildren<{
 const Video = ({ controls, spaceAfter, url, file, loop = true }: VideoProps) => {
   const [hover, setHover] = useState(false);
   const ytDomains = ['youtube.com', 'youtu.be'];
-  const [forceShowControls, setForceShowControls] = useState(ytDomains.some((domain) => url?.includes(domain)));
+  const [forceShowControls, setForceShowControls] = useState(
+    ytDomains.some(domain => url?.includes(domain))
+  );
   const marginBottom = getInitialMarginBottom(spaceAfter);
 
   return (
