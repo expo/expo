@@ -2,11 +2,15 @@
 title: Native Modules
 ---
 
+import { Callout } from '~/ui/components/Callout';
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
 
-The Expo native modules API is an abstraction layer on top of React Native modules that helps you build native modules in modern languages (Swift and Kotlin) with an easy to use and convenient API that is consistent across platforms where possible.
+<Callout type="warning">Expo Modules APIs are in beta and subject to breaking changes.</Callout>
+<br />
+
+The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primities that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy to use and convenient API that is consistent across platforms where possible.
 
 ## Design considerations
 

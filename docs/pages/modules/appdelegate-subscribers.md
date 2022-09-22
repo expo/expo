@@ -2,7 +2,11 @@
 title: iOS AppDelegate Subscribers
 ---
 
+import { Callout } from '~/ui/components/Callout';
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+
+<Callout type="warning">Expo Modules APIs are in beta and subject to breaking changes.</Callout>
+<br />
 
 In order to respond to certain iOS system events relevant to an app, such as inbound links and notifications, it is necessary to handle the corresponding methods in the `AppDelegate`.
 

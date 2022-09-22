@@ -2,7 +2,11 @@
 title: Android Lifecycle Listeners
 ---
 
+import { Callout } from '~/ui/components/Callout';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
+
+<Callout type="warning">Expo Modules APIs are in beta and subject to breaking changes.</Callout>
+<br />
 
 In order to respond to certain Android system events relevant to an app, such as inbound links and configuration changes, it is necessary to override the corresponding lifecycle callbacks in **MainActivity.java** and/or **MainApplication.java**.
 
