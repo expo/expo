@@ -15,7 +15,7 @@ The `ImageBackground` component accepts mostly the same props as the `Image` com
 
 ## Example
 
-<SnackInline>
+<SnackInline label="Using ImageBackground component">
 
 {/* prettier-ignore */}
 ```js
@@ -68,4 +68,4 @@ export default App;
 
 The example above renders a screen like this:
 
-<ImageSpotlight style={{ maxWidth: 276 }} containerStyle={{ marginTop: 0 }} src="/static/images/imagebackground-example.png" alt="Text rendered on top of an image background" />
+<ImageSpotlight style={{ maxWidth: 276 }} src="/static/images/imagebackground-example.png" alt="Text rendered on top of an image background" />
