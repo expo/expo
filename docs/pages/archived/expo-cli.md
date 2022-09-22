@@ -3,9 +3,10 @@ title: Global Expo CLI
 maxHeadingDepth: 4
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-The global Expo CLI `expo-cli` was succeeded by the local CLI `@expo/cli` in SDK 46. This documentaion contains info on the now deprecated `expo-cli` package.
+The global Expo CLI `expo-cli` was succeeded by the local CLI `@expo/cli` in SDK 46. This documentation contains info on the now deprecated `expo-cli` package.
 
 If you're using a project that is SDK 46 or higher, refer to the [Expo CLI docs](/workflow/expo-cli/).
 
@@ -35,7 +36,7 @@ To learn more about a specific command and the options it may have, use `expo [c
 
 You will find a list of all commands derived from the latest version of Expo CLI.
 
-<!-- BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/main/packages/expo-cli/scripts/introspect.ts -->
+{/* BEGIN GENERATED BLOCK. DO NOT MODIFY MANUALLY. https://github.com/expo/expo-cli/blob/main/packages/expo-cli/scripts/introspect.ts */}
 
 > Based on `expo-cli` v5.2.0
 
@@ -43,12 +44,7 @@ You will find a list of all commands derived from the latest version of Expo CLI
 
 ### Core
 
-<details>
-<summary>
-<h4>expo export</h4>
-<p>Export the static files of the app for hosting it on a web server</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo export</h4>Export the static files of the app for hosting it on a web server</>}>
 
 | Option                           | Description                                                            |
 | -------------------------------- | ---------------------------------------------------------------------- |
@@ -68,15 +64,9 @@ You will find a list of all commands derived from the latest version of Expo CLI
 | `--experimental-bundle`          | export bundles for use with EAS updates                                |
 | `--config [file]`                | Deprecated: Use app.config.js to switch config files instead.          |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo init</h4>
-<p>Create a new Expo project</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo init</h4>Create a new Expo project</>}>
 
 Alias: `expo i`
 
@@ -89,15 +79,9 @@ Alias: `expo i`
 | `--name [name]`         | The name of your app visible on the home screen.                                                                                                                                 |
 | `--yes`                 | Use default options. Same as "expo init . --template blank                                                                                                                       |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo install</h4>
-<p>Install a module or other package to a project</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo install</h4>Install a module or other package to a project</>}>
 
 Alias: `expo add`
 
@@ -106,15 +90,9 @@ Alias: `expo add`
 | `--npm`  | Use npm to install dependencies. (default when package-lock.json exists) |
 | `--yarn` | Use Yarn to install dependencies. (default when yarn.lock exists)        |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo run:android</h4>
-<p>Run the Android app binary locally</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo run:android</h4>Run the Android app binary locally</>}>
 
 | Option                  | Description                                                   |
 | ----------------------- | ------------------------------------------------------------- |
@@ -124,15 +102,9 @@ Alias: `expo add`
 | `--variant [name]`      | (Android) build variant                                       |
 | `--config [file]`       | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo run:ios</h4>
-<p>Run the iOS app binary locally</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo run:ios</h4>Run the iOS app binary locally</>}>
 
 | Option                            | Description                                                   |
 | --------------------------------- | ------------------------------------------------------------- |
@@ -145,15 +117,9 @@ Alias: `expo add`
 | `--configuration [configuration]` | Xcode configuration to use. Debug or Release. Default: Debug  |
 | `--config [file]`                 | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo send</h4>
-<p>Share the project's URL to an email address</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo send</h4>Share the project's URL to an email address</>}>
 
 | Option                 | Description                                                                                                    |
 | ---------------------- | -------------------------------------------------------------------------------------------------------------- |
@@ -169,15 +135,9 @@ Alias: `expo add`
 | `--localhost`          | Same as --host localhost                                                                                       |
 | `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo start</h4>
-<p>Start a local dev server for the app</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo start</h4>Start a local dev server for the app</>}>
 
 Alias: `expo r`
 
@@ -206,15 +166,9 @@ Alias: `expo r`
 | `--no-https`                            | Deprecated: https is disabled by default                                                                       |
 | `--config [file]`                       | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo start:web</h4>
-<p>Start a Webpack dev server for the web app</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo start:web</h4>Start a Webpack dev server for the web app</>}>
 
 Alias: `expo web`
 
@@ -241,19 +195,13 @@ Alias: `expo web`
 | `--no-https`                            | Deprecated: https is disabled by default                                                                       |
 | `--config [file]`                       | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Auth
 
-<details>
-<summary>
-<h4>expo login</h4>
-<p>Login to an Expo account</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo login</h4>Login to an Expo account</>}>
 
 Alias: `expo signin`
 
@@ -263,90 +211,54 @@ Alias: `expo signin`
 | `-p, --password [string]` | Password                               |
 | `--otp [string]`          | One-time password from your 2FA device |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo logout</h4>
-<p>Logout of an Expo account</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo logout</h4>Logout of an Expo account</>}>
 
 This command does not take any options.
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo register</h4>
-<p>Sign up for a new Expo account</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo register</h4>Sign up for a new Expo account</>}>
 
 This command does not take any options.
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo whoami</h4>
-<p>Return the currently authenticated account</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo whoami</h4>Return the currently authenticated account</>}>
 
 Alias: `expo w`
 
 This command does not take any options.
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Client
 
-<details>
-<summary>
-<h4>expo client:install:ios</h4>
-<p>Install Expo Go for iOS on the simulator</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo client:install:ios</h4>Install Expo Go for iOS on the simulator</>}>
 
 | Option     | Description                                                                  |
 | ---------- | ---------------------------------------------------------------------------- |
 | `--latest` | Install the latest version of Expo Go, ignoring the current project version. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo client:install:android</h4>
-<p>Install Expo Go for Android on a connected device or emulator</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo client:install:android</h4>Install Expo Go for Android on a connected device or emulator</>}>
 
 | Option                  | Description                                                                |
 | ----------------------- | -------------------------------------------------------------------------- |
 | `-d, --device [device]` | Device name to install the client on                                       |
 | `--latest`              | Install the latest version of Expo Go, ignore the current project version. |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Info
 
-<details>
-<summary>
-<h4>expo config</h4>
-<p>Show the project config</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo config</h4>Show the project config</>}>
 
 | Option                                      | Description                                                   |
 | ------------------------------------------- | ------------------------------------------------------------- |
@@ -355,44 +267,26 @@ This command does not take any options.
 | `--json`                                    | Output in JSON format                                         |
 | `--config [file]`                           | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo diagnostics</h4>
-<p>Log environment info to the console</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo diagnostics</h4>Log environment info to the console</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo doctor</h4>
-<p>Diagnose issues with the project</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo doctor</h4>Diagnose issues with the project</>}>
 
 | Option               | Description                                                   |
 | -------------------- | ------------------------------------------------------------- |
 | `--fix-dependencies` | Fix incompatible dependency versions                          |
 | `--config [file]`    | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo upgrade</h4>
-<p>Upgrade the project packages and config for the given SDK version</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo upgrade</h4>Upgrade the project packages and config for the given SDK version</>}>
 
 Alias: `expo update`
 
@@ -401,19 +295,13 @@ Alias: `expo update`
 | `--npm`  | Use npm to install dependencies. (default when package-lock.json exists) |
 | `--yarn` | Use Yarn to install dependencies. (default when yarn.lock exists)        |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Eject
 
-<details>
-<summary>
-<h4>expo customize:web</h4>
-<p>Eject the default web files for customization</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo customize:web</h4>Eject the default web files for customization</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
@@ -421,15 +309,9 @@ Alias: `expo update`
 | `--offline`       | Allows this command to run while offline                      |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo eject</h4>
-<p>Create native iOS and Android project files. Learn more: https://docs.expo.dev/workflow/customizing/</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo eject</h4>Create native iOS and Android project files. Learn more: https://docs.expo.dev/workflow/customizing/</>}>
 
 | Option                               | Description                                                           |
 | ------------------------------------ | --------------------------------------------------------------------- |
@@ -438,15 +320,9 @@ Alias: `expo update`
 | `-p, --platform [all\|android\|ios]` | Platforms to sync: ios, android, all. Default: all                    |
 | `--config [file]`                    | Deprecated: Use app.config.js to switch config files instead.         |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo prebuild</h4>
-<p>Create native iOS and Android project files before building natively. Learn more: https://docs.expo.dev/workflow/customizing/</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo prebuild</h4>Create native iOS and Android project files before building natively. Learn more: https://docs.expo.dev/workflow/customizing/</>}>
 
 | Option                                    | Description                                                                             |
 | ----------------------------------------- | --------------------------------------------------------------------------------------- |
@@ -458,19 +334,13 @@ Alias: `expo update`
 | `--skip-dependency-update [dependencies]` | Preserves versions of listed packages in package.json (comma separated list)            |
 | `--config [file]`                         | Deprecated: Use app.config.js to switch config files instead.                           |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Publish
 
-<details>
-<summary>
-<h4>expo publish</h4>
-<p>Deploy a project to Expo hosting</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo publish</h4>Deploy a project to Expo hosting</>}>
 
 Alias: `expo p`
 
@@ -484,15 +354,9 @@ Alias: `expo p`
 | `--release-channel [name]`     | The release channel to publish to. Default is 'default'.                                |
 | `--config [file]`              | Deprecated: Use app.config.js to switch config files instead.                           |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo publish:set</h4>
-<p>Specify the channel to serve a published release</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo publish:set</h4>Specify the channel to serve a published release</>}>
 
 Alias: `expo ps`
 
@@ -502,15 +366,9 @@ Alias: `expo ps`
 | `-p, --publish-id [publish-id]` | The id of the published release to serve from the channel. (Required) |
 | `--config [file]`               | Deprecated: Use app.config.js to switch config files instead.         |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo publish:rollback</h4>
-<p>Undo an update to a channel</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo publish:rollback</h4>Undo an update to a channel</>}>
 
 Alias: `expo pr`
 
@@ -522,15 +380,9 @@ Alias: `expo pr`
 | `-p, --platform [android\|ios]` | The platform to rollback.                                     |
 | `--config [file]`               | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo publish:history</h4>
-<p>Log the project's releases</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo publish:history</h4>Log the project's releases</>}>
 
 Alias: `expo ph`
 
@@ -543,15 +395,9 @@ Alias: `expo ph`
 | `-r, --raw`                     | Produce some raw output.                                                                             |
 | `--config [file]`               | Deprecated: Use app.config.js to switch config files instead.                                        |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo publish:details</h4>
-<p>Log details of a published release</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo publish:details</h4>Log details of a published release</>}>
 
 Alias: `expo pd`
 
@@ -561,19 +407,13 @@ Alias: `expo pd`
 | `-r, --raw`                 | Produce some raw output.                                      |
 | `--config [file]`           | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Build
 
-<details>
-<summary>
-<h4>expo build:web</h4>
-<p>Build the web app for production</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo build:web</h4>Build the web app for production</>}>
 
 | Option            | Description                                                                                    |
 | ----------------- | ---------------------------------------------------------------------------------------------- |
@@ -582,141 +422,87 @@ Alias: `expo pd`
 | `-d, --dev`       | Turns dev flag on before bundling                                                              |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead.                                  |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Credentials
 
-<details>
-<summary>
-<h4>expo credentials:manager</h4>
-<p>Manage your credentials</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo credentials:manager</h4>Manage your credentials</>}>
 
 | Option                         | Description                                                   |
 | ------------------------------ | ------------------------------------------------------------- |
 | `-p --platform [android\|ios]` | Platform: [android\|ios]                                      |
 | `--config [file]`              | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo fetch:ios:certs</h4>
-<p>Download the project's iOS standalone app signing credentials</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo fetch:ios:certs</h4>Download the project's iOS standalone app signing credentials</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo fetch:android:keystore</h4>
-<p>Download the project's Android keystore</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo fetch:android:keystore</h4>Download the project's Android keystore</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo fetch:android:hashes</h4>
-<p>Compute and log the project's Android key hashes</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo fetch:android:hashes</h4>Compute and log the project's Android key hashes</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo fetch:android:upload-cert</h4>
-<p>Download the project's Android keystore</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo fetch:android:upload-cert</h4>Download the project's Android keystore</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Notifications
 
-<details>
-<summary>
-<h4>expo push:android:upload</h4>
-<p>Upload an FCM key for Android push notifications</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo push:android:upload</h4>Upload an FCM key for Android push notifications</>}>
 
 | Option                | Description                                                   |
 | --------------------- | ------------------------------------------------------------- |
 | `--api-key [api-key]` | Server API key for FCM.                                       |
 | `--config [file]`     | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo push:android:show</h4>
-<p>Log the value currently in use for FCM notifications for this project</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo push:android:show</h4>Log the value currently in use for FCM notifications for this project</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo push:android:clear</h4>
-<p>Delete a previously uploaded FCM credential</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo push:android:clear</h4>Delete a previously uploaded FCM credential</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Url
 
-<details>
-<summary>
-<h4>expo url</h4>
-<p>Log a URL for opening the project in Expo Go</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo url</h4>Log a URL for opening the project in Expo Go</>}>
 
 Alias: `expo u`
 
@@ -734,63 +520,39 @@ Alias: `expo u`
 | `--offline`         | Allows this command to run while offline                                                                       |
 | `--config [file]`   | Deprecated: Use app.config.js to switch config files instead.                                                  |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo url:ipa</h4>
-<p>Log the download URL for the standalone iOS binary</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo url:ipa</h4>Log the download URL for the standalone iOS binary</>}>
 
 | Option               | Description                                                     |
 | -------------------- | --------------------------------------------------------------- |
 | `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps) |
 | `--config [file]`    | Deprecated: Use app.config.js to switch config files instead.   |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo url:apk</h4>
-<p>Log the download URL for the standalone Android binary</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo url:apk</h4>Log the download URL for the standalone Android binary</>}>
 
 | Option               | Description                                                     |
 | -------------------- | --------------------------------------------------------------- |
 | `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps) |
 | `--config [file]`    | Deprecated: Use app.config.js to switch config files instead.   |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Webhooks
 
-<details>
-<summary>
-<h4>expo webhooks</h4>
-<p>List all webhooks for a project</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo webhooks</h4>List all webhooks for a project</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo webhooks:add</h4>
-<p>Add a webhook to a project</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo webhooks:add</h4>Add a webhook to a project</>}>
 
 | Option                 | Description                                                                                             |
 | ---------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -799,30 +561,18 @@ Alias: `expo u`
 | `--secret [secret]`    | Secret used to create a hash signature of the request payload, provided in the 'Expo-Signature' header. |
 | `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                           |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo webhooks:remove</h4>
-<p>Delete a webhook</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo webhooks:remove</h4>Delete a webhook</>}>
 
 | Option            | Description                                                   |
 | ----------------- | ------------------------------------------------------------- |
 | `--id [id]`       | ID of the webhook to remove.                                  |
 | `--config [file]` | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo webhooks:update</h4>
-<p>Update an existing webhook</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo webhooks:update</h4>Update an existing webhook</>}>
 
 | Option                 | Description                                                                                             |
 | ---------------------- | ------------------------------------------------------------------------------------------------------- |
@@ -832,19 +582,13 @@ Alias: `expo u`
 | `--secret [secret]`    | Secret used to create a hash signature of the request payload, provided in the 'Expo-Signature' header. |
 | `--config [file]`      | Deprecated: Use app.config.js to switch config files instead.                                           |
 
-</p>
-</details>
+</Collapsible>
 
 ---
 
 ### Deprecated
 
-<details>
-<summary>
-<h4>expo build:ios</h4>
-<p>Superseded by eas build in eas-cli</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo build:ios</h4>Superseded by eas build in eas-cli</>}>
 
 Alias: `expo bi`
 
@@ -871,15 +615,9 @@ Alias: `expo bi`
 | `--skip-workflow-check`              | Skip warning about build service bare workflow limitations.                                                         |
 | `--config [file]`                    | Deprecated: Use app.config.js to switch config files instead.                                                       |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo build:android</h4>
-<p>Superseded by eas build in eas-cli</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo build:android</h4>Superseded by eas build in eas-cli</>}>
 
 Alias: `expo ba`
 
@@ -897,15 +635,9 @@ Alias: `expo ba`
 | `-t --type [app-bundle\|apk]` | Type of build: [app-bundle\|apk].                               |
 | `--config [file]`             | Deprecated: Use app.config.js to switch config files instead.   |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo build:status</h4>
-<p>Superseded by eas build:list in eas-cli</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo build:status</h4>Superseded by eas build:list in eas-cli</>}>
 
 Alias: `expo bs`
 
@@ -914,15 +646,9 @@ Alias: `expo bs`
 | `--public-url [url]` | The URL of an externally hosted manifest (for self-hosted apps). |
 | `--config [file]`    | Deprecated: Use app.config.js to switch config files instead.    |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo upload:android</h4>
-<p>Superseded by eas submit in eas-cli</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo upload:android</h4>Superseded by eas submit in eas-cli</>}>
 
 Alias: `expo ua`
 
@@ -940,15 +666,9 @@ Alias: `expo ua`
 | `--release-status [release-status]`   | Migrate to eas.json's releaseStatus property                  |
 | `--config [file]`                     | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo upload:ios</h4>
-<p>Superseded by eas submit in eas-cli</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo upload:ios</h4>Superseded by eas submit in eas-cli</>}>
 
 Alias: `expo ui`
 
@@ -967,25 +687,18 @@ Alias: `expo ui`
 | `--language [language]`         | Migrate to eas.json's language property                       |
 | `--config [file]`               | Deprecated: Use app.config.js to switch config files instead. |
 
-</p>
-</details>
+</Collapsible>
 
-<details>
-<summary>
-<h4>expo client:ios</h4>
-<p>Superseded by Expo Dev Clients</p>
-</summary>
-<p>
+<Collapsible summary={<><h4>expo client:ios</h4>Superseded by Expo Dev Clients</>}>
 
 | Option               | Description                                                                                            |
 | -------------------- | ------------------------------------------------------------------------------------------------------ |
 | `--apple-id [login]` | Apple ID username (please also set the Apple ID password as EXPO_APPLE_PASSWORD environment variable). |
 | `--config [file]`    | Deprecated: Use app.config.js to switch config files instead.                                          |
 
-</p>
-</details>
+</Collapsible>
 
-<!-- END GENERATED BLOCK. DO NOT MODIFY MANUALLY. -->
+{/* END GENERATED BLOCK. DO NOT MODIFY MANUALLY. */}
 
 ## Expo CLI Migration
 

@@ -1,11 +1,17 @@
 import { css } from '@emotion/react';
-import { theme, typography, iconSize, InfoIcon, spacing, borderRadius } from '@expo/styleguide';
+import {
+  theme,
+  typography,
+  iconSize,
+  InfoIcon,
+  spacing,
+  borderRadius,
+  breakpoints,
+} from '@expo/styleguide';
 import emojiRegex from 'emoji-regex';
 import { Children, PropsWithChildren, ReactNode, BlockquoteHTMLAttributes } from 'react';
 
 import { paragraph } from './typography';
-
-import * as Constants from '~/constants/theme';
 
 const attributes = {
   'data-text': true,
@@ -40,7 +46,7 @@ const STYLES_PARAGRAPH_DIV = css`
     max-width: 1200px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     &.is-wider {
       max-width: 100%;
       width: 100%;

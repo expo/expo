@@ -119,7 +119,7 @@ Let's say that your project consists of a main application target (named `multit
 
 In this case your **credentials.json** should like like this:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```json
 {
   "ios": {
