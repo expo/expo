@@ -519,13 +519,12 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 #### Custom Apps
 
-Consider using the [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next) module with [Config Plugins](/guides/config-plugins/) for native auth as it supports some nonstandard OAuth features implemented by Facebook.
+For SDK 46 and above, we recommend using [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) module with [Development Builds](https://docs.expo.dev/development/introduction/).
 
-- The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
-- Add `facebookScheme: 'fb<YOUR FBID>'` to your **app.config.js** or **app.json**. Example: `{ facebookScheme: "fb145668956753819" }` (notice the `fb` prefix).
-- You'll need to make a new native build to add this redirect URI into your app's **AndroidManifest.xml** and **Info.plist**:
-  - iOS: `eas build` or `expo build:ios`.
-  - Android: `eas build` or `expo build:android`.
+You'll have to rebuild after adding the `react-native-fbsdk-next` as a config plugin to **app.json** or **app.config.js**:
+
+- iOS: `eas build` or `npx expo run:ios`
+- Android: `eas build` or `npx expo run:android`
 - **Bare:**
   - Regenerate your native projects with `expo prebuild`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
   - Rebuild the projects with `yarn ios` & `yarn android`
