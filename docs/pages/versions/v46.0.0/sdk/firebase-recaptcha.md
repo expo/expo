@@ -25,7 +25,7 @@ Additionally, you'll also need to install the webview using `npx expo install re
 
 ### Additional configuration for iOS
 
-`expo-firebase-recaptcha` uses native Firebase libraries on iOS that require additional configuration using the `expo-build-properties` config plugin. Install the plugin and apply the following configuration to your Expo config file.
+`expo-firebase-recaptcha` uses native Firebase libraries on iOS that require additional configuration using the `expo-build-properties` config plugin. Install the plugin and apply the following configuration to your [Expo config](/workflow/configuration/) file.
 
 <Terminal cmd={["$ npx expo install expo-build-properties"]} />
 
