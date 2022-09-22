@@ -30,7 +30,7 @@ provided by React Native.
 To show a basic toast with `ToastAndroid`, import `ToastAndroid` from the `'react-native'` package
 and call `ToastAndroid.show` with a message and duration option:
 
-<SnackInline label="Using ToastAndroid API">
+<SnackInline label="Using ToastAndroid API" platforms={['android']}>
 
 ```jsx
 import React from 'react';
