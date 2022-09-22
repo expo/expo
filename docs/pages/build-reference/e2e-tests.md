@@ -370,7 +370,7 @@ Development builds typically display an onboarding welcome screen when an app is
 
 An example of such a Detox test is shown below.  Full example code is available on the [eas-tests-example repository](https://github.com/expo/eas-tests-example).
 
-_homeScreen.e2e.js_:
+<Collapsible summary="homeScreen.e2e.js">
 
 ```js
 const {
@@ -408,7 +408,10 @@ describe('Home screen', () => {
 });
 ```
 
-_utils.js_:
+</Collapsible>
+
+<Collapsible summary="utils.js">
+
 ```js
 const {exec} = require('child_process');
 const argparse = require('detox/src/utils/argparse');
@@ -448,3 +451,5 @@ module.exports = {
   invokeDevLauncherUrl,
 };
 ```
+
+</Collapsible>
