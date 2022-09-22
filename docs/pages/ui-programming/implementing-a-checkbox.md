@@ -2,7 +2,6 @@
 title: 'Implementing a checkbox for Expo and React Native apps'
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import SnackInline from '~/components/plugins/SnackInline';
 
 One fairly common component that is not offered out of the box by Expo is the mighty checkbox. There are several packages available on npm; however, it is simple enough to implement yourself, and by doing so you have full customization and control over the look and feel of your checkbox.
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-_Note: https://icons.expo.fyi is a great resource for finding all of the icons available in the @expo/vector-icons package._
+> Note: https://icons.expo.fyi is a great resource for finding all of the icons available in the @expo/vector-icons package.
 
 ## Controlling the checkbox
 
@@ -185,7 +184,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-_Note: This pattern is referred to as a "controlled component" — you can read more about them here: https://reactjs.org/docs/forms.html#controlled-components_
+> Note: This pattern is referred to as a "controlled component" — you can read more about them here: https://reactjs.org/docs/forms.html#controlled-components.
 
 ## Extending the interface
 
