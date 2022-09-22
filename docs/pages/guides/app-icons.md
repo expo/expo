@@ -2,6 +2,8 @@
 title: App Icons
 ---
 
+import Video from '~/components/plugins/Video';
+
 Your app's icon is what users see on the home screen of their devices, as well as in the App Store and Play Store. This is one topic where platform differences matter, and requirements can be strict. This guide offers details on how to make sure your App Icon looks as good as possible on all devices.
 
 ## Configuring your App's Icon
@@ -14,11 +16,7 @@ The most straightforward way to provide an icon for your app is to provide the [
 
 Create an app icon and splash image with the [Figma template](https://www.figma.com/community/file/1020369500490206655) and video below:
 
-<object width="100%" height="400">
-  <param name="movie" value="https://youtube.com/embed/mVOFvLSiJ_s" />
-  <param name="wmode" value="transparent" />
-  <embed src="https://youtube.com/embed/mVOFvLSiJ_s" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
-</object>
+<Video url="https://youtube.com/embed/mVOFvLSiJ_s" /> 
 
 ### iOS
 
