@@ -44,6 +44,10 @@ const styles = StyleSheet.create({
 
 > **Note:** As with [any custom font](using-custom-fonts.md#using-custom-fonts) in Expo, you may want to preload icon fonts before rendering your app. The font object is available as a static property on the font component, so in the case above it is `Ionicons.font`, which evaluates to `{ionicons: require('path/to/ionicons.ttf')}`. Read more on about [pre-loading and caching assets](preloading-and-caching-assets#pre-loading-and-caching-assets).
 
+## A note on performance / bundle size
+
+Unfortunately the import style mentioned in the previous paragraph will make all fonts included in `@expo/vector-icons` (FontAwesome, MaterialCommunityIcons, ...) as part of your web build. Therefore you might still want to import only what you need separately, e.g. `import createIconSet from '@expo/vector-icons/build/createIconSet';`
+
 ## Custom Icon Fonts
 
 To use a custom icon font, you have to make sure you import them into your project. Only after a font has loaded, you can create an Icon set. [Learn more about loading custom fonts](using-custom-fonts.md).
