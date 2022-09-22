@@ -2,11 +2,15 @@
 title: iOS AppDelegate Subscribers
 ---
 
+import { Callout } from '~/ui/components/Callout';
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+
+<Callout type="warning">Expo Modules APIs are in beta and subject to breaking changes.</Callout>
+<br />
 
 In order to respond to certain iOS system events relevant to an app, such as inbound links and notifications, it is necessary to handle the corresponding methods in the `AppDelegate`.
 
-The React Native module API does not provide any mechanism to hook into these methods, and so setup instructions for React Native libraries often include a step to copy code into the `AppDelegate` file. To simplify and automate setup and maintenance, the Expo module API provides a mechanism that allows your library to subscribe to calls to `AppDelegate` functions. In order for this to work, the app `AppDelegate` must inherit from `ExpoAppDelegate`, and this is a requirement for using Expo Modules.
+The React Native module API does not provide any mechanism to hook into these methods, and so setup instructions for React Native libraries often include a step to copy code into the `AppDelegate` file. To simplify and automate setup and maintenance, the Expo Modules API provides a mechanism that allows your library to subscribe to calls to `AppDelegate` functions. In order for this to work, the app `AppDelegate` must inherit from `ExpoAppDelegate`, and this is a requirement for using Expo Modules.
 
 `ExpoAppDelegate` implements most functions from [`UIApplicationDelegate`](https://developer.apple.com/documentation/uikit/uiapplicationdelegate) protocol and forwards their calls to all the subscribers.
 
