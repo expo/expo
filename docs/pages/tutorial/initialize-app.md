@@ -14,7 +14,7 @@ We’ll need the following tools to get started:
 - Install [Expo Go](https://expo.dev/client) on a physical device.
 - Prepare for development by [installing the required tools and dependencies](https://docs.expo.dev/get-started/installation/#requirements).
 
-This tutorial also assumes that you have a basic knowledge of JavaScript and React or React Native. If you have never written React code, go through [the official React tutorial](https://reactjs.org/tutorial/tutorial.html) first. For more resources, see [additional resources](https://docs.expo.dev/next-steps/additional-resources/).
+This tutorial also assumes that you have a basic knowledge of JavaScript and React or React Native. If you have never written React code, go through [the official React tutorial](https://reactjs.org/tutorial/tutorial.html).
 
 ## Step 1: Initialize a new Expo app
 
@@ -63,18 +63,15 @@ In the project directory, run the following command to start a [development serv
 
 <Terminal cmd={['$ npx expo start']} />
 
-Once the development server is running, the best way to develop is on your physical device with Expo Go. [Learn more](/get-started/create-a-new-app/#opening-the-app-on-your-phonetablet) on how to get the project running on your physical device.
+Once the development server is running, the best way to develop is on a physical device with Expo Go.
 
-To see the web app in action, press <kbd>w</kbd> in the terminal. It will open the web app in your default web browser at a specific URL.
+To see the web app in action, press <kbd>W</kbd> in the terminal. It will open the web app in the default web browser at a specific URL.
 
-Once it is running on all platforms, your project should look like this:
+Once it is running on all platforms, the project should look like this:
 
 <ImageSpotlight alt="App running on an all platforms" src="/static/images/tutorial/app-running-on-all-platforms.jpg" style={{maxWidth: 720}} />
 
-The text displayed on the app's screen above can be found in the **App.js** file at the root of the project's directory. It is the entry point of the project and is executed when the development server starts.
-
+The text displayed on the app's screen above can be found in the **App.js** file which is at the root of the project's directory. It is the entry point of the project and is executed when the development server starts.
 ## Up next
 
-If you have trouble opening the app on the device of your choice, refer to the [Opening the app on your phone/tablet](/get-started/create-a-new-app/#opening-the-app-on-your-phonetablet) section.
-
-You have now initialized an Expo project on your computer and you're ready to start developing StickerSmash. The next step is to learn [how to build the first screen of the app](/tutorial/layout).
+We have now created a new Expo project and are ready to start developing our **StickerSmash** app. The next step is to learn [how to build the first screen of the app](/tutorial/layout).

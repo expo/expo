@@ -22,7 +22,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
     };
   });
 
-  const tapGestureHandler = useAnimatedGestureHandler({
+  const onDoubleTap = useAnimatedGestureHandler({
     onActive: () => {
       if (scaleImage.value) {
         scaleImage.value = scaleImage.value * 2;
@@ -30,7 +30,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
     },
   });
 
-  const panGestureHandler = useAnimatedGestureHandler({
+  const onDrag = useAnimatedGestureHandler({
     onStart: (event, context) => {
       context.translateX = translateX.value;
       context.translateY = translateY.value;
@@ -55,9 +55,9 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
   });
 
   return (
-    <PanGestureHandler onGestureEvent={panGestureHandler}>
-      <AnimatedView style={[containerStyle, { top: -450 }]}>
-        <TapGestureHandler onGestureEvent={tapGestureHandler} numberOfTaps={2}>
+    <PanGestureHandler onGestureEvent={onDrag}>
+      <AnimatedView style={[containerStyle, { top: -350 }]}>
+        <TapGestureHandler onGestureEvent={onDoubleTap} numberOfTaps={2}>
           <AnimatedImage
             source={stickerSource}
             resizeMode="contain"

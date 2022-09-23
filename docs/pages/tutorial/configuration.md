@@ -1,30 +1,30 @@
 ---
-title: Configure status bar, splash screen and app icon
+title: Configure the status bar, splash screen, and app icon
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import Video from '~/components/plugins/Video';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Before considering the app fully launchable, you have to configure the status bar and add a splash screen and app icon. In this chapter, you will learn how to do all of that.
+Before considering the app fully launchable, we have to configure the status bar, add a splash screen, and add an app icon. In this chapter, we will learn how to do all of that.
 
 ## Step 1: Configure the status bar
 
-The [`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in any Expo project created using `npx create-expo-app`. This library gives a `StatusBar` component that allows configuring the app's status bar to change the text color, background color, make it translucent, and so on.
+The [`expo-status-bar`](/versions/latest/sdk/status-bar/) library comes pre-installed in every project created using `npx create-expo-app`. This library provides a `<StatusBar>` component that allows configuring the app's status bar to change the text color, background color, make it translucent, and so on.
 
-The `StatusBar` component is already imported in the **App.js**:
+The `<StatusBar>` component is already imported in the **App.js**:
 
 ```js
 import { StatusBar } from 'expo-status-bar';
 ```
 
-It's also mounted in the `App` component.
+It's also mounted in the `<App>` component.
 
 ```js
 <StatusBar style="auto" />
 ```
 
-Currently, the `style` value is `auto`. It means the status bar automatically picks the text color based on the color scheme. However, you do not have different color schemes in the tutorial app. There is only one active color scheme, which represents a dark background. Change the `style` value to `light` for the status bar to be visible.
+Currently, the `style` value is `auto`. It means that the status bar will automatically pick the text color based on the app’s color scheme. However, we do not have different color schemes in the tutorial app. There is only one active color scheme, which has a dark background. To make the status bar light, change the `style` value to `"light"`.
 
 ```js
 <StatusBar style="light" />
@@ -38,7 +38,7 @@ Currently, the `style` value is `auto`. It means the status bar automatically pi
 
 A splash screen is a screen that is visible before the contents of the app has had a chance to load. It hides once the app is ready for use and the content is ready to be displayed.
 
-To add one, our designers provided us with a splash screen image. Here is the image:
+Here is the image we are using for the splash screen in the app:
 
 <ImageSpotlight src="/static/images/tutorial/splash.png" style={{ maxWidth: 150 }} containerStyle={{ marginBottom: 0 }} />
 
@@ -58,7 +58,7 @@ You can make the splash screen stick around for longer by manually controlling w
 
 First, run `npx expo install expo-splash-screen`.
 
-Next, add the following code to delay hiding the splash screen for five seconds.
+Next, add the following code in **App.js** to delay hiding the splash screen for five seconds.
 
 ```js
 import * as SplashScreen from 'expo-splash-screen';
@@ -67,7 +67,7 @@ SplashScreen.preventAutoHideAsync();
 setTimeout(SplashScreen.hideAsync, 5000);
 ```
 
-_Don't forget to remove this code when you are done testing your splash screen!_
+Don't forget to remove this code when you are done testing your splash screen!
 
 </Collapsible>
 
@@ -75,9 +75,9 @@ Notice that there is a white bar on the edges on the side of the Android device 
 
 ## Step 3: Configure the splash screen background color
 
-The **App.js** is the file you have worked on so far in your Expo project to create this app. However, there are other aspects of the app that you may want to configure without running your JavaScript code. The splash screen is one of these configurations.
+We can configure the splash screen’s background color in **app.json**.
 
-Open **app.json** in your project directory and make the following change in the `splash` section:
+Open **app.json** and make the following change in `splash`:
 
 <!-- prettier-ignore -->
 ```json
@@ -98,22 +98,18 @@ On running the app, you will get a similar output on mobile platforms:
 
 ## Step 4: Add an app icon
 
-An app icon is a uniquely designed icon that represents your app. It is the first icon displayed to users when they install the app from the app stores. It is also the icon displayed on the user's device when the app is installed.
-
-Our designer provided us with this 1024px width x 1024px height app icon:
+Inside the project, there’s an **icon.png** file inside **assets**. This is our app icon. It’s a 1024px by 1024px image. Eventually when we build our app for the app stores, Expo Application Services (EAS) will take this image and create optimized images for every device.
 
 <ImageSpotlight src="/static/images/tutorial/icon.png" style={{ maxWidth: 150 }} />
 
-> If you are using the starter template, the asset is available at the **assets/icon.png**.
+You can see the icon now in various places in Expo Go. 
 
-Save this image to the **assets** directory inside your project and call it **icon.png** to replace the existing file. Then, reload the app. You will now see the icon in various places in Expo Go, and after submitting the app build to the stores, the icon will display on a user's home screen.
-
-Here is an example of the app icon displayed in the developer menu of the Expo Go app:
+Here is an example of the app icon displayed in the developer menu of Expo Go:
 
 <ImageSpotlight alt="Splash screen on Developer Menu in Expo Go app." src="/static/images/tutorial/app-icon-visible.jpg" style={{ maxWidth: 250 }} containerStyle={{ marginBottom: 0 }} />
 
 ## You have completed the app!
 
-Well done, you have now gone through the motions of building a simple but meaningful app that runs on iOS, and Android from the same codebase! We hope this tutorial has answered some of your questions and many more.
+Well done! We built an app that runs on Android, iOS, and the web from the same codebase.
 
-The next section of the tutorial will guide you towards resources to learn more about concepts we've covered here and others we have only mentioned in passing. [Continue to find out how you can learn more](/tutorial/follow-up).
+The next section of the tutorial will guide us towards resources to learn more about concepts we've covered here and others we have only mentioned in passing. [Continue to find out how you can learn more](/tutorial/follow-up).

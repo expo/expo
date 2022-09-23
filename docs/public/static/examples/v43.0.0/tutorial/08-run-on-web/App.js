@@ -15,11 +15,10 @@ import EmojiPicker from './components/EmojiPicker';
 import EmojiList from './components/EmojiList';
 import EmojiSticker from './components/EmojiSticker';
 
-const SIZE = 40;
 const PlaceholderImage = require('./assets/images/background-image.png');
 
 export default function App() {
-  const [modalVisible, setModalVisible] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [showAppOptions, setShowAppOptions] = useState(false);
   const [pickedEmoji, setPickedEmoji] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -31,7 +30,7 @@ export default function App() {
     requestPermission();
   }
 
-  const pickImageHandler = async () => {
+  const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       aspect: [4, 3],
@@ -46,15 +45,19 @@ export default function App() {
     }
   };
 
-  const resetHandler = () => {
+  const onReset = () => {
     setShowAppOptions(false);
   };
 
-  const modalVisibilityHandler = () => {
-    setModalVisible(current => !current);
+  const onAddSticker = () => {
+    setIsModalVisible(true);
   };
 
-  const saveImageHandler = async () => {
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const onSaveImageAsync = async () => {
     if (Platform.OS !== 'web') {
       try {
         const localUri = await captureRef(imageRef, {
@@ -73,7 +76,7 @@ export default function App() {
         .toJpeg(imageRef.current)
         .then(dataUrl => {
           let link = document.createElement('a');
-          link.download = 'my-saved-image.jpeg';
+          link.download = 'sticker-smash.jpeg';
           link.href = dataUrl;
           link.click();
         })
@@ -85,35 +88,35 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <View ref={imageRef} style={styles.screenshotContainer} collapsable={false}>
-        <ImageViewer
-          ref={imageRef}
-          placeholderImageSource={PlaceholderImage}
-          selectedImage={selectedImage}
-        />
-        {pickedEmoji !== null ? (
-          <EmojiSticker imageSize={SIZE} stickerSource={pickedEmoji} />
-        ) : null}
+      <View style={styles.imageContainer}>
+        <View ref={imageRef} collapsable={false}>
+          <ImageViewer
+            ref={imageRef}
+            placeholderImageSource={PlaceholderImage}
+            selectedImage={selectedImage}
+          />
+          {pickedEmoji !== null ? (
+            <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />
+          ) : null}
+        </View>
       </View>
       {showAppOptions ? (
         <View style={styles.optionsContainer}>
           <View style={styles.optionsRow}>
-            <IconButton icon="refresh" label="Reset" onPressHandler={resetHandler} />
-            <CircleButton onPressHandler={modalVisibilityHandler} />
-            <IconButton icon="save-alt" label="Save" onPressHandler={saveImageHandler} />
+            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <CircleButton onPress={onAddSticker} />
+            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
           </View>
         </View>
       ) : (
         <View style={styles.footerContainer}>
-          <Button label="Choose a photo" onPressHandler={pickImageHandler} />
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
           <Button
-            label="Use this photo"
-            isBorderLess
-            onPressHandler={() => setShowAppOptions(true)}
+            label="Use this photo" onPress={() => setShowAppOptions(true)}
           />
         </View>
       )}
-      <EmojiPicker modalVisible={modalVisible} onClose={modalVisibilityHandler}>
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         <EmojiList onSelect={setPickedEmoji} />
       </EmojiPicker>
       <StatusBar style="auto" />
@@ -127,6 +130,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#25292e',
     alignItems: 'center',
   },
+  imageContainer: {
+    flex:1, 
+    paddingTop: 58
+  },
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
@@ -139,9 +146,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-  },
-  screenshotContainer: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
+  }
 });

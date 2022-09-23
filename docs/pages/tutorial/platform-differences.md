@@ -6,19 +6,15 @@ import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 
-In the perfect world, you will want to write code to perform the task just once and have it run the same on every platform. However, that's not the case sometimes. For example, capturing screenshots on mobile and web is handled differently. Even on the web, where this is an explicit design goal, it's often necessary to consider differences between web browsers.
+Android, iOS, and the web have different capabilities. In our case, Android and iOS both are able to capture a screenshot with the `react-native-view-shot` library, however web browsers cannot.
 
-Expo tools try to sort out these differences between iOS, Android, and web (and different web browsers) for you, but it isn't always possible. In such scenarios, you can handle the code by distinguishing between the mobile and web platforms. In this chapter, let's handle capturing the screenshot and downloading the captured image for the web.
+In this chapter, we’ll learn how to make an exception for web browsers to get the same functionality on all platforms.
 
-## Step 1: Install dom-to-image
+## Step 1: Use dom-to-image
 
-To implement the functionality of capturing a screenshot and saving it as an image file on the machine from the web, let's use a third-party library [dom-to-image](https://github.com/tsayen/dom-to-image#readme). It allows capturing any DOM node and turning it into a vector (SVG) or raster (PNG or JPEG) image.
+To capture a screenshot and save it as an image, we’ll use a third-party library called [dom-to-image](https://github.com/tsayen/dom-to-image#readme). It allows taking a screenshot of any DOM node and turning it into a vector (SVG) or raster (PNG or JPEG) image.
 
-Install this library in your Expo project by running:
-
-<Terminal cmd={["$ npm install dom-to-image"]} />
-
-After installing this library, import it into **App.js**:
+Import it into **App.js**:
 
 ```js
 import domtoimage from 'dom-to-image';
@@ -26,15 +22,16 @@ import domtoimage from 'dom-to-image';
 
 ## Step 2: Add platform-specific code
 
-React Native provides a `Platform` module that detects the platform in which the app is running. Using this module, you can add a detection logic to implement platform-specific code.
+React Native provides a `Platform` module that returns the currently running platform. With it, we can implement platform-specific code.
 
-First, import the `Platform` module in **App.js**:
+Import the `Platform` module in **App.js**:
 
 ```js
 import { StyleSheet, View, Platform } from 'react-native';
 ```
 
-Inside the `saveImageHandler` method in the `App` component, use `Platform.OS` to check whether the code platform is detected as web or not. If it is not web, run the logic added previously. If it is web, use the `domtoimage.toJpeg` method to convert and capture the current view to a JPEG image and download it.
+Inside the `onSaveImageAsync()` function in the `<App>` component, we’ll use `Platform.OS` to check whether the platform is `"web"`. If it is not `"web"`, we’ll run the logic added previously. If it is `"web"`, we’ll use the `domtoimage.toJpeg()` method to convert and capture the current `<View>` as a JPEG image.
+
 
 <SnackInline
 label="Take a screenshot"
@@ -58,7 +55,7 @@ files={{
 }}>
 
 ```js
-const saveImageHandler = async () => {
+const onSaveImageAsync = async () => {
   if (Platform.OS !== 'web') {
     try {
       const localUri = await captureRef(imageRef, {
@@ -77,7 +74,7 @@ const saveImageHandler = async () => {
       .toJpeg(imageRef.current)
       .then(dataUrl => {
         let link = document.createElement('a');
-        link.download = 'my-image-name.jpeg';
+        link.download = 'sticker-smash.jpeg';
         link.href = dataUrl;
         link.click();
       })
@@ -90,7 +87,7 @@ const saveImageHandler = async () => {
 
 </SnackInline>
 
-On running the app in a web browser, you will get a similar output:
+On running the app in a web browser, we can now save a screenshot:
 
 <Video file="tutorial/web.mp4" />
 

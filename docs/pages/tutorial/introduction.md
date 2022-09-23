@@ -10,7 +10,7 @@ Welcome to Expo. We’re about to embark on a journey of building universal apps
 
 ## About this tutorial
 
-The objective of this tutorial is to get started with Expo and get familiar with the Expo SDK. We’ll build an app for Android, iOS, and the web. It’ll cover the following topics:
+The objective of this tutorial is to get started with Expo and get familiar with the Expo SDK. It’ll cover the following topics:
 
 - Create an Expo App
 - Breaking down app layout and implementing it with flexbox
@@ -25,13 +25,11 @@ Before we get started, take a look at what we’ll build: an app named **Sticker
 
 <Video file="tutorial/final.mp4" />
 
-Following this tutorial, we will provide you with hands-on experience by using different Expo libraries such as `expo-image-picker`, `expo-media-library`, and `expo-status-bar`. Some of the functionalities these libraries offer are picking an image from a device's media library, saving the image on the device, and so on. Expo's SDK provides universal libraries that make implementing features across unique platforms a snap. With that said, we can use any native code or library in our apps.
+This tutorial provides a hands-on experience by using different Expo libraries such as `expo-image-picker`, `expo-media-library`, and `expo-status-bar`. Some of the functionalities these libraries offer are picking an image from a device's media library, saving the image on the device, and so on. Expo's SDK provides universal libraries that make implementing features across unique platforms a snap. With that said, we can use any native code or library in our apps.
 
 Further in the tutorial, we will also use libraries like [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/) and [Reanimated](https://docs.swmansion.com/react-native-reanimated/) to add interactivity and to implement pan and tap gestures to add interactive features.
 
-This tutorial is divided into eight chapters. These chapters cover the fundamentals of how to build a mobile app.
-
-This is a self-paced tutorial. On average, it will take around two and a half hours to complete this tutorial.
+This tutorial is divided into eight chapters. These chapters cover the fundamentals of how to build a mobile app. It is a self-paced tutorial. On average, it will take around two and a half hours to complete this tutorial.
 
 Each chapter also contains all the necessary code. Feel free to follow along either by creating an app from scratch or using Expo Snack examples to copy and paste the code if you get lost in between.
 

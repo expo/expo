@@ -6,36 +6,28 @@ import SnackInline from '~/components/plugins/SnackInline';
 import { Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 
-In this chapter, you will learn how to use a third-party library compatible with the Expo Go app. These are the following libraries that are used:
+In this chapter, we will learn how to use a third-party library. We’ll use the following libraries:
 
-- [react-native-view-shot](https://github.com/gre/react-native-view-shot): the third-party library that allows you to add the functionality of taking a screenshot.
-- [`expo-media-library`](/versions/latest/sdk/media-library/): Expo library that allows you to access a device's media library and save an image.
+- [react-native-view-shot](https://github.com/gre/react-native-view-shot): allows taking a screenshot.
+- [`expo-media-library`](/versions/latest/sdk/media-library/): allows accessing a device's media library to save an image.
 
-Both are compatible with Expo Go, a client app to run Expo projects on a device when in development. It comes with a set of native modules pre-packaged that are compatible with [Expo SDK](/workflow/glossary-of-terms/#expo-sdk). You use the Expo Go app on a device or run it on a simulator. Generally, any third-party library is compatible with the Expo Go client as long as it does not require custom native code configuration. An excellent way to seek which libraries in the community are compatible, search the library name on [reactnative.directory](https://reactnative.directory/).
+> We can find hundreds of other libraries on the [React Native Directory](https://reactnative.directory/).
 
-## Step 1: Install expo-media-library
+## Step 1: Ask for permissions
 
-Let's begin by installing `expo-media-library`. Open your Expo project in the terminal and run the command:
+When creating an app that requires access to potentially sensitive information, such as access to the media library, we must first ask for the user's permission.
 
-<Terminal cmd={['$ npx expo install expo-media-library']} />
+`expo-media-library` provides a `usePermissions()` hook. It gives the permission `status` and a `requestPermission()` method to ask for access to the media library when permission is not granted.
 
-After installing it, import the library in the **App.js** file:
+Initially, when the app loads for the first time and the permission status is neither granted nor denied, the value of the `status` is `null`. When asked for permission, a user can either grant the permission or deny it. We can add a condition to check if it is `null`, and if it is, trigger the `requestPermission()` method.
+
+Add the following code snippet inside the `<App>` component:
 
 ```js
 import * as MediaLibrary from 'expo-media-library';
-```
 
-## Step 2: Ask for permissions
+// …
 
-When creating an app that requires access to potentially sensitive information on a device, such as access to the media library, you must first ask for the app user's permission.
-
-`expo-media-library` provides a `usePermissions` hook. It gives the permission `status` and a `requestPermission` method to ask for access to the media library when permission is not granted.
-
-Initially, when the app loads for the first time and the permission status is neither granted nor denied, the value of the `status` is `null`. When asked for permission, a user can either grant the permission or deny it. You can add a condition to check if it is `null`, and if it is, trigger the `requestPermission` method.
-
-Add the following code snippet inside the `App` component:
-
-```js
 export default function App() {
   const [status, requestPermission] = MediaLibrary.usePermissions();
 
@@ -45,46 +37,30 @@ export default function App() {
     /* @end */
   }
 
-  // rest of the code
+  // ...
 }
 ```
 
-Once the permission is allowed, the value of the `status` changes to `granted`. You can also view the `status` by adding a temporary `console.log(status)` statement. In the terminal window, when the permissions are granted, are logged as a JSON objected:
+Once the permission is allowed, the value of the `status` changes to `granted`. 
 
-```json
-{
-  "accessPrivileges": "all",
-  "canAskAgain": true,
-  "expires": "never",
-  "granted": true,
-  "status": "granted"
-}
-```
+## Step 2: Picking a library to take screenshots
 
-## Step 3: Picking a library to take screenshots
+To allow the user to take a screenshot within the app, we’ll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot). It allows capturing a `<View>` as an image.
 
-To allow the user to take a screenshot within the app, let's use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot). It allows capturing a view in a React Native app as an image.
 
-Looking at this library on [reactnative.directory](https://reactnative.directory/?search=react-native-view-shot), you will find that it is compatible with the Expo Go client.
-
-## Step 4: Install react-native-view-shot
-
-Open up the terminal window, and run the command to install `react-native-view-shot`:
-
-<Terminal cmd={['$ npx expo install react-native-view-shot']} />
-
-After installing this library let's import it into **App.js**.
+Let's import it into **App.js**.
 
 ```js
 import { captureRef } from 'react-native-view-shot';
 ```
 
-## Step 5: Create a ref to save the current view
+## Step 3: Create a ref to save the current view
 
-The `react-native-view-shot` library provides a method called `captureRef` that helps capture a screenshot of the view in the app and returns a URI of the captured view as an image. It's the same method you imported in the previous step.
+The `react-native-view-shot` library provides a method called `captureRef()` that captures a screenshot of a `<View>` in the app and returns a URI of the captured `<View>` as an image.
 
-To capture a view, wrap the `ImageViewer` and `EmojiSticker` components inside a `View` and then pass a reference to it. Using `useRef` from React library, let's create `imageRef` inside the `App` component.
+To capture a `<View>`, wrap the `<ImageViewer>` and `<EmojiSticker>` components inside a `<View>` and then pass a reference to it. Using the `useRef()` hook from React, let's create an `imageRef` variable inside `<App>`.
 
+<!-- prettier-ignore -->
 ```js
 import { useState, useRef } from 'react';
 
@@ -95,33 +71,28 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={styles.container}>
-      <View ref={imageRef} style={styles.screenshotContainer} collapsable={false}>
-        <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
-        {pickedEmoji !== null ? (
-          <EmojiSticker imageSize={SIZE} stickerSource={pickedEmoji} />
-        ) : null}
+      <View style={styles.imageContainer}>
+        <View ref={imageRef} collapsable={false}>
+          <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
+          {pickedEmoji !== null ? (
+            <EmojiSticker imageSize={SIZE} stickerSource={pickedEmoji} />
+          ) : null}
+        </View>
       </View>
+            
       /* ... */
     </GestureHandlerRootView>
   );
 }
-
-const styles = StyleSheet.create({
-  // rest of the styles remain same
-  screenshotContainer: {
-    flex: 1,
-    backgroundColor: 'transparent',
-  },
-});
 ```
 
-## Step 6: Capture a screenshot and save it
+## Step 4: Capture a screenshot and save it
 
-Now, you can capture a screenshot of the view by calling the `captureRef` method from `react-native-view-shot` inside the `saveImageHandler`. This method accepts an optional object where you can pass the `width` and `height` of the area you want to capture a screenshot for, and other options `format` such as `png` or `jpg`, and `quality`. You can [read more about available options](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api) in the library's documentation.
+Now we can capture a screenshot of the view by calling the `captureRef()` method from `react-native-view-shot` inside the `onSaveImageAsync()` function. `captureRef()` accepts an optional argument where we can pass the `width` and `height` of the area we’d like to capture a screenshot for. We can [read more about available options](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api) in the library's documentation.
 
-The `captureRef` method returns a promise that resolves to the URI of the captured view. You will use this URI as a parameter to [`MediaLibrary.saveToLibraryAsync()`](https://docs.expo.dev/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri), which will save the file to the device's media library.
+The `captureRef()` method returns a promise that resolves to the URI of the captured screenshot. We will pass this URI as a parameter to [`MediaLibrary.saveToLibraryAsync()`](https://docs.expo.dev/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri), which will save the screenshot to the device's media library.
 
-Update the `saveImageHandler` function as the following code snippet:
+Update the `onSaveImageAsync()` function with the following code:
 
 <SnackInline
 label="Take a screenshot"
@@ -147,7 +118,7 @@ files={{
 <!-- prettier-ignore -->
 ```js
 export default function App() {
-  const saveImageHandler = async () => {
+  const onSaveImageAsync = async () => {
     try {
       const localUri = await captureRef(imageRef, {        
         height: 440,
@@ -168,16 +139,13 @@ export default function App() {
 
 </SnackInline>
 
-On running the app on a mobile, you will get a similar output:
+Now, choose a photo and add a sticker. Then tap the “Save” button. We should see the 
 
 <Video file="tutorial/saving-screenshot.mp4" />
 
-At this point, capturing a screenshot and saving it on the machine using the web app won't work. The `react-native-view-shot` and `expo-media-library` work only on mobile platforms.
-
 ## Up next
 
-[reactnative.directory](https://reactnative.directory/) is an open source directory that is maintained by Expo and React Native community members. It has a collection of third-party libraries and tells you about what platforms are supported such as (iOS, Android, Web, Windows and so on) compatibility, license information and more.
-
-When developing your own apps, if any library you find is not compatible with the Expo Go client and uses custom native code, you can still use it with [Development Builds](/development/introduction/).
+The `react-native-view-shot` and `expo-media-library` work only on Android and iOS, but we’d like our app to work on web as well.
 
 In the next chapter, let's learn how to [handle the differences between mobile and web platforms](/tutorial/platform-differences).
+
