@@ -140,7 +140,7 @@ class LocalizationModule : Module() {
     return if (VERSION.SDK_INT >= VERSION_CODES.O) {
       Calendar.getInstance().calendarType.toString()
     } else {
-      "gregorian"
+      "gregory"
     }
   }
 

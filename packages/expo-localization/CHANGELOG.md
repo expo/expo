@@ -8,9 +8,13 @@
 
 ### 🎉 New features
 
-- Added two new synchronous functions: `getPreferredLocales` and `getPreferredCalendars`. Soft deprecated existing constants API. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))
+- Added two new synchronous functions: `getPreferredLocales` and `getPreferredCalendars`. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
+
+### ⚠️ Notices
+
+- Deprecated existing constants API while keeping backwards compatibility. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
