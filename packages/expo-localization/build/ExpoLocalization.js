@@ -108,7 +108,6 @@ export default {
                 calendar: locale?.calendar || locale?.calendars?.[0] || null,
                 timeZone: locale?.timeZone || locale?.timeZones?.[0] || null,
                 uses24hourClock: (locale?.hourCycle || locale?.hourCycles?.[0])?.startsWith('h2') ?? null,
-                // 1..7 indexing, 1 is sunday
                 firstWeekday: locale?.weekInfo?.firstDay || null,
             },
         ];

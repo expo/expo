@@ -1,33 +1,39 @@
 import { Localization } from './Localization.types';
 export { Localization };
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * Three-character ISO 4217 currency code. Returns `null` on web.
  *
  * @example `'USD'`, `'EUR'`, `'CNY'`, `null`
  */
 export declare const currency: string | null;
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * Decimal separator used for formatting numbers.
  *
  * @example `','`, `'.'`
  */
 export declare const decimalSeparator: string;
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * Digit grouping separator used when formatting numbers larger than 1000.
  *
  * @example `'.'`, `''`, `','`
  */
 export declare const digitGroupingSeparator: string;
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * A list of all the supported language ISO codes.
  */
 export declare const isoCurrencyCodes: string[];
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * Boolean value that indicates whether the system uses the metric system.
  * On Android and web, this is inferred from the current region.
  */
 export declare const isMetric: boolean;
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * Returns if the system's language is written from Right-to-Left.
  * This can be used to build features like [bidirectional icons](https://material.io/design/usability/bidirectionality.html).
  *
@@ -35,6 +41,7 @@ export declare const isMetric: boolean;
  */
 export declare const isRTL: boolean;
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
  * consisting of a two-character language code and optional script, region and variant codes.
  *
@@ -42,6 +49,7 @@ export declare const isRTL: boolean;
  */
 export declare const locale: string;
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * List of all the native languages provided by the user settings.
  * These are returned in the order the user defines in their device settings.
  *
@@ -49,6 +57,7 @@ export declare const locale: string;
  */
 export declare const locales: string[];
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * The current time zone in display format.
  * On Web time zone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a
  * better estimation you could use the moment-timezone package but it will add significant bloat to
@@ -58,6 +67,7 @@ export declare const locales: string[];
  */
 export declare const timezone: string;
 /**
+ * @deprecated Use Localization.getPreferredLocales() instead.
  * The region code for your device that comes from the Region setting under Language & Region on iOS.
  * This value is always available on iOS, but might return `null` on Android or web.
  *
@@ -85,8 +95,8 @@ export declare const region: string | null;
 export declare const getPreferredLocales: () => import("./Localization.types").PreferredLocale[];
 /**
  * List of user's preferred calendars, returned as an array of objects of type `PreferredCalendar`.
- * For now always returns a single element. The calendar field does't include aliases, such as "gregorian" for "gregory",
- * so it can differ per platform.
+ * Guaranteed to contain at least 1 element.
+ * For now always returns a single element, but it's likely to return a user preference list on some platforms.
  * @example `[
     {
       "calendar": "gregory",
