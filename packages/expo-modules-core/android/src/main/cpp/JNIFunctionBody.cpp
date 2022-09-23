@@ -7,7 +7,7 @@ namespace jni = facebook::jni;
 namespace react = facebook::react;
 
 namespace expo {
-jni::local_ref<react::ReadableNativeArray::javaobject>
+jni::local_ref<jni::JObject>
 JNIFunctionBody::invoke(jobjectArray args) {
   // Do NOT use getClass here!
   // Method obtained from `getClass` will point to the overridden version of the method.
@@ -15,9 +15,9 @@ JNIFunctionBody::invoke(jobjectArray args) {
   // if we receive an object of a different class than the one used to obtain the method id.
   // The only cacheable method id can be obtain from the base class.
   static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNIFunctionBody")
-    ->getMethod<jni::local_ref<react::ReadableNativeArray::javaobject>(jobjectArray)>(
+    ->getMethod<jni::local_ref<jni::JObject>(jobjectArray)>(
       "invoke",
-      "([Ljava/lang/Object;)Lcom/facebook/react/bridge/ReadableNativeArray;"
+      "([Ljava/lang/Object;)Ljava/lang/Object;"
     );
 
   return method(this->self(), args);
@@ -37,7 +37,7 @@ void JNIAsyncFunctionBody::invoke(
       void(jobjectArray , jobject)
     >(
       "invoke",
-      "([Ljava/lang/Object;Ljava/lang/Object;)V"
+      "([Ljava/lang/Object;Lexpo/modules/kotlin/jni/PromiseImpl;)V"
     );
 
   method(this->self(), args, promise);
