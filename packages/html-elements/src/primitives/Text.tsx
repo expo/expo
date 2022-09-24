@@ -6,6 +6,8 @@ import {
   TextStyle as NativeTextStyle,
 } from 'react-native';
 
+import { WebViewStyle } from './View';
+
 // https://github.com/necolas/react-native-web/issues/832
 
 type NativeTextProps = ComponentProps<typeof NativeText> & ClassAttributes<typeof NativeText>;
@@ -31,13 +33,32 @@ export interface WebTextStyle {
   wordWrap?: string;
 }
 
-export type TextStyle = Omit<NativeTextStyle, 'fontSize' | 'lineHeight'> & WebTextStyle;
+export type TextStyle = Omit<NativeTextStyle, 'position' | 'fontSize' | 'lineHeight'> &
+  WebTextStyle &
+  WebViewStyle;
 
 export type WebTextProps = {
   style?: StyleProp<TextStyle>;
   /** @platform web */
   tabIndex?: number;
-  accessibilityRole?: 'listitem' | AccessibilityRole;
+  /** @platform web */
+  accessibilityLevel?: number;
+  accessibilityRole?: 'listitem' | 'heading' | AccessibilityRole;
+  /** @platform web */
+  href?: string;
+  /** @deprecated use the prop `hrefAttrs={{ target: '...' }}` instead. */
+  target?: string;
+  /** @platform web */
+  hrefAttrs?: {
+    /** @platform web */
+    target?: string;
+    /** @platform web */
+    rel?: string;
+    /** @platform web */
+    download?: boolean | string;
+  };
+  /** @platform web */
+  lang?: string;
 };
 
 export type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;

@@ -13,5 +13,9 @@ export type LinkProps = React.PropsWithChildren<
     href?: string;
     /** @platform web */
     target?: string;
+    /** @platform web */
+    rel?: string;
+    /** @platform web */
+    download?: boolean | string;
   }
 >;

@@ -118,9 +118,11 @@ export interface WebViewStyle {
   visibility?: string;
   /** @platform web */
   willChange?: string;
+  /** @platform web */
+  position?: 'static' | 'relative' | 'absolute' | 'fixed' | 'sticky';
 }
 
-export type ViewStyle = NativeViewStyle & WebViewStyle;
+export type ViewStyle = Omit<NativeViewStyle, 'position'> & WebViewStyle;
 
 export type WebViewProps = {
   style?: StyleProp<ViewStyle>;
