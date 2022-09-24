@@ -8,6 +8,9 @@
 
 ### 🎉 New features
 
+- Added support for Metro web.
+
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
