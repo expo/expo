@@ -12,12 +12,12 @@ The most straightforward way to provide an icon for your app is to provide the [
 
 ### Design
 
-Create an app icon and splash image with the [Figma template](https://www.figma.com/community/file/1020369500490206655) and video below:
+Create an app icon and splash image with the [Figma template](https://www.figma.com/community/file/1155362909441341285) and video below:
 
 <object width="100%" height="400">
-  <param name="movie" value="https://youtube.com/embed/mVOFvLSiJ_s" />
+  <param name="movie" value="https://youtu.be/QSNkU7v0MPc" />
   <param name="wmode" value="transparent" />
-  <embed src="https://youtube.com/embed/mVOFvLSiJ_s" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
+  <embed src="https://youtu.be/QSNkU7v0MPc" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
 </object>
 
 ### iOS
