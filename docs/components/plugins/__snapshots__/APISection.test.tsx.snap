@@ -54,7 +54,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -234,14 +234,15 @@ button.
       Make sure to attach height and width via the style props as without these styles, the button will
 not appear on the screen.
     </p>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -258,7 +259,9 @@ not appear on the screen.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -277,7 +280,7 @@ Documentation
 for more details.
         </span>
       </div>
-    </blockquote>
+    </div>
     <h2
       class="css-1ck3d9a-H2"
       data-heading="true"
@@ -331,7 +334,7 @@ for more details.
     </h2>
     <div>
       <div
-        class="css-g8zh0a"
+        class="css-uo8h68"
       >
         <h3
           class="css-m417je-H3"
@@ -417,7 +420,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-uo8h68"
       >
         <h3
           class="css-m417je-H3"
@@ -503,7 +506,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-uo8h68"
       >
         <h3
           class="css-m417je-H3"
@@ -596,7 +599,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-uo8h68"
       >
         <h3
           class="css-m417je-H3"
@@ -726,7 +729,7 @@ properties.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-uo8h68"
       >
         <h3
           class="css-m417je-H3"
@@ -945,7 +948,7 @@ in here.
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -1084,14 +1087,15 @@ This should come from the user field of an
     </p>
     
 
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -1108,21 +1112,14 @@ This should come from the user field of an
           />
         </svg>
       </div>
-      <div>
-        
-
-        <strong
-          class="css-1qx481h-B"
-        >
-          Note:
-        </strong>
+      <div
+        class="css-vjw6uw-Callout"
+      >
          This method must be tested on a real device. On the iOS simulator it always throws an error.
-        
-
       </div>
-    </blockquote>
+    </div>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1245,7 +1242,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -1309,7 +1306,7 @@ value depending on the state of the credential.
       Determine if the current device's operating system supports Apple authentication.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1427,7 +1424,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -1570,7 +1567,7 @@ value depending on the state of the credential.
 Calling this method will show the sign in modal before actually refreshing the user credentials.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1700,7 +1697,7 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -1887,7 +1884,7 @@ You can use
 the user, since this remains the same for apps released by the same developer.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -2017,7 +2014,7 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -2190,7 +2187,7 @@ from using
        methods.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -2371,7 +2368,7 @@ sign-out operation.
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -2491,7 +2488,7 @@ sign-out operation.
       </table>
     </div>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -2636,7 +2633,7 @@ sign-out operation.
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -2734,14 +2731,15 @@ sign-out operation.
       
 which contains all of the pertinent user and credential information.
     </p>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -2758,7 +2756,9 @@ which contains all of the pertinent user and credential information.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -2777,7 +2777,7 @@ Documentation
 for more details.
         </span>
       </div>
-    </blockquote>
+    </div>
     <div
       class="css-rufzkc-Table"
     >
@@ -3116,7 +3116,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -3419,7 +3419,7 @@ may be
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -3494,14 +3494,15 @@ may be
       .
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -3518,7 +3519,9 @@ You must include the ID string of the user whose credentials you'd like to refre
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -3537,7 +3540,7 @@ Documentation
 for more details.
         </span>
       </div>
-    </blockquote>
+    </div>
     <div
       class="css-rufzkc-Table"
     >
@@ -3709,7 +3712,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -3784,14 +3787,15 @@ OAuth 2.0 protocol
       .
 None of these options are required.
     </p>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -3808,7 +3812,9 @@ None of these options are required.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -3827,7 +3833,7 @@ Documentation
 for more details.
         </span>
       </div>
-    </blockquote>
+    </div>
     <div
       class="css-rufzkc-Table"
     >
@@ -4016,7 +4022,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -4091,14 +4097,15 @@ OAuth 2.0 protocol
       .
 You must include the ID string of the user to sign out.
     </p>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -4115,7 +4122,9 @@ You must include the ID string of the user to sign out.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -4134,7 +4143,7 @@ Documentation
 for more details.
         </span>
       </div>
-    </blockquote>
+    </div>
     <div
       class="css-rufzkc-Table"
     >
@@ -4243,7 +4252,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -4418,7 +4427,7 @@ OAuth 2.0 protocol
     </div>
   </h2>
   <div
-    class="css-ii449t"
+    class="css-dz12uj"
   >
     <h3
       class="css-m417je-H3"
@@ -4493,10 +4502,10 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4571,10 +4580,10 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4649,10 +4658,10 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4728,7 +4737,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-dz12uj"
   >
     <h3
       class="css-m417je-H3"
@@ -4803,10 +4812,10 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4881,10 +4890,10 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4959,7 +4968,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <strong
         class="css-1qx481h-B"
@@ -4968,7 +4977,7 @@ OAuth 2.0 protocol
          
       </strong>
       <div
-        class="css-1kq9nqw-PlatformTag"
+        class="css-u7asze-PlatformTag"
       >
         <svg
           color="var(--expo-theme-palette-blue-900)"
@@ -4995,7 +5004,7 @@ OAuth 2.0 protocol
       </div>
       <br />
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5071,7 +5080,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-dz12uj"
   >
     <h3
       class="css-m417je-H3"
@@ -5145,14 +5154,15 @@ OAuth 2.0 protocol
       </a>
       .
     </p>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -5169,7 +5179,9 @@ OAuth 2.0 protocol
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -5188,12 +5200,12 @@ Documentation
 for more details.
         </span>
       </div>
-    </blockquote>
+    </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5262,10 +5274,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5334,10 +5346,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5406,10 +5418,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5479,7 +5491,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-dz12uj"
   >
     <h3
       class="css-m417je-H3"
@@ -5537,10 +5549,10 @@ for more details.
       </div>
     </h3>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5615,10 +5627,10 @@ for more details.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5687,10 +5699,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5759,10 +5771,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5832,7 +5844,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-dz12uj"
   >
     <h3
       class="css-m417je-H3"
@@ -5906,14 +5918,15 @@ for more details.
       </a>
       .
     </p>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -5930,23 +5943,31 @@ for more details.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         
 
-        Note that it is possible that you will not be granted all of the scopes which you request.
+        <p
+          class="css-6jxvia-P"
+          data-text="true"
+        >
+          Note that it is possible that you will not be granted all of the scopes which you request.
 You will still need to handle null values for any fields you request.
+        </p>
         
 
       </div>
-    </blockquote>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    </div>
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -5963,7 +5984,9 @@ You will still need to handle null values for any fields you request.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -5982,12 +6005,12 @@ Documentation
 for more details.
         </span>
       </div>
-    </blockquote>
+    </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6056,10 +6079,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6129,7 +6152,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-dz12uj"
   >
     <h3
       class="css-m417je-H3"
@@ -6192,14 +6215,15 @@ for more details.
     >
       An enum whose values specify the system's best guess for how likely the current user is a real person.
     </p>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -6216,7 +6240,9 @@ for more details.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -6235,12 +6261,12 @@ Documentation
 for more details.
         </span>
       </div>
-    </blockquote>
+    </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6315,10 +6341,10 @@ for more details.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6393,10 +6419,10 @@ for more details.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6528,7 +6554,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -6664,7 +6690,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-        class="css-g8zh0a"
+        class="css-uo8h68"
       >
         <h3
           class="css-m417je-H3"
@@ -6784,7 +6810,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-uo8h68"
       >
         <h3
           class="css-m417je-H3"
@@ -6883,14 +6909,15 @@ provided with an
         </p>
         
 
-        <blockquote
-          class="css-1nn217x-Quote"
-          data-text="true"
+        <div
+          class="css-1xjn6jt-Callout"
+          data-testid="callout-container"
         >
           <div
-            style="margin-top: 2px;"
+            class="css-ks2t0-Callout"
           >
             <svg
+              color="var(--expo-theme-icon-default)"
               fill="none"
               height="16"
               role="img"
@@ -6907,14 +6934,9 @@ provided with an
               />
             </svg>
           </div>
-          <div>
-            
-
-            <strong
-              class="css-1qx481h-B"
-            >
-              Note:
-            </strong>
+          <div
+            class="css-vjw6uw-Callout"
+          >
              Passing 
             <code
               class="inline css-ov7own-InlineCode"
@@ -6930,13 +6952,11 @@ provided with an
              prop will result in no scanning. This
 can be used to effectively "pause" the scanner so that it doesn't continually scan even after
 data has been retrieved.
-            
-
           </div>
-        </blockquote>
+        </div>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-uo8h68"
       >
         <h3
           class="css-m417je-H3"
@@ -7194,7 +7214,7 @@ Same as
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -7335,7 +7355,7 @@ Same as
 This can be used to quickly create specific permission hooks in every module.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="css-uucypz-H4"
@@ -7418,7 +7438,7 @@ This can be used to quickly create specific permission hooks in every module.
       </pre>
     </pre>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -7601,7 +7621,7 @@ This can be used to quickly create specific permission hooks in every module.
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -7666,7 +7686,7 @@ This can be used to quickly create specific permission hooks in every module.
       Checks user's permissions for accessing the camera.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -7788,7 +7808,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -7871,7 +7891,7 @@ This can be used to quickly create specific permission hooks in every module.
       .
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -7993,7 +8013,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -8146,14 +8166,15 @@ the platform.
               </span>
               
 
-              <blockquote
-                class="css-1nn217x-Quote"
-                data-text="true"
+              <div
+                class="css-1xjn6jt-Callout"
+                data-testid="callout-container"
               >
                 <div
-                  style="margin-top: 2px;"
+                  class="css-ks2t0-Callout"
                 >
                   <svg
+                    color="var(--expo-theme-icon-default)"
                     fill="none"
                     height="16"
                     role="img"
@@ -8170,19 +8191,12 @@ the platform.
                     />
                   </svg>
                 </div>
-                <div>
-                  
-
-                  <strong
-                    class="css-1qx481h-B"
-                  >
-                    Note:
-                  </strong>
+                <div
+                  class="css-vjw6uw-Callout"
+                >
                    Only QR codes are supported on iOS.
-                  
-
                 </div>
-              </blockquote>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -8195,7 +8209,7 @@ the platform.
       Scan bar codes from the image given by the URL.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -8366,7 +8380,7 @@ code.
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -8430,7 +8444,7 @@ code.
       An object obtained by permissions get and request functions.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -8700,7 +8714,7 @@ in order to enable/disable the permission.
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -8860,7 +8874,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -9002,7 +9016,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -9126,7 +9140,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -9295,7 +9309,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -9422,7 +9436,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -9479,14 +9493,15 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </a>
       </div>
     </h3>
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -9503,14 +9518,9 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           />
         </svg>
       </div>
-      <div>
-        
-
-        <strong
-          class="css-1qx481h-B"
-        >
-          Note:
-        </strong>
+      <div
+        class="css-vjw6uw-Callout"
+      >
          
         <code
           class="inline css-ov7own-InlineCode"
@@ -9538,10 +9548,8 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         
 you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode.
 For some types, they will represent the area used by the scanner.
-        
-
       </div>
-    </blockquote>
+    </div>
     <div
       class="css-rufzkc-Table"
     >
@@ -9723,7 +9731,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -9873,7 +9881,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -10006,7 +10014,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </h2>
   <div
-    class="css-ii449t"
+    class="css-dz12uj"
   >
     <h3
       class="css-m417je-H3"
@@ -10064,10 +10072,10 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -10142,10 +10150,10 @@ For some types, they will represent the area used by the scanner.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -10220,10 +10228,10 @@ For some types, they will represent the area used by the scanner.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -10355,7 +10363,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -10413,7 +10421,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h3>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -10518,7 +10526,7 @@ exports[`APISection expo-pedometer 1`] = `
     </ul>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -10685,7 +10693,7 @@ exports[`APISection expo-pedometer 1`] = `
       Get the step count between two dates.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -10823,14 +10831,15 @@ exports[`APISection expo-pedometer 1`] = `
     </p>
     
 
-    <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+    <div
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -10847,18 +10856,25 @@ exports[`APISection expo-pedometer 1`] = `
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-vjw6uw-Callout"
+      >
         
 
-        Only the past seven days worth of data is stored and available for you to retrieve. Specifying
+        <p
+          class="css-6jxvia-P"
+          data-text="true"
+        >
+          Only the past seven days worth of data is stored and available for you to retrieve. Specifying
 a start date that is more than seven days in the past returns only the available data.
+        </p>
         
 
       </div>
-    </blockquote>
+    </div>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -10922,7 +10938,7 @@ a start date that is more than seven days in the past returns only the available
       Returns whether the pedometer is enabled on the device.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11035,7 +11051,7 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -11093,7 +11109,7 @@ available on this device.
       </div>
     </h3>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11198,7 +11214,7 @@ available on this device.
     </ul>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-uo8h68"
   >
     <h3
       class="css-m417je-H3"
@@ -11341,7 +11357,7 @@ provided with a single argument that is
       Subscribe to pedometer updates.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11510,7 +11526,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -11568,7 +11584,7 @@ provided with a single argument that is
       </div>
     </h3>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11828,7 +11844,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -11949,7 +11965,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -12076,7 +12092,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -12158,7 +12174,7 @@ provided with a single argument that is
     </p>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-k1hgl6"
   >
     <h3
       class="css-m417je-H3"
@@ -12333,7 +12349,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-ii449t"
+    class="css-dz12uj"
   >
     <h3
       class="css-m417je-H3"
@@ -12391,10 +12407,10 @@ provided with a single argument that is
       </div>
     </h3>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -12463,10 +12479,10 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -12535,10 +12551,10 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-1ntmnla"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"

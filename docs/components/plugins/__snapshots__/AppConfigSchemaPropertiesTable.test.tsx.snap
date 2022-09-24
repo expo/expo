@@ -756,14 +756,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 </p>
               </div>
             </details>
-            <blockquote
-              class="css-1nn217x-Quote"
-              data-text="true"
+            <div
+              class="css-1xjn6jt-Callout"
+              data-testid="callout-container"
             >
               <div
-                style="margin-top: 2px;"
+                class="css-ks2t0-Callout"
               >
                 <svg
+                  color="var(--expo-theme-icon-default)"
                   fill="none"
                   height="16"
                   role="img"
@@ -780,14 +781,18 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   />
                 </svg>
               </div>
-              <div>
+              <div
+                class="css-vjw6uw-Callout"
+              >
                 
 
-                [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
+                <span>
+                  [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
+                </span>
                 
 
               </div>
-            </blockquote>
+            </div>
           </td>
         </tr>
         <tr
