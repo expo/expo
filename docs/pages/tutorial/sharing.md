@@ -15,6 +15,12 @@ You can install expo-sharing in the same way as you installed expo-image-picker.
 
 <Terminal cmd={['$ npx expo install expo-sharing']} />
 
+## Installing expo-image-manipulator
+
+You'll also need expo-image-manipulator. In your project directory run:
+
+<Terminal cmd={['$ npx expo install expo-image-manipulator']} />
+
 ## Using expo-sharing to share an image
 
 <SnackInline label="Sharing" templateId="tutorial/sharing-simple" dependencies={['expo-image-picker', 'expo-sharing']}>
@@ -26,7 +32,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View, /* @info This is requi
 import * as ImagePicker from 'expo-image-picker';
 /* @info As always, we must import it to use it */ import * as Sharing from 'expo-sharing'; /* @end */
 
-import * as ImageManipulator from "expo-image-manipulator";
+/* @info As always, we must import it to use it */ import * as ImageManipulator from "expo-image-manipulator"; /* @end */
 
 export default function App() {
   const [selectedImage, setSelectedImage] = React.useState(null);

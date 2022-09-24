@@ -185,7 +185,7 @@ const general = [
     makePage('ui-programming/react-native-styling-buttons.md'),
     makePage('guides/userinterface.md'),
   ]),
-  makeSection('Expo Module API (Alpha)', [
+  makeSection('Expo Modules API', [
     makePage('modules/overview.md'),
     makePage('modules/module-api.md'),
     makePage('modules/android-lifecycle-listeners.md'),
