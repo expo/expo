@@ -57,13 +57,4 @@ describe('getAssetForSource', () => {
         .display
     ).toBe(Font.FontDisplay.SWAP);
   });
-  it(`doesn't support numeric assets on web`, () => {
-    expect(() => FontLoader.getAssetForSource(10)).toThrow('number is not supported on web');
-    expect(() =>
-      FontLoader.getAssetForSource({ name: 'foo', display: Font.FontDisplay.FALLBACK, uri: 10 })
-    ).toThrow('number is not supported on web');
-    expect(() => FontLoader.getAssetForSource({ name: 'foo', localUri: 10 } as any)).toThrow(
-      'number is not supported on web'
-    );
-  });
 });
