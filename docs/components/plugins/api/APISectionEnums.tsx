@@ -68,8 +68,6 @@ const enumContainerStyle = css({
 });
 
 const enumValueNameStyle = css({
-  marginTop: spacing[3],
-
   h4: {
     marginTop: 0,
   },
