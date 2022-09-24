@@ -26,11 +26,13 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Pedometer } from 'expo-sensors';
 
+  
+  //give some permisions for activity recognition here
+  
 export default class App extends React.Component {
   state = {
     isPedometerAvailable: 'checking',
     pastStepCount: 0,
-    currentStepCount: 0,
   };
 
   componentDidMount() {
@@ -44,7 +46,7 @@ export default class App extends React.Component {
   _subscribe = () => {
     this._subscription = Pedometer.watchStepCount(result => {
       this.setState({
-        currentStepCount: result.steps,
+        currentStepCount: result.steps++,
       });
     });
 
@@ -60,19 +62,6 @@ export default class App extends React.Component {
         });
       }
     );
-
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 1);
-    Pedometer.getStepCountAsync(start, end).then(
-      result => {
-        this.setState({ pastStepCount: result.steps });
-      },
-      error => {
-        this.setState({
-          pastStepCount: 'Could not get stepCount: ' + error,
-        });
-      }
     );
   };
 
@@ -85,7 +74,6 @@ export default class App extends React.Component {
     return (
       <View style={styles.container}>
         <Text>Pedometer.isAvailableAsync(): {this.state.isPedometerAvailable}</Text>
-        <Text>Steps taken in the last 24 hours: {this.state.pastStepCount}</Text>
         <Text>Walk! And watch this go up: {this.state.currentStepCount}</Text>
       </View>
     );
