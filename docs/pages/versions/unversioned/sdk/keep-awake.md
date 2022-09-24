@@ -32,6 +32,7 @@ export default function KeepAwakeExample() {
   /* @info As long as this component is mounted, the screen will not turn off from being idle. */
   useKeepAwake();
   /* @end */
+
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Text>This screen will never sleep!</Text>
