@@ -31,14 +31,14 @@ const sortByValue = (a: EnumValueData, b: EnumValueData) => {
 const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
   <div key={`enum-definition-${name}`} css={[STYLES_APIBOX, enumContentStyles]}>
     <APISectionDeprecationNote comment={comment} />
-    <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
+    <APISectionPlatformTags comment={comment} prefix="Only for:" />
     <H3Code tags={getTagNamesList(comment)}>
       <InlineCode>{name}</InlineCode>
     </H3Code>
     <CommentTextBlock comment={comment} includePlatforms={false} />
     {children.sort(sortByValue).map((enumValue: EnumValueData) => (
       <div css={[STYLES_APIBOX, enumContainerStyle]} key={enumValue.name}>
-        <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" firstElement />
+        <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" />
         <div css={enumValueNameStyle}>
           <H4Code>
             <InlineCode>{enumValue.name}</InlineCode>
@@ -78,14 +78,10 @@ const enumValueStyles = css({
   padding: `0 ${spacing[2]}px`,
   color: theme.text.secondary,
   fontSize: '75%',
-  marginBottom: spacing[3],
+  marginBottom: spacing[4],
 });
 
 const enumContentStyles = css({
-  '& blockquote': {
-    margin: `${spacing[2]}px 0`,
-  },
-
   '& ul': {
     marginBottom: 0,
   },

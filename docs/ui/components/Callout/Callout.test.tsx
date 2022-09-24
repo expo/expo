@@ -82,4 +82,13 @@ describe(Callout, () => {
     expect(screen.getByTitle('Warning-icon')).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
   });
+
+  it('renders content starting with emphasized word which is not a type', () => {
+    render(
+      <ReactMarkdown components={{ blockquote: Callout }}>{`> **Note**: Hello`}</ReactMarkdown>
+    );
+    expect(screen.getByTestId('callout-container')).toBeInTheDocument();
+    expect(screen.getByText('Note')).toBeInTheDocument();
+    expect(screen.getByText(': Hello')).toBeInTheDocument();
+  });
 });

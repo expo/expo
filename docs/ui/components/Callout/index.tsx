@@ -38,11 +38,12 @@ export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
   const content = Children.toArray(children).filter(child => isValidElement(child))[0];
   const contentChildren = Children.toArray(isValidElement(content) && content?.props?.children);
 
-  const finalType = extractType(contentChildren) || type;
+  const extractedType = extractType(contentChildren);
+  const finalType = ['warning', 'error', 'info'].includes(extractedType) ? extractedType : type;
   const Icon = icon || getCalloutIcon(finalType);
 
   return (
-    <div css={[containerStyle, getCalloutColor(finalType)]} data-testid="callout-container">
+    <blockquote css={[containerStyle, getCalloutColor(finalType)]} data-testid="callout-container">
       <div css={iconStyle}>
         {typeof icon === 'string' ? (
           icon
@@ -53,7 +54,7 @@ export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
       <div css={contentStyle}>
         {type === finalType ? children : contentChildren.filter((_, i) => i !== 0)}
       </div>
-    </div>
+    </blockquote>
   );
 };
 
@@ -124,18 +125,8 @@ const contentStyle = css({
   ...typography.body.paragraph,
   color: theme.text.default,
 
-  '*:last-of-type': {
+  '*:last-child': {
     marginBottom: 0,
-  },
-
-  'table &': {
-    '&:first-of-type': {
-      marginTop: 0,
-    },
-
-    '&:last-of-type': {
-      marginBottom: 0,
-    },
   },
 });
 

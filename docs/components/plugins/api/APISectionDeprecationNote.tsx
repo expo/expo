@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, spacing } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -32,9 +32,5 @@ const deprecationNoticeStyle = css({
   'table &': {
     marginTop: 0,
     marginBottom: spacing[3],
-
-    span: {
-      fontSize: '90%',
-    },
   },
 });

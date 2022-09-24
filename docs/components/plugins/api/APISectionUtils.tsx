@@ -564,7 +564,7 @@ export const STYLES_APIBOX = css({
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  padding: `${spacing[4]}px ${spacing[5]}px 0`,
+  padding: `${spacing[5]}px ${spacing[5]}px 0`,
   boxShadow: shadows.micro,
   marginBottom: spacing[6],
   overflowX: 'hidden',
@@ -639,6 +639,11 @@ export const STYLES_SECONDARY = css({
 
 const defaultValueContainerStyle = css({
   marginTop: spacing[2],
+  marginBottom: spacing[2],
+
+  '&:last-child': {
+    marginBottom: 0,
+  },
 });
 
 const STYLES_EXAMPLE_IN_TABLE = css({

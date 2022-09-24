@@ -115,7 +115,7 @@ const renderInterface = ({
   return (
     <div key={`interface-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
-      <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <H3Code tags={getTagNamesList(comment)}>
         <InlineCode>{name}</InlineCode>
       </H3Code>
