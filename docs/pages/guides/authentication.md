@@ -26,6 +26,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 <SocialGrid>
   <SocialGridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} href="#identityserver-4" image="/static/images/sdk/auth-session/identity4.png" />
+  <SocialGridItem title="Auth0" protocol={['OAuth 2', 'OpenID']} href="#auth0" image="/static/images/sdk/auth-session/auth0.png" />
   <SocialGridItem title="Azure" protocol={['OAuth 2', 'OpenID']} href="#azure" image="/static/images/sdk/auth-session/azure.png" />
   <SocialGridItem title="Apple" protocol={['iOS Only']} href="/versions/latest/sdk/apple-authentication" image="/static/images/sdk/auth-session/apple.png" />
   <SocialGridItem title="Coinbase" protocol={['OAuth 2']} href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
@@ -104,6 +105,233 @@ export default function App() {
 ```
 
 {/* End IdentityServer 4 */}
+
+### Auth0
+
+<CreateAppButton name="Auth0" href="https://auth0.com/signup" />
+
+| Website                           | Provider | PKCE      | Auto Discovery |
+| --------------------------------- | -------- | --------- | -------------- |
+| [Sign-up][c-auth0] > Applications | OpenID   | Supported | Available      |
+
+[c-auth0]: https://auth0.com/signup
+
+<Tabs tabs={["Auth Code", "Implicit Flow", "Auth Code w/ PKCE"]}>
+
+<Tab>
+
+<SnackInline label='Auth0 Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
+
+<!-- prettier-ignore -->
+```tsx
+import React, { useState, useEffect } from 'react';
+import { makeRedirectUri, useAuthRequest, ResponseType, Prompt } from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { Button, Platform } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
+
+const discovery = {
+  authorizationEndpoint: 'https://<AUTH0_DOMAIN>/authorize',
+  tokenEndpoint: 'https://<AUTH0_DOMAIN>/oauth/token',
+};
+
+const App: React.FC = () => {
+  const useProxy = Platform.select({ web: false, default: true });
+  const [randomValue] = useState(Math.random().toString(36).substring(2, 15));
+
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      redirectUri: makeRedirectUri({ useProxy }),
+      clientId: 'CLIENT_ID',
+      responseType: ResponseType.Code,
+      // offline_access required in order to obtain a refresh token
+      // must enable refresh tokens in Auth0 console to obtain a refresh token
+      scopes: ['openid', 'profile', 'email', 'offline_access'],
+      // Set usePKCE to false in order to follow server side authorization code flow.
+      usePKCE: false,
+      prompt: Prompt.Login,
+      extraParams: {
+        nonce: randomValue,
+        audience: 'AUTH0_AUDIENCE',
+      },
+    },
+    discovery,
+  );
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { code } = response.params;
+    }
+  }, [response]);
+
+  return (
+    <Button
+      disabled={!request}
+      title="Login"
+      onPress={() => {
+        promptAsync({ useProxy });
+      }}
+    />
+  );
+};
+
+export default App;
+```
+
+</SnackInline>
+
+</Tab>
+
+<Tab>
+
+<SnackInline label='Auth0 Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
+
+<!-- prettier-ignore -->
+```tsx
+import React, { useState, useEffect } from 'react';
+import { makeRedirectUri, useAuthRequest, ResponseType, Prompt } from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { Button, Platform } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
+
+const discovery = {
+  authorizationEndpoint: 'https://<AUTH0_DOMAIN>/authorize',
+  tokenEndpoint: 'https://<AUTH0_DOMAIN>/oauth/token',
+};
+
+const App: React.FC = () => {
+  const useProxy = Platform.select({ web: false, default: true });
+  const [randomValue] = useState(Math.random().toString(36).substring(2, 15));
+
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      redirectUri: makeRedirectUri({ useProxy }),
+      clientId: 'CLIENT_ID',
+      responseType: ResponseType.IdToken,
+      scopes: ['openid', 'profile', 'email'],
+      prompt: Prompt.Login,
+      extraParams: {
+        nonce: randomValue,
+        audience: 'AUTH0_AUDIENCE',
+      },
+    },
+    discovery,
+  );
+
+  useEffect(() => {
+    if (response?.type === 'success') {
+      //The id_token is used as the access token in implicit flow.
+      const { id_token } = response.params;
+    }
+  }, [response]);
+
+  return (
+    <Button
+      disabled={!request}
+      title="Login"
+      onPress={() => {
+        promptAsync({ useProxy });
+      }}
+    />
+  );
+};
+
+export default App;
+```
+
+</SnackInline>
+
+</Tab>
+
+<Tab>
+
+<SnackInline label='Auth0 PKCE' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
+
+<!-- prettier-ignore -->
+```tsx
+import React, { useState, useEffect } from 'react';
+import { makeRedirectUri, useAuthRequest, ResponseType, Prompt, exchangeCodeAsync } from 'expo-auth-session';
+import * as WebBrowser from 'expo-web-browser';
+import { Button, Platform } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
+
+const discovery = {
+  authorizationEndpoint: 'https://<AUTH0_DOMAIN>/authorize',
+  tokenEndpoint: 'https://<AUTH0_DOMAIN>/oauth/token',
+};
+
+const App: React.FC = () => {
+  const useProxy = Platform.select({ web: false, default: true });
+  const [randomValue] = useState(Math.random().toString(36).substring(2, 15));
+
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      redirectUri: makeRedirectUri({ useProxy }),
+      clientId: 'CLIENT_ID',
+      responseType: ResponseType.Code,
+      // offline_access required in order to obtain a refresh token
+      // must enable refresh tokens in Auth0 console to obtain a refresh token
+      scopes: ['openid', 'profile', 'email', 'offline_access'],
+      // Set usePKCE to true in order to follow PKCE authorization code flow.
+      usePKCE: true,
+      prompt: Prompt.Login,
+      extraParams: {
+        nonce: randomValue,
+        audience: 'AUTH0_AUDIENCE',
+      },
+    },
+    discovery,
+  );
+
+  useEffect(() => {
+    async function getToken() {
+      if (response?.type === 'success') {
+        const { code } = response.params;
+        const token = await exchangeCodeAsync(
+          {
+            code: code,
+            clientId: 'CLIENT_ID',
+            redirectUri: makeRedirectUri({ useProxy }),
+            extraParams: {
+              //Required to complete PKCE flow.
+              code_verifier: request?.codeVerifier || '',
+              audience: 'AUTH0_AUDIENCE',
+            }
+          },
+          discovery,
+        );
+        console.log(token);
+        //Obtain accessToken and refreshToken pair here.
+        const { accessToken, idToken, refreshToken } = token;
+      }
+    }
+    getToken();
+  }, [response]);
+
+  return (
+    <Button
+      disabled={!request}
+      title="Login"
+      onPress={() => {
+        promptAsync({ useProxy });
+      }}
+    />
+  );
+};
+
+export default App;
+```
+
+</SnackInline>
+
+</Tab>
+
+</Tabs>
+
+<!-- End Auth0 -->
 
 ### Azure
 
