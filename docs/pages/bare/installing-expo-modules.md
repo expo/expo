@@ -3,38 +3,44 @@ title: Installing Expo modules
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
-import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
+import { DiffBlock } from '~/ui/components/Snippet';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-> Are you migrating from `react-native-unimodules`? Please refer to [the Expo modules migration guide](https://expo.fyi/expo-modules-migration).
+> Are you migrating from `react-native-unimodules`? If yes, please refer to [the Expo modules migration guide](https://expo.fyi/expo-modules-migration).
 
 In order to use Expo modules in your app, you will need to install and configure the `expo` package.
 
-The `expo` package has a small footprint; it includes only a minimal set of packages that are needed in nearly every app and the module and autolinking infrastructure that other Expo SDK packages are built with. Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK.
+The `expo` package has a small footprint; it includes only a minimal set of packages that are needed in nearly every app and the module and autolinking infrastructure that other Expo SDK packages are built with. Once the `expo` package is installed and configured in your project, you can use `npx expo install` to add any other Expo module from the SDK.
 
-The easiest way to get started with Expo modules is to initialize a new bare workflow project with Expo CLI: `expo init --template bare-minimum`.
-
-If you have an existing project without Expo modules installed (perhaps created with `npx react-native init`), please follow the automatic or manual installation instructions below.
+Depending on how you [initialized the project](/bare/hello-world/), there are two ways you can install the Expo modules: [automatic](#automatic-installation) or [manual](#manual-installation).
 
 ## Automatic installation
 
-Aside from initializing a new project with `expo-cli`, the easiest way to get up and running is with the `install-expo-modules` command.
+To install and use Expo modules, the easiest way to get up and running is with the `install-expo-modules` command.
 
-<InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules"]} hideBareInstructions />
+<InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules@latest"]} hideBareInstructions />
 
-- ✅ **When the command succeeds**, you will be able any Expo module in your app! Proceed to [Usage](#usage) for more information.
-- ❌ **If the command fails**, please follow the manual installation instructions. Updating code programmatically can be tricky, and if your project deviates significantly from a default React Native project then manual installation is needed in order to adapt the instructions to your codebase.
+- <YesIcon small />{' '}
+
+  **When the command succeeds**, you will be able to add any Expo module in your app! Proceed to [Usage](#usage) for more information.
+
+- <NoIcon small />{' '}
+
+  **If the command fails**, please follow the manual installation instructions. Updating code programmatically can be tricky, and if your project deviates significantly from a default React Native project, then you need to perform manual installation and adapt the instructions here to your codebase.
 
 ## Manual installation
 
-<InstallSection packageName="expo" cmd={["npm install expo"]} hideBareInstructions />
+The following instructions apply to installing the latest version of Expo modules in React Native 0.68.
 
-<br />
+<InstallSection packageName="expo" cmd={["npm install expo"]} hideBareInstructions />
 
 Once installation is complete, apply the changes from the following diffs to configure Expo modules in your project. This is expected to take about five minutes, and you may need to adapt it slightly depending on how customized your project is.
 
 ### Configuration for iOS
 
-<ConfigurationDiff source="/static/diffs/expo-ios.diff" />
+<DiffBlock source="/static/diffs/expo-ios.diff" />
+
+Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/b7c0356c697ef2cf46388e5742d67b7b48adc97f/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L75-L102).
 
 Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 12.0`. The last step is to install the project's CocoaPods again in order to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
 
@@ -44,7 +50,7 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
 
 ### Configuration for Android
 
-<ConfigurationDiff source="/static/diffs/expo-android.diff" />
+<DiffBlock source="/static/diffs/expo-android.diff" />
 
 <div style={{marginTop: -10}} />
 
@@ -61,7 +67,7 @@ console.log(Constants.systemFonts);
 
 ### Using Expo SDK packages
 
-Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK. Learn more in ["Using Libraries"](../using-libraries.md).
+Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK. Learn more in ["Using Libraries"](/workflow/using-libraries).
 
 ### Expo modules included in the `expo` package
 
@@ -75,7 +81,6 @@ The following Expo modules are brought in as dependencies of the `expo` package:
 - [expo-keep-awake](/versions/latest/sdk/keep-awake.md) - Prevents your device from going to sleep while developing your app. This module is optional and can be safely removed.
 
 To exclude any of these modules, refer to the following guide on [excluding modules from autolinking](#excluding-specific-modules-from-autolinking).
-
 
 ### Excluding specific modules from autolinking
 
@@ -93,7 +98,7 @@ If you need to exclude Expo modules that you are not using but they got installe
 }
 ```
 
-You can exclude only for a specific platform by using `exclude` under the platform key:
+You can also exclude a specific platform by using `exclude` under the platform key:
 
 ```json
 {

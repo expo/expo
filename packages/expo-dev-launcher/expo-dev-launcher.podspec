@@ -10,13 +10,13 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '11.0'
+  s.platform       = :ios, '13.0'
   s.swift_version  = '5.2'
   s.source         = { :git => 'https://github.com/github_account/expo-development-client.git', :tag => "#{s.version}" }
   s.static_framework = true
   s.source_files   = 'ios/**/*.{h,m,swift,cpp}'
   s.preserve_paths = 'ios/**/*.{h,m,swift}'
-  s.exclude_files  = ['ios/Unsafe/**/*.{h,m,mm,swift,cpp}', 'ios/Tests/**/*.{h,m,swift}']
+  s.exclude_files  = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}', 'ios/Tests/**/*.{h,m,swift}'
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
@@ -29,17 +29,30 @@ Pod::Spec.new do |s|
   }
 
   s.xcconfig = {
-    'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_ENABLED=1 EX_DEV_LAUNCHER_VERSION=#{s.version}",
-    'OTHER_SWIFT_FLAGS' => '-DEX_DEV_LAUNCHER_ENABLED=1'
+    'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_VERSION=#{s.version}"
   }
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
+  dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
+  if dev_launcher_url != ""
+    escaped_dev_launcher_url = Shellwords.escape(dev_launcher_url).gsub('/','\\/')
+    s.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES',
+      'OTHER_CFLAGS[config=Debug]' => "$(inherited) -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
+    }
+  end
+
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/Swift Compatibility Header\"",
+  }
   
   s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"
   s.dependency "EXManifests"
   s.dependency "EXUpdatesInterface"
+  s.dependency "expo-dev-menu"
+  s.dependency "ExpoModulesCore"
   
   s.subspec 'Unsafe' do |unsafe|
     unsafe.source_files = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
@@ -51,7 +64,6 @@ Pod::Spec.new do |s|
   end
 
   s.test_spec 'Tests' do |test_spec|
-    test_spec.platform     = :ios, '12.0'
     test_spec.source_files = 'ios/Tests/**/*.{h,m,swift}'
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
@@ -60,4 +72,5 @@ Pod::Spec.new do |s|
   end
   
   s.default_subspec = 'Main'
+
 end

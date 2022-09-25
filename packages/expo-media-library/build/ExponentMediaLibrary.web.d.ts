@@ -9,3 +9,4 @@ declare const _default: {
     requestPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExponentMediaLibrary.web.d.ts.map

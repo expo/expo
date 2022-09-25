@@ -15,17 +15,30 @@ import {
 } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { isAudioEnabled, throwIfAudioIsDisabled } from './AudioAvailability';
-import { RecordingOptions, RecordingStatus } from './Recording.types';
-import { RECORDING_OPTIONS_PRESET_LOW_QUALITY } from './RecordingConstants';
-import { Sound } from './Sound';
+import {
+  RecordingInput,
+  RecordingObject,
+  RecordingOptions,
+  RecordingStatus,
+} from './Recording.types';
+import { RecordingOptionsPresets } from './RecordingConstants';
+import { Sound, SoundObject } from './Sound';
 
 let _recorderExists: boolean = false;
 const eventEmitter = Platform.OS === 'android' ? new EventEmitter(ExponentAV) : null;
 
+/**
+ * Checks user's permissions for audio recording.
+ * @return A promise that resolves to an object of type `PermissionResponse`.
+ */
 export async function getPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.getPermissionsAsync();
 }
 
+/**
+ * Asks the user to grant permissions for audio recording.
+ * @return A promise that resolves to an object of type `PermissionResponse`.
+ */
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   return ExponentAV.requestPermissionsAsync();
 }
@@ -44,6 +57,32 @@ export const usePermissions = createPermissionHook({
   requestMethod: requestPermissionsAsync,
 });
 
+// @needsAudit
+/**
+ * This class represents an audio recording. After creating an instance of this class, `prepareToRecordAsync`
+ * must be called in order to record audio. Once recording is finished, call `stopAndUnloadAsync`. Note that
+ * only one recorder is allowed to exist in the state between `prepareToRecordAsync` and `stopAndUnloadAsync`
+ * at any given time.
+ *
+ * Note that your experience must request audio recording permissions in order for recording to function.
+ * See the [`Permissions` module](/guides/permissions) for more details.
+ *
+ * Additionally, audio recording is [not supported in the iOS Simulator](/workflow/ios-simulator/#limitations).
+ *
+ * @example
+ * ```ts
+ * const recording = new Audio.Recording();
+ * try {
+ *   await recording.prepareToRecordAsync(Audio.RecordingOptionsPresets.HIGH_QUALITY);
+ *   await recording.startAsync();
+ *   // You are now recording!
+ * } catch (error) {
+ *   // An error occurred!
+ * }
+ * ```
+ *
+ * @return A newly constructed instance of `Audio.Recording`.
+ */
 export class Recording {
   _subscription: Subscription | null = null;
   _canRecord: boolean = false;
@@ -78,7 +117,7 @@ export class Recording {
       ) as any;
       try {
         await this.getStatusAsync();
-      } catch (error) {
+      } catch {
         this._disablePolling();
       }
     }
@@ -117,13 +156,47 @@ export class Recording {
     }
   }
 
-  // Note that all calls automatically call onRecordingStatusUpdate as a side effect.
-
+  /**
+   * Creates and starts a recording using the given options, with optional `onRecordingStatusUpdate` and `progressUpdateIntervalMillis`.
+   *
+   * ```ts
+   * const { recording, status } = await Audio.Recording.createAsync(
+   *   options,
+   *   onRecordingStatusUpdate,
+   *   progressUpdateIntervalMillis
+   * );
+   *
+   * // Which is equivalent to the following:
+   * const recording = new Audio.Recording();
+   * await recording.prepareToRecordAsync(options);
+   * recording.setOnRecordingStatusUpdate(onRecordingStatusUpdate);
+   * await recording.startAsync();
+   * ```
+   *
+   * @param options Options for the recording, including sample rate, bitrate, channels, format, encoder, and extension. If no options are passed to,
+   * the recorder will be created with options `Audio.RecordingOptionsPresets.LOW_QUALITY`. See below for details on `RecordingOptions`.
+   * @param onRecordingStatusUpdate A function taking a single parameter `status` (a dictionary, described in `getStatusAsync`).
+   * @param progressUpdateIntervalMillis The interval between calls of `onRecordingStatusUpdate`. This value defaults to 500 milliseconds.
+   *
+   * @example
+   * ```ts
+   * try {
+   *   const { recording: recordingObject, status } = await Audio.Recording.createAsync(
+   *     Audio.RecordingOptionsPresets.HIGH_QUALITY
+   *   );
+   *   // You are now recording!
+   * } catch (error) {
+   *   // An error occurred!
+   * }
+   * ```
+   *
+   * @return A `Promise` that is rejected if creation failed, or fulfilled with the following dictionary if creation succeeded.
+   */
   static createAsync = async (
-    options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY,
+    options: RecordingOptions = RecordingOptionsPresets.LOW_QUALITY,
     onRecordingStatusUpdate: ((status: RecordingStatus) => void) | null = null,
     progressUpdateIntervalMillis: number | null = null
-  ): Promise<{ recording: Recording; status: RecordingStatus }> => {
+  ): Promise<RecordingObject> => {
     const recording: Recording = new Recording();
     if (progressUpdateIntervalMillis) {
       recording._progressUpdateIntervalMillis = progressUpdateIntervalMillis;
@@ -144,6 +217,10 @@ export class Recording {
 
   // Get status API
 
+  /**
+   * Gets the `status` of the `Recording`.
+   * @return A `Promise` that is resolved with the `RecordingStatus` object.
+   */
   getStatusAsync = async (): Promise<RecordingStatus> => {
     // Automatically calls onRecordingStatusUpdate.
     if (this._canRecord) {
@@ -159,6 +236,15 @@ export class Recording {
     return status;
   };
 
+  /**
+   * Sets a function to be called regularly with the `RecordingStatus` of the `Recording`.
+   *
+   * `onRecordingStatusUpdate` will be called when another call to the API for this recording completes (such as `prepareToRecordAsync()`,
+   * `startAsync()`, `getStatusAsync()`, or `stopAndUnloadAsync()`), and will also be called at regular intervals while the recording can record.
+   * Call `setProgressUpdateInterval()` to modify the interval with which `onRecordingStatusUpdate` is called while the recording can record.
+   *
+   * @param onRecordingStatusUpdate A function taking a single parameter `RecordingStatus`.
+   */
   setOnRecordingStatusUpdate(onRecordingStatusUpdate: ((status: RecordingStatus) => void) | null) {
     this._onRecordingStatusUpdate = onRecordingStatusUpdate;
     if (onRecordingStatusUpdate == null) {
@@ -169,6 +255,11 @@ export class Recording {
     this.getStatusAsync();
   }
 
+  /**
+   * Sets the interval with which `onRecordingStatusUpdate` is called while the recording can record.
+   * See `setOnRecordingStatusUpdate` for details. This value defaults to 500 milliseconds.
+   * @param progressUpdateIntervalMillis The new interval between calls of `onRecordingStatusUpdate`.
+   */
   setProgressUpdateInterval(progressUpdateIntervalMillis: number) {
     this._progressUpdateIntervalMillis = progressUpdateIntervalMillis;
     this.getStatusAsync();
@@ -176,8 +267,19 @@ export class Recording {
 
   // Record API
 
+  /**
+   * Loads the recorder into memory and prepares it for recording. This must be called before calling `startAsync()`.
+   * This method can only be called if the `Recording` instance has never yet been prepared.
+   *
+   * @param options `RecordingOptions` for the recording, including sample rate, bitrate, channels, format, encoder, and extension.
+   * If no options are passed to `prepareToRecordAsync()`, the recorder will be created with options `Audio.RecordingOptionsPresets.LOW_QUALITY`.
+   *
+   * @return A `Promise` that is fulfilled when the recorder is loaded and prepared, or rejects if this failed. If another `Recording` exists
+   * in your experience that is currently prepared to record, the `Promise` will reject. If the `RecordingOptions` provided are invalid,
+   * the `Promise` will also reject. The promise is resolved with the `RecordingStatus` of the recording.
+   */
   async prepareToRecordAsync(
-    options: RecordingOptions = RECORDING_OPTIONS_PRESET_LOW_QUALITY
+    options: RecordingOptions = RecordingOptionsPresets.LOW_QUALITY
   ): Promise<RecordingStatus> {
     throwIfAudioIsDisabled();
 
@@ -235,14 +337,64 @@ export class Recording {
     }
   }
 
+  /**
+   * Returns a list of available recording inputs. This method can only be called if the `Recording` has been prepared.
+   * @return A `Promise` that is fulfilled with an array of `RecordingInput` objects.
+   */
+  async getAvailableInputs(): Promise<RecordingInput[]> {
+    return ExponentAV.getAvailableInputs();
+  }
+
+  /**
+   * Returns the currently-selected recording input. This method can only be called if the `Recording` has been prepared.
+   * @return A `Promise` that is fulfilled with a `RecordingInput` object.
+   */
+  async getCurrentInput(): Promise<RecordingInput> {
+    return ExponentAV.getCurrentInput();
+  }
+
+  /**
+   * Sets the current recording input.
+   * @param inputUid The uid of a `RecordingInput`.
+   * @return A `Promise` that is resolved if successful or rejected if not.
+   */
+  async setInput(inputUid: string): Promise<void> {
+    return ExponentAV.setInput(inputUid);
+  }
+
+  /**
+   * Begins recording. This method can only be called if the `Recording` has been prepared.
+   * @return A `Promise` that is fulfilled when recording has begun, or rejects if recording could not be started.
+   * The promise is resolved with the `RecordingStatus` of the recording.
+   */
   async startAsync(): Promise<RecordingStatus> {
     return this._performOperationAndHandleStatusAsync(() => ExponentAV.startAudioRecording());
   }
 
+  /**
+   * Pauses recording. This method can only be called if the `Recording` has been prepared.
+   *
+   * > This is only available on Android API version 24 and later.
+   *
+   * @return A `Promise` that is fulfilled when recording has paused, or rejects if recording could not be paused.
+   * If the Android API version is less than 24, the `Promise` will reject. The promise is resolved with the
+   * `RecordingStatus` of the recording.
+   */
   async pauseAsync(): Promise<RecordingStatus> {
     return this._performOperationAndHandleStatusAsync(() => ExponentAV.pauseAudioRecording());
   }
 
+  /**
+   * Stops the recording and deallocates the recorder from memory. This reverts the `Recording` instance
+   * to an unprepared state, and another `Recording` instance must be created in order to record again.
+   * This method can only be called if the `Recording` has been prepared.
+   *
+   * > On Android this method may fail with `E_AUDIO_NODATA` when called too soon after `startAsync` and
+   * > no audio data has been recorded yet. In that case the recorded file will be invalid and should be discarded.
+   *
+   * @return A `Promise` that is fulfilled when recording has stopped, or rejects if recording could not be stopped.
+   * The promise is resolved with the `RecordingStatus` of the recording.
+   */
   async stopAndUnloadAsync(): Promise<RecordingStatus> {
     if (!this._canRecord) {
       if (this._isDoneRecording) {
@@ -274,25 +426,45 @@ export class Recording {
 
   // Read API
 
+  /**
+   * Gets the local URI of the `Recording`. Note that this will only succeed once the `Recording` is prepared
+   * to record. On web, this will not return the URI until the recording is finished.
+   * @return A `string` with the local URI of the `Recording`, or `null` if the `Recording` is not prepared
+   * to record (or, on Web, if the recording has not finished).
+   */
   getURI(): string | null {
     return this._uri;
   }
 
-  /** @deprecated Use `createNewLoadedSoundAsync()` instead */
+  /**
+   * @deprecated Use `createNewLoadedSoundAsync()` instead.
+   */
   async createNewLoadedSound(
     initialStatus: AVPlaybackStatusToSet = {},
     onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null
-  ): Promise<{ sound: Sound; status: AVPlaybackStatus }> {
+  ): Promise<SoundObject> {
     console.warn(
       `createNewLoadedSound is deprecated in favor of createNewLoadedSoundAsync, which has the same API aside from the method name`
     );
     return this.createNewLoadedSoundAsync(initialStatus, onPlaybackStatusUpdate);
   }
 
+  /**
+   * Creates and loads a new `Sound` object to play back the `Recording`. Note that this will only succeed once the `Recording`
+   * is done recording and `stopAndUnloadAsync()` has been called.
+   *
+   * @param initialStatus The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status.
+   * This value defaults to `{}` if no parameter is passed. See the [AV documentation](/versions/latest/sdk/av) for details on `PlaybackStatusToSet`
+   * and the default initial playback status.
+   * @param onPlaybackStatusUpdate A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed.
+   * See the [AV documentation](/versions/latest/sdk/av) for details on the functionality provided by `onPlaybackStatusUpdate`
+   *
+   * @return A `Promise` that is rejected if creation failed, or fulfilled with the `SoundObject`.
+   */
   async createNewLoadedSoundAsync(
     initialStatus: AVPlaybackStatusToSet = {},
     onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null = null
-  ): Promise<{ sound: Sound; status: AVPlaybackStatus }> {
+  ): Promise<SoundObject> {
     if (this._uri == null || !this._isDoneRecording) {
       throw new Error('Cannot create sound when the Recording has not finished!');
     }
@@ -306,12 +478,8 @@ export class Recording {
   }
 }
 
+export { PermissionResponse, PermissionStatus, PermissionHookOptions };
+
 export * from './RecordingConstants';
 
-export {
-  PermissionResponse,
-  PermissionStatus,
-  PermissionHookOptions,
-  RecordingOptions,
-  RecordingStatus,
-};
+export * from './Recording.types';

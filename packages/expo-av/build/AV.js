@@ -9,7 +9,29 @@ import { PitchCorrectionQuality, } from './AV.types';
 //  API to explicitly request audio focus / session
 //  API to select stream type on Android
 //  subtitles API
+/**
+ * @hidden
+ */
 export const _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS = 500;
+// @needsAudit
+/**
+ * The default initial `AVPlaybackStatusToSet` of all `Audio.Sound` objects and `Video` components is as follows:
+ *
+ * ```javascript
+ * {
+ *   progressUpdateIntervalMillis: 500,
+ *   positionMillis: 0,
+ *   shouldPlay: false,
+ *   rate: 1.0,
+ *   shouldCorrectPitch: false,
+ *   volume: 1.0,
+ *   isMuted: false,
+ *   isLooping: false,
+ * }
+ * ```
+ *
+ * This default initial status can be overwritten by setting the optional `initialStatus` in `loadAsync()` or `Audio.Sound.createAsync()`.
+ */
 export const _DEFAULT_INITIAL_PLAYBACK_STATUS = {
     positionMillis: 0,
     progressUpdateIntervalMillis: _DEFAULT_PROGRESS_UPDATE_INTERVAL_MILLIS,
@@ -17,9 +39,14 @@ export const _DEFAULT_INITIAL_PLAYBACK_STATUS = {
     rate: 1.0,
     shouldCorrectPitch: false,
     volume: 1.0,
+    audioPan: 0,
     isMuted: false,
     isLooping: false,
 };
+// @needsAudit
+/**
+ * @hidden
+ */
 export function getNativeSourceFromSource(source) {
     let uri = null;
     let overridingExtension = null;
@@ -71,6 +98,10 @@ function _getAssetFromPlaybackSource(source) {
     }
     return asset;
 }
+// @needsAudit
+/**
+ * @hidden
+ */
 export function assertStatusValuesInBounds(status) {
     if (typeof status.rate === 'number' && (status.rate < 0 || status.rate > 32)) {
         throw new RangeError('Rate value must be between 0.0 and 32.0');
@@ -78,7 +109,14 @@ export function assertStatusValuesInBounds(status) {
     if (typeof status.volume === 'number' && (status.volume < 0 || status.volume > 1)) {
         throw new RangeError('Volume value must be between 0.0 and 1.0');
     }
+    if (typeof status.audioPan === 'number' && (status.audioPan < -1 || status.audioPan > 1)) {
+        throw new RangeError('Pan value must be between -1.0 and 1.0');
+    }
 }
+// @needsAudit
+/**
+ * @hidden
+ */
 export async function getNativeSourceAndFullInitialStatusForLoadAsync(source, initialStatus, downloadFirst) {
     // Get the full initial status
     const fullInitialStatus = initialStatus == null
@@ -108,8 +146,16 @@ export async function getNativeSourceAndFullInitialStatusForLoadAsync(source, in
     if (nativeSource === null) {
         throw new Error(`Cannot load an AV asset from a null playback source`);
     }
+    // If asset has been downloaded use the localUri
+    if (asset && asset.localUri) {
+        nativeSource.uri = asset.localUri;
+    }
     return { nativeSource, fullInitialStatus };
 }
+// @needsAudit
+/**
+ * @hidden
+ */
 export function getUnloadedStatus(error = null) {
     return {
         isLoaded: false,
@@ -117,8 +163,9 @@ export function getUnloadedStatus(error = null) {
     };
 }
 /**
- * A mixin that defines common playback methods for A/V classes so they implement the `Playback`
- * interface
+ * @hidden
+ * A mixin that defines common playback methods for A/V classes, so they implement the `Playback`
+ * interface.
  */
 export const PlaybackMixin = {
     async playAsync() {
@@ -152,8 +199,8 @@ export const PlaybackMixin = {
             pitchCorrectionQuality,
         });
     },
-    async setVolumeAsync(volume) {
-        return this.setStatusAsync({ volume });
+    async setVolumeAsync(volume, audioPan) {
+        return this.setStatusAsync({ volume, audioPan });
     },
     async setIsMutedAsync(isMuted) {
         return this.setStatusAsync({ isMuted });

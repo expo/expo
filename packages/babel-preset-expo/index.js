@@ -17,7 +17,12 @@ module.exports = function (api, options = {}) {
 
   const platformOptions =
     platform === 'web'
-      ? { disableImportExportTransform: true, ...web }
+      ? {
+          // Only disable import/export transform when Webpack is used because
+          // Metro does not support tree-shaking.
+          disableImportExportTransform: !!isWebpack,
+          ...web,
+        }
       : { disableImportExportTransform: false, ...native };
 
   // Note that if `options.lazyImports` is not set (i.e., `null` or `undefined`),
@@ -45,6 +50,10 @@ module.exports = function (api, options = {}) {
       {
         // Defaults to `automatic`, pass in `classic` to disable auto JSX transformations.
         runtime: (options && options.jsxRuntime) || 'automatic',
+        ...(options &&
+          options.jsxRuntime !== 'classic' && {
+            importSource: (options && options.jsxImportSource) || 'react',
+          }),
       },
     ]);
     // Purposefully not adding the deprecated packages:

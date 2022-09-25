@@ -10,24 +10,24 @@ class DevMenuExtensionsTest: QuickSpec {
       return true
     }
   }
-  
+
   override func spec() {
     it("getAllItems should return nil when called without the bridge") {
       let settings = MockedSettings()
       let module = DevMenuExtensions()
-      
+
       let itemContainer = module.devMenuItems(settings)
-    
+
       expect(itemContainer).to(beNil())
     }
-    
+
     it("getAllItems should return nil when called without DevSettings") {
       let settings = MockedSettings()
       let module = DevMenuExtensions()
       module.bridge = MockedNOOPBridge(delegate: nil, launchOptions: nil)
-      
+
       let itemContainer = module.devMenuItems(settings)
-    
+
       expect(itemContainer).to(beNil())
     }
   }

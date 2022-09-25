@@ -59,3 +59,4 @@ export declare enum NetworkStateType {
      */
     OTHER = "OTHER"
 }
+//# sourceMappingURL=Network.types.d.ts.map

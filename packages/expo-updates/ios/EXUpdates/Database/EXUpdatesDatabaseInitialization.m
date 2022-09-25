@@ -8,7 +8,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesDatabaseInitializationErrorDomain = @"EXUpdatesDatabaseInitialization";
-static NSString * const EXUpdatesDatabaseLatestFilename = @"expo-v7.db";
+static NSString * const EXUpdatesDatabaseLatestFilename = @"expo-v9.db";
 
 static NSString * const EXUpdatesDatabaseInitializationLatestSchema = @"\
 CREATE TABLE \"updates\" (\
@@ -21,8 +21,8 @@ CREATE TABLE \"updates\" (\
 \"status\"  INTEGER NOT NULL,\
 \"keep\"  INTEGER NOT NULL,\
 \"last_accessed\"  INTEGER NOT NULL,\
-\"successful_launch_count\"  INTEGER NOT NULL,\
-\"failed_launch_count\"  INTEGER NOT NULL,\
+\"successful_launch_count\"  INTEGER NOT NULL DEFAULT 0,\
+\"failed_launch_count\"  INTEGER NOT NULL DEFAULT 0,\
 PRIMARY KEY(\"id\"),\
 FOREIGN KEY(\"launch_asset_id\") REFERENCES \"assets\"(\"id\") ON DELETE CASCADE\
 );\
@@ -31,6 +31,8 @@ CREATE TABLE \"assets\" (\
 \"url\"  TEXT,\
 \"key\"  TEXT UNIQUE,\
 \"headers\"  TEXT,\
+\"expected_hash\"  TEXT,\
+\"extra_request_headers\"  TEXT,\
 \"type\"  TEXT NOT NULL,\
 \"metadata\"  TEXT,\
 \"download_time\"  INTEGER NOT NULL,\

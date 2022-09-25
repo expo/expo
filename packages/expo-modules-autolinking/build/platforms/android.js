@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolveModuleAsync = exports.generatePackageListAsync = void 0;
+exports.convertPackageNameToProjectName = exports.resolveModuleAsync = exports.generatePackageListAsync = void 0;
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
@@ -15,26 +15,41 @@ async function generatePackageListAsync(modules, targetPath, namespace) {
     await fs_extra_1.default.outputFile(targetPath, generatedFileContent);
 }
 exports.generatePackageListAsync = generatePackageListAsync;
+async function findGradleFilesAsync(revision) {
+    var _a;
+    const configGradlePaths = (_a = revision.config) === null || _a === void 0 ? void 0 : _a.androidGradlePaths();
+    if (configGradlePaths && configGradlePaths.length) {
+        return configGradlePaths;
+    }
+    const buildGradleFiles = await (0, fast_glob_1.default)('*/build.gradle', {
+        cwd: revision.path,
+        ignore: ['**/node_modules/**'],
+    });
+    return buildGradleFiles;
+}
 async function resolveModuleAsync(packageName, revision) {
     // TODO: Relative source dir should be configurable through the module config.
-    var _a;
+    var _a, _b;
     // Don't link itself... :D
     if (packageName === '@unimodules/react-native-adapter') {
         return null;
     }
-    const [buildGradleFile] = await (0, fast_glob_1.default)('*/build.gradle', {
-        cwd: revision.path,
-        ignore: ['**/node_modules/**'],
-    });
+    const buildGradleFiles = await findGradleFilesAsync(revision);
     // Just in case where the module doesn't have its own `build.gradle`.
-    if (!buildGradleFile) {
+    if (!buildGradleFiles.length) {
         return null;
     }
-    const sourceDir = path_1.default.dirname(path_1.default.join(revision.path, buildGradleFile));
+    const projects = buildGradleFiles.map((buildGradleFile) => {
+        const gradleFilePath = path_1.default.join(revision.path, buildGradleFile);
+        return {
+            name: convertPackageNameToProjectName(packageName, path_1.default.relative(revision.path, gradleFilePath)),
+            sourceDir: path_1.default.dirname(gradleFilePath),
+        };
+    });
     return {
-        projectName: convertPackageNameToProjectName(packageName),
-        sourceDir,
-        modulesClassNames: (_a = revision.config) === null || _a === void 0 ? void 0 : _a.androidModulesClassNames(),
+        packageName,
+        projects,
+        modules: (_b = (_a = revision.config) === null || _a === void 0 ? void 0 : _a.androidModules()) !== null && _b !== void 0 ? _b : [],
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;
@@ -76,18 +91,24 @@ ${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n
 `;
 }
 function findAndroidModules(modules) {
-    const modulesToProvide = modules.filter((module) => module.modulesClassNames.length > 0);
-    const classNames = [].concat(...modulesToProvide.map((module) => module.modulesClassNames));
+    const modulesToProvide = modules.filter((module) => module.modules.length > 0);
+    const classNames = [].concat(...modulesToProvide.map((module) => module.modules));
     return classNames;
 }
 async function findAndroidPackagesAsync(modules) {
     const classes = [];
-    await Promise.all(modules.map(async (module) => {
+    const flattenedSourceDirList = [];
+    for (const module of modules) {
+        for (const project of module.projects) {
+            flattenedSourceDirList.push(project.sourceDir);
+        }
+    }
+    await Promise.all(flattenedSourceDirList.map(async (sourceDir) => {
         const files = await (0, fast_glob_1.default)('**/*Package.{java,kt}', {
-            cwd: module.sourceDir,
+            cwd: sourceDir,
         });
         for (const file of files) {
-            const fileContent = await fs_extra_1.default.readFile(path_1.default.join(module.sourceDir, file), 'utf8');
+            const fileContent = await fs_extra_1.default.readFile(path_1.default.join(sourceDir, file), 'utf8');
             const packageRegex = (() => {
                 if (process.env.EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE) {
                     return /\bimport\s+org\.unimodules\.core\.(interfaces\.Package|BasePackage)\b/;
@@ -110,10 +131,20 @@ async function findAndroidPackagesAsync(modules) {
     return classes.sort();
 }
 /**
- * Converts the package name to Android's project name.
- * Example: `@unimodules/core` → `unimodules-core`
+ * Converts the package name and gradle file path to Android's project name.
+ *   `$` to indicate subprojects
+ *   `/` path will transform as `-`
+ *
+ * Example: `@expo/example` + `android/build.gradle` → `expo-example`
+ *
+ * Example: multiple projects
+ *   - `expo-test` + `android/build.gradle` → `react-native-third-party`
+ *   - `expo-test` + `subproject/build.gradle` → `react-native-third-party$subproject`
  */
-function convertPackageNameToProjectName(projectName) {
-    return projectName.replace(/^@/g, '').replace(/\W+/g, '-');
+function convertPackageNameToProjectName(packageName, buildGradleFile) {
+    const name = packageName.replace(/^@/g, '').replace(/\W+/g, '-');
+    const baseDir = path_1.default.dirname(buildGradleFile).replace(/\//g, '-');
+    return baseDir === 'android' ? name : `${name}$${baseDir}`;
 }
+exports.convertPackageNameToProjectName = convertPackageNameToProjectName;
 //# sourceMappingURL=android.js.map

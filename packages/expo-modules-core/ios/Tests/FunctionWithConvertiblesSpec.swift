@@ -1,12 +1,11 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import CoreGraphics
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class FunctionWithConvertiblesSpec: QuickSpec {
+class FunctionWithConvertiblesSpec: ExpoSpec {
   override func spec() {
     let appContext = AppContext()
     let functionName = "function"
@@ -18,7 +17,7 @@ class FunctionWithConvertiblesSpec: QuickSpec {
       let height = 592.1
 
       mockModuleHolder(appContext) {
-        $0.function(functionName) { (point: CGPoint, size: CGSize, vector: CGVector, rect: CGRect) in
+        AsyncFunction(functionName) { (point: CGPoint, size: CGSize, vector: CGVector, rect: CGRect) in
           expect(point.x) == x
           expect(point.y) == y
           expect(size.width) == width
@@ -48,7 +47,7 @@ class FunctionWithConvertiblesSpec: QuickSpec {
       }
 
       mockModuleHolder(appContext) {
-        $0.function(functionName) { (color1: CGColor, color2: CGColor, color3: CGColor, color4: CGColor) in
+        AsyncFunction(functionName) { (color1: CGColor, color2: CGColor, color3: CGColor, color4: CGColor) in
           testColorComponents(color1, 0x2A, 0x4B, 0x5D, 0xFF)
           testColorComponents(color2, 0x11, 0xFF, 0x00, 0xDD)
           testColorComponents(color3, 0x66, 0x00, 0xCC, 0xAA)

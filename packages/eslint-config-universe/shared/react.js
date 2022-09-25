@@ -14,7 +14,7 @@ module.exports = {
     'react/jsx-fragments': ['warn', 'syntax'],
     'react/jsx-indent': ['warn', 2],
     'react/jsx-indent-props': ['warn', 2],
-    'react/jsx-no-bind': ['warn', { allowArrowFunctions: true }],
+    'react/jsx-no-bind': ['warn', { allowArrowFunctions: true, allowFunctions: true }],
     'react/jsx-no-duplicate-props': 'error',
     'react/jsx-no-undef': 'error',
     'react/jsx-props-no-multi-spaces': 'warn',
@@ -33,7 +33,6 @@ module.exports = {
     'react/no-this-in-sfc': 'warn',
     'react/no-unknown-property': 'warn',
     'react/no-will-update-set-state': 'warn',
-    'react/react-in-jsx-scope': 'error',
     'react/require-render-return': 'warn',
     'react/self-closing-comp': 'warn',
 

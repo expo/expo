@@ -78,7 +78,7 @@ export async function test(t) {
 
         t.expect(registeredTasks).toBeDefined();
         t.expect(registeredTasks.length).toBe(1);
-        t.expect(registeredTasks.find(task => task.taskName === DEFINED_TASK_NAME)).toEqual(
+        t.expect(registeredTasks.find((task) => task.taskName === DEFINED_TASK_NAME)).toEqual(
           t.jasmine.objectContaining({
             taskName: DEFINED_TASK_NAME,
             taskType: 'backgroundFetch',
@@ -123,4 +123,4 @@ export async function test(t) {
 
 // Empty task so we can properly test some methods.
 // We are telling iOS that we successfully fetched new data, to prevent possible throttle from iOS
-TaskManager.defineTask(DEFINED_TASK_NAME, () => BackgroundFetch.Result.NewData);
+TaskManager.defineTask(DEFINED_TASK_NAME, () => BackgroundFetch.BackgroundFetchResult.NewData);

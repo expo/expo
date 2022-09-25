@@ -4,15 +4,15 @@ hideTOC: true
 ---
 
 import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { InlineCode } from '~/components/base/code';
 
 <VersionedRedirectNotification />
 
 The Expo SDK provides access to device and system functionality such as contacts, camera, and GPS location. You install modules from the Expo SDK using `expo-cli` with the `expo install` command:
 
-<TerminalBlock cmd={['expo install expo-camera expo-contacts expo-sensors']} />
-
-<br />
+<Terminal cmd={['$ expo install expo-camera expo-contacts expo-sensors']} />
 
 You can import modules from it in your JavaScript code as follows:
 
@@ -26,7 +26,16 @@ This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts.md#contact
 
 ## These packages work in bare React Native apps too
 
-The easiest way to create a bare React Native app with support for the Expo SDK is `npx create-react-native-app myapp`. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating into existing apps](../../bare/existing-apps.md).
+The easiest way to create a bare React Native app with support for the Expo SDK is by running the command:
+
+<Terminal cmd={[
+'# Create a project named my-app',
+'$ npx create-expo-app my-app --template bare-minimum',
+]} cmdCopy="npx create-expo-app my-app --template bare-minimum" />
+
+<BoxLink title="Existing apps" href="/bare/installing-expo-modules" description={<>Projects that were created with <InlineCode>npx react-native init</InlineCode> require additional setup to use the Expo SDK.</>} />
+
+<BoxLink title="Using libraries" description="Learn how to install Expo SDK packages in your project." href="/workflow/using-libraries" />
 
 ## Each Expo SDK version depends on a React Native version
 

@@ -24,3 +24,4 @@ export declare function isRootedExperimentalAsync(): Promise<boolean>;
 export declare function isSideLoadingEnabledAsync(): Promise<boolean>;
 export declare function getPlatformFeaturesAsync(): Promise<string[]>;
 export declare function hasPlatformFeatureAsync(feature: string): Promise<boolean>;
+//# sourceMappingURL=Device.d.ts.map

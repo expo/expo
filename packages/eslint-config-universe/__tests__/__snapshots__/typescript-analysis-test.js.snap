@@ -44,6 +44,8 @@ Object {
 export function myFunc(foo: T | null) {
   return foo && foo.a && foo.a.b && foo.a.b.c;
 }",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;
@@ -74,6 +76,8 @@ for (const b in arr) {
   sum += b;
 }
 export { sum };",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -116,6 +120,8 @@ Object {
   return a || b;
 }
 ",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;
@@ -142,6 +148,8 @@ Object {
   "source": "export function wat() {
   throw 3;
 }",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;

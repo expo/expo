@@ -3,3 +3,4 @@
  * registered in the API layer with `NativeEventEmitter`.
  */
 export { default } from 'react-native-web/dist/vendor/react-native/NativeEventEmitter/RCTDeviceEventEmitter';
+//# sourceMappingURL=SyntheticPlatformEmitter.web.d.ts.map

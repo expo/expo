@@ -1,12 +1,12 @@
-#import "REAConcatNode.h"
-#import "REAValueNode.h"
-#import "REANodesManager.h"
+#import <RNReanimated/REAConcatNode.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAValueNode.h>
 
 @implementation REAConcatNode {
   NSArray<NSNumber *> *_input;
 }
 
-- (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _input = config[@"input"];

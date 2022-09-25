@@ -14,3 +14,4 @@ export interface NotificationHandler {
     handleError?: (notificationId: string, error: NotificationHandlingError) => void;
 }
 export declare function setNotificationHandler(handler: NotificationHandler | null): void;
+//# sourceMappingURL=NotificationsHandler.d.ts.map

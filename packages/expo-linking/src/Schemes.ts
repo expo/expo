@@ -1,8 +1,9 @@
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { Platform } from 'expo-modules-core';
 
-const LINKING_GUIDE_URL = `https://docs.expo.io/guides/linking/`;
+const LINKING_GUIDE_URL = `https://docs.expo.dev/guides/linking/`;
 
+// @docsMissing
 export function hasCustomScheme(): boolean {
   if (Constants.executionEnvironment === ExecutionEnvironment.Bare) {
     // Bare always uses a custom scheme.
@@ -64,19 +65,16 @@ export function collectManifestSchemes(): string[] {
   // to have them only work with `eas build`.
   const platformManifest =
     (Platform.select<any>({
-      ios: Constants.manifest?.ios ?? Constants.manifest2?.extra?.expoClient?.ios,
-      android: Constants.manifest?.android ?? Constants.manifest2?.extra?.expoClient?.android,
+      ios: Constants.expoConfig?.ios,
+      android: Constants.expoConfig?.android,
       web: {},
     }) as SchemeConfig) ?? {};
 
-  const schemes = getSchemes(Constants.manifest ?? Constants.manifest2?.extra?.expoClient);
+  const schemes = getSchemes(Constants.expoConfig);
 
   // Add the detached scheme after the manifest scheme for legacy ExpoKit support.
-  if (Constants.manifest?.detach?.scheme) {
-    schemes.push(Constants.manifest.detach.scheme);
-  }
-  if (Constants.manifest2?.extra?.expoClient?.detach?.scheme) {
-    schemes.push(Constants.manifest2.extra.expoClient.detach.scheme);
+  if (Constants.expoConfig?.detach?.scheme) {
+    schemes.push(Constants.expoConfig.detach.scheme);
   }
 
   // Add the unimplemented platform schemes last.
@@ -90,32 +88,32 @@ function getNativeAppIdScheme(): string | null {
   // The native app id has been added to builds for a long time to support Google Sign-In.
   return (
     Platform.select({
-      ios:
-        Constants.manifest?.ios?.bundleIdentifier ??
-        Constants.manifest2?.extra?.expoClient?.ios?.bundleIdentifier,
+      ios: Constants.expoConfig?.ios?.bundleIdentifier,
       // TODO: This may change to android.applicationId in the future.
-      android:
-        Constants.manifest?.android?.package ??
-        Constants.manifest2?.extra?.expoClient?.android?.package,
+      android: Constants.expoConfig?.android?.package,
     }) ?? null
   );
 }
 
+// @needsAudit
+/**
+ * Ensure the user has linked the expo-constants manifest in bare workflow.
+ */
 export function hasConstantsManifest(): boolean {
-  // Ensure the user has linked the expo-constants manifest in bare workflow.
   return (
     !!Object.keys(Constants.manifest ?? {}).length ||
     !!Object.keys(Constants.manifest2 ?? {}).length
   );
 }
 
-export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): string {
+// @docsMissing
+export function resolveScheme(options: { scheme?: string; isSilent?: boolean }): string {
   if (
     Constants.executionEnvironment !== ExecutionEnvironment.StoreClient &&
     !hasConstantsManifest()
   ) {
     throw new Error(
-      `expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/master/packages/expo-constants/README.md`
+      `expo-linking needs access to the expo-constants manifest (app.json or app.config.js) to determine what URI scheme to use. Setup the manifest and rebuild: https://github.com/expo/expo/blob/main/packages/expo-constants/README.md`
     );
   }
 
@@ -123,7 +121,7 @@ export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): s
   const nativeAppId = getNativeAppIdScheme();
 
   if (!manifestSchemes.length) {
-    if (__DEV__ && !props.isSilent) {
+    if (__DEV__ && !options.isSilent) {
       // Assert a config warning if no scheme is setup yet. `isSilent` is used for warnings, but we'll ignore it for exceptions.
       console.warn(
         `Linking requires a build-time setting \`scheme\` in the project's Expo config (app.config.js or app.json) for production apps, if it's left blank, your app may crash. The scheme does not apply to development in the Expo client but you should add it as soon as you start working with Linking to avoid creating a broken build. Learn more: ${LINKING_GUIDE_URL}`
@@ -138,10 +136,10 @@ export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): s
 
   // In the Expo client...
   if (Constants.executionEnvironment === ExecutionEnvironment.StoreClient) {
-    if (props.scheme) {
+    if (options.scheme) {
       // This enables users to use the fb or google redirects on iOS in the Expo client.
-      if (EXPO_CLIENT_SCHEMES.includes(props.scheme)) {
-        return props.scheme;
+      if (EXPO_CLIENT_SCHEMES.includes(options.scheme)) {
+        return options.scheme;
       }
       // Silently ignore to make bare workflow development easier.
     }
@@ -151,15 +149,15 @@ export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): s
 
   const schemes = [...manifestSchemes, nativeAppId].filter(Boolean);
 
-  if (props.scheme) {
+  if (options.scheme) {
     if (__DEV__) {
       // Bare workflow development assertion about the provided scheme matching the Expo config.
-      if (!schemes.includes(props.scheme) && !props.isSilent) {
+      if (!schemes.includes(options.scheme) && !options.isSilent) {
         // TODO: Will this cause issues for things like Facebook or Google that use `reversed-client-id://` or `fb<FBID>:/`?
         // Traditionally these APIs don't use the Linking API directly.
         console.warn(
           `The provided Linking scheme '${
-            props.scheme
+            options.scheme
           }' does not appear in the list of possible URI schemes in your Expo config. Expected one of: ${schemes
             .map((scheme) => `'${scheme}'`)
             .join(', ')}`
@@ -167,7 +165,7 @@ export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): s
       }
     }
     // Return the user provided value.
-    return props.scheme;
+    return options.scheme;
   }
   // If no scheme is provided, we'll guess what the scheme is based on the manifest.
   // This is to attempt to keep managed apps working across expo build and EAS build.
@@ -175,7 +173,7 @@ export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): s
   // be using one of defined schemes.
 
   // If the native app id is the only scheme,
-  if (!!nativeAppId && !manifestSchemes.length && !props.isSilent) {
+  if (!!nativeAppId && !manifestSchemes.length && !options.isSilent) {
     // Assert a config warning if no scheme is setup yet.
     // This warning only applies to managed workflow EAS apps, as bare workflow
     console.warn(
@@ -195,7 +193,7 @@ export function resolveScheme(props: { scheme?: string; isSilent?: boolean }): s
     // Throw in production, use the __DEV__ flag so users can test this functionality with `expo start --no-dev`
     throw new Error(errorMessage);
   }
-  if (extraSchemes.length && !props.isSilent) {
+  if (extraSchemes.length && !options.isSilent) {
     console.warn(
       `Linking found multiple possible URI schemes in your Expo config.\nUsing '${scheme}'. Ignoring: ${[
         ...extraSchemes,

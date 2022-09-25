@@ -1,9 +1,7 @@
-/* eslint-disable */
-// @ts-nocheck
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import moment from 'moment';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -11,14 +9,27 @@ import {
   View,
   Text,
   StatusBar,
-  Button,
   Platform,
   TextInput,
   useColorScheme,
+  Switch,
+  TextProps,
+  TextInputProps,
+  Button,
 } from 'react-native';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
 
-const ThemedText = props => {
+export const DAY_OF_WEEK = Object.freeze({
+  Sunday: 0,
+  Monday: 1,
+  Tuesday: 2,
+  Wednesday: 3,
+  Thursday: 4,
+  Friday: 5,
+  Saturday: 6,
+});
+
+const ThemedText = (props: TextProps) => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const textColorByMode = { color: isDarkMode ? Colors.white : Colors.black };
@@ -28,51 +39,56 @@ const ThemedText = props => {
     style: [props.style, textColorByMode],
   });
 };
+const ThemedTextInput = (props: TextInputProps) => {
+  const isDarkMode = useColorScheme() === 'dark';
+
+  const textColorByMode = { color: isDarkMode ? Colors.white : Colors.black };
+
+  const TextElement = React.createElement(TextInput, props);
+  return React.cloneElement(TextElement, {
+    style: [props.style, styles.textInput, textColorByMode],
+    placeholderTextColor: isDarkMode ? Colors.white : Colors.black,
+  });
+};
 
 const MODE_VALUES = Platform.select({
-  ios: Object.values({
-    date: 'date',
-    time: 'time',
-    datetime: 'datetime',
-    countdown: 'countdown',
-  }),
-  android: Object.values({
-    date: 'date',
-    time: 'time',
-  }),
-});
+  ios: ['date', 'time', 'datetime', 'countdown'],
+  android: ['date', 'time'],
+})! as ['date', 'time', 'datetime', 'countdown'];
 const DISPLAY_VALUES = Platform.select({
-  ios: Object.values({
-    default: 'default',
-    spinner: 'spinner',
-    compact: 'compact',
-    inline: 'inline',
-  }),
-  android: Object.values({
-    default: 'default',
-    spinner: 'spinner',
-    clock: 'clock',
-    calendar: 'calendar',
-  }),
-});
+  ios: ['default', 'spinner', 'compact', 'inline'],
+  android: ['default', 'spinner', 'clock', 'calendar'],
+})! as ['default', 'spinner', 'clock', 'calendar'];
 const MINUTE_INTERVALS = [1, 2, 3, 4, 5, 6, 10, 12, 15, 20, 30];
 
 // This example is a refactored copy from https://github.com/react-native-community/react-native-datetimepicker/tree/master/example
 // Please try to keep it up to date when updating @react-native-community/datetimepicker package :)
 
 const DateTimePickerScreen = () => {
-  const [date, setDate] = useState(new Date(1598051730000));
-  const [mode, setMode] = useState(MODE_VALUES[0]);
-  const [show, setShow] = useState(false);
-  const [color, setColor] = useState();
-  const [display, setDisplay] = useState(DISPLAY_VALUES[0]);
+  // Sat, 13 Nov 2021 10:00:00 GMT (local: Saturday, November 13, 2021 11:00:00 AM GMT+01:00)
+  const sourceMoment = moment.unix(1636797600);
+  const sourceDate = sourceMoment.local().toDate();
+  const [show, setShow] = useState(true);
+  const [date, setDate] = useState<Date>(sourceDate);
+  const [mode, setMode] = useState<'date' | 'time' | 'datetime' | 'countdown'>(MODE_VALUES[0]);
+  const [textColor, setTextColor] = useState<string | undefined>();
+  const [accentColor, setAccentColor] = useState<string | undefined>();
+  const [display, setDisplay] = useState<'default' | 'spinner' | 'clock' | 'calendar'>(
+    DISPLAY_VALUES[0]
+  );
   const [interval, setMinInterval] = useState(1);
+  const [neutralButtonLabel, setNeutralButtonLabel] = useState<string | undefined>();
+  const [disabled, setDisabled] = useState(false);
 
-  const onChange = (event, selectedDate) => {
+  const scrollRef = useRef<ScrollView>(null);
+
+  const onChange = (event: DateTimePickerEvent, selectedDate?: Date | undefined) => {
     const currentDate = selectedDate || date;
-
-    setShow(Platform.OS === 'ios');
-    setDate(currentDate);
+    if (event.type === 'neutralButtonPressed') {
+      setDate(new Date(0));
+    } else {
+      setDate(currentDate);
+    }
   };
 
   const isDarkMode = useColorScheme() === 'dark';
@@ -82,99 +98,131 @@ const DateTimePickerScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={backgroundStyle}>
-      {global.HermesInternal != null && (
-        <View style={styles.engine}>
-          <Text testID="hermesIndicator" style={styles.footer}>
-            Engine: Hermes
-          </Text>
-        </View>
-      )}
-      <View
-        testID="appRootView"
-        style={{
-          backgroundColor: isDarkMode ? Colors.black : Colors.white,
+    <SafeAreaView style={[backgroundStyle, { flex: 1 }]}>
+      <StatusBar barStyle="dark-content" />
+      <ScrollView
+        testID="DateTimePickerScrollView"
+        ref={scrollRef}
+        onContentSizeChange={() => {
+          if (Platform.OS === 'ios') {
+            scrollRef.current?.scrollToEnd({ animated: true });
+          }
         }}>
-        <View style={styles.header}>
-          <ThemedText style={styles.text}>Example DateTime Picker</ThemedText>
-        </View>
-        <ThemedText>mode prop:</ThemedText>
-        <SegmentedControl
-          values={MODE_VALUES}
-          selectedIndex={MODE_VALUES.indexOf(mode)}
-          onChange={event => {
-            setMode(MODE_VALUES[event.nativeEvent.selectedSegmentIndex]);
-          }}
-        />
-        <ThemedText>display prop:</ThemedText>
-        <SegmentedControl
-          values={DISPLAY_VALUES}
-          selectedIndex={DISPLAY_VALUES.indexOf(display)}
-          onChange={event => {
-            setDisplay(DISPLAY_VALUES[event.nativeEvent.selectedSegmentIndex]);
-          }}
-        />
-        <ThemedText>minute interval prop:</ThemedText>
-        <SegmentedControl
-          values={MINUTE_INTERVALS.map(String)}
-          selectedIndex={MINUTE_INTERVALS.indexOf(interval)}
-          onChange={event => {
-            setMinInterval(MINUTE_INTERVALS[event.nativeEvent.selectedSegmentIndex]);
-          }}
-        />
-        <View style={styles.header}>
-          <ThemedText style={{ margin: 10, flex: 1 }}>text color (iOS only)</ThemedText>
-          <TextInput
-            value={color}
-            style={{ height: 60, flex: 1 }}
-            onChangeText={text => {
-              setColor(text.toLowerCase());
-            }}
-            placeholder="color"
-          />
-        </View>
-        <View style={styles.button}>
-          <Button
-            testID="showPickerButton"
-            onPress={() => {
-              setShow(true);
-            }}
-            title="Show picker!"
-          />
-        </View>
-
-        <View style={styles.header}>
-          <ThemedText testID="dateText" style={styles.dateTimeText}>
-            {moment.utc(date).format('MM/DD/YYYY')}
-          </ThemedText>
-          <Text> </Text>
-          <ThemedText testID="timeText" style={styles.dateTimeText}>
-            {moment.utc(date).format('HH:mm')}
-          </ThemedText>
-          <Button testID="hidePicker" onPress={() => setShow(false)} title="hide picker" />
-        </View>
-        {Platform.OS === 'android' && (
-          <Text style={{ padding: 8, textAlign: 'center', color: 'grey' }}>
-            Please ensure that each of the displays are distinct. If not, it's likely that this
-            change must be applied: expo/expo PR #12563
-          </Text>
+        {/* @ts-expect-error */}
+        {global.HermesInternal != null && (
+          <View style={styles.engine}>
+            <Text testID="hermesIndicator" style={styles.footer}>
+              Engine: Hermes
+            </Text>
+          </View>
         )}
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            timeZoneOffsetInMinutes={0}
-            minuteInterval={interval}
-            value={date}
-            mode={mode}
-            is24Hour
-            display={display}
-            onChange={onChange}
-            style={styles.iOsPicker}
-            textColor={color || undefined}
+        <View
+          testID="appRootView"
+          style={{ backgroundColor: isDarkMode ? Colors.black : Colors.white }}>
+          <ThemedText>mode prop:</ThemedText>
+          <SegmentedControl
+            values={MODE_VALUES}
+            selectedIndex={MODE_VALUES.indexOf(mode)}
+            onChange={(event) => {
+              setMode(MODE_VALUES[event.nativeEvent.selectedSegmentIndex]);
+            }}
           />
-        )}
-      </View>
-    </ScrollView>
+          <ThemedText>display prop:</ThemedText>
+          <SegmentedControl
+            values={DISPLAY_VALUES}
+            selectedIndex={DISPLAY_VALUES.indexOf(display)}
+            onChange={(event) => {
+              setDisplay(DISPLAY_VALUES[event.nativeEvent.selectedSegmentIndex]);
+            }}
+          />
+          <ThemedText>minute interval prop:</ThemedText>
+          <SegmentedControl
+            values={MINUTE_INTERVALS.map(String)}
+            selectedIndex={MINUTE_INTERVALS.indexOf(interval)}
+            onChange={(event) => {
+              setMinInterval(MINUTE_INTERVALS[event.nativeEvent.selectedSegmentIndex]);
+            }}
+          />
+          {Platform.OS === 'ios' && (
+            <>
+              <View style={styles.header}>
+                <ThemedText style={styles.textLabel}>text color (iOS only)</ThemedText>
+                <ThemedTextInput
+                  value={textColor}
+                  onChangeText={(text) => {
+                    setTextColor(text.toLowerCase());
+                  }}
+                  placeholder="textColor"
+                />
+              </View>
+              <View style={styles.header}>
+                <ThemedText style={styles.textLabel}>accent color (iOS only)</ThemedText>
+                <ThemedTextInput
+                  value={accentColor}
+                  onChangeText={(text) => {
+                    setAccentColor(text.toLowerCase());
+                  }}
+                  placeholder="accentColor"
+                />
+              </View>
+              <View style={styles.header}>
+                <ThemedText style={styles.textLabel}>disabled (iOS only)</ThemedText>
+                <Switch value={disabled} onValueChange={setDisabled} />
+              </View>
+            </>
+          )}
+          {Platform.OS === 'android' && (
+            <>
+              <View style={styles.header}>
+                <ThemedText style={styles.textLabel}>neutralButtonLabel (android only)</ThemedText>
+                <ThemedTextInput
+                  value={neutralButtonLabel}
+                  onChangeText={setNeutralButtonLabel}
+                  placeholder="neutralButtonLabel"
+                  testID="neutralButtonLabelTextInput"
+                />
+              </View>
+              <View style={styles.header}>
+                <ThemedText style={styles.textLabel}>
+                  [android] show and dismiss picker after 3 secs
+                </ThemedText>
+              </View>
+            </>
+          )}
+          <View style={[styles.button, { flexDirection: 'row', justifyContent: 'space-around' }]}>
+            <Button
+              testID="showPickerButton"
+              onPress={() => {
+                setShow(true);
+              }}
+              title="Show picker!"
+            />
+            <Button testID="hidePicker" onPress={() => setShow(false)} title="Hide picker!" />
+          </View>
+          <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-around' }]}>
+            <ThemedText testID="dateText" style={styles.dateTimeText}>
+              {moment(date).format('MM/DD/YYYY  HH:mm')}
+            </ThemedText>
+          </View>
+          {show && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              minuteInterval={interval}
+              value={date}
+              mode={mode}
+              is24Hour
+              display={display}
+              onChange={onChange}
+              style={styles.iOsPicker}
+              textColor={textColor || undefined}
+              accentColor={accentColor || undefined}
+              neutralButtonLabel={neutralButtonLabel}
+              disabled={disabled}
+            />
+          )}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
@@ -215,6 +263,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
   },
+  textLabel: {
+    margin: 10,
+    flex: 1,
+  },
+  textInput: {
+    height: 60,
+    flex: 1,
+  },
   button: {
     alignItems: 'center',
     marginBottom: 10,
@@ -232,6 +288,7 @@ const styles = StyleSheet.create({
   },
   iOsPicker: {
     flex: 1,
+    marginTop: 30,
   },
   windowsPicker: {
     flex: 1,

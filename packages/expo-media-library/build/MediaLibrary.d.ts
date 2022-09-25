@@ -110,7 +110,7 @@ export declare type MediaSubtype = 'depthEffect' | 'hdr' | 'highFrameRate' | 'li
 export declare type MediaLibraryAssetInfoQueryOptions = {
     /**
      * Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets.
-     * @default `true`
+     * @default true
      */
     shouldDownloadFromNetwork?: boolean;
 };
@@ -194,7 +194,7 @@ export declare type AlbumsOptions = {
 export declare type AssetsOptions = {
     /**
      * The maximum number of items on a single page.
-     * @default `20`
+     * @default 20
      */
     first?: number;
     /**
@@ -216,7 +216,7 @@ export declare type AssetsOptions = {
     sortBy?: SortByValue[] | SortByValue;
     /**
      * An array of [MediaTypeValue](#expomedialibrarymediatypevalue)s or a single `MediaTypeValue`.
-     * @default `MediaType.photo`
+     * @default MediaType.photo
      */
     mediaType?: MediaTypeValue[] | MediaTypeValue;
     /**
@@ -302,7 +302,7 @@ export declare const usePermissions: (options?: PermissionHookOptions<{
  */
 export declare function presentPermissionsPickerAsync(): Promise<void>;
 /**
- * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera).
+ * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](./camera).
  * This method requires `CAMERA_ROLL` permission.
  *
  * @example
@@ -462,3 +462,4 @@ export declare function migrateAlbumIfNeededAsync(album: AlbumRef): Promise<void
  * @return Returns a promise which fulfils with `true` if the album should be migrated.
  */
 export declare function albumNeedsMigrationAsync(album: AlbumRef): Promise<boolean>;
+//# sourceMappingURL=MediaLibrary.d.ts.map

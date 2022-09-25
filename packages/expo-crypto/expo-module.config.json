@@ -1,0 +1,10 @@
+{
+  "name": "expo-crypto",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modulesClassNames": ["CryptoModule"]
+  },
+  "android": {
+    "modulesClassNames": ["expo.modules.crypto.CryptoModule"]
+  }
+}

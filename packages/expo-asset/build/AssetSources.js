@@ -3,7 +3,7 @@ import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import URL from 'url-parse';
 import AssetSourceResolver from './AssetSourceResolver';
-import { manifestBaseUrl, getManifest } from './PlatformUtils';
+import { manifestBaseUrl, getManifest, getManifest2 } from './PlatformUtils';
 // Fast lookup check if asset map has any overrides in the manifest
 const assetMapOverride = getManifest().assetMapOverride;
 /**
@@ -42,6 +42,16 @@ export function selectAssetSource(meta) {
         const uri = meta.httpServerLocation + suffix;
         return { uri, hash };
     }
+    // For assets during development using manifest2, we use the development server's URL origin
+    const manifest2 = getManifest2();
+    if (manifest2?.extra?.expoGo?.developer) {
+        const baseUrl = new URL(`http://${manifest2.extra.expoGo.debuggerHost}`);
+        baseUrl.set('pathname', meta.httpServerLocation + suffix);
+        return {
+            uri: baseUrl.href,
+            hash,
+        };
+    }
     // For assets during development, we use the development server's URL origin
     if (getManifest().developer) {
         const baseUrl = new URL(getManifest().bundleUrl);
@@ -50,7 +60,7 @@ export function selectAssetSource(meta) {
     }
     // Production CDN URIs are based on each asset file hash
     return {
-        uri: `https://d1wp6m56sqw74a.cloudfront.net/~assets/${encodeURIComponent(hash)}`,
+        uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`,
         hash,
     };
 }

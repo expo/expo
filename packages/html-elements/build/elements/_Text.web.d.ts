@@ -16,3 +16,4 @@ export declare const Mark: ComponentType<TextProps>;
 export declare const Code: ComponentType<TextProps>;
 export declare const Time: ComponentType<TimeProps>;
 export declare const Pre: ComponentType<TextProps>;
+//# sourceMappingURL=_Text.web.d.ts.map

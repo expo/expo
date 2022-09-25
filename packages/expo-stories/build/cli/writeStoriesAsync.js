@@ -45,19 +45,20 @@ var path_1 = __importDefault(require("path"));
 var shared_1 = require("./shared");
 function writeStoriesAsync(config) {
     return __awaiter(this, void 0, void 0, function () {
-        var storyManifest, stories, template, storiesDir, writeRequiresPath;
+        var projectRoot, storyManifest, stories, template, storiesDir, writeRequiresPath;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    storyManifest = (0, shared_1.getStoryManifest)(config.projectRoot);
+                    projectRoot = config.projectRoot;
+                    storyManifest = (0, shared_1.getStoryManifest)(projectRoot);
                     stories = Object.keys(storyManifest.files).map(function (id) { return storyManifest.files[id]; });
-                    template = "\n      const storiesToExport = {}\n      " + stories.map(function (story) { return generateTemplateForStory(story); }).join('') + "\n      module.exports = storiesToExport\n    ";
+                    template = "\n      const storiesToExport = {}\n      ".concat(stories.map(function (story) { return generateTemplateForStory(story); }).join(''), "\n      module.exports = storiesToExport\n    ");
                     if (!process.env.EXPO_DEBUG) {
                         template = require('esbuild').transformSync(template, {
                             minify: true,
                         }).code;
                     }
-                    storiesDir = (0, shared_1.getStoriesDir)(config);
+                    storiesDir = (0, shared_1.getStoriesDir)({ projectRoot: projectRoot });
                     writeRequiresPath = path_1.default.resolve(storiesDir, 'stories.js');
                     return [4 /*yield*/, fs_extra_1.default.writeFile(writeRequiresPath, template, { encoding: 'utf-8' })];
                 case 1:
@@ -71,6 +72,6 @@ exports.writeStoriesAsync = writeStoriesAsync;
 // the formatting of this template is important because it preserves fast refresh w/ metro
 function generateTemplateForStory(story) {
     var defaultTitle = story.relativePath.replace('.stories.tsx', '').split('/').pop();
-    return "\n    function " + story.id + "Setup() {\n      const stories = require(\"" + story.fullPath + "\")\n      const file = stories.default || {}\n      file.id = \"" + story.id + "\"\n      file.title = file.title || '" + defaultTitle + "'\n\n      Object.keys(stories).forEach((key) => {\n        const Component = stories[key]\n        \n        if (typeof Component === \"function\") {\n          const storyId = \"" + story.id + "\" + \"_\" + key\n          \n          Component.storyConfig = {\n            id: storyId,\n            name: key,\n            ...Component.storyConfig,\n          }\n\n          Component.file = file\n\n          storiesToExport[storyId] = Component \n        }\n      })\n    }\n\n    " + story.id + "Setup()\n  ";
+    return "\n    function ".concat(story.id, "Setup() {\n      const stories = require(\"").concat(story.fullPath, "\")\n      const file = stories.default || {}\n      file.id = \"").concat(story.id, "\"\n      file.title = file.title || '").concat(defaultTitle, "'\n\n      Object.keys(stories).forEach((key) => {\n        const Component = stories[key]\n        \n        if (typeof Component === \"function\") {\n          const storyId = \"").concat(story.id, "\" + \"_\" + key\n          \n          Component.storyConfig = {\n            id: storyId,\n            name: key,\n            ...Component.storyConfig,\n          }\n\n          Component.file = file\n\n          storiesToExport[storyId] = Component \n        }\n      })\n    }\n\n    ").concat(story.id, "Setup()\n  ");
 }
 //# sourceMappingURL=writeStoriesAsync.js.map

@@ -1,12 +1,12 @@
+import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
-import fs from 'fs-extra';
 
+import { formatXcodeBuildOutput } from '../Formatter';
 import { spawnAsync } from '../Utils';
 import { generateXcodeProjectAsync } from './XcodeGen';
-import { Flavor, Framework, XcodebuildSettings } from './XcodeProject.types';
-import { formatXcodeBuildOutput } from '../Formatter';
 import { ProjectSpec } from './XcodeGen.types';
+import { Flavor, Framework, XcodebuildSettings } from './XcodeProject.types';
 
 /**
  * Path to the shared derived data directory.

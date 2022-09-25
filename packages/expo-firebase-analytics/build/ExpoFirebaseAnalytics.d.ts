@@ -15,3 +15,4 @@ declare const _default: {
     setClientId(clientId: string): void;
 };
 export default _default;
+//# sourceMappingURL=ExpoFirebaseAnalytics.d.ts.map

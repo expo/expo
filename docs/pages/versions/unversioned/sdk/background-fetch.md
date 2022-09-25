@@ -1,8 +1,10 @@
 ---
 title: BackgroundFetch
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-background-fetch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-background-fetch'
+packageName: 'expo-background-fetch'
 ---
 
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
@@ -14,17 +16,17 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 ## Known issues
 
-**iOS only**: BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant Github issue](https://github.com/expo/expo/issues/3582)
+**iOS only**: BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant GitHub issue](https://github.com/expo/expo/issues/3582)
 
 ## Installation
 
-For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-background-fetch`. To use it in [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-background-fetch);
+<APIInstallSection />
 
 ## Usage
 
 Below is an example that demonstrates how to use `expo-background-fetch`.
 
-<SnackInline>
+<SnackInline label="Background Fetch Usage" dependencies={['expo-background-fetch', 'expo-task-manager']}>
 
 ```tsx
 import React from 'react';
@@ -42,10 +44,11 @@ TaskManager.defineTask(BACKGROUND_FETCH_TASK, async () => {
   console.log(`Got background fetch call at date: ${new Date(now).toISOString()}`);
 
   // Be sure to return the successful result type!
-  return BackgroundFetch.Result.NewData;
+  return BackgroundFetch.BackgroundFetchResult.NewData;
 });
 
-// 2. Register the task at some point in your app by providing the same name, and some configuration options for how the background fetch should behave
+// 2. Register the task at some point in your app by providing the same name,
+// and some configuration options for how the background fetch should behave
 // Note: This does NOT need to be in the global scope and CAN be used in your React components!
 async function registerBackgroundFetchAsync() {
   return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
@@ -63,8 +66,8 @@ async function unregisterBackgroundFetchAsync() {
 }
 
 export default function BackgroundFetchScreen() {
-  const [isRegistered, setIsRegistered] = React.useState<boolean>(false);
-  const [status, setStatus] = React.useState<BackgroundFetch.Status | null>(null);
+  const [isRegistered, setIsRegistered] = React.useState(false);
+  const [status, setStatus] = React.useState(null);
 
   React.useEffect(() => {
     checkStatusAsync();
@@ -92,7 +95,9 @@ export default function BackgroundFetchScreen() {
       <View style={styles.textContainer}>
         <Text>
           Background fetch status:{' '}
-          <Text style={styles.boldText}>{status ? BackgroundFetch.Status[status] : null}</Text>
+          <Text style={styles.boldText}>
+            {status && BackgroundFetch.BackgroundFetchStatus[status]}
+          </Text>
         </Text>
         <Text>
           Background fetch task name:{' '}
@@ -110,14 +115,13 @@ export default function BackgroundFetchScreen() {
   );
 }
 
-/* @hide */
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   textContainer: {
     margin: 10,
   },
@@ -125,7 +129,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
 });
-
 /* @end */
 ```
 
@@ -150,14 +153,14 @@ For Android, you can set the `minimumInterval` option of your task to a small nu
 ```tsx
 async function registerBackgroundFetchAsync() {
   return BackgroundFetch.registerTaskAsync(BACKGROUND_FETCH_TASK, {
-    minimumInterval: 1, // task will fire 1 minute after app is backgrounded
+    minimumInterval: 1 * 60, // task will fire 1 minute after app is backgrounded
   });
 }
 ```
 
 ## Configuration
 
-In order to use `BackgroundFetch` API in standalone, detached and bare apps on iOS, your app has to include background mode in the **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration-for-standalone-apps) for more details.
+In order to use `BackgroundFetch` API in standalone, bare apps on iOS, your app has to include background mode in the **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration-for-standalone-apps) for more details.
 
 On Android, this module might listen when the device is starting up. It's necessary to continue working on tasks started with `startOnBoot`. It also keeps devices "awake" that are going idle and asleep fast, to improve reliability of the tasks. Because of this both the `RECEIVE_BOOT_COMPLETED` and `WAKE_LOCK` permissions are added automatically.
 

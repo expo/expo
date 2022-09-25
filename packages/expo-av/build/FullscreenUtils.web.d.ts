@@ -12,3 +12,4 @@ export declare function exitFullscreen(element: HTMLMediaElement): Promise<void>
  * fullscreen and `false` when the video is switched out of fullscreen.
  */
 export declare function addFullscreenListener(element: HTMLVideoElement, callback: (isFullscreen: boolean) => void): () => any;
+//# sourceMappingURL=FullscreenUtils.web.d.ts.map

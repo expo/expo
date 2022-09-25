@@ -10,26 +10,25 @@ const configFile = path.resolve(__dirname, '../web.js');
 it(`has a web config`, () => {
   expect(
     () =>
-      new eslint.CLIEngine({
+      new eslint.ESLint({
         baseConfig: getBaseConfig(),
-        configFile,
+        overrideConfigFile: configFile,
         useEslintrc: false,
       })
   ).not.toThrow();
 });
 
 it(`lints with the web config`, async () => {
-  const report = await lintAsync(
+  const results = await lintAsync(
     {
       baseConfig: getBaseConfig(),
-      configFile,
+      overrideConfigFile: configFile,
       fix: true,
       ignore: false,
       useEslintrc: false,
     },
     ['__tests__/fixtures/*all*', '__tests__/fixtures/*web*']
   );
-  const { results } = report;
   for (const result of results) {
     const relativeFilePath = path.relative(__dirname, result.filePath);
     delete result.filePath;

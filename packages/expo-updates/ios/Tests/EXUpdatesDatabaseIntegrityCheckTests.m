@@ -75,8 +75,8 @@
   NSString *scopeKey = @"testScopeKey";
   NSString *runtimeVersion = @"1.0";
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesScopeKey": scopeKey,
-    @"EXUpdatesRuntimeVersion": runtimeVersion
+    EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfigRuntimeVersionKey: runtimeVersion
   }];
   EXUpdatesUpdate *update1 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
   EXUpdatesUpdate *update2 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
@@ -116,8 +116,8 @@
   NSString *scopeKey = @"testScopeKey";
   NSString *runtimeVersion = @"1.0";
   EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesScopeKey": scopeKey,
-    @"EXUpdatesRuntimeVersion": runtimeVersion
+    EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfigRuntimeVersionKey: runtimeVersion
   }];
   EXUpdatesUpdate *update1 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
   EXUpdatesUpdate *update2 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];

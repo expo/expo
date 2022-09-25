@@ -31,14 +31,11 @@
 #endif
 
 #import <React/RCTAppearance.h>
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI43_0_0React/ABI43_0_0RCTAppearance.h>)
-#import <ABI43_0_0React/ABI43_0_0RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
+#import <ABI46_0_0React/ABI46_0_0RCTAppearance.h>
 #endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
-#import <ABI42_0_0React/ABI42_0_0RCTAppearance.h>
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
-#import <ABI41_0_0React/ABI41_0_0RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
+#import <ABI45_0_0React/ABI45_0_0RCTAppearance.h>
 #endif
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
@@ -65,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
   <EXReactAppManagerUIDelegate, EXAppLoaderDelegate, EXErrorViewDelegate, EXAppLoadingCancelViewDelegate>
 
 @property (nonatomic, assign) BOOL isLoading;
-@property (nonatomic, assign) BOOL isBridgeAlreadyLoading;
+@property (atomic, assign) BOOL isBridgeAlreadyLoading;
 @property (nonatomic, weak) EXKernelAppRecord *appRecord;
 @property (nonatomic, strong) EXErrorView *errorView;
 @property (nonatomic, strong) NSTimer *tmrAutoReloadDebounce;
@@ -267,7 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     // Reset the root view background color and window color if we switch between Expo home and project
-    [self _setBackgroundColor:self.view];
+    [self _setBackgroundColor];
   });
 }
 
@@ -387,6 +384,7 @@ NS_ASSUME_NONNULL_BEGIN
     dispatch_once(&once, ^{
       UIViewController *rootViewController = [UIApplication sharedApplication].keyWindow.rootViewController;
       [splashScreenService hideSplashScreenFor:rootViewController
+                                       options:EXSplashScreenDefault
                                successCallback:^(BOOL hasEffect){}
                                failureCallback:^(NSString * _Nonnull message) {
         EXLogWarn(@"Hiding splash screen from root view controller did not succeed: %@", message);
@@ -398,6 +396,7 @@ NS_ASSUME_NONNULL_BEGIN
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
     [splashScreenService showSplashScreenFor:self
+                                     options:EXSplashScreenDefault
                     splashScreenViewProvider:provider
                              successCallback:hideRootViewControllerSplashScreen
                              failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
@@ -418,6 +417,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.managedSplashScreenController = [[EXManagedAppSplashScreenViewController alloc] initWithRootView:rootView
                                                                                                  splashScreenView:splashScreenView];
     [splashScreenService showSplashScreenFor:self
+                                     options:EXSplashScreenDefault
                       splashScreenController:self.managedSplashScreenController
                              successCallback:^{}
                              failureCallback:^(NSString *message){ EXLogWarn(@"%@", message); }];
@@ -493,7 +493,9 @@ NS_ASSUME_NONNULL_BEGIN
   UIView *reactView = appManager.rootView;
   reactView.frame = CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height);
   reactView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-
+  // Set this view to transparent so the root view background color aligns with custom development clients where the
+  // background color is the view controller root view.
+  reactView.backgroundColor = [UIColor clearColor];
 
   [_contentView removeFromSuperview];
   _contentView = reactView;
@@ -502,7 +504,7 @@ NS_ASSUME_NONNULL_BEGIN
   [reactView becomeFirstResponder];
 
   // Set root view background color after adding as subview so we can access window
-  [self _setBackgroundColor:reactView];
+  [self _setBackgroundColor];
 }
 
 - (void)reactAppManagerStartedLoadingJavaScript:(EXReactAppManager *)appManager
@@ -612,7 +614,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   NSString *userInterfaceStyle = [self _readUserInterfaceStyleFromManifest:_appRecord.appLoader.manifest];
   NSString *appearancePreference = nil;
-  if (!userInterfaceStyle || [userInterfaceStyle isEqualToString:@"light"]) {
+  if ([userInterfaceStyle isEqualToString:@"light"]) {
     appearancePreference = @"light";
   } else if ([userInterfaceStyle isEqualToString:@"dark"]) {
     appearancePreference = @"dark";
@@ -620,16 +622,13 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI43_0_0React/ABI43_0_0RCTAppearance.h>)
-  ABI43_0_0RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
+  ABI46_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
+  ABI45_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI42_0_0React/ABI42_0_0RCTAppearance.h>)
-  ABI42_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI41_0_0React/ABI41_0_0RCTAppearance.h>)
-  ABI41_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
 }
 
 #pragma mark - user interface style
@@ -654,36 +653,45 @@ NS_ASSUME_NONNULL_BEGIN
   if ([userInterfaceStyleString isEqualToString:@"automatic"]) {
     return UIUserInterfaceStyleUnspecified;
   }
-  return UIUserInterfaceStyleLight;
+  if ([userInterfaceStyleString isEqualToString:@"light"]) {
+    return UIUserInterfaceStyleLight;
+  }
+
+  return UIUserInterfaceStyleUnspecified;
 }
 
 #pragma mark - root view and window background color
 
-- (void)_setBackgroundColor:(UIView *)view
+- (void)_setBackgroundColor
 {
     NSString *backgroundColorString = [self _readBackgroundColorFromManifest:_appRecord.appLoader.manifest];
     UIColor *backgroundColor = [EXUtil colorWithHexString:backgroundColorString];
+    self.view.backgroundColor = [UIColor clearColor];
 
+    // NOTE(evanbacon): `self.view.window.rootViewController.view` represents the top-most window's root view controller's view which is the same
+    // view we set in `expo-system-ui`'s `setBackgroundColorAsync` method.
     if (backgroundColor) {
-      view.backgroundColor = backgroundColor;
-      // NOTE(brentvatne): it may be desirable at some point to split the window backgroundColor out from the
-      // root view, we can do if use case is presented to us.
-      view.window.backgroundColor = backgroundColor;
+      if (self.view.window.rootViewController != nil && self.view.window.rootViewController.view != nil) {
+        self.view.window.rootViewController.view.backgroundColor = backgroundColor;
+      }
+      self.view.window.backgroundColor = backgroundColor;
     } else {
-      view.backgroundColor = [UIColor whiteColor];
-
+      // Reset this color to white so splash and other screens don't load against a black background.
+      if (self.view.window.rootViewController != nil && self.view.window.rootViewController.view != nil) {
+        self.view.window.rootViewController.view.backgroundColor = [UIColor whiteColor];
+      }
       // NOTE(brentvatne): we used to use white as a default background color for window but this caused
       // problems when using form sheet presentation style with vcs eg: <Modal /> and native-stack. Most
       // users expect the background behind these to be black, which is the default if backgroundColor is nil.
-      view.window.backgroundColor = nil;
+      self.view.window.backgroundColor = nil;
 
       // NOTE(brentvatne): we may want to default to respecting the default system background color
       // on iOS13 and higher, but if we do make this choice then we will have to implement it on Android
-      // as well. This would also be a breaking change. Leaaving this here as a placeholder for the future.
+      // as well. This would also be a breaking change. Leaving this here as a placeholder for the future.
       // if (@available(iOS 13.0, *)) {
-      //   view.backgroundColor = [UIColor systemBackgroundColor];
+      //   self.view.backgroundColor = [UIColor systemBackgroundColor];
       // } else {
-      //  view.backgroundColor = [UIColor whiteColor];
+      //  self.view.backgroundColor = [UIColor whiteColor];
       // }
     }
 }

@@ -1,6 +1,11 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXDevMenu/DevMenuRCTBridge.h>
+#if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
+#import <EXDevMenu/EXDevMenu-Swift.h>
+#else
+#import <EXDevMenu-Swift.h>
+#endif
 #import <RCTCxxBridge+Private.h>
 
 #import <React/RCTPerformanceLogger.h>
@@ -8,7 +13,19 @@
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevMenu.h>
 
+@import EXDevMenuInterface;
+
 @implementation DevMenuRCTCxxBridge
+
+- (instancetype)initWithParentBridge:(RCTBridge *)bridge
+{
+  if ((self = [super initWithParentBridge:bridge])) {
+    RCTBridge *appBridge = DevMenuManager.shared.currentBridge;
+    // reset the singleton `RCTBridge.currentBridge` to app bridge instance
+    RCTBridge.currentBridge = appBridge != nil ? appBridge.batchedBridge : nil;
+  }
+  return self;
+}
 
 /**
  * Theoretically, we could overwrite the `RCTDevSettings` module by exporting our version through the bridge.
@@ -17,6 +34,8 @@
  */
 - (RCTDevSettings *)devSettings
 {
+  // uncomment below to enable fast refresh for development builds of DevMenu
+  //  return super.devSettings;
   return nil;
 }
 
@@ -30,6 +49,11 @@
   NSArray<NSString *> *allowedModules = @[@"RCT"];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
+      
+    if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
+      return true;
+    }
+    
     for (NSString *allowedModule in allowedModules) {
       if ([clazzName hasPrefix:allowedModule]) {
         return true;

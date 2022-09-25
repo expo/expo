@@ -1,8 +1,8 @@
+import { Picker } from '@react-native-picker/picker';
 import * as Speech from 'expo-speech';
 import * as React from 'react';
 import {
   Button,
-  Picker,
   Platform,
   ScrollView,
   StyleSheet,

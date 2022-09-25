@@ -118,3 +118,4 @@ export declare type WebViewProps = {
 export declare type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;
 declare const View: ComponentType<ViewProps>;
 export default View;
+//# sourceMappingURL=View.d.ts.map

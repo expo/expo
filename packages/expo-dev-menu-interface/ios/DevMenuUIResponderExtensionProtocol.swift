@@ -5,8 +5,6 @@ import UIKit
 
 @objc
 public protocol DevMenuUIResponderExtensionProtocol {
-  
   @objc
   func EXDevMenu_handleKeyCommand(_ key: UIKeyCommand)
-
 }

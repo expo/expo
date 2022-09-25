@@ -27,3 +27,4 @@ export declare const HeadingSubscriber: Subscriber<LocationHeadingCallback>;
  */
 export declare function _getCurrentWatchId(): number;
 export {};
+//# sourceMappingURL=LocationSubscribers.d.ts.map

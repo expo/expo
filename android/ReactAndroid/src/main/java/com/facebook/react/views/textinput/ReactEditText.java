@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -36,15 +36,16 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatEditText;
-import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.ReactContext;
-import com.facebook.react.bridge.ReactSoftException;
+import com.facebook.react.bridge.ReactSoftExceptionLogger;
 import com.facebook.react.common.build.ReactBuildConfig;
 import com.facebook.react.uimanager.FabricViewStateManager;
+import com.facebook.react.uimanager.ReactAccessibilityDelegate;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.views.text.CustomLetterSpacingSpan;
 import com.facebook.react.views.text.CustomLineHeightSpan;
 import com.facebook.react.views.text.CustomStyleSpan;
@@ -106,19 +107,21 @@ public class ReactEditText extends AppCompatEditText
   private TextAttributes mTextAttributes;
   private boolean mTypefaceDirty = false;
   private @Nullable String mFontFamily = null;
-  private int mFontWeight = ReactTypefaceUtils.UNSET;
-  private int mFontStyle = ReactTypefaceUtils.UNSET;
+  private int mFontWeight = UNSET;
+  private int mFontStyle = UNSET;
   private boolean mAutoFocus = false;
   private boolean mDidAttachToWindow = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
-  private final FabricViewStateManager mFabricViewStateManager = new FabricViewStateManager();
+  private final @Nullable FabricViewStateManager mFabricViewStateManager =
+      new FabricViewStateManager();
   protected boolean mDisableTextDiffing = false;
 
   protected boolean mIsSettingTextFromState = false;
 
   private static final KeyListener sKeyListener = QwertyKeyListener.getInstanceForFullKeyboard();
+  private @Nullable EventDispatcher mEventDispatcher;
 
   public ReactEditText(Context context) {
     super(context);
@@ -151,9 +154,9 @@ public class ReactEditText extends AppCompatEditText
       setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
-    ViewCompat.setAccessibilityDelegate(
-        this,
-        new AccessibilityDelegateCompat() {
+    ReactAccessibilityDelegate editTextAccessibilityDelegate =
+        new ReactAccessibilityDelegate(
+            this, this.isFocusable(), this.getImportantForAccessibility()) {
           @Override
           public boolean performAccessibilityAction(View host, int action, Bundle args) {
             if (action == AccessibilityNodeInfo.ACTION_CLICK) {
@@ -169,7 +172,8 @@ public class ReactEditText extends AppCompatEditText
             }
             return super.performAccessibilityAction(host, action, args);
           }
-        });
+        };
+    ViewCompat.setAccessibilityDelegate(this, editTextAccessibilityDelegate);
   }
 
   @Override
@@ -247,7 +251,8 @@ public class ReactEditText extends AppCompatEditText
     InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
     if (inputConnection != null && mOnKeyPress) {
       inputConnection =
-          new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
+          new ReactEditTextInputConnectionWrapper(
+              inputConnection, reactContext, this, mEventDispatcher);
     }
 
     if (isMultiline() && getBlurOnSubmit()) {
@@ -328,8 +333,18 @@ public class ReactEditText extends AppCompatEditText
     }
 
     if (start != UNSET && end != UNSET) {
+      // clamp selection values for safety
+      start = clampToTextLength(start);
+      end = clampToTextLength(end);
+
       setSelection(start, end);
     }
+  }
+
+  private int clampToTextLength(int value) {
+    int textLength = getText() == null ? 0 : getText().length();
+
+    return Math.max(0, Math.min(value, textLength));
   }
 
   @Override
@@ -654,12 +669,10 @@ public class ReactEditText extends AppCompatEditText
 
     List<TextLayoutManager.SetSpanOperation> ops = new ArrayList<>();
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      if (!Float.isNaN(mTextAttributes.getLetterSpacing())) {
-        ops.add(
-            new TextLayoutManager.SetSpanOperation(
-                start, end, new CustomLetterSpacingSpan(mTextAttributes.getLetterSpacing())));
-      }
+    if (!Float.isNaN(mTextAttributes.getLetterSpacing())) {
+      ops.add(
+          new TextLayoutManager.SetSpanOperation(
+              start, end, new CustomLetterSpacingSpan(mTextAttributes.getLetterSpacing())));
     }
     ops.add(
         new TextLayoutManager.SetSpanOperation(
@@ -733,8 +746,11 @@ public class ReactEditText extends AppCompatEditText
     // wrapper 100% of the time.
     // Since the LocalData object is constructed by getting values from the underlying EditText
     // view, we don't need to construct one or apply it at all - it provides no use in Fabric.
-    if (!mFabricViewStateManager.hasStateWrapper()) {
-      ReactContext reactContext = getReactContext(this);
+    ReactContext reactContext = getReactContext(this);
+
+    if (mFabricViewStateManager != null
+        && !mFabricViewStateManager.hasStateWrapper()
+        && !reactContext.isBridgeless()) {
       final ReactTextInputLocalData localData = new ReactTextInputLocalData(this);
       UIManagerModule uiManager = reactContext.getNativeModule(UIManagerModule.class);
       if (uiManager != null) {
@@ -899,6 +915,10 @@ public class ReactEditText extends AppCompatEditText
     mReactBackgroundManager.setBorderColor(position, color, alpha);
   }
 
+  public int getBorderColor(int position) {
+    return mReactBackgroundManager.getBorderColor(position);
+  }
+
   public void setBorderRadius(float borderRadius) {
     mReactBackgroundManager.setBorderRadius(borderRadius);
   }
@@ -947,11 +967,9 @@ public class ReactEditText extends AppCompatEditText
     // `Float.NaN`.
     setTextSize(TypedValue.COMPLEX_UNIT_PX, mTextAttributes.getEffectiveFontSize());
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
-      if (!Float.isNaN(effectiveLetterSpacing)) {
-        setLetterSpacing(effectiveLetterSpacing);
-      }
+    float effectiveLetterSpacing = mTextAttributes.getEffectiveLetterSpacing();
+    if (!Float.isNaN(effectiveLetterSpacing)) {
+      setLetterSpacing(effectiveLetterSpacing);
     }
   }
 
@@ -968,7 +986,7 @@ public class ReactEditText extends AppCompatEditText
    */
   private void updateCachedSpannable(boolean resetStyles) {
     // Noops in non-Fabric
-    if (!mFabricViewStateManager.hasStateWrapper()) {
+    if (mFabricViewStateManager != null && !mFabricViewStateManager.hasStateWrapper()) {
       return;
     }
     // If this view doesn't have an ID yet, we don't have a cache key, so bail here
@@ -1025,7 +1043,7 @@ public class ReactEditText extends AppCompatEditText
       try {
         sb.append(currentText.subSequence(0, currentText.length()));
       } catch (IndexOutOfBoundsException e) {
-        ReactSoftException.logSoftException(TAG, e);
+        ReactSoftExceptionLogger.logSoftException(TAG, e);
       }
     }
 
@@ -1045,6 +1063,10 @@ public class ReactEditText extends AppCompatEditText
     }
 
     TextLayoutManager.setCachedSpannabledForTag(getId(), sb);
+  }
+
+  void setEventDispatcher(@Nullable EventDispatcher eventDispatcher) {
+    mEventDispatcher = eventDispatcher;
   }
 
   /**

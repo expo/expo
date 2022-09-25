@@ -1,0 +1,7 @@
+{
+  "name": "expo-image-manipulator",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modulesClassNames": ["ImageManipulatorModule"]
+  }
+}

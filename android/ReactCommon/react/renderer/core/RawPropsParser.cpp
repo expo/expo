@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -8,6 +8,7 @@
 #include "RawPropsParser.h"
 
 #include <folly/Likely.h>
+#include <react/debug/react_native_assert.h>
 #include <react/renderer/core/RawProps.h>
 
 #include <glog/logging.h>
@@ -32,7 +33,8 @@ RawValue const *RawPropsParser::at(
     // 1))) or n*n - (1/2)(n*(n+1)). If there are 100 props, this will result in
     // 4950 lookups and equality checks on initialization of the parser, which
     // happens exactly once per component.
-    for (int i = 0; i < size_; i++) {
+    size_t size = keys_.size();
+    for (int i = 0; i < size; i++) {
       if (keys_[i] == key) {
         return nullptr;
       }
@@ -40,8 +42,7 @@ RawValue const *RawPropsParser::at(
     // This is not thread-safe part; this happens only during initialization of
     // a `ComponentDescriptor` where it is actually safe.
     keys_.push_back(key);
-    nameToIndex_.insert(key, size_);
-    size_++;
+    nameToIndex_.insert(key, static_cast<RawPropsValueIndex>(size));
     return nullptr;
   }
 
@@ -62,14 +63,14 @@ RawValue const *RawPropsParser::at(
   // the same order every time. This is trivial if you have a simple Props
   // constructor, but difficult or impossible if you have a shared sub-prop
   // Struct that is used by multiple parent Props.
-#ifndef NDEBUG
+#ifdef REACT_NATIVE_DEBUG
   bool resetLoop = false;
 #endif
   do {
     rawProps.keyIndexCursor_++;
 
-    if (UNLIKELY(rawProps.keyIndexCursor_ >= size_)) {
-#ifndef NDEBUG
+    if (UNLIKELY(rawProps.keyIndexCursor_ >= keys_.size())) {
+#ifdef REACT_NATIVE_DEBUG
       if (resetLoop) {
         LOG(ERROR) << "Looked up RawProps key that does not exist: "
                    << (std::string)key;
@@ -92,10 +93,11 @@ void RawPropsParser::postPrepare() noexcept {
 }
 
 void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
-  rawProps.keyIndexToValueIndex_.resize(size_, kRawPropsValueIndexEmpty);
+  const size_t keyCount = keys_.size();
+  rawProps.keyIndexToValueIndex_.resize(keyCount, kRawPropsValueIndexEmpty);
 
   // Resetting the cursor, the next increment will give `0`.
-  rawProps.keyIndexCursor_ = size_ - 1;
+  rawProps.keyIndexCursor_ = static_cast<int>(keyCount - 1);
 
   switch (rawProps.mode_) {
     case RawProps::Mode::Empty:
@@ -106,20 +108,21 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
       if (!rawProps.value_.isObject()) {
         LOG(ERROR) << "Preparse props: rawProps value is not object";
       }
-      assert(rawProps.value_.isObject());
+      react_native_assert(rawProps.value_.isObject());
       auto object = rawProps.value_.asObject(runtime);
 
       auto names = object.getPropertyNames(runtime);
       auto count = names.size(runtime);
       auto valueIndex = RawPropsValueIndex{0};
 
-      for (auto i = 0; i < count; i++) {
+      for (size_t i = 0; i < count; i++) {
         auto nameValue = names.getValueAtIndex(runtime, i).getString(runtime);
         auto value = object.getProperty(runtime, nameValue);
 
         auto name = nameValue.utf8(runtime);
 
-        auto keyIndex = nameToIndex_.at(name.data(), name.size());
+        auto keyIndex = nameToIndex_.at(
+            name.data(), static_cast<RawPropsPropNameLength>(name.size()));
         if (keyIndex == kRawPropsValueIndexEmpty) {
           continue;
         }
@@ -140,7 +143,8 @@ void RawPropsParser::preparse(RawProps const &rawProps) const noexcept {
       for (auto const &pair : dynamic.items()) {
         auto name = pair.first.getString();
 
-        auto keyIndex = nameToIndex_.at(name.data(), name.size());
+        auto keyIndex = nameToIndex_.at(
+            name.data(), static_cast<RawPropsPropNameLength>(name.size()));
         if (keyIndex == kRawPropsValueIndexEmpty) {
           continue;
         }

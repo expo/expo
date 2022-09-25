@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-orientation",
-  "version": "4.0.1",
+  "version": "4.3.0",
   "description": "Expo universal module for managing device's screen orientation",
   "main": "build/ScreenOrientation.js",
   "types": "build/ScreenOrientation.d.ts",
@@ -34,9 +34,6 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/screen-orientation/",
   "jest": {
     "preset": "expo-module-scripts"
-  },
-  "dependencies": {
-    "@expo/config-plugins": "^4.0.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^2.0.0"

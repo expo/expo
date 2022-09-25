@@ -53,6 +53,13 @@ export declare type LocalAuthenticationOptions = {
      */
     disableDeviceFallback?: boolean;
     /**
+     * Sets a hint to the system for whether to require user confirmation after authentication.
+     * This may be ignored by the system if the user has disabled implicit authentication in Settings
+     * or if it does not apply to a particular biometric modality. Defaults to `true`.
+     * @platform android
+     */
+    requireConfirmation?: boolean;
+    /**
      * Allows to customize the default `Use Passcode` label shown after several failed
      * authentication attempts. Setting this option to an empty string disables this button from
      * showing in the prompt.
@@ -60,3 +67,4 @@ export declare type LocalAuthenticationOptions = {
      */
     fallbackLabel?: string;
 };
+//# sourceMappingURL=LocalAuthentication.types.d.ts.map

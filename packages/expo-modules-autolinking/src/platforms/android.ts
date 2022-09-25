@@ -2,13 +2,13 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { ModuleDescriptor, PackageRevision } from '../types';
+import { ModuleDescriptorAndroid, PackageRevision } from '../types';
 
 /**
  * Generates Java file that contains all autolinked packages.
  */
 export async function generatePackageListAsync(
-  modules: ModuleDescriptor[],
+  modules: ModuleDescriptorAndroid[],
   targetPath: string,
   namespace: string
 ): Promise<void> {
@@ -16,10 +16,24 @@ export async function generatePackageListAsync(
   await fs.outputFile(targetPath, generatedFileContent);
 }
 
+async function findGradleFilesAsync(revision: PackageRevision): Promise<string[]> {
+  const configGradlePaths = revision.config?.androidGradlePaths();
+  if (configGradlePaths && configGradlePaths.length) {
+    return configGradlePaths;
+  }
+
+  const buildGradleFiles = await glob('*/build.gradle', {
+    cwd: revision.path,
+    ignore: ['**/node_modules/**'],
+  });
+
+  return buildGradleFiles;
+}
+
 export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision
-): Promise<ModuleDescriptor | null> {
+): Promise<ModuleDescriptorAndroid | null> {
   // TODO: Relative source dir should be configurable through the module config.
 
   // Don't link itself... :D
@@ -27,22 +41,27 @@ export async function resolveModuleAsync(
     return null;
   }
 
-  const [buildGradleFile] = await glob('*/build.gradle', {
-    cwd: revision.path,
-    ignore: ['**/node_modules/**'],
-  });
-
+  const buildGradleFiles = await findGradleFilesAsync(revision);
   // Just in case where the module doesn't have its own `build.gradle`.
-  if (!buildGradleFile) {
+  if (!buildGradleFiles.length) {
     return null;
   }
 
-  const sourceDir = path.dirname(path.join(revision.path, buildGradleFile));
+  const projects = buildGradleFiles.map((buildGradleFile) => {
+    const gradleFilePath = path.join(revision.path, buildGradleFile);
+    return {
+      name: convertPackageNameToProjectName(
+        packageName,
+        path.relative(revision.path, gradleFilePath)
+      ),
+      sourceDir: path.dirname(gradleFilePath),
+    };
+  });
 
   return {
-    projectName: convertPackageNameToProjectName(packageName),
-    sourceDir,
-    modulesClassNames: revision.config?.androidModulesClassNames(),
+    packageName,
+    projects,
+    modules: revision.config?.androidModules() ?? [],
   };
 }
 
@@ -50,7 +69,7 @@ export async function resolveModuleAsync(
  * Generates the string to put into the generated package list.
  */
 async function generatePackageListFileContentAsync(
-  modules: ModuleDescriptor[],
+  modules: ModuleDescriptorAndroid[],
   namespace: string
 ): Promise<string> {
   // TODO: Instead of ignoring `expo` here, make the package class paths configurable from `expo-module.config.json`.
@@ -91,23 +110,30 @@ ${packagesClasses.map((packageClass) => `      new ${packageClass}()`).join(',\n
 `;
 }
 
-function findAndroidModules(modules: ModuleDescriptor[]): string[] {
-  const modulesToProvide = modules.filter((module) => module.modulesClassNames.length > 0);
-  const classNames = [].concat(...modulesToProvide.map((module) => module.modulesClassNames));
+function findAndroidModules(modules: ModuleDescriptorAndroid[]): string[] {
+  const modulesToProvide = modules.filter((module) => module.modules.length > 0);
+  const classNames = ([] as string[]).concat(...modulesToProvide.map((module) => module.modules));
   return classNames;
 }
 
-async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<string[]> {
+async function findAndroidPackagesAsync(modules: ModuleDescriptorAndroid[]): Promise<string[]> {
   const classes: string[] = [];
 
+  const flattenedSourceDirList: string[] = [];
+  for (const module of modules) {
+    for (const project of module.projects) {
+      flattenedSourceDirList.push(project.sourceDir);
+    }
+  }
+
   await Promise.all(
-    modules.map(async (module) => {
+    flattenedSourceDirList.map(async (sourceDir) => {
       const files = await glob('**/*Package.{java,kt}', {
-        cwd: module.sourceDir,
+        cwd: sourceDir,
       });
 
       for (const file of files) {
-        const fileContent = await fs.readFile(path.join(module.sourceDir, file), 'utf8');
+        const fileContent = await fs.readFile(path.join(sourceDir, file), 'utf8');
 
         const packageRegex = (() => {
           if (process.env.EXPO_SHOULD_USE_LEGACY_PACKAGE_INTERFACE) {
@@ -135,9 +161,21 @@ async function findAndroidPackagesAsync(modules: ModuleDescriptor[]): Promise<st
 }
 
 /**
- * Converts the package name to Android's project name.
- * Example: `@unimodules/core` → `unimodules-core`
+ * Converts the package name and gradle file path to Android's project name.
+ *   `$` to indicate subprojects
+ *   `/` path will transform as `-`
+ *
+ * Example: `@expo/example` + `android/build.gradle` → `expo-example`
+ *
+ * Example: multiple projects
+ *   - `expo-test` + `android/build.gradle` → `react-native-third-party`
+ *   - `expo-test` + `subproject/build.gradle` → `react-native-third-party$subproject`
  */
-function convertPackageNameToProjectName(projectName: string): string {
-  return projectName.replace(/^@/g, '').replace(/\W+/g, '-');
+export function convertPackageNameToProjectName(
+  packageName: string,
+  buildGradleFile: string
+): string {
+  const name = packageName.replace(/^@/g, '').replace(/\W+/g, '-');
+  const baseDir = path.dirname(buildGradleFile).replace(/\//g, '-');
+  return baseDir === 'android' ? name : `${name}$${baseDir}`;
 }

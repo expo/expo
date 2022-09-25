@@ -3,6 +3,9 @@ title: Submitting to the Apple App Store
 sidebar_title: Submitting to Apple
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
 This guide outlines how to submit your app to the Apple App Store from your own computer and from CI.
 
 ## Prerequisites
@@ -12,7 +15,7 @@ This guide outlines how to submit your app to the Apple App Store from your own 
 
 ## 1. Build a standalone app
 
-You'll need a native app binary signed for store submission. You can either use [EAS Build](introduction.md) or do it on your own.
+You'll need a native app binary signed for store submission. You can either use [EAS Build](/build/introduction.md) or do it on your own.
 
 ## 2. Start the submission
 
@@ -38,14 +41,13 @@ The command will perform the following steps:
   > If you already have an App Store Connect app, this step can be skipped by providing the `ascAppId` in the submit profile. The [ASC App ID](https://expo.fyi/asc-app-id) can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
 
 - Ensure you have the proper credentials set up. If none can be found, you can let EAS CLI set some up for you.
-  <details><summary><h4>🔐 Do you want to use your own credentials?</h4></summary>
-  <p>
+  <Collapsible summary="🔐 Do you want to use your own credentials?">
 
   **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
 
   **App Specific Password:** Provide your [password](https://expo.fyi/apple-app-specific-password) and Apple ID Username by passing them in with the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable and `appleId` field in **eas.json**, respectively.
-  </p>
-  </details>
+
+  </Collapsible>
 
 - Ask for which binary to submit. You can select one of the following:
 
@@ -54,7 +56,7 @@ The command will perform the following steps:
   - Path to an **.ipa** archive on your local filesystem.
   - URL to the app archive.
 
-  > This step can be skipped if one of the following parameters is provided: `--latest`, `--id`, `--path`, or `--url`.
+  > This step can be skipped if one of the following CLI parameters is provided: `--latest`, `--id`, `--path`, or `--url`.
 
 - A summary of the provided configuration is displayed and the submission process begins. The submission progress is displayed on the screen.
 - Your build should now be visible on [App Store Connect](https://appstoreconnect.apple.com). If something goes wrong, an appropriate message is displayed on the screen.
@@ -67,23 +69,53 @@ You must do the following:
 
 - Provide the archive source (`--latest`, `--id`, `--path`, or `--url`).
 - Make sure that the iOS Bundle Identifier is present in your [app config file](/workflow/configuration.md).
-- Set the ASC App ID (`ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
+- Set the ASC App ID (`ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple Developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
 - Set up your App Store Connect API Key with EAS Servers. You can check the state of your credentials by running `eas credentials` or by running `eas submit -p ios` interactively.
-  <details><summary><h4>🔐 Do you want to use your own credentials?</h4></summary>
-  <p>
+  <Collapsible summary="🔐 Do you want to use your own credentials?">
 
   **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
 
   **App Specific Password:** Provide your [password](https://expo.fyi/apple-app-specific-password) and Apple ID Username by passing them in with the `EXPO_APPLE_APP_SPECIFIC_PASSWORD` environment variable and `appleId` field in **eas.json**, respectively.
-  </p>
-  </details>
+
+  </Collapsible>
 
 Example usage:
 
-```sh
-eas submit -p ios --latest --profile foobar
-```
+<Terminal cmd={['$ eas submit -p ios --latest --profile foobar']} copyCmd="eas submit -p ios --latest --profile foobar" />
+
+## Manual submissions
+
+If you ever need to submit your build without going through EAS Submit, for example if the service is temporarily unavailable for maintenance, you can upload to the Apple App Store manually from a macOS devices.
+
+<Collapsible summary="How to upload to the Apple App Store manually from a macOS device">
+
+### Creating an entry on App Store Connect
+
+Start by creating an app profile in App Store Connect, if you haven't already:
+
+1. Go to [App Store Connect][asc] and sign in. Make sure you've accepted any legal notices or terms at the top of the page.
+2. Click the blue plus button by the Apps header, then click **New App**.
+3. Add your app's name, language, bundle identifier, and SKU (this isn't seen by end users, it can be any unique string. A common choice is your app's bundle identifier, e.g. "com.company.my-app").
+4. Click **Create**. If this succeeds, then you've created your application record.
+
+### Uploading with Transporter
+
+Finally, you need to upload the IPA to the Apple App Store.
+
+1. Download [**Transporter** from the App Store](https://apps.apple.com/app/transporter/id1450874784).
+2. Sign in with your Apple ID.
+3. Add the build either by dragging the IPA file directly into the Transporter window or by selecting it from the file dialog opened with **+** or **Add App** button.
+4. Submit it by clicking the **Deliver** button.
+
+This process can take a few minutes, then another 10-15 minutes of processing on Apple's servers. Afterward, you can check the status of your binary in [App Store Connect][asc]:
+
+1. Visit [App Store Connect][asc], select **My Apps**, and click on the app entry you created earlier.
+2. Scroll down to the **Build** section and select your newly uploaded binary.
+
+</Collapsible>
 
 ## Automating submissions
 
 To learn how to automatically submit your app after a successful build, refer to the ["Automating submissions" guide](/build/automating-submissions.md).
+
+[asc]: https://appstoreconnect.apple.com/apps

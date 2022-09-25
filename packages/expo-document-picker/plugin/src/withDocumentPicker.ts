@@ -1,15 +1,7 @@
-import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
+import { createRunOncePlugin } from '@expo/config-plugins';
 
-import { withDocumentPickerIOS, IosProps } from './withDocumentPickerIOS';
+import { withDocumentPickerIOS } from './withDocumentPickerIOS';
 
 const pkg = require('expo-document-picker/package.json');
 
-const withDocumentPicker: ConfigPlugin<IosProps | void> = (
-  config,
-  { appleTeamId = process.env.EXPO_APPLE_TEAM_ID } = {}
-) => {
-  config = withDocumentPickerIOS(config, { appleTeamId });
-  return config;
-};
-
-export default createRunOncePlugin(withDocumentPicker, pkg.name, pkg.version);
+export default createRunOncePlugin(withDocumentPickerIOS, pkg.name, pkg.version);

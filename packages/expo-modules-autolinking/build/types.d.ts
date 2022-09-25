@@ -6,6 +6,7 @@ export interface SearchOptions {
     exclude?: string[] | null;
     platform: SupportedPlatform;
     silent?: boolean;
+    nativeModulesDir?: string | null;
     flags?: Record<string, any>;
 }
 export interface ResolveOptions extends SearchOptions {
@@ -16,6 +17,10 @@ export interface GenerateOptions extends ResolveOptions {
     namespace?: string;
     empty?: boolean;
 }
+export interface PatchReactImportsOptions {
+    podsRoot: string;
+    dryRun: boolean;
+}
 export declare type PackageRevision = {
     path: string;
     version: string;
@@ -25,7 +30,30 @@ export declare type PackageRevision = {
 export declare type SearchResults = {
     [moduleName: string]: PackageRevision;
 };
-export declare type ModuleDescriptor = Record<string, any>;
+export interface ModuleAndroidProjectInfo {
+    name: string;
+    sourceDir: string;
+}
+export interface ModuleDescriptorAndroid {
+    packageName: string;
+    projects: ModuleAndroidProjectInfo[];
+    modules: string[];
+}
+export interface ModuleIosPodspecInfo {
+    podName: string;
+    podspecDir: string;
+}
+export interface ModuleDescriptorIos {
+    packageName: string;
+    pods: ModuleIosPodspecInfo[];
+    flags: Record<string, any> | undefined;
+    swiftModuleNames: string[];
+    modules: string[];
+    appDelegateSubscribers: string[];
+    reactDelegateHandlers: string[];
+    debugOnly: boolean;
+}
+export declare type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
 /**
  * Represents a raw config from `expo-module.json`.
  */
@@ -41,11 +69,35 @@ export interface RawExpoModuleConfig {
         /**
          * Names of Swift native modules classes to put to the generated modules provider file.
          */
+        modules?: string[];
+        /**
+         * Names of Swift native modules classes to put to the generated modules provider file.
+         * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
+         */
         modulesClassNames?: string[];
         /**
          * Names of Swift classes that hooks into `ExpoAppDelegate` to receive AppDelegate life-cycle events.
          */
         appDelegateSubscribers?: string[];
+        /**
+         * Names of Swift classes that implement `ExpoReactDelegateHandler` to hook React instance creation.
+         */
+        reactDelegateHandlers?: string[];
+        /**
+         * Podspec relative path.
+         * To have multiple podspecs, string array type is also supported.
+         */
+        podspecPath?: string | string[];
+        /**
+         * Swift product module name. If empty, the pod name is used for Swift imports.
+         * To have multiple modules, string array is also supported.
+         */
+        swiftModuleName?: string | string[];
+        /**
+         * Whether this module will be added only to the debug configuration.
+         * Defaults to false.
+         */
+        debugOnly?: boolean;
     };
     /**
      * Android-specific config.
@@ -54,6 +106,16 @@ export interface RawExpoModuleConfig {
         /**
          * Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
          */
+        modules?: string[];
+        /**
+         * Full names (package + class name) of Kotlin native modules classes to put to the generated package provider file.
+         * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
+         */
         modulesClassNames?: string[];
+        /**
+         * build.gradle relative path.
+         * To have multiple build.gradle projects, string array type is also supported.
+         */
+        gradlePath?: string | string[];
     };
 }

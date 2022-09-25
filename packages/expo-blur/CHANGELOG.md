@@ -4,11 +4,34 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.2.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Fixed the component not rendering correctly when the border radius style is set. ([#16671](https://github.com/expo/expo/pull/16671) by [@tsapeta](https://github.com/tsapeta))
+
+## 11.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
+- On iOS replaced non-working `alpha`-based blur mechanism with a new one basing on `UIViewPropertyAnimator`. ([#14946](https://github.com/expo/expo/pull/14946) by [@bbarthec](https://github.com/bbarthec))
+- Renamed `BlurProps` to `BlurViewProps` to align with React Native's types naming convention. ([#14946](https://github.com/expo/expo/pull/14946) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- On iOS fixed `intensity` property not blurring text content properly. ([#14946](https://github.com/expo/expo/pull/14946) by [@bbarthec](https://github.com/bbarthec))
 
 ## 10.0.1 — 2021-10-01
 

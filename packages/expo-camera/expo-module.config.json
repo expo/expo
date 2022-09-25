@@ -1,0 +1,10 @@
+{
+  "name": "expo-camera",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["CameraViewModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.camera.CameraViewModule"]
+  }
+}

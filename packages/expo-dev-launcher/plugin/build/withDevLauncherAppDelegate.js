@@ -19,12 +19,16 @@ const DEV_LAUNCHER_APP_DELEGATE_SOURCE_FOR_URL = `  #if defined(EX_DEV_LAUNCHER_
   #else
   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
   #endif`;
+const DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK_TO_REMOVE = new RegExp('return (' +
+    escapeRegExpCharacters('[super application:application openURL:url options:options] || ') +
+    ')?' +
+    escapeRegExpCharacters('[RCTLinkingManager application:application openURL:url options:options];'));
 const DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK = `#if defined(EX_DEV_LAUNCHER_ENABLED)
   if ([EXDevLauncherController.sharedInstance onDeepLink:url options:options]) {
     return true;
   }
   #endif
-  return [RCTLinkingManager application:application openURL:url options:options];`;
+  $&`;
 const DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT = `
 #if defined(EX_DEV_LAUNCHER_ENABLED)
 #include <EXDevLauncher/EXDevLauncherController.h>
@@ -98,6 +102,16 @@ const DEV_LAUNCHER_INIT_TO_REMOVE = new RegExp(escapeRegExpCharacters(`RCTBridge
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];`), 'm');
+const DEV_LAUNCHER_INIT_TO_REMOVE_SDK_44 = new RegExp(escapeRegExpCharacters(`RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  rootView.backgroundColor = [UIColor whiteColor];
+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
+  UIViewController *rootViewController = `) +
+    `([^;]+)` +
+    escapeRegExpCharacters(`;
+  rootViewController.view = rootView;
+  self.window.rootViewController = rootViewController;
+  [self.window makeKeyAndVisible];`), 'm');
 const DEV_LAUNCHER_NEW_INIT = `self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
 #if defined(EX_DEV_LAUNCHER_ENABLED)
   EXDevLauncherController *controller = [EXDevLauncherController sharedInstance];
@@ -139,13 +153,27 @@ const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION = (viewContro
     rootView.backgroundColor = [UIColor whiteColor];
   }
 
-  UIViewController *rootViewController = ${viewControllerInit !== null && viewControllerInit !== void 0 ? viewControllerInit : '[UIViewController new]'};
+  UIViewController *rootViewController = ${viewControllerInit ?? '[UIViewController new]'};
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
 
   return bridge;
 }
+`;
+const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_SDK_44 = `
+- (RCTBridge *)initializeReactNativeApp:(NSDictionary *)launchOptions
+{
+  RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
+  RCTRootView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
+  rootView.backgroundColor = [UIColor whiteColor];
+  UIViewController *rootViewController = [self.reactDelegate createRootViewController];
+  rootViewController.view = rootView;
+  self.window.rootViewController = rootViewController;
+  [self.window makeKeyAndVisible];
+
+  return bridge;
+ }
 `;
 function addImports(appDelegate, shouldAddUpdatesIntegration) {
     if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_IOS_IMPORT) &&
@@ -168,7 +196,7 @@ function removeDevMenuInit(appDelegate) {
 }
 function addDeepLinkHandler(appDelegate) {
     if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK)) {
-        appDelegate = appDelegate.replace('return [RCTLinkingManager application:application openURL:url options:options];', DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK);
+        appDelegate = appDelegate.replace(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK_TO_REMOVE, DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK);
     }
     return appDelegate;
 }
@@ -202,18 +230,29 @@ function modifyLegacyAppDelegate(appDelegate, expoUpdatesVersion = null) {
 exports.modifyLegacyAppDelegate = modifyLegacyAppDelegate;
 function modifyAppDelegate(appDelegate, expoUpdatesVersion = null) {
     const shouldAddUpdatesIntegration = expoUpdatesVersion != null && semver_1.default.gt(expoUpdatesVersion, '0.6.0');
-    if (!DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_REGEX.test(appDelegate)) {
-        if (DEV_LAUNCHER_INIT_TO_REMOVE.test(appDelegate)) {
+    if (!DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_REGEX.test(appDelegate) &&
+        !appDelegate.includes(DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_SDK_44)) {
+        let initToRemove;
+        let shouldAddSDK44Init = false;
+        if (DEV_LAUNCHER_INIT_TO_REMOVE_SDK_44.test(appDelegate)) {
+            initToRemove = DEV_LAUNCHER_INIT_TO_REMOVE_SDK_44;
+            shouldAddSDK44Init = true;
+        }
+        else if (DEV_LAUNCHER_INIT_TO_REMOVE.test(appDelegate)) {
+            initToRemove = DEV_LAUNCHER_INIT_TO_REMOVE;
+        }
+        if (initToRemove) {
             // UIViewController can be initialized differently depending on whether expo-screen-orientation is installed,
             // so we need to preserve whatever is there already.
             let viewControllerInit;
-            appDelegate = appDelegate.replace(DEV_LAUNCHER_INIT_TO_REMOVE, (match, p1) => {
+            appDelegate = appDelegate.replace(initToRemove, (match, p1) => {
                 viewControllerInit = p1;
                 return DEV_LAUNCHER_NEW_INIT;
             });
-            appDelegate = (0, utils_1.addLines)(appDelegate, '@implementation AppDelegate', 1, [
-                DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION(viewControllerInit),
-            ]);
+            const initToAdd = shouldAddSDK44Init
+                ? DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION_SDK_44
+                : DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION(viewControllerInit);
+            appDelegate = (0, utils_1.addLines)(appDelegate, '@implementation AppDelegate', 1, [initToAdd]);
         }
         else {
             config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Failed to modify AppDelegate init function. 
@@ -228,9 +267,7 @@ See the expo-dev-client installation instructions to modify your AppDelegate man
     if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE)) {
         appDelegate += DEV_LAUNCHER_APP_DELEGATE_CONTROLLER_DELEGATE;
     }
-    if (!appDelegate.includes(DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK)) {
-        appDelegate = appDelegate.replace('return [RCTLinkingManager application:application openURL:url options:options];', DEV_LAUNCHER_APP_DELEGATE_ON_DEEP_LINK);
-    }
+    appDelegate = addDeepLinkHandler(appDelegate);
     appDelegate = changeDebugURL(appDelegate);
     appDelegate = removeDevMenuInit(appDelegate);
     return appDelegate;

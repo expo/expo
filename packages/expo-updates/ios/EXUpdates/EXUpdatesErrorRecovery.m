@@ -6,6 +6,12 @@
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, EXUpdatesErrorRecoveryTask) {
@@ -33,6 +39,8 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
 
 @property (nonatomic, copy) RCTFatalHandler previousFatalErrorHandler;
 @property (nonatomic, copy) RCTFatalExceptionHandler previousFatalExceptionHandler;
+
+@property (nonatomic, strong) EXUpdatesLogger *logger;
 
 @end
 
@@ -64,6 +72,7 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
     _diskWriteQueue = diskWriteQueue;
     _remoteLoadTimeout = remoteLoadTimeout;
     _encounteredErrors = [NSMutableArray new];
+    _logger = [EXUpdatesLogger new];
   }
   return self;
 }
@@ -126,15 +135,18 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
   [_pipeline removeObjectAtIndex:0];
   switch ((EXUpdatesErrorRecoveryTask)nextTask.integerValue) {
     case EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate:
+      [self->_logger info:@"EXUpdatesErrorRecovery: attempting to fetch a new update, waiting"];
       [self _waitForRemoteLoaderToFinish];
       break;
     // EXUpdatesErrorRecoveryTaskLaunchNew is called only after a new update is downloaded
     // and added to the cache, so it is equivalent to EXUpdatesErrorRecoveryTaskLaunchCached
     case EXUpdatesErrorRecoveryTaskLaunchNew:
     case EXUpdatesErrorRecoveryTaskLaunchCached:
+      [self->_logger info:@"EXUpdatesErrorRecovery: launching a new or cached update"];
       [self _tryRelaunchFromCache];
       break;
     case EXUpdatesErrorRecoveryTaskCrash:
+      [self->_logger error:@"EXUpdatesErrorRecovery: could not recover from error, crashing" code:EXUpdatesErrorCodeUpdateFailedToLoad];
       [self _crash];
       break;
     default:
@@ -145,8 +157,14 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
 - (void)_waitForRemoteLoaderToFinish
 {
   dispatch_assert_queue(_errorRecoveryQueue);
-  if (_delegate.remoteLoadStatus == EXUpdatesRemoteLoadStatusLoading) {
+  if (_delegate.remoteLoadStatus == EXUpdatesRemoteLoadStatusNewUpdateLoaded) {
+    [self _runNextTask];
+  } else if (_delegate.config.checkOnLaunch != EXUpdatesCheckAutomaticallyConfigNever ||
+             _delegate.remoteLoadStatus == EXUpdatesRemoteLoadStatusLoading) {
     _isWaitingForRemoteUpdate = YES;
+    if (_delegate.remoteLoadStatus != EXUpdatesRemoteLoadStatusLoading) {
+      [_delegate loadRemoteUpdate];
+    }
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, _remoteLoadTimeout * NSEC_PER_MSEC), _errorRecoveryQueue, ^{
       if (!self->_isWaitingForRemoteUpdate) {
         return;
@@ -156,11 +174,6 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
       [self _runNextTask];
     });
     return;
-  } else if (_delegate.remoteLoadStatus == EXUpdatesRemoteLoadStatusNewUpdateLoaded) {
-    [self _runNextTask];
-  } else if (_delegate.config.checkOnLaunch != EXUpdatesCheckAutomaticallyConfigNever) {
-    _isWaitingForRemoteUpdate = YES;
-    [_delegate loadRemoteUpdate];
   } else {
     // there's no remote update, so move to the next step in the pipeline
     [self->_pipeline removeObject:@(EXUpdatesErrorRecoveryTaskLaunchNew)];
@@ -252,10 +265,9 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
       return obj.integerValue == EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate || obj.integerValue == EXUpdatesErrorRecoveryTaskCrash;
     }]].mutableCopy;
   });
-  // wait 10s before unsetting error handlers; even though we won't try to
-  // relaunch if our handlers are triggered after now, we still want to give
-  // the EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate task a reasonable
-  // window of time to start and check for a new update is there is one
+  // wait 10s before unsetting error handlers; even though we won't try to relaunch if our handlers
+  // are triggered after now, we still want to give the app a reasonable window of time to start the
+  // EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate task and check for a new update is there is one
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC), _errorRecoveryQueue, ^{
     [self _unsetRCTErrorHandlers];
   });
@@ -322,6 +334,8 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
       return;
     }
 
+    [self->_logger error:[NSString stringWithFormat:@"EXUpdatesErrorRecovery fatal exception: %@", serializedError]
+                    code:EXUpdatesErrorCodeJsRuntimeError];
     NSData *data = [serializedError dataUsingEncoding:NSUTF8StringEncoding];
     NSString *errorLogFilePath = [[self class] _errorLogFilePath];
     if ([NSFileManager.defaultManager fileExistsAtPath:errorLogFilePath]) {

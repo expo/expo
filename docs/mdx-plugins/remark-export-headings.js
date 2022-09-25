@@ -1,8 +1,9 @@
-const visit = require('unist-util-visit');
+import { parse } from 'acorn';
+import { visit } from 'unist-util-visit';
 
 /**
- * @typedef {import('mdast').Root} Root - https://github.com/syntax-tree/mdast#root
- * @typedef {import('mdast').Heading} Heading - https://github.com/syntax-tree/mdast#heading
+ * @typedef {import('@types/mdast').Root} Root - https://github.com/syntax-tree/mdast#root
+ * @typedef {import('@types/mdast').Heading} Heading - https://github.com/syntax-tree/mdast#heading
  */
 
 /**
@@ -13,14 +14,14 @@ const visit = require('unist-util-visit');
  * @param {object} options
  * @param {string} [options.exportName="headings"]
  */
-module.exports = function remarkExportHeadings(options = {}) {
+export default function remarkExportHeadings(options = {}) {
   const { exportName = 'headings' } = options;
 
   /** @param {Root} tree */
   return tree => {
     const headings = [];
 
-    /** @param {Heading} node -  */
+    /** @param {Heading} node */
     const visitor = node => {
       if (node.children.length > 0) {
         headings.push({
@@ -35,8 +36,13 @@ module.exports = function remarkExportHeadings(options = {}) {
     visit(tree, 'heading', visitor);
 
     tree.children.push({
-      type: 'export',
-      value: `export const ${exportName} = ${JSON.stringify(headings)};`,
+      type: 'mdxjsEsm',
+      data: {
+        estree: parse(`export const ${exportName} = ${JSON.stringify(headings)};`, {
+          sourceType: 'module',
+          ecmaVersion: 2022,
+        }),
+      },
     });
   };
-};
+}

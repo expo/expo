@@ -1,12 +1,13 @@
 ---
 title: ImagePicker
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-image-picker'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-image-picker'
+packageName: 'expo-image-picker'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video';
 import SnackInline from '~/components/plugins/SnackInline';
@@ -19,17 +20,13 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-image-picker" />
+<APIInstallSection />
 
 ## Configuration in app.json / app.config.js
 
-<!-- update library name here -->
-
-You can configure `expo-image-picker` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-image-picker` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
-
-<!-- this is a standard type of message that will apply to many libraries. if there are no usage description keys or permissions, then you may want to say something else here -->
 
 You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.md#infoplist) and [`android.permissions`](../config/app.md#permissions).
 
@@ -37,15 +34,11 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <ConfigReactNative>
 
-<!-- update library name and link here -->
-
-Learn how to configure the native projects in the [installation instructions in the `expo-image-picker` repository](https://github.com/expo/expo/tree/master/packages/expo-image-picker#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-image-picker` repository](https://github.com/expo/expo/tree/main/packages/expo-image-picker#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 
 <ConfigPluginExample>
-
-<!-- add some example usage of the plugin. you don't need to provide every option -->
 
 ```json
 {
@@ -63,8 +56,6 @@ Learn how to configure the native projects in the [installation instructions in 
 ```
 
 </ConfigPluginExample>
-
-<!-- look in the plugin directory for the library and see what the options are, then fill in the below table as needed. here's an example plugin: https://git.io/JKlrN -->
 
 <ConfigPluginProperties properties={[
 { name: 'photosPermission', platform: 'ios', description: 'A string to set the NSPhotoLibraryUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your photos"' },
@@ -84,18 +75,8 @@ import * as ImagePicker from 'expo-image-picker';
 export default function ImagePickerExample() {
   const [image, setImage] = useState(null);
 
-  useEffect(() => {
-    (async () => {
-      if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status !== 'granted') {
-          alert('Sorry, we need camera roll permissions to make this work!');
-        }
-      }
-    })();
-  }, []);
-
   const pickImage = async () => {
+    // No permissions request is necessary for launching the image library
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -132,11 +113,11 @@ When you run this example and pick an image, you will see the image that you pic
 }
 ```
 
-## Using ImagePicker with AWS S3
+### Using with AWS S3
 
 Please refer to the [with-aws-storage-upload example](https://github.com/expo/examples/tree/master/with-aws-storage-upload). Follow [Amplify docs](https://docs.amplify.aws/) to set your project up correctly.
 
-## Using ImagePicker with Firebase
+### Using with Firebase
 
 Please refer to the [with-firebase-storage-upload example](https://github.com/expo/examples/tree/master/with-firebase-storage-upload). Make sure you follow the ["Using Firebase"](/guides/using-firebase/) docs to set your project up correctly.
 
@@ -152,25 +133,12 @@ import * as ImagePicker from 'expo-image-picker';
 
 ### Android
 
-<!-- look in the library AndroidManifest.xml and the config plugin to see which permissions are added -->
-
 The following permissions are added automatically through the library **AndroidManifest.xml**.
 
 <AndroidPermissions permissions={['CAMERA', 'READ_EXTERNAL_STORAGE', 'WRITE_EXTERNAL_STORAGE']} />
 
-<!-- if no permissions required, just use this text: -->
-
-<!-- _No permissions required_. -->
-
 ### iOS
-
-<!-- look in the README and config plugin to see what usage descriptions required, add that here -->
 
 The following usage description keys are used by the APIs in this library.
 
 <IOSPermissions permissions={[ 'NSMicrophoneUsageDescription', 'NSPhotoLibraryUsageDescription', 'NSCameraUsageDescription' ]} />
-
-<!-- if no permissions required, just use this text: -->
-
-<!-- _No usage description required_. -->
-

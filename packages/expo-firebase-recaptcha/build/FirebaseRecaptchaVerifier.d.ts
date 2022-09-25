@@ -5,3 +5,4 @@ export default class FirebaseRecaptchaVerifier implements FirebaseAuthApplicatio
     get type(): string;
     verify(): Promise<string>;
 }
+//# sourceMappingURL=FirebaseRecaptchaVerifier.d.ts.map

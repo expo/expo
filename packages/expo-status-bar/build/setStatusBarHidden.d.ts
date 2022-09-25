@@ -5,3 +5,4 @@ import { StatusBarAnimation } from './StatusBar.types';
  * @param animation Animation to use when toggling hidden, defaults to `'none'`.
  */
 export default function setStatusBarHidden(hidden: boolean, animation: StatusBarAnimation): void;
+//# sourceMappingURL=setStatusBarHidden.d.ts.map

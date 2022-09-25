@@ -1,15 +1,14 @@
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class ConstantsSpec: QuickSpec {
+class ConstantsSpec: ExpoSpec {
   override func spec() {
     let appContext = AppContext()
 
     it("takes closure resolving to dictionary") {
       let holder = mockModuleHolder(appContext) {
-        $0.constants {
+        Constants {
           return ["test": 123]
         }
       }
@@ -18,15 +17,15 @@ class ConstantsSpec: QuickSpec {
 
     it("takes the dictionary") {
       let holder = mockModuleHolder(appContext) {
-        $0.constants(["test": 123])
+        Constants(["test": 123])
       }
       expect(holder.getConstants()["test"] as? Int) == 123
     }
 
     it("merges multiple constants definitions") {
       let holder = mockModuleHolder(appContext) {
-        $0.constants(["test": 456, "test2": 789])
-        $0.constants(["test": 123])
+        Constants(["test": 456, "test2": 789])
+        Constants(["test": 123])
       }
       let consts = holder.getConstants()
       expect(consts["test"] as? Int) == 123

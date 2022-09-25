@@ -1,12 +1,11 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import CoreGraphics
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class ConvertiblesSpec: QuickSpec {
+class ConvertiblesSpec: ExpoSpec {
   override func spec() {
     describe("URL") {
       it("converts from remote url") {
@@ -37,7 +36,7 @@ class ConvertiblesSpec: QuickSpec {
 
       it("throws when no string") {
         expect { try URL.convert(from: 29.5) }.to(
-          throwError(errorType: Conversions.ConvertingError<URL>.self)
+          throwError(errorType: Conversions.ConvertingException<URL>.self)
         )
       }
     }
@@ -61,22 +60,22 @@ class ConvertiblesSpec: QuickSpec {
       }
 
       it("throws when array size is unexpected") { // different than two
-        expect { try CGPoint.convert(from: []) }.to(throwError(errorType: Conversions.ConvertingError<CGPoint>.self))
-        expect { try CGPoint.convert(from: [x]) }.to(throwError(errorType: Conversions.ConvertingError<CGPoint>.self))
-        expect { try CGPoint.convert(from: [x, y, x]) }.to(throwError(errorType: Conversions.ConvertingError<CGPoint>.self))
+        expect { try CGPoint.convert(from: []) }.to(throwError(errorType: Conversions.ConvertingException<CGPoint>.self))
+        expect { try CGPoint.convert(from: [x]) }.to(throwError(errorType: Conversions.ConvertingException<CGPoint>.self))
+        expect { try CGPoint.convert(from: [x, y, x]) }.to(throwError(errorType: Conversions.ConvertingException<CGPoint>.self))
       }
 
       it("throws when dict is missing some keys") {
         expect { try CGPoint.convert(from: ["test": x]) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.MissingKeysError<Double>.self))
-          expect(($0 as! CodedError).description) == Conversions.MissingKeysError<Double>(keys: ["x", "y"]).description
+          expect($0).to(beAKindOf(Conversions.MissingKeysException<Double>.self))
+          expect(($0 as! CodedError).description) == Conversions.MissingKeysException<Double>(["x", "y"]).description
         })
       }
 
       it("throws when dict has uncastable keys") {
         expect { try CGPoint.convert(from: ["x": x, "y": "string"]) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.CastingValuesError<Double>.self))
-          expect(($0 as! CodedError).description) == Conversions.CastingValuesError<Double>(keys: ["y"]).description
+          expect($0).to(beAKindOf(Conversions.CastingValuesException<Double>.self))
+          expect(($0 as! CodedError).description) == Conversions.CastingValuesException<Double>(["y"]).description
         })
       }
     }
@@ -100,22 +99,22 @@ class ConvertiblesSpec: QuickSpec {
       }
 
       it("throws when array size is unexpected") { // different than two
-        expect { try CGSize.convert(from: []) }.to(throwError(errorType: Conversions.ConvertingError<CGSize>.self))
-        expect { try CGSize.convert(from: [width]) }.to(throwError(errorType: Conversions.ConvertingError<CGSize>.self))
-        expect { try CGSize.convert(from: [width, height, width]) }.to(throwError(errorType: Conversions.ConvertingError<CGSize>.self))
+        expect { try CGSize.convert(from: []) }.to(throwError(errorType: Conversions.ConvertingException<CGSize>.self))
+        expect { try CGSize.convert(from: [width]) }.to(throwError(errorType: Conversions.ConvertingException<CGSize>.self))
+        expect { try CGSize.convert(from: [width, height, width]) }.to(throwError(errorType: Conversions.ConvertingException<CGSize>.self))
       }
 
       it("throws when dict is missing some keys") {
         expect { try CGSize.convert(from: ["width": width]) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.MissingKeysError<Double>.self))
-          expect(($0 as! CodedError).description) == Conversions.MissingKeysError<Double>(keys: ["height"]).description
+          expect($0).to(beAKindOf(Conversions.MissingKeysException<Double>.self))
+          expect(($0 as! CodedError).description) == Conversions.MissingKeysException<Double>(["height"]).description
         })
       }
 
       it("throws when dict has uncastable keys") {
         expect { try CGSize.convert(from: ["width": "test", "height": height]) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.CastingValuesError<Double>.self))
-          expect(($0 as! CodedError).description) == Conversions.CastingValuesError<Double>(keys: ["width"]).description
+          expect($0).to(beAKindOf(Conversions.CastingValuesException<Double>.self))
+          expect(($0 as! CodedError).description) == Conversions.CastingValuesException<Double>(["width"]).description
         })
       }
     }
@@ -139,22 +138,22 @@ class ConvertiblesSpec: QuickSpec {
       }
 
       it("throws when array size is unexpected") { // different than two
-        expect { try CGVector.convert(from: []) }.to(throwError(errorType: Conversions.ConvertingError<CGVector>.self))
-        expect { try CGVector.convert(from: [dx]) }.to(throwError(errorType: Conversions.ConvertingError<CGVector>.self))
-        expect { try CGVector.convert(from: [dx, dy, dx]) }.to(throwError(errorType: Conversions.ConvertingError<CGVector>.self))
+        expect { try CGVector.convert(from: []) }.to(throwError(errorType: Conversions.ConvertingException<CGVector>.self))
+        expect { try CGVector.convert(from: [dx]) }.to(throwError(errorType: Conversions.ConvertingException<CGVector>.self))
+        expect { try CGVector.convert(from: [dx, dy, dx]) }.to(throwError(errorType: Conversions.ConvertingException<CGVector>.self))
       }
 
       it("throws when dict is missing some keys") {
         expect { try CGVector.convert(from: ["dx": dx]) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.MissingKeysError<Double>.self))
-          expect(($0 as! CodedError).description) == Conversions.MissingKeysError<Double>(keys: ["dy"]).description
+          expect($0).to(beAKindOf(Conversions.MissingKeysException<Double>.self))
+          expect(($0 as! CodedError).description) == Conversions.MissingKeysException<Double>(["dy"]).description
         })
       }
 
       it("throws when dict has uncastable keys") {
         expect { try CGVector.convert(from: ["dx": "dx", "dy": dy]) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.CastingValuesError<Double>.self))
-          expect(($0 as! CodedError).description) == Conversions.CastingValuesError<Double>(keys: ["dx"]).description
+          expect($0).to(beAKindOf(Conversions.CastingValuesException<Double>.self))
+          expect(($0 as! CodedError).description) == Conversions.CastingValuesException<Double>(["dx"]).description
         })
       }
     }
@@ -184,22 +183,22 @@ class ConvertiblesSpec: QuickSpec {
       }
 
       it("throws when array size is unexpected") { // different than four
-        expect { try CGRect.convert(from: [x]) }.to(throwError(errorType: Conversions.ConvertingError<CGRect>.self))
-        expect { try CGRect.convert(from: [x, y]) }.to(throwError(errorType: Conversions.ConvertingError<CGRect>.self))
-        expect { try CGRect.convert(from: [x, y, width, height, y]) }.to(throwError(errorType: Conversions.ConvertingError<CGRect>.self))
+        expect { try CGRect.convert(from: [x]) }.to(throwError(errorType: Conversions.ConvertingException<CGRect>.self))
+        expect { try CGRect.convert(from: [x, y]) }.to(throwError(errorType: Conversions.ConvertingException<CGRect>.self))
+        expect { try CGRect.convert(from: [x, y, width, height, y]) }.to(throwError(errorType: Conversions.ConvertingException<CGRect>.self))
       }
 
       it("throws when dict is missing some keys") {
         expect { try CGRect.convert(from: ["x": x]) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.MissingKeysError<Double>.self))
-          expect(($0 as! CodedError).description) == Conversions.MissingKeysError<Double>(keys: ["y", "width", "height"]).description
+          expect($0).to(beAKindOf(Conversions.MissingKeysException<Double>.self))
+          expect(($0 as! CodedError).description) == Conversions.MissingKeysException<Double>(["y", "width", "height"]).description
         })
       }
 
       it("throws when dict has uncastable keys") {
         expect { try CGRect.convert(from: ["x": x, "y": nil, "width": width, "height": "\(height)"]) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.CastingValuesError<Double>.self))
-          expect(($0 as! CodedError).description) == Conversions.CastingValuesError<Double>(keys: ["y", "height"]).description
+          expect($0).to(beAKindOf(Conversions.CastingValuesException<Double>.self))
+          expect(($0 as! CodedError).description) == Conversions.CastingValuesException<Double>(["y", "height"]).description
         })
       }
     }
@@ -213,8 +212,8 @@ class ConvertiblesSpec: QuickSpec {
       }
       func testInvalidHexColor(_ hex: String) {
         expect { try CGColor.convert(from: hex) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.InvalidHexColorError.self))
-          expect(($0 as! CodedError).description) == Conversions.InvalidHexColorError(hex: hex).description
+          expect($0).to(beAKindOf(Conversions.InvalidHexColorException.self))
+          expect(($0 as! CodedError).description) == Conversions.InvalidHexColorException(hex).description
         })
       }
 
@@ -244,7 +243,17 @@ class ConvertiblesSpec: QuickSpec {
         testColorComponents(color, 0x99, 0xEE, 0xAA, 0x55)
       }
 
-      it("throws when hex string is invalid") {
+      it("converts from CSS named color") {
+        let papayawhip = try CGColor.convert(from: "papayawhip")
+        testColorComponents(papayawhip, 0xFF, 0xEF, 0xD5, 0xFF)
+      }
+
+      it("converts from transparent") {
+        let transparent = try CGColor.convert(from: "transparent")
+        expect(transparent.alpha) == .zero
+      }
+
+      it("throws when string is invalid") {
         testInvalidHexColor("")
         testInvalidHexColor("#21")
         testInvalidHexColor("ABCDEFGH")
@@ -256,8 +265,8 @@ class ConvertiblesSpec: QuickSpec {
       it("throws when int overflows") {
         let hex = 0xBBAA88FF2
         expect { try CGColor.convert(from: hex) }.to(throwError {
-          expect($0).to(beAKindOf(Conversions.HexColorOverflowError.self))
-          expect(($0 as! CodedError).description) == Conversions.HexColorOverflowError(hex: UInt64(hex)).description
+          expect($0).to(beAKindOf(Conversions.HexColorOverflowException.self))
+          expect(($0 as! CodedError).description) == Conversions.HexColorOverflowException(UInt64(hex)).description
         })
       }
     }

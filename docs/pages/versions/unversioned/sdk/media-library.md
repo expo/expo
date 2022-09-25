@@ -1,27 +1,28 @@
 ---
 title: MediaLibrary
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-media-library'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-media-library'
+packageName: 'expo-media-library'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
 
-> ⚠️ If your Android app created an album using SDK <= 40 and you want to add more assets to this album, you may need to migrate it to the new scoped directory. Otherwise, your app won't have access to the old album directory and expo-media-library won't be able to add new assets to it. However, all other functions will work without problems. You only need to migrate the old album if you want to add something to it. For more information, check out [Android R changes](https://expo.fyi/android-r) and [`MediaLibrary.migrateAlbumIfNeededAsync`](#medialibrarymigratealbumifneededasyncalbum).
+> ⚠️ If your Android app created an album using SDK &lt;= 40 and you want to add more assets to this album, you may need to migrate it to the new scoped directory. Otherwise, your app won't have access to the old album directory and expo-media-library won't be able to add new assets to it. However, all other functions will work without problems. You only need to migrate the old album if you want to add something to it. For more information, check out [Android R changes](https://expo.fyi/android-r) and [`MediaLibrary.migrateAlbumIfNeededAsync`](#medialibrarymigratealbumifneededasyncalbum).
 
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-<InstallSection packageName="expo-media-library" />
+<APIInstallSection />
 
 ## Configuration in app.json / app.config.js
 
-You can configure `expo-media-library` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-media-library` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 
@@ -31,7 +32,7 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-media-library` repository](https://github.com/expo/expo/tree/master/packages/expo-media-library#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-media-library` repository](https://github.com/expo/expo/tree/main/packages/expo-media-library#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 

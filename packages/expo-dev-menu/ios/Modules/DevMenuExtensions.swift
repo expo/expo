@@ -4,7 +4,6 @@ import EXDevMenuInterface
 
 @objc(DevMenuExtensions)
 open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
-
   @objc
   open var bridge: RCTBridge?
 
@@ -12,21 +11,21 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
 
   @objc
   open func devMenuItems(_ settings: DevMenuExtensionSettingsProtocol) -> DevMenuItemsContainerProtocol? {
-    if (!settings.wasRunOnDevelopmentBridge()) {
+    if !settings.wasRunOnDevelopmentBridge() {
       return nil
     }
-    
+
     guard let bridge = bridge else {
       return nil
     }
-    
+
     let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
     guard let devSettings = devDelegate.devSettings else {
       return nil
     }
-    
+
     let container = DevMenuItemsContainer()
-    
+
     let reload = DevMenuExtensions.reloadAction(devDelegate.reload)
     reload.isAvailable = { !DevMenuExtensions.checkIfLogBoxIsOpened() }
 
@@ -51,17 +50,17 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     container.addItem(inspector)
     container.addItem(remoteDebug)
     container.addItem(fastRefresh)
-  
+
     #endif
 
     return container
   }
-  
+
   @objc
   open func devMenuScreens(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuScreen]? {
     return nil
   }
-  
+
   @objc
   open func devMenuDataSources(_ settings: DevMenuExtensionSettingsProtocol) -> [DevMenuDataSourceProtocol]? {
     return nil
@@ -69,7 +68,7 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
 
   // MARK: static helpers
 
-  private static func reloadAction(_ action: @escaping () -> ()) -> DevMenuAction {
+  private static func reloadAction(_ action: @escaping () -> Void) -> DevMenuAction {
     let reload = DevMenuAction(withId: "reload", action: action)
     reload.label = { "Reload" }
     reload.glyphName = { "reload" }
@@ -78,7 +77,7 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     return reload
   }
 
-  private static func elementInspectorAction(_ action: @escaping () -> ()) -> DevMenuAction {
+  private static func elementInspectorAction(_ action: @escaping () -> Void) -> DevMenuAction {
     let inspector = DevMenuAction(withId: "inspector", action: action)
     inspector.label = { inspector.isEnabled() ? "Hide Element Inspector" : "Show Element Inspector" }
     inspector.glyphName = { "border-style" }
@@ -87,7 +86,7 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     return inspector
   }
 
-  private static func remoteDebugAction(_ action: @escaping () -> ()) -> DevMenuAction {
+  private static func remoteDebugAction(_ action: @escaping () -> Void) -> DevMenuAction {
     let remoteDebug = DevMenuAction(withId: "remote-debug", action: action)
     remoteDebug.label = { remoteDebug.isAvailable() ? remoteDebug.isEnabled() ? "Stop Remote Debugging" : "Debug Remote JS" : "Remote Debugger Unavailable" }
     remoteDebug.glyphName = { "remote-desktop" }
@@ -95,7 +94,7 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     return remoteDebug
   }
 
-  private static func fastRefreshAction(_ action: @escaping () -> ()) -> DevMenuAction {
+  private static func fastRefreshAction(_ action: @escaping () -> Void) -> DevMenuAction {
     let fastRefresh = DevMenuAction(withId: "fast-refresh", action: action)
     fastRefresh.label = { fastRefresh.isAvailable() ? fastRefresh.isEnabled() ? "Disable Fast Refresh" : "Enable Fast Refresh" : "Fast Refresh Unavailable" }
     fastRefresh.glyphName = { "run-fast" }
@@ -103,7 +102,7 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     return fastRefresh
   }
 
-  private static func performanceMonitorAction(_ action: @escaping () -> ()) -> DevMenuAction {
+  private static func performanceMonitorAction(_ action: @escaping () -> Void) -> DevMenuAction {
     let perfMonitor = DevMenuAction(withId: "performance-monitor", action: action)
     perfMonitor.label = { perfMonitor.isAvailable() ? perfMonitor.isEnabled() ? "Hide Performance Monitor" : "Show Performance Monitor" : "Performance Monitor Unavailable" }
     perfMonitor.glyphName = { "speedometer" }
@@ -111,14 +110,14 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     perfMonitor.registerKeyCommand(input: "p", modifiers: .command)
     return perfMonitor
   }
-  
+
   private static func checkIfLogBoxIsOpened() -> Bool {
     return UIApplication.shared.windows.contains {
       let className = String(describing: type(of: $0))
       if className == "RCTLogBoxView" || className == "RCTRedBoxView" {
         return true
       }
-  
+
       return false
     }
   }

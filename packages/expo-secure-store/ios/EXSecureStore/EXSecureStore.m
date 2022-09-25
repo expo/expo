@@ -38,7 +38,7 @@
   if (![requireAuth boolValue]) {
     [dictionary setObject:(__bridge id)accessibility forKey:(__bridge id)kSecAttrAccessible];
   } else {
-    SecAccessControlRef accessOptions = SecAccessControlCreateWithFlags(nil, accessibility, kSecAccessControlUserPresence, nil);
+    SecAccessControlRef accessOptions = SecAccessControlCreateWithFlags(nil, accessibility, kSecAccessControlBiometryCurrentSet, nil);
     [dictionary setObject:(__bridge_transfer id)accessOptions forKey:(__bridge id)kSecAttrAccessControl];
   }
 

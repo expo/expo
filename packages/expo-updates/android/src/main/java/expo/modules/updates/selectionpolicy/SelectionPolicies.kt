@@ -1,6 +1,7 @@
 package expo.modules.updates.selectionpolicy
 
 import android.util.Log
+import expo.modules.manifests.core.Manifest
 import expo.modules.updates.db.entity.UpdateEntity
 import org.json.JSONObject
 import java.lang.Exception
@@ -9,13 +10,16 @@ object SelectionPolicies {
   val TAG = SelectionPolicies::class.java.simpleName
 
   fun matchesFilters(update: UpdateEntity, manifestFilters: JSONObject?): Boolean {
-    if (manifestFilters == null || update.manifest == null || !update.manifest!!.has("metadata")) {
+    val rawManifest = update.manifest
+    if (manifestFilters == null || rawManifest == null) {
       // empty matches all
       return true
     }
-    try {
-      val metadata = update.manifest!!.getJSONObject("metadata")
 
+    val manifest = Manifest.fromManifestJson(rawManifest)
+    val metadata = manifest.getMetadata() ?: return true // empty matches all
+
+    try {
       // create lowercase copy for case-insensitive search
       val metadataLCKeys = JSONObject()
       val metadataKeySet = metadata.keys()

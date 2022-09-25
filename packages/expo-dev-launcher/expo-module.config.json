@@ -1,0 +1,11 @@
+{
+  "name": "expo-dev-launcher",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "podspecPath": "expo-dev-launcher.podspec",
+    "swiftModuleName": "EXDevLauncher",
+    "appDelegateSubscribers": ["ExpoDevLauncherAppDelegateSubscriber"],
+    "reactDelegateHandlers": ["ExpoDevLauncherReactDelegateHandler"],
+    "debugOnly": true
+  }
+}

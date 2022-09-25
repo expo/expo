@@ -2,6 +2,10 @@
 
 @objc(DevMenuModule)
 open class DevMenuModule: NSObject {
+  deinit {
+    // cleanup registered callbacks when the bridge is deallocated to prevent these leaking into other (potentially unrelated) bridges
+    DevMenuManager.shared.registeredCallbacks = []
+  }
   
   // MARK: JavaScript API
 
@@ -11,35 +15,8 @@ open class DevMenuModule: NSObject {
   }
 
   @objc
-  func openSettings() {
-    DevMenuManager.shared.openMenu("Settings")
-  }
-  
-  @objc
-  func openProfile() {
-    DevMenuManager.shared.openMenu("Profile")
-  }
-  
-  @objc
-  func isLoggedInAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    resolve(DevMenuManager.shared.expoApiClient.isLoggedIn())
-  }
-  
-  @objc
-  func queryDevSessionsAsync(_ resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
-    DevMenuManager.shared.expoApiClient.queryDevSessionsAsync({ (data, response, error) in
-      guard error == nil else {
-        reject("ERR_DEVMENU_CANNOT_GET_DEV_SESSIONS", error.debugDescription, error)
-        return
-      }
-      
-      guard let data = data else {
-        resolve(nil)
-        return
-      }
-      
-      let response = String(decoding: data, as: UTF8.self)
-      resolve(response)
-    })
+  func addDevMenuCallbacks(_ names: [String], resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
+    DevMenuManager.shared.registeredCallbacks = names
+    return resolve(nil)
   }
 }

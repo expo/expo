@@ -1,18 +1,15 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
 import { initializeApp, getApp } from 'firebase/app';
-import { initializeAuth, getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { getDatabase, ref, onValue } from 'firebase/database';
 import {
-  initializeFirestore,
-  getFirestore,
-  query,
-  collection,
-  where,
-  doc,
-  getDocs,
-  getDoc,
-} from 'firebase/firestore';
+  initializeAuth,
+  getAuth,
+  signInWithEmailAndPassword,
+  signInWithPhoneNumber,
+  PhoneAuthProvider,
+} from 'firebase/auth';
+import { getDatabase, ref, onValue } from 'firebase/database';
+import { getFirestore, query, collection, where, doc, getDocs, getDoc } from 'firebase/firestore';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { getStorage, ref as storageRef, listAll, getDownloadURL } from 'firebase/storage';
 
@@ -49,12 +46,6 @@ export async function test({ describe, it, expect, beforeAll }) {
       // We need to use `@react-native-async-storage/async-storage` instead of `react-native`.
       // See: https://github.com/firebase/firebase-js-sdk/issues/1847
       initializeAuth(getApp(), { persistence: getReactNativePersistence(AsyncStorage) });
-    } catch {}
-
-    try {
-      // Without experimental force long polling, the SDK can't connect to the firestore server.
-      // See: https://github.com/firebase/firebase-js-sdk/issues/5504
-      initializeFirestore(getApp(), { experimentalForceLongPolling: true });
     } catch {}
   });
 
@@ -191,6 +182,19 @@ export async function test({ describe, it, expect, beforeAll }) {
       });
     });
   });
+
+  describe('regression', () => {
+    // see: https://github.com/firebase/firebase-js-sdk/issues/5638
+    describe('firebase/auth', () => {
+      it('exports signInWithPhoneNumber', () => {
+        expect(signInWithPhoneNumber).not.toBe(undefined);
+      });
+
+      it('exports PhoneAuthProvider', () => {
+        expect(PhoneAuthProvider).not.toBe(undefined);
+      });
+    });
+  });
 }
 
 /**
@@ -201,6 +205,9 @@ export async function test({ describe, it, expect, beforeAll }) {
  * @see https://github.com/firebase/firebase-js-sdk/issues/1847#issuecomment-929482013
  */
 function getReactNativePersistence(storage) {
+  // https://github.com/firebase/firebase-js-sdk/blob/6dacc2400fdcf4432ed1977ca1eb148da6db3fc5/packages/auth/src/core/persistence/index.ts#L33
+  const STORAGE_AVAILABLE_KEY = '__sak';
+
   return class PersistenceExpo {
     type = 'LOCAL';
 

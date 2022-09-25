@@ -36,3 +36,4 @@ export declare function resume(): Promise<void>;
  * On iOS, this returns `Number.MAX_VALUE`.
  */
 export declare const maxSpeechInputLength: number;
+//# sourceMappingURL=Speech.d.ts.map

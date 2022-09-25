@@ -1,6 +1,6 @@
 ---
 title: MapView
-sourceCodeUrl: 'https://github.com/react-native-community/react-native-maps'
+sourceCodeUrl: 'https://github.com/react-native-maps/react-native-maps'
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -17,7 +17,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-See full documentation at [react-native-community/react-native-maps](https://github.com/react-native-community/react-native-maps).
+See full documentation at [react-native-maps/react-native-maps](https://github.com/react-native-maps/react-native-maps).
 
 <SnackInline label='MapView' dependencies={['react-native-maps']}>
 
@@ -120,17 +120,14 @@ To use this in web, add the following script to your **web/index.html**. This sc
 <html lang="en">
   <head>
     <!-- At the end of the <head/> element... -->
-
     <script
       async
       defer
       src="https://maps.googleapis.com/maps/api/js?key=API_KEY"
       type="text/javascript"
-    ></script>
-
+    />
     <!-- Use your web API Key in place of API_KEY: https://developers.google.com/maps/documentation/javascript/get-api-key -->
   </head>
-
-  <!-- <body /> -->
+  <body />
 </html>
 ```

@@ -3,9 +3,9 @@ title: app.json / app.config.js
 maxHeadingDepth: 5
 ---
 
-<!--
+{/*
 Hi! If you found an issue within the description of the manifest properties, please create a GitHub issue.
--->
+*/}
 
 import AppConfigSchemaPropertiesTable from '~/components/plugins/AppConfigSchemaPropertiesTable';
 import schema from '~/scripts/schemas/unversioned/app-config-schema.js';
@@ -16,4 +16,4 @@ For more general information on app configuration, such as the differences betwe
 
 ## Properties
 
-<AppConfigSchemaPropertiesTable schema={schema}/>
+<AppConfigSchemaPropertiesTable schema={schema} />

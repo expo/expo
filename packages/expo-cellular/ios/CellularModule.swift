@@ -3,33 +3,33 @@ import ExpoModulesCore
 
 public class CellularModule: Module {
   public func definition() -> ModuleDefinition {
-    name("ExpoCellular")
+    Name("ExpoCellular")
 
-    constants {
+    Constants {
       Self.getCurrentCellularInfo()
     }
 
-    function("getCellularGenerationAsync") { () -> Int in
+    AsyncFunction("getCellularGenerationAsync") { () -> Int in
       Self.currentCellularGeneration().rawValue
     }
 
-    function("allowsVoipAsync") { () -> Bool? in
+    AsyncFunction("allowsVoipAsync") { () -> Bool? in
       Self.currentCarrier()?.allowsVOIP
     }
 
-    function("getIsoCountryCodeAsync") { () -> String? in
+    AsyncFunction("getIsoCountryCodeAsync") { () -> String? in
       Self.currentCarrier()?.isoCountryCode
     }
 
-    function("getCarrierNameAsync") { () -> String? in
+    AsyncFunction("getCarrierNameAsync") { () -> String? in
       Self.currentCarrier()?.carrierName
     }
 
-    function("getMobileCountryCodeAsync") { () -> String? in
+    AsyncFunction("getMobileCountryCodeAsync") { () -> String? in
       Self.currentCarrier()?.mobileCountryCode
     }
 
-    function("getMobileNetworkCodeAsync") { () -> String? in
+    AsyncFunction("getMobileNetworkCodeAsync") { () -> String? in
       Self.currentCarrier()?.mobileNetworkCode
     }
   }
@@ -67,8 +67,8 @@ public class CellularModule: Module {
       return .cellular4G
     default:
       if #available(iOS 14.1, *) {
-        if (radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
-            radioAccessTechnology == CTRadioAccessTechnologyNR) {
+        if radioAccessTechnology == CTRadioAccessTechnologyNRNSA ||
+            radioAccessTechnology == CTRadioAccessTechnologyNR {
           return .cellular5G
         }
       }
@@ -76,7 +76,7 @@ public class CellularModule: Module {
     }
   }
 
-  static func getCurrentCellularInfo() -> [String : Any?] {
+  static func getCurrentCellularInfo() -> [String: Any?] {
     let carrier = Self.currentCarrier()
     let generation = Self.currentCellularGeneration()
 
@@ -86,7 +86,7 @@ public class CellularModule: Module {
       "isoCountryCode": carrier?.isoCountryCode,
       "mobileCountryCode": carrier?.mobileCountryCode,
       "mobileNetworkCode": carrier?.mobileNetworkCode,
-      "generation": generation.rawValue,
+      "generation": generation.rawValue
     ]
   }
 
@@ -104,10 +104,8 @@ public class CellularModule: Module {
     let netinfo = CTTelephonyNetworkInfo()
 
     if #available(iOS 12.0, *), let providers = netinfo.serviceSubscriberCellularProviders {
-      for carrier in providers.values {
-        if carrier.carrierName != nil {
-          return carrier
-        }
+      for carrier in providers.values where carrier.carrierName != nil {
+        return carrier
       }
       return providers.values.first
     }

@@ -12,4 +12,4 @@ const withSensors = (config, { motionPermission } = {}) => {
         motionPermission || config.ios.infoPlist.NSMotionUsageDescription || MOTION_USAGE;
     return config;
 };
-exports.default = config_plugins_1.createRunOncePlugin(withSensors, pkg.name, pkg.version);
+exports.default = (0, config_plugins_1.createRunOncePlugin)(withSensors, pkg.name, pkg.version);

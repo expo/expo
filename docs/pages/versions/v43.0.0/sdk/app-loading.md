@@ -1,6 +1,6 @@
 ---
 title: AppLoading
-sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo/src/launch'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-app-loading'
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -19,7 +19,7 @@ This is useful to download and cache fonts, logos, icon images and other assets 
 
 ## Usage
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```javascript
 import React from 'react';
 import { Image, Text, View } from 'react-native';
@@ -53,7 +53,7 @@ export default class App extends React.Component {
   async _cacheResourcesAsync() {
     const images = [require('./assets/snack-icon.png')];
 
-    /* @info Read more about <a href='../guides/preloading-and-caching-assets.html'>Preloading and Caching Assets</a> */
+    /* @info Read more about <a href='../archive/classic-updates/preloading-and-caching-assets.html'>Preloading and Caching Assets</a> */
     const cacheImages = images.map(image => {
       return Asset.fromModule(image).downloadAsync();
     }); /* @end */

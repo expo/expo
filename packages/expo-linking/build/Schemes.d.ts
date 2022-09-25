@@ -9,8 +9,12 @@ export declare function hasCustomScheme(): boolean;
  * - Android: scheme -> android.scheme -> android.package
  */
 export declare function collectManifestSchemes(): string[];
+/**
+ * Ensure the user has linked the expo-constants manifest in bare workflow.
+ */
 export declare function hasConstantsManifest(): boolean;
-export declare function resolveScheme(props: {
+export declare function resolveScheme(options: {
     scheme?: string;
     isSilent?: boolean;
 }): string;
+//# sourceMappingURL=Schemes.d.ts.map

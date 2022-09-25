@@ -7,7 +7,6 @@ import InstallSection from '~/components/plugins/InstallSection';
 
 import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
-import TerminalBlock from '~/components/plugins/TerminalBlock';
 import SnackInline from '~/components/plugins/SnackInline';
 
 Expo can be used to login to many popular providers on iOS, Android, and web! Most of these guides utilize the pure JS [`AuthSession` API](/versions/latest/sdk/auth-session), refer to those docs for more information on the API.
@@ -23,7 +22,7 @@ Here are some **important rules** that apply to all authentication providers:
 ## Guides
 
 **AuthSession** can be used for any OAuth or OpenID Connect provider, we've assembled guides for using the most requested services!
-If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit/master/docs/pages/guides/authentication.md) or [vote on canny](https://expo.canny.io/feature-requests).
+If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit/main/docs/pages/guides/authentication.md) or [vote on canny](https://expo.canny.io/feature-requests).
 
 <SocialGrid>
   <SocialGridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} href="#identityserver-4" image="/static/images/sdk/auth-session/identity4.png" />
@@ -34,7 +33,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Facebook" protocol={['OAuth 2']} href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
   <SocialGridItem title="Fitbit" protocol={['OAuth 2']} href="#fitbit" image="/static/images/sdk/auth-session/fitbit.png" />
   <SocialGridItem title="Firebase Phone" protocol={['Recaptcha']} href="/versions/latest/sdk/firebase-recaptcha" image="/static/images/sdk/auth-session/firebase-phone.png" />
-  <SocialGridItem title="Github" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
+  <SocialGridItem title="GitHub" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
   <SocialGridItem title="Google" protocol={['OAuth 2', 'OpenID']} href="#google" image="/static/images/sdk/auth-session/google.png" />
   <SocialGridItem title="Imgur" protocol={['OAuth 2']} href="#imgur" image="/static/images/sdk/auth-session/imgur.png" />
   <SocialGridItem title="Okta" protocol={['OAuth 2', 'OpenID']} href="#okta" image="/static/images/sdk/auth-session/okta.png" />
@@ -43,6 +42,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
   <SocialGridItem title="Spotify" protocol={['OAuth 2']} href="#spotify" image="/static/images/sdk/auth-session/spotify.png" />
   <SocialGridItem title="Strava" protocol={['OAuth 2']} href="#strava" image="/static/images/sdk/auth-session/strava.png" />
   <SocialGridItem title="Twitch" protocol={['OAuth 2']} href="#twitch" image="/static/images/sdk/auth-session/twitch.png" />
+  <SocialGridItem title="Twitter" protocol={['OAuth 2']} href="#twitter" image="/static/images/sdk/auth-session/twitter.png" />
   <SocialGridItem title="Uber" protocol={['OAuth 2']} href="#uber" image="/static/images/sdk/auth-session/uber.png" />
 </SocialGrid>
 
@@ -58,9 +58,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 - If `offline_access` isn't included then no refresh token will be returned.
 
-<SnackInline label='IdentityServer 4 Auth' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import { Button, Text, View } from 'react-native';
@@ -105,9 +103,7 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
-<!-- End IdentityServer 4 -->
+{/* End IdentityServer 4 */}
 
 ### Azure
 
@@ -119,9 +115,7 @@ export default function App() {
 
 [c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
 
-<SnackInline label='Azure Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -165,9 +159,7 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
-<!-- End Azure -->
+{/* End Azure */}
 
 ### Coinbase
 
@@ -184,7 +176,7 @@ export default function App() {
 - Setup redirect URIs: Your Project > Permitted Redirect URIs: (be sure to save after making changes).
   - _Expo Go_: `exp://localhost:19000/--/`
   - _Web dev_: `https://localhost:19006`
-    - Run `expo start:web --https` to run with **https**, auth won't work otherwise.
+    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
     - Adding a slash to the end of the URL doesn't matter.
   - _Standalone and Bare_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
@@ -197,9 +189,7 @@ export default function App() {
 
 <Tab>
 
-<SnackInline label='Coinbase Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import {
   exchangeCodeAsync,
@@ -224,7 +214,7 @@ const discovery = {
 
 const redirectUri = makeRedirectUri({
   /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-  scheme: 'your.app'  
+  scheme: 'your.app'
 /* @end */});
 
 const CLIENT_ID = "CLIENT_ID";
@@ -333,8 +323,6 @@ function useMounted() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -344,7 +332,7 @@ function useMounted() {
 </Tab>
 </Tabs>
 
-<!-- End Coinbase -->
+{/* End Coinbase */}
 
 ### Dropbox
 
@@ -367,9 +355,7 @@ function useMounted() {
 
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
 
-<SnackInline label='Dropbox Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -401,7 +387,7 @@ export default function App() {
       // For usage in managed apps using the proxy
       redirectUri: makeRedirectUri({
         /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-        scheme: 'your.app'
+        scheme: 'your.app',
         /* @end */
         useProxy,
       }),
@@ -433,15 +419,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
-<SnackInline label='Dropbox Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -502,13 +484,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
 
-<!-- End Dropbox -->
+{/* End Dropbox */}
 
 ### Facebook
 
@@ -539,15 +519,14 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 #### Custom Apps
 
-Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for native auth as it supports some nonstandard OAuth features implemented by Facebook.
+For SDK 46 and above, we recommend using [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) module with [Development Builds](https://docs.expo.dev/development/introduction/).
 
-- The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
-- Add `facebookScheme: 'fb<YOUR FBID>'` to your **app.config.js** or **app.json**. Example: `{ facebookScheme: "fb145668956753819" }` (notice the `fb` prefix).
-- You'll need to make a new native build to add this redirect URI into your app's **AndroidManifest.xml** and **Info.plist**:
-  - iOS: `eas build` or `expo build:ios`.
-  - Android: `eas build` or `expo build:android`.
+You'll have to rebuild after adding the `react-native-fbsdk-next` as a config plugin to **app.json** or **app.config.js**:
+
+- iOS: `eas build` or `npx expo run:ios`
+- Android: `eas build` or `npx expo run:android`
 - **Bare:**
-  - Regenerate your native projects with `expo eject`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
+  - Regenerate your native projects with `expo prebuild`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
   - Rebuild the projects with `yarn ios` & `yarn android`
 
 #### Native iOS
@@ -557,7 +536,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 
 <img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-ios-guide.png" />
 
-- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your **app.json** - `expo.ios.bundleIdentifier`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
+- Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your **app.json** - `expo.ios.bundleIdentifier`. If you don't have one set, run `expo prebuild` to create one (then rebuild the native app).
 - Press "Save Changes" in the footer.
 - Copy the "App ID" in the header into your `iosClientId: '<YOUR FBID>'` or `clientId`. Ex: `{ iosClientId: '474614477183384' }` (no `fb` prefix).
 - Now you're ready to use the demo component in your native iOS app.
@@ -569,7 +548,7 @@ Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for n
 
 <img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-android-guide.png" />
 
-- Under Android > Google Play Package Name: Add your app's android package, this should match the value in your **app.json** - `expo.android.package`. If you don't have one set, run `expo eject` to create one (then rebuild the native app).
+- Under Android > Google Play Package Name: Add your app's android package, this should match the value in your **app.json** - `expo.android.package`. If you don't have one set, run `expo prebuild` to create one (then rebuild the native app).
 - Under Android > Class Name: This should match the package name + `.MainActivity`, i.e. `com.bacon.yolo15.MainActivity`.
 - Under Android > Key Hashes: You'll need to create two different values, one for Debug and one for Release. Learn how to create the [Key Hash here](https://stackoverflow.com/questions/4388992/key-hash-for-android-facebook-app).
   - In your app root, run: `keytool -exportcert -alias androiddebugkey -keystore android/app/debug.keystore | openssl sha1 -binary | openssl base64` you don't need a password, but it is recommended.
@@ -618,9 +597,7 @@ Then add `<data android:scheme="fb<YOUR ID>"/>` to the `.MainActivity` `intent-f
 
 <Tab>
 
-<SnackInline label='Facebook Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -661,15 +638,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
-<SnackInline label='Facebook Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -708,8 +681,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -718,9 +689,7 @@ export default function App() {
 - 🔥 Create a new Firebase project
 - Enable Facebook auth, save the project.
 
-<SnackInline label='Facebook Firebase' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser', 'firebase']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -778,13 +747,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
 
-<!-- End Facebook -->
+{/* End Facebook */}
 
 ### FitBit
 
@@ -806,9 +773,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<SnackInline label='FitBit Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -864,15 +829,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
-<SnackInline label='FitBit Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -935,17 +896,15 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
 
-<!-- End FitBit -->
+{/* End FitBit */}
 
 ### GitHub
 
-<CreateAppButton name="Github" href="https://github.com/settings/developers" />
+<CreateAppButton name="GitHub" href="https://github.com/settings/developers" />
 
 | Website                     | Provider  | PKCE      | Auto Discovery |
 | --------------------------- | --------- | --------- | -------------- |
@@ -964,9 +923,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<SnackInline label='GitHub Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1022,19 +979,17 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
-- Implicit grant is [not supported for Github](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
+- Implicit grant is [not supported for GitHub](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
 
 </Tab>
 
 </Tabs>
 
-<!-- End Github -->
+{/* End GitHub */}
 
 ### Google
 
@@ -1085,10 +1040,7 @@ This can only be used in standalone and bare workflow apps. This method cannot b
 - Your app needs to conform to the URI scheme matching your bundle identifier.
   - _Standalone_: Automatically added, do nothing.
   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
-- To test this you can:
-  1. Eject to bare: `expo eject` and run `yarn ios`
-  2. Build a simulator app: `expo build:ios -t simulator` on `eas build`
-  3. Build a production IPA: `expo build:ios` or `eas build`
+- To test this you can use `expo run:ios` or create a development build.
 - Whenever you change the values in **app.json** you'll need to rebuild the native app.
 
 **Troubleshooting**
@@ -1108,11 +1060,9 @@ This can only be used in Standalone, and bare workflow apps. This method cannot 
   - _Standalone_: Automatically added, do nothing.
   - _Bare workflow_: Run `npx uri-scheme add <your android.package> --android`
 - **Signing-certificate fingerprint**:
-  - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
-  - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
-- To test this you can:
-  1. Eject to bare: `expo eject` and run `yarn android`
-  2. Build a production APK: `expo build:android`
+  - Run `eas credentials` then select "Android" and then pick a build profile.
+  - Copy your "SHA1 Fingerprint"
+- To test this you can use `expo run:android` or create a development build.
 - Whenever you change the values in **app.json** you'll need to rebuild the native app.
 
 #### Web Apps
@@ -1125,14 +1075,12 @@ Expo web client ID for use in the browser.
 - Give it a name (e.g. "Web App").
 - **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
 - **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
-- To test this be sure to start your app with `expo start:web --https`.
+- To test this be sure to start your app with `expo start --web --https`.
 
 <Tabs tabs={["Standard", "Firebase"]}>
 <Tab>
 
-<SnackInline label='Google Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1175,8 +1123,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -1197,9 +1143,7 @@ export default function App() {
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
 
-<SnackInline label='Google Firebase' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser', 'firebase']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1236,8 +1180,7 @@ export default function App() {
 
       /* @info Create a Google credential with the <code>id_token</code> */
       const auth = getAuth();
-      const provider = new GoogleAuthProvider();
-      const credential = provider.credential(id_token);
+      const credential = GoogleAuthProvider.credential(id_token);
       /* @end */
       signInWithCredential(auth, credential);
     }
@@ -1259,13 +1202,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
 
-<!-- End Google -->
+{/* End Google */}
 
 ### Imgur
 
@@ -1282,8 +1223,6 @@ export default function App() {
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
-
-<SnackInline label='Imgur Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -1341,13 +1280,9 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
-
-<SnackInline label='Imgur Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
 
 ```tsx
 import * as React from 'react';
@@ -1406,13 +1341,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
 
-<!-- End Imgur -->
+{/* End Imgur */}
 
 ### Okta
 
@@ -1430,9 +1363,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<SnackInline label='Okta Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1487,8 +1418,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -1499,7 +1428,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Okta -->
+{/* End Okta */}
 
 ### Reddit
 
@@ -1522,9 +1451,7 @@ export default function App() {
 
 <Tab>
 
-<SnackInline label='Reddit Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1578,17 +1505,13 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
 - You must select the `installed` option for your app on Reddit to use implicit grant.
 
-<SnackInline label='Reddit Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1646,12 +1569,10 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 </Tabs>
 
-<!-- End Reddit -->
+{/* End Reddit */}
 
 ### Slack
 
@@ -1674,9 +1595,7 @@ export default function App() {
 
 <Tab>
 
-<SnackInline label='Slack Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1731,8 +1650,6 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
@@ -1743,7 +1660,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Slack -->
+{/* End Slack */}
 
 ### Spotify
 
@@ -1759,7 +1676,7 @@ export default function App() {
   - _Expo Go_: `exp://localhost:19000/--/`
   - _Web dev_: `https://localhost:19006`
     - Important: Ensure there's no slash at the end of the URL unless manually changed in the app code with `makeRedirectUri({ path: '/' })`.
-    - Run `expo start:web --https` to run with **https**, auth won't work otherwise.
+    - Run `expo start --web --https` to run with **https**, auth won't work otherwise.
   - _Custom app_: `your-scheme://`
     - Scheme should be specified in app.json `expo.scheme: 'your-scheme'`, then added to the app code with `makeRedirectUri({ native: 'your-scheme://' })`)
   - _Proxy_: `https://auth.expo.io/@username/slug`
@@ -1772,9 +1689,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<SnackInline label='Spotify Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1832,15 +1747,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
-<SnackInline label='Spotify Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1901,12 +1812,10 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 </Tabs>
 
-<!-- End Spotify -->
+{/* End Spotify */}
 
 ### Strava
 
@@ -1925,9 +1834,7 @@ export default function App() {
 <Tabs tabs={["Auth Code"]}>
 <Tab>
 
-<SnackInline label='Strava Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1986,7 +1893,7 @@ export default function App() {
 Strava doesn't provide an implicit auth flow, you should send the code to a server or serverless function to perform the access token exchange.
 For **debugging** purposes, you can perform the exchange client-side using the following method:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 const { accessToken } = await AuthSession.exchangeCodeAsync(
   {
@@ -2003,13 +1910,11 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 );
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
 
-<!-- End Strava -->
+{/* End Strava */}
 
 ### Twitch
 
@@ -2028,9 +1933,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 <Tab>
 
-<SnackInline label='Twitch Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2057,7 +1960,7 @@ export default function App() {
         scheme: 'your.app'
         /* @end */
       }),
-      scopes: ['openid', 'user_read', 'analytics:read:games'],
+      scopes: ['user:read:email', 'analytics:read:games'],
     },
     discovery
   );
@@ -2086,15 +1989,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
-<SnackInline label='Twitch Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2124,7 +2023,7 @@ export default function App() {
         scheme: 'your.app'
         /* @end */
       }),
-      scopes: ['openid', 'user_read', 'analytics:read:games'],
+      scopes: ['user:read:email', 'analytics:read:games'],
     },
     discovery
   );
@@ -2153,13 +2052,106 @@ export default function App() {
 }
 ```
 
-</SnackInline>
+</Tab>
+
+</Tabs>
+
+{/* End Twitch */}
+
+### Twitter
+
+<CreateAppButton name="Twitter" href="https://developer.twitter.com/en/portal/projects/new" />
+
+| Website                      | Provider | PKCE      | Auto Discovery | Scopes            |
+| ---------------------------- | -------- | --------- | -------------- | ----------------- |
+| [Get your Config][c-twitter] | OAuth    | Supported | Not Available  | [Info][s-twitter] |
+
+[c-twitter]: https://developer.twitter.com/en/portal/projects/new
+[s-twitter]: https://developer.twitter.com/en/docs/authentication/oauth-2-0/authorization-code
+
+- You will need to be approved by Twitter support before you can use the Twitter v2 API.
+- Web does not appear to work, the Twitter authentication website appears to block the popup, causing the `response` of `useAuthRequest` to always be `{type: 'dismiss'}`.
+- Example redirects:
+  - Expo Go + Proxy: `https://auth.expo.io/@you/your-app`
+  - Standalone or Bare: `com.your.app://`
+  - Web (dev `expo start --https`): `https://localhost:19006` (no ending slash)
+- The `redirectUri` requires 2 slashes (`://`).
+
+#### Expo Go
+
+You must use the proxy service in the Expo Go app because `exp://localhost:19000` cannot be added to your Twitter app as a redirect.
+
+<Tabs tabs={["Auth Code"]}>
+
+<Tab>
+
+{/* prettier-ignore */}
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session';
+import { Button, Platform } from 'react-native';
+
+const useProxy = Platform.select({ web: false, default: true });
+
+/* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+// Endpoint
+const discovery = {
+  authorizationEndpoint: "https://twitter.com/i/oauth2/authorize",
+  tokenEndpoint: "https://twitter.com/i/oauth2/token",
+  revocationEndpoint: "https://twitter.com/i/oauth2/revoke",
+};
+
+export default function App() {
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId: 'CLIENT_ID',
+      redirectUri: makeRedirectUri({
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        scheme: 'your.app',
+        /* @end */
+        useProxy
+      }),
+      usePKCE: true,
+      scopes: [
+        "tweet.read",
+      ],
+    },
+    discovery
+  );
+
+  React.useEffect(() => {
+    if (response?.type === 'success') {
+      /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
+      const { code } = response.params;
+      /* @end */
+    }
+  }, [response]);
+
+  return (
+    <Button
+      /* @info Disable the button until the request is loaded asynchronously. */
+      disabled={!request}
+      /* @end */
+      title="Login"
+      onPress={() => {
+        /* @info Prompt the user to authenticate in a user interaction or web browsers will block it. */
+        promptAsync({ useProxy });
+        /* @end */
+      }}
+    />
+  );
+}
+```
 
 </Tab>
 
 </Tabs>
 
-<!-- End Twitch -->
+{/* End Twitter */}
 
 ### Uber
 
@@ -2178,9 +2170,7 @@ export default function App() {
 
 <Tab>
 
-<SnackInline label='Uber Auth Code' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2236,15 +2226,11 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 <Tab>
 
-<SnackInline label='Uber Implicit' dependencies={['expo-auth-session', 'expo-random', 'expo-web-browser']}>
-
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2303,15 +2289,13 @@ export default function App() {
 }
 ```
 
-</SnackInline>
-
 </Tab>
 
 </Tabs>
 
-<!-- End Uber -->
+{/* End Uber */}
 
-<!-- End Guides -->
+{/* End Guides */}
 
 ## Redirect URI patterns
 
@@ -2319,21 +2303,33 @@ Here are a few examples of some common redirect URI patterns you may end up usin
 
 #### Expo Proxy
 
-> `https://auth.expo.io/@yourname/your-app`
+```
+https://auth.expo.io/@username/app-slug
+
+# Example
+https://auth.expo.io/@johnsample/my-app
+
+```
 
 - **Environment:** Development or production projects in Expo Go, or in a standalone build.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: true })` to create this URI.
-  - The link is constructed from your Expo username and the Expo app name, which are appended to the proxy website.
+  - The link is constructed from your Expo username and the Expo config (**app.json**) `slug`, which are appended to the proxy website.
   - For custom apps, you'll need to rebuild the native app if you change users or if you reassign your `slug`, or `owner` properties in the app.json. We highly recommend **not** using the proxy in custom apps (standalone, bare, custom).
 - **Usage:** `promptAsync({ useProxy: true, redirectUri })`
 
 #### Published project in the Expo Go app
 
-> `exp://exp.host/@yourname/your-app`
+```
+exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]
 
-- **Environment:** Production projects that you `expo publish`'d and opened in the Expo Go app.
+# Example
+
+exp://u.expo.dev/F767ADF57-B487-4D8F-9522-85549C39F43F?channel-name=main&runtime-version=exposdk:45.0.0
+```
+
+- **Environment:** Production projects that you `eas update`'d and opened in the Expo Go app.
 - **Create:** Use `AuthSession.makeRedirectUri({ useProxy: false })` to create this URI.
-  - The link is constructed from your Expo username and the Expo app name, which are appended to the Expo Go app URI scheme.
+  - The link is constructed from your Expo username and the Expo config (**app.json**) `slug`, which are appended to the Expo Go app URI scheme.
   - You could also create this link with using `Linking.makeUrl()` from `expo-linking`.
 - **Usage:** `promptAsync({ redirectUri })`
 
@@ -2356,9 +2352,10 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
 - **Environment:**
 
   - Bare workflow
-    - `npx create-react-native-app` or `expo eject`
+    - `npx create-react-native-app` or `expo prebuild`
   - Standalone builds in the App or Play Store
-    - `expo build:ios` or `expo build:android`
+    - iOS: `eas build` or `expo build:ios`
+    - Android: `eas build` or `expo build:android`
   - Standalone builds for local testing
     - `expo build:ios -t simulator` or `expo build:android -t apk`
 
@@ -2367,7 +2364,7 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - `your.app:///` -> `makeRedirectUri({ scheme: 'your.app', isTripleSlashed: true })`
   - `your.app:/authorize` -> `makeRedirectUri({ native: 'your.app:/authorize' })`
   - `your.app://auth?foo=bar` -> `makeRedirectUri({ scheme: 'your.app', path: 'auth', queryParams: { foo: 'bar' } })`
-  - `exp://exp.host/@yourname/your-app` -> `makeRedirectUri({ useProxy: true })`
+  - `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` -> `makeRedirectUri({ useProxy: true })`
   - This link can often be created automatically but we recommend you define the `scheme` property at least. The entire URL can be overridden in custom apps by passing the `native` property. Often this will be used for providers like Google or Okta which require you to use a custom native URI redirect. You can add, list, and open URI schemes using `npx uri-scheme`.
   - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them (`yarn ios`, `yarn android`).
 - **Usage:** `promptAsync({ redirectUri })`
@@ -2382,7 +2379,7 @@ Here are a few tips you can use to make authentication quick, easy, and secure f
 
 On Android you can optionally warm up the web browser before it's used. This allows the browser app to pre-initialize itself in the background. Doing this can significantly speed up prompting the user for authentication.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2410,7 +2407,7 @@ You should never store your client secret locally in your bundle because there's
 
 Here is an example of logging into Spotify without using a client secret.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2460,7 +2457,7 @@ On native platforms like iOS, and Android you can secure things like access toke
 
 You can store your authentication results and rehydrate them later to avoid having to prompt the user to login again.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as SecureStore from 'expo-secure-store';
 

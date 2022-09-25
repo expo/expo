@@ -5,13 +5,15 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-google-si
 
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-`expo-google-sign-in` provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in Expo Go as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the **Info.plist** at build-time. To use Google authentication in the Expo Go, check out [`expo-google-app-auth`](google.md) or [expo-app-auth](app-auth.md).
+> This package has been deprecated in favor of [`expo-auth-session`](auth-session.md)'s Google provider. Users can also create custom development clients with the native community package [`@react-native-google-signin/google-signin`](https://www.npmjs.com/package/@react-native-google-signin/google-signin).
+
+`expo-google-sign-in` provides native Google authentication for **standalone** Expo apps or bare React Native apps. It cannot be used in Expo Go as the native `GoogleSignIn` library expects your `REVERSED_CLIENT_ID` in the **Info.plist** at build-time. To use Google authentication in the Expo Go, and on web, check out [`expo-auth-session`](/guides/authentication#google).
 
 <PlatformsSection android emulator ios simulator />
 
 ## Installation
 
-For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/master/packages/expo-google-sign-in).
+For [managed](../../../introduction/managed-vs-bare.md#managed-workflow) apps, you'll need to run `expo install expo-google-sign-in`. To use it in a [bare](../../../introduction/managed-vs-bare.md#bare-workflow) React Native app, follow its [installation instructions](https://github.com/expo/expo/tree/main/packages/expo-google-sign-in).
 
 ## Configuration
 
@@ -367,7 +369,7 @@ Extends [`GoogleAuthData`](#googleauthdata), manages the user tokens.
 - `accessTokenExpirationDate: ?number;`
 - `refreshToken: ?string;`
 - `idToken: ?string;`
-- `idTokenExpirationDate: ?number;` | UNIX time in milliseconds
+- `idTokenExpirationDate: ?number;` | Unix time in milliseconds
 
 ## Constants
 

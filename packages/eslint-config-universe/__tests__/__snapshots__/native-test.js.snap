@@ -13,7 +13,19 @@ Object {
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": Array [
+    Object {
+      "column": 14,
+      "endColumn": 15,
+      "endLine": 30,
+      "line": 30,
+      "message": "'e' is defined but never used. Allowed unused args must match /^_/u.",
+      "messageId": "unusedVar",
+      "nodeType": "Identifier",
+      "ruleId": "no-unused-vars",
+      "severity": 1,
+    },
+  ],
   "output": "import 'hi';
 
 import a from 'a';
@@ -38,12 +50,18 @@ export class Example {
 
   hi() {
     _fn() ?? this.byeAsync();
-    m &&= {};
-    s?.a?.();
+    this.m &&= {};
+    Example.s?.a?.();
 
     try {
       _fn();
-    } catch {
+    } catch (e) {
+      _fn();
+    }
+
+    try {
+      _fn();
+    } catch (_ignored) {
       _fn();
     }
 
@@ -68,7 +86,9 @@ function _fn() {}
 
 function* gen() {}
 ",
-  "warningCount": 0,
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
+  "warningCount": 1,
 }
 `;
 
@@ -78,8 +98,69 @@ Object {
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
-  "warningCount": 0,
+  "messages": Array [
+    Object {
+      "column": 3,
+      "endColumn": 18,
+      "endLine": 18,
+      "line": 18,
+      "message": "Duplicate name 'm'.",
+      "messageId": "unexpected",
+      "nodeType": "PropertyDefinition",
+      "ruleId": "@typescript-eslint/no-dupe-class-members",
+      "severity": 1,
+    },
+    Object {
+      "column": 14,
+      "endColumn": 25,
+      "endLine": 25,
+      "line": 25,
+      "message": "'_notIgnored' is defined but never used.",
+      "messageId": "unusedVar",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+    },
+  ],
+  "source": "import 'hi';
+
+import a from 'a';
+import { b } from 'b';
+import c, { c1 } from 'c';
+import * as d from 'd';
+
+import e from './e';
+
+@d
+export class Example {
+  static s = {
+    a,
+    b,
+  };
+
+  m: object = {};
+  m: object = {};
+
+  hi(): void {
+    _fn();
+
+    try {
+      _fn();
+    } catch (_notIgnored) {
+      _fn();
+    }
+  }
+
+  async byeAsync(): Promise<void> {
+    _fn(a, b, c, c1, d, e);
+  }
+}
+
+function _fn(...args: any): void {}
+",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
+  "warningCount": 2,
 }
 `;
 
@@ -98,7 +179,7 @@ Object {
       "message": "'unused1' is assigned a value but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
     Object {
@@ -109,7 +190,7 @@ Object {
       "message": "'unused2' is defined but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
     Object {
@@ -120,7 +201,7 @@ Object {
       "message": "'unused3' is assigned a value but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
   ],
@@ -130,6 +211,8 @@ function unused2() {
   const unused3 = 'hi';
 }
 ",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 3,
 }
 `;
@@ -205,6 +288,8 @@ function tsUnused2() {
   const angleBracketCast = <string>x;
 }
 ",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 5,
 }
 `;
@@ -220,6 +305,8 @@ Object {
   return ['1'];
 };
 ",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -233,6 +320,8 @@ Object {
   "messages": Array [],
   "output": "export const blah = 3!;
 ",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -251,6 +340,8 @@ export const objectTest: object | null = null;
 export const stringTest: string | null = null;
 export const objectShorthandTest: object | null = null;
 ",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -272,6 +363,8 @@ const e = require('e');
 
 export default a + b + c + d + e;
 ",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -283,6 +376,8 @@ Object {
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -293,35 +388,10 @@ Object {
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
-      "column": 5,
-      "endColumn": 18,
-      "endLine": 8,
-      "line": 8,
-      "message": "Do not use setState in componentDidMount",
-      "messageId": "noSetState",
-      "nodeType": "MemberExpression",
-      "ruleId": "react/no-did-mount-set-state",
-      "severity": 1,
-    },
-  ],
-  "source": "import React from 'react';
-
-export default class Example extends React.Component {
-  props = { x: 'x' };
-
-  componentDidMount() {
-    alert('uh oh');
-    this.setState({});
-  }
-
-  render() {
-    return <div>{this.props.x}</div>;
-  }
-}
-",
-  "warningCount": 1,
+  "messages": Array [],
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
+  "warningCount": 0,
 }
 `;
 
@@ -332,6 +402,8 @@ Object {
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
   "messages": Array [],
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -350,6 +422,8 @@ export default function Example() {
   return <View testID=\\"test\\" />;
 }
 ",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 0,
 }
 `;
@@ -379,7 +453,7 @@ Object {
       "message": "'notAHook' is defined but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
     Object {
@@ -387,7 +461,7 @@ Object {
       "endColumn": 12,
       "endLine": 15,
       "line": 15,
-      "message": "React Hook \\"useEffect\\" is called in function \\"notAHook\\" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter.",
+      "message": "React Hook \\"useEffect\\" is called in function \\"notAHook\\" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word \\"use\\".",
       "nodeType": "Identifier",
       "ruleId": "react-hooks/rules-of-hooks",
       "severity": 2,
@@ -410,6 +484,8 @@ function notAHook() {
   useEffect(() => {});
 }
 ",
+  "suppressedMessages": Array [],
+  "usedDeprecatedRules": Array [],
   "warningCount": 1,
 }
 `;

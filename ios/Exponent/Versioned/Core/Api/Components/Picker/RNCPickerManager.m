@@ -25,6 +25,7 @@ RCT_EXPORT_VIEW_PROPERTY(selectedIndex, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(onChange, RCTBubblingEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(color, UIColor)
 RCT_EXPORT_VIEW_PROPERTY(textAlign, NSTextAlignment)
+RCT_EXPORT_VIEW_PROPERTY(numberOfLines, NSInteger)
 RCT_CUSTOM_VIEW_PROPERTY(fontSize, NSNumber, RNCPicker)
 {
   view.font = [RCTFont updateFont:view.font withSize:json ?: @(defaultView.font.pointSize)];
@@ -40,6 +41,19 @@ RCT_CUSTOM_VIEW_PROPERTY(fontStyle, NSString, __unused RNCPicker)
 RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RNCPicker)
 {
   view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
+}
+RCT_CUSTOM_VIEW_PROPERTY(themeVariant, NSString, RNCPicker)
+{
+    if (@available(iOS 13.4, *)) {
+            if (json) {
+                if ([json isEqual:@"dark"])
+                    view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+                else if ([json isEqual:@"light"])
+                    view.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+                else
+                    view.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+            }
+        }
 }
 
 @end

@@ -2,6 +2,7 @@
   "name": "expo-screen-orientation",
   "platforms": ["ios", "android"],
   "ios": {
-    "appDelegateSubscribers": ["ScreenOrientationAppDelegate"]
+    "appDelegateSubscribers": ["ScreenOrientationAppDelegate"],
+    "reactDelegateHandlers": ["ScreenOrientationReactDelegateHandler"]
   }
 }

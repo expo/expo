@@ -36,6 +36,17 @@ class UpdateEntity(
 
   var keep = false
 
+  val loggingId: String
+    get() {
+      return id.toString().lowercase()
+    }
+
   @ColumnInfo(name = "last_accessed")
   var lastAccessed: Date = Date()
+
+  @ColumnInfo(name = "successful_launch_count", defaultValue = "0")
+  var successfulLaunchCount = 0
+
+  @ColumnInfo(name = "failed_launch_count", defaultValue = "0")
+  var failedLaunchCount = 0
 }

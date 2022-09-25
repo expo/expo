@@ -3,6 +3,7 @@ package expo.modules.updates.manifest
 import android.net.Uri
 import android.util.Log
 import expo.modules.jsonutils.getNullable
+import expo.modules.jsonutils.require
 import expo.modules.structuredheaders.BooleanItem
 import expo.modules.structuredheaders.NumberItem
 import expo.modules.structuredheaders.Parser
@@ -27,6 +28,7 @@ class NewUpdateManifest private constructor(
   private val mRuntimeVersion: String,
   private val mLaunchAsset: JSONObject,
   private val mAssets: JSONArray?,
+  private val mExtensions: JSONObject?,
   private val mServerDefinedHeaders: String?,
   private val mManifestFilters: String?
 ) : UpdateManifest {
@@ -48,6 +50,11 @@ class NewUpdateManifest private constructor(
     }
   }
 
+  private val assetHeaders: Map<String, JSONObject> by lazy {
+    val assetRequestHeadersJSON = (mExtensions ?: JSONObject()).getNullable<JSONObject>("assetRequestHeaders")
+    assetRequestHeadersJSON?.let { it.keys().asSequence().associateWith { key -> it.require(key) } } ?: mapOf()
+  }
+
   override val assetEntityList: List<AssetEntity> by lazy {
     val assetList = mutableListOf<AssetEntity>()
     try {
@@ -58,8 +65,10 @@ class NewUpdateManifest private constructor(
           mLaunchAsset.getNullable("fileExtension")
         ).apply {
           url = Uri.parse(mLaunchAsset.getString("url"))
+          extraRequestHeaders = assetHeaders[mLaunchAsset.getString("key")]
           isLaunchAsset = true
           embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
+          expectedHash = mLaunchAsset.getNullable("hash")
         }
       )
     } catch (e: JSONException) {
@@ -75,7 +84,9 @@ class NewUpdateManifest private constructor(
               assetObject.getString("fileExtension")
             ).apply {
               url = Uri.parse(assetObject.getString("url"))
+              extraRequestHeaders = assetHeaders[assetObject.getString("key")]
               embeddedAssetFilename = assetObject.getNullable("embeddedAssetFilename")
+              expectedHash = assetObject.getNullable("hash")
             }
           )
         } catch (e: JSONException) {
@@ -94,7 +105,8 @@ class NewUpdateManifest private constructor(
     @Throws(JSONException::class)
     fun fromNewManifest(
       manifest: NewManifest,
-      httpResponse: ManifestResponse?,
+      manifestHeaderData: ManifestHeaderData,
+      extensions: JSONObject?,
       configuration: UpdatesConfiguration
     ): NewUpdateManifest {
       val id = UUID.fromString(manifest.getID())
@@ -107,8 +119,6 @@ class NewUpdateManifest private constructor(
         Log.e(TAG, "Could not parse manifest createdAt string; falling back to current time", e)
         Date()
       }
-      val serverDefinedHeaders = httpResponse?.header("expo-server-defined-headers")
-      val manifestFilters = httpResponse?.header("expo-manifest-filters")
       return NewUpdateManifest(
         manifest,
         id,
@@ -117,8 +127,9 @@ class NewUpdateManifest private constructor(
         runtimeVersion,
         launchAsset,
         assets,
-        serverDefinedHeaders,
-        manifestFilters
+        extensions,
+        manifestHeaderData.serverDefinedHeaders,
+        manifestHeaderData.manifestFilters
       )
     }
 

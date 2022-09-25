@@ -28,7 +28,8 @@ export interface TaskManagerTaskBody<T = object> {
  */
 export interface TaskManagerTaskBodyExecutionInfo {
     /**
-     * __(iOS only)__ State of the application.
+     * State of the application.
+     * @platform ios
      */
     appState?: 'active' | 'background' | 'inactive';
     /**
@@ -148,3 +149,4 @@ export declare function unregisterAllTasksAsync(): Promise<void>;
  * On the web it always returns `false`.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
+//# sourceMappingURL=TaskManager.d.ts.map

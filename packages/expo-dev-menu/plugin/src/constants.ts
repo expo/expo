@@ -1,2 +1,2 @@
 export const InstallationPage =
-  'https://github.com/expo/expo/blob/master/packages/expo-dev-menu/README.md';
+  'https://github.com/expo/expo/blob/main/packages/expo-dev-menu/README.md';

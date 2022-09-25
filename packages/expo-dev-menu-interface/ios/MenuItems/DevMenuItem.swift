@@ -21,9 +21,9 @@ open class DevMenuItem: NSObject {
   }
 
   @objc
-  open func serialize() -> [String : Any] {
+  open func serialize() -> [String: Any] {
     return [
-      "type": type.rawValue,
+      "type": type.rawValue
     ]
   }
 }

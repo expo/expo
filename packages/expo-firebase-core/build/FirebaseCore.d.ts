@@ -19,8 +19,7 @@ export declare const DEFAULT_APP_NAME: string | void;
  * | Android  | `google-services.json`     | `android.googleServicesFile` |
  * | Web      | -                          | `web.config.firebase`        |
  *
- * # Example
- *
+ * @example
  * ```js
  * console.log(FirebaseCore.DEFAULT_APP_OPTIONS);
  * {
@@ -40,3 +39,4 @@ export declare const DEFAULT_APP_OPTIONS: FirebaseOptions | void;
  * The default Firebase options as defined in `web.config.firebase` in `app.json`.
  */
 export declare const DEFAULT_WEB_APP_OPTIONS: FirebaseOptions | void;
+//# sourceMappingURL=FirebaseCore.d.ts.map

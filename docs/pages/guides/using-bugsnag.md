@@ -26,7 +26,7 @@ With Bugsnag, developers and engineering organizations can:
 
 ### Get Started
 
-Add Bugsnag to your Expo apps to automatically capture and report JavaScript errors. Follow the guide below and read the [blog post](https://www.bugsnag.com/blog/build-apps-in-expo-with-bugsnag) announcing Bugsnag’s Expo integration. If you’re new to Bugsnag, you can [create an account](https://app.bugsnag.com/user/new/) or [request a demo](https://www.bugsnag.com/demo-request).
+Add Bugsnag to your native apps to automatically capture and report JavaScript errors. Follow the guide below and read the [blog post](https://www.bugsnag.com/blog/build-apps-in-expo-with-bugsnag) announcing Bugsnag’s Expo integration. If you’re new to Bugsnag, you can [create an account](https://app.bugsnag.com/user/new/) or [request a demo](https://www.bugsnag.com/demo-request).
 
 ## Add Bugsnag to your Expo project
 
@@ -81,5 +81,5 @@ Type definitions provided and will be picked up automatically by the TypeScript 
 
 - Read the [full integration guide](https://docs.bugsnag.com/platforms/react-native/expo/)
 - View [`@bugsnag/js`](https://github.com/bugsnag/bugsnag-js), the library powering Bugsnag’s JavaScript error reporting, on GitHub
-- Explore [the example project](https://github.com/bugsnag/bugsnag-js/tree/master/examples/expo)
+- Explore [the example project](https://github.com/bugsnag/bugsnag-js/tree/next/examples/js/expo)
 - Get [support](https://docs.bugsnag.com/#support) for your questions and feature requests

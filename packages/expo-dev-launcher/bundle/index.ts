@@ -1,5 +1,10 @@
-import { AppRegistry } from 'react-native';
+import { AppRegistry, LogBox } from 'react-native';
+import { enableScreens } from 'react-native-screens';
 
-import LauncherApp from './views/LauncherApp';
+import { App } from './App';
 
-AppRegistry.registerComponent('main', () => LauncherApp);
+LogBox.ignoreLogs(['EventEmitter']);
+
+enableScreens(false);
+
+AppRegistry.registerComponent('main', () => App);

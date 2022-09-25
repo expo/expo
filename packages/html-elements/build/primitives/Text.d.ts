@@ -31,3 +31,4 @@ export declare type WebTextProps = {
 export declare type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
 declare const Text: ComponentType<TextProps>;
 export default Text;
+//# sourceMappingURL=Text.d.ts.map

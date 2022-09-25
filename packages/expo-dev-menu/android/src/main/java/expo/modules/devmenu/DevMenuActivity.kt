@@ -1,7 +1,5 @@
 package expo.modules.devmenu
 
-import android.content.Context
-import android.content.pm.ActivityInfo
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
@@ -12,8 +10,8 @@ import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.devsupport.interfaces.DevSupportManager
-import expo.modules.devmenu.helpers.getPrivateDeclaredFiledValue
-import expo.modules.devmenu.helpers.setPrivateDeclaredFiledValue
+import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
+import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import java.util.*
 
 /**
@@ -23,6 +21,9 @@ import java.util.*
  */
 class DevMenuActivity : ReactActivity() {
   override fun getMainComponentName() = "main"
+
+  private val isEmulator
+    get() = Build.FINGERPRINT.contains("vbox") || Build.FINGERPRINT.contains("generic")
 
   override fun createReactActivityDelegate(): ReactActivityDelegate {
     return object : ReactActivityDelegate(this, mainComponentName) {
@@ -38,10 +39,10 @@ class DevMenuActivity : ReactActivity() {
         }
 
         val reactDelegate: ReactDelegate = ReactActivityDelegate::class.java
-          .getPrivateDeclaredFiledValue("mReactDelegate", this)
+          .getPrivateDeclaredFieldValue("mReactDelegate", this)
 
         ReactDelegate::class.java
-          .setPrivateDeclaredFiledValue("mReactRootView", reactDelegate, rootView)
+          .setPrivateDeclaredFieldValue("mReactRootView", reactDelegate, rootView)
 
         // Removes the root view from the previous activity
         (rootView.parent as? ViewGroup)?.removeView(rootView)
@@ -58,29 +59,23 @@ class DevMenuActivity : ReactActivity() {
       override fun getReactNativeHost() = DevMenuManager.getMenuHost()
 
       override fun getLaunchOptions() = Bundle().apply {
-        putBoolean("enableDevelopmentTools", true)
-        putBoolean("showOnboardingView", DevMenuManager.getSettings()?.isOnboardingFinished != true)
-        putParcelableArray("devMenuItems", DevMenuManager.serializedItems().toTypedArray())
-        putParcelableArray("devMenuScreens", DevMenuManager.serializedScreens().toTypedArray())
         putString("uuid", UUID.randomUUID().toString())
-        putBundle("appInfo", DevMenuManager.getSession()?.appInfo ?: Bundle.EMPTY)
-        putString("openScreen", DevMenuManager.getSession()?.openScreen)
+        putBundle("appInfo", DevMenuManager.getAppInfo())
+        putBundle("devSettings", DevMenuManager.getDevSettings())
+        putBundle("menuPreferences", DevMenuManager.getMenuPreferences())
+        putBoolean("isDevice", !isEmulator)
+        putStringArrayList("registeredCallbacks", DevMenuManager.registeredCallbacks)
       }
 
-      override fun createRootView() = createRootView(this@DevMenuActivity)
-    }
-  }
+      override fun createRootView(): ReactRootView {
+        if (rootViewWasInitialized()) {
+          return rootView
+        }
 
-  override fun onCreate(savedInstanceState: Bundle?) {
-    // Due to a bug in API 26, we can't set the orientation in translucent activity.
-    // See https://stackoverflow.com/questions/48072438/java-lang-illegalstateexception-only-fullscreen-opaque-activities-can-request-o
-    requestedOrientation = if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O) {
-      ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-    } else {
-      ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        rootView = super.createRootView()
+        return rootView
+      }
     }
-
-    super.onCreate(savedInstanceState)
   }
 
   override fun onKeyUp(keyCode: Int, event: KeyEvent): Boolean {
@@ -104,7 +99,7 @@ class DevMenuActivity : ReactActivity() {
 
     if (supportsDevelopment) {
       val devSupportManager: DevSupportManager =
-        ReactInstanceManager::class.java.getPrivateDeclaredFiledValue(
+        ReactInstanceManager::class.java.getPrivateDeclaredFieldValue(
           "mDevSupportManager", instanceManager
         )
 
@@ -116,19 +111,6 @@ class DevMenuActivity : ReactActivity() {
     var appWasLoaded = false
     private lateinit var rootView: ReactRootView
 
-    fun createRootView(activity: ReactActivity): ReactRootView {
-      if (::rootView.isInitialized) {
-        return rootView
-      }
-
-      // This type hint is needed for the older kotlin version.
-      @Suppress("RemoveExplicitTypeArguments")
-      rootView = getVendoredClass<ReactRootView>(
-        "com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView",
-        arrayOf(Context::class.java),
-        arrayOf(activity)
-      )
-      return rootView
-    }
+    private fun rootViewWasInitialized() = ::rootView.isInitialized
   }
 }

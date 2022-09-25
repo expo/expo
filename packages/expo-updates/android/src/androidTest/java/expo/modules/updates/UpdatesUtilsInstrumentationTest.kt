@@ -47,7 +47,7 @@ class UpdatesUtilsInstrumentationTest {
   @Test
   @Throws(Exception::class)
   fun testgetHeadersMapFromJSONString_empty() {
-    val emptyMap = UpdatesUtils.getHeadersMapFromJSONString("{}")
+    val emptyMap = UpdatesUtils.getMapFromJSONString("{}")
     Assert.assertEquals(emptyMap, mapOf<String, String>())
   }
 
@@ -55,25 +55,25 @@ class UpdatesUtilsInstrumentationTest {
   @Throws(Exception::class)
   fun testgetHeadersMapFromJSONString_expectedFormat() {
     val expected = mapOf("expo-channel-name" to "main")
-    val emptyMap = UpdatesUtils.getHeadersMapFromJSONString("{\"expo-channel-name\":\"main\"}")
+    val emptyMap = UpdatesUtils.getMapFromJSONString("{\"expo-channel-name\":\"main\"}")
     Assert.assertEquals(emptyMap, expected)
   }
 
   @Test(expected = Exception::class)
   @Throws(Exception::class)
   fun testgetHeadersMapFromJSONString_throwsIntegerValue() {
-    UpdatesUtils.getHeadersMapFromJSONString("{\"expo-channel-name\": 5}")
+    UpdatesUtils.getMapFromJSONString("{\"expo-channel-name\": 5}")
   }
 
   @Test(expected = Exception::class)
   @Throws(Exception::class)
   fun testgetHeadersMapFromJSONString_throwsNonStringValue() {
-    UpdatesUtils.getHeadersMapFromJSONString("{\"expo-channel-name\":[\"main\"]}")
+    UpdatesUtils.getMapFromJSONString("{\"expo-channel-name\":[\"main\"]}")
   }
 
   @Test(expected = Exception::class)
   @Throws(Exception::class)
   fun testgetHeadersMapFromJSONString_throwsNonStringKey() {
-    UpdatesUtils.getHeadersMapFromJSONString("{7:[\"main\"]}")
+    UpdatesUtils.getMapFromJSONString("{7:[\"main\"]}")
   }
 }

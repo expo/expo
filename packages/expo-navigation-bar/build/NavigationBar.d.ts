@@ -165,3 +165,4 @@ export declare function getBehaviorAsync(): Promise<NavigationBarBehavior>;
  */
 export declare function useVisibility(): NavigationBarVisibility | null;
 export * from './NavigationBar.types';
+//# sourceMappingURL=NavigationBar.d.ts.map

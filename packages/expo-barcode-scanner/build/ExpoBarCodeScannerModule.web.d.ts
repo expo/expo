@@ -27,3 +27,4 @@ declare const _default: {
     getPermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExpoBarCodeScannerModule.web.d.ts.map

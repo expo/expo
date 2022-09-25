@@ -24,6 +24,9 @@ export function getLocalAssets() {
 export function getManifest() {
     return Constants.__unsafeNoWarnManifest ?? {};
 }
+export function getManifest2() {
+    return Constants.__unsafeNoWarnManifest2;
+}
 // Compute manifest base URL if available
 export const manifestBaseUrl = Constants.experienceUrl
     ? getManifestBaseUrl(Constants.experienceUrl)

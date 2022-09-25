@@ -1,6 +1,5 @@
 #import <Foundation/Foundation.h>
-
-#import "REANode.h"
+#import <RNReanimated/REANode.h>
 #import <React/RCTBridgeModule.h>
 #import <React/RCTUIManager.h>
 
@@ -19,10 +18,9 @@ typedef void (^REAEventHandler)(NSString *eventName, id<RCTEvent> event);
 @property (nonatomic, nullable) NSSet<NSString *> *uiProps;
 @property (nonatomic, nullable) NSSet<NSString *> *nativeProps;
 
-- (nonnull instancetype)initWithModule:(REAModule *)reanimatedModule
-                             uiManager:(nonnull RCTUIManager *)uiManager;
+- (nonnull instancetype)initWithModule:(REAModule *)reanimatedModule uiManager:(nonnull RCTUIManager *)uiManager;
 
-- (REANode* _Nullable)findNodeByID:(nonnull REANodeID)nodeID;
+- (REANode *_Nullable)findNodeByID:(nonnull REANodeID)nodeID;
 
 - (void)invalidate;
 
@@ -34,31 +32,26 @@ typedef void (^REAEventHandler)(NSString *eventName, id<RCTEvent> event);
 - (void)postRunUpdatesAfterAnimation;
 - (void)registerEventHandler:(REAEventHandler)eventHandler;
 - (void)enqueueUpdateViewOnNativeThread:(nonnull NSNumber *)reactTag
-                               viewName:(NSString *) viewName
+                               viewName:(NSString *)viewName
                             nativeProps:(NSMutableDictionary *)nativeProps
                        trySynchronously:(BOOL)trySync;
-- (void)getValue:(REANodeID)nodeID
-        callback:(RCTResponseSenderBlock)callback;
+- (void)getValue:(REANodeID)nodeID callback:(RCTResponseSenderBlock)callback;
 
 // graph
 
-- (void)createNode:(nonnull REANodeID)tag
-            config:(NSDictionary<NSString *, id> *__nonnull)config;
+- (void)createNode:(nonnull REANodeID)tag config:(NSDictionary<NSString *, id> *__nonnull)config;
 
 - (void)dropNode:(nonnull REANodeID)tag;
 
-- (void)connectNodes:(nonnull REANodeID)parentID
-             childID:(nonnull REANodeID)childID;
+- (void)connectNodes:(nonnull REANodeID)parentID childID:(nonnull REANodeID)childID;
 
-- (void)disconnectNodes:(nonnull REANodeID)parentID
-                childID:(nonnull REANodeID)childID;
+- (void)disconnectNodes:(nonnull REANodeID)parentID childID:(nonnull REANodeID)childID;
 
 - (void)connectNodeToView:(nonnull REANodeID)nodeID
                   viewTag:(nonnull NSNumber *)viewTag
                  viewName:(nonnull NSString *)viewName;
 
-- (void)disconnectNodeFromView:(nonnull REANodeID)nodeID
-                       viewTag:(nonnull NSNumber *)viewTag;
+- (void)disconnectNodeFromView:(nonnull REANodeID)nodeID viewTag:(nonnull NSNumber *)viewTag;
 
 - (void)attachEvent:(nonnull NSNumber *)viewTag
           eventName:(nonnull NSString *)eventName
@@ -70,20 +63,21 @@ typedef void (^REAEventHandler)(NSString *eventName, id<RCTEvent> event);
 
 // configuration
 
-- (void)configureProps:(nonnull NSSet<NSString *> *)nativeProps
-               uiProps:(nonnull NSSet<NSString *> *)uiProps;
+- (void)configureUiProps:(nonnull NSSet<NSString *> *)uiPropsSet
+          andNativeProps:(nonnull NSSet<NSString *> *)nativePropsSet;
 
 - (void)updateProps:(nonnull NSDictionary *)props
       ofViewWithTag:(nonnull NSNumber *)viewTag
            withName:(nonnull NSString *)viewName;
 
-- (NSString*)obtainProp:(nonnull NSNumber *)viewTag
-          propName:(nonnull NSString *)propName;
+- (NSString *)obtainProp:(nonnull NSNumber *)viewTag propName:(nonnull NSString *)propName;
 
 // events
 
 - (void)dispatchEvent:(id<RCTEvent>)event;
 
 - (void)setValueForNodeID:(nonnull NSNumber *)nodeID value:(nonnull NSNumber *)newValue;
+
+- (void)maybeFlushUpdateBuffer;
 
 @end

@@ -28,3 +28,4 @@ declare const _default: {
     stopObserving(): void;
 };
 export default _default;
+//# sourceMappingURL=ExpoLocation.web.d.ts.map

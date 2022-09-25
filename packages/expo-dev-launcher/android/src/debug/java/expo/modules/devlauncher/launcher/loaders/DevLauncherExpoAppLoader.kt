@@ -27,6 +27,7 @@ abstract class DevLauncherExpoAppLoader(
     applyOrientation(activity)
     applyStatusBarConfiguration(activity)
     applyTaskDescription(activity)
+    applyNavigationBarConfiguration(activity)
   }
 
   override fun onReactContext(context: ReactContext) {

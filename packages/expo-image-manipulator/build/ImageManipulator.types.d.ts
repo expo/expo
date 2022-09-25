@@ -63,7 +63,7 @@ export declare enum SaveFormat {
     JPEG = "jpeg",
     PNG = "png",
     /**
-     * __Web Only__
+     * @platform web
      */
     WEBP = "webp"
 }
@@ -87,3 +87,4 @@ export declare type SaveOptions = {
      */
     format?: SaveFormat;
 };
+//# sourceMappingURL=ImageManipulator.types.d.ts.map

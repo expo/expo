@@ -3,7 +3,7 @@ import UIKit
 /**
  The definition of the view manager. It's part of the module definition to scope only view-related definitions.
  */
-public struct ViewManagerDefinition: AnyDefinition {
+public class ViewManagerDefinition: ObjectDefinition {
   /**
    The view factory that lets us create views.
    */
@@ -14,19 +14,35 @@ public struct ViewManagerDefinition: AnyDefinition {
    */
   let props: [AnyViewProp]
 
-  init(definitions: [AnyDefinition]) {
+  /**
+   Names of the events that the view can send to JavaScript.
+   */
+  let eventNames: [String]
+
+  /**
+   Default initializer receiving children definitions from the result builder.
+   */
+  override init(definitions: [AnyDefinition]) {
     self.factory = definitions
       .compactMap { $0 as? ViewFactory }
       .last
 
     self.props = definitions
       .compactMap { $0 as? AnyViewProp }
+
+    self.eventNames = Array(
+      definitions
+        .compactMap { ($0 as? EventsDefinition)?.names }
+        .joined()
+    )
+
+    super.init(definitions: definitions)
   }
 
   /**
    Creates a new view using the view factory. Returns `nil` if the definition doesn't use the `view` function.
    */
-  func createView() -> UIView? {
+  func createView(appContext: AppContext) -> UIView? {
     return factory?.create()
   }
 
@@ -39,3 +55,8 @@ public struct ViewManagerDefinition: AnyDefinition {
     }
   }
 }
+
+/**
+ The protocol for definition components that can only be handled by the view manager builder.
+ */
+public protocol ViewManagerDefinitionComponent: AnyDefinition {}

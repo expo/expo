@@ -12,15 +12,35 @@ export declare class ExpoModuleConfig {
     /**
      * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
      */
-    iosModulesClassNames(): string[];
+    iosModules(): string[];
     /**
      * Returns a list of names of Swift classes that receives AppDelegate life-cycle events.
      */
     iosAppDelegateSubscribers(): string[];
     /**
+     * Returns a list of names of Swift classes that implement `ExpoReactDelegateHandler`.
+     */
+    iosReactDelegateHandlers(): string[];
+    /**
+     * Returns podspec paths defined by the module author.
+     */
+    iosPodspecPaths(): string[];
+    /**
+     * Returns the product module names, if defined by the module author.
+     */
+    iosSwiftModuleNames(): string[];
+    /**
+     * Returns whether this module will be added only to the debug configuration
+     */
+    iosDebugOnly(): boolean;
+    /**
      * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
      */
-    androidModulesClassNames(): string[];
+    androidModules(): string[];
+    /**
+     * Returns build.gradle file paths defined by the module author.
+     */
+    androidGradlePaths(): string[];
     /**
      * Returns serializable raw config.
      */

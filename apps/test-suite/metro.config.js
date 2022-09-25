@@ -1,5 +1,6 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
 
+/* global __dirname */
 const baseConfig = createMetroConfiguration(__dirname);
 
 module.exports = {
@@ -8,7 +9,7 @@ module.exports = {
   // NOTE(brentvatne): This can be removed when
   // https://github.com/facebook/metro/issues/290 is fixed.
   server: {
-    enhanceMiddleware: middleware => {
+    enhanceMiddleware: (middleware) => {
       return (req, res, next) => {
         // When an asset is imported outside the project root, it has wrong path on Android
         // This happens for the back button in stack, so we fix the path to correct one

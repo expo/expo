@@ -8,6 +8,8 @@
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
+import host.exp.expoview.R;
+
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -71,28 +73,20 @@ public class RNTimePickerDialogFragment extends DialogFragment {
       is24hour = args.getBoolean(RNConstants.ARG_IS24HOUR, DateFormat.is24HourFormat(activityContext));
     }
 
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-      switch (display) {
-        case CLOCK:
-        case SPINNER:
-          String resourceName = display == RNTimePickerDisplay.CLOCK
-                  ? "ReactAndroidClockTimePickerDialog"
-                  : "ReactAndroidSpinnerTimePickerDialog";
-          return new RNDismissableTimePickerDialog(
-                  activityContext,
-                  activityContext.getResources().getIdentifier(
-                          resourceName,
-                          "style",
-                          activityContext.getPackageName()
-                  ),
-                  onTimeSetListener,
-                  hour,
-                  minute,
-                  minuteInterval,
-                  is24hour,
-                  display
-          );
-      }
+    if (display == RNTimePickerDisplay.CLOCK || display == RNTimePickerDisplay.SPINNER) {
+        int theme = display == RNTimePickerDisplay.CLOCK
+              ? R.style.ClockTimePickerDialog
+              : R.style.SpinnerTimePickerDialog;
+        return new RNDismissableTimePickerDialog(
+                activityContext,
+                theme,
+                onTimeSetListener,
+                hour,
+                minute,
+                minuteInterval,
+                is24hour,
+                display
+        );
     }
     return new RNDismissableTimePickerDialog(
       activityContext,
@@ -113,6 +107,12 @@ public class RNTimePickerDialogFragment extends DialogFragment {
 
     if (args != null && args.containsKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
       dialog.setButton(DialogInterface.BUTTON_NEUTRAL, args.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL), mOnNeutralButtonActionListener);
+    }
+    if (args != null && args.containsKey(RNConstants.ARG_POSITIVE_BUTTON_LABEL)) {
+      dialog.setButton(DialogInterface.BUTTON_POSITIVE, args.getString(RNConstants.ARG_POSITIVE_BUTTON_LABEL), dialog);
+    }
+    if (args != null && args.containsKey(RNConstants.ARG_NEGATIVE_BUTTON_LABEL)) {
+      dialog.setButton(DialogInterface.BUTTON_NEGATIVE, args.getString(RNConstants.ARG_NEGATIVE_BUTTON_LABEL), dialog);
     }
     return dialog;
   }

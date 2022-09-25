@@ -4,3 +4,4 @@
  * @platform ios
  */
 export default function setStatusBarNetworkActivityIndicatorVisible(visible: boolean): void;
+//# sourceMappingURL=setStatusBarNetworkActivityIndicatorVisible.d.ts.map

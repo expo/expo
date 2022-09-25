@@ -1,0 +1,1 @@
+{"version":3,"file":"registerRootComponent.d.ts","sourceRoot":"","sources":["../../src/launch/registerRootComponent.tsx"],"names":[],"mappings":"AAAA,OAAO,oBAAoB,CAAC;AAC5B,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAI/B,OAAO,EAAE,YAAY,EAAE,MAAM,sBAAsB,CAAC;AAEpD,MAAM,CAAC,OAAO,UAAU,qBAAqB,CAAC,CAAC,SAAS,YAAY,EAClE,SAAS,EAAE,KAAK,CAAC,aAAa,CAAC,CAAC,CAAC,GAChC,IAAI,CAMN"}

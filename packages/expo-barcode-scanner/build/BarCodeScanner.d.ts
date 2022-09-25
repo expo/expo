@@ -142,11 +142,18 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
      */
     static scanFromURLAsync(url: string, barCodeTypes?: string[]): Promise<BarCodeScannerResult[]>;
     render(): JSX.Element;
+    /**
+     * @hidden
+     */
     onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent }: BarCodeEventCallbackArguments) => void;
+    /**
+     * @hidden
+     */
     convertNativeProps(props: BarCodeScannerProps): BarCodeScannerProps;
 }
 export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 export declare const Constants: {
     BarCodeType: any;
     Type: any;
-}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>], scanFromURLAsync: typeof BarCodeScanner.scanFromURLAsync;
+}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, scanFromURLAsync: typeof BarCodeScanner.scanFromURLAsync;
+//# sourceMappingURL=BarCodeScanner.d.ts.map

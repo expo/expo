@@ -3,3 +3,4 @@ declare const _default: {
     unregisterTaskAsync(taskName: string): Promise<null>;
 };
 export default _default;
+//# sourceMappingURL=BackgroundNotificationTasksModule.web.d.ts.map

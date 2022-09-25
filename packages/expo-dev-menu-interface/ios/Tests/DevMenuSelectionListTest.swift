@@ -7,9 +7,9 @@ class DevMenuSelectionListTest: QuickSpec {
   override func spec() {
     it("List should be serializable") {
       let list = DevMenuSelectionList()
-      
+
       let serilizedData = list.serialize()
-      
+
       expect(serilizedData["type"] as? Int).to(equal(ItemType.selectionList.rawValue))
       expect(serilizedData["actionId"] as? String).toNot(beNil())
     }

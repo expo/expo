@@ -36,3 +36,4 @@ export declare type SendIntentExtras = {
     key: string;
     value: string | number | boolean;
 };
+//# sourceMappingURL=Linking.types.d.ts.map

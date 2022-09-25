@@ -7,12 +7,11 @@
 
 #pragma once
 
+#include <ReactCommon/CallInvoker.h>
+#include <jsi/jsi.h>
+#include <memory>
 #include <string>
 #include <unordered_map>
-
-#include <jsi/jsi.h>
-
-#include <ReactCommon/CallInvoker.h>
 
 namespace facebook {
 namespace react {
@@ -37,12 +36,10 @@ enum TurboModuleMethodValueKind {
  */
 class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  public:
-  TurboModule(
-      const std::string &name,
-      std::shared_ptr<CallInvoker> jsInvoker);
+  TurboModule(const std::string &name, std::shared_ptr<CallInvoker> jsInvoker);
   virtual ~TurboModule();
 
-  virtual facebook::jsi::Value get(
+  facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,
       const facebook::jsi::PropNameID &propName) override;
 

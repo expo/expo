@@ -62,3 +62,4 @@ export interface DateTriggerInput {
     timestamp: number;
 }
 export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | DateTriggerInput | CalendarTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput | YearlyTriggerInput;
+//# sourceMappingURL=NotificationScheduler.types.d.ts.map

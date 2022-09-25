@@ -6,6 +6,12 @@
 #import <SystemConfiguration/SystemConfiguration.h>
 #import <arpa/inet.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesEventName = @"Expo.nativeUpdatesEvent";
@@ -22,7 +28,7 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   }
 }
 
-+ (NSString *)sha256WithData:(NSData *)data
++ (NSString *)hexEncodedSHA256WithData:(NSData *)data
 {
   uint8_t digest[CC_SHA256_DIGEST_LENGTH];
   CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
@@ -34,6 +40,19 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   }
 
   return output;
+}
+
++ (NSString *)base64UrlEncodedSHA256WithData:(NSData *)data
+{
+  uint8_t digest[CC_SHA256_DIGEST_LENGTH];
+  CC_SHA256(data.bytes, (CC_LONG)data.length, digest);
+  NSString *base64String = [[NSData dataWithBytes:digest length:CC_SHA256_DIGEST_LENGTH] base64EncodedStringWithOptions:0];
+
+  // ref. https://datatracker.ietf.org/doc/html/rfc4648#section-5
+  return [[[base64String
+            stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"="]] // remove extra padding
+           stringByReplacingOccurrencesOfString:@"+" withString:@"-"] // replace "+" character w/ "-"
+          stringByReplacingOccurrencesOfString:@"/" withString:@"_"]; // replace "/" character w/ "_"
 }
 
 + (nullable NSURL *)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error
@@ -119,6 +138,17 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   return asset.mainBundleDir
     ? [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type inDirectory:asset.mainBundleDir]
     : [[NSBundle mainBundle] pathForResource:asset.mainBundleFilename ofType:asset.type];
+}
+
+// Purges entries in the expo-updates log file that are older than 1 day
++ (void)purgeUpdatesLogsOlderThanOneDay
+{
+  EXUpdatesLogReader *logReader = [EXUpdatesLogReader new];
+  [logReader purgeLogEntries:^(NSError *error) {
+    if (error) {
+      NSLog(@"EXUpdatesUtils: error in purgeOldUpdatesLogs: %@", [error localizedDescription]);
+    }
+  }];
 }
 
 @end

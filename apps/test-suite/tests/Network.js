@@ -1,11 +1,9 @@
 import * as Network from 'expo-network';
 import { Platform } from 'react-native';
 
-import { isDeviceFarm } from '../utils/Environment';
-
 export const name = 'Network';
-const Ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-const macAddressRegex = /^([0-9a-fA-F]{2}[:.-]){5}[0-9a-fA-F]{2}$/;
+const Ipv4Regex =
+  /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
 export async function test(t) {
   if (Platform.OS === 'android') {

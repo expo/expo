@@ -26,3 +26,4 @@ export default _default;
  * intended for testing only.
  */
 export declare function __waitForEmptyLogQueueAsync(): Promise<void>;
+//# sourceMappingURL=RemoteLogging.d.ts.map

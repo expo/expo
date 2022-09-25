@@ -1,20 +1,21 @@
 ---
 title: FileSystem
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-file-system'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-file-system'
+packageName: 'expo-file-system'
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import { ConfigClassic, ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-file-system`** provides access to a file system stored locally on the device. Within Expo Go, each project has a separate file system and has no access to the file system of other Expo projects. However, it can save content shared by other projects to the local filesystem, as well as share local files with other projects. It is also capable of uploading and downloading files from network URLs.
 
-<!-- TODO: update this image so we don't have to force a white background on it -->
+{/* TODO: update this image so we don't have to force a white background on it */}
 
 <ImageSpotlight alt="Diagram of the various pieces of expo-file-system and how they interact with different resources" src="/static/images/sdk/file-system/file-system-diagram.png" style={{ maxWidth: 850, maxHeight: 600 }} containerStyle={{ backgroundColor: "#fff" }} />
 
@@ -22,7 +23,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-file-system" />
+<APIInstallSection />
 
 ## Configuration in app.json / app.config.js
 
@@ -34,7 +35,7 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-file-system` repository](https://github.com/expo/expo/tree/master/packages/expo-file-system#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-file-system` repository](https://github.com/expo/expo/tree/main/packages/expo-file-system#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 
@@ -173,7 +174,7 @@ export async function deleteAllGifs() {
 import * as FileSystem from 'expo-file-system';
 ```
 
-### [Supported URI schemes](#supported-uri-schemes-1)
+### Supported URI schemes
 
 ## Directories
 
@@ -193,7 +194,7 @@ So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the
 
 Expo APIs that create files generally operate within these directories. This includes `Audio` recordings, `Camera` photos, `ImagePicker` results, `SQLite` databases and `takeSnapShotAsync()` results. This allows their use with the `FileSystem` API.
 
-Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `FileSystem.getInfoAsync()` and `FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos) from React Native.
+Some `FileSystem` functions are able to read from (but not write to) other locations.
 
 ## Constants
 
@@ -425,6 +426,31 @@ Returns a Promise that resolves to an object with the following fields:
 
 Upload the contents of the file pointed by `fileUri` to the remote url.
 
+#### Example
+
+**client**
+```javascript
+import * as FileSystem from 'expo-file-system'
+
+try {
+  const response = await FileSystem.uploadAsync(
+    `http://192.168.0.1:1234/binary-upload`,
+    fileUri,
+    {
+      fieldName: "file",
+      httpMethod: "PATCH",
+      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+    }
+  )
+  console.log(JSON.stringify(response, null, 4))
+} catch(error) {
+  console.log(error)
+}
+```
+**server**
+
+Please refer to the "[how to handle such requests](#how-to-handle-such-requests)" section - there is code for a simple Node.js server.
+
 #### Arguments
 
 - **url (_string_)** -- The remote URL, where the file will be sent.
@@ -447,7 +473,7 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 
   - **mimeType (_string_)** -- The MIME type of the provided file. If not provided, the module will try to guess it based on the extension.
 
-  - **parameters (_Record<string, string>_)** -- Additional form properties. They will be located in the request body.
+  - **parameters (_Record&lt;string, string&gt;_)** -- Additional form properties. They will be located in the request body.
 
 #### Returns
 
@@ -796,21 +822,21 @@ Alias to [FileSystem.copyAsync(options)](#filesystemcopyasyncoptions)
 
 In this table, you can see what type of URI can be handled by each method. For example, if you have an URI, which begins with `content://`, you cannot use `FileSystem.readAsStringAsync()`, but you can use `FileSystem.copyAsync()` which supports this scheme.
 
-| Method name               | Android                                                                                                                                   | iOS                                                                                             |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- | --- |
-| `getInfoAsync`            | `file://`,<br/>`content://`,<br/>`asset://`,<br/>no scheme**\***                                                                          | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
-| `readAsStringAsync`       | `file://`,<br/>`asset://`,<br/>[SAF URI](#saf-uri)                                                                                        | `file://`                                                                                       |
-| `writeAsStringAsync`      | `file://`,<br/>[SAF URI](#saf-uri)                                                                                                        | `file://`                                                                                       |
-| `deleteAsync`             | `file://`,<br/>[SAF URI](#saf-uri)                                                                                                        | `file://`                                                                                       |
-| `moveAsync`               | Source:<br/>`file://`,<br/>[SAF URI](#saf-uri)<br/><br/>Destination:<br/>`file://`                                                        | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                       |
-| `copyAsync`               | Source:<br/>`file://`,<br/>`content://`,<br/>`asset://`,<br/>[SAF URI](#saf-uri),<br/>no scheme**\***<br/><br/>Destination:<br/>`file://` | Source:<br/>`file://`,<br/>`ph://`,<br/>`assets-library://`<br/><br/>Destination:<br/>`file://` |
-| `makeDirectoryAsync`      | `file://`                                                                                                                                 | `file://`                                                                                       |
-| `readDirectoryAsync`      | `file://`                                                                                                                                 | `file://`                                                                                       |
-| `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
-| `uploadAsync`             | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                                                  | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
-| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                                                                 | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |     |
+| Method name               | Android                                                                                                                              | iOS                                                                                             |
+| ------------------------- |--------------------------------------------------------------------------------------------------------------------------------------| ----------------------------------------------------------------------------------------------- |
+| `getInfoAsync`            | `file:///`,<br/>`content://`,<br/>`asset://`,<br/>no scheme                                                                          | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
+| `readAsStringAsync`       | `file:///`,<br/>`asset://`,<br/>[SAF URI](#saf-uri)                                                                                  | `file://`                                                                                       |
+| `writeAsStringAsync`      | `file:///`,<br/>[SAF URI](#saf-uri)                                                                                                  | `file://`                                                                                       |
+| `deleteAsync`             | `file:///`,<br/>[SAF URI](#saf-uri)                                                                                                  | `file://`                                                                                       |
+| `moveAsync`               | Source:<br/>`file:///`,<br/>[SAF URI](#saf-uri)<br/><br/>Destination:<br/>`file://`                                                  | Source:<br/>`file://`<br/><br/>Destination:<br/>`file://`                                       |
+| `copyAsync`               | Source:<br/>`file:///`,<br/>`content://`,<br/>`asset://`,<br/>[SAF URI](#saf-uri),<br/>no scheme<br/><br/>Destination:<br/>`file://` | Source:<br/>`file://`,<br/>`ph://`,<br/>`assets-library://`<br/><br/>Destination:<br/>`file://` |
+| `makeDirectoryAsync`      | `file:///`                                                                                                                           | `file://`                                                                                       |
+| `readDirectoryAsync`      | `file:///`                                                                                                                           | `file://`                                                                                       |
+| `downloadAsync`           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file:///`                                                           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
+| `uploadAsync`             | Source:<br/>`file:///`<br/><br/>Destination:<br/>`http://`<br/>`https://`                                                            | Source:<br/>`file://`<br/><br/>Destination:<br/>`http://`<br/>`https://`                        |
+| `createDownloadResumable` | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file:///`                                                           | Source:<br/>`http://`,<br/>`https://`<br/><br/>Destination:<br/>`file://`                       |
 
-**\***On Android _no scheme_ defaults to a bundled resource.
+> On Android **no scheme** defaults to a bundled resource.
 
 ## Permissions
 

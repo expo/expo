@@ -17,7 +17,7 @@ class DevMenuGestureRecognizerDelegate {
       cancelGesture(gestureReconizer)
     }
   }
-  
+
   /**
    Use a trick that cancels a gesture.
   */
@@ -29,7 +29,7 @@ class DevMenuGestureRecognizerDelegate {
 
 class DevMenuGestureRecognizer: UILongPressGestureRecognizer {
   static fileprivate let gestureDelegate = DevMenuGestureRecognizerDelegate()
-  
+
   init() {
     super.init(target: DevMenuGestureRecognizer.gestureDelegate, action: #selector(DevMenuGestureRecognizer.gestureDelegate.handleLongPress(_:)))
 

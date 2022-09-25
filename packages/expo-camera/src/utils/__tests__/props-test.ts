@@ -1,5 +1,7 @@
+import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Platform } from 'react-native';
 
+import { AutoFocus, CameraType, FlashMode, WhiteBalance } from '../../Camera.types';
 import { ensureNativeProps } from '../props';
 
 describe(ensureNativeProps, () => {
@@ -9,14 +11,16 @@ describe(ensureNativeProps, () => {
 
     expect(
       ensureNativeProps({
-        type: 'front',
-        flashMode: 'torch',
-        autoFocus: 'auto',
-        whiteBalance: 'continuous',
+        type: CameraType.front,
+        flashMode: FlashMode.torch,
+        autoFocus: AutoFocus.auto,
+        whiteBalance: WhiteBalance.continuous,
         poster: './image.png',
         ratio: '1080p',
         useCamera2Api: true,
-        barCodeScannerSettings: {},
+        barCodeScannerSettings: {
+          barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+        },
         onBarCodeScanned,
         onFacesDetected,
       })
@@ -28,7 +32,9 @@ describe(ensureNativeProps, () => {
           type: undefined,
           whiteBalance: undefined,
           flashMode: undefined,
-          barCodeScannerSettings: {},
+          barCodeScannerSettings: {
+            barCodeTypes: [undefined],
+          },
           onBarCodeScanned,
           onFacesDetected,
           barCodeScannerEnabled: true,
@@ -40,7 +46,9 @@ describe(ensureNativeProps, () => {
           type: undefined,
           whiteBalance: undefined,
           flashMode: undefined,
-          barCodeScannerSettings: {},
+          barCodeScannerSettings: {
+            barCodeTypes: [undefined],
+          },
           onBarCodeScanned,
           onFacesDetected,
           barCodeScannerEnabled: true,
@@ -55,7 +63,9 @@ describe(ensureNativeProps, () => {
           flashMode: 'torch',
           type: 'front',
           whiteBalance: 'continuous',
-          barCodeScannerSettings: {},
+          barCodeScannerSettings: {
+            barCodeTypes: ['qr'],
+          },
           onBarCodeScanned,
           onFacesDetected,
           barCodeScannerEnabled: true,

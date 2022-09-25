@@ -1,4 +1,4 @@
-import { Audio, Video } from 'expo-av';
+import { Video } from 'expo-av';
 import { Camera } from 'expo-camera';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -10,29 +10,30 @@ export const name = 'Camera';
 const style = { width: 200, height: 200 };
 
 export async function test(t, { setPortalChild, cleanupPortal }) {
-  const shouldSkipTestsRequiringPermissions = await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
+  const shouldSkipTestsRequiringPermissions =
+    await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
   describeWithPermissions('Camera', () => {
     let instance = null;
     let originalTimeout;
 
-    const refSetter = ref => {
+    const refSetter = (ref) => {
       instance = ref;
     };
 
     const mountAndWaitFor = (child, propName = 'onCameraReady') =>
-      new Promise(resolve => {
+      new Promise((resolve) => {
         const response = originalMountAndWaitFor(child, propName, setPortalChild);
         setTimeout(() => resolve(response), 1500);
       });
 
     t.beforeAll(async () => {
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Camera.requestPermissionsAsync();
+        return Camera.requestCameraPermissionsAsync();
       });
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Audio.requestPermissionsAsync();
+        return Camera.requestMicrophonePermissionsAsync();
       });
 
       originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -44,13 +45,27 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     t.beforeEach(async () => {
-      const { status } = await Camera.getPermissionsAsync();
+      const { status } = await Camera.getCameraPermissionsAsync();
       t.expect(status).toEqual('granted');
     });
 
     t.afterEach(async () => {
       instance = null;
       await cleanupPortal();
+    });
+
+    t.describe('Camera.getCameraPermissionsAsync', () => {
+      t.it('is granted', async () => {
+        const { status } = await Camera.getCameraPermissionsAsync();
+        t.expect(status).toEqual('granted');
+      });
+    });
+
+    t.describe('Camera.getMicrophonePermissionsAsync', () => {
+      t.it('is granted', async () => {
+        const { status } = await Camera.getMicrophonePermissionsAsync();
+        t.expect(status).toEqual('granted');
+      });
     });
 
     if (Platform.OS === 'android') {
@@ -91,6 +106,25 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           picture = await instance.takePictureAsync({ exif: true });
           t.expect(picture).toBeDefined();
           t.expect(picture.exif).toBeDefined();
+        });
+
+        t.it('adds additional EXIF only if requested', async () => {
+          await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
+          const additionalExif = {
+            GPSLatitude: 30.82123,
+            GPSLongitude: 150.25582,
+            GPSAltitude: 80.808,
+          };
+          let picture = await instance.takePictureAsync({ exif: false, additionalExif });
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).not.toBeDefined();
+
+          picture = await instance.takePictureAsync({ exif: true, additionalExif });
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).toBeDefined();
+          t.expect(picture.exif.GPSLatitude).toBe(additionalExif.GPSLatitude);
+          t.expect(picture.exif.GPSLongitude).toBe(additionalExif.GPSLongitude);
+          t.expect(picture.exif.GPSAltitude).toBe(additionalExif.GPSAltitude);
         });
 
         t.it(
@@ -260,7 +294,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
             .recordAsync({
               codec: '123',
             })
-            .catch(error => {
+            .catch((error) => {
               t.expect(error.message).toMatch(/(?=.*codec)(?=.*is not supported)/i);
             });
         });
@@ -292,7 +326,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
 
       // Test for the fix to: https://github.com/expo/expo/issues/1976
-      const testFrontCameraRecording = async camera => {
+      const testFrontCameraRecording = async (camera) => {
         await mountAndWaitFor(camera);
         const response = await instance.recordAsync({ maxDuration: 2 });
 
@@ -350,7 +384,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.it('started/stopped manually', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
 
-          const recordFor = duration =>
+          const recordFor = (duration) =>
             new Promise(async (resolve, reject) => {
               const recordingPromise = instance.recordAsync();
               await waitFor(duration);
@@ -373,7 +407,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.it('started/stopped automatically', async () => {
           await mountAndWaitFor(<Camera style={style} ref={refSetter} />);
 
-          const recordFor = duration =>
+          const recordFor = (duration) =>
             new Promise(async (resolve, reject) => {
               try {
                 const response = await instance.recordAsync({ maxDuration: duration / 1000 });

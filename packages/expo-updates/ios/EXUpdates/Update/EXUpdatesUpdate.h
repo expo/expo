@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
+#import <EXUpdates/EXUpdatesManifestHeaders.h>
 #import <EXManifests/EXManifestsManifest.h>
 
 @class EXUpdatesDatabase;
@@ -57,6 +58,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 
 @property (nonatomic, strong, readonly, nullable) NSDictionary *serverDefinedHeaders;
 @property (nonatomic, strong, readonly, nullable) NSDictionary *manifestFilters;
+@property (nonatomic, strong, readonly, nullable) NSString *loggingId;
 
 @property (nonatomic, strong, readonly) EXManifestsManifest *manifest;
 
@@ -76,7 +78,8 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
                     database:(EXUpdatesDatabase *)database;
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                          response:(nullable NSURLResponse *)response
+                   manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
+                        extensions:(NSDictionary *)extensions
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
                              error:(NSError **)error;

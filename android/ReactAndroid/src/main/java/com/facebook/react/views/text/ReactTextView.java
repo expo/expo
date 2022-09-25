@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -19,11 +19,15 @@ import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.appcompat.widget.TintContextWrapper;
+import androidx.core.view.AccessibilityDelegateCompat;
+import androidx.core.view.ViewCompat;
+import androidx.customview.widget.ExploreByTouchHelper;
 import com.facebook.common.logging.FLog;
 import com.facebook.infer.annotation.Assertions;
 import com.facebook.react.bridge.Arguments;
@@ -56,6 +60,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   private boolean mAdjustsFontSizeToFit = false;
   private int mLinkifyMaskType = 0;
   private boolean mNotifyOnInlineViewLayout;
+  private boolean mTextIsSelectable = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
   private Spannable mSpanned;
@@ -124,6 +129,17 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
     Spanned text = (Spanned) getText();
     Layout layout = getLayout();
+    if (layout == null) {
+      // Text layout is calculated during pre-draw phase, so in some cases it can be empty during
+      // layout phase, which usually happens before drawing.
+      // The text layout is created by private {@link assumeLayout} method, which we can try to
+      // invoke directly through reflection or indirectly through some methods that compute it
+      // (e.g. {@link getExtendedPaddingTop}).
+      // It is safer, however, to just early return here, as next measure/layout passes are way more
+      // likely to have the text layout computed.
+      return;
+    }
+
     TextInlineViewPlaceholderSpan[] placeholders =
         text.getSpans(0, text.length(), TextInlineViewPlaceholderSpan.class);
     ArrayList inlineViewInfoArray =
@@ -359,7 +375,7 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
         for (int i = 0; i < spans.length; i++) {
           int spanStart = spannedText.getSpanStart(spans[i]);
           int spanEnd = spannedText.getSpanEnd(spans[i]);
-          if (spanEnd > index && (spanEnd - spanStart) <= targetSpanTextLength) {
+          if (spanEnd >= index && (spanEnd - spanStart) <= targetSpanTextLength) {
             target = spans[i].getReactTag();
             targetSpanTextLength = (spanEnd - spanStart);
           }
@@ -423,8 +439,15 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
   }
 
   @Override
+  public void setTextIsSelectable(boolean selectable) {
+    mTextIsSelectable = selectable;
+    super.setTextIsSelectable(selectable);
+  }
+
+  @Override
   public void onAttachedToWindow() {
     super.onAttachedToWindow();
+    setTextIsSelectable(mTextIsSelectable);
     if (mContainsImages && getText() instanceof Spanned) {
       Spanned text = (Spanned) getText();
       TextInlineImageSpan[] spans = text.getSpans(0, text.length(), TextInlineImageSpan.class);
@@ -531,5 +554,21 @@ public class ReactTextView extends AppCompatTextView implements ReactCompoundVie
 
   public void setLinkifyMask(int mask) {
     mLinkifyMaskType = mask;
+  }
+
+  @Override
+  protected boolean dispatchHoverEvent(MotionEvent event) {
+    // if this view has an accessibility delegate set, and that delegate supports virtual view
+    // children (used for links), pass the hover event along to it so that touching and holding on
+    // this text will properly move focus to the virtual children.
+    if (ViewCompat.hasAccessibilityDelegate(this)) {
+      AccessibilityDelegateCompat delegate = ViewCompat.getAccessibilityDelegate(this);
+      if (delegate instanceof ExploreByTouchHelper) {
+        return ((ExploreByTouchHelper) delegate).dispatchHoverEvent(event)
+            || super.dispatchHoverEvent(event);
+      }
+    }
+
+    return super.dispatchHoverEvent(event);
   }
 }

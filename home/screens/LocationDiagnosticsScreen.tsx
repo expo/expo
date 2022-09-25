@@ -1,11 +1,20 @@
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import FontAwesome from '@expo/vector-icons/build/FontAwesome';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 import * as TaskManager from 'expo-task-manager';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import * as React from 'react';
-import { AppState, AppStateStatus, Platform, StyleSheet, Text, View } from 'react-native';
+import {
+  AppState,
+  AppStateStatus,
+  NativeEventSubscription,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import MapView, { Polyline } from 'react-native-maps';
 
 import NavigationEvents from '../components/NavigationEvents';
@@ -45,6 +54,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
   mapViewRef = React.createRef<MapView>();
 
   eventSubscription?: EventSubscription;
+  appStateSubscription?: NativeEventSubscription;
 
   readonly state: State = {
     isBackgroundLocationAvailable: null,
@@ -69,7 +79,7 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
     const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
     if (status !== 'granted') {
-      AppState.addEventListener('change', this.handleAppStateChange);
+      this.appStateSubscription = AppState.addEventListener('change', this.handleAppStateChange);
       this.setState({
         error:
           'Location permissions are required in order to use this feature. You can manually enable them at any time in the "Location Services" section of the Settings app.',
@@ -113,7 +123,10 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
     }
 
     if (this.state.initialRegion) {
-      AppState.removeEventListener('change', this.handleAppStateChange);
+      if (this.appStateSubscription) {
+        this.appStateSubscription.remove();
+        this.appStateSubscription = undefined;
+      }
       return;
     }
 
@@ -125,7 +138,10 @@ export default class LocationDiagnosticsScreen extends React.Component<Props, St
       this.eventSubscription.remove();
     }
 
-    AppState.removeEventListener('change', this.handleAppStateChange);
+    if (this.appStateSubscription != null) {
+      this.appStateSubscription.remove();
+      this.appStateSubscription = undefined;
+    }
   }
 
   async startLocationUpdates(accuracy = this.state.accuracy) {
@@ -273,7 +289,7 @@ async function getSavedLocations() {
   try {
     const item = await AsyncStorage.getItem(STORAGE_KEY);
     return item ? JSON.parse(item) : [];
-  } catch (e) {
+  } catch {
     return [];
   }
 }

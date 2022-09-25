@@ -1,6 +1,8 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { theme, spacing, ArrowUpRightIcon } from '@expo/styleguide';
 import * as React from 'react';
+
+import { Button } from '~/ui/components/Button';
 
 const STYLES_LINK = css`
   text-decoration: none;
@@ -25,21 +27,22 @@ const STYLES_LINK = css`
 `;
 
 const STYLES_BUTTON = css`
-  display: inline-flex;
+  margin-bottom: ${spacing[4]}px;
 `;
 
-export const CreateAppButton: React.FC<{ href: string; name: string }> = ({ href, name }) => (
-  <a
+type CreateAppButtonProps = React.PropsWithChildren<{ href: string; name: string }>;
+
+export const CreateAppButton = ({ href, name }: CreateAppButtonProps) => (
+  <Button
     css={STYLES_BUTTON}
-    className="snack-inline-example-button"
     href={href}
     target="_blank"
-    rel="noreferrer">
+    iconRight={<ArrowUpRightIcon color={theme.button.primary.foreground} />}>
     Create {name} App
-  </a>
+  </Button>
 );
 
-export const SocialGrid: React.FC = ({ children }) => (
+export const SocialGrid = ({ children }: React.PropsWithChildren<object>) => (
   <div
     style={{
       gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
@@ -51,12 +54,14 @@ export const SocialGrid: React.FC = ({ children }) => (
   </div>
 );
 
-export const SocialGridItem: React.FC<{
+type SocialGridItemProps = React.PropsWithChildren<{
   title: string;
   image?: string;
   href?: string;
   protocol: string[];
-}> = ({ title, protocol = [], image, href }) => (
+}>;
+
+export const SocialGridItem = ({ title, protocol = [], image, href }: SocialGridItemProps) => (
   <a
     href={href}
     css={STYLES_LINK}

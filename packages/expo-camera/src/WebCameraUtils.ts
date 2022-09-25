@@ -3,7 +3,7 @@ import invariant from 'invariant';
 
 import {
   CameraType,
-  CapturedPicture,
+  CameraCapturedPicture,
   ImageSize,
   ImageType,
   WebCameraSettings,
@@ -248,10 +248,10 @@ export function capture(
   video: HTMLVideoElement,
   settings: MediaTrackSettings,
   config: CameraPictureOptions
-): CapturedPicture {
+): CameraCapturedPicture {
   const base64 = captureImage(video, config);
 
-  const capturedPicture: CapturedPicture = {
+  const capturedPicture: CameraCapturedPicture = {
     uri: base64,
     base64,
     width: 0,
@@ -384,7 +384,7 @@ export function setVideoSource(
   } else if (typeof (video as any).mozSrcObject !== 'undefined') {
     (video as any).mozSrcObject = stream;
   } else if (stream && createObjectURL) {
-    video.src = createObjectURL(stream);
+    video.src = createObjectURL(stream as MediaSource | Blob);
   }
 
   if (!stream) {

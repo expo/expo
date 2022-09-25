@@ -1,7 +1,5 @@
+#import <RNReanimated/REATransitionAnimation.h>
 #import <UIKit/UIKit.h>
-
-#import "REATransitionAnimation.h"
-
 
 #define DEFAULT_DURATION 0.25
 
@@ -31,7 +29,7 @@ CGFloat SimAnimationDragCoefficient()
 
 + (REATransitionAnimation *)transitionWithAnimation:(CAAnimation *)animation
                                               layer:(CALayer *)layer
-                                         andKeyPath:(NSString*)keyPath;
+                                         andKeyPath:(NSString *)keyPath;
 {
   REATransitionAnimation *anim = [REATransitionAnimation new];
   anim.animation = animation;
@@ -47,7 +45,7 @@ CGFloat SimAnimationDragCoefficient()
   it calls mach_absolute_time() which is based on the last time the device booted
   which might cause the delay
   */
-  if (_delay > 0){
+  if (_delay > 0) {
     _animation.beginTime = CACurrentMediaTime() + _delay * SimAnimationDragCoefficient();
   }
   _animation.duration = self.duration * SimAnimationDragCoefficient();

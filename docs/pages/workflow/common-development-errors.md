@@ -6,6 +6,8 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 ### expo command not found
 
+> This applies to the [legacy `expo-cli`](/archived/expo-cli) package which is no longer used in Expo SDK 46 and greater.
+
 - Either you do not have `expo-cli` installed or it is not properly configured in your `$PATH`.
 
 - [Install expo-cli](../get-started/installation.md) if you have not already. Otherwise, check how to set your `$PATH` based on your OS.
@@ -20,7 +22,7 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - An error in your code is preventing the JavaScript bundle from being executed on startup.
 
-- Try running `expo start --no-dev --minify` to reproduce the production JS bundle locally. If possible, connect your device and access the device logs via Android Studio or Xcode. Device logs contain much more detailed stacktraces and information. Check to see if you have any changes or errors in your Babel configuration. In some rare cases, this issue could be caused by incompatibility between the Metro JavaScript minifier and certain code in your app ([more information](https://forums.expo.dev/t/change-minifierconfig-for-minify-uglify/36460/2)).
+- Try running `npx expo start --no-dev --minify` to reproduce the production JS bundle locally. If possible, connect your device and access the device logs via Android Studio or Xcode. Device logs contain much more detailed stacktraces and information. Check to see if you have any changes or errors in your Babel configuration. In some rare cases, this issue could be caused by incompatibility between the Metro JavaScript minifier and certain code in your app ([more information](https://forums.expo.dev/t/change-minifierconfig-for-minify-uglify/36460/2)).
 
 ### npm ERR! No git binary found in \$PATH
 
@@ -32,7 +34,7 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - The SDK version you are running has been deprecated and is no longer supported.
 
-- [Upgrade your project](../workflow/upgrading-expo-sdk-walkthrough.md) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo Go app. If you experience this error in a standalone app, make sure you have published a JS bundle for the specific SDK version and release channel for the given binary via `expo publish`.
+- [Upgrade your project](../workflow/upgrading-expo-sdk-walkthrough.md) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo Go app.
 
 ### React Native version mismatch
 

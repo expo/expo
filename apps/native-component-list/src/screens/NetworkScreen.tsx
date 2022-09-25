@@ -1,6 +1,6 @@
 import * as Network from 'expo-network';
 import * as React from 'react';
-import { ScrollView } from 'react-native';
+import { ScrollView, Text } from 'react-native';
 
 import MonoText from '../components/MonoText';
 import { useResolvedValue } from '../utilities/useResolvedValue';
@@ -35,6 +35,10 @@ export default function NetworkScreen() {
           2
         )}
       </MonoText>
+      <Text>
+        💡 <Text style={{ fontWeight: 'bold' }}>airplaneModeEnabled</Text> is only supported on
+        Android. It should be <Text style={{ fontWeight: 'bold' }}>null</Text> on iOS.
+      </Text>
     </ScrollView>
   );
 }

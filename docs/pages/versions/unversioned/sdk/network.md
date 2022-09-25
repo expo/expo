@@ -1,10 +1,11 @@
 ---
 title: Network
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-network'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-network'
+packageName: 'expo-network'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-network`** provides useful information about the device's network such as its IP address, MAC address, and airplane mode status.
@@ -13,7 +14,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="expo-network" />
+<APIInstallSection />
 
 ## Configuration
 
@@ -31,7 +32,7 @@ import * as Network from 'expo-network';
 
 | Code                                    | Description                                                                                                                                                                                |
 | --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| ERR_NETWORK_IP_ADDRESS                  | On Android, there may be an unknown Wifi host when trying to access `WifiManager` in `getIpAddressAsync`. On iOS, no network interfaces could be retrieved.                                |
+| ERR_NETWORK_IP_ADDRESS                  | On Android, there may be an unknown Wi-Fi host when trying to access `WifiManager` in `getIpAddressAsync`. On iOS, no network interfaces could be retrieved.                                |
 | ERR_NETWORK_UNDEFINED_INTERFACE         | An undefined `interfaceName` was passed as an argument in `getMacAddressAsync`.                                                                                                            |
 | ERR_NETWORK_SOCKET_EXCEPTION            | An error was encountered in creating or accessing the socket in `getMacAddressAsync`.                                                                                                      |
 | ERR_NETWORK_INVALID_PERMISSION_INTERNET | There are invalid permissions for [`android.permission.ACCESS_WIFI_STATE`](https://developer.android.com/reference/android/Manifest.permission#ACCESS_WIFI_STATE) in `getMacAddressAsync`. |

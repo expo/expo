@@ -86,7 +86,7 @@ class LegacyUpdateManifest private constructor(
   companion object {
     private val TAG = UpdateManifest::class.java.simpleName
 
-    private const val EXPO_ASSETS_URL_BASE = "https://d1wp6m56sqw74a.cloudfront.net/~assets/"
+    private const val EXPO_ASSETS_URL_BASE = "https://classic-assets.eascdn.net/~assets/"
     private val EXPO_DOMAINS = arrayOf("expo.io", "exp.host", "expo.test")
 
     @Throws(JSONException::class)

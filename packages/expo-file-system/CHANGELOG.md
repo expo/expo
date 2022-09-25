@@ -4,11 +4,77 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 14.1.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 14.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Remove okhttp and okio backward compatible workaround and drop react-native 0.64 support. ([#16446](https://github.com/expo/expo/pull/16446) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+- Fixed failing download on Android when using `createDownloadResumable()`, because of an invalid Range header. ([#15934](https://github.com/expo/expo/pull/15934) by [@johanpoirier](https://github.com/johanpoirier))
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+- Fix URL scheme differences between iOS and Android. ([#16352](https://github.com/expo/expo/pull/16352) by [@hbiede](https://github.com/hbiede))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 13.2.1 — 2022-01-20
+
+### 🐛 Bug fixes
+
+- Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
+
+## 13.2.0 — 2021-12-22
+
+### 🐛 Bug fixes
+
+- Fixed runtime crash due to `.toUpperCase` not being invoked as a function, it was missing `()`. ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+- Fixed `totalByteSent` in upload progress callback incorrectly sending `bytesSent` on iOS. ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+- Fixed simulator runtime crash on arm64 devices caused by `CFRelease(NULL)`. ([#15496](https://github.com/expo/expo/pull/15496) by [@daxaxelrod](https://github.com/daxaxelrod))
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.1.4 — 2022-02-10
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.3 — 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 13.1.2 — 2022-01-22
+
+### 🐛 Bug fixes
+
+- Fixed runtime crash due to `.toUpperCase` not being invoked as a function, it was missing `()`. ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+- Fixed `totalByteSent` in upload progress callback incorrectly sending `bytesSent` on iOS. ([#15615](https://github.com/expo/expo/pull/15615) by [@lukebrandonfarrell](https://github.com/lukebrandonfarrell))
+- Fixed simulator runtime crash on arm64 devices caused by `CFRelease(NULL)`. ([#15496](https://github.com/expo/expo/pull/15496) by [@daxaxelrod](https://github.com/daxaxelrod))
+
+## 13.1.1 — 2022-01-20
+
+### 🐛 Bug fixes
+
+- Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
 
 ## 13.1.0 — 2021-11-17
 

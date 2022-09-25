@@ -17,6 +17,7 @@ import versioned.host.exp.exponent.modules.api.components.pagerview.event.PageSc
 import versioned.host.exp.exponent.modules.api.components.pagerview.event.PageScrollStateChangedEvent
 import versioned.host.exp.exponent.modules.api.components.pagerview.event.PageSelectedEvent
 
+
 class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
   private lateinit var eventDispatcher: EventDispatcher
 
@@ -30,7 +31,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
     host.isSaveEnabled = false
     val vp = ViewPager2(reactContext)
     vp.adapter = ViewPagerAdapter()
-    // https://github.com/callstack/react-native-viewpager/issues/183
+    //https://github.com/callstack/react-native-viewpager/issues/183
     vp.isSaveEnabled = false
     eventDispatcher = reactContext.getNativeModule(UIManagerModule::class.java)!!.eventDispatcher
 
@@ -39,15 +40,13 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
           super.onPageScrolled(position, positionOffset, positionOffsetPixels)
           eventDispatcher.dispatchEvent(
-            PageScrollEvent(host.id, position, positionOffset)
-          )
+                  PageScrollEvent(host.id, position, positionOffset))
         }
 
         override fun onPageSelected(position: Int) {
           super.onPageSelected(position)
           eventDispatcher.dispatchEvent(
-            PageSelectedEvent(host.id, position)
-          )
+                  PageSelectedEvent(host.id, position))
         }
 
         override fun onPageScrollStateChanged(state: Int) {
@@ -59,8 +58,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
             else -> throw IllegalStateException("Unsupported pageScrollState")
           }
           eventDispatcher.dispatchEvent(
-            PageScrollStateChangedEvent(host.id, pageScrollState)
-          )
+                  PageScrollStateChangedEvent(host.id, pageScrollState))
         }
       })
 
@@ -89,7 +87,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
     }
     val parent = getViewPager(host)
 
-    (parent.adapter as ViewPagerAdapter?)?.addChild(child, index)
+    (parent.adapter as ViewPagerAdapter?)?.addChild(child, index);
 
     if (parent.currentItem == index) {
       // Solves https://github.com/callstack/react-native-pager-view/issues/219
@@ -97,6 +95,11 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
       // (otherwise a white screen is shown until the next user interaction).
       // https://github.com/facebook/react-native/issues/17968#issuecomment-697136929
       refreshViewChildrenLayout(parent)
+    }
+
+    if (!host.didSetInitialIndex && host.initialIndex == index) {
+      host.didSetInitialIndex = true
+      setCurrentItem(parent, index, false)
     }
   }
 
@@ -111,7 +114,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
     val pager = getViewPager(parent)
     (pager.adapter as ViewPagerAdapter?)?.removeChild(view)
 
-    // Required so ViewPager actually animates the removed view right away (otherwise
+    // Required so ViewPager actually animates the removed view right away (otherwise 
     // a white screen is shown until the next user interaction).
     // https://github.com/facebook/react-native/issues/17968#issuecomment-697136929
     refreshViewChildrenLayout(pager)
@@ -129,7 +132,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
     val adapter = pager.adapter as ViewPagerAdapter?
     adapter?.removeChildAt(index)
 
-    // Required so ViewPager actually animates the removed view right away (otherwise
+    // Required so ViewPager actually animates the removed view right away (otherwise 
     // a white screen is shown until the next user interaction).
     // https://github.com/facebook/react-native/issues/17968#issuecomment-697136929
     refreshViewChildrenLayout(pager)
@@ -147,12 +150,12 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
   @ReactProp(name = "initialPage", defaultInt = 0)
   fun setInitialPage(host: NestedScrollableHost, value: Int) {
     val view = getViewPager(host)
-    // https://github.com/callstack/react-native-pager-view/issues/456
-    // Initial index should be set only once.
+    //https://github.com/callstack/react-native-pager-view/issues/456
+    //Initial index should be set only once. 
     if (host.initialIndex === null) {
+      host.initialIndex = value
       view.post {
-        setCurrentItem(view, value, false)
-        host.initialIndex = value
+        host.didSetInitialIndex = true
       }
     }
   }
@@ -171,18 +174,18 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
   fun setOverScrollMode(host: NestedScrollableHost, value: String) {
     val child = getViewPager(host).getChildAt(0)
     when (value) {
-      "never" -> {
-        child.overScrollMode = ViewPager2.OVER_SCROLL_NEVER
-      }
-      "always" -> {
-        child.overScrollMode = ViewPager2.OVER_SCROLL_ALWAYS
-      }
-      else -> {
-        child.overScrollMode = ViewPager2.OVER_SCROLL_IF_CONTENT_SCROLLS
-      }
+        "never" -> {
+          child.overScrollMode = ViewPager2.OVER_SCROLL_NEVER
+        }
+        "always" -> {
+          child.overScrollMode = ViewPager2.OVER_SCROLL_ALWAYS
+        }
+        else -> {
+          child.overScrollMode = ViewPager2.OVER_SCROLL_IF_CONTENT_SCROLLS
+        }
     }
   }
-
+  
   @ReactProp(name = "layoutDirection")
   fun setLayoutDirection(host: NestedScrollableHost, value: String) {
     val view = getViewPager(host)
@@ -200,8 +203,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
     return MapBuilder.of(
       PageScrollEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageScroll"),
       PageScrollStateChangedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageScrollStateChanged"),
-      PageSelectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageSelected")
-    )
+      PageSelectedEvent.EVENT_NAME, MapBuilder.of("registrationName", "onPageSelected"))
   }
 
   override fun getCommandsMap(): Map<String, Int>? {
@@ -211,8 +213,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
       "setPageWithoutAnimation",
       COMMAND_SET_PAGE_WITHOUT_ANIMATION,
       "setScrollEnabled",
-      COMMAND_SET_SCROLL_ENABLED
-    )
+      COMMAND_SET_SCROLL_ENABLED)
   }
 
   override fun receiveCommand(root: NestedScrollableHost, commandId: Int, args: ReadableArray?) {
@@ -235,13 +236,10 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
       COMMAND_SET_SCROLL_ENABLED -> {
         view.isUserInputEnabled = args!!.getBoolean(0)
       }
-      else -> throw IllegalArgumentException(
-        String.format(
-          "Unsupported command %d received by %s.",
-          commandId,
-          javaClass.simpleName
-        )
-      )
+      else -> throw IllegalArgumentException(String.format(
+        "Unsupported command %d received by %s.",
+        commandId,
+        javaClass.simpleName))
     }
   }
 
@@ -266,9 +264,8 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
   private fun refreshViewChildrenLayout(view: View) {
     view.post {
       view.measure(
-        View.MeasureSpec.makeMeasureSpec(view.width, View.MeasureSpec.EXACTLY),
-        View.MeasureSpec.makeMeasureSpec(view.height, View.MeasureSpec.EXACTLY)
-      )
+              View.MeasureSpec.makeMeasureSpec(view.width, View.MeasureSpec.EXACTLY),
+              View.MeasureSpec.makeMeasureSpec(view.height, View.MeasureSpec.EXACTLY))
       view.layout(view.left, view.top, view.right, view.bottom)
     }
   }
@@ -280,3 +277,4 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
     private const val COMMAND_SET_SCROLL_ENABLED = 3
   }
 }
+

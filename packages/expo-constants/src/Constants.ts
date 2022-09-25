@@ -1,3 +1,4 @@
+import { ExpoConfig } from '@expo/config-types';
 import { CodedError, NativeModulesProxy } from 'expo-modules-core';
 import { Platform, NativeModules } from 'react-native';
 
@@ -73,9 +74,6 @@ const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {}) as 
 
 let warnedAboutDeviceYearClass = false;
 let warnedAboutIosModel = false;
-let warnedAboutInstallationId = false;
-let warnedAboutDeviceId = false;
-let warnedAboutLinkingUrl = false;
 
 const constants: Constants = {
   ...nativeConstants,
@@ -84,7 +82,7 @@ const constants: Constants = {
 };
 
 Object.defineProperties(constants, {
-  // Deprecated fields
+  // Deprecated field
   deviceYearClass: {
     get() {
       if (!warnedAboutDeviceYearClass) {
@@ -97,41 +95,9 @@ Object.defineProperties(constants, {
     },
     enumerable: false,
   },
-  // Deprecated fields
   installationId: {
     get() {
-      if (!warnedAboutInstallationId) {
-        console.warn(
-          `Constants.installationId has been deprecated in favor of generating and storing your own ID. Implement it using expo-application's androidId on Android and a storage API such as expo-secure-store on iOS and localStorage on the web. This API will be removed in SDK 44.`
-        );
-        warnedAboutInstallationId = true;
-      }
       return nativeConstants.installationId;
-    },
-    enumerable: false,
-  },
-  // Legacy aliases
-  deviceId: {
-    get() {
-      if (!warnedAboutDeviceId) {
-        console.warn(
-          `Constants.deviceId has been deprecated in favor of generating and storing your own ID. This API will be removed in SDK 44.`
-        );
-        warnedAboutDeviceId = true;
-      }
-      return nativeConstants.installationId;
-    },
-    enumerable: false,
-  },
-  linkingUrl: {
-    get() {
-      if (!warnedAboutLinkingUrl) {
-        console.warn(
-          `Constants.linkingUrl has been renamed to Constants.linkingUri. Consider using the Linking API directly. Constants.linkingUrl will be removed in SDK 44.`
-        );
-        warnedAboutLinkingUrl = true;
-      }
-      return nativeConstants.linkingUri;
     },
     enumerable: false,
   },
@@ -152,7 +118,7 @@ Object.defineProperties(constants, {
     enumerable: false,
   },
   __unsafeNoWarnManifest2: {
-    get(): Manifest | Manifest | null {
+    get(): Manifest | null {
       const maybeManifest = getManifest(true);
       if (!maybeManifest || !isManifest(maybeManifest)) {
         return null;
@@ -178,6 +144,23 @@ Object.defineProperties(constants, {
         return null;
       }
       return maybeManifest;
+    },
+    enumerable: true,
+  },
+  expoConfig: {
+    get(): ExpoConfig | null {
+      const maybeManifest = getManifest(true);
+      if (!maybeManifest) {
+        return null;
+      }
+
+      if (isManifest(maybeManifest)) {
+        return maybeManifest.extra?.expoClient ?? null;
+      } else if (isAppManifest(maybeManifest)) {
+        return maybeManifest;
+      }
+
+      return null;
     },
     enumerable: true,
   },

@@ -102,7 +102,7 @@ async function _handleSinglePermissionRequestIOSAsync(
     // We recognize the permission's library, so we inform the user to link that library to request the permission.
     if (error.code === 'E_PERMISSIONS_UNKNOWN' && PERMISSION_MODULE_MAPPING[type]) {
       const library = PERMISSION_MODULE_MAPPING[type];
-      error.message = `${error.message}, please install and link the package ${PERMISSION_MODULE_MAPPING[type]}, see more at https://github.com/expo/expo/tree/master/packages/${library}`;
+      error.message = `${error.message}, please install and link the package ${PERMISSION_MODULE_MAPPING[type]}, see more at https://github.com/expo/expo/tree/main/packages/${library}`;
     }
     throw error;
   }

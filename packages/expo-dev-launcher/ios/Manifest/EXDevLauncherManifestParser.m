@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherManifestParser.h"
+#import "EXDevLauncherController.h"
+
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
@@ -16,17 +18,21 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 
 @property (weak, nonatomic) NSURLSession *session;
 @property (strong, nonatomic) NSURL *url;
+@property (nonatomic, strong) NSString *installationID;
 
 @end
 
 @implementation EXDevLauncherManifestParser
 
 
-- (instancetype)initWithURL:(NSURL *)url session:(NSURLSession *)session
+- (instancetype)initWithURL:(NSURL *)url
+             installationID:(NSString *)installationID
+                    session:(NSURLSession *)session
 {
   if (self = [super init]) {
     self.session = session;
     self.url = url;
+    self.installationID = installationID;
   }
   return self;
 }
@@ -49,7 +55,8 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
       return;
     }
 
-    if ([headers[@"Content-Type"] hasPrefix:@"application/json"]) {
+    NSString *contentType = headers[@"Content-Type"];
+    if (contentType && ![contentType hasPrefix:@"text/html"] && ![contentType containsString:@"/javascript"]) {
       completion(YES);
       return;
     }
@@ -91,6 +98,10 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 {
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:self.url];
   [request setHTTPMethod:method];
+  [request setValue:@"ios" forHTTPHeaderField:@"expo-platform"];
+  if (self.installationID) {
+    [request setValue:self.installationID forHTTPHeaderField:@"Expo-Dev-Client-ID"];
+  }
   NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
     if (error) {
       onError(error);

@@ -12,6 +12,7 @@
     ],
     "sourceMap": true,
     "declaration": true,
+    "declarationMap": true,
     "inlineSources": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": true,

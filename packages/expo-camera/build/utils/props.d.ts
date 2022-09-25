@@ -7,3 +7,4 @@ export declare const ConversionTables: {
 };
 export declare function convertNativeProps(props?: CameraProps): CameraNativeProps;
 export declare function ensureNativeProps(props?: CameraProps): CameraNativeProps;
+//# sourceMappingURL=props.d.ts.map

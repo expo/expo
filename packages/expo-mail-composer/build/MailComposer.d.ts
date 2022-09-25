@@ -17,3 +17,4 @@ export declare function composeAsync(options: MailComposerOptions): Promise<Mail
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 export * from './MailComposer.types';
+//# sourceMappingURL=MailComposer.d.ts.map

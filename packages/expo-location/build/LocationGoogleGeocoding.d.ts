@@ -13,3 +13,4 @@ export declare function googleReverseGeocodeAsync(options: {
     latitude: number;
     longitude: number;
 }): Promise<LocationGeocodedAddress[]>;
+//# sourceMappingURL=LocationGoogleGeocoding.d.ts.map

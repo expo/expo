@@ -20,49 +20,34 @@ function validateOptions(options) {
 // @needsAudit
 /**
  * Checks user's permissions for accessing camera.
- * @return A promise that fulfills with an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
+ * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerapermissionresponse).
  */
 export async function getCameraPermissionsAsync() {
     return ExponentImagePicker.getCameraPermissionsAsync();
-}
-/**
- * @deprecated Use `getMediaLibraryPermissionsAsync()` instead.
- */
-export async function getCameraRollPermissionsAsync() {
-    console.warn('ImagePicker.getCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.getMediaLibraryPermissionsAsync()');
-    return getMediaLibraryPermissionsAsync();
 }
 // @needsAudit
 /**
  * Checks user's permissions for accessing photos.
  * @param writeOnly Whether to request write or read and write permissions. Defaults to `false`
- * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#imagepickercamerarollpermissionresponse).
+ * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#medialibrarypermissionresponse).
  */
 export async function getMediaLibraryPermissionsAsync(writeOnly = false) {
-    const imagePickerMethod = ExponentImagePicker.getMediaLibraryPermissionsAsync;
-    return imagePickerMethod(writeOnly);
+    return ExponentImagePicker.getMediaLibraryPermissionsAsync(writeOnly);
 }
 // @needsAudit
 /**
  * Asks the user to grant permissions for accessing camera. This does nothing on web because the
  * browser camera is not used.
- * @return A promise that fulfills with an object of type [CameraPermissionResponse](#imagepickercamerapermissionresponse).
+ * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerarollpermissionresponse).
  */
 export async function requestCameraPermissionsAsync() {
     return ExponentImagePicker.requestCameraPermissionsAsync();
-}
-/**
- * @deprecated Use `requestMediaLibraryPermissionsAsync()` instead.
- */
-export async function requestCameraRollPermissionsAsync() {
-    console.warn('ImagePicker.requestCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.requestMediaLibraryPermissionsAsync()');
-    return requestMediaLibraryPermissionsAsync();
 }
 // @needsAudit
 /**
  * Asks the user to grant permissions for accessing user's photo. This method does nothing on web.
  * @param writeOnly Whether to request write or read and write permissions. Defaults to `false`
- * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#imagepickercamerarollpermissionresponse).
+ * @return A promise that fulfills with an object of type [MediaLibraryPermissionResponse](#medialibrarypermissionresponse).
  */
 export async function requestMediaLibraryPermissionsAsync(writeOnly = false) {
     const imagePickerMethod = ExponentImagePicker.requestMediaLibraryPermissionsAsync;
@@ -119,7 +104,7 @@ export async function getPendingResultAsync() {
 /**
  * Display the system UI for taking a photo with the camera. Requires `Permissions.CAMERA`.
  * On Android and iOS 10 `Permissions.CAMERA_ROLL` is also required. On mobile web, this must be
- * called immediately in a user interaction like a button press, otherwise the browser will bloc
+ * called immediately in a user interaction like a button press, otherwise the browser will block
  * the request without a warning.
  * > **Note:** Make sure that you handle `MainActivity` destruction on **Android**. See [ImagePicker.getPendingResultAsync](#imagepickergetpendingresultasync).
  * > **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press).
@@ -141,7 +126,7 @@ export async function launchCameraAsync(options = {}) {
 // @needsAudit
 /**
  * Display the system UI for choosing an image or a video from the phone's library.
- * Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be called
+ * Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be     called
  * immediately in a user interaction like a button press, otherwise the browser will block the
  * request without a warning.
  * **Animated GIFs support** If the selected image is an animated GIF, the result image will be an
@@ -161,6 +146,11 @@ export async function launchCameraAsync(options = {}) {
 export async function launchImageLibraryAsync(options) {
     if (!ExponentImagePicker.launchImageLibraryAsync) {
         throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
+    }
+    if (options?.allowsEditing && options.allowsMultipleSelection) {
+        console.warn('[expo-image-picker] `allowsEditing` is not supported when `allowsMultipleSelection` is enabled and will be ignored.' +
+            "Disable either 'allowsEditing' or 'allowsMultipleSelection' in 'launchImageLibraryAsync' " +
+            'to fix this warning.');
     }
     return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
 }

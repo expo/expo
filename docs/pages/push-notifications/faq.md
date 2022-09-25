@@ -3,11 +3,13 @@ title: Push Notifications Troubleshooting & FAQ
 sidebar_title: Troubleshooting and FAQ
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
 This is a collection of FAQs and common issues when setting up push notifications with Expo. This document covers the `expo-notifications` client-side library, as well as Expo's push notification service.
 
 ### How much does Expo's push notification service cost?
 
-There is no cost associated with sending notifications through Expo's classic push notification service. EAS Notify, a push notification service with new features coming in 2021, will be part of EAS's pricing plans.
+There is no cost associated with sending notifications through Expo's classic push notification service. EAS Notify, an upcoming iteration of Expo's push notification service, will be a part of EAS's pricing plans.
 
 ### How many notifications can I send through Expo?
 
@@ -27,7 +29,7 @@ You should read **all** the relevant guides (this won't take longer than 10 minu
 
 ### Do I have to use Expo's push notification service?
 
-No, you can use any push notification service for both managed and bare workflow apps. The [`getDevicePushTokenAsync` method from `expo-notifications`](/versions/v40.0.0/sdk/notifications.md#getdevicepushtokenasync-devicepushtoken) allows you to get the native device push token, which you can then use with other services, or even [send your notifications through APNs and FCM directly](/push-notifications/sending-notifications-custom.md).
+No, you can use any push notification service for both managed and bare workflow apps. The [`getDevicePushTokenAsync` method from `expo-notifications`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken) allows you to get the native device push token, which you can then use with other services, or even [send your notifications through APNs and FCM directly](/push-notifications/sending-notifications-custom.md).
 
 That being said, we think sending notifications through Expo is the fastest and easiest way to do it, and millions of notifications are sent through Expo every day.
 
@@ -35,10 +37,10 @@ That being said, we think sending notifications through Expo is the fastest and 
 
 Push notifications have a lot of moving parts, so this can be due to a wide variety of reasons. To narrow things down, check the [push ticket](/push-notifications/sending-notifications.md#push-tickets) and [push receipt](/push-notifications/sending-notifications.md#push-receipts) for error messages. This information (and maybe a little bit of Googling) will help narrow down the problem so that you can solve it.
 
-You can also narrow things even further by testing [local notifications](/versions/v40.0.0/sdk/notifications.md#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
+You can also narrow things even further by testing [local notifications](/versions/latest/sdk/notifications/#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
 
-<details><summary><h4>See here for some quick terminal commands you can use to get the push receipt.</h4></summary>
-<p>
+<Collapsible summary="See here for some quick terminal commands you can use to get the push receipt">
+
 1. Send a notification:
 
 ```sh
@@ -59,8 +61,7 @@ curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/pus
 }'
 ```
 
-</p>
-</details>
+</Collapsible>
 
 ### How often does the `ExpoPushToken` change?
 
@@ -70,13 +71,13 @@ The `ExpoPushToken` will never "expire" but if one of your users uninstalls the 
 
 ### Push notifications work in development, but not after I build the app
 
-This strongly indicates that you have either misconfigured your credentials, or didn't configure them at all. In the Expo Go app, you rely on Expo's credentials so that you don't need to worry about it, and setup is as easy as possible. But when you build your own app for the stores, you need to use your own credentials. On iOS, this is handled via your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app **will result in your notifications failing to be delivered**. To fix that, add a new push key with `expo credentials:manager`). On Android, all you need to do is follow [this guide](/push-notifications/using-fcm.md). **Please note** that after setting up Android FCM credentials, you will need to rebuild your app.
+This strongly indicates that you have either misconfigured your credentials, or didn't configure them at all. In the Expo Go app, you rely on Expo's credentials so that you don't need to worry about it, and setup is as easy as possible. But when you build your own app for the stores, you need to use your own credentials. On iOS, this is handled via your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app **will result in your notifications failing to be delivered**. To fix that, add a new push key with `eas credentials`). On Android, all you need to do is follow [this guide](/push-notifications/using-fcm.md). **Please note** that after setting up Android FCM credentials, you will need to rebuild your app.
 
 Expo abstracts the majority of credential management away so that you can focus on building your app, but if you want to understand it on a deeper level, read our [guide to app signing](/app-signing/app-credentials.md).
 
 ### Push notifications _occasionally_ stop coming through on Android
 
-This is likely due to the `priority` level of the notifications you're sending. You can learn more about Android priority [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-json), but as for how it relates to Expo- [Expo accepts four priorities](https://docs.expo.dev/push-notifications/sending-notifications/#message-request-format):
+This is likely due to the `priority` level of the notifications you're sending. You can learn more about Android priority [here](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-json), but as for how it relates to Expo- [Expo accepts four priorities](/push-notifications/sending-notifications/#message-request-format):
 
 - `default`: manually mapped to the default priority documented by Apple and Google
 - `high`: mapped to the high priority level documented by Apple and Google
@@ -99,7 +100,7 @@ Expo's connections to Apple and Google are encrypted and use HTTPS.
 
 ### How do I handle expired push notification credentials?
 
-When your push notification credentials have expired, run `expo credentials:manager -p ios` which will provide a list of actions to choose from. Select the removal of your expired credentials and then select "Add new Push Notifications Key".
+When your push notification credentials have expired, run `eas credentials`, choose iOS and a build profile, then remove your push notification key and generate a new one.
 
 ### What delivery guarantees are there for push notifications?
 

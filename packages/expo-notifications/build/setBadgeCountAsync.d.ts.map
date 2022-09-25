@@ -1,0 +1,1 @@
+{"version":3,"file":"setBadgeCountAsync.d.ts","sourceRoot":"","sources":["../src/setBadgeCountAsync.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,uBAAuB,EAAE,MAAM,qBAAqB,CAAC;AAE9D,MAAM,WAAW,oBAAoB;IACnC,GAAG,CAAC,EAAE,uBAAuB,CAAC;CAC/B;AAED,wBAA8B,kBAAkB,CAC9C,UAAU,EAAE,MAAM,EAClB,OAAO,CAAC,EAAE,oBAAoB,GAC7B,OAAO,CAAC,OAAO,CAAC,CAMlB"}

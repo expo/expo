@@ -13,3 +13,4 @@ declare const _default: {
     getLocalizationAsync(): Promise<Localization>;
 };
 export default _default;
+//# sourceMappingURL=ExpoLocalization.d.ts.map

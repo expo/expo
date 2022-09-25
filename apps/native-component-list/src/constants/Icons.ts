@@ -1,5 +1,4 @@
 const Icons: { [key: string]: any } = {
-  AdMob: () => require('../../assets/icons/api/AdMob.png'),
   BackgroundLocation: () => require('../../assets/icons/api/Location.png'),
   BarCodeScanner: () => require('../../assets/icons/api/BarCodeScanner.png'),
   BlurView: () => require('../../assets/icons/api/BlurView.png'),

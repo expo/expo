@@ -8,6 +8,7 @@
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
+#import <EXUpdates/EXUpdatesManifestHeaders.h>
 
 @interface EXUpdatesUpdateTests : XCTestCase
 
@@ -44,7 +45,7 @@
   };
 
   _config = [EXUpdatesConfig configWithDictionary:@{
-    @"EXUpdatesURL": @"https://exp.host/@test/test",
+    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
 
   _database = [EXUpdatesDatabase new];
@@ -58,27 +59,51 @@
 - (void)testUpdateWithManifest_Legacy
 {
   NSError *error;
-  NSURLResponse* response =  [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://example.com"] statusCode:200 HTTPVersion:nil headerFields:@{}];
-
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest response:response config:_config database:_database error:&error];
+  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest
+                                                manifestHeaders:manifestHeaders
+                                                     extensions:@{}
+                                                         config:_config
+                                                       database:_database
+                                                          error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_New
 {
   NSError *error;
-  NSURLResponse* response =  [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://example.com"] statusCode:200 HTTPVersion:nil headerFields:@{@"expo-protocol-version" : @"0"}];
-
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest response:response config:_config database:_database error:&error];
+  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:@"0"
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest
+                                                manifestHeaders:manifestHeaders
+                                                     extensions:@{}
+                                                         config:_config
+                                                       database:_database
+                                                          error:&error];
   XCTAssert(update != nil);
 }
 
 - (void)testUpdateWithManifest_UnsupportedProtocolVersion
 {
   NSError *error;
-  NSURLResponse* response =  [[NSHTTPURLResponse alloc] initWithURL:[NSURL URLWithString:@"https://example.com"] statusCode:200 HTTPVersion:nil headerFields:@{@"expo-protocol-version" : @"1"}];
-
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest response:response config:_config database:_database error:&error];
+  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:@"1"
+                                                                                   serverDefinedHeaders:nil
+                                                                                        manifestFilters:nil
+                                                                                      manifestSignature:nil
+                                                                                              signature:nil];
+  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest
+                                                manifestHeaders:manifestHeaders
+                                                     extensions:@{}
+                                                         config:_config
+                                                       database:_database
+                                                          error:&error];
   XCTAssert(error != nil);
   XCTAssert(update == nil);
 }

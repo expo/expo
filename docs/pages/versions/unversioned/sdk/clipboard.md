@@ -1,10 +1,11 @@
 ---
 title: Clipboard
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-clipboard'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-clipboard'
+packageName: 'expo-clipboard'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -14,11 +15,11 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-clipboard" />
+<APIInstallSection />
 
 ## Usage
 
-<SnackInline label='Clipboard' dependencies={['expo-clipboard']} platforms={['ios', 'android']}>
+<SnackInline label='Clipboard' dependencies={['expo-clipboard']} platforms={['ios', 'android', 'web']}>
 
 ```jsx
 import * as React from 'react';
@@ -28,13 +29,14 @@ import * as Clipboard from 'expo-clipboard';
 export default function App() {
   const [copiedText, setCopiedText] = React.useState('');
 
-  const copyToClipboard = () => {
-    /* @info */ Clipboard.setString('hello world');/* @end */
-
+  const copyToClipboard = async () => {
+    /* @info Copy the text to the clipboard */
+    await Clipboard.setStringAsync('hello world');
+    /* @end */
   };
 
   const fetchCopiedText = async () => {
-    const text = /* @info */ await Clipboard.getStringAsync();
+    const text = /* @info Paste the text from the clipboard */ await Clipboard.getStringAsync();
     /* @end */
     setCopiedText(text);
   };
@@ -70,5 +72,10 @@ const styles = StyleSheet.create({
 ```js
 import * as Clipboard from 'expo-clipboard';
 ```
+
+> ⚠️ On Web, this module uses the [`AsyncClipboard` API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API),
+> which might behave differently between browsers or not be fully supported.
+> Especially on WebKit, there's an issue which makes this API unusable in asynchronous code.
+> [Click here for more details](https://bugs.webkit.org/show_bug.cgi?id=222262).
 
 <APISection packageName="expo-clipboard" />

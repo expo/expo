@@ -1,8 +1,8 @@
 'use strict';
 
-import { Platform } from 'expo-modules-core';
 import { Asset } from 'expo-asset';
 import * as FS from 'expo-file-system';
+import { Platform } from 'expo-modules-core';
 import * as SQLite from 'expo-sqlite';
 
 export const name = 'SQLite';
@@ -14,7 +14,7 @@ export function test(t) {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
+          (tx) => {
             const nop = () => {};
             const onError = (tx, error) => reject(error);
 
@@ -77,7 +77,7 @@ export function test(t) {
           const db = SQLite.openDatabase('downloaded.db');
           await new Promise((resolve, reject) => {
             db.transaction(
-              tx => {
+              (tx) => {
                 const onError = (tx, error) => reject(error);
                 tx.executeSql(
                   'SELECT * FROM Users',
@@ -93,7 +93,7 @@ export function test(t) {
               resolve
             );
           });
-          db._db.close();
+          db.closeAsync();
         },
         30000
       );
@@ -104,7 +104,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -152,7 +152,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -198,7 +198,7 @@ export function test(t) {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
+          (tx) => {
             const nop = () => {};
             const onError = (tx, error) => reject(error);
 
@@ -243,7 +243,7 @@ export function test(t) {
         const db = SQLite.openDatabase('test.db');
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -290,7 +290,7 @@ export function test(t) {
       const db = SQLite.openDatabase('test.db');
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
+          (tx) => {
             const nop = () => {};
             const onError = (tx, error) => reject(error);
 
@@ -314,8 +314,7 @@ export function test(t) {
       });
       await new Promise((resolve, reject) => {
         db.transaction(
-          tx => {
-            const nop = () => {};
+          (tx) => {
             const onError = (tx, error) => reject(error);
             tx.executeSql(
               'DELETE FROM Users WHERE name=?',
@@ -348,6 +347,7 @@ export function test(t) {
         );
       });
     });
+
     if (Platform.OS !== 'web') {
       // It is not expected to work on web, since we cannot execute PRAGMA to enable foreign keys support
       t.it('should return correct rowsAffected value when deleting cascade', async () => {
@@ -355,7 +355,7 @@ export function test(t) {
         db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () => {});
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
 
@@ -394,7 +394,7 @@ export function test(t) {
         });
         await new Promise((resolve, reject) => {
           db.transaction(
-            tx => {
+            (tx) => {
               const nop = () => {};
               const onError = (tx, error) => reject(error);
               tx.executeSql('PRAGMA foreign_keys=on;', [], nop, onError);
@@ -439,6 +439,19 @@ export function test(t) {
             resolve
           );
         });
+      });
+    }
+
+    if (Platform.OS !== 'web') {
+      t.it('should delete db on filesystem from the `deleteAsync()` call', async () => {
+        const db = SQLite.openDatabase('test.db');
+        let fileInfo = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
+        t.expect(fileInfo.exists).toBeTruthy();
+
+        await db.closeAsync();
+        await db.deleteAsync();
+        fileInfo = await FS.getInfoAsync(`${FS.documentDirectory}SQLite/test.db`);
+        t.expect(fileInfo.exists).toBeFalsy();
       });
     }
   });

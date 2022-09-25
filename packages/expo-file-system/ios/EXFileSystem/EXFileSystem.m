@@ -613,7 +613,7 @@ EX_EXPORT_METHOD_AS(uploadTaskStartAsync,
                        body:@{
                              @"uuid": uuid,
                              @"data": @{
-                                 @"totalByteSent": @(bytesSent),
+                                 @"totalByteSent": @(totalBytesSent),
                                  @"totalBytesExpectedToSend": @(totalBytesExpectedToSend),
                              },
                            }];
@@ -815,7 +815,9 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 {
   CFStringRef UTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, (__bridge CFStringRef)[path pathExtension], NULL);
   CFStringRef MIMEType = UTTypeCopyPreferredTagWithClass(UTI, kUTTagClassMIMEType);
-  CFRelease(UTI);
+  if (UTI) {
+    CFRelease(UTI);
+  }
   if (!MIMEType) {
     return @"application/octet-stream";
   }

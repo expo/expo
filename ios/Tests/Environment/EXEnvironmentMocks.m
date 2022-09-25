@@ -74,7 +74,7 @@
 + (NSDictionary *)embeddedManifest
 {
   return @{
-   @"bundleUrl": @"https://d1wp6m56sqw74a.cloudfront.net/%40community%2Fnative-component-list%2F25.1.0%2Fdbe753ef7122562ed798ee55cfa489ed-25.0.0-ios.js"
+   @"bundleUrl": @"https://classic-assets.eascdn.net/%40community%2Fnative-component-list%2F25.1.0%2Fdbe753ef7122562ed798ee55cfa489ed-25.0.0-ios.js"
   };
 }
 

@@ -8,9 +8,128 @@
 
 ### 🐛 Bug fixes
 
-- [plugin] Fix android adding duplicate schemes. ([#15057](https://github.com/expo/expo/pull/15057) by [@EvanBacon](https://github.com/EvanBacon))
+### 💡 Others
+
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+## 1.3.0 — 2022-09-16
+
+### 🐛 Bug fixes
+
+- Remove default scheme from intent filters that specify `autoVerify=true`. ([#18963](https://github.com/expo/expo/pull/18963) by [@ajsmth](https://github.com/ajsmth))
+
+## 1.2.1 — 2022-08-16
+
+_This version does not introduce any user-facing changes._
+
+## 1.2.0 — 2022-08-11
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.1 — 2022-07-20
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.0 — 2022-07-18
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.1 — 2022-07-14
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.0 — 2022-06-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.10.0 — 2022-06-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.6 — 2022-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.5 — 2022-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.4 — 2022-05-05
+
+### 🐛 Bug fixes
+
+- Fix `no such module 'EXDevLauncher'` when compiling the release build on iOS. ([#17332](https://github.com/expo/expo/pull/17332) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.9.3 — 2022-04-26
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.2 — 2022-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.1 — 2022-04-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.9.0 — 2022-04-20
+
+### 🐛 Bug fixes
+
+- Removed the unused `jcenter()` maven dependencies. ([#16846](https://github.com/expo/expo/pull/16846) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 0.8.4 — 2022-02-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.3 — 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 0.8.2 — 2022-01-18
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.1 — 2022-01-17
+
+_This version does not introduce any user-facing changes._
+
+## 0.8.0 — 2021-12-22
 
 ### 💡 Others
+
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.7.2 — 2021-12-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.7.1 — 2021-12-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.7.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
+- [plugin] Fix android adding duplicate schemes. ([#15057](https://github.com/expo/expo/pull/15057) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.6.3 — 2021-10-21
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.2 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.6.1 — 2021-10-15
+
+_This version does not introduce any user-facing changes._
 
 ## 0.6.0 — 2021-10-07
 

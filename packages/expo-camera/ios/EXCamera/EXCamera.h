@@ -1,11 +1,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
-#import <EXCamera/EXCameraManager.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
-
-@class EXCameraManager;
 
 static const int EXFlashModeTorch = 3;
 
@@ -87,7 +84,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, assign) BOOL isDetectingFaces;
 @property (nonatomic, assign) AVVideoCodecType videoCodecType;
 
-- (id)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
+- (nonnull instancetype)initWithModuleRegistry:(nullable EXModuleRegistry *)moduleRegistry;
 - (void)updateType;
 - (void)updateFlashMode;
 - (void)updateFocusMode;

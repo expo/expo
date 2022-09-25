@@ -13,7 +13,7 @@ Note that audio automatically stops if headphones / bluetooth audio devices are 
 
 Try the [playlist example app](https://expo.dev/@documentation/playlist-example) (source code is [on GitHub](https://github.com/expo/playlist-example)) to see an example usage of the media playback API, and the [recording example app](https://expo.dev/@documentation/record) (source code is [on GitHub](https://github.com/expo/audio-recording-example)) to see an example usage of the recording API.
 
-<PlatformsSection android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/8721' }} />
+<PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
@@ -320,10 +320,10 @@ A static convenience method to construct and load a sound is also provided:
 
   ```javascript
   try {
-    const {
-      sound: soundObject,
-      status,
-    } = await Audio.Sound.createAsync(require('./assets/sounds/hello.mp3'), { shouldPlay: true });
+    const { sound: soundObject, status } = await Audio.Sound.createAsync(
+      require('./assets/sounds/hello.mp3'),
+      { shouldPlay: true }
+    );
     // Your sound is playing!
   } catch (error) {
     // An error occurred!
@@ -332,8 +332,8 @@ A static convenience method to construct and load a sound is also provided:
 
 On the `soundObject` reference, the following API is provided:
 
-- `soundObject.setOnMetadataUpdate(onMetadataUpdate)` _[iOS only]_ 
-Sets a function to be called whenever the metadata (of type `AVMetadata`, details below) of the sound object, if any, changes.
+- `soundObject.setOnMetadataUpdate(onMetadataUpdate)` _[iOS only]_
+  Sets a function to be called whenever the metadata (of type `AVMetadata`, details below) of the sound object, if any, changes.
 
   #### Parameters
 
@@ -418,7 +418,7 @@ A static convenience method to construct and start a recording is also provided:
   const { recording, status } = await Audio.Recording.createAsync(
     options,
     onRecordingStatusUpdate,
-    progressUpdateIntervalMillis,
+    progressUpdateIntervalMillis
   );
 
   // Which is equivalent to the following:
@@ -447,10 +447,9 @@ A static convenience method to construct and start a recording is also provided:
 
   ```javascript
   try {
-    const {
-      recording: recordingObject,
-      status,
-    } = await Audio.Recording.createAsync(Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY);
+    const { recording: recordingObject, status } = await Audio.Recording.createAsync(
+      Audio.RECORDING_OPTIONS_PRESET_HIGH_QUALITY
+    );
     // You are now recording!
   } catch (error) {
     // An error occurred!

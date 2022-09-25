@@ -1,2 +1,6 @@
-import { StoryOptions, StoryManifest } from '../types';
-export declare function saveManifestAsync(storyManifest: StoryManifest, config: StoryOptions): Promise<void>;
+import { StoryManifest } from '../types';
+export declare function saveManifestAsync(storyManifest: StoryManifest, config: {
+    watchRoot: string;
+    projectRoot: string;
+}): Promise<void>;
+//# sourceMappingURL=saveManifestAsync.d.ts.map

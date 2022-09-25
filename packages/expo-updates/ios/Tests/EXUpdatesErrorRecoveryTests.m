@@ -60,9 +60,29 @@
   [verify(mockDelegate) throwException:anything()];
 }
 
-- (void)testHandleError_NewWorkingUpdateLoading
+- (void)testHandleError_NewUpdateLoaded_RelaunchFails
 {
   id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  _errorRecovery.delegate = mockDelegate;
+
+  [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusNewUpdateLoaded];
+
+  NSError *mockError = mock([NSError class]);
+  [_errorRecovery handleError:mockError];
+  dispatch_sync(_testQueue, ^{}); // flush queue
+
+  [verify(mockDelegate) markFailedLaunchForLaunchedUpdate];
+  [self verifyFailedRelaunchWithCompletion_WithMockDelegate:mockDelegate];
+  [verifyCount(mockDelegate, never()) relaunchWithCompletion:(id)anything()];
+  [verifyCount(mockDelegate, never()) loadRemoteUpdate];
+  [verify(mockDelegate) throwException:anything()];
+}
+
+// TODO(eric): make these tests less flaky on CI and reenable them
+/**
+- (void)testHandleError_NewWorkingUpdateLoading
+{
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(^protocol(EXUpdatesErrorRecoveryDelegate)); // replace ^ with @ when uncommenting
   _errorRecovery.delegate = mockDelegate;
 
   [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusLoading];
@@ -84,7 +104,7 @@
 - (void)testHandleError_NewWorkingUpdateLoading_RCTContentDidAppear
 {
   // should wait a short window for new update to load, then crash
-  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(^protocol(EXUpdatesErrorRecoveryDelegate)); // replace ^ with @ when uncommenting
   _errorRecovery.delegate = mockDelegate;
 
   [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusLoading];
@@ -109,6 +129,7 @@
   [verifyCount(mockDelegate, never()) relaunchWithCompletion:(id)anything()];
   [verify(mockDelegate) throwException:anything()];
 }
+ */
 
 - (void)testHandleError_NewBrokenUpdateLoaded_WorkingUpdateCached
 {
@@ -165,9 +186,11 @@
   [verifyCount(mockDelegate, never()) loadRemoteUpdate];
 }
 
+// TODO(eric): make these tests less flaky on CI and reenable them
+/**
 - (void)testHandleError_RemoteLoadTimesOut
 {
-  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(^protocol(EXUpdatesErrorRecoveryDelegate)); // replace ^ with @ when uncommenting
   _errorRecovery.delegate = mockDelegate;
 
   [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusLoading];
@@ -189,7 +212,7 @@
 {
   // if an update has already been launched successfully, we don't want to fall back to an older update
 
-  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(^protocol(EXUpdatesErrorRecoveryDelegate)); // replace ^ with @ when uncommenting
   _errorRecovery.delegate = mockDelegate;
 
   EXUpdatesUpdate *mockUpdate = mock([EXUpdatesUpdate class]);
@@ -213,7 +236,7 @@
 
 - (void)testHandleError_RemoteLoadTimesOut_RCTContentDidAppear
 {
-  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(@protocol(EXUpdatesErrorRecoveryDelegate));
+  id<EXUpdatesErrorRecoveryDelegate> mockDelegate = mockProtocol(^protocol(EXUpdatesErrorRecoveryDelegate)); // replace ^ with @ when uncommenting
   _errorRecovery.delegate = mockDelegate;
 
   [given(mockDelegate.remoteLoadStatus) willReturnInteger:EXUpdatesRemoteLoadStatusLoading];
@@ -235,6 +258,7 @@
   [verifyCount(mockDelegate, never()) relaunchWithCompletion:anything()];
   [verifyCount(mockDelegate, never()) loadRemoteUpdate];
 }
+ */
 
 - (void)testHandleError_NoRemoteUpdate
 {

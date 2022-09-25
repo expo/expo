@@ -7,3 +7,4 @@ import { CodedError } from './CodedError';
 export declare class UnavailabilityError extends CodedError {
     constructor(moduleName: string, propertyName: string);
 }
+//# sourceMappingURL=UnavailabilityError.d.ts.map

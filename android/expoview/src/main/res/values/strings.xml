@@ -21,6 +21,7 @@
   <string name="perm_camera">accessing camera</string>
   <string name="perm_camera_roll_read">reading camera roll</string>
   <string name="perm_camera_roll_write">modifying camera roll</string>
+  <string name="perm_access_media_location">accessing media location</string>
   <string name="perm_contacts_read">reading contacts</string>
   <string name="perm_contacts_write">modifying contacts</string>
   <string name="perm_fine_location">fine location</string>
@@ -36,6 +37,7 @@
   <string name="devmenu_element_inspector_unavailable">Element Inspector Unavailable</string>
   <string name="devmenu_stop_remote_debugging">Stop Remote Debugging</string>
   <string name="devmenu_start_remote_debugging">Debug Remote JS</string>
+  <string name="devmenu_open_js_debugger">Open JS Debugger</string>
   <string name="devmenu_remote_debugger_unavailable">Remote Debugger Unavailable</string>
   <string name="devmenu_disable_fast_refresh">Disable Fast Refresh</string>
   <string name="devmenu_enable_fast_refresh">Enable Fast Refresh</string>

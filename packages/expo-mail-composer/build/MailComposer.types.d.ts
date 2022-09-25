@@ -41,3 +41,4 @@ export declare enum MailComposerStatus {
     SAVED = "saved",
     CANCELLED = "cancelled"
 }
+//# sourceMappingURL=MailComposer.types.d.ts.map

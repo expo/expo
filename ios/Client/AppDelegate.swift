@@ -7,8 +7,8 @@ import ExpoModulesCore
 class AppDelegate: ExpoAppDelegate {
   var rootViewController: EXRootViewController?
 
-  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-    if (application.applicationState != UIApplication.State.background) {
+  override func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+    if application.applicationState != UIApplication.State.background {
       // App launched in foreground
       setUpUserInterfaceForApplication(application, withLaunchOptions: launchOptions)
     }
@@ -23,8 +23,8 @@ class AppDelegate: ExpoAppDelegate {
     super.applicationWillEnterForeground(application)
   }
 
-  private func setUpUserInterfaceForApplication(_ application: UIApplication, withLaunchOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]?) {
-    if (self.window != nil) {
+  private func setUpUserInterfaceForApplication(_ application: UIApplication, withLaunchOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) {
+    if self.window != nil {
       return
     }
 

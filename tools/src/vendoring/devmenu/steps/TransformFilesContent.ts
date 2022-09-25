@@ -1,14 +1,16 @@
-import { Task } from './Task';
-import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import path from 'path';
+
 import { findFiles } from '../utils';
+import { Task } from './Task';
 
 export type FileContentTransformStepSettings = {
   source?: string;
   filePattern: string;
   find: string;
   replace: string;
+  debug?: boolean;
 };
 
 /**
@@ -21,17 +23,19 @@ export class TransformFilesContent extends Task {
   protected readonly filePattern: string;
   protected readonly find: RegExp;
   protected readonly replace: string;
+  protected readonly debug: boolean;
 
-  constructor({ source, filePattern, find, replace }: FileContentTransformStepSettings) {
+  constructor({ source, filePattern, find, replace, debug }: FileContentTransformStepSettings) {
     super();
     this.source = source;
     this.filePattern = filePattern;
     this.find = new RegExp(find, 'gm');
     this.replace = replace;
+    this.debug = debug || false;
   }
 
-  protected overrideWorkingDirectory(): string | undefined {
-    return this.source;
+  protected overrideWorkingDirectory(): string {
+    return this.source || '<workingDirectory>';
   }
 
   async execute() {
@@ -39,11 +43,14 @@ export class TransformFilesContent extends Task {
 
     this.logSubStep(
       `🔄 find ${chalk.yellow(this.find.toString())} in ${chalk.green(
-        this.overrideWorkingDirectory() || '<workingDirectory>'
+        this.overrideWorkingDirectory()
       )}/${chalk.yellow(this.filePattern)} and replace with ${chalk.magenta(this.replace)}`
     );
 
     const files = await findFiles(workDirectory, this.filePattern);
+    if (this.debug) {
+      this.logDebugInfo('Files: ' + files.join('\n'));
+    }
     await Promise.all(
       files.map(async (file) => {
         const content = await fs.readFile(file, 'utf8');
@@ -75,6 +82,6 @@ export const renameIOSSymbols = (settings: {
 }): TransformFilesContent => {
   return new TransformFilesContent({
     ...settings,
-    filePattern: path.join('ios', '**', '*.@(h|m)'),
+    filePattern: path.join('ios', '**', '*.@(h|m|mm)'),
   });
 };

@@ -2,9 +2,11 @@
 title: Environment variables and secrets
 ---
 
+import { Collapsible } from '~/ui/components/Collapsible';
+
 The ["Environment variables in Expo"](/guides/environment-variables.md) guide presents several options for how you can access system environment variables to your app JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables.md#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
 
-Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with its evaluated result) in your app's JavaScript code _at the the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without explicitly providing values or fallbacks for the environment variables, then you are likely to encounter either a build-time or runtime error.
+Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with its evaluated result) in your app's JavaScript code _at the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without explicitly providing values or fallbacks for the environment variables, then you are likely to encounter either a build-time or runtime error.
 
 ## Using plaintext environment variables
 
@@ -46,7 +48,7 @@ See the [eas.json reference](/build/eas-json.md) for more information.
 
 ## Environment variables and app.config.js
 
-Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important in order to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (in order to gather metadata for the build job) and when it occurs on the remote build worker, for example to configure the project during `expo prebuild` or to embed the configuration data in the app.
+Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important in order to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (in order to gather metadata for the build job) and when it occurs on the remote build worker, for example to configure the project during `npx expo prebuild` or to embed the configuration data in the app.
 
 ## Built-in environment variables
 
@@ -54,17 +56,21 @@ The following environment variables are exposed to each build job &mdash; they a
 
 - `CI=1` - indicates this is a CI environment
 - `EAS_BUILD=true` - indicates this is an EAS Build environment
+- `EAS_BUILD_PLATFORM` - either `android` or `ios`
+- `EAS_BUILD_RUNNER` - either `eas-build` for EAS Build cloud builds or `local-build-plugin` for [local builds](local-builds)
 - `EAS_BUILD_ID` - the build ID, e.g. `f51831f0-ea30-406a-8c5f-f8e1cc57d39c`
 - `EAS_BUILD_PROFILE` - the name of the build profile from **eas.json**, e.g. `production`
 - `EAS_BUILD_GIT_COMMIT_HASH` - the hash of the Git commit, e.g. `88f28ab5ea39108ade978de2d0d1adeedf0ece76`
 - `EAS_BUILD_NPM_CACHE_URL` - the URL of the npm cache ([learn more](/build-reference/private-npm-packages))
+- `EAS_BUILD_MAVEN_CACHE_URL` - the URL of Maven cache ([learn more](/build-reference/caching/#android-dependencies))
 - `EAS_BUILD_USERNAME` - the username of the user initiating the build (it's undefined for bot users)
+- `EAS_BUILD_WORKINGDIR` - the remote directory path with your project
 
 ## Using secrets in environment variables
 
 To provide your build jobs with access to values that are too sensitive to include in your source code and Git repository, you can use "Secrets".
 
-A secret is made up of a name and a value. The name can only contain alphanumeric characters and underscores.
+A secret is made up of a name and a value. The name can only contain alphanumeric characters and underscores. The value is limited to 32 KiB.
 
 The secret values are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
 
@@ -85,7 +91,7 @@ To create **app-specific secrets**, navigate to [the "Secrets" tab in your proje
 To create a new secret, run `eas secret:create`
 
 ```
-> eas secret:create project SECRET_NAME secretvalue
+> eas secret:create --scope project --name SECRET_NAME --value secretvalue
 ✔ Linked to project @fiberjw/goodweebs
 ✔ You're inside the project directory. Would you like to use fiberjw account? … yes
 ✔ ️Created a new secret SECRET_NAME on project @fiberjw/goodweebs.
@@ -116,22 +122,22 @@ After creating a secret, you can read it on subsequent EAS Build jobs with `proc
 
 Environment variables can be tricky to use if you don't have the correct mental model for how they work. In this section we're going to clarify common sources of confusion, oriented around use cases.
 
-### Can I share environment variables defined in eas.json with `expo start` and `expo publish`?
+### Can I share environment variables defined in eas.json with `expo start` and `eas update`?
 
-When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imagine we had the following **eas.json**:
+When you define environment variables on build profiles in **eas.json**, they will not be available for local development when you run `npx expo start`. A concern that developers often raise about this is that they now have to duplicate their configuration in multiple places, leading to additional maintenance effort and possible bugs when values go out of sync. If you find yourself in this situation, one possible solution is to move your configuration out of environment variables and into JavaScript. For example, imagine we had the following **eas.json**:
 
 ```json
 {
   "build": {
     "production": {
-      "releaseChannel": "production",
+      "channel": "production",
       "env": {
         "API_URL": "https://api.production.com",
         "ENABLE_HIDDEN_FEATURES": 0
       }
     },
     "preview": {
-      "releaseChannel": "staging",
+      "channel": "staging",
       "env": {
         "API_URL": "https://api.staging.com",
         "ENABLE_HIDDEN_FEATURES": 1
@@ -154,96 +160,95 @@ export default {
 }
 ```
 
-Using this approach, we would always need to remember to run `API_URL=https://api.staging.com ENABLE_HIDDEN_FEATURES=1 expo publish` when updating staging, and something similar for production. If we forgot the `ENABLE_HIDDEN_FEATURES=0` flag when publishing to production, we might end up rolling out untested features to production, and if we forgot the `API_URL` value, then users would be pointed to `https://localhost:3000`!
+Using this approach, we would always need to remember to run `API_URL=https://api.staging.com ENABLE_HIDDEN_FEATURES=1 eas update` when updating staging, and something similar for production. If we forgot the `ENABLE_HIDDEN_FEATURES=0` flag when publishing to production, we might end up rolling out untested features to production, and if we forgot the `API_URL` value, then users would be pointed to `https://localhost:3000`!
 
 The following are two possible alternative approaches, each with different tradeoffs.
 
-1. **Move values to application code and switch based on release channel**. Rather than putting configuration in environment variables and extras, create a JavaScript file, possibly named **Config.js**. This approach will work well for you as long as you don't need to use the configuration values to modify build time configuration, such as the `ios.bundleIdentifier`, `icon`, and so on. This approach also gives you the ability to promote updates between environments, because the configuration that is used will switch when it's loaded from a binary with a different release channel. It might look something like this:
+1. **Move values to application code and switch based on channel**. Rather than putting configuration in environment variables and extras, create a JavaScript file, possibly named **Config.js**. This approach will work well for you as long as you don't need to use the configuration values to modify build time configuration, such as the `ios.bundleIdentifier`, `icon`, and so on. This approach also gives you the ability to promote updates between environments, because the configuration that is used will switch when it's loaded from a binary with a different channel. It might look something like this:
 
-  <details>
-    <summary><strong>Config.js</strong></summary>
+  <Collapsible summary="Config.js">
 
-  ```js
-  import * as Updates from 'expo-updates';
+    ```js
+    import * as Updates from 'expo-updates';
 
-  let Config = {
-    apiUrl: 'https://localhost:3000',
-    enableHiddenFeatures: true,
-  };
+    let Config = {
+      apiUrl: 'https://localhost:3000',
+      enableHiddenFeatures: true,
+    };
 
-  if (Updates.releaseChannel === 'production') {
-    Config.apiUrl = 'https://api.production.com';
-    Config.enableHiddenFeatures = false;
-  } else if (Updates.releaseChannel === 'staging') {
-    Config.apiUrl = 'https://api.staging.com';
-    Config.enableHiddenFeatures = true;
-  }
+    if (Updates.channel === 'production') {
+      Config.apiUrl = 'https://api.production.com';
+      Config.enableHiddenFeatures = false;
+    } else if (Updates.channel === 'staging') {
+      Config.apiUrl = 'https://api.staging.com';
+      Config.enableHiddenFeatures = true;
+    }
 
-  export default Config;
-  ```
+    export default Config;
+    ```
 
-  </details>
+  </Collapsible>
 
-2. **Use a single environment variable to toggle configuration**. In our **eas.json** we can set an environment variable such as `APP_ENV` and then switch on that value inside of **app.config.js**. This way, we only have to be sure to set one environment variable: `APP_ENV=production expo publish`.
+2. **Use a single environment variable to toggle configuration**. In our **eas.json** we can set an environment variable such as `APP_ENV` and then switch on that value inside of **app.config.js**. This way, we only have to be sure to set one environment variable: `APP_ENV=production eas update`.
 
-  <details>
-    <summary><strong>eas.json</strong></summary>
+  <Collapsible summary="eas.json">
 
-  ```json
-  {
-    "build": {
-      "production": {
-        "releaseChannel": "production",
-        "env": {
-          "APP_ENV": "production"
-        }
-      },
-      "preview": {
-        "releaseChannel": "staging",
-        "env": {
-          "APP_ENV": "staging"
+    ```json
+    {
+      "build": {
+        "production": {
+          "channel": "production",
+          "env": {
+            "APP_ENV": "production"
+          }
+        },
+        "preview": {
+          "channel": "staging",
+          "env": {
+            "APP_ENV": "staging"
+          }
         }
       }
     }
-  }
-  ```
+    ```
 
-  </details>
+  </Collapsible>
 
-  <div style={{marginTop: -20, display: 'block'}} />
+  <Collapsible summary="app.config.js">
 
-  <details>
-    <summary><strong>app.config.js</strong></summary>
+    ```js
+    let Config = {
+      apiUrl: 'https://localhost:3000',
+      enableHiddenFeatures: true,
+    };
 
-  ```js
-  let Config = {
-    apiUrl: 'https://localhost:3000',
-    enableHiddenFeatures: true,
-  };
+    if (process.env.APP_ENV === 'production') {
+      Config.apiUrl = 'https://api.production.com';
+      Config.enableHiddenFeatures = false;
+    } else if (process.env.APP_ENV === 'staging') {
+      Config.apiUrl = 'https://api.staging.com';
+      Config.enableHiddenFeatures = true;
+    }
 
-  if (process.env.APP_ENV === 'production') {
-    Config.apiUrl = 'https://api.production.com';
-    Config.enableHiddenFeatures = false;
-  } else if (process.env.APP_ENV === 'staging') {
-    Config.apiUrl = 'https://api.staging.com';
-    Config.enableHiddenFeatures = true;
-  }
+    export default {
+      // ...
+      extra: {
+        ...Config,
+      },
+    };
+    ```
 
-  export default {
-    // ...
-    extra: {
-      ...Config,
-    },
-  };
-  ```
+  </Collapsible>
 
-  </details>
+### How are naming collisions between secrets and the `env` field in eas.json handled?
 
-<div style={{marginTop: -20, display: 'block'}} />
+A secret created on the Expo website or with `eas secret:create` will take precedence over an environment variable of the same name that is set through the `env` field in **eas.json**.
+
+For example, if you create a secret with name `MY_TOKEN` and value `secret` and also set `"env": { "MY_TOKEN": "public" }` in your **eas.json**, then `process.env.MY_TOKEN` on EAS Build will evaluate to `secret`.
 
 ### How do environment variables work for my Expo Development Client builds?
 
-Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used for the app manifest; this becomes the same situation as described above for **expo start**.
+Environment variables set in your build profile that impact **app.config.js** will be used for configuring the development build. When you run `npx expo start` to load your app inside of your development build, only environment variables that are available on your development machine will be used for the app manifest; this becomes the same situation as described above for **expo start**.
 
 ### Can I just set my environment variables on a CI provider?
 

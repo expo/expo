@@ -1,5 +1,6 @@
 package expo.modules.devlauncher.koin
 
+import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistry
 import expo.modules.devlauncher.launcher.DevLauncherIntentRegistryInterface
 import expo.modules.devlauncher.launcher.DevLauncherLifecycle
@@ -20,6 +21,7 @@ val DevLauncherBaseModule = module {
   single<DevLauncherIntentRegistryInterface> { DevLauncherIntentRegistry() }
   single { OkHttpClient() }
   single { DevLauncherLifecycle() }
+  single { DevLauncherInstallationIDHelper() }
   factory<DevLauncherAppLoaderFactoryInterface> { DevLauncherAppLoaderFactory() }
 }
 

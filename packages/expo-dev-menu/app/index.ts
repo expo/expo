@@ -1,8 +1,8 @@
 import { AppRegistry } from 'react-native';
 import { enableScreens } from 'react-native-screens';
 
-import DevMenuApp from './views/DevMenuApp';
+import { App } from './App';
 
 enableScreens(false);
 
-AppRegistry.registerComponent('main', () => DevMenuApp);
+AppRegistry.registerComponent('main', () => App);

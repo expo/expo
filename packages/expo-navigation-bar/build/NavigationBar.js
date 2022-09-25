@@ -1,8 +1,16 @@
-import { EventEmitter, Platform } from 'expo-modules-core';
+import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useState } from 'react';
 import { processColor } from 'react-native';
 import ExpoNavigationBar from './ExpoNavigationBar';
-const emitter = new EventEmitter(ExpoNavigationBar);
+let _emitter;
+// Lazily initialize the event emitter because it isn't available on iOS,
+// this enables us to use the same code for all platforms.
+function getEmitter() {
+    if (!_emitter) {
+        _emitter = new EventEmitter(ExpoNavigationBar);
+    }
+    return _emitter;
+}
 /**
  * Observe changes to the system navigation bar.
  * Due to platform constraints, this callback will also be triggered when the status bar visibility changes.
@@ -15,7 +23,11 @@ const emitter = new EventEmitter(ExpoNavigationBar);
  * ```
  */
 export function addVisibilityListener(listener) {
-    return emitter.addListener('ExpoNavigationBar.didChange', listener);
+    // Assert so the type is non-nullable.
+    if (!ExpoNavigationBar.addListener) {
+        throw new UnavailabilityError('NavigationBar', 'addVisibilityListener');
+    }
+    return getEmitter().addListener('ExpoNavigationBar.didChange', listener);
 }
 /**
  * Changes the navigation bar's background color.
@@ -245,13 +257,15 @@ export function useVisibility() {
     const [visibility, setVisible] = useState(null);
     useEffect(() => {
         let isMounted = true;
-        if (Platform.OS === 'android') {
-            getVisibilityAsync().then((visibility) => {
-                if (isMounted) {
-                    setVisible(visibility);
-                }
-            });
+        if (Platform.OS !== 'android') {
+            setVisible('hidden');
+            return;
         }
+        getVisibilityAsync().then((visibility) => {
+            if (isMounted) {
+                setVisible(visibility);
+            }
+        });
         const listener = addVisibilityListener(({ visibility }) => {
             if (isMounted) {
                 setVisible(visibility);

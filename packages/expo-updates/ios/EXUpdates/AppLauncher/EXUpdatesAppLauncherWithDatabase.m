@@ -117,6 +117,21 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
 }
 
++ (void)storedUpdateIdsInDatabase:(EXUpdatesDatabase *)database
+                       completion:(EXUpdatesAppLauncherQueryCompletionBlock)completionBlock
+{
+  dispatch_async(database.databaseQueue,^{
+    NSArray<NSUUID *> *readyUpdateIds;
+    NSError *dbError = nil;
+    readyUpdateIds = [database allUpdateIdsWithStatus:EXUpdatesUpdateStatusReady error:&dbError];
+    if (dbError != nil) {
+      completionBlock(dbError, @[]);
+    } else {
+      completionBlock(nil, readyUpdateIds);
+    }
+  });
+}
+
 - (BOOL)isUsingEmbeddedAssets
 {
   return _assetFilesMap == nil;
@@ -289,16 +304,21 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
     completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain code:1007 userInfo:@{NSLocalizedDescriptionKey: @"Failed to download asset with no URL provided"}], asset, assetLocalUrl);
   }
   dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
-    [self.downloader downloadFileFromURL:asset.url toPath:[assetLocalUrl path] successBlock:^(NSData *data, NSURLResponse *response) {
+    [self.downloader downloadFileFromURL:asset.url
+                           verifyingHash:asset.expectedHash
+                                  toPath:[assetLocalUrl path]
+                            extraHeaders:asset.extraRequestHeaders ?: @{}
+                            successBlock:^(NSData *data, NSURLResponse *response, NSString *base64URLEncodedSHA256Hash) {
       dispatch_async(self->_launcherQueue, ^{
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
           asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
         }
-        asset.contentHash = [EXUpdatesUtils sha256WithData:data];
+        asset.contentHash = base64URLEncodedSHA256Hash;
         asset.downloadTime = [NSDate date];
         completion(nil, asset, assetLocalUrl);
       });
-    } errorBlock:^(NSError *error, NSURLResponse *response) {
+    }
+                              errorBlock:^(NSError *error) {
       dispatch_async(self->_launcherQueue, ^{
         completion(error, asset, assetLocalUrl);
       });

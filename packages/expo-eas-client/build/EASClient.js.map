@@ -1,0 +1,1 @@
+{"version":3,"file":"EASClient.js","sourceRoot":"","sources":["../src/EASClient.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AACvD,eAAe,kBAAkB,CAAC,SAAS,IAAI,EAAE,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\nexport default NativeModulesProxy.EASClient || {};\n"]}

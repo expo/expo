@@ -1,4 +1,4 @@
-# Copyright (c) Facebook, Inc. and its affiliates.
+# Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
@@ -13,7 +13,7 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/reactperflogger
 # Header search path for modules that depend on this module
 LOCAL_EXPORT_C_INCLUDES := $(LOCAL_PATH)
 
-LOCAL_CFLAGS += -fexceptions -frtti -std=c++14 -Wall
+LOCAL_CFLAGS += -fexceptions -frtti -std=c++17 -Wall
 
 LOCAL_LDLIBS += -landroid
 
@@ -26,6 +26,7 @@ LOCAL_MODULE := reactperfloggerjni
 
 # Compile all local c++ files
 LOCAL_SRC_FILES := $(wildcard $(LOCAL_PATH)/reactperflogger/*.cpp)
+LOCAL_SRC_FILES := $(subst $(LOCAL_PATH)/,,$(LOCAL_SRC_FILES))
 
 # Build the files in this directory as a shared library
 include $(BUILD_SHARED_LIBRARY)

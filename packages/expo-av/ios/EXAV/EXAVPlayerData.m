@@ -882,7 +882,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
       MTAudioProcessingTapCallbacks callbacks;
 
       callbacks.version = kMTAudioProcessingTapCallbacksVersion_0;
-      callbacks.clientInfo = (__bridge void *)self,
+      callbacks.clientInfo = (__bridge void *)self;
       callbacks.init = EXTapInit;
       callbacks.finalize = EXTapFinalize;
       callbacks.prepare = EXTapPrepare;
@@ -1066,12 +1066,21 @@ void EXTapProcess(MTAudioProcessingTapRef tap, CMItemCount numberFrames, MTAudio
 
 #pragma mark - NSObject Lifecycle
 
-- (void)dealloc
+/*
+ * Call this synchronously on the main thread to remove the EXAVPlayerData
+ * as an observer before KVO messages are broadcasted on the main thread.
+ */
+- (void)cleanup
 {
   // this triggers the audio tap removal
   [self setSampleBufferCallback:nil];
   [self _removeTimeObserver];
   [self _removeObservers];
+}
+
+- (void)dealloc
+{
+  [self cleanup];
 }
 
 # pragma mark - Utilities

@@ -12,3 +12,7 @@ export async function downloadAsync(uri, hash, type, name): Promise<string> {
 export function getManifest() {
   return {};
 }
+
+export function getManifest2() {
+  return {};
+}

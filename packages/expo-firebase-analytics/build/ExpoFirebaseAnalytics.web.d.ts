@@ -34,3 +34,4 @@ declare const _default: {
     setDebugModeEnabled(isEnabled: boolean): Promise<void>;
 };
 export default _default;
+//# sourceMappingURL=ExpoFirebaseAnalytics.web.d.ts.map

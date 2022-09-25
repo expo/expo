@@ -1,6 +1,6 @@
-import fs from 'fs-extra';
-import chalk from 'chalk';
 import JsonFile, { JSONObject } from '@expo/json-file';
+import chalk from 'chalk';
+import fs from 'fs-extra';
 
 import Git from './Git';
 import logger from './Logger';
@@ -92,7 +92,8 @@ export class TaskError<TaskType extends { name: string }> extends Error {
  * backup and restore tasks' state.
  */
 export class TaskRunner<Args extends any[], BackupDataType extends JSONObject | null = null>
-  implements TaskRunnerDescriptor<Args, BackupDataType> {
+  implements TaskRunnerDescriptor<Args, BackupDataType>
+{
   // Descriptor properties
   readonly tasks: Task<Args>[];
 
@@ -100,13 +101,11 @@ export class TaskRunner<Args extends any[], BackupDataType extends JSONObject | 
 
   readonly backupExpirationTime: number = 60 * 60 * 1000;
 
-  readonly validateBackup: (
-    backup: TasksRunnerBackup<BackupDataType>
-  ) => Promiseable<boolean> = () => true;
+  readonly validateBackup: (backup: TasksRunnerBackup<BackupDataType>) => Promiseable<boolean> =
+    () => true;
 
-  readonly shouldUseBackup: (
-    backup: TasksRunnerBackup<BackupDataType>
-  ) => Promiseable<boolean> = () => true;
+  readonly shouldUseBackup: (backup: TasksRunnerBackup<BackupDataType>) => Promiseable<boolean> =
+    () => true;
 
   readonly restoreBackup: (
     backup: TasksRunnerBackup<BackupDataType>,
@@ -142,7 +141,7 @@ export class TaskRunner<Args extends any[], BackupDataType extends JSONObject | 
     try {
       await fs.access(this.backupFilePath, fs.constants.R_OK);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }

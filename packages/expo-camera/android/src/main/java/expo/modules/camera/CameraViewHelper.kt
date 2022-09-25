@@ -7,65 +7,15 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.media.CamcorderProfile
 import android.os.Bundle
-import android.view.ViewGroup
 
 import com.google.android.cameraview.CameraView
 
-import expo.modules.camera.events.CameraMountErrorEvent
-import expo.modules.camera.events.CameraReadyEvent
-import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
-import expo.modules.core.interfaces.services.EventEmitter
-import expo.modules.camera.events.FacesDetectedEvent
-import expo.modules.interfaces.facedetector.FaceDetectorInterface
-import expo.modules.camera.events.FaceDetectionErrorEvent
-import expo.modules.camera.events.PictureSavedEvent
-import expo.modules.camera.events.BarCodeScannedEvent
+import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 object CameraViewHelper {
-  // Mount error event
-  @JvmStatic
-  fun emitMountErrorEvent(emitter: EventEmitter, view: ViewGroup, message: String) {
-    val event = CameraMountErrorEvent.obtain(message)
-    emitter.emit(view.id, event)
-  }
-
-  // Camera ready event
-  @JvmStatic
-  fun emitCameraReadyEvent(emitter: EventEmitter, view: ViewGroup) {
-    val event = CameraReadyEvent.obtain()
-    emitter.emit(view.id, event)
-  }
-
-  // Bar code read event
-  @JvmStatic
-  fun emitBarCodeReadEvent(emitter: EventEmitter, view: ViewGroup, barCode: BarCodeScannerResult) {
-    val event = BarCodeScannedEvent.obtain(view.id, barCode)
-    emitter.emit(view.id, event)
-  }
-
-  // Face detection events
-  @JvmStatic
-  fun emitFacesDetectedEvent(emitter: EventEmitter, view: ViewGroup, faces: List<Bundle>) {
-    val event = FacesDetectedEvent.obtain(view.id, faces)
-    emitter.emit(view.id, event)
-  }
-
-  @JvmStatic
-  fun emitFaceDetectionErrorEvent(emitter: EventEmitter, view: ViewGroup, faceDetector: FaceDetectorInterface) {
-    val event = FaceDetectionErrorEvent.obtain(faceDetector)
-    emitter.emit(view.id, event)
-  }
-
-  // Picture saved
-  @JvmStatic
-  fun emitPictureSavedEvent(emitter: EventEmitter, view: ViewGroup, info: Bundle) {
-    val event = PictureSavedEvent.obtain(info)
-    emitter.emit(view.id, event)
-  }
-
   // Utilities
   @JvmStatic
   fun getCorrectCameraRotation(rotation: Int, facing: Int) =
@@ -109,6 +59,38 @@ object CameraViewHelper {
   }
 
   @JvmStatic
+  @Throws(IllegalArgumentException::class)
+  fun setExifData(baseExif: ExifInterface, exifMap: Map<String, Any>) {
+    for ((_, name) in exifTags) {
+      exifMap[name]?.let {
+        // Convert possible type to string before putting into baseExif
+        when (it) {
+          is String -> baseExif.setAttribute(name, it)
+          is Number -> baseExif.setAttribute(name, it.toDouble().toBigDecimal().toPlainString())
+          is Boolean -> baseExif.setAttribute(name, it.toString())
+        }
+      }
+    }
+
+    if (exifMap.containsKey(ExifInterface.TAG_GPS_LATITUDE) &&
+      exifMap.containsKey(ExifInterface.TAG_GPS_LONGITUDE) &&
+      exifMap[ExifInterface.TAG_GPS_LATITUDE] is Number &&
+      exifMap[ExifInterface.TAG_GPS_LONGITUDE] is Number
+    ) {
+      baseExif.setLatLong(
+        exifMap[ExifInterface.TAG_GPS_LATITUDE] as Double,
+        exifMap[ExifInterface.TAG_GPS_LONGITUDE] as Double
+      )
+    }
+
+    if (exifMap.containsKey(ExifInterface.TAG_GPS_ALTITUDE) &&
+      exifMap[ExifInterface.TAG_GPS_ALTITUDE] is Number
+    ) {
+      baseExif.setAltitude(exifMap[ExifInterface.TAG_GPS_ALTITUDE] as Double)
+    }
+  }
+
+  @JvmStatic
   @Throws(IOException::class)
   fun addExifData(baseExif: ExifInterface, additionalExif: ExifInterface) {
     for (tagInfo in exifTags) {
@@ -120,9 +102,9 @@ object CameraViewHelper {
     baseExif.saveAttributes()
   }
 
-  fun generateSimulatorPhoto(width: Int, height: Int): Bitmap {
-    val fakePhoto = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
-    val canvas = Canvas(fakePhoto)
+  fun generateSimulatorPhoto(width: Int, height: Int): ByteArray {
+    val fakePhotoBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(fakePhotoBitmap)
     val background = Paint().apply {
       color = Color.BLACK
     }
@@ -134,6 +116,10 @@ object CameraViewHelper {
     val calendar = Calendar.getInstance()
     val simpleDateFormat = SimpleDateFormat("dd.MM.yy HH:mm:ss", Locale.US)
     canvas.drawText(simpleDateFormat.format(calendar.time), width * 0.1f, height * 0.9f, textPaint)
-    return fakePhoto
+
+    val stream = ByteArrayOutputStream()
+    fakePhotoBitmap.compress(Bitmap.CompressFormat.PNG, 90, stream)
+    val fakePhotoByteArray = stream.toByteArray()
+    return fakePhotoByteArray
   }
 }

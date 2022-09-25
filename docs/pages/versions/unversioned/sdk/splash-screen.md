@@ -1,13 +1,14 @@
 ---
 title: SplashScreen
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-splash-screen'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-splash-screen'
+packageName: 'expo-splash-screen'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-The `SplashScreen` module tells the splash screen to remain visible until it has been explicitly told to hide. This is useful to do some work behind the scenes before displaying your app (eg: make API calls) and to animated your splash screen (eg: fade out or slide away, or switch from a static splash screen to an animated splash screen).
+The `SplashScreen` module tells the splash screen to remain visible until it has been explicitly told to hide. This is useful to do some work behind the scenes before displaying your app (eg: make API calls) and to animate your splash screen (eg: fade out or slide away, or switch from a static splash screen to an animated splash screen).
 
 Read more about [creating a splash screen image](../../../guides/splash-screens.md), or [quickly generate an icon and splash screen on the web](https://buildicon.netlify.app/)
 
@@ -15,7 +16,7 @@ Read more about [creating a splash screen image](../../../guides/splash-screens.
 
 ## Installation
 
-<InstallSection packageName="expo-splash-screen" />
+<APIInstallSection />
 
 ## Usage
 
@@ -24,9 +25,12 @@ This example shows how to keep the splash screen visible while loading app resou
 ```js
 import React, { useCallback, useEffect, useState } from 'react';
 import { Text, View } from 'react-native';
-import { Entypo } from '@expo/vector-icons';
+import Entypo from '@expo/vector-icons/Entypo';
 import * as SplashScreen from 'expo-splash-screen';
 import * as Font from 'expo-font';
+
+// Keep the splash screen visible while we fetch resources
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -34,8 +38,6 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        // Keep the splash screen visible while we fetch resources
-        await SplashScreen.preventAutoHideAsync();
         // Pre-load fonts, make any API calls you need to do here
         await Font.loadAsync(Entypo.font);
         // Artificially delay for two seconds to simulate a slow loading

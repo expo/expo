@@ -1,0 +1,1 @@
+{"version":3,"file":"MailComposer.d.ts","sourceRoot":"","sources":["../src/MailComposer.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,mBAAmB,EAAE,kBAAkB,EAAE,MAAM,sBAAsB,CAAC;AAG/E;;;;;;GAMG;AACH,wBAAsB,YAAY,CAAC,OAAO,EAAE,mBAAmB,GAAG,OAAO,CAAC,kBAAkB,CAAC,CAE5F;AAGD;;;;;;;GAOG;AACH,wBAAsB,gBAAgB,IAAI,OAAO,CAAC,OAAO,CAAC,CAEzD;AAED,cAAc,sBAAsB,CAAC"}

@@ -67,31 +67,30 @@ class Converters {
     return bb.array()
   }
 
+  /**
+   * It's important that the integer values here stay constant across all versions of this library
+   * since they are stored in SQLite on user devices. (The nonconsecutive numbers are a historical
+   * artifact.)
+   */
   @TypeConverter
   fun intToStatus(value: Int): UpdateStatus {
     return when (value) {
-      0 -> UpdateStatus.FAILED
       1 -> UpdateStatus.READY
-      2 -> UpdateStatus.LAUNCHABLE
       3 -> UpdateStatus.PENDING
       5 -> UpdateStatus.EMBEDDED
       6 -> UpdateStatus.DEVELOPMENT
-      4 -> UpdateStatus.UNUSED
-      else -> UpdateStatus.UNUSED
+      else -> throw AssertionError("Invalid UpdateStatus value in database: $value")
     }
   }
 
   @TypeConverter
   fun statusToInt(status: UpdateStatus?): Int {
     return when (status) {
-      UpdateStatus.FAILED -> 0
       UpdateStatus.READY -> 1
-      UpdateStatus.LAUNCHABLE -> 2
       UpdateStatus.PENDING -> 3
       UpdateStatus.EMBEDDED -> 5
       UpdateStatus.DEVELOPMENT -> 6
-      UpdateStatus.UNUSED -> 4
-      else -> 4
+      else -> throw AssertionError("Invalid UpdateStatus value: $status")
     }
   }
 

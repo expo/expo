@@ -32,10 +32,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
   const deviceId = options.deviceId || (await getDeviceIdAsync());
 
   const experienceId =
-    options.experienceId ||
-    Constants.manifest?.originalFullName ||
-    Constants.manifest2?.extra?.expoClient?.originalFullName ||
-    Constants.manifest?.id;
+    options.experienceId || Constants.expoConfig?.originalFullName || Constants.manifest?.id;
 
   const projectId =
     options.projectId ||
@@ -89,7 +86,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
     let body: string | undefined = undefined;
     try {
       body = await response.text();
-    } catch (error) {
+    } catch {
       // do nothing
     }
     throw new CodedError(
@@ -124,7 +121,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 async function parseResponse(response: Response) {
   try {
     return await response.json();
-  } catch (error) {
+  } catch {
     try {
       throw new CodedError(
         'ERR_NOTIFICATIONS_SERVER_ERROR',
@@ -132,7 +129,7 @@ async function parseResponse(response: Response) {
           await response.text()
         )}.`
       );
-    } catch (innerError) {
+    } catch {
       throw new CodedError(
         'ERR_NOTIFICATIONS_SERVER_ERROR',
         `Expected a JSON response from server when fetching Expo token, received response: ${JSON.stringify(
@@ -198,7 +195,7 @@ async function shouldUseDevelopmentNotificationService() {
       if (notificationServiceEnvironment === 'development') {
         return true;
       }
-    } catch (e) {
+    } catch {
       // We can't do anything here, we'll fallback to false then.
     }
   }

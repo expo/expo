@@ -1,20 +1,26 @@
 ---
 title: Notifications
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-notifications'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-notifications'
+packageName: 'expo-notifications'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 The **`expo-notifications`** provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 
 > Migrating from Expo's `LegacyNotifications` module? [Here's a guide to help make the transition as easy as possible](https://github.com/expo/fyi/blob/master/LegacyNotifications-to-ExpoNotifications.md).
 
-### Features
+<PlatformsSection title="Push notifications Platform Compatibility" android ios />
+
+<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator />
+
+## Features
 
 - 📣 schedule a one-off notification for a specific date, or some time from now,
 - 🔁 schedule a notification repeating in some time interval (or a calendar date match on iOS),
@@ -28,17 +34,13 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 - 🗂 create, update, delete Android notification channels,
 - 🎨 set custom icon and color for notifications on Android.
 
-<PlatformsSection title="Push notifications Platform Compatibility" android ios web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
-
-<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator web={{ pending: 'https://github.com/expo/expo/issues/6895' }} />
-
 ## Installation
 
-<InstallSection packageName="expo-notifications" />
+<APIInstallSection />
 
 ## Configuration in app.json / app.config.js
 
-You can configure `expo-notifications` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+To configure `expo-notifications`, use the built-in [config plugin](/guides/config-plugins) in the **app.json** or **app.config.js** for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 
@@ -48,9 +50,11 @@ Learn how to configure notifications with the [app manifest `notification` prope
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/master/packages/expo-notifications#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/main/packages/expo-notifications#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
+
+> The iOS APNS entitlement is _always_ set to 'development'. Xcode automatically changes this to 'production' during archive. [Learn more](https://stackoverflow.com/a/42293632/4047926).
 
 <ConfigPluginExample>
 
@@ -66,8 +70,7 @@ Learn how to configure the native projects in the [installation instructions in 
           "sounds": [
             "./local/assets/notification-sound.wav",
             "./local/assets/notification-sound-other.wav"
-          ],
-          "mode": "production"
+          ]
         }
       ]
     ]
@@ -78,10 +81,9 @@ Learn how to configure the native projects in the [installation instructions in 
 </ConfigPluginExample>
 
 <ConfigPluginProperties properties={[
-  { name: 'icon', platform: 'android', description: 'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.' },
-  { name: 'color', default: '#ffffff', platform: 'android', description: 'Tint color for the push notification image when it appears in the notification tray.' },
-  { name: 'sounds', description: 'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.' },
-  { name: 'mode', default: 'development', platform: 'ios', description: `Environment of the app: either 'development' or 'production'.` },
+{ name: 'icon', platform: 'android', description: 'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.' },
+{ name: 'color', default: '#ffffff', platform: 'android', description: 'Tint color for the push notification image when it appears in the notification tray.' },
+{ name: 'sounds', description: 'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.' },
 ]} />
 
 ## Credentials configuration
@@ -98,9 +100,13 @@ Learn how push notification credentials can be automatically generated or upload
 
 ### Android
 
-On Android, this module requires permission to subscribe to device boot. It's used to setup scheduled notifications when the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
+- On Android, this module requires permission to subscribe to device boot. It's used to setup scheduled notifications when the device (re)starts. The `RECEIVE_BOOT_COMPLETED` permission is added automatically through the library **AndroidManifest.xml**.
 
-<AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED']} />
+- Starting from Android 12 (API level 31), to schedule the notification that triggers at the exact time, you need to add `<uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>` to **AndroidManifest.xml**. You can read more about the exact alarm permission [here](https://developer.android.com/about/versions/12/behavior-changes-12#exact-alarm-permission).
+
+- On Android 13, app users must opt-in to receive notifications via a permissions prompt automatically triggered by the operating system. This prompt will not appear until at least one notification channel is created. Therefore, `setNotificationChannelAsync` must be called prior to `getDevicePushTokenAsync` or `getExpoPushTokenAsync` in order to obtain a push token. You can read more about the new notification permission behavior for Android 13 [in the official documentation](https://developer.android.com/develop/ui/views/notifications/notification-permission#new-apps).
+
+<AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED', 'SCHEDULE_EXACT_ALARM']} />
 
 ### iOS
 
@@ -122,45 +128,39 @@ As mentioned, the most common reasons for this issue are either an invalid Inter
 
 Here are a few ways people claim to have solved this problem, maybe one of these will help you solve it, too!
 
-<details><summary><strong>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></strong></summary> <p>
+<Collapsible summary={<span>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></span>}>
 
 Go read the Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This the single most reliable source of information on this problem. To help you grasp what they're suggesting:
 
 - Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
-- Make sure your app configuration is set properly for registering for push notifications (for bare workflow check out [this guide](https://developer.apple.com/library/ios/documentation/IDEs/Conceptual/AppDistributionGuide/AddingCapabilities/AddingCapabilities.html#//apple_ref/doc/uid/TP40012582-CH26-SW6), for managed workflow this is done automatically for you by `expo-cli`) as also suggested by [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156).
-- If you're in bare workflow you may want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
+- **Bare React Native apps** must [manually enable the **Push Notifications** capability](/build-reference/ios-capabilities#manual-setup). If you have trouble setting this up, refer to [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156). You may also want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Try again in a little while</strong></summary> <p>
+<Collapsible summary="Try again in a little while">
 
 - APNS servers near the device may be down as indicated by [this forum thread](https://developer.apple.com/forums/thread/52224). Take a walk and try again later!
 - Try again in a few days time as suggested by [this GitHub comment](https://github.com/expo/expo/issues/10369#issuecomment-717872956).
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Disable network sharing on your device</strong></summary> <p>
+<Collapsible summary="Disable network sharing on your device">
 
 You may need to disable network sharing as this may impact the registration as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59156989/1123156).
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Restart your device</strong></summary> <p>
+<Collapsible summary="Restart your device">
 
 If you just changed the APNS servers where the app should be registering (by installing a TestFlight build over an Xcode build on the same device) you may need to restart your device as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59864028/1123156).
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Setup your device with a SIM card</strong></summary> <p>
+<Collapsible summary="Setup your device with a SIM card">
 
 If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this StackOverflow answer](https://stackoverflow.com/a/19432504/1123156).
 
-</p>
-</details>
+</Collapsible>
 
 ## API
 
@@ -170,10 +170,10 @@ import * as Notifications from 'expo-notifications';
 
 Check out the Snack below to see Notifications in action, but be sure to use a physical device! Push notifications don't work on simulators/emulators.
 
-<SnackInline label='Push Notifications' dependencies={['expo-constants', 'expo-permissions', 'expo-notifications']}>
+<SnackInline label='Push Notifications' dependencies={['expo-device', 'expo-permissions', 'expo-notifications']}>
 
 ```js
-import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import React, { useState, useEffect, useRef } from 'react';
 import { Text, View, Button, Platform } from 'react-native';
@@ -245,7 +245,17 @@ async function schedulePushNotification() {
 
 async function registerForPushNotificationsAsync() {
   let token;
-  if (Constants.isDevice) {
+
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
@@ -262,15 +272,6 @@ async function registerForPushNotificationsAsync() {
     alert('Must use physical device for Push Notifications');
   }
 
-  if (Platform.OS === 'android') {
-    Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
-    });
-  }
-
   return token;
 }
 ```
@@ -279,13 +280,13 @@ async function registerForPushNotificationsAsync() {
 
 ## Custom notification icon and colors (Android only)
 
-In the managed workflow, set your [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in **app.json**, rebuild your app, and you're good to go!
+You can configure  the [`notification.icon`](../config/app.md#notification) and [`notification.color`](../config/app.md#notification) keys in the project's **app.json** if you are using [Expo Prebuild](/workflow/prebuild) or by using the [`expo-notifications` config plugin directly](#optional-setup). These are build-time settings, so you'll need to recompile your native Android app with `eas build -p android` or `npx expo run:android` to see the changes.
 
-For bare workflow **and EAS Build users**, the configuration is also done in **app.json**, but you'll use the [`expo-notifications` config plugin instead](#optional-setup).
+For Bare react native apps, see [Customize Notification Icons](https://documentation.onesignal.com/docs/customize-notification-icons) to manually configure Android notification icons in Android Studio.
 
 For your notification icon, make sure you follow [Google's design guidelines](https://material.io/design/iconography/product-icons.html#design-principles) (the icon must be all white with a transparent background) or else it may not be displayed as intended.
 
-In both the managed and bare workflow, you can also set a custom notification color _per-notification_ directly in your [`NotificationContentInput`](#notificationcontentinput) under the `color` attribute.
+You can also set a custom notification color _per-notification_ directly in your [`NotificationContentInput`](#notificationcontentinput) under the `color` attribute.
 
 ## Setting custom notification sounds
 
@@ -330,7 +331,7 @@ await Notifications.scheduleNotificationAsync({
 
 You can also manually add notification files to your Android and iOS projects if you prefer:
 
-<details><summary><strong>Manually adding notification sounds on Android</strong></summary> <p>
+<Collapsible summary="Manually adding notification sounds on Android">
 
 On Androids 8.0+, playing a custom sound for a notification requires more than setting the `sound` property on the `NotificationContentInput`. You will _also_ need to configure the `NotificationChannel` with the appropriate `sound`, and use it when sending/scheduling the notification.
 
@@ -358,10 +359,9 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-</p>
-</details>
+</Collapsible>
 
-<details><summary><strong>Manually adding notification sounds on iOS</strong></summary> <p>
+<Collapsible summary="Manually adding notification sounds on iOS">
 
 On iOS, all that's needed is to place your sound file in your Xcode project (see the screenshot below), and then specify the sound file in your `NotificationContentInput`, like this:
 
@@ -380,8 +380,7 @@ await Notifications.scheduleNotificationAsync({
 
 <ImageSpotlight alt="notification.wav inside of app resources in Xcode project organizer" src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
 
-</p>
-</details>
+</Collapsible>
 
 ## Android push notification payload specification
 
@@ -407,16 +406,16 @@ Returns an Expo token that can be used to send a push notification to the device
 
 This method makes a request to Expo's servers, so it can reject in cases where the request itself fails (like due to the device being offline, experiencing a network timeout, or other HTTPS request failures). To provide offline support to your users, you should `try/catch` this method and implement retry logic to attempt to get the push token later, once the device is back online.
 
-> **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using `expo-cli` (`expo credentials:manager`). [Read more in the “Upload notifications credentials” guide](../../../push-notifications/push-notifications-setup.md#credentials).
+> **Note:** For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys. This can be done using EAS CLI (`eas credentials`). [Read more in the “Upload notifications credentials” guide](../../../push-notifications/push-notifications-setup.md#credentials).
 
 #### Arguments
 
 This function accepts an optional object allowing you to pass in configuration, consisting of fields (all are optional, but some may have to be defined if configuration cannot be inferred):
 
-- **experienceId (_string_)** -- **Although this is optional, we recommend explicitly passing it in**. The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. When building with EAS Build, or in the bare workflow, **this is required** and you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from **app.json**](../config/app.md#slug).
+- **experienceId (_string_)** -- **Although this is optional, we recommend explicitly passing it in**. The ID of the experience to which the token should be attributed. Defaults to [`Constants.manifest.id`](/versions/latest/sdk/constants/#constantsmanifest) exposed by `expo-constants`. When building with EAS Build, or in the bare workflow, **this is required** and you must provide a value which takes the shape `@username/projectSlug`, where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug` from **app.json**](../config/app.md#slug).
 - **devicePushToken ([_DevicePushToken_](#devicepushtoken))** -- The device push token with which to register at the backend. Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
-- **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](https://docs.expo.dev/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
-- **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](https://docs.expo.dev/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
+- **applicationId (_string_)** -- The ID of the application to which the token should be attributed. Defaults to [`Application.applicationId`](/versions/latest/sdk/application/#applicationapplicationid) exposed by `expo-application`.
+- **development (_boolean_)** -- Makes sense only on iOS, where there are two push notification services: sandbox and production. This defines whether the push token is supposed to be used with the sandbox platform notification service. Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](/versions/latest/sdk/application/#applicationgetiospushnotificationserviceenvironmentasync) exposed by `expo-application` or `false`. Most probably you won't need to customize that. You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNS.
 
 #### Returns
 
@@ -430,7 +429,6 @@ Returns a `Promise` that resolves to an object with the following fields:
 #### Fetching the Expo push token and uploading it to a server
 
 ```ts
-import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 
 export async function registerForPushNotificationsAsync(userId: string) {
@@ -766,7 +764,7 @@ Notifications.setNotificationHandler({
 
 ### `registerTaskAsync(taskName: string): void`
 
-When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification. Under the hood, this function is run using `expo-task-manager`. You **must** define the task _first_, with [`TaskManager.defineTask`](./task-manager.md/#taskmanagerdefinetasktaskname-task). Make sure you define it in the global scope.
+When a notification is received while the app is backgrounded, using this function you can set a callback that will be run in response to that notification. Under the hood, this function is run using `expo-task-manager`. You **must** define the task _first_, with [`TaskManager.defineTask`](./task-manager.md#taskmanagerdefinetasktaskname-task). Make sure you define it in the global scope.
 
 The `taskName` argument is the string you passed to `TaskManager.defineTask` as the "taskName". The callback function you define with `TaskManager.defineTask` will receive an object with the following fields:
 
@@ -843,7 +841,7 @@ An optional object of conforming to the following interface:
 }
 ```
 
-Each option corresponds to a different native platform authorization option (a list of iOS options is available [here](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions), on Android all available permissions are granted by default and if a user declines any permission an app can't prompt the user to change).
+Each option corresponds to a different native platform authorization option. To see a list of available options on iOS, see [UNAuthorizationOptions](https://developer.apple.com/documentation/usernotifications/unauthorizationoptions). On Android, all available permissions are granted by default, and if a user declines any permission, an app cannot prompt the user to change.
 
 #### Returns
 
@@ -1067,7 +1065,7 @@ async function scheduleAndCancel() {
     content: {
       title: 'Hey!',
     },
-    trigger: { seconds: 5, repeats: true },
+    trigger: { seconds: 60, repeats: true },
   });
   await Notifications.cancelScheduledNotificationAsync(identifier);
 }
@@ -1750,7 +1748,7 @@ export type ChannelAwareTriggerInput = {
 
 #### `DateTriggerInput`
 
-A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a UNIX timestamp.
+A trigger that will cause the notification to be delivered once at the specified `Date`. If you pass in a `number` it will be interpreted as a Unix timestamp.
 
 ```ts
 export type DateTriggerInput = Date | number | { channelId?: string; date: Date | number };
@@ -1759,6 +1757,8 @@ export type DateTriggerInput = Date | number | { channelId?: string; date: Date 
 #### `TimeIntervalTriggerInput`
 
 A trigger that will cause the notification to be delivered once or many times (depends on the `repeats` field) after `seconds` time elapse.
+
+> **On iOS**, when `repeats` is `true`, the time interval must be 60 seconds or greater. Otherwise, the notification won't be triggered.
 
 ```ts
 export interface TimeIntervalTriggerInput {

@@ -1,16 +1,20 @@
 # expo-app-loading
 
+## ⚠️ Deprecated
+
+**expo-app-loading** is deprecated in favor of **expo-splash-screen**: use `SplashScreen.preventAutoHideAsync()` and `SplashScreen.hideAsync()` instead. [Learn more](https://docs.expo.dev/versions/latest/sdk/splash-screen/).
+
 A React component that tells expo-splash-screen to remain visible if it is the first and only component rendered in your app.
 This can be useful while download and cache fonts, logos, icon images and other assets that you want to be sure the user has on their device for an optimal experience before rendering and they start using the app. You can alternatively use expo-splash-screen APIs directly - expo-app-loading just wraps them.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/app-loading.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/app-loading/)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/app-loading.md)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/app-loading/)
 
 # Installation in managed Expo projects
 
-For managed [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/app-loading/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/app-loading/).
 
 # Installation in bare React Native projects
 

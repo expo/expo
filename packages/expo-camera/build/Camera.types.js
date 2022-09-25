@@ -1,85 +1,63 @@
 import { PermissionStatus, } from 'expo-modules-core';
 export var CameraType;
 (function (CameraType) {
-    /**
-     * @platforms ios, android, web
-     */
     CameraType["front"] = "front";
-    /**
-     * @platforms ios, android, web
-     */
     CameraType["back"] = "back";
 })(CameraType || (CameraType = {}));
 export var FlashMode;
 (function (FlashMode) {
-    /**
-     * @platforms ios, android, web
-     */
     FlashMode["on"] = "on";
-    /**
-     * @platforms ios, android, web
-     */
     FlashMode["off"] = "off";
-    /**
-     * @platforms ios, android, web
-     */
     FlashMode["auto"] = "auto";
-    /**
-     * @platforms ios, android, web
-     */
     FlashMode["torch"] = "torch";
 })(FlashMode || (FlashMode = {}));
 export var AutoFocus;
 (function (AutoFocus) {
-    /**
-     * @platforms ios, android, web
-     */
     AutoFocus["on"] = "on";
-    /**
-     * @platforms ios, android, web
-     */
     AutoFocus["off"] = "off";
     /**
-     * @platforms web
+     * @platform web
      */
     AutoFocus["auto"] = "auto";
     /**
-     * @platforms web
+     * @platform web
      */
     AutoFocus["singleShot"] = "singleShot";
 })(AutoFocus || (AutoFocus = {}));
 export var WhiteBalance;
 (function (WhiteBalance) {
-    /**
-     * @platforms ios, android, web
-     */
     WhiteBalance["auto"] = "auto";
     /**
-     * @platforms ios, android
+     * @platform android
+     * @platform ios
      */
     WhiteBalance["sunny"] = "sunny";
     /**
-     * @platforms ios, android
+     * @platform android
+     * @platform ios
      */
     WhiteBalance["cloudy"] = "cloudy";
     /**
-     * @platforms ios, android
+     * @platform android
+     * @platform ios
      */
     WhiteBalance["shadow"] = "shadow";
     /**
-     * @platforms ios, android
+     * @platform android
+     * @platform ios
      */
     WhiteBalance["incandescent"] = "incandescent";
     /**
-     * @platforms ios, android
+     * @platform android
+     * @platform ios
      */
     WhiteBalance["fluorescent"] = "fluorescent";
     /**
-     * @platforms web
+     * @platform web
      */
     WhiteBalance["continuous"] = "continuous";
     /**
-     * @platforms web
+     * @platform web
      */
     WhiteBalance["manual"] = "manual";
 })(WhiteBalance || (WhiteBalance = {}));
@@ -90,29 +68,32 @@ export var ImageType;
 })(ImageType || (ImageType = {}));
 /**
  * This option specifies what codec to use when recording a video.
+ * @platform ios
  */
 export var VideoCodec;
 (function (VideoCodec) {
-    /**
-     * @platforms ios
-     */
     VideoCodec["H264"] = "avc1";
-    /**
-     * @platforms ios
-     */
     VideoCodec["HEVC"] = "hvc1";
-    /**
-     * @platforms ios
-     */
     VideoCodec["JPEG"] = "jpeg";
-    /**
-     * @platforms ios
-     */
     VideoCodec["AppleProRes422"] = "apcn";
-    /**
-     * @platforms ios
-     */
     VideoCodec["AppleProRes4444"] = "ap4h";
 })(VideoCodec || (VideoCodec = {}));
+// @needsAudit
+export var VideoStabilization;
+(function (VideoStabilization) {
+    VideoStabilization["off"] = "off";
+    VideoStabilization["standard"] = "standard";
+    VideoStabilization["cinematic"] = "cinematic";
+    VideoStabilization["auto"] = "auto";
+})(VideoStabilization || (VideoStabilization = {}));
+// @needsAudit
+export var VideoQuality;
+(function (VideoQuality) {
+    VideoQuality["2160p"] = "2160p";
+    VideoQuality["1080p"] = "1080p";
+    VideoQuality["720p"] = "720p";
+    VideoQuality["480p"] = "480p";
+    VideoQuality["4:3"] = "4:3";
+})(VideoQuality || (VideoQuality = {}));
 export { PermissionStatus };
 //# sourceMappingURL=Camera.types.js.map

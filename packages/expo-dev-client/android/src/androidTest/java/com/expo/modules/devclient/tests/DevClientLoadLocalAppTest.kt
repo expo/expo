@@ -67,7 +67,8 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
           object : ReactPackage {
             override fun createNativeModules(reactContext: ReactApplicationContext) = listOf(DevClientTestExtension(reactContext))
             override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<View, ReactShadowNode<*>>> = emptyList()
-          })
+          }
+        )
       }
     }.also {
       reactNativeHostHolder = it
@@ -157,20 +158,10 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
     }
 
     Views.DevMenu.main.isDisplayed()
-    val menuSession = DevMenuManager.getSession()
-    Truth.assertThat(DevMenuManager.getSession()).isNotNull()
-    requireNotNull(menuSession)
-    Truth.assertThat(menuSession.openScreen).isNull() // main screen
-    Truth.assertThat(menuSession.appInfo.getString("appName")).isEqualTo("Bundled App") // main screen
-
     onView(withText("Back to Launcher")).check(matches(isDisplayed()))
     onView(withText("Back to Launcher")).perform(ViewActions.click())
 
     Views.DevLauncher.main.isDisplayed()
-
-    Truth.assertThat(
-      DevMenuManager.getSession()?.reactInstanceManager?.currentReactContext?.currentActivity
-    ).isNull()
   }
 
   @Test
@@ -223,9 +214,12 @@ internal class DevClientLoadLocalAppTest : DevLauncherKoinTest() {
     launcherClass = DevClientBundledAppActivity::class.java
   ).setUpAndLaunch {
     it.onLauncherActivity { launcherActivity ->
-      it.launcherController().handleIntent(Intent().apply {
-        data = Uri.parse("https://expo-development-client?url=$appURL")
-      }, activityToBeInvalidated = launcherActivity)
+      it.launcherController().handleIntent(
+        Intent().apply {
+          data = Uri.parse("https://expo-development-client?url=$appURL")
+        },
+        activityToBeInvalidated = launcherActivity
+      )
     }
 
     Views.BundledApp.main.isDisplayed()

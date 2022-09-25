@@ -11,6 +11,13 @@ import expo.modules.updates.selectionpolicy.SelectionPolicy
 import java.io.File
 
 // these unused imports must stay because of versioning
+/* ktlint-disable no-unused-imports */
+import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.UpdatesController
+import expo.modules.updates.manifest.EmbeddedManifest
+
+/* ktlint-enable no-unused-imports */
+
 open class UpdatesService(protected var context: Context) : InternalModule, UpdatesInterface {
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf(UpdatesInterface::class.java as Class<*>)
@@ -35,6 +42,8 @@ open class UpdatesService(protected var context: Context) : InternalModule, Upda
     return configuration.isEnabled && launchedUpdate != null
   }
 
+  override val embeddedUpdate: UpdateEntity?
+    get() = EmbeddedManifest.get(context, configuration)?.updateEntity
   override val launchedUpdate: UpdateEntity?
     get() = UpdatesController.instance.launchedUpdate
   override val localAssetFiles: Map<AssetEntity, String>?

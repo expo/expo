@@ -1,13 +1,16 @@
 import { Command } from '@expo/commander';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import os from 'os';
 import path from 'path';
 
+import { runReactNativeCodegenAsync } from '../Codegen';
 import { EXPO_DIR } from '../Constants';
 import { GitDirectory } from '../Git';
 import logger from '../Logger';
+import { downloadPackageTarballAsync } from '../Npm';
 import { PackageJson } from '../Packages';
 import { updateBundledVersionsAsync } from '../ProjectVersions';
 import * as Workspace from '../Workspace';
@@ -18,7 +21,7 @@ import {
 } from '../vendoring';
 import vendoredModulesConfig from '../vendoring/config';
 import { legacyVendorModuleAsync } from '../vendoring/legacy';
-import { VendoringTargetConfig } from '../vendoring/types';
+import { VendoringModuleConfig, VendoringTargetConfig } from '../vendoring/types';
 
 type ActionOptions = {
   list: boolean;
@@ -85,20 +88,8 @@ async function action(options: ActionOptions) {
   const sourceDirectory = path.join(os.tmpdir(), 'ExpoVendoredModules', moduleName);
   const moduleConfig = targetConfig.modules[moduleName];
 
-  logger.log(
-    '📥 Cloning %s#%s from %s',
-    chalk.green(moduleName),
-    chalk.cyan(options.commit),
-    chalk.magenta(moduleConfig.source)
-  );
-
   try {
-    // Clone repository from the source
-    await GitDirectory.shallowCloneAsync(
-      sourceDirectory,
-      moduleConfig.source,
-      options.commit ?? 'master'
-    );
+    await downloadSourceAsync(sourceDirectory, moduleName, moduleConfig, options);
 
     const platforms = resolvePlatforms(options.platform);
 
@@ -106,6 +97,7 @@ async function action(options: ActionOptions) {
       if (!targetConfig.platforms[platform]) {
         continue;
       }
+      await runCodegenIfNeeded(sourceDirectory, moduleConfig, platform);
 
       // TODO(@tsapeta): Remove this once all vendored modules are migrated to the new system.
       if (!targetConfig.modules[moduleName][platform]) {
@@ -136,7 +128,11 @@ async function action(options: ActionOptions) {
 
     // Update dependency versions only for Expo Go target.
     if (options.updateDependencies !== false && target === EXPO_GO_TARGET) {
-      const packageJson = require(path.join(sourceDirectory, 'package.json')) as PackageJson;
+      const packageJsonPath = path.join(
+        sourceDirectory,
+        moduleConfig.packageJsonPath ?? 'package.json'
+      );
+      const packageJson = require(packageJsonPath) as PackageJson;
       const semverPrefix =
         (options.semverPrefix != null ? options.semverPrefix : moduleConfig.semverPrefix) || '';
       const newVersionRange = `${semverPrefix}${packageJson.version}`;
@@ -148,6 +144,44 @@ async function action(options: ActionOptions) {
     await fs.remove(sourceDirectory);
   }
   logger.success('💪 Successfully updated %s\n', chalk.bold(moduleName));
+}
+
+/**
+ * Downloads vendoring module source code either from git repository or npm
+ */
+async function downloadSourceAsync(
+  sourceDirectory: string,
+  moduleName: string,
+  moduleConfig: VendoringModuleConfig,
+  options: ActionOptions
+) {
+  if (moduleConfig.sourceType === 'npm') {
+    const version = options.commit ?? 'latest';
+    logger.log('📥 Downloading %s@%s from npm', chalk.green(moduleName), chalk.cyan(version));
+
+    const tarball = await downloadPackageTarballAsync(
+      sourceDirectory,
+      moduleConfig.source,
+      version
+    );
+    // `--strip-component 1` to extract files from package/ folder
+    await spawnAsync('tar', ['--strip-component', '1', '-xf', tarball], { cwd: sourceDirectory });
+    return;
+  }
+
+  // Clone repository from the source
+  logger.log(
+    '📥 Cloning %s#%s from %s',
+    chalk.green(moduleName),
+    chalk.cyan(options.commit),
+    chalk.magenta(moduleConfig.source)
+  );
+
+  await GitDirectory.shallowCloneAsync(
+    sourceDirectory,
+    moduleConfig.source,
+    options.commit ?? 'master'
+  );
 }
 
 /**
@@ -222,4 +256,41 @@ async function resolveModuleNameAsync(
 function resolvePlatforms(platform: string): string[] {
   const all = getVendoringAvailablePlatforms();
   return all.includes(platform) ? [platform] : all;
+}
+
+async function runCodegenIfNeeded(
+  sourceDirectory: string,
+  moduleConfig: VendoringModuleConfig,
+  platform: string
+) {
+  const packageJsonPath = path.join(
+    sourceDirectory,
+    moduleConfig.packageJsonPath ?? 'package.json'
+  );
+  const packageJson = require(packageJsonPath) as PackageJson;
+  const libs = packageJson?.codegenConfig?.libraries ?? [];
+  const fabricDisabledLibs = libs.filter((lib) => lib.type !== 'components');
+  if (!fabricDisabledLibs.length) {
+    return;
+  }
+  if (platform !== 'android' && platform !== 'ios') {
+    throw new Error(`Unsupported platform - ${platform}`);
+  }
+
+  const reactNativeRoot = path.join(EXPO_DIR, 'react-native-lab', 'react-native');
+  const codegenPkgRoot = path.join(reactNativeRoot, 'packages', 'react-native-codegen');
+
+  await Promise.all(
+    fabricDisabledLibs.map((lib) =>
+      runReactNativeCodegenAsync({
+        reactNativeRoot,
+        codegenPkgRoot,
+        outputDir: path.join(sourceDirectory, platform),
+        name: lib.name,
+        type: lib.type,
+        platform,
+        jsSrcsDir: path.join(sourceDirectory, lib.jsSrcsDir),
+      })
+    )
+  );
 }

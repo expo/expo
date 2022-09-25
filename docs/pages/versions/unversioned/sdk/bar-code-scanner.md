@@ -1,10 +1,11 @@
 ---
 title: BarCodeScanner
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-barcode-scanner'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-barcode-scanner'
+packageName: 'expo-barcode-scanner'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -16,18 +17,20 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Installation
 
-<InstallSection packageName="expo-barcode-scanner" />
+<APIInstallSection />
 
 ## Configuration
 
-In managed apps, scanning barcodes with the camera requires the [`Permission.CAMERA`](permissions.md#permissionscamera) permission. See the [usage example](#usage) below.
+{/* TODO: Replace with config format from tracking-transparency */}
+
+Scanning barcodes with the camera requires the [`Permission.CAMERA`](permissions.md#permissionscamera) permission. See the [usage example](#usage) below.
 
 ## Supported formats
 
 | Bar code format | iOS   | Android     |
 | --------------- | ----- | ----------- |
 | aztec           | Yes   | Yes         |
-| codabar         | No    | Yes         |
+| codabar         | Yes   | Yes         |
 | code39          | Yes   | Yes         |
 | code93          | Yes   | Yes         |
 | code128         | Yes   | Yes         |
@@ -46,7 +49,8 @@ In managed apps, scanning barcodes with the camera requires the [`Permission.CAM
 | upc_ean         | No    | Yes         |
 | qr              | Yes   | Yes         |
 
-> __Notes:__
+> **Notes:**
+>
 > - When an ITF-14 barcode is recognized, it's type can sometimes be set to `interleaved2of5`.
 > - Scanning for either `PDF417` and/or `Code39` formats can result in a noticeable increase in battery consumption on iOS. It is recommended to provide only the bar code formats you expect to scan to the `barCodeTypes` prop.
 
@@ -66,10 +70,12 @@ export default function App() {
   const [scanned, setScanned] = useState(false);
 
   useEffect(() => {
-    (async () => {
+    const getBarCodeScannerPermissions = async () => {
       const { status } = await BarCodeScanner.requestPermissionsAsync();
       setHasPermission(status === 'granted');
-    })();
+    };
+
+    getBarCodeScannerPermissions();
   }, []);
 
   const handleBarCodeScanned = ({ type, data }) => {

@@ -22,11 +22,11 @@ class NewArchitectureBenchmark {
     }
 
     override fun definition() = ModuleDefinition {
-      name("MyModule")
-      function("m1") { -> retNull() }
-      function("m2") { _: Int, _: Int -> retNull() }
-      function("m3") { _: IntArray -> retNull() }
-      function("m4") { _: String -> retNull() }
+      Name("MyModule")
+      AsyncFunction("m1") { -> retNull() }
+      AsyncFunction("m2") { _: Int, _: Int -> retNull() }
+      AsyncFunction("m3") { _: IntArray -> retNull() }
+      AsyncFunction("m4") { _: String -> retNull() }
     }
   }
 

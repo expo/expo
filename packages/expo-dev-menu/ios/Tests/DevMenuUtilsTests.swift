@@ -7,10 +7,10 @@ class DevMenuUtilsTest: XCTestCase {
     XCTAssertEqual(DevMenuUtils.stripRCT("RCTTest"), "Test")
     XCTAssertEqual(DevMenuUtils.stripRCT("Test"), "Test")
   }
-  
+
   func test_if_bundle_is_present() {
     let bundle = DevMenuUtils.resourcesBundle()
-    
+
     XCTAssertNotNil(bundle)
     XCTAssertNotNil(bundle!.url(forResource: "EXDevMenuApp.ios", withExtension: "js"))
   }

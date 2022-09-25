@@ -2,8 +2,6 @@
 package host.exp.exponent.notifications
 
 object NotificationConstants {
-  const val MAX_COLLAPSED_NOTIFICATIONS = 5
-
   @Deprecated(message = "") const val NOTIFICATION_MESSAGE_KEY = "message"
   const val NOTIFICATION_EXPERIENCE_ID_KEY = "experienceId"
   const val NOTIFICATION_EXPERIENCE_SCOPE_KEY_KEY = "scopeKey"
@@ -12,7 +10,6 @@ object NotificationConstants {
   const val NOTIFICATION_ID_KEY = "notificationId"
   const val NOTIFICATION_IS_MULTIPLE_KEY = "isMultiple"
   const val NOTIFICATION_COLLAPSE_MODE = "collapse"
-  const val NOTIFICATION_UNREAD_COUNT_KEY = "#{unread_notifications}"
   const val NOTIFICATION_REMOTE_KEY = "remote"
   const val NOTIFICATION_ACTION_TYPE = "actionId"
   const val NOTIFICATION_INPUT_TEXT = "userText"

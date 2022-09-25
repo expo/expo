@@ -8,3 +8,4 @@ declare class AppLoading extends React.Component<AppLoadingProps> {
     render(): JSX.Element;
 }
 export default AppLoading;
+//# sourceMappingURL=AppLoading.d.ts.map

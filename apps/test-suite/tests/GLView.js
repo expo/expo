@@ -16,7 +16,7 @@ export async function test(
   let instance = null;
   let originalTimeout;
 
-  const refSetter = ref => {
+  const refSetter = (ref) => {
     instance = ref;
   };
 
@@ -35,9 +35,9 @@ export async function test(
   });
 
   function getContextAsync() {
-    return new Promise(async resolve => {
+    return new Promise(async (resolve) => {
       await mountAndWaitFor(
-        <GLView onContextCreate={context => resolve(context)} ref={refSetter} style={style} />,
+        <GLView onContextCreate={(context) => resolve(context)} ref={refSetter} style={style} />,
         'onContextCreate',
         setPortalChild
       );

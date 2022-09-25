@@ -7,3 +7,4 @@ export interface BadgeModule extends ProxyNativeModule {
     setBadgeCountAsync?: (badgeCount: number, options: SetBadgeCountOptions) => Promise<boolean>;
 }
 export {};
+//# sourceMappingURL=BadgeModule.types.d.ts.map

@@ -32,7 +32,7 @@ class ZxingBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
 
   override val isAvailable = true
 
-  override fun scan(data: ByteArray, width: Int, height: Int, rotation: Int): BarCodeScannerResult {
+  override fun scan(data: ByteArray, width: Int, height: Int, rotation: Int): BarCodeScannerResult? {
     // rotate for zxing if orientation is portrait
     var innerData = data
     var innerWidth = width
@@ -53,9 +53,7 @@ class ZxingBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
       innerWidth -= innerHeight
       innerData = rotated
     }
-    return requireNotNull(
-      scan(generateSourceFromImageData(innerData, innerWidth, innerHeight))
-    ) { "Scan output cannot be null" }
+    return scan(generateSourceFromImageData(innerData, innerWidth, innerHeight))
   }
 
   private fun scan(source: LuminanceSource): BarCodeScannerResult? {

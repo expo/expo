@@ -7,3 +7,4 @@ export declare const Header: React.ComponentType<ViewProps>;
 export declare const Main: React.ComponentType<ViewProps>;
 export declare const Article: React.ComponentType<ViewProps>;
 export declare const Section: React.ComponentType<ViewProps>;
+//# sourceMappingURL=Layout.d.ts.map

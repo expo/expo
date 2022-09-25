@@ -25,3 +25,4 @@ export declare function selectPrinterAsync(): Promise<Printer>;
  * @param options A map of print options.
  */
 export declare function printToFileAsync(options?: FilePrintOptions): Promise<FilePrintResult>;
+//# sourceMappingURL=Print.d.ts.map

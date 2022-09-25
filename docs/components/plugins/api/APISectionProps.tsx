@@ -1,23 +1,28 @@
-import { css } from '@emotion/react';
 import React from 'react';
 
 import { InlineCode } from '~/components/base/code';
-import { H4 } from '~/components/base/headings';
 import { LI, UL } from '~/components/base/list';
 import { P } from '~/components/base/paragraph';
-import { H2, H3, H3Code } from '~/components/plugins/Headings';
+import { H2, H3, H3Code, H4, H4Code } from '~/components/plugins/Headings';
 import {
   DefaultPropsDefinitionData,
   PropData,
   PropsDefinitionData,
   TypeDefinitionData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   CommentTextBlock,
   getCommentOrSignatureComment,
   getTagData,
+  getTagNamesList,
   renderTypeOrSignatureType,
   resolveTypeName,
+  STYLES_APIBOX,
+  STYLES_APIBOX_NESTED,
+  STYLES_NESTED_SECTION_HEADER,
+  STYLES_NOT_EXPOSED_HEADER,
   STYLES_SECONDARY,
 } from '~/components/plugins/api/APISectionUtils';
 
@@ -28,10 +33,6 @@ export type APISectionPropsProps = {
 };
 
 const UNKNOWN_VALUE = '...';
-
-const PROP_LIST_ELEMENT_STYLE = css`
-  padding: 0;
-`;
 
 const extractDefaultPropValue = (
   { comment, name }: PropData,
@@ -85,13 +86,11 @@ const renderProps = (
 
   return (
     <div key={`props-definition-${name}`}>
-      <UL>
-        {propsDeclarations?.map(prop =>
-          prop
-            ? renderProp(prop, extractDefaultPropValue(prop, defaultValues), exposeInSidebar)
-            : null
-        )}
-      </UL>
+      {propsDeclarations?.map(prop =>
+        prop
+          ? renderProp(prop, extractDefaultPropValue(prop, defaultValues), exposeInSidebar)
+          : null
+      )}
       {renderInheritedProps(type.types, exposeInSidebar)}
     </div>
   );
@@ -101,46 +100,53 @@ export const renderProp = (
   { comment, name, type, flags, signatures }: PropData,
   defaultValue?: string,
   exposeInSidebar?: boolean
-) => (
-  <LI key={`prop-entry-${name}`} customCss={exposeInSidebar ? PROP_LIST_ELEMENT_STYLE : undefined}>
-    {exposeInSidebar ? (
-      <H3Code>
-        <InlineCode>{name}</InlineCode>
-      </H3Code>
-    ) : (
-      <H4>{name}</H4>
-    )}
-    <P>
-      {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
-      <span css={STYLES_SECONDARY}>Type:</span> {renderTypeOrSignatureType(type, signatures, true)}
-      {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
-        <span>
-          <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
-          <InlineCode>{defaultValue}</InlineCode>
-        </span>
-      ) : null}
-    </P>
-    <CommentTextBlock comment={getCommentOrSignatureComment(comment, signatures)} />
-  </LI>
-);
+) => {
+  const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
+  const extractedComment = getCommentOrSignatureComment(comment, signatures);
+  return (
+    <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
+      <APISectionDeprecationNote comment={extractedComment} />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
+      <HeaderComponent tags={getTagNamesList(comment)}>
+        <InlineCode css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
+          {name}
+        </InlineCode>
+      </HeaderComponent>
+      <P>
+        {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
+        <span css={STYLES_SECONDARY}>Type:</span> {renderTypeOrSignatureType(type, signatures)}
+        {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
+          <span>
+            <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
+            <InlineCode>{defaultValue}</InlineCode>
+          </span>
+        ) : null}
+      </P>
+      <CommentTextBlock comment={extractedComment} includePlatforms={false} />
+    </div>
+  );
+};
 
-const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) =>
-  data?.length ? (
+const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) => {
+  const baseProp = data.find(prop => prop.name === header);
+  return data?.length ? (
     <>
-      {header === 'Props' ? (
+      {data?.length === 1 || header === 'Props' ? (
         <H2 key="props-header">{header}</H2>
       ) : (
-        <>
-          <H3Code key={`${header}-props-header`}>
-            <InlineCode>{header}</InlineCode>
-          </H3Code>
-          <br />
-        </>
+        <div>
+          {baseProp && <APISectionDeprecationNote comment={baseProp.comment} />}
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4 key={`${header}-props-header`}>{header}</H4>
+          </div>
+          {baseProp && baseProp.comment ? <CommentTextBlock comment={baseProp.comment} /> : null}
+        </div>
       )}
       {data.map((propsDefinition: PropsDefinitionData) =>
-        renderProps(propsDefinition, defaultProps, header === 'Props')
+        renderProps(propsDefinition, defaultProps, data?.length === 1 || header === 'Props')
       )}
     </>
   ) : null;
+};
 
 export default APISectionProps;

@@ -9,4 +9,6 @@
 
 - (instancetype)initWithDefaultScreenOrientationMask:(UIInterfaceOrientationMask)defaultOrientationMask;
 
+- (instancetype)initDefaultScreenOrientationFromPlist;
+
 @end

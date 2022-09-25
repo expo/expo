@@ -5,13 +5,26 @@ sidebar_title: Upgrading
 
 While we try to make upgrading the `expo-dev-client` package as painless as possible, occasionally you will need to make small changes to your project which are listed on this page.
 
+## 0.8.0
+
+You can safely remove the following line from the `react-native.config.js`:
+
+```js
+module.exports = {
+  dependencies: {
+    ...require('expo-dev-client/dependencies'), // to remove
+    // ...
+  },
+};
+```
+
 ## 0.6.0
 
-**For managed workflow projects, and bare projects with the `expo` or `react-native-unimodules` package**, no additional changes are needed. 🎉
+**For managed workflow projects, and bare projects with the `expo` or `react-native-unimodules` package**, no additional changes are needed.
 
 **For bare workflow projects with no other Expo modules nor `react-native-unimodules`**, the following additional changes are needed when upgrading to `expo-dev-client@0.6.x`:
 
-### 🍏 iOS
+### iOS
 
 In `ios/Podfile`, change the deployment target to `platform :ios, '12.0'` and add the following lines inside the main target:
 
@@ -22,7 +35,7 @@ pod 'EXManifests', path: '../node_modules/expo-manifests/ios', :configurations =
 
 Rerun `pod install` before reopening your project.
 
-### 🤖 Android
+### Android
 
 In `android/settings.gradle`, add the following lines:
 

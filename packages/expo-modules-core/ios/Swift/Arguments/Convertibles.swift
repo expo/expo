@@ -3,11 +3,11 @@
 import UIKit
 import CoreGraphics
 
-/// Here we extend some common iOS types to implement `ConvertibleArgument` protocol and
-/// describe how they can be converted from primitive types received from JavaScript runtime.
-/// This allows these types to be used as argument types of functions callable from JavaScript.
-/// As an example, when the `CGPoint` type is used as an argument type, its instance can be
-/// created from an array of two doubles or an object with `x` and `y` fields.
+// Here we extend some common iOS types to implement `ConvertibleArgument` protocol and
+// describe how they can be converted from primitive types received from JavaScript runtime.
+// This allows these types to be used as argument types of functions callable from JavaScript.
+// As an example, when the `CGPoint` type is used as an argument type, its instance can be
+// created from an array of two doubles or an object with `x` and `y` fields.
 
 // MARK: - Foundation
 
@@ -19,25 +19,7 @@ extension URL: ConvertibleArgument {
       // If it has no scheme, we assume it was the file path.
       return url.scheme != nil ? url : URL(fileURLWithPath: uri)
     }
-    throw Conversions.ConvertingError<URL>(value: value)
-  }
-}
-
-// MARK: - UIKit
-
-extension UIColor: ConvertibleArgument {
-  public static func convert(from value: Any?) throws -> Self {
-    if let value = value as? String {
-      return try Conversions.toColor(hexString: value) as! Self
-    }
-    if let components = value as? [Double] {
-      let alpha = components.count > 3 ? components[3] : 1.0
-      return Self.init(red: components[0], green: components[1], blue: components[2], alpha: alpha)
-    }
-    if let value = value as? Int {
-      return try Conversions.toColor(argb: UInt64(value)) as! Self
-    }
-    throw Conversions.ConvertingError<UIColor>(value: value)
+    throw Conversions.ConvertingException<URL>(value)
   }
 }
 
@@ -52,7 +34,7 @@ extension CGPoint: ConvertibleArgument {
       let args = try Conversions.pickValues(from: value, byKeys: ["x", "y"], as: Double.self)
       return CGPoint(x: args[0], y: args[1])
     }
-    throw Conversions.ConvertingError<CGPoint>(value: value)
+    throw Conversions.ConvertingException<CGPoint>(value)
   }
 }
 
@@ -65,7 +47,7 @@ extension CGSize: ConvertibleArgument {
       let args = try Conversions.pickValues(from: value, byKeys: ["width", "height"], as: Double.self)
       return CGSize(width: args[0], height: args[1])
     }
-    throw Conversions.ConvertingError<CGSize>(value: value)
+    throw Conversions.ConvertingException<CGSize>(value)
   }
 }
 
@@ -78,7 +60,7 @@ extension CGVector: ConvertibleArgument {
       let args = try Conversions.pickValues(from: value, byKeys: ["dx", "dy"], as: Double.self)
       return CGVector(dx: args[0], dy: args[1])
     }
-    throw Conversions.ConvertingError<CGVector>(value: value)
+    throw Conversions.ConvertingException<CGVector>(value)
   }
 }
 
@@ -91,17 +73,6 @@ extension CGRect: ConvertibleArgument {
       let args = try Conversions.pickValues(from: value, byKeys: ["x", "y", "width", "height"], as: Double.self)
       return CGRect(x: args[0], y: args[1], width: args[2], height: args[3])
     }
-    throw Conversions.ConvertingError<CGRect>(value: value)
-  }
-}
-
-extension CGColor: ConvertibleArgument {
-  public static func convert(from value: Any?) throws -> Self {
-    do {
-      return try UIColor.convert(from: value).cgColor as! Self
-    } catch _ as Conversions.ConvertingError<UIColor> {
-      // Rethrow `ConvertingError` with proper type
-      throw Conversions.ConvertingError<CGColor>(value: value)
-    }
+    throw Conversions.ConvertingException<CGRect>(value)
   }
 }

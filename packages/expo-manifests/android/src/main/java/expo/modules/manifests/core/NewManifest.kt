@@ -67,10 +67,6 @@ class NewManifest(json: JSONObject) : Manifest(json) {
 
   override fun getAppKey(): String? = null
 
-  override fun getSortTime(): String {
-    return getCreatedAt()
-  }
-
   private fun getExtra(): JSONObject? {
     return json.getNullable("extra")
   }

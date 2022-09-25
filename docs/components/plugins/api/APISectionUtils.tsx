@@ -1,13 +1,15 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
+import { APIDataType } from './APIDataType';
+
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
 import Link from '~/components/base/link';
-import { LI, UL } from '~/components/base/list';
+import { LI, UL, OL } from '~/components/base/list';
 import { B, P, Quote } from '~/components/base/paragraph';
 import {
   CommentData,
@@ -17,6 +19,12 @@ import {
   TypeDefinitionData,
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { tableWrapperStyle } from '~/ui/components/Table/Table';
+import { A } from '~/ui/components/Text';
+
+const isDev = process.env.NODE_ENV === 'development';
 
 export enum TypeDocKind {
   LegacyEnum = 4,
@@ -27,10 +35,14 @@ export enum TypeDocKind {
   Interface = 256,
   Property = 1024,
   Method = 2048,
+  Parameter = 32768,
   TypeAlias = 4194304,
 }
 
 export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
+
+const getInvalidLinkMessage = (href: string) =>
+  `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => (
@@ -43,11 +55,30 @@ export const mdComponents: MDComponents = {
     className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
   h1: ({ children }) => <H4>{children}</H4>,
   ul: ({ children }) => <UL>{children}</UL>,
+  ol: ({ children }) => <OL>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
-  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+  a: ({ href, children }) => {
+    if (
+      href?.startsWith('../') &&
+      !href?.startsWith('../..') &&
+      !href?.startsWith('../react-native')
+    ) {
+      if (isDev) {
+        throw new Error(getInvalidLinkMessage(href));
+      } else {
+        console.warn(getInvalidLinkMessage(href));
+      }
+    }
+    return <Link href={href}>{children}</Link>;
+  },
   p: ({ children }) => (children ? <P>{children}</P> : null),
   strong: ({ children }) => <B>{children}</B>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
+  table: ({ children }) => <Table>{children}</Table>,
+  thead: ({ children }) => <TableHead>{children}</TableHead>,
+  tr: ({ children }) => <Row>{children}</Row>,
+  th: ({ children }) => <HeaderCell>{children}</HeaderCell>,
+  td: ({ children }) => <Cell>{children}</Cell>,
 };
 
 export const mdInlineComponents: MDComponents = {
@@ -55,22 +86,27 @@ export const mdInlineComponents: MDComponents = {
   p: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
+export const mdInlineComponentsNoValidation: MDComponents = {
+  ...mdInlineComponents,
+  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+};
+
 const nonLinkableTypes = [
   'ColorValue',
   'Component',
+  'ComponentClass',
   'E',
   'EventSubscription',
-  'File',
-  'FileList',
-  'Manifest',
   'NativeSyntheticEvent',
   'ParsedQs',
-  'React.FC',
   'ServiceActionResult',
-  'StyleProp',
   'T',
   'TaskOptions',
   'Uint8Array',
+  // React & React Native
+  'React.FC',
+  'ForwardRefExoticComponent',
+  'StyleProp',
   // Cross-package permissions management
   'RequestPermissionMethod',
   'GetPermissionMethod',
@@ -78,52 +114,93 @@ const nonLinkableTypes = [
   'PermissionHookBehavior',
 ];
 
+/**
+ * List of type names that should not be visible in the docs.
+ */
+const omittableTypes = [
+  // Internal React type that adds `ref` prop to the component
+  'RefAttributes',
+];
+
+/**
+ * Map of internal names/type names that should be replaced with something more developer-friendly.
+ */
+const replaceableTypes: Partial<Record<string, string>> = {
+  ForwardRefExoticComponent: 'Component',
+};
+
 const hardcodedTypeLinks: Record<string, string> = {
+  AVPlaybackSource: '/versions/latest/sdk/av/#avplaybacksource',
+  AVPlaybackStatus: '/versions/latest/sdk/av/#avplaybackstatus',
+  AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
+  Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   ExpoConfig:
-    'https://github.com/expo/expo-cli/blob/master/packages/config-types/src/ExpoConfig.ts',
+    'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
+  File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
+  FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
-  View: '../../react-native/view',
-  ViewProps: '../../react-native/view#props',
-  ViewStyle: '../../react-native/view-style-props/',
+  View: '/versions/latest/react-native/view',
+  ViewProps: '/versions/latest/react-native/view#props',
+  ViewStyle: '/versions/latest/react-native/view-style-props',
+  WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
+  WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
 
-const renderWithLink = (name: string, type?: string) =>
-  nonLinkableTypes.includes(name) ? (
-    name + (type === 'array' ? '[]' : '')
+const renderWithLink = (name: string, type?: string) => {
+  const replacedName = replaceableTypes[name] ?? name;
+
+  return nonLinkableTypes.includes(replacedName) ? (
+    replacedName + (type === 'array' ? '[]' : '')
   ) : (
-    <Link href={hardcodedTypeLinks[name] || `#${name.toLowerCase()}`} key={`type-link-${name}`}>
-      {name}
+    <Link
+      href={hardcodedTypeLinks[replacedName] || `#${replacedName.toLowerCase()}`}
+      key={`type-link-${replacedName}`}>
+      {replacedName}
       {type === 'array' && '[]'}
     </Link>
   );
+};
 
 const renderUnion = (types: TypeDefinitionData[]) =>
-  types.map(resolveTypeName).map((valueToRender, index) => (
-    <span key={`union-type-${index}`}>
-      {valueToRender}
-      {index + 1 !== types.length && ' | '}
-    </span>
-  ));
+  types
+    .map(type => resolveTypeName(type))
+    .map((valueToRender, index) => (
+      <span key={`union-type-${index}`}>
+        {valueToRender}
+        {index + 1 !== types.length && ' | '}
+      </span>
+    ));
 
-export const resolveTypeName = ({
-  elements,
-  elementType,
-  name,
-  type,
-  types,
-  typeArguments,
-  declaration,
-  value,
-  queryType,
-}: TypeDefinitionData): string | JSX.Element | (string | JSX.Element)[] => {
+export const resolveTypeName = (
+  typeDefinition: TypeDefinitionData
+): string | JSX.Element | (string | JSX.Element)[] => {
+  if (!typeDefinition) {
+    return 'undefined';
+  }
+
+  const {
+    elements,
+    elementType,
+    name,
+    type,
+    types,
+    typeArguments,
+    declaration,
+    value,
+    queryType,
+    operator,
+    objectType,
+    indexType,
+  } = typeDefinition;
+
   try {
     if (name) {
       if (type === 'reference') {
@@ -211,14 +288,17 @@ export const resolveTypeName = ({
     } else if (type === 'reflection' && declaration?.children) {
       return (
         <>
-          {'{ '}
+          {'{\n'}
           {declaration?.children.map((child: PropData, i) => (
             <span key={`reflection-${name}-${i}`}>
-              {child.name + ': ' + resolveTypeName(child.type)}
+              {'  '}
+              {child.name + ': '}
+              {resolveTypeName(child.type)}
               {i + 1 !== declaration?.children?.length ? ', ' : null}
+              {'\n'}
             </span>
           ))}
-          {' }'}
+          {'}'}
         </>
       );
     } else if (type === 'tuple' && elements) {
@@ -240,6 +320,19 @@ export const resolveTypeName = ({
       return `${value}`;
     } else if (type === 'literal' && value) {
       return `'${value}'`;
+    } else if (type === 'intersection' && types) {
+      return types
+        .filter(({ name }) => !omittableTypes.includes(name ?? ''))
+        .map((value, index, array) => (
+          <span key={`intersection-${name}-${index}`}>
+            {resolveTypeName(value)}
+            {index + 1 !== array.length && ' & '}
+          </span>
+        ));
+    } else if (type === 'indexedAccess') {
+      return `${objectType?.name}['${indexType?.value}']`;
+    } else if (type === 'typeOperator') {
+      return operator || 'undefined';
     } else if (value === null) {
       return 'null';
     }
@@ -252,59 +345,126 @@ export const resolveTypeName = ({
 
 export const parseParamName = (name: string) => (name.startsWith('__') ? name.substr(2) : name);
 
-export const renderParam = ({ comment, name, type, flags }: MethodParamData): JSX.Element => (
-  <LI key={`param-${name}`}>
-    <B>
-      {parseParamName(name)}
-      {flags?.isOptional && '?'} (<InlineCode>{resolveTypeName(type)}</InlineCode>)
-    </B>
-    <CommentTextBlock comment={comment} components={mdInlineComponents} withDash />
-  </LI>
+export const renderParamRow = ({
+  comment,
+  name,
+  type,
+  flags,
+  defaultValue,
+}: MethodParamData): JSX.Element => {
+  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  return (
+    <Row key={`param-${name}`}>
+      <Cell>
+        <B>{parseParamName(name)}</B>
+        {renderFlags(flags, initValue)}
+      </Cell>
+      <Cell>
+        <APIDataType typeDefinition={type} />
+      </Cell>
+      <Cell>
+        <CommentTextBlock
+          comment={comment}
+          components={mdInlineComponents}
+          afterContent={renderDefaultValue(initValue)}
+          emptyCommentFallback="-"
+        />
+      </Cell>
+    </Row>
+  );
+};
+
+export const renderTableHeadRow = () => (
+  <TableHead>
+    <Row>
+      <HeaderCell>Name</HeaderCell>
+      <HeaderCell>Type</HeaderCell>
+      <HeaderCell>Description</HeaderCell>
+    </Row>
+  </TableHead>
+);
+
+export const renderParams = (parameters: MethodParamData[]) => (
+  <Table>
+    {renderTableHeadRow()}
+    <tbody>{parameters?.map(renderParamRow)}</tbody>
+  </Table>
 );
 
 export const listParams = (parameters: MethodParamData[]) =>
   parameters ? parameters?.map(param => parseParamName(param.name)).join(', ') : '';
 
+export const renderDefaultValue = (defaultValue?: string) =>
+  defaultValue && defaultValue !== '...' ? (
+    <div css={defaultValueContainerStyle}>
+      <B>Default:</B> <InlineCode>{defaultValue}</InlineCode>
+    </div>
+  ) : undefined;
+
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
   signatures?: MethodSignatureData[],
-  includeParamType: boolean = false
+  allowBlock: boolean = false
 ) => {
-  if (type) {
-    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
-  } else if (signatures && signatures.length) {
-    return signatures.map(({ name, type, parameters }) => (
-      <InlineCode key={`signature-type-${name}`}>
+  if (signatures && signatures.length) {
+    return (
+      <InlineCode key={`signature-type-${signatures[0].name}`}>
         (
-        {parameters && includeParamType
-          ? parameters.map(param => (
-              <span key={`signature-param-${param.name}`}>
-                {param.name}
-                {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-              </span>
-            ))
-          : listParams(parameters)}
-        ) =&gt; {resolveTypeName(type)}
+        {signatures?.map(({ parameters }) =>
+          parameters?.map(param => (
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+            </span>
+          ))
+        )}
+        ) =&gt;{' '}
+        {type ? (
+          <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>
+        ) : (
+          'void'
+        )}
       </InlineCode>
-    ));
+    );
+  } else if (type) {
+    if (allowBlock) {
+      return <APIDataType typeDefinition={type} />;
+    }
+    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
   }
   return undefined;
 };
 
-export const renderFlags = (flags?: TypePropertyDataFlags) =>
-  flags?.isOptional ? (
+export const renderFlags = (flags?: TypePropertyDataFlags, defaultValue?: string) =>
+  (flags?.isOptional || defaultValue) && (
     <>
       <br />
       <span css={STYLES_OPTIONAL}>(optional)</span>
     </>
-  ) : undefined;
+  );
+
+export const renderIndexSignature = (kind: TypeDocKind) =>
+  kind === TypeDocKind.Parameter && (
+    <>
+      <br />
+      <A
+        css={STYLES_OPTIONAL}
+        href="https://www.typescriptlang.org/docs/handbook/2/objects.html#index-signatures"
+        openInNewTab
+        isStyled>
+        (index signature)
+      </A>
+    </>
+  );
 
 export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
   withDash?: boolean;
   beforeContent?: JSX.Element;
+  afterContent?: JSX.Element;
   includePlatforms?: boolean;
+  emptyCommentFallback?: string;
 };
 
 export const parseCommentContent = (content?: string): string =>
@@ -321,37 +481,23 @@ export const getTagData = (tagName: string, comment?: CommentData) =>
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
   comment?.tags?.filter(tag => tag.tag === tagName);
 
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
+export const getTagNamesList = (comment?: CommentData) =>
+  comment && [
+    ...(getAllTagData('platform', comment)?.map(platformData => platformData.text) || []),
+    ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
+    ...(getTagData('experimental', comment) ? ['experimental'] : []),
+  ];
 
-const formatPlatformName = (name: string) => {
-  const cleanName = name.toLowerCase().replace('\n', '');
-  return cleanName.includes('ios')
-    ? cleanName.replace('ios', 'iOS')
-    : cleanName.includes('expo')
-    ? cleanName.replace('expo', 'Expo Go')
-    : capitalize(name);
-};
-
-export const getPlatformTags = (comment?: CommentData) => {
-  const platforms = getAllTagData('platform', comment);
-  return platforms?.length ? (
-    <>
-      {platforms.map(platform => (
-        <div key={platform.text} css={STYLES_PLATFORM}>
-          {formatPlatformName(platform.text)} Only
-        </div>
-      ))}
-      <br />
-    </>
-  ) : null;
-};
+export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const CommentTextBlock = ({
   comment,
   components = mdComponents,
   withDash,
   beforeContent,
+  afterContent,
   includePlatforms = true,
+  emptyCommentFallback,
 }: CommentTextBlockProps) => {
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
@@ -364,24 +510,25 @@ export const CommentTextBlock = ({
     </ReactMarkdown>
   ) : null;
 
-  const example = getTagData('example', comment);
-  const exampleText = example ? (
-    <>
-      <H4>Example</H4>
-      <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
-    </>
-  ) : null;
+  if (emptyCommentFallback && (!comment || (!shortText && !text))) {
+    return <>{emptyCommentFallback}</>;
+  }
 
-  const deprecation = getTagData('deprecated', comment);
-  const deprecationNote = deprecation ? (
-    <Quote key="deprecation-note">
-      {deprecation.text.trim().length ? (
-        <ReactMarkdown components={mdInlineComponents}>{deprecation.text}</ReactMarkdown>
+  const examples = getAllTagData('example', comment);
+  const exampleText = examples?.map((example, index) => (
+    <React.Fragment key={'example-' + index}>
+      {components !== mdComponents ? (
+        <div css={STYLES_EXAMPLE_IN_TABLE}>
+          <B>Example</B>
+        </div>
       ) : (
-        <B>Deprecated</B>
+        <div css={STYLES_NESTED_SECTION_HEADER}>
+          <H4>Example</H4>
+        </div>
       )}
-    </Quote>
-  ) : null;
+      <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
+    </React.Fragment>
+  ));
 
   const see = getTagData('see', comment);
   const seeText = see ? (
@@ -391,40 +538,106 @@ export const CommentTextBlock = ({
     </Quote>
   ) : null;
 
+  const hasPlatforms = (getAllTagData('platform', comment)?.length || 0) > 0;
+
   return (
     <>
-      {deprecationNote}
+      {!withDash && includePlatforms && hasPlatforms && (
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      )}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
-      {includePlatforms && getPlatformTags(comment)}
+      {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
       {shortText}
       {text}
+      {afterContent}
       {seeText}
       {exampleText}
     </>
   );
 };
 
-export const STYLES_OPTIONAL = css`
-  color: ${theme.text.secondary};
-  font-size: 90%;
-  padding-top: 22px;
-`;
+export const getComponentName = (name?: string, children: PropData[] = []) => {
+  if (name && name !== 'default') return name;
+  const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
+  return ctor?.signatures?.[0]?.type?.name ?? 'default';
+};
 
-export const STYLES_SECONDARY = css`
-  color: ${theme.text.secondary};
-  font-size: 90%;
-  font-weight: 600;
-`;
+export const STYLES_APIBOX = css({
+  borderRadius: borderRadius.medium,
+  borderWidth: 1,
+  borderStyle: 'solid',
+  borderColor: theme.border.default,
+  padding: `${spacing[1]}px ${spacing[5]}px`,
+  boxShadow: shadows.micro,
+  marginBottom: spacing[6],
+  overflowX: 'hidden',
 
-export const STYLES_PLATFORM = css`
-  display: inline-block;
-  background-color: ${theme.background.tertiary};
-  color: ${theme.text.default};
-  font-size: 90%;
-  font-weight: 700;
-  padding: 6px 12px;
-  margin-bottom: 8px;
-  margin-right: 8px;
-  border-radius: 4px;
-`;
+  h3: {
+    marginTop: spacing[4],
+  },
+
+  th: {
+    color: theme.text.secondary,
+    padding: `${spacing[3]}px ${spacing[4]}px`,
+  },
+
+  [`.css-${tableWrapperStyle.name}`]: {
+    boxShadow: 'none',
+  },
+
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    padding: `0 ${spacing[4]}px`,
+  },
+});
+
+export const STYLES_APIBOX_NESTED = css({
+  boxShadow: 'none',
+
+  h4: {
+    marginTop: 0,
+  },
+});
+
+export const STYLES_NESTED_SECTION_HEADER = css({
+  display: 'flex',
+  borderTop: `1px solid ${theme.border.default}`,
+  borderBottom: `1px solid ${theme.border.default}`,
+  margin: `${spacing[6]}px -${spacing[5]}px ${spacing[4]}px`,
+  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  backgroundColor: theme.background.secondary,
+
+  h4: {
+    ...typography.fontSizes[16],
+    fontFamily: typography.fontFaces.medium,
+    marginBottom: 0,
+    marginTop: 0,
+    color: theme.text.secondary,
+  },
+});
+
+export const STYLES_NOT_EXPOSED_HEADER = css({
+  marginTop: spacing[5],
+  marginBottom: spacing[2],
+  display: 'inline-block',
+});
+
+export const STYLES_OPTIONAL = css({
+  color: theme.text.secondary,
+  fontSize: '90%',
+  paddingTop: 22,
+});
+
+export const STYLES_SECONDARY = css({
+  color: theme.text.secondary,
+  fontSize: '90%',
+  fontWeight: 600,
+});
+
+const defaultValueContainerStyle = css({
+  marginTop: spacing[2],
+});
+
+const STYLES_EXAMPLE_IN_TABLE = css({
+  margin: `${spacing[2]}px 0`,
+});

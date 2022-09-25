@@ -27,6 +27,7 @@ import com.facebook.react.bridge.JavaOnlyArray;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.ColorPropConverter;
 import com.facebook.react.uimanager.PointerEvents;
 import com.facebook.react.uimanager.annotations.ReactProp;
 
@@ -474,7 +475,12 @@ abstract public class RenderableView extends VirtualView {
         switch (colorType) {
             case 0:
                 if (colors.size() == 2) {
-                    int color = colors.getInt(1);
+                    int color;
+                    if (colors.getType(1) == ReadableType.Map) {
+                      color = ColorPropConverter.getColor(colors.getMap(1), getContext());
+                    } else {
+                      color = colors.getInt(1);
+                    }
                     int alpha = color >>> 24;
                     int combined = Math.round((float)alpha * opacity);
                     paint.setColor(combined << 24 | (color & 0x00ffffff));

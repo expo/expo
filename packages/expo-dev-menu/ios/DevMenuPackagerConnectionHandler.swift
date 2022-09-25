@@ -4,11 +4,11 @@ import Foundation
 
 class DevMenuPackagerConnectionHandler {
   weak var manager: DevMenuManager?
-  
+
   init(manager: DevMenuManager) {
     self.manager = manager
   }
-  
+
   func setup() {
     // `RCT_DEV` isn't available in Swift, that's why we used `DEBUG` instead.
     // It shouldn't diverge, because of the definition of `RCT_DEV`.
@@ -20,7 +20,7 @@ class DevMenuPackagerConnectionHandler {
         queue: DispatchQueue.main,
         forMethod: "sendDevCommand"
       )
-    
+
     RCTPackagerConnection
       .shared()
       .addNotificationHandler(
@@ -30,18 +30,18 @@ class DevMenuPackagerConnectionHandler {
       )
 #endif
   }
-  
+
   @objc
   func sendDevCommandNotificationHandler(_ params: [String: Any]) {
     guard let manager = manager,
           let command = params["name"] as? String,
-          let bridge = manager.delegate?.appBridge?(forDevMenuManager: manager) as? RCTBridge
+          let bridge = manager.currentBridge
     else {
       return
     }
-    
+
     let devDelegate = DevMenuDevOptionsDelegate(forBridge: bridge)
-  
+
     switch command {
     case "reload":
       devDelegate.reload()
@@ -54,10 +54,10 @@ class DevMenuPackagerConnectionHandler {
     case "togglePerformanceMonitor":
       devDelegate.togglePerformanceMonitor()
     default:
-      NSLog("Unknown command from packager: %@", command);
+      NSLog("Unknown command from packager: %@", command)
     }
   }
-  
+
   @objc
   func devMenuNotificationHanlder(_ parames: [String: Any]) {
     self.manager?.toggleMenu()

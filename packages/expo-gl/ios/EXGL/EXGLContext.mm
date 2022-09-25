@@ -20,6 +20,7 @@
 @property (nonatomic, weak) EXGLObjectManager *objectManager;
 @property (nonatomic, assign) BOOL isContextReady;
 @property (nonatomic, assign) BOOL wasPrepareCalled;
+@property (nonatomic) BOOL appIsBackgrounded;
 
 @end
 
@@ -36,6 +37,7 @@
     _eaglCtx = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES3] ?: [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
     _isContextReady = NO;
     _wasPrepareCalled = NO;
+    _appIsBackgrounded = NO;
   }
   return self;
 }
@@ -69,8 +71,31 @@
 
 - (void)initialize
 {
-  self->_contextId = UEXGLContextCreate();
+  self->_contextId = EXGLContextCreate();
   [self->_objectManager saveContext:self];
+
+  // listen for foreground/background transitions
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                        selector:@selector(onApplicationDidBecomeActive:)
+                                        name:UIApplicationDidBecomeActiveNotification
+                                        object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                        selector:@selector(onApplicationWillResignActive:)
+                                        name:UIApplicationWillResignActiveNotification
+                                        object:nil];
+}
+
+- (void)onApplicationWillResignActive:(NSNotification *)notification
+{
+  _appIsBackgrounded = YES;
+  dispatch_sync(_glQueue, ^{
+    glFinish();
+  });
+}
+
+- (void)onApplicationDidBecomeActive:(NSNotification *)notification {
+  _appIsBackgrounded = NO;
+  [self flush];
 }
 
 - (void)prepare:(void(^)(BOOL))callback
@@ -97,8 +122,8 @@
         return;
       }
 
-      UEXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
-      UEXGLContextPrepare(jsRuntimePtr, self->_contextId, ^{
+      EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
+      EXGLContextPrepare(jsRuntimePtr, self->_contextId, [self](){
         [self flush];
       });
 
@@ -117,8 +142,11 @@
 
 - (void)flush
 {
+  if (_appIsBackgrounded) {
+      return;
+  }
   [self runAsync:^{
-    UEXGLContextFlush(self->_contextId);
+    EXGLContextFlush(self->_contextId);
 
     if ([self.delegate respondsToSelector:@selector(glContextFlushed:)]) {
       [self.delegate glContextFlushed:self];
@@ -128,16 +156,19 @@
 
 - (void)destroy
 {
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidBecomeActiveNotification object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillResignActiveNotification object:nil];
+
   [self runAsync:^{
     if ([self.delegate respondsToSelector:@selector(glContextWillDestroy:)]) {
       [self.delegate glContextWillDestroy:self];
     }
 
     // Flush all the stuff
-    UEXGLContextFlush(self->_contextId);
+    EXGLContextFlush(self->_contextId);
 
     // Destroy JS binding
-    UEXGLContextDestroy(self->_contextId);
+    EXGLContextDestroy(self->_contextId);
 
     // Remove from dictionary of contexts
     [self->_objectManager deleteContextWithId:@(self->_contextId)];
@@ -178,7 +209,7 @@
 
     if (options[@"framebuffer"] && options[@"framebuffer"][@"id"]) {
       int exglFramebufferId = [options[@"framebuffer"][@"id"] intValue];
-      sourceFramebuffer = UEXGLContextGetObject(self.contextId, exglFramebufferId);
+      sourceFramebuffer = EXGLContextGetObject(self.contextId, exglFramebufferId);
     } else {
       // headless context doesn't have default framebuffer, so we use the current one
       sourceFramebuffer = [self defaultFramebuffer] || prevFramebuffer;

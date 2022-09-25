@@ -4,13 +4,57 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fix `Cannot remove an observer <EXSplashScreenService> for the key path "rootViewController"` exception if applcation keyWindow changed. ([#14982](https://github.com/expo/expo/pull/14982) by [@kudo](https://github.com/kudo))
+- Fixed `'SplashScreen.show' has already been called for given view controller.` warning being displayed when using `expo-dev-client` on iOS. ([#18682](https://github.com/expo/expo/pull/18682) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+## 0.16.1 — 2022-07-16
+
+### 🐛 Bug fixes
+
+- Fixed splash screen not showing when reloading apps on iOS. ([#18229](https://github.com/expo/expo/pull/18229) by [@kudo](https://github.com/kudo))
+
+## 0.16.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 0.15.1 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
+## 0.15.0 — 2022-04-18
+
+### 💡 Others
+
+- Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 0.14.2 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 0.14.1 — 2021-12-22
+
+### 🐛 Bug fixes
+
+- Remove duplicated `expo-modules-autolinking` package coming from `expo-splash-screen` dependencies. ([#15685](https://github.com/expo/expo/pull/15685) by [@kudo](https://github.com/kudo))
+
+## 0.14.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
+- Fix `Cannot remove an observer <EXSplashScreenService> for the key path "rootViewController"` exception if applcation keyWindow changed. ([#14982](https://github.com/expo/expo/pull/14982) by [@kudo](https://github.com/kudo))
 
 ## 0.13.4 — 2021-10-22
 

@@ -1,12 +1,17 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import {
+  theme,
+  typography,
+  iconSize,
+  InfoIcon,
+  spacing,
+  borderRadius,
+  breakpoints,
+} from '@expo/styleguide';
 import emojiRegex from 'emoji-regex';
-import * as React from 'react';
+import { Children, PropsWithChildren, ReactNode, BlockquoteHTMLAttributes } from 'react';
 
 import { paragraph } from './typography';
-
-import { Info } from '~/components/icons/Info';
-import * as Constants from '~/constants/theme';
 
 const attributes = {
   'data-text': true,
@@ -14,36 +19,34 @@ const attributes = {
 
 const STYLES_PARAGRAPH = css`
   ${paragraph}
-  margin-bottom: 1rem;
+  margin-bottom: ${spacing[4]}px;
 `;
 
-export const P: React.FC = ({ children }) => (
+export const P = ({ children }: PropsWithChildren<object>) => (
   <p {...attributes} css={STYLES_PARAGRAPH}>
     {children}
   </p>
 );
 
 const STYLES_BOLD_PARAGRAPH = css`
-  ${paragraph}
+  ${STYLES_PARAGRAPH}
   font-size: inherit;
-  font-family: ${Constants.fontFamilies.bold};
-  font-weight: 500;
+  font-family: ${typography.fontFaces.semiBold};
 `;
 
-export const B: React.FC = ({ children }) => (
+export const B = ({ children }: PropsWithChildren<object>) => (
   <strong css={STYLES_BOLD_PARAGRAPH}>{children}</strong>
 );
 
 const STYLES_PARAGRAPH_DIV = css`
-  ${paragraph}
+  ${STYLES_PARAGRAPH}
   display: block;
-  margin-bottom: 1rem;
 
   &.is-wider {
     max-width: 1200px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     &.is-wider {
       max-width: 100%;
       width: 100%;
@@ -51,7 +54,7 @@ const STYLES_PARAGRAPH_DIV = css`
   }
 `;
 
-export const PDIV: React.FC = ({ children }) => {
+export const PDIV = ({ children }: PropsWithChildren<object>) => {
   const isWider = (children as JSX.Element)?.props?.snackId;
   return (
     <div {...attributes} css={STYLES_PARAGRAPH_DIV} className={isWider ? 'is-wider' : ''}>
@@ -61,22 +64,36 @@ export const PDIV: React.FC = ({ children }) => {
 };
 
 const STYLES_BLOCKQUOTE = css`
-  ${paragraph}
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-gap: 12px;
-  padding: 12px;
-  margin-bottom: 1rem;
-  border-left: 4px solid ${theme.border.default};
-  background: ${theme.background.secondary};
-  border-radius: 4px;
+  & {
+    ${paragraph}
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-gap: ${spacing[3]}px;
+    padding: ${spacing[3]}px;
+    margin-bottom: ${spacing[4]}px;
+    border-left: 4px solid ${theme.border.default};
+    background: ${theme.background.secondary};
+    border-radius: ${borderRadius.small};
 
-  div {
-    margin: 0;
+    div {
+      margin: 0;
+    }
+
+    code {
+      background-color: ${theme.background.tertiary};
+    }
   }
 
-  code {
-    background-color: ${theme.background.tertiary};
+  table & {
+    margin: ${spacing[2]}px 0;
+
+    &:first-of-type {
+      margin-top: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 `;
 
@@ -87,7 +104,7 @@ function firstChild<T>(children: T | T[]): T {
   return children;
 }
 
-function captureEmoji(children: React.ReactNode) {
+function captureEmoji(children: ReactNode | ReactNode[]) {
   const child = firstChild(children);
 
   if (typeof child === 'string') {
@@ -99,38 +116,47 @@ function captureEmoji(children: React.ReactNode) {
   }
 }
 
-function removeEmoji(emoji: string, children: string[]) {
+function removeEmoji(emoji: string, children: ReactNode | ReactNode[]) {
   const child = firstChild(children) || '';
 
-  const modifiedChild = child.replace(emoji, '');
+  if (typeof child === 'string') {
+    const modifiedChild = child.replace(emoji, '');
 
-  if (Array.isArray(children)) {
-    return [modifiedChild, ...children.slice(1)];
-  } else {
-    return modifiedChild;
+    if (Array.isArray(children)) {
+      return [modifiedChild, ...children.slice(1)];
+    } else {
+      return modifiedChild;
+    }
   }
+
+  return child;
 }
 
-export const Quote = ({ children, ...rest }: { children: JSX.Element | JSX.Element[] }) => {
-  let icon: React.ReactNode = (
+export const Quote = ({
+  children,
+  ...rest
+}: PropsWithChildren<BlockquoteHTMLAttributes<HTMLQuoteElement>>) => {
+  let icon = (
     <div style={{ marginTop: 2 }}>
-      <Info size={16} />
+      <InfoIcon size={iconSize.small} />
     </div>
   );
 
-  const newChildren: JSX.Element[] = React.Children.map(children, child => {
-    const emoji = captureEmoji(child?.props?.children);
+  const newChildren = Children.map(children, child => {
+    const { props } = child as JSX.Element;
+    const emoji = captureEmoji(props?.children);
 
     if (emoji) {
-      icon = emoji;
+      icon = <div>{emoji}</div>;
+      const updatedChildren = removeEmoji(emoji, props?.children);
 
-      return {
-        ...child,
+      return Object.assign({}, child, {
+        children: updatedChildren,
         props: {
-          ...child?.props,
-          children: removeEmoji(emoji, child?.props?.children),
+          ...props,
+          children: removeEmoji(emoji, props?.children),
         },
-      };
+      });
     }
 
     return child;
@@ -138,7 +164,7 @@ export const Quote = ({ children, ...rest }: { children: JSX.Element | JSX.Eleme
 
   return (
     <blockquote {...attributes} css={STYLES_BLOCKQUOTE} {...rest}>
-      <div>{icon}</div>
+      {icon}
       <div>{newChildren}</div>
     </blockquote>
   );

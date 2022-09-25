@@ -2,18 +2,17 @@
 title: Using automatically managed credentials
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { ConfigClassic } from '~/components/plugins/ConfigSection';
 
 For your app to be distributed in an app store, it needs to be digitally signed with credentials such as a keystore or a distribution certificate. This certifies the source of the app and ensures that it can't be tampered with. Other credentials, such as your Apple Push Key and FCM API Key, are needed to send push notifications, but they are not involved in app signing.
 
 Thankfully, that's all that you need to know about any of this to build an app with EAS Build, but if you would like to learn more you can refer to the ["App Signing"](/app-signing/app-credentials.md) guide.
 
-<details><summary><strong>Are you using the classic build system?</strong> (<InlineCode>expo build:[android|ios]</InlineCode>)</summary> <p>
+<ConfigClassic>
 
 Learn how to [manage credentials with our classic build service](/app-signing/app-credentials.md).
 
-</p>
-</details>
+</ConfigClassic>
 
 Read on to learn how EAS can automatically manage credentials for you and your team.
 
@@ -23,13 +22,13 @@ When you run `eas build`, you will be prompted to generate credentials if you ha
 
 Generating your iOS credentials (distribution certificate, provisioning profile, and push key) requires you to sign in with an [Apple Developer Program](https://developer.apple.com/programs) membership.
 
-> If you have any security concerns about EAS managing your credentials or about logging in to your Apple Developer account through EAS CLI, please refer to the ["Security"](/distribution/security.md) guide. If that does not satisfy your concerns, you can reach out to [secure@expo.dev](mailto:secure@expo.dev) for more information, or use [local credentials](/app-signing/local-credentials.md) instead.
+> If you have any security concerns about EAS managing your credentials or about logging in to your Apple Developer account through EAS CLI, please refer to the ["Security"](/app-signing/security) guide. If that does not satisfy your concerns, you can reach out to [secure@expo.dev](mailto:secure@expo.dev) for more information, or use [local credentials](/app-signing/local-credentials.md) instead.
 
 ### Push notification credentials
 
 #### iOS
 
-If you haven't set up your Push Notifictions key yet, EAS CLI will ask you to set it up during the next `eas build` run.
+If you haven't set up your Push Notifications key yet, EAS CLI will ask you to set it up during the next `eas build` run.
 
 If you're building an app that was previously built with classic builds (`expo build:ios`), then you already have iOS push notification credentials configured on Expo's servers, so there's nothing you need to do.
 

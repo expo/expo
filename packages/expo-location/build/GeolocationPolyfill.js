@@ -8,6 +8,13 @@ import { LocationSubscriber } from './LocationSubscribers';
  */
 export function installWebGeolocationPolyfill() {
     if (Platform.OS !== 'web') {
+        // Make sure `window.navigator` is defined in the global scope.
+        if (!('window' in global)) {
+            global.window = global;
+        }
+        if (!('navigator' in global.window)) {
+            global.window.navigator = {};
+        }
         // @ts-ignore
         window.navigator.geolocation = {
             getCurrentPosition,

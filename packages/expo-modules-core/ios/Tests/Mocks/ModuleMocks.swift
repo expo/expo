@@ -8,7 +8,7 @@ class NamedModule: Module {
   static let namedModuleName = "MyModule"
 
   func definition() -> ModuleDefinition {
-    name(Self.namedModuleName)
+    Name(Self.namedModuleName)
   }
 }
 
@@ -32,7 +32,7 @@ class CustomModule: Module {
 typealias MockedDefinitionFunc = (CustomModule) -> ModuleDefinition
 
 func mockModuleHolder(_ appContext: AppContext, @ModuleDefinitionBuilder _ definitionBody: @escaping () -> ModuleDefinition) -> ModuleHolder {
-  return ModuleHolder(appContext: appContext, module: CustomModule(appContext: appContext, { module in definitionBody() }))
+  return ModuleHolder(appContext: appContext, module: CustomModule(appContext: appContext, { _ in definitionBody() }))
 }
 
 func mockModuleHolder(_ appContext: AppContext, @ModuleDefinitionBuilder _ definitionBody: @escaping (CustomModule) -> ModuleDefinition) -> ModuleHolder {

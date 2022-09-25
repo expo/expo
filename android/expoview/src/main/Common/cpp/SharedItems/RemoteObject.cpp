@@ -1,7 +1,7 @@
 #include "RemoteObject.h"
-#include "SharedParent.h"
-#include "RuntimeDecorator.h"
 #include <jsi/jsi.h>
+#include "RuntimeDecorator.h"
+#include "SharedParent.h"
 
 using namespace facebook;
 
@@ -22,7 +22,10 @@ jsi::Value RemoteObject::get(jsi::Runtime &rt, const jsi::PropNameID &name) {
   return jsi::Value::undefined();
 }
 
-void RemoteObject::set(jsi::Runtime &rt, const jsi::PropNameID &name, const jsi::Value &value) {
+void RemoteObject::set(
+    jsi::Runtime &rt,
+    const jsi::PropNameID &name,
+    const jsi::Value &value) {
   if (RuntimeDecorator::isWorkletRuntime(rt)) {
     backing.lock()->getObject(rt).setProperty(rt, name, value);
   }
@@ -33,9 +36,10 @@ std::vector<jsi::PropNameID> RemoteObject::getPropertyNames(jsi::Runtime &rt) {
   std::vector<jsi::PropNameID> res;
   auto propertyNames = backing.lock()->getObject(rt).getPropertyNames(rt);
   for (size_t i = 0, size = propertyNames.size(rt); i < size; i++) {
-    res.push_back(jsi::PropNameID::forString(rt, propertyNames.getValueAtIndex(rt, i).asString(rt)));
+    res.push_back(jsi::PropNameID::forString(
+        rt, propertyNames.getValueAtIndex(rt, i).asString(rt)));
   }
   return res;
 }
 
-}
+} // namespace reanimated

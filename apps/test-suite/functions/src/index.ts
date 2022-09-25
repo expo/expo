@@ -7,7 +7,7 @@ export class ArgumentError extends functions.https.HttpsError {
   }
 }
 
-exports.echoMessage = functions.https.onCall(data => {
+exports.echoMessage = functions.https.onCall((data) => {
   const { message } = data;
   if (!message) {
     throw new ArgumentError(`Hi 👋, you did not specify a message`);

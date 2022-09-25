@@ -7,7 +7,7 @@
 
 @protocol EXViewControllerDelegate <NSObject>
 
-- (void)viewController:(EXViewController *)vc didNavigateAppToVisible:(EXKernelAppRecord *)appRecord;
+- (void)viewController:(EXViewController * _Nonnull)vc didNavigateAppToVisible:(EXKernelAppRecord * _Nonnull)appRecord;
 
 @end
 
@@ -18,7 +18,7 @@
  */
 - (void)createRootAppAndMakeVisible;
 
-@property (nonatomic, strong) UIViewController *contentViewController;
-@property (nonatomic, weak) id<EXViewControllerDelegate> delegate;
+@property (nonatomic, strong, nullable) UIViewController *contentViewController;
+@property (nonatomic, weak, nullable) id<EXViewControllerDelegate> delegate;
 
 @end

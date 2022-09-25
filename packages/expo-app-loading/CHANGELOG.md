@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 2.1.0 — 2022-07-07
+
+### 💡 Others
+
+- Fix typo in deprecation warning. ([#17513](https://github.com/expo/expo/pull/17513) by [@frankcalise](https://github.com/frankcalise))
+
+## 2.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Deprecate the library in favor of expo-splash-screen. ([#16963](https://github.com/expo/expo/pull/16963) by [@brentvatne](https://github.com/brentvatne))
+
+## 1.3.0 — 2021-12-03
+
+_This version does not introduce any user-facing changes._
+
 ## 1.1.4 — 2021-10-01
 
 ### 🐛 Bug fixes

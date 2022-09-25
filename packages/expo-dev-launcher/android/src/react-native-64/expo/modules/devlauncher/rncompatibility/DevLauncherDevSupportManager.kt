@@ -32,7 +32,8 @@ class DevLauncherDevSupportManager(
   devBundleDownloadListener,
   minNumShakes,
   customPackagerCommandHandlers
-), DevLauncherKoinComponent {
+),
+  DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
   override fun showNewJavaError(message: String?, e: Throwable) {
     if (!DevLauncherController.wasInitialized()) {
@@ -47,7 +48,7 @@ class DevLauncherDevSupportManager(
     }
 
     controller.onAppLoadedWithError()
-    DevLauncherErrorActivity.showError(activity, DevLauncherAppError(message, e))
+    DevLauncherErrorActivity.showErrorIfNotVisible(activity, DevLauncherAppError(message, e))
   }
 
   companion object {

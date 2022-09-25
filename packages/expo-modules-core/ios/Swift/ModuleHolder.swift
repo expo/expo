@@ -15,6 +15,11 @@ public final class ModuleHolder {
   private(set) weak var appContext: AppContext?
 
   /**
+   JavaScript object that represents the module instance in the runtime.
+   */
+  public internal(set) lazy var javaScriptObject: JavaScriptObject? = createJavaScriptModuleObject()
+
+  /**
    Caches the definition of the module type.
    */
   let definition: ModuleDefinition
@@ -24,6 +29,13 @@ public final class ModuleHolder {
    */
   var name: String {
     return definition.name.isEmpty ? String(describing: type(of: module)) : definition.name
+  }
+
+  /**
+   Shortcut to get the underlying view manager definition.
+   */
+  var viewManager: ViewManagerDefinition? {
+    return definition.viewManager
   }
 
   /**
@@ -44,45 +56,53 @@ public final class ModuleHolder {
    Merges all `constants` definitions into one dictionary.
    */
   func getConstants() -> [String: Any?] {
-    return definition.constants.reduce(into: [String: Any?]()) { dict, definition in
-      dict.merge(definition.body()) { $1 }
-    }
+    return definition.getConstants()
   }
 
   // MARK: Calling functions
 
-  func call(function functionName: String, args: [Any], promise: Promise) {
-    do {
-      guard let function = definition.functions[functionName] else {
-        throw FunctionNotFoundError(functionName: functionName, moduleName: self.name)
-      }
-      let queue = function.queue ?? DispatchQueue.global(qos: .default)
-
-      queue.async {
-        function.call(args: args, promise: promise)
-      }
-    } catch let error as CodedError {
-      promise.reject(error)
-    } catch {
-      promise.reject(UnexpectedError(error))
+  func call(function functionName: String, args: [Any], _ callback: @escaping (FunctionCallResult) -> () = { _ in }) {
+    guard let function = definition.functions[functionName] else {
+      callback(.failure(FunctionNotFoundException((functionName: functionName, moduleName: self.name))))
+      return
     }
-  }
-
-  func call(function functionName: String, args: [Any], _ callback: @escaping (Any?, CodedError?) -> Void = { _, _ in }) {
-    let promise = Promise {
-      callback($0, nil)
-    } rejecter: {
-      callback(nil, $0)
-    }
-    call(function: functionName, args: args, promise: promise)
+    function.call(by: self, withArguments: args, callback: callback)
   }
 
   @discardableResult
   func callSync(function functionName: String, args: [Any]) -> Any? {
-    if let function = definition.functions[functionName] {
-      return function.callSync(args: args)
+    guard let function = definition.functions[functionName] as? AnySyncFunctionComponent else {
+      return nil
     }
-    return nil
+    do {
+      let arguments = try cast(arguments: args, forFunction: function)
+      let result = try function.call(by: self, withArguments: arguments)
+
+      if let result = result as? SharedObject {
+        let jsObject = SharedObjectRegistry.ensureSharedJavaScriptObject(runtime: appContext!.runtime!, nativeObject: result)
+        return jsObject
+      }
+      return result
+    } catch {
+      return error
+    }
+  }
+
+  // MARK: JavaScript Module Object
+
+  /**
+   Creates the JavaScript object that will be used to communicate with the native module.
+   The object is prefilled with module's constants and functions.
+   JavaScript can access it through `global.ExpoModules[moduleName]`.
+   - Note: The object will be `nil` when the runtime is unavailable (e.g. remote debugger is enabled).
+   */
+  private func createJavaScriptModuleObject() -> JavaScriptObject? {
+    // It might be impossible to create any object at the moment (e.g. remote debugging, app context destroyed)
+    guard let runtime = appContext?.runtime else {
+      return nil
+    }
+    log.info("Creating JS object for module '\(name)'")
+    return definition.build(inRuntime: runtime)
   }
 
   // MARK: Listening to native events
@@ -112,9 +132,9 @@ public final class ModuleHolder {
    */
   func modifyListenersCount(_ count: Int) {
     if count > 0 && listenersCount == 0 {
-      let _ = definition.functions["startObserving"]?.callSync(args: [])
+      definition.functions["startObserving"]?.call(withArguments: [])
     } else if count < 0 && listenersCount + count <= 0 {
-      let _ = definition.functions["stopObserving"]?.callSync(args: [])
+      definition.functions["stopObserving"]?.call(withArguments: [])
     }
     listenersCount = max(0, listenersCount + count)
   }
@@ -125,20 +145,17 @@ public final class ModuleHolder {
     post(event: .moduleDestroy)
   }
 
-  // MARK: Errors
+  // MARK: - Exceptions
 
-  struct ModuleNotFoundError: CodedError {
-    let moduleName: String
-    var description: String {
-      "Cannot find module `\(moduleName)`"
+  internal class ModuleNotFoundException: GenericException<String> {
+    override var reason: String {
+      "Module '\(param)' not found"
     }
   }
 
-  struct FunctionNotFoundError: CodedError {
-    let functionName: String
-    let moduleName: String
-    var description: String {
-      "Cannot find function `\(functionName)` in module `\(moduleName)`"
+  internal class FunctionNotFoundException: GenericException<(functionName: String, moduleName: String)> {
+    override var reason: String {
+      "Function '\(param.functionName)' not found in module '\(param.moduleName)'"
     }
   }
 }

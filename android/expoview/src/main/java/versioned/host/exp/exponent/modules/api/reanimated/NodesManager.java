@@ -2,7 +2,6 @@ package versioned.host.exp.exponent.modules.api.reanimated;
 
 import android.util.SparseArray;
 import android.view.View;
-
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.Callback;
 import com.facebook.react.bridge.GuardedRunnable;
@@ -12,7 +11,9 @@ import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.UiThreadUtil;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.facebook.react.modules.core.ReactChoreographer;
@@ -26,6 +27,7 @@ import com.facebook.react.uimanager.UIManagerReanimatedHelper;
 import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.EventDispatcherListener;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
+import versioned.host.exp.exponent.modules.api.reanimated.layoutReanimation.AnimationsManager;
 import versioned.host.exp.exponent.modules.api.reanimated.nodes.AlwaysNode;
 import versioned.host.exp.exponent.modules.api.reanimated.nodes.BezierNode;
 import versioned.host.exp.exponent.modules.api.reanimated.nodes.BlockNode;
@@ -47,7 +49,6 @@ import versioned.host.exp.exponent.modules.api.reanimated.nodes.SetNode;
 import versioned.host.exp.exponent.modules.api.reanimated.nodes.StyleNode;
 import versioned.host.exp.exponent.modules.api.reanimated.nodes.TransformNode;
 import versioned.host.exp.exponent.modules.api.reanimated.nodes.ValueNode;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -59,7 +60,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.annotation.Nullable;
 
 public class NodesManager implements EventDispatcherListener {
@@ -70,7 +70,7 @@ public class NodesManager implements EventDispatcherListener {
     View view;
     try {
       view = mUIManager.resolveView(viewTag);
-    } catch(IllegalViewOperationException e) {
+    } catch (IllegalViewOperationException e) {
       e.printStackTrace();
       return;
     }
@@ -81,9 +81,9 @@ public class NodesManager implements EventDispatcherListener {
     View view;
     try {
       view = mUIManager.resolveView(viewTag);
-    } catch(IllegalViewOperationException e) {
+    } catch (IllegalViewOperationException e) {
       e.printStackTrace();
-      return (new float[]{});
+      return (new float[] {});
     }
     return NativeMethodsHelper.measure(view);
   }
@@ -92,6 +92,7 @@ public class NodesManager implements EventDispatcherListener {
     void onAnimationFrame(double timestampMs);
   }
 
+  private AnimationsManager mAnimationManager = null;
   private final SparseArray<Node> mAnimatedNodes = new SparseArray<>();
   private final Map<String, EventNode> mEventMapping = new HashMap<>();
   private final UIImplementation mUIImplementation;
@@ -114,9 +115,21 @@ public class NodesManager implements EventDispatcherListener {
   public Set<String> uiProps = Collections.emptySet();
   public Set<String> nativeProps = Collections.emptySet();
 
+  public NativeProxy getNativeProxy() {
+    return mNativeProxy;
+  }
+
   private NativeProxy mNativeProxy;
 
+  public AnimationsManager getAnimationsManager() {
+    return mAnimationManager;
+  }
+
   public void onCatalystInstanceDestroy() {
+    if (mAnimationManager != null) {
+      mAnimationManager.onCatalystInstanceDestroy();
+    }
+
     if (mNativeProxy != null) {
       mNativeProxy.onCatalystInstanceDestroy();
       mNativeProxy = null;
@@ -125,16 +138,19 @@ public class NodesManager implements EventDispatcherListener {
 
   public void initWithContext(ReactApplicationContext reactApplicationContext) {
     mNativeProxy = new NativeProxy(reactApplicationContext);
+    mAnimationManager.setScheduler(getNativeProxy().getScheduler());
   }
 
   private final class NativeUpdateOperation {
     public int mViewTag;
     public WritableMap mNativeProps;
+
     public NativeUpdateOperation(int viewTag, WritableMap nativeProps) {
       mViewTag = viewTag;
       mNativeProps = nativeProps;
     }
   }
+
   private Queue<NativeUpdateOperation> mOperationsInBatch = new LinkedList<>();
   private boolean mTryRunBatchUpdatesSynchronously = false;
 
@@ -147,20 +163,27 @@ public class NodesManager implements EventDispatcherListener {
     mEventEmitter = context.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class);
 
     mReactChoreographer = ReactChoreographer.getInstance();
-    mChoreographerCallback = new GuardedFrameCallback(context) {
-      @Override
-      protected void doFrameGuarded(long frameTimeNanos) {
-        onAnimationFrame(frameTimeNanos);
-      }
-    };
+    mChoreographerCallback =
+        new GuardedFrameCallback(context) {
+          @Override
+          protected void doFrameGuarded(long frameTimeNanos) {
+            onAnimationFrame(frameTimeNanos);
+          }
+        };
 
     mNoopNode = new NoopNode(this);
 
-    // We register as event listener at the end, because we pass `this` and we haven't finished contructing an object yet.
-    // This lead to a crash described in https://github.com/software-mansion/react-native-reanimated/issues/604 which was caused by Nodes Manager being constructed on UI thread and registering for events.
+    // We register as event listener at the end, because we pass `this` and we haven't finished
+    // contructing an object yet.
+    // This lead to a crash described in
+    // https://github.com/software-mansion/react-native-reanimated/issues/604 which was caused by
+    // Nodes Manager being constructed on UI thread and registering for events.
     // Events are handled in the native modules thread in the `onEventDispatch()` method.
-    // This method indirectly uses `mChoreographerCallback` which was created after event registration, creating race condition
+    // This method indirectly uses `mChoreographerCallback` which was created after event
+    // registration, creating race condition
     mUIManager.getEventDispatcher().addListener(this);
+
+    mAnimationManager = new AnimationsManager(mContext, mUIImplementation, mUIManager);
   }
 
   public void onHostPause() {
@@ -179,16 +202,14 @@ public class NodesManager implements EventDispatcherListener {
   public void startUpdatingOnAnimationFrame() {
     if (!mCallbackPosted.getAndSet(true)) {
       mReactChoreographer.postFrameCallback(
-              ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-              mChoreographerCallback);
+          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mChoreographerCallback);
     }
   }
 
   private void stopUpdatingOnAnimationFrame() {
     if (mCallbackPosted.getAndSet(false)) {
       mReactChoreographer.removeFrameCallback(
-              ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE,
-              mChoreographerCallback);
+          ReactChoreographer.CallbackType.NATIVE_ANIMATED_MODULE, mChoreographerCallback);
     }
   }
 
@@ -200,37 +221,37 @@ public class NodesManager implements EventDispatcherListener {
       mTryRunBatchUpdatesSynchronously = false;
       final Semaphore semaphore = new Semaphore(0);
       mContext.runOnNativeModulesQueueThread(
-              // FIXME replace `mContext` with `mContext.getExceptionHandler()` after RN 0.59 support is dropped
-              new GuardedRunnable(mContext) {
-                @Override
-                public void runGuarded() {
-                  boolean queueWasEmpty = UIManagerReanimatedHelper.isOperationQueueEmpty(mUIImplementation);
-                  boolean shouldDispatchUpdates = trySynchronously && queueWasEmpty;
-                  if (!shouldDispatchUpdates) {
-                    semaphore.release();
-                  }
-                  while (!copiedOperationsQueue.isEmpty()) {
-                    NativeUpdateOperation op = copiedOperationsQueue.remove();
-                    ReactShadowNode shadowNode = mUIImplementation.resolveShadowNode(op.mViewTag);
-                    if (shadowNode != null) {
-                      mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mNativeProps);
-                    }
-                  }
-                  if (queueWasEmpty) {
-                    mUIImplementation.dispatchViewUpdates(-1); // no associated batchId
-                  }
-                  if (shouldDispatchUpdates) {
-                    semaphore.release();
-                  }
+          new GuardedRunnable(mContext.getExceptionHandler()) {
+            @Override
+            public void runGuarded() {
+              boolean queueWasEmpty =
+                  UIManagerReanimatedHelper.isOperationQueueEmpty(mUIImplementation);
+              boolean shouldDispatchUpdates = trySynchronously && queueWasEmpty;
+              if (!shouldDispatchUpdates) {
+                semaphore.release();
+              }
+              while (!copiedOperationsQueue.isEmpty()) {
+                NativeUpdateOperation op = copiedOperationsQueue.remove();
+                ReactShadowNode shadowNode = mUIImplementation.resolveShadowNode(op.mViewTag);
+                if (shadowNode != null) {
+                  mUIManager.updateView(op.mViewTag, shadowNode.getViewClass(), op.mNativeProps);
                 }
-              });
+              }
+              if (queueWasEmpty) {
+                mUIImplementation.dispatchViewUpdates(-1); // no associated batchId
+              }
+              if (shouldDispatchUpdates) {
+                semaphore.release();
+              }
+            }
+          });
       if (trySynchronously) {
         while (true) {
           try {
             semaphore.acquire();
             break;
           } catch (InterruptedException e) {
-            //noop
+            // noop
           }
         }
       }
@@ -290,20 +311,25 @@ public class NodesManager implements EventDispatcherListener {
       if (type == Node.class || type == ValueNode.class) {
         return (T) mNoopNode;
       }
-      throw new IllegalArgumentException("Requested node with id " + id + " of type " + type +
-              " cannot be found");
+      throw new IllegalArgumentException(
+          "Requested node with id " + id + " of type " + type + " cannot be found");
     }
     if (type.isInstance(node)) {
       return (T) node;
     }
-    throw new IllegalArgumentException("Node with id " + id + " is of incompatible type " +
-            node.getClass() + ", requested type was " + type);
+    throw new IllegalArgumentException(
+        "Node with id "
+            + id
+            + " is of incompatible type "
+            + node.getClass()
+            + ", requested type was "
+            + type);
   }
 
   public void createNode(int nodeID, ReadableMap config) {
     if (mAnimatedNodes.get(nodeID) != null) {
-      throw new JSApplicationIllegalArgumentException("Animated node with ID " + nodeID +
-              " already exists");
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node with ID " + nodeID + " already exists");
     }
     String type = config.getString("type");
     final Node node;
@@ -367,8 +393,8 @@ public class NodesManager implements EventDispatcherListener {
     Node parentNode = mAnimatedNodes.get(parentID);
     Node childNode = mAnimatedNodes.get(childID);
     if (childNode == null) {
-      throw new JSApplicationIllegalArgumentException("Animated node with ID " + childID +
-              " does not exists");
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node with ID " + childID + " does not exists");
     }
     parentNode.addChild(childNode);
   }
@@ -377,8 +403,8 @@ public class NodesManager implements EventDispatcherListener {
     Node parentNode = mAnimatedNodes.get(parentID);
     Node childNode = mAnimatedNodes.get(childID);
     if (childNode == null) {
-      throw new JSApplicationIllegalArgumentException("Animated node with ID " + childID +
-              " does not exists");
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node with ID " + childID + " does not exists");
     }
     parentNode.removeChild(childNode);
   }
@@ -386,12 +412,12 @@ public class NodesManager implements EventDispatcherListener {
   public void connectNodeToView(int nodeID, int viewTag) {
     Node node = mAnimatedNodes.get(nodeID);
     if (node == null) {
-      throw new JSApplicationIllegalArgumentException("Animated node with ID " + nodeID +
-              " does not exists");
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node with ID " + nodeID + " does not exists");
     }
     if (!(node instanceof PropsNode)) {
-      throw new JSApplicationIllegalArgumentException("Animated node connected to view should be" +
-              "of type " + PropsNode.class.getName());
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node connected to view should be" + "of type " + PropsNode.class.getName());
     }
     ((PropsNode) node).connectToView(viewTag);
   }
@@ -399,17 +425,18 @@ public class NodesManager implements EventDispatcherListener {
   public void disconnectNodeFromView(int nodeID, int viewTag) {
     Node node = mAnimatedNodes.get(nodeID);
     if (node == null) {
-      throw new JSApplicationIllegalArgumentException("Animated node with ID " + nodeID +
-              " does not exists");
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node with ID " + nodeID + " does not exists");
     }
     if (!(node instanceof PropsNode)) {
-      throw new JSApplicationIllegalArgumentException("Animated node connected to view should be" +
-              "of type " + PropsNode.class.getName());
+      throw new JSApplicationIllegalArgumentException(
+          "Animated node connected to view should be" + "of type " + PropsNode.class.getName());
     }
     ((PropsNode) node).disconnectFromView(viewTag);
   }
 
-  public void enqueueUpdateViewOnNativeThread(int viewTag, WritableMap nativeProps, boolean trySynchronously) {
+  public void enqueueUpdateViewOnNativeThread(
+      int viewTag, WritableMap nativeProps, boolean trySynchronously) {
     if (trySynchronously) {
       mTryRunBatchUpdatesSynchronously = true;
     }
@@ -421,10 +448,12 @@ public class NodesManager implements EventDispatcherListener {
 
     EventNode node = (EventNode) mAnimatedNodes.get(eventNodeID);
     if (node == null) {
-      throw new JSApplicationIllegalArgumentException("Event node " + eventNodeID + " does not exists");
+      throw new JSApplicationIllegalArgumentException(
+          "Event node " + eventNodeID + " does not exists");
     }
     if (mEventMapping.containsKey(key)) {
-      throw new JSApplicationIllegalArgumentException("Event handler already set for the given view and event type");
+      throw new JSApplicationIllegalArgumentException(
+          "Event handler already set for the given view and event type");
     }
 
     mEventMapping.put(key, node);
@@ -435,9 +464,9 @@ public class NodesManager implements EventDispatcherListener {
     mEventMapping.remove(key);
   }
 
-  public void configureProps(Set<String> nativePropsSet, Set<String> uiPropsSet) {
-    nativeProps = nativePropsSet;
+  public void configureProps(Set<String> uiPropsSet, Set<String> nativePropsSet) {
     uiProps = uiPropsSet;
+    nativeProps = nativePropsSet;
   }
 
   public void getValue(int nodeID, Callback callback) {
@@ -467,7 +496,10 @@ public class NodesManager implements EventDispatcherListener {
       int viewTag = event.getViewTag();
       String key = viewTag + eventName;
 
-      shouldSaveEvent |= (mCustomEventHandler != null && mNativeProxy != null && mNativeProxy.isAnyHandlerWaitingForEvent(key));
+      shouldSaveEvent |=
+          (mCustomEventHandler != null
+              && mNativeProxy != null
+              && mNativeProxy.isAnyHandlerWaitingForEvent(key));
       if (shouldSaveEvent) {
         mEventQueue.offer(new CopiedEvent(event));
       }
@@ -536,14 +568,13 @@ public class NodesManager implements EventDispatcherListener {
     WritableMap newJSProps = Arguments.createMap();
     WritableMap newNativeProps = Arguments.createMap();
 
-
     for (Map.Entry<String, Object> entry : props.entrySet()) {
       String key = entry.getKey();
       Object value = entry.getValue();
       if (uiProps.contains(key)) {
         hasUIProps = true;
         addProp(newUIProps, key, value);
-      } else if(nativeProps.contains(key)) {
+      } else if (nativeProps.contains(key)) {
         hasNativeProps = true;
         addProp(newNativeProps, key, value);
       } else {
@@ -555,7 +586,7 @@ public class NodesManager implements EventDispatcherListener {
     if (viewTag != View.NO_ID) {
       if (hasUIProps) {
         mUIImplementation.synchronouslyUpdateViewOnUIThread(
-                viewTag, new ReactStylesDiffMap(newUIProps));
+            viewTag, new ReactStylesDiffMap(newUIProps));
       }
       if (hasNativeProps) {
         enqueueUpdateViewOnNativeThread(viewTag, newNativeProps, true);
@@ -571,7 +602,8 @@ public class NodesManager implements EventDispatcherListener {
 
   public String obtainProp(int viewTag, String propName) {
     View view = mUIManager.resolveView(viewTag);
-    String result = "error: unknown propName " + propName + ", currently supported: opacity, zIndex";
+    String result =
+        "error: unknown propName " + propName + ", currently supported: opacity, zIndex";
     if (propName.equals("opacity")) {
       Float opacity = view.getAlpha();
       result = Float.toString(opacity);
@@ -580,6 +612,42 @@ public class NodesManager implements EventDispatcherListener {
       result = Float.toString(zIndex);
     }
     return result;
+  }
+
+  private static WritableMap copyReadableMap(ReadableMap map) {
+    WritableMap copy = Arguments.createMap();
+    copy.merge(map);
+    return copy;
+  }
+
+  private static WritableArray copyReadableArray(ReadableArray array) {
+    WritableArray copy = Arguments.createArray();
+    for (int i = 0; i < array.size(); i++) {
+      ReadableType type = array.getType(i);
+      switch (type) {
+        case Boolean:
+          copy.pushBoolean(array.getBoolean(i));
+          break;
+        case String:
+          copy.pushString(array.getString(i));
+          break;
+        case Null:
+          copy.pushNull();
+          break;
+        case Number:
+          copy.pushDouble(array.getDouble(i));
+          break;
+        case Map:
+          copy.pushMap(copyReadableMap(array.getMap(i)));
+          break;
+        case Array:
+          copy.pushArray(copyReadableArray(array.getArray(i)));
+          break;
+        default:
+          throw new IllegalStateException("Unknown type of ReadableArray");
+      }
+    }
+    return copy;
   }
 
   private static void addProp(WritableMap propMap, String key, Object value) {
@@ -596,9 +664,17 @@ public class NodesManager implements EventDispatcherListener {
     } else if (value instanceof String) {
       propMap.putString(key, (String) value);
     } else if (value instanceof ReadableArray) {
-      propMap.putArray(key, (ReadableArray) value);
+      if (!(value instanceof WritableArray)) {
+        propMap.putArray(key, copyReadableArray((ReadableArray) value));
+      } else {
+        propMap.putArray(key, (ReadableArray) value);
+      }
     } else if (value instanceof ReadableMap) {
-      propMap.putMap(key, (ReadableMap) value);
+      if (!(value instanceof WritableMap)) {
+        propMap.putMap(key, copyReadableMap((ReadableMap) value));
+      } else {
+        propMap.putMap(key, (ReadableMap) value);
+      }
     } else {
       throw new IllegalStateException("Unknown type of animated value");
     }

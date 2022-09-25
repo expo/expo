@@ -12,13 +12,16 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation EXUpdatesNewUpdate
 
 + (EXUpdatesUpdate *)updateWithNewManifest:(EXManifestsNewManifest *)manifest
-                                  response:(nullable NSURLResponse *)response
+                           manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
+                                extensions:(NSDictionary *)extensions
                                     config:(EXUpdatesConfig *)config
                                   database:(EXUpdatesDatabase *)database
 {
+  NSDictionary *assetHeaders = [extensions nullableDictionaryForKey:@"assetRequestHeaders"] ?: @{};
+  
   EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithManifest:manifest
-                                                                  config:config
-                                                                database:database];
+                                                               config:config
+                                                             database:database];
 
   NSString *updateId = manifest.rawId;
   NSString *commitTime = manifest.createdAt;
@@ -44,6 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
   jsBundleAsset.url = bundleUrl;
   jsBundleAsset.isLaunchAsset = YES;
   jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename;
+  jsBundleAsset.extraRequestHeaders = [assetHeaders nullableDictionaryForKey:bundleKey];
+  jsBundleAsset.expectedHash = launchAsset[@"hash"];
   [processedAssets addObject:jsBundleAsset];
 
   if (assets) {
@@ -54,14 +59,17 @@ NS_ASSUME_NONNULL_BEGIN
       id fileExtension = assetDict[@"fileExtension"];
       id metadata = assetDict[@"metadata"];
       id mainBundleFilename = assetDict[@"mainBundleFilename"];
+      id expectedHash = assetDict[@"hash"];
       NSAssert(key && [key isKindOfClass:[NSString class]], @"asset key should be a nonnull string");
       NSAssert(urlString && [urlString isKindOfClass:[NSString class]], @"asset url should be a nonnull string");
       NSAssert(fileExtension && [fileExtension isKindOfClass:[NSString class]], @"asset fileExtension should be a nonnull string");
+      NSAssert(!expectedHash || [expectedHash isKindOfClass:[NSString class]], @"asset hash should be a string");
       NSURL *url = [NSURL URLWithString:(NSString *)urlString];
       NSAssert(url, @"asset url should be a valid URL");
 
       EXUpdatesAsset *asset = [[EXUpdatesAsset alloc] initWithKey:key type:(NSString *)fileExtension];
       asset.url = url;
+      asset.expectedHash = expectedHash;
 
       if (metadata) {
         NSAssert([metadata isKindOfClass:[NSDictionary class]], @"asset metadata should be an object");
@@ -72,6 +80,8 @@ NS_ASSUME_NONNULL_BEGIN
         NSAssert([mainBundleFilename isKindOfClass:[NSString class]], @"asset localPath should be a string");
         asset.mainBundleFilename = (NSString *)mainBundleFilename;
       }
+      
+      asset.extraRequestHeaders = [assetHeaders nullableDictionaryForKey:key];
 
       [processedAssets addObject:asset];
     }
@@ -85,13 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
   update.bundleUrl = bundleUrl;
   update.assets = processedAssets;
   update.manifestJSON = manifest.rawManifestJSON;
-
-  if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
-    NSDictionary *headersDictionary = ((NSHTTPURLResponse *)response).allHeaderFields;
-    update.serverDefinedHeaders = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-server-defined-headers"]];
-    update.manifestFilters = [[self class] dictionaryWithStructuredHeader:headersDictionary[@"expo-manifest-filters"]];
-  }
-
+  update.serverDefinedHeaders = [[self class] dictionaryWithStructuredHeader:manifestHeaders.serverDefinedHeaders];
+  update.manifestFilters = [[self class] dictionaryWithStructuredHeader:manifestHeaders.manifestFilters];
   return update;
 }
 

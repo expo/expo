@@ -1,44 +1,62 @@
 ---
 title: Location
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-location'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-location'
+packageName: 'expo-location'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
+import { AndroidPermissions } from '~/components/plugins/permissions';
 
-**`expo-location`** allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
+`expo-location` allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-<InstallSection packageName="expo-location" />
+<APIInstallSection />
 
 ## Configuration
 
-In Managed and bare apps, `Location` requires `Permissions.LOCATION`.
+### Android permissions
+
+When you install the `expo-location` module, it automatically adds the following permissions:
+
+- `ACCESS_COARSE_LOCATION`: for approximate device location
+- `ACCESS_FINE_LOCATION`: for precise device location
+- `FOREGROUND_SERVICE`: to subscribe to location updates while the app is in use
+
+To use background location features, you must add the `ACCESS_BACKGROUND_LOCATION` in **app.json** and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
+
+<AndroidPermissions permissions={['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION', 'FOREGROUND_SERVICE', 'ACCESS_BACKGROUND_LOCATION']} />
+
+#### Excluding a permission
+
+> **Note**: Excluding a **required permission** from a module in your app can break the functionality corresponding to that permission. Always make sure to include all permissions a module is dependent on.
+
+When your Expo project doesn't benefit from having particular permission included, you can omit it. For example, if your application doesn't need access to the precise location, you can exclude the `ACCESS_FINE_LOCATION` permission.
+
+Another example can be stated using [available location accuracies](#accuracy). Android defines the approximate location accuracy estimation within about 3 square kilometers, and the precise location accuracy estimation within about 50 meters. For example, if the location accuracy value is [Low](#low), you can exclude `ACCESS_FINE_LOCATION` permission. To learn more about levels of location accuracies, see [Android documentation](https://developer.android.com/training/location/permissions#accuracy).
+
+To learn more on how to exclude a permission, see [Excluding Android permissions](/guides/permissions/#excluding-android-permissions).
 
 ### Background Location Methods
 
-In order to use Background Location methods, the following requirements apply:
+To use Background Location methods, the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
-- **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration). 
+- Location permissions must be granted. On iOS it must be granted with `Always` option.
+- **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration).
 - Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 
 ### Geofencing Methods
 
-In order to use Geofencing methods, the following requirements apply:
+To use Geofencing methods, the following requirements apply:
 
-- `Permissions.LOCATION` permission must be granted. On iOS it must be granted with `Always` option — see [Permissions.LOCATION](permissions.md#permissionslocation) for more details.
-- Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
+- Location permissions must be granted. On iOS it must be granted with `Always` option.
+- The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
 - On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
-
-> **Note:** On Android, This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. The `ACCESS_COARSE_LOCATION`, `ACCESS_FINE_LOCATION`, and `FOREGROUND_SERVICE` permissions are automatically added.
-
-> **Note:** On Android, you have to [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
 ## Usage
 
@@ -50,7 +68,7 @@ If you're using the iOS or Android Emulators, ensure that [Location is enabled](
 import React, { useState, useEffect } from 'react';
 import { Platform, Text, View, StyleSheet } from 'react-native';
 /* @hide */
-import Constants from 'expo-constants';
+import Device from 'expo-device';
 /* @end */
 import * as Location from 'expo-location';
 
@@ -61,9 +79,9 @@ export default function App() {
   useEffect(() => {
     (async () => {
       /* @hide */
-      if (Platform.OS === 'android' && !Constants.isDevice) {
+      if (Platform.OS === 'android' && !Device.isDevice) {
         setErrorMsg(
-          'Oops, this will not work on Snack in an Android emulator. Try it on your device!'
+          'Oops, this will not work on Snack in an Android Emulator. Try it on your device!'
         );
         return;
       }

@@ -10,7 +10,7 @@ export default function Suites({ suites, done, numFailed, results }) {
 
   const renderItem = ({ item }) => <SuiteResult r={item} depth={0} />;
 
-  const keyExtractor = item => item.get('result').get('id');
+  const keyExtractor = (item) => item.get('result').get('id');
 
   const scrollToEnd = React.useMemo(
     () => () => {

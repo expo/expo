@@ -4,11 +4,37 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 2.2.1 — 2022-04-22
+
+### 🐛 Bug fixes
+
+- Stop prebuilding xcframework. ([#17161](https://github.com/expo/expo/pull/17161) by [@wschurman](https://github.com/wschurman))
+
+## 2.2.0 — 2022-04-18
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 2.1.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 2.1.0 — 2021-12-03
+
+### 🎉 New features
+
+- Enable iOS `DEFINES_MODULE` for Swift integration. ([#15142](https://github.com/expo/expo/pull/15142) by [@kudo](https://github.com/kudo))
 
 ## 2.0.0 — 2021-09-28
 

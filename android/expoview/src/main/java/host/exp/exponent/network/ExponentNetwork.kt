@@ -3,7 +3,6 @@ package host.exp.exponent.network
 
 import android.content.Context
 import android.net.ConnectivityManager
-import android.util.Log
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.expoview.ExpoViewBuildConfig
 import okhttp3.Cache
@@ -58,24 +57,6 @@ class ExponentNetwork constructor(
       return Cache(directory, cacheSize.toLong())
     }
 
-  // TODO: can remove this after most apps have upgraded to SDK 41 or later
-  private fun clearLegacyCache() {
-    if (exponentSharedPreferences.getInteger(ExponentSharedPreferences.ExponentSharedPreferencesKey.OKHTTP_CACHE_VERSION_KEY) == 1) {
-      return
-    }
-    try {
-      val directory = File(context.filesDir, LEGACY_CACHE_DIR)
-      val legacyCache = Cache(directory, 40 * 1024 * 1024)
-      legacyCache.delete()
-      if (directory.exists()) {
-        directory.delete()
-      }
-      exponentSharedPreferences.setInteger(ExponentSharedPreferences.ExponentSharedPreferencesKey.OKHTTP_CACHE_VERSION_KEY, 1)
-    } catch (e: Exception) {
-      Log.e(TAG, "Failed to clear legacy OkHttp cache", e)
-    }
-  }
-
   companion object {
     private val TAG = ExponentNetwork::class.java.simpleName
 
@@ -95,9 +76,5 @@ class ExponentNetwork constructor(
       val activeNetworkInfo = connectivityManager.activeNetworkInfo
       return activeNetworkInfo != null && activeNetworkInfo.isConnected
     }
-  }
-
-  init {
-    clearLegacyCache()
   }
 }

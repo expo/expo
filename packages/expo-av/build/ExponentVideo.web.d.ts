@@ -36,14 +36,6 @@ export declare type NaturalSize = {
     height: number;
     orientation: 'portrait' | 'landscape';
 };
-export declare const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
-export declare const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
-export declare const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
-export declare const FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     _video?: HTMLVideoElement;
     _removeFullscreenListener?: () => any;
@@ -63,3 +55,4 @@ export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     render(): JSX.Element;
 }
 export {};
+//# sourceMappingURL=ExponentVideo.web.d.ts.map

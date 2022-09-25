@@ -6,7 +6,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXDevLauncherUpdatesHelper : NSObject
 
-+ (NSDictionary *)createUpdatesConfigurationWithURL:(NSURL *)url;
++ (NSDictionary *)createUpdatesConfigurationWithURL:(NSURL *)url
+                                         projectURL:(NSURL *)projectURL
+                                     installationID:(NSString *)installationID;
 
 @end
 

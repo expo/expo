@@ -9,3 +9,4 @@ declare type IntegerArray = Int8Array | Uint8Array | Int16Array | Uint16Array | 
 export default function getRandomValues<TArray extends ArrayBufferView>(values: TArray): TArray;
 export declare function getRandomValuesInsecure<TArray extends IntegerArray>(values: TArray): TArray;
 export {};
+//# sourceMappingURL=getRandomValues.d.ts.map

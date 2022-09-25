@@ -30,6 +30,7 @@ internal class CardFormCompleteEvent constructor(viewTag: Int, private val cardD
 
     if (dangerouslyGetFullCardDetails) {
       eventData.putString("number", cardDetails["number"]?.toString()?.replace(" ", ""))
+      eventData.putString("cvc", cardDetails["cvc"]?.toString())
     }
 
     return eventData
@@ -38,4 +39,5 @@ internal class CardFormCompleteEvent constructor(viewTag: Int, private val cardD
   companion object {
     const val EVENT_NAME = "onFormComplete"
   }
+
 }

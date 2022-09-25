@@ -5,3 +5,4 @@ declare const _default: {
     deleteNotificationCategoryAsync(identifier: string): Promise<null>;
 };
 export default _default;
+//# sourceMappingURL=NotificationCategoriesModule.web.d.ts.map

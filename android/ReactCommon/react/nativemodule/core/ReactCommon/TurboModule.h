@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Facebook, Inc. and its affiliates.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
@@ -38,11 +38,27 @@ enum TurboModuleMethodValueKind {
 class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  public:
   TurboModule(const std::string &name, std::shared_ptr<CallInvoker> jsInvoker);
-  virtual ~TurboModule();
 
   virtual facebook::jsi::Value get(
       facebook::jsi::Runtime &runtime,
-      const facebook::jsi::PropNameID &propName) override;
+      const facebook::jsi::PropNameID &propName) override {
+    std::string propNameUtf8 = propName.utf8(runtime);
+    auto p = methodMap_.find(propNameUtf8);
+    if (p == methodMap_.end()) {
+      // Method was not found, let JS decide what to do.
+      return jsi::Value::undefined();
+    }
+    MethodMetadata meta = p->second;
+    return jsi::Function::createFromHostFunction(
+        runtime,
+        propName,
+        static_cast<unsigned int>(meta.argCount),
+        [this, meta](
+            facebook::jsi::Runtime &rt,
+            const facebook::jsi::Value &thisVal,
+            const facebook::jsi::Value *args,
+            size_t count) { return meta.invoker(rt, *this, args, count); });
+  }
 
   const std::string name_;
   std::shared_ptr<CallInvoker> jsInvoker_;
@@ -64,8 +80,8 @@ class JSI_EXPORT TurboModule : public facebook::jsi::HostObject {
  * An app/platform-specific provider function to get an instance of a module
  * given a name.
  */
-using TurboModuleProviderFunctionType = std::function<std::shared_ptr<
-    TurboModule>(const std::string &name, const jsi::Value *schema)>;
+using TurboModuleProviderFunctionType =
+    std::function<std::shared_ptr<TurboModule>(const std::string &name)>;
 
 } // namespace react
 } // namespace facebook

@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { attachRecoveredProps } from './RecoveryProps';
 import { InitialProps } from './withExpoRoot.types';
 
 // This hook can be optionally imported because __DEV__ never changes during runtime.
@@ -10,8 +9,8 @@ let useDevKeepAwake: (tag?: string) => void = () => {};
 if (__DEV__) {
   try {
     // Optionally import expo-keep-awake
-    const { useKeepAwake } = require('expo-keep-awake');
-    useDevKeepAwake = useKeepAwake;
+    const { useKeepAwake, ExpoKeepAwakeTag } = require('expo-keep-awake');
+    useDevKeepAwake = () => useKeepAwake(ExpoKeepAwakeTag, { suppressDeactivateWarnings: true });
   } catch {}
 }
 
@@ -21,7 +20,6 @@ export default function withExpoRoot<P extends InitialProps>(
   return function ExpoRoot(props: P) {
     useDevKeepAwake();
 
-    const combinedProps = attachRecoveredProps(props);
-    return <AppRootComponent {...combinedProps} />;
+    return <AppRootComponent {...props} />;
   };
 }

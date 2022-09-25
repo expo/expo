@@ -102,6 +102,12 @@ const screens = [
     name: 'Headless rendering',
     route: '/components/gl/headlessrendering',
   },
+  {
+    _name: 'ReanimatedWorklets',
+    isAvailable: true,
+    name: 'Reanimated worklets + gesture handler',
+    route: '/components/gl/reanimated',
+  },
 ];
 
 export default function GLScreen() {

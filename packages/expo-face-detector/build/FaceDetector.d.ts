@@ -109,12 +109,12 @@ export declare enum FaceDetectorMode {
     accurate = 2
 }
 export declare enum FaceDetectorLandmarks {
-    all = 1,
-    none = 2
+    none = 1,
+    all = 2
 }
 export declare enum FaceDetectorClassifications {
-    all = 1,
-    none = 2
+    none = 1,
+    all = 2
 }
 export declare type Image = {
     /**
@@ -156,13 +156,13 @@ export declare type DetectionOptions = {
     /**
      * Minimal interval in milliseconds between two face detection events being submitted to JS.
      * Use, when you expect lots of faces for long time and are afraid of JS Bridge being overloaded.
-     * @default `0`
+     * @default 0
      */
     minDetectionInterval?: number;
     /**
      * Flag to enable tracking of faces between frames. If true, each face will be returned with
      * `faceID` attribute which should be consistent across frames.
-     * @default `false`
+     * @default false
      */
     tracking?: boolean;
 };
@@ -180,3 +180,4 @@ export declare type DetectionResult = {
  * @return Returns a Promise which fulfils with [`DetectionResult`](#detectionresult) object.
  */
 export declare function detectFacesAsync(uri: string, options?: DetectionOptions): Promise<DetectionResult>;
+//# sourceMappingURL=FaceDetector.d.ts.map

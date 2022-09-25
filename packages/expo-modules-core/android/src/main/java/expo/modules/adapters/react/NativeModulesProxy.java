@@ -1,5 +1,6 @@
 package expo.modules.adapters.react;
 
+import android.util.Log;
 import android.util.SparseArray;
 
 import com.facebook.react.bridge.Dynamic;
@@ -14,6 +15,7 @@ import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.ViewManager;
 import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.kotlin.CoreLoggerKt;
 import expo.modules.kotlin.ExpoModulesHelper;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
 import expo.modules.kotlin.KPromiseWrapper;
@@ -36,7 +38,7 @@ import javax.annotation.Nullable;
  */
 public class NativeModulesProxy extends ReactContextBaseJavaModule {
   private final static String NAME = "NativeUnimoduleProxy";
-  private final static String VIEW_MANAGERS_NAMES_KEY = "viewManagersNames";
+  private final static String VIEW_MANAGERS_METADATA_KEY = "viewManagersMetadata";
   private final static String MODULES_CONSTANTS_KEY = "modulesConstants";
   private final static String EXPORTED_METHODS_KEY = "exportedMethods";
 
@@ -52,6 +54,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   private Map<String, Map<String, Integer>> mExportedMethodsKeys;
   private Map<String, SparseArray<String>> mExportedMethodsReverseKeys;
   private KotlinInteropModuleRegistry mKotlinInteropModuleRegistry;
+  private Map<String, Object> cachedConstants;
 
   public NativeModulesProxy(ReactApplicationContext context, ModuleRegistry moduleRegistry) {
     super(context);
@@ -91,13 +94,19 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   @Nullable
   @Override
   public Map<String, Object> getConstants() {
+    if (cachedConstants != null) {
+      return cachedConstants;
+    }
+
     mModuleRegistry.ensureIsInitialized();
+    getKotlinInteropModuleRegistry().installJSIInterop();
+
     Collection<ExportedModule> exportedModules = mModuleRegistry.getAllExportedModules();
     Collection<ViewManager> viewManagers = mModuleRegistry.getAllViewManagers();
 
     Map<String, Object> modulesConstants = new HashMap<>(exportedModules.size());
     Map<String, Object> exportedMethodsMap = new HashMap<>(exportedModules.size());
-    List<String> viewManagersNames = new ArrayList<>(viewManagers.size());
+    Map<String, Object> viewManagersMetadata = new HashMap<>(viewManagers.size());
 
     for (ExportedModule exportedModule : exportedModules) {
       String moduleName = exportedModule.getName();
@@ -116,15 +125,20 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     }));
 
     for (ViewManager viewManager : viewManagers) {
-      viewManagersNames.add(viewManager.getName());
+      viewManagersMetadata.put(viewManager.getName(), viewManager.getMetadata());
     }
 
-    viewManagersNames.addAll(mKotlinInteropModuleRegistry.exportedViewManagersNames());
+    viewManagersMetadata.putAll(mKotlinInteropModuleRegistry.viewManagersMetadata());
 
     Map<String, Object> constants = new HashMap<>(3);
     constants.put(MODULES_CONSTANTS_KEY, modulesConstants);
     constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
-    constants.put(VIEW_MANAGERS_NAMES_KEY, viewManagersNames);
+    constants.put(VIEW_MANAGERS_METADATA_KEY, viewManagersMetadata);
+
+    CoreLoggerKt.getLogger().info("✅ Constants was exported");
+
+    cachedConstants = constants;
+
     return constants;
   }
 
@@ -244,5 +258,9 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   public void onCatalystInstanceDestroy() {
     mModuleRegistry.onDestroy();
     mKotlinInteropModuleRegistry.onDestroy();
+  }
+
+  ModuleRegistry getModuleRegistry() {
+    return mModuleRegistry;
   }
 }

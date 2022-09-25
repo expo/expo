@@ -24,7 +24,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.annotation.Nullable;
-
+import com.facebook.react.modules.i18nmanager.I18nUtil;
 /**
  * Slider that behaves more like the iOS one, for consistency.
  *
@@ -55,6 +55,8 @@ public class ReactSlider extends AppCompatSeekBar {
    */
   private double mValue = 0;
 
+  private boolean isSliding = false;
+
   /** If zero it's determined automatically. */
   private double mStep = 0;
 
@@ -66,6 +68,8 @@ public class ReactSlider extends AppCompatSeekBar {
 
   public ReactSlider(Context context, @Nullable AttributeSet attrs, int style) {
     super(context, attrs, style);
+    I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
+    super.setLayoutDirection(sharedI18nUtilInstance.isRTL(context) ? LAYOUT_DIRECTION_RTL : LAYOUT_DIRECTION_LTR);
     disableStateListAnimatorIfNeeded();
   }
 
@@ -98,6 +102,14 @@ public class ReactSlider extends AppCompatSeekBar {
     updateAll();
   }
 
+  boolean isSliding() {
+    return isSliding;
+  }
+
+  void isSliding(boolean isSliding) {
+    this.isSliding = isSliding;
+  }
+
   void setAccessibilityUnits(String accessibilityUnits) {
     mAccessibilityUnits = accessibilityUnits;
   }
@@ -109,9 +121,12 @@ public class ReactSlider extends AppCompatSeekBar {
   @Override
   public void onPopulateAccessibilityEvent(AccessibilityEvent event) {
     super.onPopulateAccessibilityEvent(event);
-    if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED ||
-        (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SELECTED && this.isAccessibilityFocused())) {
-      this.setupAccessibility();
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED ||
+          (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SELECTED && this.isAccessibilityFocused())) {
+          this.setupAccessibility((int)mValue);
+      }
     }
   }
 
@@ -139,9 +154,8 @@ public class ReactSlider extends AppCompatSeekBar {
     }
   }
 
-  private void setupAccessibility() {
+  public void setupAccessibility(int index) {
     if (mAccessibilityUnits != null && mAccessibilityIncrements != null && mAccessibilityIncrements.size() - 1 == (int)mMaxValue) {
-      int index = (int)mValue;
       String sliderValue = mAccessibilityIncrements.get(index);
       int stringLength = mAccessibilityUnits.length();
 

@@ -12,15 +12,13 @@
 import UserNotifications
 
 class NotificationService: UNNotificationServiceExtension {
-  
   override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
     if let bestAttemptContent = request.content.mutableCopy() as? UNMutableNotificationContent {
       // Modify notification content here...
-      if (!request.content.categoryIdentifier.isEmpty && (request.content.userInfo["experienceId"]) != nil) {
+      if !request.content.categoryIdentifier.isEmpty && (request.content.userInfo["experienceId"]) != nil {
         bestAttemptContent.categoryIdentifier = EXScopedNotificationsUtils.scopedIdentifier(fromId: request.content.categoryIdentifier, forExperience: request.content.userInfo["experienceId"] as! String)
       }
       contentHandler(bestAttemptContent)
     }
   }
-  
 }

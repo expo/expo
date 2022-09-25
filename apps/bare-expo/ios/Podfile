@@ -1,8 +1,9 @@
 install! 'cocoapods',
-         generate_multiple_pod_projects: true,
-         incremental_installation: true
+         :generate_multiple_pod_projects => true,
+         :incremental_installation => true,
+         :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
-platform :ios, '12.0'
+platform :ios, '13.0'
 inhibit_all_warnings!
 
 # Import the auto-linking packages
@@ -14,24 +15,38 @@ require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
 abstract_target 'BareExpoMain' do
-  use_expo_modules!
-
-  pod 'expo-dev-menu-interface', path: '../../../packages/expo-dev-menu-interface', :testspecs => ['Tests']
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+
+  # Required by latest firebase versions
+  # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
+
+  use_expo_modules!(
+    tests: [
+      'expo-dev-menu-interface',
+      'expo-dev-launcher',
+    ],
+  )
+
+  # Flags change depending on the env values.
+  flags = get_default_flags()
 
   config = use_native_modules!
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes'
+    :hermes_enabled => flags[:hermes_enabled] || podfile_properties['expo.jsEngine'] == 'hermes',
+    :fabric_enabled => flags[:fabric_enabled],
+    # An absolute path to your application root.
+    :app_path => "#{Dir.pwd}/.."
   )
-
-  pod 'expo-dev-launcher', path: '../../../packages/expo-dev-launcher', :testspecs => ['Tests']
 
   # Fix Google Sign-in and Flipper
   post_install do |installer|
-    # `installer.pod_project` might be nil for `incremental_installation: true` and no new project generated
+    # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
     react_native_post_install(installer) if installer.pods_project
+    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
 
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
@@ -42,9 +57,17 @@ abstract_target 'BareExpoMain' do
           # See https://github.com/react-native-community/upgrade-support/issues/91 and https://github.com/facebook/flipper/issues/834
           config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
         else
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
         end
       end
+    end
+  end
+
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
     end
   end
 
@@ -52,11 +75,9 @@ abstract_target 'BareExpoMain' do
     # Enables Flipper.
 
     # Uncomment to opt-in to using Flipper
-    # Note that we don't call `flipper_post_install`.
-    # It causes problems with cocoapods. We add the FB_SONARKIT_ENABLED manually instead.
-
+    #
     # if !ENV['CI']
-    #   use_flipper!({ 'Flipper-Folly' => '2.5.3', 'Flipper' => '0.87.0', 'Flipper-RSocket' => '1.3.1' })
+    #   use_flipper!()
     # end
   end
 
@@ -66,7 +87,6 @@ abstract_target 'BareExpoMain' do
   target 'BareExpoTests' do
     inherit! :search_paths
 
-    pod 'Quick', :podspec => './../../../ios/Quick.podspec'
     pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end

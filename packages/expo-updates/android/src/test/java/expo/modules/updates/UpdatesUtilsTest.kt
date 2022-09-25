@@ -3,13 +3,11 @@ package expo.modules.updates
 import expo.modules.updates.db.entity.AssetEntity
 import io.mockk.every
 import io.mockk.mockk
+import junit.framework.TestCase
 import org.junit.Assert
 import org.junit.Test
-import org.junit.runner.RunWith
-import org.mockito.runners.MockitoJUnitRunner
 
-@RunWith(MockitoJUnitRunner::class)
-class UpdatesUtilsTest {
+class UpdatesUtilsTest : TestCase() {
   @Test
   fun testCreateFilenameForAsset() {
     val assetEntity = AssetEntity("key", ".png")

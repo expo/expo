@@ -1,5 +1,12 @@
 import { RawExpoModuleConfig, SupportedPlatform } from './types';
 
+function arrayize<T>(value: T[] | T | undefined): T[] {
+  if (Array.isArray(value)) {
+    return value;
+  }
+  return value != null ? [value] : [];
+}
+
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -16,8 +23,11 @@ export class ExpoModuleConfig {
   /**
    * Returns a list of names of Swift native modules classes to put to the generated modules provider file.
    */
-  iosModulesClassNames() {
-    return this.rawConfig.ios?.modulesClassNames ?? [];
+  iosModules() {
+    const iosConfig = this.rawConfig.ios;
+
+    // `modulesClassNames` is a legacy name for the same config.
+    return iosConfig?.modules ?? iosConfig?.modulesClassNames ?? [];
   }
 
   /**
@@ -28,10 +38,48 @@ export class ExpoModuleConfig {
   }
 
   /**
+   * Returns a list of names of Swift classes that implement `ExpoReactDelegateHandler`.
+   */
+  iosReactDelegateHandlers(): string[] {
+    return this.rawConfig.ios?.reactDelegateHandlers ?? [];
+  }
+
+  /**
+   * Returns podspec paths defined by the module author.
+   */
+  iosPodspecPaths(): string[] {
+    return arrayize(this.rawConfig.ios?.podspecPath);
+  }
+
+  /**
+   * Returns the product module names, if defined by the module author.
+   */
+  iosSwiftModuleNames(): string[] {
+    return arrayize(this.rawConfig.ios?.swiftModuleName);
+  }
+
+  /**
+   * Returns whether this module will be added only to the debug configuration
+   */
+  iosDebugOnly(): boolean {
+    return this.rawConfig.ios?.debugOnly ?? false;
+  }
+
+  /**
    * Returns a list of names of Kotlin native modules classes to put to the generated package provider file.
    */
-  androidModulesClassNames() {
-    return this.rawConfig.android?.modulesClassNames ?? [];
+  androidModules() {
+    const androidConfig = this.rawConfig.android;
+
+    // `modulesClassNames` is a legacy name for the same config.
+    return androidConfig?.modules ?? androidConfig?.modulesClassNames ?? [];
+  }
+
+  /**
+   * Returns build.gradle file paths defined by the module author.
+   */
+  androidGradlePaths(): string[] {
+    return arrayize(this.rawConfig.android?.gradlePath ?? []);
   }
 
   /**

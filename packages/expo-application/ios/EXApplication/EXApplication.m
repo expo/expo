@@ -41,7 +41,7 @@ EX_EXPORT_METHOD_AS(getApplicationReleaseTypeAsync, getApplicationReleaseTypeAsy
 EX_EXPORT_METHOD_AS(getPushNotificationServiceEnvironmentAsync, getPushNotificationServiceEnvironmentAsyncWithResolver:(EXPromiseResolveBlock)resolve rejecter:(EXPromiseRejectBlock)reject)
 {
   EXProvisioningProfile *mainProvisioningProfile = [EXProvisioningProfile mainProvisioningProfile];
-  resolve([mainProvisioningProfile notificationServiceEnvironment]);
+  resolve(EXNullIfNil([mainProvisioningProfile notificationServiceEnvironment]));
 }
 
 - (NSDictionary *)constantsToExport

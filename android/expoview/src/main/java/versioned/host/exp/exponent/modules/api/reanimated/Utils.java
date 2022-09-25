@@ -3,11 +3,12 @@ package versioned.host.exp.exponent.modules.api.reanimated;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class Utils {
+
+  protected static boolean isChromeDebugger = false;
 
   public static Map<String, Integer> processMapping(ReadableMap style) {
     ReadableMapKeySetIterator iter = style.keySetIterator();

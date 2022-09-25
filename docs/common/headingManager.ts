@@ -32,7 +32,7 @@ const DEFAULT_NESTING_LIMIT = 1;
 
 /**
  * Those properties can be customized
- * from markdown pages usign heading components
+ * from markdown pages using heading components
  * from `plugins/Headings.tsx`
  */
 export type AdditionalProps = {
@@ -40,6 +40,7 @@ export type AdditionalProps = {
   sidebarTitle?: string;
   sidebarDepth?: number;
   sidebarType?: HeadingType;
+  tags?: string[];
 };
 
 type Metadata = Partial<PageMetadata> & { headings: (RemarkHeading & { _processed?: boolean })[] };
@@ -53,6 +54,7 @@ export type Heading = {
   level: number;
   type: HeadingType;
   ref: React.RefObject<any>;
+  tags?: string[];
   metadata?: ElementType<Metadata['headings']>;
 };
 
@@ -100,7 +102,7 @@ export class HeadingManager {
    * @returns {Object} Newly created heading instance
    */
   addHeading(
-    title: string | object,
+    title: React.ReactNode,
     nestingLevel?: number,
     additionalProps?: AdditionalProps,
     id?: string
@@ -109,7 +111,7 @@ export class HeadingManager {
     // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
     title = Array.isArray(title) ? title.map(Utilities.toString).join(' ') : title;
 
-    const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType } = additionalProps ?? {};
+    const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType, tags } = additionalProps ?? {};
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
 
     const slug = id ?? Utilities.generateSlug(this.slugger, title);
@@ -123,6 +125,7 @@ export class HeadingManager {
       slug,
       level,
       type,
+      tags,
       ref: React.createRef(),
       metadata: meta,
     };

@@ -4,12 +4,17 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.annotation.UiThread
+import com.facebook.react.ReactInstanceManager
 import expo.modules.core.ExportedModule
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.InternalModule
 import expo.modules.core.interfaces.ReactNativeHostHandler
 
 // these unused imports must stay because of versioning
+/* ktlint-disable no-unused-imports */
+import expo.modules.updates.UpdatesController
+/* ktlint-enable no-unused-imports */
+
 class UpdatesPackage : Package {
   override fun createInternalModules(context: Context): List<InternalModule> {
     return listOf(UpdatesService(context) as InternalModule)
@@ -35,6 +40,15 @@ class UpdatesPackage : Package {
         if (shouldAutoSetup(context) && !useDeveloperSupport) {
           UpdatesController.initialize(context)
         }
+      }
+
+      override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {
+        // WHEN_VERSIONING_REMOVE_FROM_HERE
+        // This code path breaks versioning and is not necessary for Expo Go.
+        if (shouldAutoSetup(context) && !useDeveloperSupport) {
+          UpdatesController.instance.onDidCreateReactInstanceManager(reactInstanceManager)
+        }
+        // WHEN_VERSIONING_REMOVE_TO_HERE
       }
 
       @UiThread

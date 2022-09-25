@@ -2,47 +2,61 @@
 title: Adding custom native code
 ---
 
-import TerminalBlock from '~/components/plugins/TerminalBlock';
+import { Terminal } from '~/ui/components/Snippet';
 
-The Expo Go app enables you to move quickly by building on a feature rich native runtime that is well suited for developing many types of apps. If you want to use custom native code that isn't already in the Expo Go app, you will need to generate the native iOS and Android projects that are typically hidden in the managed workflow, then build and run them.
+The Expo Go app is a great tool to get started — it exists to help developers quickly get projects off the ground, to experiment with ideas (such as on [Snack](https://snack.expo.dev/)) and share their work with minimal friction. Expo Go makes this possible by including a feature-rich native runtime made up of every module in the [Expo SDK](/versions/latest/), so all you need to do to use a module is install the package and reload your app.
 
-You can do this in a single command on each platform:
+The tradeoff is that Expo Go does not allow you to add custom native code, you can only use native modules built into the Expo SDK. There are many great libraries available outside of the Expo SDK, and you may even want to build your own native library. You can leverage these libraries with "development builds", or by using prebuild to generate the native projects, or both. You can also continue using [EAS Build](/build/introduction) to release your app, no changes are required.
 
-<TerminalBlock cmd={['# Build your native iOS project', 'expo run:ios', '', '# Build your native Android project', 'expo run:android']} />
+## Adding custom native code with development builds
 
-> Run commands were introduced in SDK 41, prebuilding and running in earlier SDKs may not work as well.
+To make use of third party libraries with custom native code and continue with the same developer experience of Expo Go, you can migrate to using ["development builds"](/development/introduction). Development builds are like your own personal version of Expo Go — they include the native runtime that powers your app, and you control what is included in that native runtime by adding or removing packages in your **package.json**. Development builds allow you to continue to build your app in JavaScript while taking advantage of the full ecosystem of native packages available for Expo and React Native projects.
 
-<!-- TODO: Add a doctor command bootstrap easier -->
-<!-- TODO: Don't link outside of Expo docs -->
+Learn how to start using custom native code in your app by switching from Expo Go to development builds in the ["Getting Started" guide for development builds](/development/getting-started).
 
-- `expo run:ios` requires Xcode (macOS only) installed on your computer. See the [setup guide](https://reactnative.dev/docs/environment-setup)
-- `expo run:android` requires Android Studio and the Android SDK to be installed. See the [setup guide](https://reactnative.dev/docs/environment-setup)
+## Generate native projects with prebuild
 
-<!-- TODO: Link to run commands doc -->
-<!-- TODO: Link to prebuild commands doc -->
+If you would like to move from a JavaScript based project and take ownership over the iOS and Android native projects, you can generate them by running `npx expo prebuild`, or `npx expo run:[ios|android]` (which will run `prebuild` automatically). You can also use development builds in this context - the easiest way to do this is to run `npx expo install expo-dev-client` prior to `prebuild` or `run`, and it's also possible to add the library at any later time ([learn more](/development/installation)).
 
-Using the run commands will initially [prebuild](https://expo.fyi/prebuilding) your project to generate all of the native code within your project directory. If you manually modify the `ios/` or `android/` folders, you won't be able to safely re-run `expo prebuild`, this is known as the [bare workflow](../introduction/managed-vs-bare.md#bare-workflow).
+<Terminal cmd={[
+  '# Build your native Android project',
+  '$ npx expo run:android',
+  '',
+  '# Build your native iOS project',
+  '$ npx expo run:ios'
+]} cmdCopy="npx expo run:android && npx expo run:ios" />
 
-Your app can still run in Expo Go, but any custom native code won't be accessible if it's not already present in the Expo Go app. [Learn more](./using-expo-client).
+- `expo run:ios` requires Xcode (macOS only) installed on your computer. See the [setup guide](https://reactnative.dev/docs/environment-setup).
+- `expo run:android` requires Android Studio and the Android SDK to be installed. See the [setup guide](https://reactnative.dev/docs/environment-setup).
 
-If you install a package with a Expo [**config plugin**](../guides/config-plugins), you'll need to add the plugin to your **app.json**s [`plugins`](../versions/latest/config/app/#plugins) array, then re-run `expo prebuild` to sync the changes before rebuilding the native app. Often this does things like adding required permissions to the **Info.plist** or **AndroidManifest.xml**. You may need to run `expo prebuild --clean` depending on how complex the plugin is; this will delete and re-generate the native project files from scratch.
+Using the run commands will initially [prebuild](https://expo.fyi/prebuilding) your project to generate all of the native code within your project directory. If you manually modify the `ios/` or `android/` folders, you won't be able to safely re-run `expo prebuild`, this is known as the [bare workflow](/introduction/managed-vs-bare#bare-workflow).
 
-## Manually changing the native project files
+Your app can still run in Expo Go, but any custom native code won't be accessible if it's not already present in the Expo Go app. [Learn more](/bare/using-expo-client).
+
+If you install a package with an Expo [**config plugin**](/guides/config-plugins), you'll need to add the plugin to the [`plugins`](/versions/latest/config/app/#plugins) array in the project's **app.json**, then re-run `expo prebuild` to sync the changes before rebuilding the native app. Often this does things like adding required permissions to the **Info.plist** or **AndroidManifest.xml**. You may need to run `expo prebuild --clean` depending on how complex the plugin is; this will delete and re-generate the native project files from scratch.
+
+### Manually changing the native project files
 
 If you've made manual modifications to your `ios/` or `android/` folder, you'll need to manually setup new packages because running `expo prebuild` may not work as expected with an unpredictable project state (think of this like running `yarn` after manually modifying your `node_modules/` folder).
 
-If you want to make static changes to your native project files like the iOS **Info.plist**, or **AndroidManifest.xml** and still have access to prebuilding, check out the [config plugins guide](../guides/config-plugins/#creating-a-plugin) to see how you can hook into the prebuild process to make those changes.
+If you want to make static changes to your native project files like the iOS **Info.plist**, or **AndroidManifest.xml** and still have access to prebuilding, check out the [config plugins guide](/guides/config-plugins/#creating-a-plugin) to see how you can hook into the prebuild process to make those changes.
 
-## Reverting changes from `expo run`
+### Reverting changes from `expo run`
 
 If you've decided that you want to roll your app back to being fully managed (no iOS and Android projects in your project directory), you can checkout your most recent commit before executing `expo run:[ios|android]`, then run `npm install` again to restore the state of your **node_modules** directory.
 
-## Developing apps with custom native code
+### Developing apps with custom native code
 
-Once you have customized the native code in your project, you can use the [`expo-dev-client`](/development/introduction.md) package to create a development build and retain the convenience of working with just JavaScript and/or TypeScript in Expo Go. You can create a development build for your managed or bare workflow by following [our guide](/development/getting-started.md).
+Once you have customized the native code in your project, you can use the [`expo-dev-client`](/development/introduction) package to create a development build and retain the convenience of working with just JavaScript and/or TypeScript in Expo Go. You can create a development build for your managed or bare workflow by following [our guide](/development/getting-started).
 
 ## Releasing apps with custom native code to production
 
-The classic `expo build` command does not support custom native code. When you're ready to ship your app, you can [build it with EAS Build](/build/introduction.md) or archive and sign it locally.
+When you're ready to ship your app, you can [build it with EAS Build](/build/introduction) exactly the same as you were building it before adding custom native code. Alternatively, you can archive and sign it locally. Unsurprisingly, we recommend EAS Build!
 
-<TerminalBlock cmd={['# Install the CLI', 'npm i -g eas-cli', '', '# Build your app!', 'eas build -p all']} />
+<Terminal cmd={[
+  '# Install the CLI',
+  '$ npm i -g eas-cli',
+  '',
+  '# Build your app!',
+  '$ eas build -p all'
+]} cmdCopy="npm i -g eas-cli && eas build -p all" />

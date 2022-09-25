@@ -1,13 +1,10 @@
 {
   "name": "expo-module-template",
-  "version": "10.0.0",
+  "version": "10.7.2",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/ModuleTemplate.js",
   "types": "build/ModuleTemplate.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "lint": "eslint ."
-  },
+  "scripts": {},
   "keywords": [
     "react-native",
     "expo",
@@ -25,10 +22,6 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
   "dependencies": {},
-  "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
-  },
-  "peerDependencies": {
-    "expo": "*"
-  }
+  "devDependencies": {},
+  "peerDependencies": {}
 }

@@ -54,8 +54,8 @@ Add the following scripts to your `package.json` and run `yarn`
 
 Running `yarn` will now run the `prepare` script, which generates any missing files:
 
-- [`.eslintrc.js`](./templates/.eslintrc.js) ([docs](https://eslint.org/docs/user-guide/configuring)) this extends [`eslint-config-universe`](https://github.com/expo/expo/tree/master/packages/eslint-config-universe).
-  - Optionally you can customize Prettier too: [.prettierrc guide](https://github.com/expo/expo/tree/master/packages/eslint-config-universe#customizing-prettier).
+- [`.eslintrc.js`](./templates/.eslintrc.js) ([docs](https://eslint.org/docs/user-guide/configuring)) this extends [`eslint-config-universe`](https://github.com/expo/expo/tree/main/packages/eslint-config-universe).
+  - Optionally you can customize Prettier too: [.prettierrc guide](https://github.com/expo/expo/tree/main/packages/eslint-config-universe#customizing-prettier).
 - [`.npmignore`](./templates/.npmignore) ([docs](https://docs.npmjs.com/misc/developers)) currently only ignores the `babel.config.js` in your module. You might also want to also add tests and docs.
   - Expo modules use `.npmignore` **instead of** the `files` field in the `package.json`.
   - (Pro Tip) Test which files get packaged by running `npm pack`. If you see files that aren't crucial to running the module, you should add them to `.npmignore`.
@@ -65,9 +65,13 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
   - Try and incorporate a table of contents (TOC).
 - [`tsconfig.json`](./templates/tsconfig.json) ([docs](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)) extends [`tsconfig.base.json`](./tsconfig.base.json) this is important for ensuring all Unimodules use the same version of TypeScript.
 
+Besides, running `yarn prepare` script will also synchronize optional files from `expo-module-scripts` when the file is present and contains the `@generated` pattern:
+
+- [`with-node.sh`](./templates/scripts/with-node.sh): An Xcode build phase script helper for Node.js binary resolution. It sources the project's **.xcode.env** and **.xcode.env.local** files, which may define an environment variable named `NODE_BINARY` to specify the file path of the Node.js binary to run.
+
 ### 🔌 Config Plugin
 
-To create a [config plugin](https://github.com/expo/expo-cli/blob/master/packages/config-plugins/README.md) that automatically configures your native code, you have two options:
+To create a [config plugin](https://github.com/expo/expo-cli/blob/main/packages/config-plugins/README.md) that automatically configures your native code, you have two options:
 
 1. Create a `plugin` folder and write your plugin in TypeScript (recommended).
 2. Create an `app.plugin.js` file in the project root and write the plugin in pure Node.js-compliant JavaScript.
@@ -89,7 +93,7 @@ The following files are required for a TypeScript plugin:
     ╰── src/index.ts ➡️ The TypeScript entry point for your plugin
 ```
 
-Create a `app.config.js` (the entry point for a config plugin):
+Create an `app.plugin.js` (the entry point for a config plugin):
 
 ```js
 module.exports = require('./plugin/build');
@@ -140,7 +144,7 @@ Use the following scripts to interact with the plugin:
 
 ### 🤡 Jest
 
-The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/master/packages/jest-expo) or [`jest-expo-enzyme`](https://github.com/expo/expo/tree/master/packages/jest-expo-enzyme) and adds proper TypeScript support and type declarations to the presets.
+The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) or [`jest-expo-enzyme`](https://github.com/expo/expo/tree/main/packages/jest-expo-enzyme) and adds proper TypeScript support and type declarations to the presets.
 
 **For unit testing API-based modules:**
 
@@ -284,7 +288,7 @@ One of the rules enforced is restricting any imports from the `fbjs` library. As
 Replacements for common `fbjs` uses-cases are listed below:
 
 - `invariant`- replace with [`invariant`](https://www.npmjs.com/package/invariant)
-- `ExecutionEnvironment`- replace with [`Platform` from `@unimodules/core`](https://github.com/expo/expo/blob/master/packages/%40unimodules/react-native-adapter/src/Platform.ts)
+- `ExecutionEnvironment`- replace with [`Platform` from `@unimodules/core`](https://github.com/expo/expo/blob/main/packages/%40unimodules/react-native-adapter/src/Platform.ts)
 
 #### lint plugin
 

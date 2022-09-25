@@ -4,9 +4,9 @@ import android.content.Context
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
 import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
-import expo.modules.updates.manifest.ManifestMetadata
 import java.io.File
 
 /**
@@ -22,15 +22,17 @@ class RemoteLoader internal constructor(
   database: UpdatesDatabase,
   private val mFileDownloader: FileDownloader,
   updatesDirectory: File?,
-  loaderFiles: LoaderFiles
+  private val launchedUpdate: UpdateEntity?,
+  private val loaderFiles: LoaderFiles
 ) : Loader(context, configuration, database, updatesDirectory, loaderFiles) {
   constructor(
     context: Context,
     configuration: UpdatesConfiguration,
     database: UpdatesDatabase,
     fileDownloader: FileDownloader,
-    updatesDirectory: File?
-  ) : this(context, configuration, database, fileDownloader, updatesDirectory, LoaderFiles())
+    updatesDirectory: File?,
+    launchedUpdate: UpdateEntity?
+  ) : this(context, configuration, database, fileDownloader, updatesDirectory, launchedUpdate, LoaderFiles())
 
   override fun loadManifest(
     context: Context,
@@ -38,17 +40,19 @@ class RemoteLoader internal constructor(
     configuration: UpdatesConfiguration,
     callback: ManifestDownloadCallback
   ) {
-    val extraHeaders = ManifestMetadata.getServerDefinedHeaders(database, configuration)
+    val embeddedUpdate = loaderFiles.readEmbeddedManifest(context, configuration)?.updateEntity
+    val extraHeaders = FileDownloader.getExtraHeaders(database, configuration, launchedUpdate, embeddedUpdate)
     mFileDownloader.downloadManifest(configuration, extraHeaders, context, callback)
   }
 
   override fun loadAsset(
+    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
     callback: AssetDownloadCallback
   ) {
-    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, configuration, callback)
+    mFileDownloader.downloadAsset(assetEntity, updatesDirectory, configuration, context, callback)
   }
 
   override fun shouldSkipAsset(assetEntity: AssetEntity): Boolean {

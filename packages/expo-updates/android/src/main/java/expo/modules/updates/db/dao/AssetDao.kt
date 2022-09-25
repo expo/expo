@@ -89,10 +89,24 @@ abstract class AssetDao {
 
   fun mergeAndUpdateAsset(existingEntity: AssetEntity, newEntity: AssetEntity) {
     // if the existing entry came from an embedded manifest, it may not have a URL in the database
-    if (newEntity.url != null && existingEntity.url == null) {
+    var shouldUpdate = false
+    if (newEntity.url != null && (existingEntity.url == null || newEntity.url != existingEntity.url)) {
       existingEntity.url = newEntity.url
+      shouldUpdate = true
+    }
+
+    val newEntityExtraRequestHeaders = newEntity.extraRequestHeaders
+    if (newEntityExtraRequestHeaders != null &&
+      (existingEntity.extraRequestHeaders == null || newEntityExtraRequestHeaders != existingEntity.extraRequestHeaders)
+    ) {
+      existingEntity.extraRequestHeaders = newEntity.extraRequestHeaders
+      shouldUpdate = true
+    }
+
+    if (shouldUpdate) {
       updateAsset(existingEntity)
     }
+
     // we need to keep track of whether the calling class expects this asset to be the launch asset
     existingEntity.isLaunchAsset = newEntity.isLaunchAsset
     // some fields on the asset entity are not stored in the database but might still be used by application code

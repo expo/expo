@@ -7,3 +7,4 @@ declare const _default: {
     37442: string;
 };
 export default _default;
+//# sourceMappingURL=GLErrors.d.ts.map

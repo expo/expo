@@ -4,13 +4,52 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fix `Tainted canvases may not be exported` CORS error on web. ([#14739](https://github.com/expo/expo/pull/14739) by [@IjzerenHein](https://github.com/IjzerenHein))
+### 💡 Others
+
+## 10.4.0 — 2022-07-07
 
 ### 💡 Others
+
+- Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+
+## 10.3.1 — 2022-04-20
+
+### 🐛 Bug fixes
+
+- Fix `base64` result of `manipulateAsync` being always `null` on iOS. ([#17122](https://github.com/expo/expo/pull/17122) by [@barthap](https://github.com/barthap))
+
+## 10.3.0 — 2022-04-18
+
+### 🎉 New features
+
+- Native module on iOS is now written in Swift using the new API. ([#15277](https://github.com/expo/expo/pull/15277) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Remove `data:image` part in web base64 result. ([#16191](https://github.com/expo/expo/pull/16191) by [@AllanChain](https://github.com/AllanChain))
+- On iOS fix rotation causing extra image borders. ([#16669](https://github.com/expo/expo/pull/16669) by [@mnightingale](https://github.com/mnightingale))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 10.2.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 10.2.0 — 2021-12-03
+
+### 🐛 Bug fixes
+
+- Fix `Tainted canvases may not be exported` CORS error on web. ([#14739](https://github.com/expo/expo/pull/14739) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ## 10.1.0 — 2021-10-01
 

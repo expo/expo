@@ -1,12 +1,12 @@
-#import "REAEventNode.h"
-#import "REANodesManager.h"
-#import "REAValueNode.h"
+#import <RNReanimated/REAEventNode.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAValueNode.h>
 
 @implementation REAEventNode {
   NSArray *_argMapping;
 }
 
-- (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(REANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _argMapping = config[@"argMapping"];

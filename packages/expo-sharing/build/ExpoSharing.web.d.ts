@@ -9,3 +9,4 @@ declare const _default: {
     shareAsync(url: string, options?: ShareOptions): Promise<void>;
 };
 export default _default;
+//# sourceMappingURL=ExpoSharing.web.d.ts.map

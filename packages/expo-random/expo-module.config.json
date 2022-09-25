@@ -1,0 +1,10 @@
+{
+  "name": "expo-random",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["RandomModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.random.RandomModule"]
+  }
+}

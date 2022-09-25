@@ -22,3 +22,4 @@ export default class DeviceSensor<M> {
     requestPermissionsAsync: () => Promise<PermissionResponse>;
 }
 export {};
+//# sourceMappingURL=DeviceSensor.d.ts.map

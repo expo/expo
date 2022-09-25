@@ -18,20 +18,26 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
         }
     }
     
-    @objc var placeholder: NSDictionary = NSDictionary() {
+    @objc var countryCode: String? {
         didSet {
-            if let numberPlaceholder = placeholder["number"] as? String {
+            cardField.countryCode = countryCode
+        }
+    }
+    
+    @objc var placeholders: NSDictionary = NSDictionary() {
+        didSet {
+            if let numberPlaceholder = placeholders["number"] as? String {
                 cardField.numberPlaceholder = numberPlaceholder
             } else {
                 cardField.numberPlaceholder = "1234123412341234"
             }
-            if let expirationPlaceholder = placeholder["expiration"] as? String {
+            if let expirationPlaceholder = placeholders["expiration"] as? String {
                 cardField.expirationPlaceholder = expirationPlaceholder
             }
-            if let cvcPlaceholder = placeholder["cvc"] as? String {
+            if let cvcPlaceholder = placeholders["cvc"] as? String {
                 cardField.cvcPlaceholder = cvcPlaceholder
             }
-            if let postalCodePlaceholder = placeholder["postalCode"] as? String {
+            if let postalCodePlaceholder = placeholders["postalCode"] as? String {
                 cardField.postalCodePlaceholder = postalCodePlaceholder
             }
         }
@@ -126,19 +132,29 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     
     func paymentCardTextFieldDidChange(_ textField: STPPaymentCardTextField) {
         if onCardChange != nil {
-            let brand = STPCardValidator.brand(forNumber: textField.cardParams.number ?? "")
+            let brand = STPCardValidator.brand(forNumber: textField.cardNumber ?? "")
+            let validExpiryDate = STPCardValidator.validationState(
+                forExpirationYear: textField.formattedExpirationYear ?? "",
+                inMonth: textField.formattedExpirationMonth ?? ""
+            )
+            let validCVC = STPCardValidator.validationState(forCVC: textField.cvc ?? "", cardBrand: brand)
+            let validNumber = STPCardValidator.validationState(forNumber: textField.cardNumber ?? "", validatingCardBrand: true)
             var cardData: [String: Any?] = [
-                "expiryMonth": textField.cardParams.expMonth ?? NSNull(),
-                "expiryYear": textField.cardParams.expYear ?? NSNull(),
+                "expiryMonth": textField.expirationMonth,
+                "expiryYear": textField.expirationYear,
                 "complete": textField.isValid,
-                "brand": Mappers.mapCardBrand(brand) ?? NSNull(),
-                "last4": textField.cardParams.last4 ?? ""
+                "brand": Mappers.mapFromCardBrand(brand) ?? NSNull(),
+                "last4": textField.cardParams.last4 ?? "",
+                "validExpiryDate": Mappers.mapFromCardValidationState(state: validExpiryDate),
+                "validCVC": Mappers.mapFromCardValidationState(state: validCVC),
+                "validNumber": Mappers.mapFromCardValidationState(state: validNumber)
             ]
             if (cardField.postalCodeEntryEnabled) {
                 cardData["postalCode"] = textField.postalCode ?? ""
             }
             if (dangerouslyGetFullCardDetails) {
-                cardData["number"] = textField.cardParams.number ?? ""
+                cardData["number"] = textField.cardNumber ?? ""
+                cardData["cvc"] = textField.cvc ?? ""
             }
             onCardChange!(cardData as [AnyHashable : Any])
         }

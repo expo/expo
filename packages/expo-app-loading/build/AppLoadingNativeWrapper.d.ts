@@ -11,3 +11,4 @@ export default class AppLoading extends React.Component<Props> {
     render(): null;
 }
 export {};
+//# sourceMappingURL=AppLoadingNativeWrapper.d.ts.map

@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, copy) RCTDirectEventBlock onPageScrollStateChanged;
 @property(nonatomic) BOOL overdrag;
 @property(nonatomic) NSString* layoutDirection;
-
+@property(nonatomic) CGRect previousBounds;
+@property(nonatomic, assign) BOOL animating;
 
 - (void)goTo:(NSInteger)index animated:(BOOL)animated;
 - (void)shouldScroll:(BOOL)scrollEnabled;

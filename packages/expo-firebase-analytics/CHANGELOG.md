@@ -4,15 +4,56 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 7.2.0 — 2022-09-15
+
+### 💡 Others
+
+- On Android bumped `com.google.firebase:firebase-core:20.1.2 ➡️ 21.1.0`, `com.google.firebase:firebase-common:20.1.0 ➡️ 20.1.1`, and `com.google.firebase:firebase-analytics:20.1.2 ➡️ 21.1.0` ([#18908](https://github.com/expo/expo/pull/18908) by [@keith-kurak](https://github.com/keith-kurak))
+- On iOS bumped `Firebase/Core@8.14.0 ➡️ 9.5.0`. ([#18908](https://github.com/expo/expo/pull/18908) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 7.1.1 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 7.1.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 7.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Removed `setCurrentScreen` method that was previously deprecated. Use `logEvent` instead. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+
+### ⚠️ Notices
+
+- On iOS bumped `Firebase/Core@7.7.0 ➡️ 8.14.0`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+- On Android bumped `com.google.firebase:firebase-core:17.2.1 ➡️ 20.1.2`, `com.google.firebase:firebase-common:19.0.0 ➡️ 20.1.0` and `com.google.firebase:firebase-analytics:17.2.1 ➡️ 20.1.2`. ([#17002](https://github.com/expo/expo/pull/17002) by [@bbarthec](https://github.com/bbarthec))
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 6.0.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
+## 6.0.0 — 2021-12-03
+
+### 🛠 Breaking changes
+
 - Deprecates `setCurrentScreen` and removes the native API calls to support the latest Firebase SDKs. ([#4366](https://github.com/expo/expo/pull/4366) by [@IjzerenHein](https://github.com/IjzerenHein))
 
 ### 🎉 New features
 
 - Add support for `setSessionTimeoutDuration` on iOS. ([#14364](https://github.com/expo/expo/pull/14364) by [@IjzerenHein](https://github.com/IjzerenHein))
-
-### 🐛 Bug fixes
-
-### 💡 Others
 
 ## 5.0.1 — 2021-10-01
 

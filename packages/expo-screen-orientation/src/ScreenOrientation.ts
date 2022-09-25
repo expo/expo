@@ -34,12 +34,12 @@ let _lastOrientationLock: OrientationLock = OrientationLock.UNKNOWN;
 // @needsAudit
 /**
  * Lock the screen orientation to a particular `OrientationLock`.
- * @param orientationLock The orientation lock to apply. See the [`OrientationLock`](#screenorientationorientationlock)
+ * @param orientationLock The orientation lock to apply. See the [`OrientationLock`](#orientationlock)
  * enum for possible values.
  * @return Returns a promise with `void` value, which fulfils when the orientation is set.
  *
  * # Error codes
- * - `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - An invalid [`OrientationLock`](#screenorientationorientationlock)
+ * - `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - An invalid [`OrientationLock`](#orientationlock)
  *   was passed in.
  * - `ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK` - The platform does not support the
  *   orientation lock policy.
@@ -72,13 +72,13 @@ export async function lockAsync(orientationLock: OrientationLock): Promise<void>
 
 // @needsAudit @docsMissing
 /**
- * @param options The platform specific lock to apply. See the [`PlatformOrientationInfo`](#screenorientationplatformorientationinfo)
+ * @param options The platform specific lock to apply. See the [`PlatformOrientationInfo`](#platformorientationinfo)
  * object type for the different platform formats.
  * @return Returns a promise with `void` value, resolving when the orientation is set and rejecting
  * if an invalid option or value is passed.
  *
  * # Error codes
- * - `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - __iOS Only.__ An invalid [`OrientationLock`](#screenorientationorientationlock)
+ * - `ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK` - __iOS Only.__ An invalid [`OrientationLock`](#orientationlock)
  *   was passed in.
  * - `ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK` - The platform does not support the
  *   orientation lock policy.
@@ -167,7 +167,7 @@ export async function getOrientationAsync(): Promise<Orientation> {
 // @needsAudit
 /**
  * Gets the current screen orientation lock type.
- * @return Returns a promise which fulfils with an [`OrientationLock`](#screenorientationorientationlock)
+ * @return Returns a promise which fulfils with an [`OrientationLock`](#orientationlock)
  * value.
  *
  * # Error codes
@@ -183,7 +183,7 @@ export async function getOrientationLockAsync(): Promise<OrientationLock> {
 // @needsAudit
 /**
  * Gets the platform specific screen orientation lock type.
- * @return Returns a promise which fulfils with a [`PlatformOrientationInfo`](#screenorientationplatformorientationinfo)
+ * @return Returns a promise which fulfils with a [`PlatformOrientationInfo`](#platformorientationinfo)
  * value.
  *
  * # Error codes
@@ -211,7 +211,7 @@ export async function getPlatformOrientationLockAsync(): Promise<PlatformOrienta
 
 // @needsAudit @docsMissing
 /**
- * Returns whether the [`OrientationLock`](#screenorientationorientationlock) policy is supported on
+ * Returns whether the [`OrientationLock`](#orientationlock) policy is supported on
  * the device.
  * @param orientationLock
  * @return Returns a promise that resolves to a `boolean` value that reflects whether or not the
@@ -248,7 +248,7 @@ function getEventName(): string {
  * or from `landscape` to `portrait`. For example, it won't be invoked when screen orientation
  * change from `portrait up` to `portrait down`, but it will be called when there was a change from
  * `portrait up` to `landscape left`.
- * @param listener Each orientation update will pass an object with the new [`OrientationChangeEvent`](#screenorientationorientationchangeevent)
+ * @param listener Each orientation update will pass an object with the new [`OrientationChangeEvent`](#orientationchangeevent)
  * to the listener.
  */
 export function addOrientationChangeListener(listener: OrientationChangeListener): Subscription {

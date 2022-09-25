@@ -29,14 +29,13 @@ const withMediaLibraryExternalStorage: ConfigPlugin = (config) => {
   });
 };
 
-const withMediaLibrary: ConfigPlugin<{
-  photosPermission?: string;
-  savePhotosPermission?: string;
-  isAccessMediaLocationEnabled?: boolean;
-} | void> = (
-  config,
-  { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}
-) => {
+const withMediaLibrary: ConfigPlugin<
+  {
+    photosPermission?: string;
+    savePhotosPermission?: string;
+    isAccessMediaLocationEnabled?: boolean;
+  } | void
+> = (config, { photosPermission, savePhotosPermission, isAccessMediaLocationEnabled } = {}) => {
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.NSPhotoLibraryUsageDescription =
@@ -52,7 +51,7 @@ const withMediaLibrary: ConfigPlugin<{
       [
         'android.permission.READ_EXTERNAL_STORAGE',
         'android.permission.WRITE_EXTERNAL_STORAGE',
-        isAccessMediaLocationEnabled ?? 'android.permission.ACCESS_MEDIA_LOCATION',
+        isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
       ].filter(Boolean),
     ],
     withMediaLibraryExternalStorage,

@@ -20,3 +20,4 @@ export declare function impactAsync(style?: ImpactFeedbackStyle): Promise<void>;
  */
 export declare function selectionAsync(): Promise<void>;
 export { NotificationFeedbackType, ImpactFeedbackStyle };
+//# sourceMappingURL=Haptics.d.ts.map

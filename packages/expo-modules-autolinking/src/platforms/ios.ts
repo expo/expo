@@ -2,7 +2,39 @@ import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
-import { ModuleDescriptor, PackageRevision, SearchOptions } from '../types';
+import {
+  ModuleDescriptorIos,
+  ModuleIosPodspecInfo,
+  PackageRevision,
+  SearchOptions,
+} from '../types';
+
+const indent = '  ';
+
+async function findPodspecFiles(revision: PackageRevision): Promise<string[]> {
+  const configPodspecPaths = revision.config?.iosPodspecPaths();
+  if (configPodspecPaths && configPodspecPaths.length) {
+    return configPodspecPaths;
+  }
+
+  const podspecFiles = await glob('*/*.podspec', {
+    cwd: revision.path,
+    ignore: ['**/node_modules/**'],
+  });
+
+  return podspecFiles;
+}
+
+export function getSwiftModuleNames(
+  pods: ModuleIosPodspecInfo[],
+  swiftModuleNames: string[] | undefined
+): string[] {
+  if (swiftModuleNames && swiftModuleNames.length) {
+    return swiftModuleNames;
+  }
+  // by default, non-alphanumeric characters in the pod name are replaced by _ in the module name
+  return pods.map((pod) => pod.podName.replace(/[^a-zA-Z0-9]/g, '_'));
+}
 
 /**
  * Resolves module search result with additional details required for iOS platform.
@@ -11,25 +43,28 @@ export async function resolveModuleAsync(
   packageName: string,
   revision: PackageRevision,
   options: SearchOptions
-): Promise<ModuleDescriptor | null> {
-  const [podspecFile] = await glob('*/*.podspec', {
-    cwd: revision.path,
-    ignore: ['**/node_modules/**'],
-  });
-
-  if (!podspecFile) {
+): Promise<ModuleDescriptorIos | null> {
+  const podspecFiles = await findPodspecFiles(revision);
+  if (!podspecFiles.length) {
     return null;
   }
 
-  const podName = path.basename(podspecFile, path.extname(podspecFile));
-  const podspecDir = path.dirname(path.join(revision.path, podspecFile));
+  const pods = podspecFiles.map((podspecFile) => ({
+    podName: path.basename(podspecFile, path.extname(podspecFile)),
+    podspecDir: path.dirname(path.join(revision.path, podspecFile)),
+  }));
+
+  const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.iosSwiftModuleNames());
 
   return {
-    podName,
-    podspecDir,
+    packageName,
+    pods,
+    swiftModuleNames,
     flags: options.flags,
-    modulesClassNames: revision.config?.iosModulesClassNames(),
-    appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers(),
+    modules: revision.config?.iosModules() ?? [],
+    appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers() ?? [],
+    reactDelegateHandlers: revision.config?.iosReactDelegateHandlers() ?? [],
+    debugOnly: revision.config?.iosDebugOnly() ?? false,
   };
 }
 
@@ -37,7 +72,7 @@ export async function resolveModuleAsync(
  * Generates Swift file that contains all autolinked Swift packages.
  */
 export async function generatePackageListAsync(
-  modules: ModuleDescriptor[],
+  modules: ModuleDescriptorIos[],
   targetPath: string
 ): Promise<void> {
   const className = path.basename(targetPath, path.extname(targetPath));
@@ -50,21 +85,50 @@ export async function generatePackageListAsync(
  * Generates the string to put into the generated package list.
  */
 async function generatePackageListFileContentAsync(
-  modules: ModuleDescriptor[],
+  modules: ModuleDescriptorIos[],
   className: string
 ): Promise<string> {
-  const modulesToImport = modules.filter(
-    (module) => module.modulesClassNames.length + module.appDelegateSubscribers.length > 0
+  const iosModules = modules.filter(
+    (module) =>
+      module.modules.length ||
+      module.appDelegateSubscribers.length ||
+      module.reactDelegateHandlers.length
   );
-  const pods = modulesToImport.map((module) => module.podName);
 
-  const modulesClassNames = []
-    .concat(...modulesToImport.map((module) => module.modulesClassNames))
+  const modulesToImport = iosModules.filter((module) => !module.debugOnly);
+  const debugOnlyModules = iosModules.filter((module) => module.debugOnly);
+
+  const swiftModules = ([] as string[])
+    .concat(...modulesToImport.map((module) => module.swiftModuleNames))
     .filter(Boolean);
 
-  const appDelegateSubscribers = []
-    .concat(...modulesToImport.map((module) => module.appDelegateSubscribers))
+  const debugOnlySwiftModules = ([] as string[])
+    .concat(...debugOnlyModules.map((module) => module.swiftModuleNames))
     .filter(Boolean);
+
+  const modulesClassNames = ([] as string[])
+    .concat(...modulesToImport.map((module) => module.modules))
+    .filter(Boolean);
+
+  const debugOnlyModulesClassNames = ([] as string[])
+    .concat(...debugOnlyModules.map((module) => module.modules))
+    .filter(Boolean);
+
+  const appDelegateSubscribers = ([] as string[]).concat(
+    ...modulesToImport.map((module) => module.appDelegateSubscribers)
+  );
+
+  const debugOnlyAppDelegateSubscribers = ([] as string[]).concat(
+    ...debugOnlyModules.map((module) => module.appDelegateSubscribers)
+  );
+
+  const reactDelegateHandlerModules = modulesToImport.filter(
+    (module) => !!module.reactDelegateHandlers.length
+  );
+
+  const debugOnlyReactDelegateHandlerModules = debugOnlyModules.filter(
+    (module) => !!module.reactDelegateHandlers.length
+  );
 
   return `/**
  * Automatically generated by expo-modules-autolinking.
@@ -74,25 +138,107 @@ async function generatePackageListFileContentAsync(
  */
 
 import ExpoModulesCore
-${pods.map((podName) => `import ${podName}\n`).join('')}
+${generateCommonImportList(swiftModules)}
+${generateDebugOnlyImportList(debugOnlySwiftModules)}
 @objc(${className})
 public class ${className}: ModulesProvider {
   public override func getModuleClasses() -> [AnyModule.Type] {
-    return ${formatArrayOfClassNames(modulesClassNames)}
+${generateModuleClasses(modulesClassNames, debugOnlyModulesClassNames)}
   }
 
   public override func getAppDelegateSubscribers() -> [ExpoAppDelegateSubscriber.Type] {
-    return ${formatArrayOfClassNames(appDelegateSubscribers)}
+${generateModuleClasses(appDelegateSubscribers, debugOnlyAppDelegateSubscribers)}
+  }
+
+  public override func getReactDelegateHandlers() -> [ExpoReactDelegateHandlerTupleType] {
+${generateReactDelegateHandlers(reactDelegateHandlerModules, debugOnlyReactDelegateHandlerModules)}
   }
 }
 `;
+}
+
+function generateCommonImportList(swiftModules: string[]): string {
+  return swiftModules.map((moduleName) => `import ${moduleName}`).join('\n');
+}
+
+function generateDebugOnlyImportList(swiftModules: string[]): string {
+  if (!swiftModules.length) {
+    return '';
+  }
+
+  return (
+    wrapInDebugConfigurationCheck(
+      0,
+      swiftModules.map((moduleName) => `import ${moduleName}`).join('\n')
+    ) + '\n'
+  );
+}
+
+function generateModuleClasses(classNames: string[], debugOnlyClassName: string[]): string {
+  const commonClassNames = formatArrayOfClassNames(classNames);
+  if (debugOnlyClassName.length > 0) {
+    return wrapInDebugConfigurationCheck(
+      2,
+      `return ${formatArrayOfClassNames(classNames.concat(debugOnlyClassName))}`,
+      `return ${commonClassNames}`
+    );
+  } else {
+    return `${indent.repeat(2)}return ${commonClassNames}`;
+  }
 }
 
 /**
  * Formats an array of class names to Swift's array containing these classes.
  */
 function formatArrayOfClassNames(classNames: string[]): string {
-  const indent = '  ';
   return `[${classNames.map((className) => `\n${indent.repeat(3)}${className}.self`).join(',')}
 ${indent.repeat(2)}]`;
+}
+
+function generateReactDelegateHandlers(
+  module: ModuleDescriptorIos[],
+  debugOnlyModules: ModuleDescriptorIos[]
+): string {
+  const commonModules = formatArrayOfReactDelegateHandler(module);
+  if (debugOnlyModules.length > 0) {
+    return wrapInDebugConfigurationCheck(
+      2,
+      `return ${formatArrayOfReactDelegateHandler(module.concat(debugOnlyModules))}`,
+      `return ${commonModules}`
+    );
+  } else {
+    return `${indent.repeat(2)}return ${commonModules}`;
+  }
+}
+
+/**
+ * Formats an array of modules to Swift's array containing ReactDelegateHandlers
+ */
+export function formatArrayOfReactDelegateHandler(modules: ModuleDescriptorIos[]): string {
+  const values: string[] = [];
+  for (const module of modules) {
+    for (const handler of module.reactDelegateHandlers) {
+      values.push(`(packageName: "${module.packageName}", handler: ${handler}.self)`);
+    }
+  }
+  return `[${values.map((value) => `\n${indent.repeat(3)}${value}`).join(',')}
+${indent.repeat(2)}]`;
+}
+
+function wrapInDebugConfigurationCheck(
+  indentationLevel: number,
+  debugBlock: string,
+  releaseBlock: string | null = null
+) {
+  if (releaseBlock) {
+    return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
+      indentationLevel
+    )}${debugBlock}\n${indent.repeat(indentationLevel)}#else\n${indent.repeat(
+      indentationLevel
+    )}${releaseBlock}\n${indent.repeat(indentationLevel)}#endif`;
+  }
+
+  return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
+    indentationLevel
+  )}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
 }

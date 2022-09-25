@@ -2,7 +2,8 @@
 title: Light and Dark modes
 ---
 
-import Video from '~/components/plugins/Video'
+import SnackInline from '~/components/plugins/SnackInline';
+import Video from '~/components/plugins/Video';
 
 Regardless of whether you are personally on team light or team dark, it's becoming increasingly common for apps to support these two color schemes. This guide explains how you can do that.
 
@@ -98,7 +99,9 @@ In some cases, you may find it helpful to get the current color scheme imperativ
 
 > Don't forget to configure your project to support automatic color scheme as described above in [Configuration](#configuration).
 
-```javascript
+<SnackInline label="useColorScheme example" dependencies={['expo-status-bar']}>
+
+```jsx
 import React from 'react';
 import { Text, StyleSheet, View, useColorScheme } from 'react-native';
 import { StatusBar } from 'expo-status-bar'; // automatically switches bar style based on theme!
@@ -139,11 +142,13 @@ const styles = StyleSheet.create({
 });
 ```
 
+</SnackInline>
+
 ## Tips
 
 While you're developing, you may want to change your simulator's or device's appearance.
 
 - If working with an iOS emulator locally, you can use the `command` + `shift` + `a` shortcut to toggle between light and dark mode.
-- If using an Android emulator, you can run `adb shell "cmd uimode night yes"` to enable dark mode, and `adb shell "cmd uimode night no"` to disable dark mode.
-- If using a real device or an Android emulator, you can toggle the system dark mode setting in the device's settings.
+- If using an Android Emulator, you can run `adb shell "cmd uimode night yes"` to enable dark mode, and `adb shell "cmd uimode night no"` to disable dark mode.
+- If using a real device or an Android Emulator, you can toggle the system dark mode setting in the device's settings.
 - [Snack](https://snack.expo.dev) is locked to light mode.

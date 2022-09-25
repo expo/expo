@@ -3,6 +3,10 @@ package expo.modules.kotlin
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManager
+import expo.modules.adapters.react.NativeModulesProxy
+import expo.modules.kotlin.defaultmodules.NativeModulesProxyModuleName
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.views.GroupViewManagerWrapper
 import expo.modules.kotlin.views.SimpleViewManagerWrapper
 import expo.modules.kotlin.views.ViewManagerWrapperDelegate
@@ -18,40 +22,51 @@ class KotlinInteropModuleRegistry(
   legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   reactContext: WeakReference<ReactApplicationContext>
 ) {
-  private val appContext = AppContext(modulesProvider, legacyModuleRegistry, reactContext)
+  internal val appContext = AppContext(modulesProvider, legacyModuleRegistry, reactContext)
 
   private val registry: ModuleRegistry
     get() = appContext.registry
 
+  private var wasDestroyed = false
+
   fun hasModule(name: String): Boolean = registry.hasModule(name)
 
   fun callMethod(moduleName: String, method: String, arguments: ReadableArray, promise: Promise) {
-    registry
-      .getModuleHolder(moduleName)
-      ?.call(method, arguments, promise)
+    try {
+      requireNotNull(
+        registry.getModuleHolder(moduleName)
+      ) { "Trying to call '$method' on the non-existing module '$moduleName'" }
+        .call(method, arguments, promise)
+    } catch (e: CodedException) {
+      promise.reject(e)
+    } catch (e: Throwable) {
+      promise.reject(UnexpectedException(e))
+    }
   }
 
   fun exportedModulesConstants(): Map<ModuleName, ModuleConstants> {
     return registry
-      .map { holder ->
+      // prevent infinite recursion - exclude NativeProxyModule constants
+      .filter { holder -> holder.name != NativeModulesProxyModuleName }
+      .associate { holder ->
         holder.name to holder.definition.constantsProvider()
       }
-      .toMap()
   }
 
   fun exportMethods(exportKey: (String, List<ModuleMethodInfo>) -> Unit = { _, _ -> }): Map<ModuleName, List<ModuleMethodInfo>> {
-    return registry
-      .map { holder ->
-        val methodsInfo = holder.definition.methods.map { (name, method) ->
+    return registry.associate { holder ->
+      val methodsInfo = holder
+        .definition
+        .asyncFunctions
+        .map { (name, method) ->
           mapOf(
             "name" to name,
             "argumentsCount" to method.argsCount
           )
         }
-        exportKey(holder.name, methodsInfo)
-        holder.name to methodsInfo
-      }
-      .toMap()
+      exportKey(holder.name, methodsInfo)
+      holder.name to methodsInfo
+    }
   }
 
   fun exportViewManagers(): List<ViewManager<*, *>> {
@@ -63,6 +78,16 @@ class KotlinInteropModuleRegistry(
           expo.modules.core.ViewManager.ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(wrapperDelegate)
           expo.modules.core.ViewManager.ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
         }
+      }
+  }
+
+  fun viewManagersMetadata(): Map<String, Map<String, Any>> {
+    return registry
+      .filter { it.definition.viewManagerDefinition != null }
+      .associate { holder ->
+        holder.name to mapOf(
+          "propsNames" to (holder.definition.viewManagerDefinition?.propsNames ?: emptyList())
+        )
       }
   }
 
@@ -87,12 +112,21 @@ class KotlinInteropModuleRegistry(
       }
   }
 
-  fun exportedViewManagersNames(): List<String> =
-    registry
-      .filter { it.definition.viewManagerDefinition != null }
-      .map { it.definition.name }
-
   fun onDestroy() {
     appContext.onDestroy()
+    wasDestroyed = true
+    logger.info("✅ KotlinInteropModuleRegistry was destroyed")
+  }
+
+  fun installJSIInterop() {
+    appContext.installJSIInterop()
+  }
+
+  fun setLegacyModulesProxy(proxyModule: NativeModulesProxy) {
+    appContext.legacyModulesProxyHolder = WeakReference(proxyModule)
+  }
+
+  fun shouldBeRecreated(applicationContext: ReactApplicationContext): Boolean {
+    return wasDestroyed || appContext.reactContext != applicationContext
   }
 }

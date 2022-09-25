@@ -19,35 +19,35 @@
 
 @implementation NSDictionary (EXJSONUtils)
 
-- (NSString *)stringForKey:(NSString *)key {
+- (NSString *)stringForKey:(id)key {
   return EXGetNonNullManifestValue(NSString, key);
 }
 
-- (nullable NSString *)nullableStringForKey:(NSString *)key {
+- (nullable NSString *)nullableStringForKey:(id)key {
   return EXGetNullableManifestValue(NSString, key);
 }
 
-- (NSNumber *)numberForKey:(NSString *)key {
+- (NSNumber *)numberForKey:(id)key {
   return EXGetNonNullManifestValue(NSNumber, key);
 }
 
-- (nullable NSNumber *)nullableNumberForKey:(NSString *)key {
+- (nullable NSNumber *)nullableNumberForKey:(id)key {
   return EXGetNullableManifestValue(NSNumber, key);
 }
 
-- (NSArray *)arrayForKey:(NSString *)key {
+- (NSArray *)arrayForKey:(id)key {
   return EXGetNonNullManifestValue(NSArray, key);
 }
 
-- (nullable NSArray *)nullableArrayForKey:(NSString *)key {
+- (nullable NSArray *)nullableArrayForKey:(id)key {
   return EXGetNullableManifestValue(NSArray, key);
 }
 
-- (NSDictionary *)dictionaryForKey:(NSString *)key {
+- (NSDictionary *)dictionaryForKey:(id)key {
   return EXGetNonNullManifestValue(NSDictionary, key);
 }
 
-- (nullable NSDictionary *)nullableDictionaryForKey:(NSString *)key {
+- (nullable NSDictionary *)nullableDictionaryForKey:(id)key {
   return EXGetNullableManifestValue(NSDictionary, key);
 }
 

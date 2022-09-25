@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentSpeech.web.d.ts","sourceRoot":"","sources":["../src/Speech/ExponentSpeech.web.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,aAAa,EAAE,QAAQ,EAAgB,MAAM,gBAAgB,CAAC;;;cA2BrD,MAAM,QAAQ,MAAM,WAAW,aAAa,GAAG,QAAQ,wBAAwB,CAAC;iBAiE7E,QAAQ,QAAQ,EAAE,CAAC;kBAYlB,QAAQ,OAAO,CAAC;YAGtB,QAAQ,IAAI,CAAC;aAGZ,QAAQ,IAAI,CAAC;cAGZ,QAAQ,IAAI,CAAC;;;AA1F/B,wBA8FE"}

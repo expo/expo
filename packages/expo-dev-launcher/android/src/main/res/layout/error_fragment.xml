@@ -4,93 +4,97 @@
   android:layout_width="match_parent"
   android:layout_height="wrap_content"
   android:orientation="vertical"
-  android:paddingLeft="16dp"
-  android:paddingTop="16dp"
-  android:paddingRight="16dp"
-  android:paddingBottom="16dp"
+
   tools:context="expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity">
 
   <LinearLayout
+    android:id="@+id/error_main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_above="@+id/view_error_log"
-    android:layout_gravity="center_vertical"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:layout_above="@id/error_footer"
+    android:layout_marginTop="32dp"
+    android:orientation="vertical"
+    android:paddingLeft="18dp"
+    android:paddingRight="18dp"
+
+    android:weightSum="1">
 
     <TextView
-      android:id="@+id/error_header"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginTop="30dp"
       android:tag="DevLauncherErrorScreen"
-      android:text="@string/error_header"
-      android:textColor="@color/white"
-      android:textSize="24sp" />
+      android:text="@string/dev_launcher_error_header"
+      android:textColor="@color/dev_launcher_primary"
+      android:textSize="22sp"
+      android:textStyle="bold" />
 
     <TextView
-      android:id="@+id/error_message"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="40dp"
-      android:layout_marginTop="20dp"
-      android:layout_marginRight="40dp"
-      android:gravity="center"
-      android:text="@string/error_default_client"
-      android:textColor="@color/white"
-      android:textSize="16sp" />
+      android:layout_marginTop="12dp"
+      android:text="@string/dev_launcher_error_details"
+      android:textColor="@color/dev_launcher_primary"
+      android:textSize="14sp" />
+
+    <TextView
+      android:id="@+id/errorDetails"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="22dp"
+      android:textColor="@color/dev_launcher_primary"
+      android:textSize="16sp"
+      android:textStyle="bold" />
+
+    <ListView
+      android:id="@+id/error_stack"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="10dp"
+      android:divider="@null"
+      android:dividerHeight="0dp" />
+  </LinearLayout>
+
+
+  <LinearLayout
+    android:id="@+id/error_footer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true">
 
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginLeft="40dp"
-      android:layout_marginTop="140dp"
-      android:layout_marginRight="40dp"
-      android:gravity="center_horizontal"
-      android:orientation="horizontal"
-      android:weightSum="2">
+      android:background="@color/dev_launcher_white"
+      android:orientation="vertical"
+      android:paddingHorizontal="16dp"
+      android:paddingVertical="16dp">
 
-      <ImageButton
-        android:id="@+id/home_button"
-        android:layout_width="wrap_content"
+      <Button
+        android:id="@+id/reloadButton"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:src="@drawable/dev_laucher_ic_home_white_36dp"
-        android:tag="DevLauncherErrorScreenGoToLauncher"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="15sp" />
+        android:backgroundTint="@color/dev_launcher_primary"
+        android:text="@string/dev_launcher_reload"
+        android:textAllCaps="false"
+        android:textColor="@color/dev_launcher_white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
 
-      <ImageButton
-        android:id="@+id/reload_button"
-        android:layout_width="wrap_content"
+      <Button
+        android:id="@+id/homeButton"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:background="@android:color/transparent"
-        android:src="@drawable/dev_launcher_ic_refresh_white_36dp"
-        android:tag="DevLauncherErrorScreenReload"
-        android:textColor="@color/colorPrimaryDark"
-        android:textSize="15sp" />
+        android:backgroundTint="@color/dev_launcher_secondaryBackgroundColor"
+        android:text="@string/dev_launcher_go_to_home"
+        android:textAllCaps="false"
+        android:textColor="@color/dev_launcher_primary"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
     </LinearLayout>
-  </LinearLayout>
 
-  <TextView
-    android:id="@id/view_error_log"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:layout_centerHorizontal="true"
-    android:clickable="true"
-    android:focusable="true"
-    android:gravity="center"
-    android:paddingLeft="20dp"
-    android:paddingTop="20dp"
-    android:paddingRight="20dp"
-    android:paddingBottom="20dp"
-    android:tag="DevLauncherErrorScreenGoToDetails"
-    android:text="@string/view_error_log"
-    android:textColor="@color/errorLogButton"
-    android:textSize="13sp" />
+
+  </LinearLayout>
 
 
 </RelativeLayout>

@@ -5,6 +5,8 @@
 #import <EXUpdates/EXUpdatesDatabaseMigration4To5.h>
 #import <EXUpdates/EXUpdatesDatabaseMigration5To6.h>
 #import <EXUpdates/EXUpdatesDatabaseMigration6To7.h>
+#import <EXUpdates/EXUpdatesDatabaseMigration7To8.h>
+#import <EXUpdates/EXUpdatesDatabaseMigration8To9.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -16,7 +18,9 @@ NS_ASSUME_NONNULL_BEGIN
   return @[
     [EXUpdatesDatabaseMigration4To5 new],
     [EXUpdatesDatabaseMigration5To6 new],
-    [EXUpdatesDatabaseMigration6To7 new]
+    [EXUpdatesDatabaseMigration6To7 new],
+    [EXUpdatesDatabaseMigration7To8 new],
+    [EXUpdatesDatabaseMigration8To9 new]
   ];
 }
 

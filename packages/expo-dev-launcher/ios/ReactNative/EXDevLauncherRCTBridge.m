@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherRCTBridge.h"
+#import "EXDevLauncherController.h"
 #import "RCTCxxBridge+Private.h"
 
 #import <React/RCTPerformanceLogger.h>
@@ -11,6 +12,16 @@
 
 @implementation EXDevLauncherRCTCxxBridge
 
+- (instancetype)initWithParentBridge:(RCTBridge *)bridge
+{
+  if ((self = [super initWithParentBridge:bridge])) {
+    RCTBridge *appBridge = [EXDevLauncherController sharedInstance].appBridge;
+    // reset the singleton `RCTBridge.currentBridge` to app bridge instance
+    RCTBridge.currentBridge = appBridge != nil ? appBridge.batchedBridge : nil;
+  }
+  return self;
+}
+
 /**
  * Theoretically, we could overwrite the `RCTDevSettings` module by exporting our version through the bridge.
  * However, this won't work with the js remote debugging. For some reason, the RN needs to initialized remote tools very early. So it always uses the default module to do it.
@@ -18,7 +29,10 @@
  */
 - (RCTDevSettings *)devSettings
 {
-  return nil;
+#ifdef EX_DEV_LAUNCHER_URL
+ return super.devSettings;
+#endif
+ return nil;
 }
 
 - (RCTDevMenu *)devMenu
@@ -31,6 +45,10 @@
   NSArray<NSString *> *allowedModules = @[@"RCT", @"DevMenu"];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     if ([clazz conformsToProtocol:@protocol(DevMenuExtensionProtocol)]) {
+      return true;
+    }
+    
+    if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
       return true;
     }
     

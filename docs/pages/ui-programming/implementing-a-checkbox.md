@@ -2,7 +2,6 @@
 title: 'Implementing a checkbox for Expo and React Native apps'
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import SnackInline from '~/components/plugins/SnackInline';
 
 One fairly common component that is not offered out of the box by Expo is the mighty checkbox. There are several packages available on npm; however, it is simple enough to implement yourself, and by doing so you have full customization and control over the look and feel of your checkbox.
@@ -11,14 +10,14 @@ One fairly common component that is not offered out of the box by Expo is the mi
 
 A checkbox is basically a button that exists in one of two states — it is checked or it isn't. This makes it a perfect candidate for the `useState()` hook. Our first iteration will render a button that toggles between checked and unchecked states. When the checkbox is checked, we'll render a checkmark icon in the center of the button.
 
-_Note: You can find more information about using icons in your Expo project here: https://docs.expo.dev/guides/icons/_
+> You can find more information about using icons in your Expo project in our [Icons guide](/guides/icons/).
 
 <SnackInline>
 
 ```jsx
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons';
 
 function MyCheckbox() {
   const [checked, onChange] = useState(false);
@@ -91,7 +90,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-_Note: https://icons.expo.fyi is a great resource for finding all of the icons available in the @expo/vector-icons package._
+> Note: https://icons.expo.fyi is a great resource for finding all of the icons available in the @expo/vector-icons package.
 
 ## Controlling the checkbox
 
@@ -102,7 +101,7 @@ This checkbox isn't useful in this state because the `checked` value is accessib
 ```jsx
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 function MyCheckbox({
   /* @info Define checked and onChange as props instead of state */ checked,
@@ -185,7 +184,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-_Note: This pattern is referred to as a "controlled component" — you can read more about them here: https://reactjs.org/docs/forms.html#controlled-components_
+> Note: This pattern is referred to as a "controlled component" — you can read more about them here: https://reactjs.org/docs/forms.html#controlled-components.
 
 ## Extending the interface
 
@@ -196,7 +195,7 @@ It's common enough to need to render different styles when the checkmark is `che
 ```jsx
 import React, { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 function MyCheckbox({
   checked,

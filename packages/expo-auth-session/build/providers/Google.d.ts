@@ -8,7 +8,8 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      */
     loginHint?: string;
     /**
-     * When `true`, the service will allow the user to switch between accounts (if possible). Defaults to `false`.
+     * When `true`, the service will allow the user to switch between accounts (if possible).
+     * @default false.
      */
     selectAccount?: boolean;
     /**
@@ -30,7 +31,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      * - Give it a name (e.g. "Web App").
      * - **URIs** (Authorized JavaScript origins): https://localhost:19006 & https://yourwebsite.com
      * - **Authorized redirect URIs**: https://localhost:19006 & https://yourwebsite.com
-     * - To test this be sure to start your app with `expo start:web --https`.
+     * - To test this be sure to start your app with `npx expo start --https`.
      */
     webClientId?: string;
     /**
@@ -45,7 +46,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      *   - _Standalone_: Automatically added, do nothing.
      *   - _Bare workflow_: Run `npx uri-scheme add <your bundle id> --ios`
      * - To test this you can:
-     *   1. Eject to bare: `expo eject` and run `yarn ios`
+     *   1. Prebuild to generate the native files: `expo prebuild` and run `yarn ios`
      *   2. Create a custom client: `expo client:ios`
      *   3. Build a production IPA: `expo build:ios`
      * - Whenever you change the values in `app.json` you'll need to rebuild the native app.
@@ -66,17 +67,24 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
      *   - Run `expo credentials:manager -p android` then select "Update upload Keystore" -> "Generate new keystore" -> "Go back to experience overview"
      *   - Copy your "Google Certificate Fingerprint", it will output a string that looks like `A1:B2:C3` but longer.
      * - To test this you can:
-     *   1. Eject to bare: `expo eject` and run `yarn ios`
+     *   1. Prebuild to generate the native files: `expo prebuild` and run `yarn ios`
      *   2. Build a production IPA: `expo build:android`
      */
     androidClientId?: string;
     /**
      * Should the hook automatically exchange the response code for an authentication token.
      *
-     * Defaults to true on installed apps (iOS, Android) when `ResponseType.Code` is used (default).
+     * Defaults to `true` on installed apps (iOS, Android) when `ResponseType.Code` is used (default).
      */
     shouldAutoExchangeCode?: boolean;
+    /**
+     * Language code ISO 3166-1 alpha-2 region code, such as 'it' or 'pt-PT'.
+     */
+    language?: string;
 }
+/**
+ * Extends [`AuthRequest`](#authrequest) and accepts [`GoogleAuthRequestConfig`](#googleauthrequestconfig) in the constructor.
+ */
 declare class GoogleAuthRequest extends AuthRequest {
     nonce?: string;
     constructor({ language, loginHint, selectAccount, extraParams, clientSecret, ...config }: GoogleAuthRequestConfig);
@@ -93,7 +101,7 @@ declare class GoogleAuthRequest extends AuthRequest {
  *
  * The id token can be retrieved with `response.params.id_token`.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#google)
  *
  * @param config
  * @param redirectUriOptions
@@ -108,7 +116,7 @@ export declare function useIdTokenAuthRequest(config: Partial<GoogleAuthRequestC
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes, then the response will be fulfilled.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#google)
  *
  * @param config
  * @param redirectUriOptions
@@ -119,3 +127,4 @@ export declare function useAuthRequest(config?: Partial<GoogleAuthRequestConfig>
     (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>
 ];
 export {};
+//# sourceMappingURL=Google.d.ts.map

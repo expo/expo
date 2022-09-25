@@ -1,1 +1,0 @@
-{"version":3,"file":"ModuleTemplate.types.js","sourceRoot":"","sources":["../src/ModuleTemplate.types.ts"],"names":[],"mappings":"","sourcesContent":["export interface SampleOptions {\n  someOption: string;\n}\n"]}

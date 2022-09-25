@@ -6,7 +6,9 @@ import SimpleActionDemo from '../../components/SimpleActionDemo';
 import TitleSwitch from '../../components/TitledSwitch';
 import usePermissions from '../../utilities/usePermissions';
 
-const GOOGLE_MAPS_API_KEY = null; // Provide your own Google Maps API Key here
+// Provide your own Google Maps API Key here to verify.  Note: this requires a
+// paid Google Maps API plan. It is not required to test this during QA.
+const GOOGLE_MAPS_API_KEY = null;
 
 if (GOOGLE_MAPS_API_KEY) {
   Location.setGoogleApiKey(GOOGLE_MAPS_API_KEY);

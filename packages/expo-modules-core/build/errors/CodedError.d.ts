@@ -8,3 +8,4 @@ export declare class CodedError extends Error {
     info?: any;
     constructor(code: string, message: string);
 }
+//# sourceMappingURL=CodedError.d.ts.map

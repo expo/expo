@@ -68,6 +68,8 @@ abstract class Manifest(protected val json: JSONObject) {
   @Throws(JSONException::class)
   fun getRevisionId(): String = getExpoClientConfigRootObject()!!.require("revisionId")
 
+  fun getMetadata(): JSONObject? = json.getNullable("metadata")
+
   abstract fun getSDKVersion(): String?
 
   abstract fun getAssets(): JSONArray?
@@ -99,9 +101,10 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getDebuggerHost(): String = getExpoGoConfigRootObject()!!.require("debuggerHost")
   fun getMainModuleName(): String = getExpoGoConfigRootObject()!!.require("mainModuleName")
-  fun getHostUri(): String? = getExpoGoConfigRootObject()?.getNullable("hostUri")
+  fun getLogUrl(): String? = getExpoGoConfigRootObject()?.getNullable("logUrl")
+  fun getHostUri(): String? = getExpoClientConfigRootObject()?.getNullable("hostUri")
 
-  fun isVerified(): Boolean = json.require("isVerified")
+  fun isVerified(): Boolean = json.getNullable("isVerified") ?: false
 
   abstract fun getAppKey(): String?
 
@@ -119,8 +122,6 @@ abstract class Manifest(protected val json: JSONObject) {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     return expoClientConfig.getNullable("updates")
   }
-
-  abstract fun getSortTime(): String?
 
   fun getPrimaryColor(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
@@ -166,12 +167,10 @@ abstract class Manifest(protected val json: JSONObject) {
     return expoClientConfig.getNullable("androidNavigationBar")
   }
 
-  fun getAndroidJsEngine(): String? {
-    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    val sharedJsEngine = expoClientConfig.getNullable<String>("jsEngine")
-    val androidJsEngine = expoClientConfig
-      .getNullable<JSONObject>("android")?.getNullable<String>("jsEngine")
-    return androidJsEngine ?: sharedJsEngine ?: null
+  val jsEngine: String by lazy {
+    val expoClientConfig = getExpoClientConfigRootObject()
+    expoClientConfig
+      ?.getNullable<JSONObject>("android")?.getNullable<String>("jsEngine") ?: expoClientConfig?.getNullable<String>("jsEngine") ?: "jsc"
   }
 
   fun getIconUrl(): String? {

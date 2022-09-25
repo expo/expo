@@ -44,7 +44,9 @@ export declare class ResponseError extends CodedError {
     constructor(params: ResponseErrorConfig, errorCodeType: string);
 }
 /**
- * [Section 5.2](https://tools.ietf.org/html/rfc6749#section-5.2)
+ * Represents an authorization response error: [Section 5.2](https://tools.ietf.org/html/rfc6749#section-5.2).
+ * Often times providers will fail to return the proper error message for a given error code.
+ * This error method will add the missing description for more context on what went wrong.
  */
 export declare class AuthError extends ResponseError {
     /**
@@ -59,3 +61,4 @@ export declare class AuthError extends ResponseError {
 export declare class TokenError extends ResponseError {
     constructor(response: ResponseErrorConfig);
 }
+//# sourceMappingURL=Errors.d.ts.map

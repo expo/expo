@@ -7,13 +7,11 @@
 #import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryHolderReactModule.h>
 #import <ExpoModulesCore/EXReactNativeEventEmitter.h>
-#import <ExpoModulesCore/Swift.h>
 
 @interface EXModuleRegistryAdapter ()
 
 @property (nonatomic, strong) EXModuleRegistryProvider *moduleRegistryProvider;
 @property (nonatomic, strong) EXViewManagerAdapterClassesRegistry *viewManagersClassesRegistry;
-@property (nonatomic, strong, nullable) id<ModulesProviderObjCProtocol> swiftModulesProvider;
 
 @end
 
@@ -24,16 +22,6 @@
   if (self = [super init]) {
     _moduleRegistryProvider = moduleRegistryProvider;
     _viewManagersClassesRegistry = [[EXViewManagerAdapterClassesRegistry alloc] init];
-  }
-  return self;
-}
-
-- (instancetype)initWithModuleRegistryProvider:(EXModuleRegistryProvider *)moduleRegistryProvider swiftModulesProviderClass:(nullable Class)swiftModulesProviderClass
-{
-  if (self = [self initWithModuleRegistryProvider:moduleRegistryProvider]) {
-    if ([swiftModulesProviderClass conformsToProtocol:@protocol(ModulesProviderObjCProtocol)]) {
-      _swiftModulesProvider = [swiftModulesProviderClass new];
-    }
   }
   return self;
 }
@@ -55,18 +43,9 @@
   EXReactNativeEventEmitter *eventEmitter = [EXReactNativeEventEmitter new];
   [moduleRegistry registerInternalModule:eventEmitter];
 
-  NSMutableSet *exportedSwiftViewModuleNames = [NSMutableSet new];
-
-  for (ViewModuleWrapper *swiftViewModule in [nativeModulesProxy.swiftInteropBridge getViewManagers]) {
-    Class wrappedViewModuleClass = [ViewModuleWrapper createViewModuleWrapperClassWithModule:swiftViewModule];
-    [extraModules addObject:[[wrappedViewModuleClass alloc] init]];
-    [exportedSwiftViewModuleNames addObject:swiftViewModule.name];
-  }
   for (EXViewManager *viewManager in [moduleRegistry getAllViewManagers]) {
-    if (![exportedSwiftViewModuleNames containsObject:viewManager.viewName]) {
-      Class viewManagerAdapterClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
-      [extraModules addObject:[[viewManagerAdapterClass alloc] init]];
-    }
+    Class viewManagerAdapterClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
+    [extraModules addObject:[[viewManagerAdapterClass alloc] init]];
   }
 
   // Silence React Native warning `Base module "%s" does not exist`
@@ -75,7 +54,6 @@
   // subclass EXViewManagerAdapter, so RN expects to find EXViewManagerAdapter
   // exported.
   [extraModules addObject:[[EXViewManagerAdapter alloc] init]];
-  [extraModules addObject:[[ViewModuleWrapper alloc] initWithDummy:nil]];
 
   // It is possible that among internal modules there are some RCTBridgeModules --
   // let's add them to extraModules here.
@@ -93,15 +71,6 @@
   // Here is our last call for finalizing initialization.
   [moduleRegistry initialize];
   return extraModules;
-}
-
-- (nullable SwiftInteropBridge *)swiftInteropBridgeModulesRegistry:(EXModuleRegistry *)moduleRegistry
-{
-  if (_swiftModulesProvider) {
-    return [[SwiftInteropBridge alloc] initWithModulesProvider:_swiftModulesProvider legacyModuleRegistry:moduleRegistry];
-  } else {
-    return nil;
-  }
 }
 
 @end

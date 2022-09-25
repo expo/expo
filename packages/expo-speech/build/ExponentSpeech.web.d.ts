@@ -10,3 +10,4 @@ declare const _default: {
     maxSpeechInputLength: number;
 };
 export default _default;
+//# sourceMappingURL=ExponentSpeech.web.d.ts.map

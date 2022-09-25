@@ -11,11 +11,11 @@ class DevMenuUtils {
       let methodB = class_getInstanceMethod(forClass, selectorB) {
       let impA = method_getImplementation(methodA)
       let argsTypeA = method_getTypeEncoding(methodA)
-      
+
       let impB = method_getImplementation(methodB)
       let argsTypeB = method_getTypeEncoding(methodB)
-      
-      if (class_addMethod(forClass, selectorA, impB, argsTypeB)) {
+
+      if class_addMethod(forClass, selectorA, impB, argsTypeB) {
         class_replaceMethod(forClass, selectorB, impA, argsTypeA)
       } else {
         method_exchangeImplementations(methodA, methodB)
@@ -29,7 +29,7 @@ class DevMenuUtils {
   static func stripRCT(_ str: String) -> String {
     return str.starts(with: "RCT") ? String(str.dropFirst(3)) : str
   }
-  
+
   static func resourcesBundle() -> Bundle? {
     let frameworkBundle = Bundle(for: DevMenuUtils.self)
 

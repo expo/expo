@@ -7,6 +7,12 @@ import { requestAsync } from './Fetch';
 export function issuerWithWellKnownUrl(issuer) {
     return `${issuer}/.well-known/openid-configuration`;
 }
+// @needsAudit
+/**
+ * Fetch a `DiscoveryDocument` from a well-known resource provider that supports auto discovery.
+ * @param issuer An `Issuer` URL to fetch from.
+ * @return Returns a discovery document that can be used for authentication.
+ */
 export async function fetchDiscoveryAsync(issuer) {
     const json = await requestAsync(issuerWithWellKnownUrl(issuer), {
         dataType: 'json',
@@ -22,6 +28,7 @@ export async function fetchDiscoveryAsync(issuer) {
         registrationEndpoint: json.registration_endpoint,
     };
 }
+// @needsAudit
 /**
  * Utility method for resolving the discovery document from an issuer or object.
  *

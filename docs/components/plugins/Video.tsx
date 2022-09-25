@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import FilePlayer from 'react-player/lib/players/FilePlayer';
+import ReactPlayer from 'react-player';
 import VisibilitySensor from 'react-visibility-sensor';
 
 // lol: https://stackoverflow.com/a/11381730/659988
@@ -25,7 +25,7 @@ function mobileAndTabletCheck() {
 
 const isMobileOrTablet = mobileAndTabletCheck();
 
-const getInitialMarginBottom = (spaceAfter: Props['spaceAfter']) => {
+const getInitialMarginBottom = (spaceAfter: VideoProps['spaceAfter']) => {
   if (typeof spaceAfter === 'undefined') {
     return 30;
   } else if (typeof spaceAfter === 'number') {
@@ -36,17 +36,20 @@ const getInitialMarginBottom = (spaceAfter: Props['spaceAfter']) => {
   return 0;
 };
 
-type Props = {
+type VideoProps = React.PropsWithChildren<{
   controls?: any;
   spaceAfter?: boolean | number;
   url?: string;
   file?: string;
   loop?: boolean;
-};
+}>;
 
-const Video: React.FC<Props> = ({ controls, spaceAfter, url, file, loop = true }: Props) => {
+const Video = ({ controls, spaceAfter, url, file, loop = true }: VideoProps) => {
   const [hover, setHover] = useState(false);
-  const [forceShowControls, setForceShowControls] = useState(false);
+  const ytDomains = ['youtube.com', 'youtu.be'];
+  const [forceShowControls, setForceShowControls] = useState(
+    ytDomains.some(domain => url?.includes(domain))
+  );
   const marginBottom = getInitialMarginBottom(spaceAfter);
 
   return (
@@ -60,7 +63,7 @@ const Video: React.FC<Props> = ({ controls, spaceAfter, url, file, loop = true }
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}>
       <VisibilitySensor partialVisibility={isMobileOrTablet}>
-        {({ isVisible }) => (
+        {({ isVisible }: { isVisible: boolean }) => (
           <div
             style={{
               position: 'relative',
@@ -69,8 +72,8 @@ const Video: React.FC<Props> = ({ controls, spaceAfter, url, file, loop = true }
               backgroundColor: '#000',
               marginBottom,
             }}>
-            <FilePlayer
-              url={isVisible || !isMobileOrTablet ? url || `/static/videos/${file}` : null}
+            <ReactPlayer
+              url={isVisible || !isMobileOrTablet ? url || `/static/videos/${file}` : undefined}
               className="react-player"
               width="100%"
               height="400px"

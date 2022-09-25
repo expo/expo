@@ -178,7 +178,7 @@ export class UploadTask extends FileSystemCancellableNetworkTask {
         this.url = url;
         this.fileUri = fileUri;
         this.callback = callback;
-        const httpMethod = (options?.httpMethod?.toUpperCase ||
+        const httpMethod = (options?.httpMethod?.toUpperCase() ||
             'POST');
         this.options = {
             sessionType: FileSystemSessionType.BACKGROUND,

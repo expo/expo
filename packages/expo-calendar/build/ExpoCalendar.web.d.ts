@@ -7,3 +7,4 @@ declare const _default: {
     requestRemindersPermissionsAsync(): Promise<PermissionResponse>;
 };
 export default _default;
+//# sourceMappingURL=ExpoCalendar.web.d.ts.map

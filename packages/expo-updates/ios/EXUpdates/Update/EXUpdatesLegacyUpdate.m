@@ -8,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString * const EXUpdatesExpoAssetBaseUrl = @"https://d1wp6m56sqw74a.cloudfront.net/~assets/";
+static NSString * const EXUpdatesExpoAssetBaseUrl = @"https://classic-assets.eascdn.net/~assets/";
 static NSString * const EXUpdatesExpoIoDomain = @"expo.io";
 static NSString * const EXUpdatesExpHostDomain = @"exp.host";
 static NSString * const EXUpdatesExpoTestDomain = @"expo.test";

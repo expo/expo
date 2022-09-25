@@ -1,6 +1,11 @@
-const path = require('path');
-const visit = require('unist-util-visit');
-const { URL } = require('url');
+import path from 'path';
+import { visit } from 'unist-util-visit';
+import { URL } from 'url';
+
+/**
+ * @typedef {import('@types/mdast').Root} Root - https://github.com/syntax-tree/mdast#root
+ * @typedef {import('vfile').VFile} VFile - https://github.com/syntax-tree/unist#file
+ */
 
 const DEFAULT_OPTIONS = {
   extension: 'md',
@@ -21,9 +26,13 @@ const FAKE_DOMAIN = 'https://fake.domain';
  * @param {boolean} [options.trailingSlash=true]
  * @returns {function} remark plugin
  */
-module.exports = function remarkLinkRewrite(options) {
+export default function remarkLinkRewrite(options) {
   const settings = { ...DEFAULT_OPTIONS, ...options };
 
+  /**
+   * @param {Root} tree
+   * @param {VFile} file
+   */
   return (tree, file) => {
     // we can't rewrite files without knowing where the file exists
     if (!file.cwd || !file.history || !file.history.length) {
@@ -55,8 +64,9 @@ module.exports = function remarkLinkRewrite(options) {
           newUrl = newUrl.replace(ignoredIndex, '');
         }
 
-        node.url = `/${newUrl}`;
+        // force forward slash on non-posix systems
+        node.url = `/${newUrl.replace(/\\/g, '/')}`;
       }
     });
   };
-};
+}

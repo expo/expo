@@ -9,3 +9,4 @@ export { VideoThumbnailsOptions, VideoThumbnailsResult };
  * @return Returns a promise which fulfils with [`VideoThumbnailsResult`](#videothumbnailsresult).
  */
 export declare function getThumbnailAsync(sourceFilename: string, options?: VideoThumbnailsOptions): Promise<VideoThumbnailsResult>;
+//# sourceMappingURL=VideoThumbnails.d.ts.map

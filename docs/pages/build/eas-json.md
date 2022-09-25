@@ -3,7 +3,7 @@ title: Configuring EAS Build with eas.json
 sidebar_title: Configuration with eas.json
 ---
 
-**eas.json** is the configuration file for EAS CLI and services. It is located at the root of your project next to your **package.json**. Configuration for EAS Build all belongs under the `"build`" key. A minimal **eas.json** may look something like this:
+**eas.json** is the configuration file for EAS CLI and services. It is located at the root of your project next to your **package.json**. Configuration for EAS Build all belongs under the `"build"` key. A minimal **eas.json** may look something like this:
 
 ```json
 {
@@ -26,11 +26,11 @@ A build profile is a named grouping of configuration that describes the necessar
 
 The JSON object under the `build` key can contain multiple build profiles, and you can name these build profiles whatever you like; in the above example, there are three build profiles: `development`, `preview`, and `production`, but these could have been named `foo`, `bar`, and `baz` if that was your preference.
 
-To run a build with a specific profile, execute `eas build --profile <profile-name>`. If you omit the `--profile` flag, EAS CLI will default to using the channel with the name **production**, if it exists.
+To run a build with a specific profile, execute `eas build --profile <profile-name>`. If you omit the `--profile` flag, EAS CLI will default to using the profile with the name **production**, if it exists.
 
 ### Platform-specific and common options
 
-Inside each build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build. Fields that are available to both platforms can provided on the platform-specific configuration object or on the root of the profile.
+Inside each build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build. Fields that are available to both platforms can be provided on the platform-specific configuration object or on the root of the profile.
 
 ### Sharing configuration between profiles
 
@@ -52,13 +52,15 @@ You may alternatively prefer for your development build to [run in an iOS simula
 
 ```json
 {
-  // ...
-  "development": {
-    "developmentClient": true,
-    "distribution": "internal",
-    "ios": {
-      "simulator": true
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true
+      }
     }
+    // ...
   }
   // ...
 }
@@ -74,9 +76,11 @@ A minimal `preview` profile looks like this:
 
 ```json
 {
-  // ...
-  "preview": {
-    "distribution": "internal"
+  "build": {
+    "preview": {
+      "distribution": "internal"
+    }
+    // ...
   }
   // ...
 }
@@ -94,11 +98,17 @@ A minimal `production` profile looks like this:
 
 ```json
 {
-  // ...
-  "production": {}
+  "build": {
+    "production": {}
+    // ...
+  }
   // ...
 }
 ```
+
+### Installing multiple builds of the same app on a single device
+
+It's common to have development and production builds installed simultaneously on the same device. [Learn about "installing app variants on the same device"](../build-reference/variants.md).
 
 ## Configuring your build tools
 
@@ -110,9 +120,11 @@ Versions for the most common build tools can be set on build profiles with field
 
 ```json
 {
-  // ...
-  "production": {
-    "node": "16.13.0"
+  "build": {
+    "production": {
+      "node": "16.13.0"
+    }
+    // ...
   }
   // ...
 }
@@ -122,18 +134,20 @@ It's common to want to share build tool configuration between profiles, and we c
 
 ```json
 {
-  // ...
-  "production": {
-    "node": "16.13.0"
-  },
-  "preview": {
-    "extends": "production",
-    "distribution": "internal"
-  },
-  "development": {
-    "extends": "production",
-    "developmentClient": "true",
-    "distribution": "internal"
+  "build": {
+    "production": {
+      "node": "16.13.0"
+    },
+    "preview": {
+      "extends": "production",
+      "distribution": "internal"
+    },
+    "development": {
+      "extends": "production",
+      "developmentClient": "true",
+      "distribution": "internal"
+    }
+    // ...
   }
   // ...
 }
@@ -147,24 +161,26 @@ If you are using the Expo managed workflow, EAS Build will pick the appropriate 
 
 ## Environment variables
 
-You can configure environment variables on your build profiles using the `"env"` field. These environment variable those will be used to evaluate `app.config.js` locally when you run `eas build`, and they will also be set on the EAS Build worker.
+You can configure environment variables on your build profiles using the `"env"` field. These environment variable will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build worker.
 
 ```json
 {
-  // ...
-  "production": {
-    "node": "16.13.0",
-    "env": {
-      "API_URL": "https://company.com/api"
+  "build": {
+    "production": {
+      "node": "16.13.0",
+      "env": {
+        "API_URL": "https://company.com/api"
+      }
+    },
+    "preview": {
+      "extends": "production",
+      "distribution": "internal",
+      "env": {
+        "API_URL": "https://staging.company.com/api"
+      }
     }
-  },
-  "preview": {
-    "extends": "production",
-    "distribution": "internal",
-    "env": {
-      "API_URL": "https://staging.company.com/api"
-    }
-  },
+    // ...
+  }
   // ...
 }
 ```

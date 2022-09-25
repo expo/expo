@@ -2,6 +2,8 @@
 title: App Icons
 ---
 
+import Video from '~/components/plugins/Video';
+
 Your app's icon is what users see on the home screen of their devices, as well as in the App Store and Play Store. This is one topic where platform differences matter, and requirements can be strict. This guide offers details on how to make sure your App Icon looks as good as possible on all devices.
 
 ## Configuring your App's Icon
@@ -14,17 +16,13 @@ The most straightforward way to provide an icon for your app is to provide the [
 
 Create an app icon and splash image with the [Figma template](https://www.figma.com/community/file/1020369500490206655) and video below:
 
-<object width="100%" height="400">
-  <param name="movie" value="https://youtube.com/embed/mVOFvLSiJ_s" />
-  <param name="wmode" value="transparent" />
-  <embed src="https://youtube.com/embed/mVOFvLSiJ_s" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
-</object>
+<Video url="https://youtube.com/embed/mVOFvLSiJ_s" /> 
 
 ### iOS
 
 - The icon you use for iOS should follow the [Apple Human Interface Guidelines](https://developer.apple.com/ios/human-interface-guidelines/icons-and-images/app-icon/) for iOS Icons.
 - Use a png file.
-- 1024x1024 is a good size. [EAS Build](/build/setup.md) will generate the other sizes for you. The largest size it generates is 1024x1024.
+- 1024x1024 is a good size. If you have an Expo managed project, [EAS Build](/build/setup.md) will generate the other sizes for you. If you have a bare workflow project, you should generate the icons on your own. The largest size EAS Build generates is 1024x1024.
 - The icon must be exactly square, i.e. a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
 

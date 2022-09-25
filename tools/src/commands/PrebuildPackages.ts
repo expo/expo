@@ -1,10 +1,9 @@
+import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import { performance } from 'perf_hooks';
-import { Command } from '@expo/commander';
 
 import logger from '../Logger';
 import { Package, getPackageByName } from '../Packages';
-import XcodeProject from '../prebuilds/XcodeProject';
 import {
   buildFrameworksForProjectAsync,
   cleanTemporaryFilesAsync,
@@ -12,6 +11,7 @@ import {
   generateXcodeProjectSpecAsync,
   PACKAGES_TO_PREBUILD,
 } from '../prebuilds/Prebuilder';
+import XcodeProject from '../prebuilds/XcodeProject';
 
 type ActionOptions = {
   removeArtifacts: boolean;

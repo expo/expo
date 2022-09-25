@@ -1,6 +1,6 @@
 export interface StoryOptions {
     projectRoot: string;
-    watchRoot: string;
+    watchRoots: string[];
 }
 export declare type StoryManifest = {
     files: Record<string, StoryFile>;
@@ -16,3 +16,4 @@ export declare type StoryItem = {
     id: string;
     name: string;
 };
+//# sourceMappingURL=index.d.ts.map

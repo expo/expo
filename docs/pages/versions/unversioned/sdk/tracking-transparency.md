@@ -1,16 +1,17 @@
 ---
 title: TrackingTransparency
-sourceCodeUrl: 'https://github.com/expo/expo/tree/master/packages/expo-tracking-transparency'
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-tracking-transparency'
+packageName: 'expo-tracking-transparency'
 ---
 
 import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
-import InstallSection from '~/components/plugins/InstallSection';
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
-A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, etc... This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](https://docs.expo.dev/versions/latest/config/app/#infoplist) to explain how the user will be tracked, otherwise your app will be rejected by Apple.
+A library for requesting permission to track the user or their device. Examples of data used for tracking include email address, device ID, advertising ID, etc... This permission is only necessary on iOS 14 and higher; on iOS 13 and below this permission is always granted. If the "Allow Apps to Request to Track" device-level setting is off, this permission will be denied. Be sure to add `NSUserTrackingUsageDescription` to your [**Info.plist**](/versions/latest/config/app/#infoplist) to explain how the user will be tracked, otherwise your app will be rejected by Apple.
 
 For more information on Apple's new App Tracking Transparency framework, please refer to their [documentation](https://developer.apple.com/app-store/user-privacy-and-data-use/).
 
@@ -18,11 +19,11 @@ For more information on Apple's new App Tracking Transparency framework, please 
 
 ## Installation
 
-<InstallSection packageName="expo-tracking-transparency" />
+<APIInstallSection />
 
 ## Configuration in app.json / app.config.js
 
-You can configure `expo-tracking-transparency` using its built-in [config plugin](../../../guides/config-plugins.md) if you use config plugins in your project ([EAS Build](../../../build/introduction.md) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-tracking-transparency` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigClassic>
 
@@ -32,7 +33,7 @@ You can configure [the permissions for this library](#permissions) using [`ios.i
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-tracking-transparency` repository](https://github.com/expo/expo/tree/master/packages/expo-tracking-transparency#installation-in-bare-react-native-projects).
+Learn how to configure the native projects in the [installation instructions in the `expo-tracking-transparency` repository](https://github.com/expo/expo/tree/main/packages/expo-tracking-transparency#installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 

@@ -6,3 +6,4 @@ export default function deprecate(library: string, deprecatedAPI: string, option
     currentVersion?: string;
     versionToRemove?: string;
 }): void;
+//# sourceMappingURL=deprecate.d.ts.map
