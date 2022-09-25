@@ -54,6 +54,7 @@ export async function instantiateMetroAsync(
 
   // Auto pick App entry: this is injected with Babel.
   process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
+  process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
 
   const {
     middleware,
