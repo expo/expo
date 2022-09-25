@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('expo-tracking-transparency/package.json');
 

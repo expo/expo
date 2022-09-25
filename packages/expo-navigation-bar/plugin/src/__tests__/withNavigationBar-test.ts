@@ -1,4 +1,4 @@
-import { AndroidConfig, WarningAggregator } from '@expo/config-plugins';
+import { AndroidConfig, WarningAggregator } from 'expo/config-plugins';
 
 import {
   resolveProps,
@@ -8,8 +8,8 @@ import {
   withAndroidNavigationBarExpoGoManifest,
 } from '../withNavigationBar';
 
-jest.mock('@expo/config-plugins', () => {
-  const plugins = jest.requireActual('@expo/config-plugins');
+jest.mock('expo/config-plugins', () => {
+  const plugins = jest.requireActual('expo/config-plugins');
   return {
     ...plugins,
     WarningAggregator: { addWarningAndroid: jest.fn() },

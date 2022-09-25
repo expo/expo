@@ -1,4 +1,4 @@
-import { AndroidConfig } from '@expo/config-plugins';
+import { AndroidConfig } from 'expo/config-plugins';
 import { resolve } from 'path';
 
 import { getBranchApiKey, setBranchApiKey } from '../withBranchAndroid';

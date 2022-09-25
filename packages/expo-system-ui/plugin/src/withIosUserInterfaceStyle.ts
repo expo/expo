@@ -1,5 +1,5 @@
-import { InfoPlist, ConfigPlugin, withInfoPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { InfoPlist, ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
 
 export const withIosUserInterfaceStyle: ConfigPlugin = (config) => {
   return withInfoPlist(config, (config) => {

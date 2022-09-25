@@ -499,7 +499,61 @@ Because of this reasoning, the root of a Node module is searched instead of righ
 
 To make plugin development easier, we've added plugin support to [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts). Refer to the [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) for more info on using TypeScript, and Jest to build plugins.
 
-Plugins will generally have `@expo/config-plugins` installed as a dependency, and `expo-module-scripts`, `@expo/config-types` installed as a devDependencies.
+### Installing dependencies
+
+Use the following dependencies in a library that provides a config plugin:
+
+```json
+{
+  "dependencies": {},
+  "devDependencies": {
+    "expo": "^46.0.0"
+  },
+  "peerDependencies": {
+    "expo": ">=46.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  }
+}
+```
+
+- You may update the exact version of `expo` to build against a specific version.
+- For simple config plugins that depend on core, stable APIs, such as a plugin that only modifies **Info.plist** or **AndroidManifest.xml**, you can use a loose dependency such as in the example above.
+- You may also want to install [`expo-module-scripts`](https://github.com/expo/expo/blob/main/packages/expo-module-scripts/README.md) as a development dependency, but it's not required.
+
+### Importing the config plugins package
+
+#### SDK 46 and lower
+
+For SDK 46 and lower, it's best practice to import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package.
+
+```js
+const { .. } = require('@expo/config-plugins');
+```
+
+#### SDK 47 and higher
+
+> Note: SDK 47 is scheduled to be released in Q3 2022
+
+The `@expo/config-plugins` and `@expo/config` packages are re-exported from the `expo` package starting in SDK 47.
+
+```js
+const { .. } = require('expo/config-plugins');
+const { .. } = require('expo/config');
+```
+
+Importing through the `expo` package ensures that you are using the version of the `@expo/config-plugins` and `@expo/config` packages that are depended on by the `expo` package.
+
+If you do not import the package through the `expo` re-export in this way, you may accidentally be importing an incompatible version (depending on the implementation details of module hoisting in the package manager used by the developer consuming the module) or be unable to import the module at all (if using "plug and play" features of a package manager like Yarn Berry or pnpm).
+
+Config types are exported directly from `expo/config`, so there is no need to install or import from `@expo/config-types`:
+
+```ts
+import { ExpoConfig, ConfigContext } from 'expo/config';
+```
 
 ### Best practices for mods
 
@@ -553,8 +607,13 @@ You can use built-in types and helpers to ease the process of working with compl
 Here's an example of adding a `<meta-data android:name="..." android:value="..."/>` to the default `<application android:name=".MainApplication" />`.
 
 ```ts
+// Use these imports in SDK 46 and lower
 import { AndroidConfig, ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
+
+// In SDK 47 and higher, use the following imports instead:
+// import { AndroidConfig, ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
+// import { ExpoConfig } from 'expo/config';
 
 // Using helpers keeps error messages unified and helps cut down on XML format changes.
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow } = AndroidConfig.Manifest;
@@ -595,8 +654,13 @@ Using the `withInfoPlist` is a bit safer than statically modifying the `expo.ios
 Here's an example of adding a `GADApplicationIdentifier` to the **Info.plist**:
 
 ```ts
+// Use these imports in SDK 46 and lower
 import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
+
+// In SDK 47 and higher, use the following imports instead:
+// import { ConfigPlugin, InfoPlist, withInfoPlist } from 'expo/config-plugins';
+// import { ExpoConfig } from 'expo/config';
 
 // Pass `<string>` to specify that this plugin requires a string property.
 export const withCustomConfig: ConfigPlugin<string> = (config, id) => {

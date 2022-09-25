@@ -1,4 +1,4 @@
-import { IOSConfig } from '@expo/config-plugins';
+import { IOSConfig } from 'expo/config-plugins';
 import { fs, vol } from 'memfs';
 import * as path from 'path';
 

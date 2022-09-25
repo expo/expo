@@ -12,6 +12,7 @@
 
 ### 💡 Others
 
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Updated docs link. ([#18972](https://github.com/expo/expo/pull/18972) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 

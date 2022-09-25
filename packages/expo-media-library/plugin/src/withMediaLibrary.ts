@@ -4,7 +4,7 @@ import {
   withAndroidManifest,
   AndroidConfig,
   createRunOncePlugin,
-} from '@expo/config-plugins';
+} from 'expo/config-plugins';
 
 const pkg = require('expo-media-library/package.json');
 
