@@ -1,6 +1,7 @@
 package expo.modules.kotlin.modules
 
 import expo.modules.kotlin.ConcatIterator
+import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.objects.ObjectDefinitionData
@@ -11,6 +12,7 @@ class ModuleDefinitionData(
   val objectDefinition: ObjectDefinitionData,
   val viewManagerDefinition: ViewManagerDefinition? = null,
   val eventListeners: Map<EventName, EventListener> = emptyMap(),
+  val registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null
 ) {
 
   val constantsProvider = objectDefinition.constantsProvider

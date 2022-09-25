@@ -2,7 +2,8 @@
 title: Introduction
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import Video from '~/components/plugins/Video';
 
 > Ready to advance from Expo Go and get a development build of your project? Follow the [Getting Started guide](getting-started.md).
 
@@ -10,8 +11,8 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 
 Building your project with Expo allows you to iterate quickly and safely by allowing you to make most changes in JavaScript. [Your team can achieve web-like iteration speeds](https://blog.expo.dev/javascript-driven-development-with-custom-runtimes-eda87d574c9d) by decomposing your application into:
 
-- **A Client**: A native binary that can interact with platform API which is built and distributed the same as in traditional native development. Expo Go is an example of a client that is used to develop React Native apps.
-- **An Update**: An atomic collection of assets like JavaScript, data files, or media that instruct the client how to behave. These updates may be served from your local computer by `expo-cli`, embedded in the binary by EAS Build, or hosted on a publicly available server.
+- **A Client**: A native binary which is built with Xcode or Android Studio. Expo Go is an example of a client that is used to develop React Native apps.
+- **An Update**: A bundle of your application JavaScript code and assets (images, video, fonts, etc.). An update may be served from your local computer with Expo CLI, embedded in the binary by EAS Build, or hosted on a publicly available server.
 
 ## From Expo Go to Development Builds
 
@@ -21,8 +22,4 @@ To help new projects get started, the [Expo Go](https://expo.dev/client) app is 
 
 > Ready to create a development build of your project? Follow the [Getting Started guide](getting-started.md).
 
-<object width="100%" height="400">
-  <param name="movie" value="https://youtube.com/embed/_SWalkrP0CA" />
-  <param name="wmode" value="transparent" />
-  <embed src="https://youtube.com/embed/_SWalkrP0CA" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
-</object>
+<Video url="https://youtube.com/embed/_SWalkrP0CA" />

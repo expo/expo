@@ -3,10 +3,18 @@
 package expo.modules.kotlin.types
 
 import android.graphics.Color
+import android.net.Uri
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
+import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.JavaScriptObject
+import expo.modules.kotlin.jni.JavaScriptValue
+import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.records.RecordTypeConverter
 import expo.modules.kotlin.typedarray.BigInt64Array
 import expo.modules.kotlin.typedarray.BigUint64Array
 import expo.modules.kotlin.typedarray.Float32Array
@@ -14,15 +22,20 @@ import expo.modules.kotlin.typedarray.Float64Array
 import expo.modules.kotlin.typedarray.Int16Array
 import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
-import expo.modules.kotlin.jni.JavaScriptObject
-import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.typedarray.TypedArray
 import expo.modules.kotlin.typedarray.Uint16Array
 import expo.modules.kotlin.typedarray.Uint32Array
 import expo.modules.kotlin.typedarray.Uint8Array
 import expo.modules.kotlin.typedarray.Uint8ClampedArray
-import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.records.RecordTypeConverter
+import expo.modules.kotlin.types.io.FileTypeConverter
+import expo.modules.kotlin.types.io.PathTypeConverter
+import expo.modules.kotlin.types.net.JavaURITypeConverter
+import expo.modules.kotlin.types.net.URLTypConverter
+import expo.modules.kotlin.types.net.UriTypeConverter
+import java.io.File
+import java.net.URI
+import java.net.URL
+import java.nio.file.Path
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.full.createType
@@ -100,14 +113,37 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return converter
     }
 
-    throw MissingTypeConverter(type)
+    return handelEither(type, kClass) ?: throw MissingTypeConverter(type)
+  }
+
+  @OptIn(EitherType::class)
+  private fun handelEither(type: KType, kClass: KClass<*>): TypeConverter<*>? {
+    if (kClass.isSubclassOf(Either::class)) {
+      if (kClass.isSubclassOf(EitherOfFour::class)) {
+        return EitherOfFourTypeConverter<Any, Any, Any, Any>(this, type)
+      }
+      if (kClass.isSubclassOf(EitherOfThree::class)) {
+        return EitherOfThreeTypeConverter<Any, Any, Any>(this, type)
+      }
+      return EitherTypeConverter<Any, Any>(this, type)
+    }
+
+    return null
   }
 
   private fun createCashedConverters(isOptional: Boolean): Map<KType, TypeConverter<*>> {
-    val intTypeConverter = IntTypeConverter(isOptional)
-    val doubleTypeConverter = DoubleTypeConverter(isOptional)
-    val floatTypeConverter = FloatTypeConverter(isOptional)
-    val boolTypeConverter = BoolTypeConverter(isOptional)
+    val intTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.INT)
+    ) { it.asDouble().toInt() }
+    val doubleTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.DOUBLE)
+    ) { it.asDouble() }
+    val floatTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.FLOAT)
+    ) { it.asDouble().toFloat() }
+    val boolTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.BOOLEAN)
+    ) { it.asBoolean() }
 
     return mapOf(
       Int::class.createType(nullable = isOptional) to intTypeConverter,
@@ -122,18 +158,56 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       Boolean::class.createType(nullable = isOptional) to boolTypeConverter,
       java.lang.Boolean::class.createType(nullable = isOptional) to boolTypeConverter,
 
-      String::class.createType(nullable = isOptional) to StringTypeConverter(isOptional),
+      String::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.STRING)
+      ) { it.asString() },
 
-      ReadableArray::class.createType(nullable = isOptional) to ReadableArrayTypeConverter(isOptional),
-      ReadableMap::class.createType(nullable = isOptional) to ReadableMapTypeConverter(isOptional),
+      ReadableArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.READABLE_ARRAY)
+      ) { it.asArray() },
+      ReadableMap::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.READABLE_MAP)
+      ) { it.asMap() },
 
-      IntArray::class.createType(nullable = isOptional) to PrimitiveIntArrayTypeConverter(isOptional),
-      DoubleArray::class.createType(nullable = isOptional) to PrimitiveDoubleArrayTypeConverter(isOptional),
-      FloatArray::class.createType(nullable = isOptional) to PrimitiveFloatArrayTypeConverter(isOptional),
-      BooleanArray::class.createType(nullable = isOptional) to PrimitiveBooleanArrayTypeConverter(isOptional),
+      IntArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.INT)
+      ) {
+        val jsArray = it.asArray()
+        IntArray(jsArray.size()) { index ->
+          jsArray.getInt(index)
+        }
+      },
+      DoubleArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.DOUBLE)
+      ) {
+        val jsArray = it.asArray()
+        DoubleArray(jsArray.size()) { index ->
+          jsArray.getDouble(index)
+        }
+      },
+      FloatArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.FLOAT)
+      ) {
+        val jsArray = it.asArray()
+        FloatArray(jsArray.size()) { index ->
+          jsArray.getDouble(index).toFloat()
+        }
+      },
+      BooleanArray::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType.forPrimitiveArray(CppType.BOOLEAN)
+      ) {
+        val jsArray = it.asArray()
+        BooleanArray(jsArray.size()) { index ->
+          jsArray.getBoolean(index)
+        }
+      },
 
-      JavaScriptValue::class.createType(nullable = isOptional) to JavaScriptValueTypeConvert(isOptional),
-      JavaScriptObject::class.createType(nullable = isOptional) to JavaScriptObjectTypeConverter(isOptional),
+      JavaScriptValue::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.JS_VALUE)
+      ),
+      JavaScriptObject::class.createType(nullable = isOptional) to createTrivialTypeConverter(
+        isOptional, ExpectedType(CppType.JS_OBJECT)
+      ),
 
       Int8Array::class.createType(nullable = isOptional) to Int8ArrayTypeConverter(isOptional),
       Int16Array::class.createType(nullable = isOptional) to Int16ArrayTypeConverter(isOptional),
@@ -149,6 +223,13 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       TypedArray::class.createType(nullable = isOptional) to TypedArrayTypeConverter(isOptional),
 
       Color::class.createType(nullable = isOptional) to ColorTypeConverter(isOptional),
+
+      URL::class.createType(nullable = isOptional) to URLTypConverter(isOptional),
+      Uri::class.createType(nullable = isOptional) to UriTypeConverter(isOptional),
+      URI::class.createType(nullable = isOptional) to JavaURITypeConverter(isOptional),
+
+      File::class.createType(nullable = isOptional) to FileTypeConverter(isOptional),
+      Path::class.createType(nullable = isOptional) to PathTypeConverter(isOptional),
 
       Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )

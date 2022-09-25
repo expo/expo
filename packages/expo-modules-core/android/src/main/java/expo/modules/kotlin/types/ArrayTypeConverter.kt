@@ -35,7 +35,24 @@ class ArrayTypeConverter(
     return array
   }
 
-  override fun convertFromAny(value: Any): Array<*> = value as Array<*>
+  override fun convertFromAny(value: Any): Array<*> {
+    return if (arrayElementConverter.isTrivial()) {
+      value as Array<*>
+    } else {
+      (value as Array<*>).map {
+        exceptionDecorator({ cause ->
+          CollectionElementCastException(
+            arrayType,
+            arrayType.arguments.first().type!!,
+            it!!::class,
+            cause
+          )
+        }) {
+          arrayElementConverter.convert(it)
+        }
+      }.toTypedArray()
+    }
+  }
 
   /**
    * We can't use a Array<Any?> here. We have to create a typed array.
@@ -52,4 +69,6 @@ class ArrayTypeConverter(
   }
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forPrimitiveArray(arrayElementConverter.getCppRequiredTypes())
+
+  override fun isTrivial() = arrayElementConverter.isTrivial()
 }

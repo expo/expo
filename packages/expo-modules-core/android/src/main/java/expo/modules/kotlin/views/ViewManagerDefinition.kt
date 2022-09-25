@@ -1,7 +1,6 @@
 package expo.modules.kotlin.views
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReactContext
@@ -11,6 +10,7 @@ import expo.modules.core.ViewManager
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
+import expo.modules.kotlin.logger
 import expo.modules.kotlin.recycle
 
 class ViewManagerDefinition(
@@ -43,7 +43,7 @@ class ViewManagerDefinition(
         try {
           propDelegate.set(this, onView)
         } catch (exception: Throwable) {
-          Log.e("ExpoModulesCore", "Cannot set the '$key' prop on the '${viewType.simpleName}'.", exception)
+          logger.error("❌ Cannot set the '$key' prop on the '${viewType.simpleName}'", exception)
 
           handleException(
             onView,

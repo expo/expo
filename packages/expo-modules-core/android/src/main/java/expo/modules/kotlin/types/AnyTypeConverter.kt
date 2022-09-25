@@ -22,9 +22,7 @@ class AnyTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Any>(is
     }
   }
 
-  override fun convertFromAny(value: Any): Any {
-    return value
-  }
+  override fun convertFromAny(value: Any): Any = value
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forAny()
 }

@@ -1,7 +1,11 @@
-import MDX from '@mdx-js/runtime';
 import * as React from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import * as components from '~/common/translate-markdown';
+import { createPermalinkedComponent } from '~/common/create-permalinked-component';
+import { HeadingType } from '~/common/headingManager';
+import { InlineCode } from '~/components/base/code';
+import { PDIV } from '~/components/base/paragraph';
+import { mdInlineComponentsNoValidation } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 export type Property = {
@@ -17,6 +21,17 @@ type FormattedProperty = {
   description: string;
   nestingLevel: number;
 };
+
+const Anchor = createPermalinkedComponent(PDIV, {
+  baseNestingLevel: 3,
+  sidebarType: HeadingType.InlineCode,
+});
+
+const PropertyName = ({ name, nestingLevel }: Pick<FormattedProperty, 'name' | 'nestingLevel'>) => (
+  <Anchor level={nestingLevel}>
+    <InlineCode>{name}</InlineCode>
+  </Anchor>
+);
 
 export function formatSchema(rawSchema: Property[]) {
   const formattedSchema: FormattedProperty[] = [];
@@ -37,9 +52,7 @@ function appendProperty(
   let nestingLevel = _nestingLevel;
 
   formattedSchema.push({
-    name: nestingLevel
-      ? `<subpropertyAnchor level={${nestingLevel}}><inlineCode>${property.name}</inlineCode></subpropertyAnchor>`
-      : `<propertyAnchor level={0}><inlineCode>${property.name}</inlineCode></propertyAnchor>`,
+    name: property.name,
     description: createDescription(property),
     nestingLevel,
   });
@@ -97,11 +110,13 @@ export default class EasJsonPropertiesTable extends React.Component<{
                       listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
                       overflowX: 'visible',
                     }}>
-                    <MDX components={components}>{property.name}</MDX>
+                    <PropertyName name={property.name} nestingLevel={property.nestingLevel} />
                   </div>
                 </Cell>
                 <Cell>
-                  <MDX components={components}>{property.description}</MDX>
+                  <ReactMarkdown components={mdInlineComponentsNoValidation}>
+                    {property.description}
+                  </ReactMarkdown>
                 </Cell>
               </Row>
             );
