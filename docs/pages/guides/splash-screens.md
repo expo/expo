@@ -14,9 +14,9 @@ The default splash screen is a blank white screen, this can be customized using 
 
 ### Video walkthrough
 
-Create an app icon and splash image with the [Figma template](https://www.figma.com/file/ddc0glVeILssZl0Dcn1lSS/App-Icon-and-Splash?node-id=0%3A1) and video below:
+Create an app icon and splash image with the [Figma template](https://www.figma.com/community/file/1155362909441341285) and video below:
 
-<Video url="https://youtube.com/embed/mVOFvLSiJ_s" />
+<Video url="https://youtu.be/QSNkU7v0MPc" />
 
 ### Make a splash image
 
