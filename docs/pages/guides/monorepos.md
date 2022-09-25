@@ -297,14 +297,14 @@ Whenever multiple workspaces use the same version of a single dependency, they c
 
 In the [Modify the Metro config](#modify-the-metro-config) step, we instructed Metro to do a couple of this, specifically:
 
-- #2 - Resolve dependencies in the order of the local **/apps/<name\>/node_modules** and root **/node_modules** directories.
+- #2 - Resolve dependencies in the order of the local **/apps/&lt;name&gt;/node_modules** and root **/node_modules** directories.
 - #3 - Disable resolving dependencies using the hierarchical lookup strategy.
 
-If a workspace uses a different library version than the one installed in the root **/node_modules**, that different library version must be installed in the workspace **/apps/<name\>/node_modules** directory.
+If a workspace uses a different library version than the one installed in the root **/node_modules**, that different library version must be installed in the workspace **/apps/&lt;name&gt;/node_modules** directory.
 
-When Metro resolves a library, e.g. `react`, from the workspace, it should find that different version in **/apps/<name\>/node_modules** and not look inside the root **/node_modules** directory.
+When Metro resolves a library, e.g. `react`, from the workspace, it should find that different version in **/apps/&lt;name&gt;/node_modules** and not look inside the root **/node_modules** directory.
 
-When importing a dependency from the root **/node_modules** folder that also imports `react`, `react` should still resolve to the different version installed in **/apps/<name\>/node_modules**. That's what the disabled hierarchical lookup option does for Metro. Without this, some libraries might import the wrong `react` version and cause "multiple React versions found" errors.
+When importing a dependency from the root **/node_modules** folder that also imports `react`, `react` should still resolve to the different version installed in **/apps/&lt;name&gt;/node_modules**. That's what the disabled hierarchical lookup option does for Metro. Without this, some libraries might import the wrong `react` version and cause "multiple React versions found" errors.
 
 </Collapsible>
 

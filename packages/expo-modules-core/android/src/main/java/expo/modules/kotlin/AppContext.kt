@@ -10,8 +10,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
+import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
+import expo.modules.core.interfaces.JavaScriptContextProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
@@ -27,6 +29,7 @@ import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
 import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
+import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.KEventEmitterWrapper
@@ -50,8 +53,7 @@ class AppContext(
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
 ) : CurrentActivityProvider, AppContextActivityResultCaller {
-  val registry = ModuleRegistry(WeakReference(this)).apply {
-  }
+  val registry = ModuleRegistry(WeakReference(this))
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
@@ -74,6 +76,8 @@ class AppContext(
       CoroutineName("expo.modules.MainQueue")
   )
 
+  internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
+
   private val activityResultsManager = ActivityResultsManager(this)
 
   init {
@@ -87,7 +91,10 @@ class AppContext(
       // `AppContext` during their initialisation (or during `OnCreate` method), so we need to ensure all `AppContext`'s
       // properties are initialized first. Not having that would trigger NPE.
       registry.register(ErrorManagerModule())
+      registry.register(NativeModulesProxyModule())
       registry.register(modulesProvider)
+
+      logger.info("✅ AppContext was initialized")
     }
   }
 
@@ -95,18 +102,26 @@ class AppContext(
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
-  fun installJSIInterop() {
-    jsiInterop = JSIInteropModuleRegistry(this)
-    val reactContext = reactContextHolder.get() ?: return
-    reactContext.javaScriptContextHolder?.get()
-      ?.takeIf { it != 0L }
-      ?.let {
-        jsiInterop.installJSI(
-          it,
-          reactContext.catalystInstance.jsCallInvokerHolder as CallInvokerHolderImpl,
-          reactContext.catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
-        )
-      }
+  fun installJSIInterop() = synchronized<Unit>(this) {
+    try {
+      jsiInterop = JSIInteropModuleRegistry(this)
+      val reactContext = reactContextHolder.get() ?: return
+      val jsContextProvider = legacyModule<JavaScriptContextProvider>() ?: return
+      val jsContextHolder = jsContextProvider.javaScriptContextRef
+      val catalystInstance = reactContext.catalystInstance ?: return
+      jsContextHolder
+        .takeIf { it != 0L }
+        ?.let {
+          jsiInterop.installJSI(
+            it,
+            jsContextProvider.jsCallInvokerHolder,
+            catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
+          )
+          logger.info("✅ JSI interop was installed")
+        }
+    } catch (e: Throwable) {
+      logger.error("❌ Cannot install JSI interop: $e", e)
+    }
   }
 
   /**
@@ -217,6 +232,7 @@ class AppContext(
     registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
+    logger.info("✅ AppContext was destroyed")
   }
 
   internal fun onHostResume() {
@@ -292,6 +308,7 @@ class AppContext(
    * what parts of the application outlives the Activity destruction (especially [AppContext] and other [Bridge]-related parts).
    */
   @MainThread
+  @Deprecated(message = "`registerForActivityResult` was deprecated. Please use `RegisterActivityContracts` component instead.")
   override suspend fun <I : Serializable, O> registerForActivityResult(
     contract: AppContextActivityResultContract<I, O>,
     fallbackCallback: AppContextActivityResultFallbackCallback<I, O>

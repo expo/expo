@@ -103,7 +103,7 @@ The development server is typically hosted on `http://localhost:19000`. It hosts
 
 ### EAS CLI
 
-The command-line tool for working with EAS. <!-- Pending creation of eas-cli [Read more](eas-cli.md). -->
+The command-line tool for working with EAS. {/* Pending creation of eas-cli [Read more](eas-cli.md). */}
 
 ### EAS Config
 
@@ -111,7 +111,7 @@ The `eas.json` file used to configure [EAS CLI](#eas-cli). For more information,
 
 ### EAS Metadata
 
-A command line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the `eas-cli` package and should be used to improve the iOS submission process.
+A command line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the [EAS CLI](#eas-cli) package and should be used to improve the iOS submission process, see [EAS Metadata](../eas/metadata/index.md).
 
 ### EAS Update
 
@@ -245,7 +245,7 @@ The package `@expo/cli` which is installed with the `expo` package. This is some
 
 ### Manifest
 
-An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo needs to know how to run the app and other relevant data. [Read more in "How Expo Works"](how-expo-works.md#expo-manifest).
+An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo Go needs to know how to run the app and other relevant data. [Read more in "Expo Go"](/workflow/expo-go#manifest).
 
 ### Meta
 
@@ -293,7 +293,7 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 - Android: `*.android.js`, `*.native.js`, `*.js`
 - Web: `*.web.js`, `*.js`
 
-<!-- TODO: Multi-Resolution Asset Extensions -->
+{/* TODO: Multi-Resolution Asset Extensions */}
 
 ### Prebuild
 

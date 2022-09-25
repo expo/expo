@@ -14,14 +14,14 @@ type SidebarHeadEntryProps = {
 export const SidebarHeadEntry = ({ href, title, isActive, Icon }: SidebarHeadEntryProps) => {
   return (
     <Link href={href} passHref>
-      <div css={[entryContainerStyle, isActive && activeEntryContainerStyle]}>
+      <a css={[entryContainerStyle, isActive && activeEntryContainerStyle]}>
         <Icon
           css={entryIconStyle}
           color={isActive ? theme.link.default : theme.icon.default}
           width={iconSize.small}
         />
         <span>{title}</span>
-      </div>
+      </a>
     </Link>
   );
 };
@@ -38,6 +38,7 @@ const entryContainerStyle = css({
   alignItems: 'center',
   userSelect: 'none',
   transition: 'color 100ms',
+  textDecoration: 'none',
 
   '&:last-of-type': {
     marginBottom: 0,

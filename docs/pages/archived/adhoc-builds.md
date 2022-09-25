@@ -2,7 +2,7 @@
 title: Custom Expo Go builds
 ---
 
-> **This experimental feature has been cancelled, and it is not supported in SDK >= 41, but you can keep using it for SDK <= 40 projects until January 4, 2023**. We are working on a more flexible and portable development client library. You can read more about this in the ["Expo managed workflow in 2021" blog posts](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb).
+> **This experimental feature has been cancelled, and it is not supported in SDK &gt;= 41, but you can keep using it for SDK &lt;= 40 projects until January 4, 2023**. We are working on a more flexible and portable development client library. You can read more about this in the ["Expo managed workflow in 2021" blog posts](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb).
 
 Build and install a custom version of [Expo Go](../get-started/installation.md#2-mobile-app-expo-client-for-ios) with your own Apple Credentials using our build service. This custom version of the Expo Go app contains features that were previously only available on the Android versions. Our build service will prepare your custom Expo Go app, and you can install it to your iOS device directly from our website.
 
@@ -48,7 +48,7 @@ Run `expo client:ios`
 
 You are given a choice of letting `expo-cli` create the necessary credentials for you, while still having a chance to provide your own overrides. Your Apple ID and password are used locally and never saved on Expo's servers.
 
-Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](../distribution/security.md) on what these credentials are and how we store them.
+Letting Expo handle credentials for you will greatly simplify the build process. Learn more [here](/app-signing/security) on what these credentials are and how we store them.
 
 ```sh
 $ expo client:ios

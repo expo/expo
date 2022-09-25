@@ -7,7 +7,7 @@ import expo.modules.core.interfaces.DoNotStrip
  */
 @DoNotStrip
 class SingleType(
-  expectedCppType: CppType,
+  internal val expectedCppType: CppType,
   /**
    * Types of generic parameters.
    */
@@ -16,7 +16,17 @@ class SingleType(
   /**
    * The representation of the type.
    */
-  val cppType: Int = expectedCppType.value
+  val cppType get() = expectedCppType.value
+
+  /**
+   * A convenient property to return the type of the first parameter.
+   */
+  val firstParameterType get() = parameterTypes?.get(0)
+
+  /**
+   * A convenient property to return the type of the second parameter.
+   */
+  val secondParameterType get() = parameterTypes?.get(1)
 }
 
 /**
@@ -34,4 +44,55 @@ class ExpectedType(
    * A convenient property to return combined int value of expected types.
    */
   val combinedTypes: Int = possibleTypes.fold(0) { acc, current -> acc or current.cppType }
+
+  /**
+   * A convenient property to return the first of possible types.
+   */
+  val firstType = possibleTypes.first()
+
+  operator fun plus(other: ExpectedType): ExpectedType {
+    return ExpectedType(
+      *this.possibleTypes, *other.possibleTypes
+    )
+  }
+
+  companion object {
+    fun forPrimitiveArray(parameterType: CppType) = ExpectedType(
+      SingleType(CppType.PRIMITIVE_ARRAY, arrayOf(ExpectedType(parameterType)))
+    )
+
+    fun forPrimitiveArray(parameterType: ExpectedType) = ExpectedType(
+      SingleType(CppType.PRIMITIVE_ARRAY, arrayOf(parameterType))
+    )
+
+    // We are not using all types here to provide a similar behaviour to the bridge implementation
+    fun forAny() = ExpectedType(
+      CppType.READABLE_MAP,
+      CppType.READABLE_ARRAY,
+      CppType.STRING,
+      CppType.BOOLEAN,
+      CppType.DOUBLE
+    )
+
+    fun forEnum() = ExpectedType(
+      CppType.STRING,
+      CppType.INT
+    )
+
+    fun forList(parameterType: CppType) = ExpectedType(
+      SingleType(CppType.LIST, arrayOf(ExpectedType(parameterType)))
+    )
+
+    fun forList(parameterType: ExpectedType) = ExpectedType(
+      SingleType(CppType.LIST, arrayOf(parameterType))
+    )
+
+    fun forMap(valueType: CppType) = ExpectedType(
+      SingleType(CppType.MAP, arrayOf(ExpectedType(valueType)))
+    )
+
+    fun forMap(valueType: ExpectedType) = ExpectedType(
+      SingleType(CppType.MAP, arrayOf(valueType))
+    )
+  }
 }

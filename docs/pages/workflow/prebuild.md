@@ -79,7 +79,7 @@ The purpose of the prompt is to encourage managed workflow users to add the `/io
 
 There are cases where developers may want to swap between workflows often. For example, you may want to build custom functionality natively in Xcode and Android Studio, and then move that functionality into local config plugins.
 
-<!-- It is also theoretically possible to make clean builds take seconds rather than minutes, meaning `--clean` could become the default behavior in the future. -->
+{/* It is also theoretically possible to make clean builds take seconds rather than minutes, meaning `--clean` could become the default behavior in the future. */}
 
 ## Templates
 
@@ -110,6 +110,8 @@ Everything offered by Expo including [EAS][eas], Expo CLI, and the libraries in 
 ## Pitch
 
 A single native project on its own is complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date for the latest operating system releases and to avoid falling too far behind in any third party dependencies. We created the _optional_ Expo Prebuild system to streamline this process. Below are a few issues we've identified with native development in the context of React Native and some corresponding reasons we believe Expo Prebuild solves these issues.
+
+> Prebuild can be used in any React Native project. Read more in [adopting prebuild](/guides/adopting-prebuild).
 
 ### Sensible upgrades
 

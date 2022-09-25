@@ -7,12 +7,12 @@ packageName: 'expo-firebase-analytics'
 import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
+import { Terminal } from '~/ui/components/Snippet';
 import { InlineCode } from '~/components/base/code';
 
 > **This is the only Firebase Analytics package for React Native that has universal platform support (iOS, Android, Web, and Electron).**
 
-**`expo-firebase-analytics`** enables the use of native Google Analytics for Firebase. Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
+`expo-firebase-analytics` provides a unified native and web API for Google Analytics for Firebase, including partial Expo Go compatibility. Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
 Learn more in the official [Firebase Docs](https://firebase.google.com/docs/analytics/).
 
 <PlatformsSection android emulator ios simulator web />
@@ -21,14 +21,46 @@ Learn more in the official [Firebase Docs](https://firebase.google.com/docs/anal
 
 <APIInstallSection />
 
-When using the web-platform, you'll also need to run `npx expo install firebase`, which install the Firebase JS SDK.
+When using the web platform, you'll also need to run `npx expo install firebase`, which installs the Firebase JS SDK.
 
 ## Configuration
 
-To use this package, the native Firebase configurations need to be added to your app.
-[Please follow this guide on how to set up native Firebase.](/guides/setup-native-firebase)
+### Additional configuration for iOS
 
-## Expo Go: Limitations & configuration
+`expo-firebase-analytics` uses native Firebase libraries on iOS that require additional configuration using the `expo-build-properties` config plugin. Install the plugin and apply the following configuration to your [Expo config](/workflow/configuration/) file.
+
+<Terminal cmd={["$ npx expo install expo-build-properties"]} />
+
+#### Example app.json with config plugin
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+### With native Firebase SDK
+
+If you are using `expo-firebase-analytics` with React Native Firebase, you'll have to install the native Firebase SDK using the `npx expo install` command:
+
+<Terminal cmd={["$ npx expo install @react-native-firebase/app"]} />
+
+This will ensure that the `@react-native-firebase/app` dependency version is compatible with the Expo SDK version your project uses.
+
+Also, make sure that you have React Native Firebase set up correctly in your project. For more information on how to configure it, see [using the native Firebase SDK](/guides/setup-native-firebase/#setup).
+
+### Expo Go: Limitations & configuration
 
 The use of Native Firebase Analytics requires that the google-services configuration is bundled and linked into your app. Since Expo Go loads projects on demand, it does not have the google-services configuration linked into its app-bundle.
 
@@ -56,7 +88,7 @@ You may want to use Firebase Analytics in Expo Go to verify that you are logging
 
 > This limitation only applies to the Expo Go app in the App and Play stores; standalone builds, custom clients & bare apps support the full native Firebase Analytics experience.
 
-## Optional: Enable AdSupport in Bare Workflow
+### Optional: Enable AdSupport in Bare Workflow
 
 To get extra features like `audiences`, `campaign attribution`, and some `user properties`, such as `Age` and `Interests`, you will need to include AdSupport. This is currently only possible in the Bare Workflow and not enabled by default because Apple & Google are strict with allowing apps to use this library.
 
@@ -70,9 +102,9 @@ To enable the AdSupport framework:
 
 [Learn more in the Firebase Docs](https://firebase.google.com/support/guides/analytics-adsupport)
 
-# Examples
+## Usage
 
-## How do people use my app?
+### Logging event
 
 You can gain deeper insight into what works and what doesn't by using the `logEvent` property. Also it's just a lot of fun to see that people actually use the features you work hard on! 😍
 
@@ -106,7 +138,7 @@ onPressProfileButton = uid => {
 };
 ```
 
-## React Navigation
+### React Navigation
 
 You can track the screens your users are interacting with by integrating the best navigation library: `react-navigation`
 

@@ -5,12 +5,15 @@
 ### 🛠 Breaking changes
 
 - Remove deprecated `requestCameraRollPermissionsAsync` and `getCameraRollPermissionsAsync` methods, as well as associated to them `CameraRollPermissionResponse` type. ([#18600](https://github.com/expo/expo/pull/18600) by [@Simek](https://github.com/Simek))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 - The new `PHPickerViewController` is now default picker interface on iOS 14+. ([#18871](https://github.com/expo/expo/pull/18871) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
+
+- Fix images taken with `launchCameraAsync` being translated incorrectly on some camera orientations. ([#19185](https://github.com/expo/expo/pull/19185) by [@jacobjaffe](https://github.com/JacobJaffe) and [@reececox](https://github.com/reececox))
 
 ### 💡 Others
 
