@@ -193,7 +193,7 @@ So, for example, the URI to a file named `'myFile'` under `'myDirectory'` in the
 
 Expo APIs that create files generally operate within these directories. This includes `Audio` recordings, `Camera` photos, `ImagePicker` results, `SQLite` databases and `takeSnapShotAsync()` results. This allows their use with the `FileSystem` API.
 
-Some `FileSystem` functions are able to read from (but not write to) other locations. Currently `FileSystem.getInfoAsync()` and `FileSystem.copyAsync()` are able to read from URIs returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos) from React Native.
+Some `FileSystem` functions are able to read from (but not write to) other locations.
 
 ## Constants
 
@@ -264,7 +264,7 @@ Get metadata information about a file, directory or external content/asset.
 
   - **md5 (_boolean_)** -- Whether to return the MD5 hash of the file. `false` by default.
 
-  - **size (_boolean_)** -- Explicitly specify that the file size should be included - skipping this can prevent downloading the file if it's stored in iCloud, for example. The size is always returned for `file://` locations.
+  - **size (_boolean_)** -- Explicitly specify that the file size should be included. For example, skipping this can prevent downloading the file if it's stored in iCloud The size is always returned for `file://` locations.
 
 #### Returns
 
