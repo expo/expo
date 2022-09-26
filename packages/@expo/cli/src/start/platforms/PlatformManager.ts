@@ -68,7 +68,7 @@ export class PlatformManager<
     const redirectUrl = this.props.getRedirectUrl();
     if (redirectUrl) {
       // If the redirect page feature is enabled, check if the project has a resolvable native identifier.
-      const applicationId = await this._getAppIdResolver().resolveAppIdFromNativeAsync();
+      const applicationId = await this._getAppIdResolver().getAppIdAsync();
       if (applicationId) {
         debug(`Resolving launch URL: (appId: ${applicationId}, redirect URL: ${redirectUrl})`);
         // NOTE(EvanBacon): This adds considerable amount of time to the command, we should consider removing or memoizing it.
