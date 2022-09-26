@@ -257,6 +257,7 @@ declare module 'metro' {
     optimizationSizeLimit: number;
     publicPath: string;
     allowOptionalDependencies: AllowOptionalDependencies;
+    unstable_allowRequireContext?: boolean;
   }>;
 
   //#endregion
@@ -393,9 +394,7 @@ declare module 'metro' {
 
     getCreateModuleId(): (path: string) => number;
 
-    build(
-      options: BundleOptions
-    ): Promise<{
+    build(options: BundleOptions): Promise<{
       code: string;
       map: string;
     }>;
