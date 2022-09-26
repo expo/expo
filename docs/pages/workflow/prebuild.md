@@ -79,7 +79,7 @@ The purpose of the prompt is to encourage managed workflow users to add the `/io
 
 There are cases where developers may want to swap between workflows often. For example, you may want to build custom functionality natively in Xcode and Android Studio, and then move that functionality into local config plugins.
 
-<!-- It is also theoretically possible to make clean builds take seconds rather than minutes, meaning `--clean` could become the default behavior in the future. -->
+{/* It is also theoretically possible to make clean builds take seconds rather than minutes, meaning `--clean` could become the default behavior in the future. */}
 
 ## Templates
 
@@ -111,6 +111,8 @@ Everything offered by Expo including [EAS][eas], Expo CLI, and the libraries in 
 
 A single native project on its own is complicated to maintain, scale, and grow. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date for the latest operating system releases and to avoid falling too far behind in any third party dependencies. We created the _optional_ Expo Prebuild system to streamline this process. Below are a few issues we've identified with native development in the context of React Native and some corresponding reasons we believe Expo Prebuild solves these issues.
 
+> Prebuild can be used in any React Native project. Read more in [adopting prebuild](/guides/adopting-prebuild).
+
 ### Sensible upgrades
 
 Building native code requires a basic familiarity with that native platform's default tooling leading to a fairly difficult learning curve. In cross-platform, this curve is multiplied by the amount of platforms you wish to develop for. Cross-platform tooling doesn't solve this issue if you need to drop down and implement many features individually in platform-specific native code.
@@ -127,15 +129,15 @@ Cross-platform configuration like the app icon, name, splash screen, and so on m
 
 ### Dependency side effects
 
-Many complex native packages require additional setup beyond installing and linking. For example, a camera library requires permission settings be added to the iOS `Info.plist` and the Android `AndroidManifest.xml` file, and modifying your **app/build.gradle** to add a new repository. This additional setup can be considered a disjointed side effect of a package. Pasting required side effect code into your project's native files can lead to difficult native compilation errors, and it's also code that you now own and maintain.
+Many complex native packages require additional setup beyond installing and [autolinking][autolinking]. For example, a camera library requires permission settings be added to the iOS `Info.plist` and the Android `AndroidManifest.xml` file. This additional setup can be considered a configuration side effect of a package. Pasting required side effect code into your project's native files can lead to difficult native compilation errors, and it's also code that you now own and maintain.
 
-**With Prebuild** library authors, who know how configure their library better than anyone, can create a testable and versioned script (config plugin) to automate adding the required configuration side effects. This means library side effects can be more expressive, powerful, and stable. For native code side effects, we also provide: [AppDelegate Subscribers](/modules/appdelegate-subscribers) and [Android Lifecycle Listeners](/modules/android-lifecycle-listeners) which come standard in the default [prebuild template](#templates).
+**With Prebuild** library authors, who know how to configure their library better than anyone, can create a testable and versioned script called a [config plugin][config-plugins], to automate adding the required configuration side effects for their library. This means library side effects can be more expressive, powerful, and stable. For native code side effects, we also provide: [AppDelegate Subscribers](/modules/appdelegate-subscribers) and [Android Lifecycle Listeners](/modules/android-lifecycle-listeners) which come standard in the default [prebuild template](#templates).
 
 ### Orphaned code
 
 When you uninstall a package you have to be certain you removed all of the side effects required to make that package work. If you miss anything, it leads to orphaned code that you cannot trace back to any particular package, this code builds up and makes your project harder to understand and maintain.
 
-**With Prebuild** the only side effect is the config plugin entry in a project's Expo config (**app.json**), which will fail to evaluate when the corresponding package has been uninstalled, meaning a lot less orphaned configuration.
+**With Prebuild** the only side effect is the [config plugin][config-plugins] in a project's Expo config (**app.json**), which will throw an error when the corresponding node module has been uninstalled, meaning a lot less orphaned configuration.
 
 ## Anti-pitch
 
@@ -143,7 +145,7 @@ Here are some reasons _Expo Prebuilding_ might **not** be the right fit for a pa
 
 ### React Native versioning
 
-`npx expo prebuild` generates native code based on the version of `expo` a project has installed, so a project with SDK 46 (`expo@46.0.0`) would generate a `react-native@0.69.4` app.
+`npx expo prebuild` generates native code based on the version of `expo` a project has installed, so a project with SDK 46 (`expo@46.0.0`) would generate a `react-native@0.69.5` app.
 
 Expo releases a new version approximately every quarter, and `react-native` does not follow a calendar based release schedule. This means there are times where you cannot use `npx expo prebuild` with the latest release of React Native. This could potentially be circumvented by using a custom [prebuild template](#templates) if you are willing to experiment. You can also mitigate this by cherry-picking any changes you need from the latest version of React Native into a fork and using that in your project.
 

@@ -32,7 +32,7 @@ You can configure `expo-ads-facebook` using its built-in [config plugin](../../.
 In your project's [app.json](../../../workflow/configuration.md), add your [Facebook App ID and Facebook Display Name](https://developers.facebook.com/docs/facebook-login/ios) under the `facebookAppId` and `facebookDisplayName` keys.
 
 - In the Expo Go app, all of your Facebook API calls will be made with Expo's Facebook App ID. This means you will not see any related ad info in your Facebook developer page while running your project in Expo Go.
-- To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](../../../distribution/building-standalone-apps.md).
+- To use your app's own Facebook App ID (and thus see any related ad info in your Facebook developer page), you'll need to [build a standalone app](/archive/classic-updates/building-standalone-apps).
 
 <ConfigClassic>
 
@@ -334,7 +334,7 @@ Asks for permissions to use data for tracking the user or the device.
 
 > iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
 
-##### Returns
+**Returns**
 
 A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
@@ -344,7 +344,7 @@ Checks application's permissions for using data for tracking the user or the dev
 
 > iOS: it requires the `NSUserTrackingUsageDescription` message added to the **Info.plist**.
 
-##### Returns
+**Returns**
 
 A promise that resolves to an object of type [PermissionResponse](permissions.md#permissionresponse).
 
@@ -380,7 +380,7 @@ Indicate to the Audience Network SDK if the user has consented to advertising tr
 FacebookAds.AdSettings.setAdvertisingTrackingEnabled(true);
 ```
 
-**Note:** This method is a no-op on Android and on iOS <= 13.
+**Note:** This method is a no-op on Android and on iOS &lt;= 13.
 
 #### setLogLevel (iOS)
 

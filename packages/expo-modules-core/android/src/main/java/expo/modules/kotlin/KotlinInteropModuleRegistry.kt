@@ -3,6 +3,8 @@ package expo.modules.kotlin
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManager
+import expo.modules.adapters.react.NativeModulesProxy
+import expo.modules.kotlin.defaultmodules.NativeModulesProxyModuleName
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.views.GroupViewManagerWrapper
@@ -25,6 +27,8 @@ class KotlinInteropModuleRegistry(
   private val registry: ModuleRegistry
     get() = appContext.registry
 
+  private var wasDestroyed = false
+
   fun hasModule(name: String): Boolean = registry.hasModule(name)
 
   fun callMethod(moduleName: String, method: String, arguments: ReadableArray, promise: Promise) {
@@ -41,9 +45,12 @@ class KotlinInteropModuleRegistry(
   }
 
   fun exportedModulesConstants(): Map<ModuleName, ModuleConstants> {
-    return registry.associate { holder ->
-      holder.name to holder.definition.constantsProvider()
-    }
+    return registry
+      // prevent infinite recursion - exclude NativeProxyModule constants
+      .filter { holder -> holder.name != NativeModulesProxyModuleName }
+      .associate { holder ->
+        holder.name to holder.definition.constantsProvider()
+      }
   }
 
   fun exportMethods(exportKey: (String, List<ModuleMethodInfo>) -> Unit = { _, _ -> }): Map<ModuleName, List<ModuleMethodInfo>> {
@@ -77,12 +84,11 @@ class KotlinInteropModuleRegistry(
   fun viewManagersMetadata(): Map<String, Map<String, Any>> {
     return registry
       .filter { it.definition.viewManagerDefinition != null }
-      .map { holder ->
+      .associate { holder ->
         holder.name to mapOf(
           "propsNames" to (holder.definition.viewManagerDefinition?.propsNames ?: emptyList())
         )
       }
-      .toMap()
   }
 
   fun extractViewManagersDelegateHolders(viewManagers: List<ViewManager<*, *>>): List<ViewWrapperDelegateHolder> =
@@ -108,9 +114,19 @@ class KotlinInteropModuleRegistry(
 
   fun onDestroy() {
     appContext.onDestroy()
+    wasDestroyed = true
+    logger.info("✅ KotlinInteropModuleRegistry was destroyed")
   }
 
   fun installJSIInterop() {
     appContext.installJSIInterop()
+  }
+
+  fun setLegacyModulesProxy(proxyModule: NativeModulesProxy) {
+    appContext.legacyModulesProxyHolder = WeakReference(proxyModule)
+  }
+
+  fun shouldBeRecreated(applicationContext: ReactApplicationContext): Boolean {
+    return wasDestroyed || appContext.reactContext != applicationContext
   }
 }

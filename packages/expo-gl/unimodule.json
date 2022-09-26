@@ -1,4 +1,7 @@
 {
   "name": "expo-gl",
-  "platforms": ["ios", "android"]
+  "platforms": ["ios", "android"],
+  "ios": {
+    "podspecPath": "./EXGL.podspec"
+  }
 }

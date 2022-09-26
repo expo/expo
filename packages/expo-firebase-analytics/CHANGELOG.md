@@ -4,11 +4,20 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 7.2.0 — 2022-09-15
+
+### 💡 Others
+
+- On Android bumped `com.google.firebase:firebase-core:20.1.2 ➡️ 21.1.0`, `com.google.firebase:firebase-common:20.1.0 ➡️ 20.1.1`, and `com.google.firebase:firebase-analytics:20.1.2 ➡️ 21.1.0` ([#18908](https://github.com/expo/expo/pull/18908) by [@keith-kurak](https://github.com/keith-kurak))
+- On iOS bumped `Firebase/Core@8.14.0 ➡️ 9.5.0`. ([#18908](https://github.com/expo/expo/pull/18908) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 7.1.1 — 2022-07-16
 

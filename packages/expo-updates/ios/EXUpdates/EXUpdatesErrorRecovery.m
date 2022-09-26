@@ -135,15 +135,18 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
   [_pipeline removeObjectAtIndex:0];
   switch ((EXUpdatesErrorRecoveryTask)nextTask.integerValue) {
     case EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate:
+      [self->_logger info:@"EXUpdatesErrorRecovery: attempting to fetch a new update, waiting"];
       [self _waitForRemoteLoaderToFinish];
       break;
     // EXUpdatesErrorRecoveryTaskLaunchNew is called only after a new update is downloaded
     // and added to the cache, so it is equivalent to EXUpdatesErrorRecoveryTaskLaunchCached
     case EXUpdatesErrorRecoveryTaskLaunchNew:
     case EXUpdatesErrorRecoveryTaskLaunchCached:
+      [self->_logger info:@"EXUpdatesErrorRecovery: launching a new or cached update"];
       [self _tryRelaunchFromCache];
       break;
     case EXUpdatesErrorRecoveryTaskCrash:
+      [self->_logger error:@"EXUpdatesErrorRecovery: could not recover from error, crashing" code:EXUpdatesErrorCodeUpdateFailedToLoad];
       [self _crash];
       break;
     default:
@@ -331,8 +334,8 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
       return;
     }
 
-    [self->_logger error:[NSString stringWithFormat:@"RCTFatalError: %@", serializedError]
-              code:EXUpdatesErrorCodeJsRuntimeError];
+    [self->_logger error:[NSString stringWithFormat:@"EXUpdatesErrorRecovery fatal exception: %@", serializedError]
+                    code:EXUpdatesErrorCodeJsRuntimeError];
     NSData *data = [serializedError dataUsingEncoding:NSUTF8StringEncoding];
     NSString *errorLogFilePath = [[self class] _errorLogFilePath];
     if ([NSFileManager.defaultManager fileExistsAtPath:errorLogFilePath]) {

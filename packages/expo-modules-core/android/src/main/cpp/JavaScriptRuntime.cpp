@@ -5,7 +5,9 @@
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
 
-#if FOR_HERMES
+#if UNIT_TEST
+
+#if USE_HERMES
 
 #include <hermes/hermes.h>
 
@@ -16,6 +18,8 @@
 #include <jsi/JSCRuntime.h>
 
 #endif
+
+#endif // UNIT_TEST
 
 namespace jsi = facebook::jsi;
 
@@ -32,7 +36,10 @@ void SyncCallInvoker::invokeSync(std::function<void()> &&func) {
 JavaScriptRuntime::JavaScriptRuntime()
   : jsInvoker(std::make_shared<SyncCallInvoker>()),
     nativeInvoker(std::make_shared<SyncCallInvoker>()) {
-#if FOR_HERMES
+#if !UNIT_TEST
+  throw std::logic_error("The JavaScriptRuntime constructor is only avaiable when UNIT_TEST is defined.");
+#else
+#if USE_HERMES
   auto config = ::hermes::vm::RuntimeConfig::Builder()
     .withEnableSampleProfiling(false);
   runtime = facebook::hermes::makeHermesRuntime(config.build());
@@ -82,6 +89,7 @@ JavaScriptRuntime::JavaScriptRuntime()
     ),
     "<<evaluated>>"
   );
+#endif // !UNIT_TEST
 }
 
 JavaScriptRuntime::JavaScriptRuntime(

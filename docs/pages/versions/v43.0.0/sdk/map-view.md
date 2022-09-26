@@ -65,10 +65,10 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 
 #### 2. Have your app's SHA-1 certificate fingerprint ready
 
-- **If you are deploying your app to the Google Play Store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md) and [uploaded it to Google Play](../../../distribution/app-stores.md) at least once in order to have Google generate your app signing credentials.
+- **If you are deploying your app to the Google Play Store**, you will need to have [created a standalone app](/archive/classic-updates/building-standalone-apps) and [uploaded it to Google Play](../../../distribution/app-stores.md) at least once in order to have Google generate your app signing credentials.
   - Go to the [Google Play Console](https://play.google.com/console) → (your app) → Setup → App Integrity
   - Copy the value of _SHA-1 certificate fingerprint_
-- **If you are sideloading your APK or deploying it to another store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md), then run `expo fetch:android:hashes` and copy the _Google Certificate Fingerprint_.
+- **If you are sideloading your APK or deploying it to another store**, you will need to have [created a standalone app](/archive/classic-updates/building-standalone-apps), then run `expo fetch:android:hashes` and copy the _Google Certificate Fingerprint_.
 
 #### 3. Create an API key
 
@@ -120,17 +120,14 @@ To use this in web, add the following script to your **web/index.html**. This sc
 <html lang="en">
   <head>
     <!-- At the end of the <head/> element... -->
-
     <script
       async
       defer
       src="https://maps.googleapis.com/maps/api/js?key=API_KEY"
       type="text/javascript"
-    ></script>
-
+    />
     <!-- Use your web API Key in place of API_KEY: https://developers.google.com/maps/documentation/javascript/get-api-key -->
   </head>
-
-  <!-- <body /> -->
+  <body />
 </html>
 ```

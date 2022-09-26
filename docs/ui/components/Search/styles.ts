@@ -91,7 +91,6 @@ export const DocSearchStyles = css`
   .DocSearch-Button:active,
   .DocSearch-Button:focus {
     color: var(--docsearch-text-color);
-    outline: none;
   }
 
   .DocSearch-Button-Container {
@@ -118,16 +117,16 @@ export const DocSearchStyles = css`
 
   .DocSearch-Button-Keys {
     display: flex;
-    min-width: calc(2 * 20px + 2 * 0.4em);
+    gap: ${spacing[1.5]}px;
   }
 
   .DocSearch-Button-Key {
     display: flex;
     align-items: center;
-    height: 20px;
     ${typography.utility.pre}
     ${kbdStyle}
-    margin-left: 0.4em;
+    height: 20px;
+    min-width: 22px;
   }
 
   @media (max-width: 768px) {
@@ -854,7 +853,7 @@ export const DocSearchStyles = css`
   .DocSearch-Hit:not(.DocSearch-Hit--Child) a[href*='/build-reference/'] .DocSearch-Hit-icon:before,
   .DocSearch-Hit:not(.DocSearch-Hit--Child) a[href*='/development/'] .DocSearch-Hit-icon:before,
   .DocSearch-Hit:not(.DocSearch-Hit--Child) a[href*='/eas/'] .DocSearch-Hit-icon:before,
-  .DocSearch-Hit:not(.DocSearch-Hit--Child) a[href*='/eas-metadata/'] .DocSearch-Hit-icon:before,
+  .DocSearch-Hit:not(.DocSearch-Hit--Child) a[href*='/eas/metadata/'] .DocSearch-Hit-icon:before,
   .DocSearch-Hit:not(.DocSearch-Hit--Child) a[href*='/eas-update/'] .DocSearch-Hit-icon:before,
   .DocSearch-Hit:not(.DocSearch-Hit--Child) a[href*='/submit/'] .DocSearch-Hit-icon:before {
     background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyNS4yLjEsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9IjAgMCAxNCAxNCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMTQgMTQ7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiM5NjlGQUY7fQ0KPC9zdHlsZT4NCjxwYXRoIGNsYXNzPSJzdDAiIGQ9Ik03LjcsMS4zYy0wLjMtMC41LTEtMC41LTEuMywwTDAuMSwxMmMtMC4zLDAuNSwwLjEsMS4xLDAuNywxLjFoMTIuNWMwLjYsMCwwLjktMC42LDAuNy0xLjFMNy43LDEuM3oNCgkgTTEyLjQsMTEuOGwtMS41LTIuNEgzbC0xLjUsMi40SDEyLjR6IE05LjEsNi4zbDEuNCwyLjJoLTdsMS40LTIuMkg5LjF6IE04LjcsNS41TDcsMi43TDUuMyw1LjVIOC43eiIvPg0KPC9zdmc+DQo=);

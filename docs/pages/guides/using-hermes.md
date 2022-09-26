@@ -14,11 +14,11 @@ A limitation with JavaScriptCore is that the debugger does not work with modules
 
 ## Android setup
 
-> Hermes for Android is supported from SDK 42 and above in Expo Go, [development builds](/development/introduction.md) built with `expo-dev-client` and standalone apps built with EAS Build. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
+> Hermes for Android is supported from SDK 42 and above in Expo Go, [development builds](/development/introduction.md) using `expo-dev-client` and standalone apps built with EAS Build. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
 
 To get started, open your **app.json** and add `jsEngine` field:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 {
   "expo": {
@@ -37,7 +37,7 @@ Now you can build an APK or AAB through `eas build` and your app will run with H
 
 To get started, open your **app.json** and add `jsEngine` field:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 {
   "expo": {
@@ -101,7 +101,7 @@ Reinstall Pods and clean Xcode build cache:
 
 You may want to use Hermes on one platform and JSC on another. One way to do this is to set the `"jsEngine"` to `"hermes"` at the top level and then override it with `"jsc"` under the `"ios"` key. You may alternatively prefer to explicitly set `"hermes"` on just the `"android"` key in this case.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 {
   "expo": {
@@ -117,13 +117,13 @@ You may want to use Hermes on one platform and JSC on another. One way to do thi
 
 ## Publish updates
 
-Publishing updates with `eas update` and `expo export --experimental-bundle` will generate Hermes bytecode bundles and their source maps.
+Publishing updates with `eas update` and `npx expo export` will generate Hermes bytecode bundles and their source maps.
 
 Please note that the Hermes bytecode format may change between different versions of `hermes-engine` — an update produced for a specific version of Hermes will not run on a different version of Hermes. Updating the Hermes version can be thought of in the same way as updating any other native module, and so if you update the `hermes-engine` version you should also update the `runtimeVersion` in **app.json**. If you don't do this, your app may crash on launch because the update may be loaded by an existing binary that uses an older version of `hermes-engine` that is incompatible with the updated bytecode format. See ["Update Compatibility"](/bare/updating-your-app/#update-compatibility) for more information.
 
 ## JavaScript inspector for Hermes
 
-To debug JavaScript code running with Hermes, you can start your project with `expo start` then press `j` to open the JavaScript inspector in Google Chrome or Microsoft Edge. _This is only supported for debug builds._
+To debug JavaScript code running with Hermes, you can start your project with `npx expo start` then press `j` to open the JavaScript inspector in Google Chrome or Microsoft Edge. _This is only supported for debug builds._
 
 Alternatively, you can use the JavaScript inspector from the following tools:
 

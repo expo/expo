@@ -23,7 +23,7 @@ public:
    * @param args
    * @return result of the Kotlin function
    */
-  jni::local_ref<react::ReadableNativeArray::javaobject> invoke(
+  jni::local_ref<jni::JObject> invoke(
     jobjectArray args
   );
 };

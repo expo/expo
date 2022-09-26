@@ -31,6 +31,9 @@ if (!platform || !projectRoot) {
 const entry = resolveEntryPoint(projectRoot, { platform });
 
 if (entry) {
+  // Prevent any logs from the app.config.js
+  // from being used in the output of this command.
+  console.clear();
   console.log(absolute ? path.resolve(entry) : path.relative(projectRoot, entry));
 } else {
   console.error(`Error: Could not find entry file for project at: ${projectRoot}`);

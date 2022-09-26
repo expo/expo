@@ -27,7 +27,7 @@ import Constants from 'expo-constants';
 Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow and classic builds; for apps built with EAS Build and in bare workflow, the result is always `null`.
 
 - `expo`: The experience is running inside of the Expo Go app.
-- `standalone`: It is a [standalone app](../../../distribution/building-standalone-apps.md#building-standalone-apps).
+- `standalone`: It is a [standalone app](/archive/classic-updates/building-standalone-apps).
 - `guest`: It has been opened through a link from a standalone app.
 
 ### `Constants.deviceName`
@@ -58,7 +58,7 @@ An identifier that is unique to this particular device and whose lifetime is at 
 
 ### `Constants.manifest`
 
-The [manifest](../../../guides/how-expo-works.md#expo-manifest) object for the app.
+The [manifest](/workflow/expo-go#manifest) object for the app.
 
 ### `Constants.nativeAppVersion`
 

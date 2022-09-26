@@ -7,7 +7,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight'
 import Video from '~/components/plugins/Video'
 import { Collapsible } from '~/ui/components/Collapsible';
 
-Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo app when in development.
+Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo Go app when in development.
 
 ## Splash screen
 
@@ -27,7 +27,7 @@ Save this image to the **assets** directory inside of your project and call it *
 
 We can make the splash screen stick around for longer by manually controlling when it is hidden, rather than the default of automatically hiding it as soon as the app is ready.
 
-First, run `expo install expo-splash-screen`.
+First, run `npx expo install expo-splash-screen`.
 
 Next, add the following code to delay hiding the splash screen for five seconds.
 
@@ -50,7 +50,7 @@ So far we have been making all of our changes to **App.js**. There are some aspe
 
 Open up **app.json** from your project directory in your code editor and make the following change in the `splash` section:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 "splash": {
   "image": "./assets/splash.png",

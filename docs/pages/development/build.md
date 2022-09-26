@@ -34,6 +34,8 @@ This profile has two options set:
 - Setting `developmentClient` to `true` will create a Debug build, which allows the `expo-dev-client` library to allow you to choose the update to load in your app and provide tools to help you develop.
 - Setting `distribution` to "internal" will make a build ready for [internal distribution](/build/internal-distribution).
 
+> iOS builds with a `developmentClient` should always be distributed as "internal". If you are distributing for TestFlight, you have to set the `distribution` to "store".
+
 ### Running a build
 
 <Tabs tabs={["For Android", "For iOS"]}>
@@ -68,7 +70,7 @@ Note: If you register any new iOS devices, you'll need create a new development 
 
 If you are comfortable setting up Xcode, Android Studio, and related dependencies, you can build and distribute your app the same as any other iOS or Android app.
 
-The `expo run` commands will create a new build, install it on to your emulator or device, and start running it.
+The `npx expo run` commands will create a new build, install it on to your emulator or device, and start running it.
 
 <Tabs tabs={["For Android", "For iOS (macOS Only)"]}>
 
@@ -77,11 +79,11 @@ The `expo run` commands will create a new build, install it on to your emulator 
 
 To build and run on an emulator:
 
-<Terminal cmd={["$ expo run:android"]} />
+<Terminal cmd={["$ npx expo run:android"]} />
 
 To build and run on a connected device:
 
-<Terminal cmd={["$ expo run:android -d"]} />
+<Terminal cmd={["$ npx expo run:android -d"]} />
 
 </Tab>
 <Tab>
@@ -89,11 +91,11 @@ To build and run on a connected device:
 
 To build and run on a simulator:
 
-<Terminal cmd={["$ expo run:ios"]} />
+<Terminal cmd={["$ npx expo run:ios"]} />
 
 To build and run on a connected device:
 
-<Terminal cmd={["$ expo run:ios -d"]} />
+<Terminal cmd={["$ npx expo run:ios -d"]} />
 
 </Tab>
 

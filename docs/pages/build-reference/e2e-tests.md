@@ -18,15 +18,15 @@ This guide explains how to run E2E tests with Detox in a bare workflow project. 
 
 ### 0. Initialize a new Bare Workflow project
 
-Let's start by initializing a new Expo project and running `expo prebuild` to generate the native projects.
+Let's start by initializing a new Expo project and running `npx expo prebuild` to generate the native projects.
 
 <Terminal cmd={[
 '# Initialize a new project',
-'$ yarn create expo-app eas-tests-example',
+'$ npx create-expo-app eas-tests-example',
 '# cd into the project directory',
 '$ cd eas-tests-example',
 '# Generate native code',
-'$ yarn expo prebuild --platform ios'
+'$ npx expo prebuild --platform ios'
 ]} />
 
 ### 1. Make home screen interactive
@@ -101,16 +101,16 @@ Let's add two development dependencies to the project - `jest` and `detox`. `jes
 
 <Terminal cmd={[
 '# Install jest & detox',
-'$ yarn add -D jest detox',
+'$ npm install --save-dev jest detox',
 '# Create Detox configuration files',
-'$ yarn detox init -r jest',
+'$ npx detox init -r jest',
 ]} />
 
 > See the official Detox docs at https://wix.github.io/Detox/docs/introduction/getting-started/ and https://wix.github.io/Detox/docs/guide/jest to learn about any potential updates to this process.
 
 #### Configure Detox
 
-Detox requires you to specify both the build command and path to the binary produced by it. Technically, the build command is not necessary when running tests on EAS Build, but allows you to run tests locally (using `yarn detox build --configuration ios`).
+Detox requires you to specify both the build command and path to the binary produced by it. Technically, the build command is not necessary when running tests on EAS Build, but allows you to run tests locally (using `npx detox build --configuration ios`).
 
 Edit **.detoxrc.json** and replace the `ios` configuration with:
 
@@ -242,6 +242,117 @@ Running the tests on EAS Build is like running a regular build:
 If you have set up everything correctly you should see the successful test result in the build logs:
 
 <img src="/static/images/eas-build/tests/03-logs.png" style={{maxWidth: "100%" }} />
+
+### 6. Upload screenshots of failed test cases
+
+> This step is optional but highly recommended. 
+
+When an E2E test case fails, it can be helpful to see the screenshot of the application state. EAS Build makes it easy to upload any arbitrary build artifacts using the [`buildArtifactPaths`](/build-reference/eas-json.md#buildartifactpaths) field in **eas.json**.
+
+#### Take screenshots for failed tests
+
+[Detox supports taking in-test screenshots of the device](https://wix.github.io/Detox/docs/api/screenshots). It exposes the `device.takeScreenshot()` function that can be called from any test case.
+
+Neither `jest` nor `detox` offers a simple way to detect when a particular test case has failed and take a screenshot for only failed test cases. You will have to implement your own mechanism for that.
+
+Edit **e2e/environment.js** and add the `handleTestEvent` method to the `CustomDetoxEnvironment` class. The function handles test events and sets a global `testFailed` variable for test case failure. See the snippet below:
+
+```ts
+// e2e/environment.js
+class CustomDetoxEnvironment extends DetoxCircusEnvironment {
+  // ...
+
+  async handleTestEvent(event, state) {
+    const { name } = event;
+
+    if (['test_start', 'test_fn_start'].includes(name)) {
+      this.global.testFailed = false;
+    }
+
+    if (name === 'test_fn_failure') {
+      this.global.testFailed = true;
+    }
+
+    await super.handleTestEvent(event, state);
+  }
+}
+```
+
+After modifying the environment class, define an `afterEach` hook that calls `device.takeScreenshot()` for failed tests. Create the `e2e/setup.ts` file with the following snippet:
+
+```ts
+// e2e/setup.ts
+afterEach(async () => {
+  if (testFailed) {
+    await device.takeScreenshot('screenshot');
+  }
+});
+```
+
+The last step is to configure `jest` to load `e2e/setup.ts` before running tests. This way, you don't need to include the `afterEach` hook in every test suite:
+
+```json
+// e2e/config.json
+{
+  /// ...
+  "setupFilesAfterEnv": ["./setup.js"]
+}
+```
+
+After making those changes, screenshots for failed tests will be saved in the `artifacts` directory.
+
+#### Configure EAS Build for screenshots upload
+
+Edit **eas.json** and add `buildArtifactPaths` to the `test` build profile:
+
+```json
+// eas.json
+{
+  "build": {
+    "test": {
+      "ios": {
+        "simulator": true,
+        "buildArtifactPaths": ["artifacts/**/*.png"]
+      }
+    }
+  }
+}
+```
+
+In contrast to `applicationArchivePath`, the build artifacts defined at `buildArtifactPaths` will be uploaded even if the build fails. All `.png` files from the `artifacts` directory will be packed into a tarball and uploaded to AWS S3. You can download them later from the build details page.
+
+If you run E2E tests locally, remember to add `artifacts` to `.gitignore`:
+
+```stylus
+// .gitignore
+artifacts/
+```
+
+#### Break a test and run a build
+
+To test the new configuration, let's break a test and see that EAS Build uploads the screenshots.
+
+Edit `e2e/homeScreen.e2e.js` and make the following change:
+
+```diff
+diff --git a/e2e/homeScreen.e2e.js b/e2e/homeScreen.e2e.js
+index e28acfa..c65e90c 100644
+--- a/e2e/homeScreen.e2e.js
++++ b/e2e/homeScreen.e2e.js
+@@ -8,7 +8,7 @@ describe('Home screen', () => {
+   });
+
+   it('"Click me" button should be visible', async () => {
+-    await expect(element(by.id('click-me-button'))).toBeVisible();
++    await expect(element(by.id('click-me-button'))).not.toBeVisible();
+   });
+
+   it('shows "Hi!" after tapping "Click me"', async () => {
+```
+
+Run a build with `eas build -p ios --profile test` and wait for the build to finish. After going to the build details page you should see that the build failed. Use the **"Download artifacts"** button to download and examine the screenshot:
+
+<img src="/static/images/eas-build/tests/04-artifacts.png" style={{maxWidth: "100%" }} />
 
 ## Repository
 

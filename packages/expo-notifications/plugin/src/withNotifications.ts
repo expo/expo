@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 import { withNotificationsAndroid } from './withNotificationsAndroid';
 import { withNotificationsIOS } from './withNotificationsIOS';

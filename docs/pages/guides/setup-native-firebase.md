@@ -3,7 +3,7 @@ title: Using the native Firebase SDK
 sidebar_title: Using Native Firebase
 ---
 
-It's possible to use Firebase through the web SDK, built only in JavaScript, or the native SDK, which is built in native code for iOS and Android. The web SDK only provides access to some Firebase features and the most notable limitation is the lack of support for browser features used in Firebase Analytics or the redirect URI scheme used for phone authentication. If this is important for you, it may make sense to install the native SDK in your app.
+React Native supports both the Firebase JavaScript SDK, and the native iOS and Android SDKs. The JavaScript SDK only provides access to some Firebase features and the most notable limitation is the lack of support for browser features used in Firebase Analytics or the redirect URI scheme used for phone authentication. If this is important for you, it may make sense to install the native SDK in your app.
 
 ## Create Firebase project
 
@@ -11,104 +11,23 @@ If you have not done so already, create a Firebase project for your app by click
 
 This will guide you through a series of steps to create your own Firebase project.
 
-## Managed Workflow Setup
+## Setup
 
-Some (but not all) native Firebase features can be used with the Managed Workflow. The most notable native feature is Firebase Analytics,
-which is otherwise unavailable in react-native using the Firebase JavaScript SDK.
+Follow the official [React Native Firebase documentation](https://rnfirebase.io/#expo) to get started with native Firebase packages in [development builds](/development/introduction).
 
-### Adding the Native Firebase Plugin
+## Manual setup
 
-- To being using Native Firebase with Expo, you will start using the plugin `@react-native-firebase/app`. You can reference the [React Native Firebase docs](https://rnfirebase.io/#expo) for more details as needed.
-- **Note: By doing this you will convert your project into a semi-managed project and will need to rebuild it if any native code changes. For more information on adding custom native code, see [here](https://docs.expo.dev/workflow/customizing/).**
-
-```json
-{
-  "expo": {
-    "plugins": [
-      "@react-native-firebase/app"
-    ]
-  }
-}
-```
-
-- Once the plugin is in use you will need to:
-  - To **prebuild** your project, you will run `expo prebuild`. This will need to be done after every native code change.
-  - To **run** your project on a **local simulator** you will run `expo run [ios:android]`
-  - To **run** your project on a **external device** you will need to build a [development client](https://docs.expo.dev/development/getting-started/) and install it on your external device. This development client will act as a custom version of Expo Go built with your native code. To start the developemnt client you will run `expo start --dev-client`
-  - To **build** your project you will use `eas build`
-
-### Android
-
-- Open **Project overview** in the firebase console and click on the Android icon or + button to **Add Firebase to your Android app**.
-- **Make sure that the Android package name is the same as the value of `android.package` in your app.json.**
-- Register the app & download the config file by clicking **"Download google-services.json"** and drag the file into your Expo project folder.
-- Add the relative path to the Android **google-services.json** file to **app.json**.
-
-```json
-{
-  "expo": {
-    "android": {
-      "package": "com.mypackage.coolapp",
-      "googleServicesFile": "./google-services.json"
-    }
-  }
-}
-```
-
-### iOS
-
-- Open **Project overview** in the Firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
-- **Make sure that the iOS bundle ID is the same as the value of `ios.bundleIdentifier` in your app.json.**
-- Register the app & download the config file by clicking **"Download GoogleService-Info.plist"** and drag the file into your Expo project folder.
-- Add the relative path to the iOS **GoogleService-Info.plist** file to **app.json**.
-
-```json
-{
-  "expo": {
-    "ios": {
-      "bundleIdentifier": "com.mypackage.coolapp",
-      "googleServicesFile": "./GoogleService-Info.plist"
-    }
-  }
-}
-```
-
-### Web
-
-- Open **Project overview** in the Firebase console and click on the Web icon or + button to **Add Firebase to your Web app**.
-- Register the app & copy the config into your **app.json** under the key `web.config.firebase`.
-
-```json
-{
-  "expo": {
-    "web": {
-      "config": {
-        "firebase": {
-          "appId": "xxxxxxxxxxxxx:web:xxxxxxxxxxxxxxxx",
-          "apiKey": "AIzaXXXXXXXX-xxxxxxxxxxxxxxxxxxx",
-          "projectId": "my-awesome-project-id",
-          ...
-          "measurementId": "G-XXXXXXXXXXXX"
-        }
-      }
-    }
-  }
-}
-```
-
-## Bare Workflow Setup
-
-In the bare workflow, the firebase configuration needs to be added according to the native Firebase SDK installation guides
+The firebase configuration needs to be added according to the native Firebase SDK installation guides
 for [iOS](https://firebase.google.com/docs/ios/setup) and [Android](https://firebase.google.com/docs/android/setup).
-Below you will find a tailored instruction for use with react-native and the Expo Bare Workflow.
+Below you will find a tailored instruction for use with React Native.
 
-You are free to use any native Firebase packages such as [react-native-firebase](https://rnfirebase.io/) in the bare workflow.
+You are free to use any native Firebase packages such as [`react-native-firebase`](https://rnfirebase.io/) in bare React Native apps.
 
 ### Android
 
 - Open **Project overview** in the Firebase console and click on the Android icon or + button to **Add Firebase to your Android app**.
 - **Make sure that the Android package name is the same as the value of `applicationId` in your `android/app/build.gradle`.**
-- Register the app & download the config file by clicking **"Download google-services.json"** to this location `/android/app/google-services.json`.
+- Register the app & download the config file by clicking **Download google-services.json** to this location `/android/app/google-services.json`.
 - Import the `google-services` plugin inside of your `android/build.gradle` file:
   ```groovy
   buildscript {
@@ -121,14 +40,14 @@ You are free to use any native Firebase packages such as [react-native-firebase]
   ```groovy
   apply plugin: 'com.google.gms.google-services'
   ```
-- Finally rebuild your native Android app: `expo run:android`
+- Finally rebuild your native Android app: `npx expo run:android`
 
 ### iOS
 
 - Open **Project overview** in the Firebase console and click on the iOS icon or + button to **Add Firebase to your iOS app**.
 - **Make sure that the iOS bundle ID is the same as the value of `Bundle Identifier` of your iOS project.**
-- Register the app & download the config file by clicking **"Download GoogleService-Info.plist"**.
-- Open your Expo iOS project in Xcode `ios/{projectName}.xcworkspace` and then drag the services file into your project. If you don't see the `.xcworkspace` workspace file, run `npx pod-install` to create it.
+- Register the app & download the config file by clicking **Download GoogleService-Info.plist**.
+- Open your iOS project in Xcode `ios/{projectName}.xcworkspace` and then drag the services file into your project. If you don't see the `.xcworkspace` workspace file, run `npx pod-install` to create it.
 
   - Be sure to enable **'Copy items if needed'**.
 
@@ -141,20 +60,19 @@ You are free to use any native Firebase packages such as [react-native-firebase]
     ```objc
     @import Firebase;
     ```
-    
-  Note that following the upgrade to Expo SDK 45, your AppDelegate file will have the `.mm` extension as opposed to the `.m` extension.
+    Note that following the upgrade to Expo SDK 45, your AppDelegate file will have the `.mm` extension as opposed to the `.m` extension.
 - At the top of the `didFinishLaunchingWithOptions` method:
   ```objc
   - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
       [FIRApp configure];
   ```
-- Rebuild your iOS project to see the changes: `expo run:ios`
+- Rebuild your iOS project to see the changes: `npx expo run:ios`
 
 ### Usage with react-native-firebase
 
 After following the iOS and Android setup, you can optionally configure your project to work with `react-native-firebase` version 6 as well.
 
-- Install the `react-native-firebase` packages (e.g. `yarn add @react-native-firebase/app @react-native-firebase/auth etc..`)
-- Install the pods on iOS
+- Install the `react-native-firebase` packages (e.g. `yarn add @react-native-firebase/app @react-native-firebase/auth` etc..)
+- Rebuild with `npx expo run:ios` or `npx expo run:android`
 
-Continue further on the [react-native-firebase](https://rnfirebase.io/) website.
+Continue further on the [react-native-firebase](https://rnfirebase.io/#installation) website.

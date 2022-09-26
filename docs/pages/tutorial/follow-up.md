@@ -8,7 +8,7 @@ We tried to set expectations early on that this tutorial is more focused towards
 
 We used React components and APIs here with little explanation. Having a solid understanding of React is essential to using Expo to build your app. We recommend reading the [Main Concepts section](https://reactjs.org/docs/hello-world.html) and the [Hooks section](https://reactjs.org/docs/hooks-intro.html) of the React documentation.
 
-<!-- TODO: replace this recommendation with the react-native tutorial when it's live -->
+{/* TODO: replace this recommendation with the react-native tutorial when it's live */}
 
 ### How to verify your learning
 
@@ -63,7 +63,3 @@ Most apps have multiple screens, we just have one here! Learn more about how to 
 ### Debugging
 
 Sometimes things go wrong, and when they do you need to use debugging tools to figure out where your code is having trouble. [Read more about debugging](/workflow/debugging).
-
-### Using the documentation
-
-[Read more about how you can navigate this documentation and use it effectively](/next-steps/using-the-documentation).

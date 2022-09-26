@@ -1,7 +1,5 @@
 package expo.modules.adapters.react;
 
-import androidx.annotation.Nullable;
-
 import com.facebook.react.ReactPackage;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
@@ -11,12 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import androidx.annotation.Nullable;
 import expo.modules.BuildConfig;
 import expo.modules.adapters.react.views.SimpleViewManagerAdapter;
 import expo.modules.adapters.react.views.ViewGroupManagerAdapter;
 import expo.modules.core.ModuleRegistry;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.Package;
+import expo.modules.kotlin.CoreLoggerKt;
 import expo.modules.kotlin.KotlinInteropModuleRegistry;
 import expo.modules.kotlin.ModulesProvider;
 import expo.modules.kotlin.views.ViewWrapperDelegateHolder;
@@ -50,7 +50,8 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
   @Override
   public List<NativeModule> createNativeModules(ReactApplicationContext reactContext) {
-    ModuleRegistry moduleRegistry = mModuleRegistryProvider.get(reactContext);
+    NativeModulesProxy proxy = getOrCreateNativeModulesProxy(reactContext, null);
+    ModuleRegistry moduleRegistry = proxy.getModuleRegistry();
 
     for (InternalModule internalModule : mReactAdapterPackage.createInternalModules(reactContext)) {
       moduleRegistry.registerInternalModule(internalModule);
@@ -58,7 +59,7 @@ public class ModuleRegistryAdapter implements ReactPackage {
 
     List<NativeModule> nativeModules = getNativeModulesFromModuleRegistry(reactContext, moduleRegistry);
     if (mWrapperDelegateHolders != null) {
-      KotlinInteropModuleRegistry kotlinInteropModuleRegistry = getOrCreateNativeModulesProxy(reactContext, null).getKotlinInteropModuleRegistry();
+      KotlinInteropModuleRegistry kotlinInteropModuleRegistry = proxy.getKotlinInteropModuleRegistry();
       kotlinInteropModuleRegistry.updateModuleHoldersInViewManagers(mWrapperDelegateHolders);
     }
 
@@ -111,8 +112,13 @@ public class ModuleRegistryAdapter implements ReactPackage {
     return viewManagerList;
   }
 
-  private NativeModulesProxy getOrCreateNativeModulesProxy(ReactApplicationContext reactContext,
-                                                           @Nullable ModuleRegistry moduleRegistry) {
+  private synchronized NativeModulesProxy getOrCreateNativeModulesProxy(
+    ReactApplicationContext reactContext,
+    @Nullable ModuleRegistry moduleRegistry
+  ) {
+    if (mModulesProxy != null && mModulesProxy.getKotlinInteropModuleRegistry().shouldBeRecreated(reactContext)) {
+      mModulesProxy = null;
+    }
     if (mModulesProxy == null) {
       ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
       if (mModulesProvider != null) {
@@ -120,7 +126,14 @@ public class ModuleRegistryAdapter implements ReactPackage {
       } else {
         mModulesProxy = new NativeModulesProxy(reactContext, registry);
       }
+
+      mModulesProxy.getKotlinInteropModuleRegistry().setLegacyModulesProxy(mModulesProxy);
     }
+
+    if (moduleRegistry != null && moduleRegistry != mModulesProxy.getModuleRegistry()) {
+      CoreLoggerKt.getLogger().error("❌ NativeModuleProxy was configured with a different instance of the modules registry.", null);
+    }
+
     return mModulesProxy;
   }
 }

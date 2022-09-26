@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 import { withBranchAndroid } from './withBranchAndroid';
 import { withBranchIOS } from './withBranchIOS';

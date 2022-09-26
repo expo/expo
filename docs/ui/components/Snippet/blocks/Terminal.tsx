@@ -24,7 +24,7 @@ export const Terminal = ({
   includeMargin = true,
   title = 'Terminal',
 }: TerminalProps) => (
-  <Snippet style={wrapperStyle} includeMargin={includeMargin}>
+  <Snippet css={wrapperStyle} includeMargin={includeMargin}>
     <SnippetHeader alwaysDark title={title}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
@@ -110,7 +110,7 @@ const unselectableStyle = css`
 
 const codeStyle = css`
   display: inline-block;
-  line-height: 130%;
+  line-height: 140%;
   background-color: transparent;
   border: none;
   color: ${darkTheme.text.default};

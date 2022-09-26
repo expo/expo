@@ -26,6 +26,11 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
     val applicationContext = context.applicationContext
 
     SoLoader.init(applicationContext, /* native exopackage */ false)
+    if (SoLoader.getLibraryPath("libv8android.so") != null) {
+      // Assuming V8 overrides the `getJavaScriptExecutorFactory` in the main ReactNativeHost,
+      // return null here to use the default value.
+      return null
+    }
     if (SoLoader.getLibraryPath("libjsc.so") != null) {
       return JSCExecutorFactory(applicationContext.packageName, AndroidInfoHelpers.getFriendlyDeviceName())
     }

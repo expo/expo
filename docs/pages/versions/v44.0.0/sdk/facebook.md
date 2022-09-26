@@ -44,7 +44,7 @@ Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured belo
 
 ### Android standalone app
 
-- [Build your standalone app](/classic/building-standalone-apps) for Android.
+- [Build your standalone app](/archive/classic-updates/building-standalone-apps) for Android.
 - Run `eas credentials`, select the profile that you would like to generate the SHA-1 Fingerprint for, and press return.
 - Take the resulting SHA1 Fingerprint and convert it to base64 (for example, [using base64.guru](https://base64.guru/converter/encode/hex)). The resulting base64 string is your "Facebook Key Hash".
 - Configure the Facebook Key Hash on the Facebook developer page pictured below.

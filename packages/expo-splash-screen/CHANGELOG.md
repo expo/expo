@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -11,6 +13,8 @@
 - Fixed `'SplashScreen.show' has already been called for given view controller.` warning being displayed when using `expo-dev-client` on iOS. ([#18682](https://github.com/expo/expo/pull/18682) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 
 ## 0.16.1 — 2022-07-16
 

@@ -47,7 +47,7 @@ This refers to the React Native community [fork](https://github.com/react-native
 
 ### Config Introspection
 
-A process for evaluating the results of [`expo prebuild`](#prebuild) in-memory without persisting any code changes. This is used in [Auto Capability Signing](#auto-capability-signing) to determine what the entitlements file will look like without generating any native code. This process is also used in the [VS Code Expo](#vs-code-expo) extension to debug [Config Mods](#config-mods).
+A process for evaluating the results of [`npx expo prebuild`](#prebuild) in-memory without persisting any code changes. This is used in [Auto Capability Signing](#auto-capability-signing) to determine what the entitlements file will look like without generating any native code. This process is also used in the [VS Code Expo](#vs-code-expo) extension to debug [Config Mods](#config-mods).
 
 ### Config Mods
 
@@ -103,7 +103,7 @@ The development server is typically hosted on `http://localhost:19000`. It hosts
 
 ### EAS CLI
 
-The command-line tool for working with EAS. <!-- Pending creation of eas-cli [Read more](eas-cli.md). -->
+The command-line tool for working with EAS. {/* Pending creation of eas-cli [Read more](eas-cli.md). */}
 
 ### EAS Config
 
@@ -111,7 +111,7 @@ The `eas.json` file used to configure [EAS CLI](#eas-cli). For more information,
 
 ### EAS Metadata
 
-A command line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the `eas-cli` package and should be used to improve the iOS submission process.
+A command line tool for uploading and downloading Apple App Store metadata as JSON. This tool is available in the [EAS CLI](#eas-cli) package and should be used to improve the iOS submission process, see [EAS Metadata](../eas/metadata/index.md).
 
 ### EAS Update
 
@@ -167,7 +167,7 @@ Refers to the command `npx expo export` from [Expo CLI](#expo-cli). This command
 
 ### Expo Go
 
-The iOS and Android app that runs Expo apps. When you want to run your app outside of the Expo Go app and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
+The iOS and Android app that runs React Native apps. When you want to run your app outside of the Expo Go app and deploy it to the App and/or Play stores, you can build a [Standalone App](#standalone-app).
 
 ### Expo Install
 
@@ -197,7 +197,7 @@ Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command 
 
 ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. [Read more](../expokit/eject.md).
 
-**Support for ExpoKit ended after SDK 38. Expo modules can implement support for custom native configuration, and projects that need even more custom native code can [expose their Android Studio and Xcode projects with `expo prebuild`](/workflow/customizing/).**
+**Support for ExpoKit ended after SDK 38. Expo modules can implement support for custom native configuration, and projects that need even more custom native code can [expose their Android Studio and Xcode projects with `npx expo prebuild`](/workflow/customizing/).**
 
 ### Fabric
 
@@ -245,7 +245,7 @@ The package `@expo/cli` which is installed with the `expo` package. This is some
 
 ### Manifest
 
-An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo needs to know how to run the app and other relevant data. [Read more in "How Expo Works"](how-expo-works.md#expo-manifest).
+An Expo app manifest is similar to a [web app manifest](https://developer.mozilla.org/en-US/docs/Web/Manifest) - it provides information that Expo Go needs to know how to run the app and other relevant data. [Read more in "Expo Go"](/workflow/expo-go#manifest).
 
 ### Meta
 
@@ -293,7 +293,7 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 - Android: `*.android.js`, `*.native.js`, `*.js`
 - Web: `*.web.js`, `*.js`
 
-<!-- TODO: Multi-Resolution Asset Extensions -->
+{/* TODO: Multi-Resolution Asset Extensions */}
 
 ### Prebuild
 
@@ -356,7 +356,7 @@ A development agency in Krakow, Poland. Maintainers of `react-native-gesture-han
 
 ### Standalone app
 
-An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](../distribution/building-standalone-apps.md).
+An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](/archive/classic-updates/building-standalone-apps).
 
 ### Store Config
 
