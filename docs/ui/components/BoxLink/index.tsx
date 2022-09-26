@@ -6,7 +6,8 @@ import {
   ArrowRightIcon,
   iconSize,
   shadows,
-  ArrowUpRightIcon, breakpoints,
+  ArrowUpRightIcon,
+  breakpoints,
 } from '@expo/styleguide';
 import type { IconProps } from '@expo/styleguide/dist/types';
 import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
