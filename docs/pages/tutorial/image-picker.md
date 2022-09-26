@@ -80,18 +80,13 @@ import * as ImagePicker from 'expo-image-picker';
 export default function App() {
   /* @info Initialize a variable to hold our selected image data */const [selectedImage, setSelectedImage] = React.useState(null);/* @end */
 
-
   let openImagePickerAsync = async () => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
-
     /* @info Stop running the function here if the user cancelled the dialog */
     if (pickerResult.cancelled === true) {
       return;
     }/* @end */
-
-
     /* @info Store away the picked image uri */setSelectedImage({ localUri: pickerResult.uri });/* @end */
-
   };
 
   /* @info Show the selected image if we have one */
@@ -122,7 +117,6 @@ const styles = StyleSheet.create({
     height: 300,
     resizeMode: "contain"
   }/* @end */
-
 });
 ```
 
