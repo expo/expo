@@ -66,7 +66,7 @@ If you need to support older versions, you will not be able to use `expo build:i
 
 <Collapsible summary="Free builds can sometimes be queued">
 
-You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](/classic/building-standalone-apps/), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.dev/eas), or you can [run the builds on your own CI](/classic/turtle-cli) if you prefer.
+You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](/archive/classic-updates/building-standalone-apps), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.dev/eas), or you can [run the builds on your own CI](/classic/turtle-cli) if you prefer.
 
 </Collapsible>
 

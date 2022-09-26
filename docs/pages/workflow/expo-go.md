@@ -46,7 +46,7 @@ The manifest is also used when publishing your app with [EAS Update](/eas-update
 
 Expo Go uses **SDK versions** that map to a major release of the `expo` and the Expo Go app. You can see the supported SDK versions in the Expo Go app by navigating to the settings page.
 
-We release a new SDK version approximately every quarter. Find out which [versions of React Native map to which versions of the Expo SDK][version-support].
+We release a new SDK version approximately every quarter. Find out which [versions of React Native map to which versions of the Expo SDK](/versions/latest/#each-expo-sdk-version-depends-on-a).
 
 ## Custom native code
 
@@ -75,5 +75,3 @@ You can create your own Expo Go-type app by using the [`expo-dev-client`](/devel
   description="Configure the Expo CLI and Expo Go with the app.json."
   href="/workflow/configuration"
 />
-
-[version-support]: versions/latest/#each-expo-sdk-version-depends-on-a

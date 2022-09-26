@@ -14,7 +14,7 @@ A limitation with JavaScriptCore is that the debugger does not work with modules
 
 ## Android setup
 
-> Hermes for Android is supported from SDK 42 and above in Expo Go, [development builds](/development/introduction.md) built with `expo-dev-client` and standalone apps built with EAS Build. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
+> Hermes for Android is supported from SDK 42 and above in Expo Go, [development builds](/development/introduction.md) using `expo-dev-client` and standalone apps built with EAS Build. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
 
 To get started, open your **app.json** and add `jsEngine` field:
 

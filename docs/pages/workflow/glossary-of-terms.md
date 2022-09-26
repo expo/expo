@@ -356,7 +356,7 @@ A development agency in Krakow, Poland. Maintainers of `react-native-gesture-han
 
 ### Standalone app
 
-An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](../distribution/building-standalone-apps.md).
+An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](/archive/classic-updates/building-standalone-apps).
 
 ### Store Config
 
