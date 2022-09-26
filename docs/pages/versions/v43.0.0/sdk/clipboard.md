@@ -30,12 +30,10 @@ export default function App() {
 
   const copyToClipboard = () => {
     /* @info */ Clipboard.setString('hello world');/* @end */
-
   };
 
   const fetchCopiedText = async () => {
-    const text = /* @info */ await Clipboard.getStringAsync();
-    /* @end */
+    const text = /* @info */ await Clipboard.getStringAsync();/* @end */
     setCopiedText(text);
   };
 

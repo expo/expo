@@ -26,12 +26,8 @@ import SnackInline from '~/components/plugins/SnackInline';
 ```jsx
 import { useEffect, useCallback } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-/* @info Import useFonts hook from 'expo-font'. */
-import { useFonts } from 'expo-font';
-/* @end */
-/* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */
-import * as SplashScreen from 'expo-splash-screen';
-/* @end */
+/* @info Import useFonts hook from 'expo-font'. */import { useFonts } from 'expo-font';/* @end */
+/* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */import * as SplashScreen from 'expo-splash-screen';/* @end */
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -44,7 +40,6 @@ export default function App() {
       await SplashScreen.preventAutoHideAsync();
     }
     /* @end */
-
     prepare();
   }, []);
 

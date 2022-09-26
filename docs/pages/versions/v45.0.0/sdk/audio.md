@@ -41,9 +41,7 @@ export default function App() {
 
   async function playSound() {
     console.log('Loading Sound');
-    /* @info */ const { sound } = await Audio.Sound.createAsync(
-      /* @end */ require('./assets/Hello.mp3')
-    );
+    /* @info */ const { sound } = await Audio.Sound.createAsync(/* @end */require('./assets/Hello.mp3'));
     setSound(sound);
 
     console.log('Playing Sound');
@@ -117,7 +115,6 @@ export default function App() {
     setRecording(undefined);
     /* @info */ await recording.stopAndUnloadAsync();
     const uri = recording.getURI(); /* @end */
-
     console.log('Recording stopped and stored at', uri);
   }
 

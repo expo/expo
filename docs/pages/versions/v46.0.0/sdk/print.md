@@ -52,15 +52,12 @@ export default function App() {
       html,
       printerUrl: selectedPrinter?.url, // iOS only
     });/* @end */
-
   }
 
   const printToFile = async () => {
     // On iOS/android prints the given html. On web prints the HTML from the current page.
-    /* @info */const { uri } = await Print.printToFileAsync({
-      html
-    });
-    /* @end */console.log('File has been saved to:', uri);
+    /* @info */const { uri } = await Print.printToFileAsync({html});/* @end */
+    console.log('File has been saved to:', uri);
     await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
   }
 

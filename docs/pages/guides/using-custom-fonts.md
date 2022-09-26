@@ -80,15 +80,12 @@ Let's take a look at a minimal example that uses Inter font family. It uses [`us
 ```jsx
 import { useCallback } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-/* @info Import useFonts hook from 'expo-font'. */
-import { useFonts } from 'expo-font';
-/* @end */
-/* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */
-import * as SplashScreen from 'expo-splash-screen';
-/* @end */
+/* @info Import useFonts hook from 'expo-font'. */import { useFonts } from 'expo-font';/* @end */
+/* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */import * as SplashScreen from 'expo-splash-screen';/* @end */
 
 /* @info This prevents SplashScreen from auto hiding while the fonts are loaded. */
 SplashScreen.preventAutoHideAsync();
+/* @end */
 
 export default function App() {
   const [fontsLoaded] = useFonts({

@@ -43,7 +43,6 @@ The schema of this file looks like this:
   "cli": {
     "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
     "requireCommit": /* @info If true, ensures that all changes are committed before a build. Defults to false. */boolean/* @end */
-
   },
   "build": {
     // EAS Build configuration
@@ -53,18 +52,15 @@ The schema of this file looks like this:
     /* @info any arbitrary name - used as an identifier */"SUBMIT_PROFILE_NAME_1"/* @end */: {
       "android": {
         /* @info Android-specific configuration */...ANDROID_OPTIONS/* @end */
-
       },
       "ios": {
         /* @info iOS-specific configuration */...IOS_OPTIONS/* @end */
-
       }
     },
     /* @info any arbitrary name - used as an identifier */"SUBMIT_PROFILE_NAME_2"/* @end */: {
       "extends": "SUBMIT_PROFILE_NAME_1",
       "android": {
         /* @info Android-specific configuration */...ANDROID_OPTIONS/* @end */
-
       }
     },
     ...
