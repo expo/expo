@@ -6,7 +6,7 @@ import ExpoModulesCore
 public class LocalizationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoLocalization")
-
+    
     Constants {
       return Self.getCurrentLocalization()
     }
@@ -20,7 +20,7 @@ public class LocalizationModule: Module {
       return Self.getCalendars()
     }
   }
-
+  
   // If the application isn't manually localized for the device language then the
   // native `Locale.current` will fallback on using English US
   // [cite](https://stackoverflow.com/questions/48136456/locale-current-reporting-wrong-language-on-device).
@@ -32,7 +32,7 @@ public class LocalizationModule: Module {
     }
     return Locale(identifier: preferredIdentifier)
   }
-
+  
   static func getUnicodeCalendarIdentifier(calendar: Calendar) -> String {
     // Maps ios unique identifiers to [BCP 47 calendar types](https://github.com/unicode-org/cldr/blob/main/common/bcp47/calendar.xml)
     switch(calendar.identifier) {
@@ -70,7 +70,7 @@ public class LocalizationModule: Module {
         return "iso8601"
     }
   }
-
+  
   static func getLocales() -> [[String: Any?]] {
     return (Locale.preferredLanguages.isEmpty ? [Locale.current.identifier] : Locale.preferredLanguages)
       .map { languageTag -> [String: Any?] in
@@ -88,14 +88,14 @@ public class LocalizationModule: Module {
         ]
       }
   }
-
+  
   // https://stackoverflow.com/a/28183182
   static func uses24HourClock() -> Bool {
     let dateFormat = DateFormatter.dateFormat(fromTemplate: "j", options: 0, locale: Locale.current)!
-
+    
     return dateFormat.firstIndex(of: "a") == nil
   }
-
+  
   static func getCalendars() -> [[String: Any?]] {
     var calendar = Locale.current.calendar
     return [
@@ -107,12 +107,12 @@ public class LocalizationModule: Module {
       ]
     ]
   }
-
+  
   static func getCurrentLocalization() -> [String: Any?] {
     let locale = getLocale()
     let languageCode = locale.languageCode ?? "en"
     var languageIds = Locale.preferredLanguages
-
+    
     if languageIds.isEmpty {
       languageIds.append("en-US")
     }
