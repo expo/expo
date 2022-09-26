@@ -68,11 +68,9 @@ import * as WebBrowser from 'expo-web-browser';
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
-
 /* @info Using the Expo proxy will redirect the user through auth.expo.io enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */
 const useProxy = true;
 /* @end */
-
 const redirectUri = AuthSession.makeRedirectUri({
   useProxy,
 });
@@ -81,7 +79,6 @@ export default function App() {
   /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
   const discovery = AuthSession.useAutoDiscovery('https://demo.identityserver.io');
   /* @end */
-
   // Create and load an auth request
   const [request, result, promptAsync] = AuthSession.useAuthRequest(
     {
@@ -212,11 +209,7 @@ const discovery = {
   revocationEndpoint: "https://api.coinbase.com/oauth/revoke",
 };
 
-const redirectUri = makeRedirectUri({
-  /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-  scheme: 'your.app'
-/* @end */});
-
+const redirectUri = makeRedirectUri({ /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */ scheme: 'your.app'/* @end */});
 const CLIENT_ID = "CLIENT_ID";
 
 export default function App() {
@@ -613,14 +606,14 @@ export default function App() {
   const [request, response, promptAsync] = Facebook.useAuthRequest({
     clientId: '<YOUR FBID>',
     /* @info Request that the server returns a <code>code</code> for server exchanges. */
-    responseType: ResponseType.Code,
-  /* @end */});
+    responseType: ResponseType.Code, /* @end */
+  });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
-      const { code } = response.params;
-    /* @end */}
+      const { code } = response.params;/* @end */
+    }
   }, [response]);
 
   return (
@@ -721,7 +714,6 @@ export default function App() {
       /* @info Use this access token to interact with user data on the provider's server. */
       const { access_token } = response.params;
       /* @end */
-
       /* @info Create a Facebook credential with the <code>access_token</code> */
       const auth = getAuth();
       const provider = new FacebookAuthProvider();
@@ -1127,7 +1119,7 @@ export default function App() {
 
 <Tab>
 
-- 🔥 Create a new Firebase project
+- Create a new Firebase project
 - Enable Google auth
   - Open "Web SDK configuration"
   - Save "Web client ID" you'll need it later
@@ -1177,7 +1169,6 @@ export default function App() {
       /* @info Use this access token to interact with user data on the provider's server. */
       const { id_token } = response.params;
       /* @end */
-
       /* @info Create a Google credential with the <code>id_token</code> */
       const auth = getAuth();
       const credential = GoogleAuthProvider.credential(id_token);

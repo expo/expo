@@ -51,7 +51,6 @@ export default function App() {
       html,
       printerUrl: selectedPrinter?.url, // iOS only
     });/* @end */
-
   }
 
   const printToFile = async () => {
