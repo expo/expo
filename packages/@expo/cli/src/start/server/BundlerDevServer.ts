@@ -407,7 +407,7 @@ export abstract class BundlerDevServer {
   /** Should use the interstitial page for selecting which runtime to use. */
   protected isRedirectPageEnabled(): boolean {
     return (
-      env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
+      !env.EXPO_NO_REDIRECT_PAGE &&
       // if user passed --dev-client flag, skip interstitial page
       !this.isDevClient &&
       // Checks if dev client is installed.

@@ -35,7 +35,7 @@ const originalEnv = process.env;
 
 beforeEach(() => {
   vol.reset();
-  delete process.env.EXPO_ENABLE_INTERSTITIAL_PAGE;
+  delete process.env.EXPO_NO_REDIRECT_PAGE;
 });
 
 afterAll(() => {
@@ -172,7 +172,7 @@ describe('stopAsync', () => {
 describe('isRedirectPageEnabled', () => {
   beforeEach(() => {
     vol.reset();
-    delete process.env.EXPO_ENABLE_INTERSTITIAL_PAGE;
+    delete process.env.EXPO_NO_REDIRECT_PAGE;
   });
 
   function mockDevClientInstalled() {
@@ -187,8 +187,6 @@ describe('isRedirectPageEnabled', () => {
   it(`is redirect enabled`, async () => {
     mockDevClientInstalled();
 
-    process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
-
     const server = new MockBundlerDevServer(
       '/',
       getPlatformBundlers({}),
@@ -201,7 +199,7 @@ describe('isRedirectPageEnabled', () => {
   it(`redirect can be disabled with env var`, async () => {
     mockDevClientInstalled();
 
-    process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '0';
+    process.env.EXPO_NO_REDIRECT_PAGE = '1';
 
     const server = new MockBundlerDevServer(
       '/',
@@ -215,8 +213,6 @@ describe('isRedirectPageEnabled', () => {
   it(`redirect is disabled when running in dev client mode`, async () => {
     mockDevClientInstalled();
 
-    process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
-
     const server = new MockBundlerDevServer(
       '/',
       getPlatformBundlers({}),
@@ -227,8 +223,6 @@ describe('isRedirectPageEnabled', () => {
   });
 
   it(`redirect is disabled when expo-dev-client is not installed in the project`, async () => {
-    process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
-
     const server = new MockBundlerDevServer(
       '/',
       getPlatformBundlers({}),
