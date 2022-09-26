@@ -265,7 +265,7 @@ Get metadata information about a file, directory or external content/asset.
 
   - **md5 (_boolean_)** -- Whether to return the MD5 hash of the file. `false` by default.
 
-  - **size (_boolean_)** -- Explicitly specify that the file size should be included - skipping this can prevent downloading the file if it's stored in iCloud, for example. The size is always returned for `file://` locations.
+  - **size (_boolean_)** -- Explicitly specify that the file size should be included. For example, skipping this can prevent downloading the file if it's stored in iCloud The size is always returned for `file://` locations.
 
 #### Returns
 
