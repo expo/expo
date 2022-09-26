@@ -3,6 +3,8 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.HandlerThread
 import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
@@ -40,11 +42,10 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.newSingleThreadContext
 import java.io.Serializable
 import java.lang.ref.WeakReference
 
@@ -59,13 +60,16 @@ class AppContext(
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   private lateinit var jsiInterop: JSIInteropModuleRegistry
 
+  private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
+    .apply { start() }
+    .looper.let { Handler(it) }
+    .asCoroutineDispatcher()
+
   /**
    * A queue used to dispatch all async methods that are called via JSI.
    */
-  @OptIn(DelicateCoroutinesApi::class)
   val modulesQueue = CoroutineScope(
-    // TODO(@lukmccall): maybe it will be better to use a thread pool
-    newSingleThreadContext("expo.modules.AsyncFunctionQueue") +
+    modulesQueueDispatcher +
       SupervisorJob() +
       CoroutineName("expo.modules.AsyncFunctionQueue")
   )
