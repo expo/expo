@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Added support for Metro web. ([#19234](https://github.com/expo/expo/pull/19234) by [@EvanBacon](https://github.com/EvanBacon))
+
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
