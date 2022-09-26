@@ -246,7 +246,7 @@ When offering guidance for projects that require manually editing native code/di
 
 ### Numbered Lists
 
-Any numbered list should start with `1` instead of `0.` This avoids inconsistency across all areas in the documentation.
+Any numbered list should start with `1` instead of `0`. This avoids inconsistency across all areas in the documentation.
 
 ## Tools to use when using visualization or interactivity to communicate
 
