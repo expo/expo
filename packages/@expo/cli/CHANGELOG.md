@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve bundle identifier / package from native project and then fallback to `app.json` when launching redirect page. ([#19260](https://github.com/expo/expo/pull/19260) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 ## 0.2.11 — 2022-08-22
