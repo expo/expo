@@ -45,7 +45,7 @@ public:
       
   JSI_HOST_FUNCTION(addListener) {
     if(!arguments[0].isObject() || !arguments[0].asObject(runtime).isFunction(runtime)) {
-      jsi::detail::throwJSError(runtime, "Expected function as first parameter.");
+      throw jsi::JSError(runtime, "Expected function as first parameter.");
       return jsi::Value::undefined();
     }
     auto callback = std::make_shared<jsi::Function>(arguments[0].asObject(runtime).asFunction(runtime));

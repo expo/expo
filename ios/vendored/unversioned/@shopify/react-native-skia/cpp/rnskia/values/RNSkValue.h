@@ -52,7 +52,7 @@ public:
     } else if(value.isUndefined() || value.isNull()) {
       // Do nothing - we've already unsubscribed
     } else {
-      jsi::detail::throwJSError(runtime, "Animation expected.");
+      throw jsi::JSError(runtime, "Animation expected.");
     }
   }
   
