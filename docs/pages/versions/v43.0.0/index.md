@@ -22,7 +22,7 @@ import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
 ```
 
-This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts.md#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or render a Camera view and take photos.
+This allows you to write [`Contacts.getContactsAsync()`](/versions/latest/sdk/contacts#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or render a Camera view and take photos.
 
 ## These packages work in bare React Native apps too
 

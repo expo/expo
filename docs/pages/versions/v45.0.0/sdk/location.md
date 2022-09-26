@@ -48,14 +48,14 @@ To use Background Location methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
 - **(_iOS only_)** `"location"` background mode must be specified in **Info.plist** file. See [background tasks configuration guide](task-manager.md#configuration).
-- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
+- Background location task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-taskexecutor).
 
 ### Geofencing Methods
 
 To use Geofencing methods, the following requirements apply:
 
 - Location permissions must be granted. On iOS it must be granted with `Always` option.
-- The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-task).
+- The Geofencing task must be defined in the top-level scope, using [TaskManager.defineTask](task-manager.md#taskmanagerdefinetasktaskname-taskexecutor).
 - On iOS, there is a [limit of 20](https://developer.apple.com/documentation/corelocation/monitoring_the_user_s_proximity_to_geographic_regions) `regions` that can be simultaneously monitored.
 
 ## Usage
