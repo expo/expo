@@ -330,6 +330,8 @@ function getDefaultConfig(projectRoot, options = {}) {
       }
     },
     transformer: {
+      // `require.context` support
+      unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: isExotic ? require.resolve('./transformer/metro-expo-exotic-babel-transformer') : isCustomBabelConfigDefined ? // If the user defined a babel config file in their project,
       // then use the default transformer.

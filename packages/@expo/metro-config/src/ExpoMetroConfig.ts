@@ -282,6 +282,8 @@ export function getDefaultConfig(
       },
     },
     transformer: {
+      // `require.context` support
+      unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: isExotic
         ? require.resolve('./transformer/metro-expo-exotic-babel-transformer')
