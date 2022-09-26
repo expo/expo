@@ -996,10 +996,7 @@ Then later in a Gradle file:
 `app/build.gradle`
 
 ```groovy
-project.ext.react = [
-  /* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */
-  enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc'
-/* @end */]
+project.ext.react = [/* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */ enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc' /* @end */]
 ```
 
 - For keys in the `gradle.properties`, use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.

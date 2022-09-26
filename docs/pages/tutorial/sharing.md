@@ -17,7 +17,7 @@ You can install expo-sharing in the same way as you installed expo-image-picker.
 
 ## Installing expo-image-manipulator
 
-You'll also need expo-image-manipulator. In your project directory run:
+You'll also need `expo-image-manipulator`. In your project directory run:
 
 <Terminal cmd={['$ npx expo install expo-image-manipulator']} />
 
@@ -31,7 +31,6 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View, /* @info This is required to determine which platform the code is going to run */ Platform /* @end */ } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 /* @info As always, we must import it to use it */ import * as Sharing from 'expo-sharing'; /* @end */
-
 /* @info As always, we must import it to use it */ import * as ImageManipulator from "expo-image-manipulator"; /* @end */
 
 export default function App() {
@@ -39,7 +38,6 @@ export default function App() {
 
   let openImagePickerAsync = async () => {
     /* most contents of this function were hidden here to keep the example brief */
-
     setSelectedImage({ localUri: pickerResult.uri });
   };
 
@@ -49,7 +47,6 @@ export default function App() {
       alert(`Uh oh, sharing isn't available on your platform`);
       return;
     }
-
     const imageTmp = await ImageManipulator.manipulateAsync(selectedImage.localUri);
     await Sharing.shareAsync(imageTmp.uri);
   }; /* @end */

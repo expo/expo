@@ -50,7 +50,6 @@ The following will only work if you have an Apple account with Apple Developer E
       "ios": {
         /* @info Valid values: universal, adhoc */
         "enterpriseProvisioning": "universal" /* @end */
-
       }
     }
   }

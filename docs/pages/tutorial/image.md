@@ -23,13 +23,10 @@ import React from 'react';
 import { /* @info Add the Image component to your list of imports */ Image, /* @end */ StyleSheet, Text, View } from 'react-native';
 /* @info Import the logo image */ import logo from './assets/logo.png'; /* @end */
 
-
 export default function App() {
   return (
     <View style={styles.container}>
       /* @info Use the Image component */ <Image source={logo} style={{ width: 305, height: 159 }} /> /* @end */
-
-
       <Text style={{color: '#888', fontSize: 18}}> 
         To share a photo from your phone with a friend, just press the button below!
       </Text>
@@ -66,7 +63,6 @@ export default function App() {
       /* @info We can use a URL instead of importing the image from your local assets */
       <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} style={{ width: 305, height: 159 }} />
     /* @end */
-
       <Text style={{color: '#888', fontSize: 18}}> 
         To share a photo from your phone with a friend, just press the button below!
       </Text>
@@ -105,7 +101,6 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} /* @info See below for the styles! */ style={styles.logo} /* @end *//>
-
       <Text /* @info See below for the styles! */ style={styles.instructions} /* @end */>
         To share a photo from your phone with a friend, just press the button below!
       </Text>
