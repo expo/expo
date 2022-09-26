@@ -8,6 +8,7 @@ import { createDevServerMiddleware } from '../middleware/createDevServerMiddlewa
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
+import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroMultiPlatform } from './withMetroMultiPlatform';
 
 // From expo/dev-server but with ability to use custom logger.
@@ -44,9 +45,16 @@ export async function instantiateMetroAsync(
   let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true });
+  const { exp } = getConfig(projectRoot, {
+    skipSDKVersionRequirement: true,
+    skipPlugins: true,
+  });
   const platformBundlers = getPlatformBundlers(exp);
   metroConfig = withMetroMultiPlatform(projectRoot, metroConfig, platformBundlers);
+
+  // Auto pick App entry: this is injected with Babel.
+  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
+  process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
 
   const {
     middleware,

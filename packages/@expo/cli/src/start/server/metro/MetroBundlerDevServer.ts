@@ -5,6 +5,7 @@ import getDevClientProperties from '../../../utils/analytics/getDevClientPropert
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import {
@@ -90,6 +91,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
     });
     middleware.use(deepLinkMiddleware.getHandler());
+
+    middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
