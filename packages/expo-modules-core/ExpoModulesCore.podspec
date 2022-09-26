@@ -2,6 +2,7 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+fabric_compiler_flags = '-DRN_FABRIC_ENABLED'
 folly_version = '2021.06.28.00-v2'
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
@@ -26,6 +27,7 @@ Pod::Spec.new do |s|
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
     'HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
+    'OTHER_SWIFT_FLAGS' => "$(inherited) #{fabric_enabled ? fabric_compiler_flags : ''}"
   }
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
@@ -35,7 +37,7 @@ Pod::Spec.new do |s|
   s.dependency 'ReactCommon/turbomodule/core'
 
   if fabric_enabled
-    s.compiler_flags = folly_compiler_flags + " -DRN_FABRIC_ENABLED"
+    s.compiler_flags = folly_compiler_flags + ' ' + fabric_compiler_flags
 
     s.dependency 'React-RCTFabric'
     s.dependency 'RCT-Folly', folly_version

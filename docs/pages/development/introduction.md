@@ -2,7 +2,8 @@
 title: Introduction
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import Video from '~/components/plugins/Video';
 
 > Ready to advance from Expo Go and get a development build of your project? Follow the [Getting Started guide](getting-started.md).
 
@@ -21,8 +22,4 @@ To help new projects get started, the [Expo Go](https://expo.dev/client) app is 
 
 > Ready to create a development build of your project? Follow the [Getting Started guide](getting-started.md).
 
-<object width="100%" height="400">
-  <param name="movie" value="https://youtube.com/embed/_SWalkrP0CA" />
-  <param name="wmode" value="transparent" />
-  <embed src="https://youtube.com/embed/_SWalkrP0CA" type="application/x-shockwave-flash" wmode="transparent" width="100%" height="400" />
-</object>
+<Video url="https://youtube.com/embed/_SWalkrP0CA" />

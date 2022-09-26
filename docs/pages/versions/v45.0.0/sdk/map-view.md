@@ -95,10 +95,10 @@ To use this in web, add the following script to your **web/index.html**. This sc
 
 #### 2. Have your app's SHA-1 certificate fingerprint ready
 
-- **If you are deploying your app to the Google Play Store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md) and [uploaded it to Google Play](../../../distribution/app-stores.md) at least once in order to have Google generate your app signing credentials.
+- **If you are deploying your app to the Google Play Store**, you will need to have [created a standalone app](/archive/classic-updates/building-standalone-apps) and [uploaded it to Google Play](../../../distribution/app-stores.md) at least once in order to have Google generate your app signing credentials.
   - Go to the [Google Play Console](https://play.google.com/console) → (your app) → Setup → App Integrity
   - Copy the value of _SHA-1 certificate fingerprint_
-- **If you are sideloading your APK or deploying it to another store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md), then run `expo fetch:android:hashes` and copy the _Google Certificate Fingerprint_.
+- **If you are sideloading your APK or deploying it to another store**, you will need to have [created a standalone app](/archive/classic-updates/building-standalone-apps), then run `expo fetch:android:hashes` and copy the _Google Certificate Fingerprint_.
 - **If you are running a _debug_ build (development client or local debug build)**, your Android app will be signed using the debug keystore. See the instructions [below](#how-to-retrieve-your-debug-keystore-fingerprint) on how to retrieve your fingerprint.
 
 #### 3. Create an API key

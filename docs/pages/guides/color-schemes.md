@@ -2,7 +2,8 @@
 title: Light and Dark modes
 ---
 
-import Video from '~/components/plugins/Video'
+import SnackInline from '~/components/plugins/SnackInline';
+import Video from '~/components/plugins/Video';
 
 Regardless of whether you are personally on team light or team dark, it's becoming increasingly common for apps to support these two color schemes. This guide explains how you can do that.
 
@@ -98,7 +99,9 @@ In some cases, you may find it helpful to get the current color scheme imperativ
 
 > Don't forget to configure your project to support automatic color scheme as described above in [Configuration](#configuration).
 
-```javascript
+<SnackInline label="useColorScheme example" dependencies={['expo-status-bar']}>
+
+```jsx
 import React from 'react';
 import { Text, StyleSheet, View, useColorScheme } from 'react-native';
 import { StatusBar } from 'expo-status-bar'; // automatically switches bar style based on theme!
@@ -138,6 +141,8 @@ const styles = StyleSheet.create({
   },
 });
 ```
+
+</SnackInline>
 
 ## Tips
 

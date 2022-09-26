@@ -66,7 +66,7 @@ If you need to support older versions, you will not be able to use `expo build:i
 
 <Collapsible summary="Free builds can sometimes be queued">
 
-You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](/classic/building-standalone-apps/), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.dev/eas), or you can [run the builds on your own CI](/classic/turtle-cli) if you prefer.
+You can easily build your app for submission to stores without even installing Xcode or Android Studio by using the free [standalone build service](/archive/classic-updates/building-standalone-apps), but it occasionally has a queue depending on how many other folks are building a binary at that time. You can have access to dedicated build infrastructure with a ["Priority" plan](https://expo.dev/eas), or you can [run the builds on your own CI](/classic/turtle-cli) if you prefer.
 
 </Collapsible>
 
@@ -90,7 +90,7 @@ The following list is therefore specifically oriented towards the limitations th
 
 <Collapsible summary={<span><span className="strike">Build service only works in the managed workflow</span> (✅ Resolved in December 2020)</span>}>
 
-<span className="strike">To build your app binaries for distribution on the Apple App Store and Google Play Store you will need to follow the same steps that you would in any native project, the Expo build service can't handle it for you. We are working on bringing bare workflow support to the build service in the near future.</span>
+~~To build your app binaries for distribution on the Apple App Store and Google Play Store you will need to follow the same steps that you would in any native project, the Expo build service can't handle it for you. We are working on bringing bare workflow support to the build service in the near future.~~
 
 You can now use [EAS Build](/build/introduction) to build and sign your apps just as easily as in the managed workflow! [Read the announcement blog post](https://blog.expo.dev/expo-application-services-eas-build-and-submit-fc1d1476aa2e).
 

@@ -3,7 +3,7 @@ title: Installing Expo modules
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
-import ConfigurationDiff from '~/components/plugins/ConfigurationDiff';
+import { DiffBlock } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
 > Are you migrating from `react-native-unimodules`? If yes, please refer to [the Expo modules migration guide](https://expo.fyi/expo-modules-migration).
@@ -38,7 +38,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 ### Configuration for iOS
 
-<ConfigurationDiff source="/static/diffs/expo-ios.diff" />
+<DiffBlock source="/static/diffs/expo-ios.diff" />
 
 Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/b7c0356c697ef2cf46388e5742d67b7b48adc97f/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L75-L102).
 
@@ -50,7 +50,7 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
 
 ### Configuration for Android
 
-<ConfigurationDiff source="/static/diffs/expo-android.diff" />
+<DiffBlock source="/static/diffs/expo-android.diff" />
 
 <div style={{marginTop: -10}} />
 

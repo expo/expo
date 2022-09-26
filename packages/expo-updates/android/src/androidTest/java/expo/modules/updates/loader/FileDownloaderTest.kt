@@ -220,7 +220,7 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(client).downloadAsset(
+    FileDownloader(context, client).downloadAsset(
       assetEntity, File(context.cacheDir, "test"), config, context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
@@ -268,7 +268,7 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(client).downloadAsset(
+    FileDownloader(context, client).downloadAsset(
       assetEntity, File(context.cacheDir, "test"), config, context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {

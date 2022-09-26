@@ -1,19 +1,19 @@
 import { css } from '@emotion/react';
+import { breakpoints } from '@expo/styleguide';
 import * as React from 'react';
 
-import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '../common/headingManager';
 import DocumentationSidebarRightLink from './DocumentationSidebarRightLink';
 
+import { BASE_HEADING_LEVEL, Heading, HeadingManager } from '~/common/headingManager';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
-import * as Constants from '~/constants/theme';
 
 const STYLES_SIDEBAR = css`
   padding: 20px 24px 24px 24px;
   width: 280px;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     width: 100%;
   }
 `;

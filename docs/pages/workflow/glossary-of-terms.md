@@ -103,7 +103,7 @@ The development server is typically hosted on `http://localhost:19000`. It hosts
 
 ### EAS CLI
 
-The command-line tool for working with EAS. <!-- Pending creation of eas-cli [Read more](eas-cli.md). -->
+The command-line tool for working with EAS. {/* Pending creation of eas-cli [Read more](eas-cli.md). */}
 
 ### EAS Config
 
@@ -293,7 +293,7 @@ By default, platform extensions are resolved in `@expo/metro-config` using the f
 - Android: `*.android.js`, `*.native.js`, `*.js`
 - Web: `*.web.js`, `*.js`
 
-<!-- TODO: Multi-Resolution Asset Extensions -->
+{/* TODO: Multi-Resolution Asset Extensions */}
 
 ### Prebuild
 
@@ -356,7 +356,7 @@ A development agency in Krakow, Poland. Maintainers of `react-native-gesture-han
 
 ### Standalone app
 
-An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](../distribution/building-standalone-apps.md).
+An application binary that can be submitted to the iOS App Store or Android Play Store. [Read more in "Building Standalone Apps"](/archive/classic-updates/building-standalone-apps).
 
 ### Store Config
 

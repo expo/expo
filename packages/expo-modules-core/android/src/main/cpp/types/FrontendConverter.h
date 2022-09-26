@@ -12,8 +12,7 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 class JSIInteropModuleRegistry;
-
-class ExpectedType;
+class SingleType;
 
 /**
  * A base interface for all frontend converter classes - converters that cast jsi values into JNI objects.
@@ -237,7 +236,7 @@ private:
 class PrimitiveArrayFrontendConverter : public FrontendConverter {
 public:
   PrimitiveArrayFrontendConverter(
-    jni::local_ref<jni::JavaClass<ExpectedType>::javaobject> expectedType
+    jni::local_ref<jni::JavaClass<SingleType>::javaobject> expectedType
   );
 
   jobject convert(
@@ -270,7 +269,7 @@ private:
 class ListFrontendConverter : public FrontendConverter {
 public:
   ListFrontendConverter(
-    jni::local_ref<jni::JavaClass<ExpectedType>::javaobject> expectedType
+    jni::local_ref<jni::JavaClass<SingleType>::javaobject> expectedType
   );
 
   jobject convert(
@@ -294,7 +293,7 @@ private:
 class MapFrontendConverter : public FrontendConverter {
 public:
   MapFrontendConverter(
-    jni::local_ref<jni::JavaClass<ExpectedType>::javaobject> expectedType
+    jni::local_ref<jni::JavaClass<SingleType>::javaobject> expectedType
   );
 
   jobject convert(

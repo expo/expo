@@ -18,7 +18,7 @@ abstract class TypeConverter<Type : Any>(
   /**
    * Tries to convert from [Any]? (can be also [Dynamic]) to the desired type.
    */
-  fun convert(value: Any?): Type? {
+  open fun convert(value: Any?): Type? {
     if (value == null || value is Dynamic && value.isNull) {
       if (isOptional) {
         return null

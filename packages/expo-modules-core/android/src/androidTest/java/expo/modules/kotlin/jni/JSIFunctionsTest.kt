@@ -3,6 +3,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
@@ -10,6 +11,7 @@ import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.typedarray.Float32Array
 import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
+import expo.modules.kotlin.types.Either
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
@@ -455,5 +457,27 @@ class JSIFunctionsTest {
       evaluateScript("ExpoModules.TestModule.jsObjectArray([{'foo':'foo'}, {'bar':'bar'}])")
       Truth.assertThat(wasCalled).isTrue()
     }
+  }
+
+  @OptIn(EitherType::class)
+  @Test
+  fun either_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("eitherFirst") { either: Either<Int, String> ->
+        Truth.assertThat(either.`is`(Int::class)).isTrue()
+        either.get(Int::class)
+      }
+      Function("eitherSecond") { either: Either<Int, String> ->
+        Truth.assertThat(either.`is`(String::class)).isTrue()
+        either.get(String::class)
+      }
+    }
+  ) {
+    val int = evaluateScript("ExpoModules.TestModule.eitherFirst(123)").getDouble().toInt()
+    val string = evaluateScript("ExpoModules.TestModule.eitherSecond('expo')").getString()
+
+    Truth.assertThat(int).isEqualTo(123)
+    Truth.assertThat(string).isEqualTo("expo")
   }
 }

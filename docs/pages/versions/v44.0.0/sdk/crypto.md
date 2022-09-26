@@ -149,6 +149,6 @@ const digest = await Crypto.digestStringAsync(
 | ERR_CRYPTO_UNAVAILABLE | (Web only) Access to the WebCrypto API is restricted to secure origins (https). |
 | ERR_CRYPTO_DIGEST      | An invalid encoding type provided.                                              |
 
-<!-- External Links -->
+{/* External Links */}
 
 [sha-def]: https://nvlpubs.nist.gov/nistpubs/FIPS/NIST.FIPS.180-4.pdf

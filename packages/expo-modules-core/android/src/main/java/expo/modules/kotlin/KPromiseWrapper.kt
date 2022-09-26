@@ -3,7 +3,7 @@ package expo.modules.kotlin
 import expo.modules.kotlin.types.JSTypeConverter
 
 class KPromiseWrapper(
-  private val bridgePromise: com.facebook.react.bridge.Promise
+  internal val bridgePromise: com.facebook.react.bridge.Promise
 ) : Promise {
 
   @Suppress("UNCHECKED_CAST")

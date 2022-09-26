@@ -246,9 +246,9 @@ jobject PolyFrontendConverter::convert(
 }
 
 PrimitiveArrayFrontendConverter::PrimitiveArrayFrontendConverter(
-  jni::local_ref<ExpectedType::javaobject> expectedType
+  jni::local_ref<SingleType::javaobject> expectedType
 ) {
-  auto parameterExpectedType = expectedType->getFirstType()->getFirstParameterType();
+  auto parameterExpectedType = expectedType->getFirstParameterType();
   parameterType = parameterExpectedType->getCombinedTypes();
   parameterConverter = FrontendConverterProvider::instance()->obtainConverter(
     parameterExpectedType
@@ -333,10 +333,10 @@ bool PrimitiveArrayFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Va
 }
 
 ListFrontendConverter::ListFrontendConverter(
-  jni::local_ref<ExpectedType::javaobject> expectedType
+  jni::local_ref<SingleType::javaobject> expectedType
 ) : parameterConverter(
   FrontendConverterProvider::instance()->obtainConverter(
-    expectedType->getFirstType()->getFirstParameterType()
+    expectedType->getFirstParameterType()
   )
 ) {}
 
@@ -366,10 +366,10 @@ bool ListFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value
 }
 
 MapFrontendConverter::MapFrontendConverter(
-  jni::local_ref<ExpectedType::javaobject> expectedType
+  jni::local_ref<SingleType::javaobject> expectedType
 ) : valueConverter(
   FrontendConverterProvider::instance()->obtainConverter(
-    expectedType->getFirstType()->getFirstParameterType()
+    expectedType->getFirstParameterType()
   )
 ) {}
 
