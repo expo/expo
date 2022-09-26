@@ -2,10 +2,10 @@ import { NativeModules } from 'react-native';
 
 import { ProxyNativeModule } from './NativeModulesProxy.types';
 
+const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
 // Fixes `cannot find name 'global'.` in tests
 // @ts-ignore
 const ExpoNativeProxy = global.ExpoModules?.NativeModulesProxy;
-const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
 
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';

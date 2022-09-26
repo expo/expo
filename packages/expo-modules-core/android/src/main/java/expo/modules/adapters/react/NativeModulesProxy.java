@@ -11,16 +11,6 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableType;
 
-import expo.modules.core.ExportedModule;
-import expo.modules.core.ModuleRegistry;
-import expo.modules.core.ViewManager;
-import expo.modules.core.interfaces.ExpoMethod;
-import expo.modules.kotlin.CoreLoggerKt;
-import expo.modules.kotlin.ExpoModulesHelper;
-import expo.modules.kotlin.KotlinInteropModuleRegistry;
-import expo.modules.kotlin.KPromiseWrapper;
-import expo.modules.kotlin.ModulesProvider;
-
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -31,6 +21,16 @@ import java.util.Map;
 import java.util.Objects;
 
 import javax.annotation.Nullable;
+
+import expo.modules.core.ExportedModule;
+import expo.modules.core.ModuleRegistry;
+import expo.modules.core.ViewManager;
+import expo.modules.core.interfaces.ExpoMethod;
+import expo.modules.kotlin.CoreLoggerKt;
+import expo.modules.kotlin.ExpoModulesHelper;
+import expo.modules.kotlin.KPromiseWrapper;
+import expo.modules.kotlin.KotlinInteropModuleRegistry;
+import expo.modules.kotlin.ModulesProvider;
 
 /**
  * A wrapper/proxy for all {@link ExportedModule}s, gets exposed as {@link com.facebook.react.bridge.NativeModule},
@@ -135,7 +135,7 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
     constants.put(EXPORTED_METHODS_KEY, exportedMethodsMap);
     constants.put(VIEW_MANAGERS_METADATA_KEY, viewManagersMetadata);
 
-    CoreLoggerKt.getLogger().info("✅ Constants was exported");
+    CoreLoggerKt.getLogger().info("✅ Constants were exported");
 
     cachedConstants = constants;
 
@@ -162,6 +162,10 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
       return;
     }
 
+    callMethod(moduleName, methodName, arguments, promise);
+  }
+
+  public void callMethod(String moduleName, String methodName, ReadableArray arguments, final Promise promise) {
     if (mKotlinInteropModuleRegistry.hasModule(moduleName)) {
       mKotlinInteropModuleRegistry.callMethod(moduleName, methodName, arguments, new KPromiseWrapper(promise));
       return;
