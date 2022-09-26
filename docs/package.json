@@ -13,7 +13,7 @@
     "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js",
     "prettier": "prettier --write '**/*.{js,ts,tsx,md}'",
     "lint": "tsc --noEmit && eslint .",
-    "lint-case": "case-police 'pages/**/*.md' -p brands,general,products,softwares -d expo-dict.json",
+    "lint-case": "case-police 'pages/**/*.mdx' -p brands,general,products,softwares -d expo-dict.json",
     "lint-links": "remark -u validate-links ./pages",
     "watch": "tsc --noEmit -w",
     "test": "yarn generate-static-resoures && node --experimental-vm-modules node_modules/jest/bin/jest.js",
