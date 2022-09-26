@@ -63,13 +63,11 @@ export default class KeepAwakeExample extends React.Component {
 
   _activate = () => {
     /* @info Screen will remain on after called until <strong>deactivateKeepAwake()</strong> is called. */ activateKeepAwake(); /* @end */
-
     alert('Activated!');
   };
 
   _deactivate = () => {
     /* @info Deactivates KeepAwake, or does nothing if it was never activated. */ deactivateKeepAwake(); /* @end */
-
     alert('Deactivated!');
   };
 }
