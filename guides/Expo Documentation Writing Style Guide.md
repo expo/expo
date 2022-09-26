@@ -100,6 +100,10 @@ Always use a capital "B" for bytes. Write "bit" or a lowercase "b" for bits. For
 
 For an in-detail reference on Bytes and Bits, read the [Writing API documentation](#writing-api-documentation).
 
+### Referencing Android, iOS and Web
+
+In most cases, to refer to multiple platforms (Android, iOS and Web) in one sentence or order sections on a particular page, follow the pattern: **"Android, iOS, and Web"**.
+
 ## Punctuation
 
 ### Use double quotes in prose
