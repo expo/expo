@@ -2,6 +2,7 @@ import { prependMiddleware } from '@expo/dev-server';
 
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
@@ -88,6 +89,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
     });
     middleware.use(deepLinkMiddleware.getHandler());
+
+    middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
