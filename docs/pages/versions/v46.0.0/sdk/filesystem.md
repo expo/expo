@@ -259,13 +259,13 @@ Get metadata information about a file, directory or external content/asset.
 
 #### Arguments
 
-- **fileUri (_string_)** -- URI to the file or directory. It may be e.g. URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
+- **fileUri (_string_)** -- URI to the file or directory. See [supported URI schemes](#supported-uri-schemes-1).
 
 - **options (_object_)** -- A map of options:
 
   - **md5 (_boolean_)** -- Whether to return the MD5 hash of the file. `false` by default.
 
-  - **size (_boolean_)** -- Whether to include the size of the file if operating on a source from [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos) (skipping this can prevent downloading the file if it's stored in iCloud, for example). The size is always returned for `file://` locations.
+  - **size (_boolean_)** -- Explicitly specify that the file size should be included. For example, skipping this can prevent downloading the file if it's stored in iCloud. The size is always returned for `file://` locations.
 
 #### Returns
 
@@ -277,7 +277,7 @@ If no item exists at this URI, returns a Promise that resolves to `{ exists: fal
 
 - **modificationTime (_number_)** -- The last modification time of the file expressed in seconds since epoch.
 
-- **size (_number_)** -- The size of the file in bytes. If operating on a source from [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos), only present if the `size` option was truthy.
+- **size (_number_)** -- The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
 
 - **uri (_string_)** -- A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
 
@@ -349,7 +349,7 @@ Create a copy of a file or directory. Directories are recursively copied with al
 
 - **options (_object_)** -- A map of options:
 
-  - **from (_string_)** -- URI or [SAF](#saf-uri) URI to the asset, file, or directory to copy. It can be e.g. the URI returned by [`CameraRoll.getPhotos()`](https://reactnative.dev/docs/cameraroll.html#getphotos). See [supported URI schemes](#supported-uri-schemes-1).
+  - **from (_string_)** -- URI or [SAF](#saf-uri) URI to the asset, file, or directory to copy. See [supported URI schemes](#supported-uri-schemes-1).
 
   - **to (_string_)** -- The `file://` URI to the new copy to create.
 
@@ -429,24 +429,22 @@ Upload the contents of the file pointed by `fileUri` to the remote url.
 #### Example
 
 **client**
+
 ```javascript
-import * as FileSystem from 'expo-file-system'
+import * as FileSystem from 'expo-file-system';
 
 try {
-  const response = await FileSystem.uploadAsync(
-    `http://192.168.0.1:1234/binary-upload`,
-    fileUri,
-    {
-      fieldName: "file",
-      httpMethod: "PATCH",
-      uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
-    }
-  )
-  console.log(JSON.stringify(response, null, 4))
-} catch(error) {
-  console.log(error)
+  const response = await FileSystem.uploadAsync(`http://192.168.0.1:1234/binary-upload`, fileUri, {
+    fieldName: 'file',
+    httpMethod: 'PATCH',
+    uploadType: FileSystem.FileSystemUploadType.BINARY_CONTENT,
+  });
+  console.log(JSON.stringify(response, null, 4));
+} catch (error) {
+  console.log(error);
 }
 ```
+
 **server**
 
 Please refer to the "[how to handle such requests](#how-to-handle-such-requests)" section - there is code for a simple Node.js server.
