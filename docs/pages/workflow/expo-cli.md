@@ -10,7 +10,6 @@ The `expo` package provides a small and powerful CLI tool `npx expo` which is de
 **Highlights**
 
 - [Start a server](#develop) for developing your app: `npx expo start`.
-  {/_ - Bundle the JavaScript and assets for your app: `npx expo export`. _/}
 - [Generate the native iOS and Android directories](#prebuild) for your project: `npx expo prebuild`.
 - [Build and run](#compiling) the native apps locally: `npx expo run:ios` and `npx expo run:android`.
 - [Install and update packages](#install) that work with the version of `react-native` in your project: `npx expo install package-name`.
@@ -158,8 +157,6 @@ If your project does not have the corresponding native directories, the `npx exp
 
 For example, if your project does not have a root `ios/` directory, then `npx expo run:ios` will first run `npx expo prebuild -p ios` before compiling your app. Learn more about about this process in the [Expo Prebuild](/workflow/prebuild) doc.
 
-{/_ TODO: multi-platform setup guide _/}
-
 **Cross-Platform Arguments**
 
 - `--no-build-cache`: Clear the native cache before building. On iOS this is the **derived data** folder. Cache clearing is useful for profiling your build times.
@@ -233,8 +230,6 @@ The following options are provided:
 - `--output-dir <dir>`: The directory to export the static files to. **Default: dist**
 - `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
 - `-c, --clear`: Clear the bundler cache before exporting.
-
-{/_ TODO: Link to docs about self hosting _/}
 
 ### Exporting with Webpack
 
