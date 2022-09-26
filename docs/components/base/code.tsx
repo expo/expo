@@ -133,7 +133,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
           )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
         }
       )
-      .replace(/\s*<span class="token comment">&lt;!-- @end --><\/span>(\n *)?/g, '</span>');
+      .replace(/\s*<span class="token comment">&lt;!-- @end --><\/span>/g, '</span>');
   }
 
   private replaceHashCommentsWithAnnotations(value: string) {
@@ -150,7 +150,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
           content
         )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
       })
-      .replace(/\s*<span class="token comment"># @end #<\/span>(\n *)?/g, '</span>');
+      .replace(/\s*<span class="token comment"># @end #<\/span>/g, '</span>');
   }
 
   private replaceSlashCommentsWithAnnotations(value: string) {
@@ -167,7 +167,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
           content
         )}</span><span class="code-hidden">%%placeholder-end%%</span><span class="code-hidden">`;
       })
-      .replace(/\s*<span class="token comment">\/\* @end \*\/<\/span>(\n *)?/g, '</span>');
+      .replace(/\s*<span class="token comment">\/\* @end \*\/<\/span>/g, '</span>');
   }
 
   render() {
