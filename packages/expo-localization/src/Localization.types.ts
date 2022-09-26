@@ -64,11 +64,11 @@ export type Localization = {
    * @example `'America/Los_Angeles'`
    */
   timezone: string;
-  getPreferredLocales: () => PreferredLocale[];
-  getPreferredCalendars: () => PreferredCalendar[];
+  getLocales: () => Locale[];
+  getCalendars: () => Calendar[];
 };
 
-export type PreferredLocale = {
+export type Locale = {
   /**
    * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) with a region code. Example: `en-US`, "es-419", "pl-PL".
    */
@@ -111,19 +111,45 @@ export type PreferredLocale = {
   measurementSystem: `metric` | `us` | `uk` | null;
 };
 
-export type PreferredCalendar = {
+export enum Weekday {
+  SUNDAY = 1,
+  MONDAY = 2,
+  TUESDAY = 3,
+  WEDNESDAY = 4,
+  THURSDAY = 5,
+  FRIDAY = 6,
+  SATURDAY = 7,
+}
+
+export type UnicodeCalendarIdentifier =
+  | 'buddhist'
+  | 'chinese'
+  | 'coptic'
+  | 'dangi'
+  | 'ethioaa'
+  | 'ethiopic'
+  | 'gregory'
+  | 'hebrew'
+  | 'indian'
+  | 'islamic'
+  | 'islamic-civil'
+  | 'islamic-rgsa'
+  | 'islamic-tbla'
+  | 'islamic-umalqura'
+  | 'iso8601'
+  | 'japanese'
+  | 'persian'
+  | 'roc';
+
+export type Calendar = {
   /**
-   * The calendar identifier.
-   * On web returns one of [Unicode calendar types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/calendar).
-   * Example: `gregory`, `chinese`, `islamic`.
+   * The calendar identifier, one of [Unicode calendar types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/calendar).
    *
-   * On android can return one of device's [available calendar types](https://developer.android.com/reference/java/util/Calendar#getAvailableCalendarTypes()).
-   * Should overlap with Unicode calendar types.
-   * Example: `gregory`, `chinese`, `islamic`.
+   * On Android is limited to one of device's [available calendar types](https://developer.android.com/reference/java/util/Calendar#getAvailableCalendarTypes()).
    *
-   * On iOS can return one of [calendar identifiers](https://developer.apple.com/documentation/foundation/calendar/identifier). Example: `gregorian`, `buddist`.
+   * On iOS uses [calendar identifiers](https://developer.apple.com/documentation/foundation/calendar/identifier), but maps them to the corresponding Unicode types, will also never contain `dangi` or `islamic-rgsa` due to it not being implemented on iOS.
    */
-  calendar: string | null;
+  calendar: UnicodeCalendarIdentifier | null;
   /**
    * True when current device settings use 24 hour time format.
    * Can be null on older browsers that don't support the `hourCycle` API.
@@ -131,11 +157,11 @@ export type PreferredCalendar = {
    */
   uses24hourClock: boolean | null;
   /**
-   * The first day of the week. For a Gregorian calendar Sunday is numbered 1, with Monday being number 7.
+   * The first day of the week. For most calendars Sunday is numbered 1, with Saturday being number 7.
    * Can be null on older browsers that don't support the `weekInfo` API.
-   * Example: `1`, `7`, `9` (for non-Gregorian calendars).
+   * Example: `1`, `7`.
    */
-  firstWeekday: number | null;
+  firstWeekday: Weekday | null;
   /**
    * Time zone for the calendar. Can be null on web.
    * Example: `America/Los_Angeles`, `Europe/Warsaw`, `GMT+1`.

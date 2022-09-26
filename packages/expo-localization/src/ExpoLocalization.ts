@@ -2,7 +2,7 @@
 import { Platform } from 'expo-modules-core';
 import * as rtlDetect from 'rtl-detect';
 
-import { Localization, PreferredCalendar, PreferredLocale } from './Localization.types';
+import { Localization, Calendar, Locale, UnicodeCalendarIdentifier } from './Localization.types';
 
 const getNavigatorLocales = () => {
   return Platform.isDOMAvailable ? navigator.languages || [navigator.language] : [];
@@ -10,17 +10,14 @@ const getNavigatorLocales = () => {
 
 type ExtendedLocale = Intl.Locale &
   // typescript definitions for navigator language don't include some modern Intl properties
-  Partial<
-    {
-      textInfo: { direction: 'ltr' | 'rtl' };
-    } & {
-      timeZones: string[];
-      weekInfo: { firstDay: number };
-      hourCycles: string[];
-      timeZone: string;
-      calendars: string[];
-    }
-  >;
+  Partial<{
+    textInfo: { direction: 'ltr' | 'rtl' };
+    timeZones: string[];
+    weekInfo: { firstDay: number };
+    hourCycles: string[];
+    timeZone: string;
+    calendars: string[];
+  }>;
 
 export default {
   get currency(): string | null {
@@ -90,7 +87,7 @@ export default {
     return null;
   },
 
-  getPreferredLocales(): PreferredLocale[] {
+  getLocales(): Locale[] {
     const locales = getNavigatorLocales();
     return locales?.map((languageTag) => {
       // TextInfo is an experimental API that is not available in all browsers.
@@ -120,7 +117,7 @@ export default {
       };
     });
   },
-  getPreferredCalendars(): PreferredCalendar[] {
+  getCalendars(): Calendar[] {
     // Prefer locales with region codes as they contain more info about calendar.
     // They seem to always exist in the list for each locale without region
     const locales = [...getNavigatorLocales()].sort((a, b) =>
@@ -131,16 +128,15 @@ export default {
       : null) as unknown as null | ExtendedLocale;
     return [
       {
-        calendar: locale?.calendar || locale?.calendars?.[0] || null,
+        calendar:
+          ((locale?.calendar || locale?.calendars?.[0]) as UnicodeCalendarIdentifier) || null,
         timeZone: locale?.timeZone || locale?.timeZones?.[0] || null,
         uses24hourClock: (locale?.hourCycle || locale?.hourCycles?.[0])?.startsWith('h2') ?? null, //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/hourCycle
         firstWeekday: locale?.weekInfo?.firstDay || null,
       },
     ];
   },
-  async getLocalizationAsync(): Promise<
-    Omit<Localization, 'getPreferredCalendars' | 'getPreferredLocales'>
-  > {
+  async getLocalizationAsync(): Promise<Omit<Localization, 'getCalendars' | 'getLocales'>> {
     const {
       currency,
       decimalSeparator,

@@ -32,12 +32,12 @@ class LocalizationModule : Module() {
       return@AsyncFunction bundledConstants
     }
 
-    Function("getPreferredLocales") {
-      return@Function getPreferredLocales()
+    Function("getLocales") {
+      return@Function getLocales()
     }
 
-    Function("getPreferredCalendars") {
-      return@Function getPreferredCalendars()
+    Function("getCalendars") {
+      return@Function getCalendars()
     }
   }
 
@@ -103,7 +103,7 @@ class LocalizationModule : Module() {
     }
   }
 
-  private fun getPreferredLocales(): List<Map<String, Any?>> {
+  private fun getLocales(): List<Map<String, Any?>> {
     val locales = mutableListOf<Map<String, Any?>>()
     val localeList: LocaleListCompat = LocaleListCompat.getDefault()
     for (i in 0 until localeList.size()) {
@@ -144,12 +144,12 @@ class LocalizationModule : Module() {
     }
   }
 
-  private fun getPreferredCalendars(): List<Map<String, Any?>> {
+  private fun getCalendars(): List<Map<String, Any?>> {
     return listOf(
       mapOf(
         "calendar" to getCalendarType(),
         "uses24hourClock" to uses24HourClock(), // we ideally would use hourCycle (one of h12, h23, h11, h24) instead, but not sure how to get it on android and ios
-        "firstWeekday" to Calendar.getInstance().firstDayOfWeek, // 1..7, 1 is sunday
+        "firstWeekday" to Calendar.getInstance().firstDayOfWeek,
         "timeZone" to Calendar.getInstance().timeZone.id
       )
     )

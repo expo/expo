@@ -32,8 +32,8 @@ export function test(t) {
   }
 
   t.describe(`Localization methods`, () => {
-    t.it('expect to getPreferredLocales return preferred locales', async () => {
-      const locales = await Localization.getPreferredLocales();
+    t.it('expect to getLocales return preferred locales', async () => {
+      const locales = await Localization.getLocales();
       t.expect(locales.length).toBeGreaterThanOrEqual(1);
       const {
         languageTag,
@@ -64,8 +64,8 @@ export function test(t) {
       }
     });
 
-    t.it('expect getPreferredCalendars to return at least a single calendar', async () => {
-      const calendars = await Localization.getPreferredCalendars();
+    t.it('expect getCalendars to return at least a single calendar', async () => {
+      const calendars = await Localization.getCalendars();
       t.expect(calendars.length).toBeGreaterThanOrEqual(1);
       const { calendar, uses24hourClock, firstWeekday, timeZone } = calendars[0];
       t.expect(calendar).toBeDefined();

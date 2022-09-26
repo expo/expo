@@ -70,7 +70,7 @@ export default {
         }
         return null;
     },
-    getPreferredLocales() {
+    getLocales() {
         const locales = getNavigatorLocales();
         return locales?.map((languageTag) => {
             // TextInfo is an experimental API that is not available in all browsers.
@@ -96,7 +96,7 @@ export default {
             };
         });
     },
-    getPreferredCalendars() {
+    getCalendars() {
         // Prefer locales with region codes as they contain more info about calendar.
         // They seem to always exist in the list for each locale without region
         const locales = [...getNavigatorLocales()].sort((a, b) => a.includes('-') === b.includes('-') ? 0 : a.includes('-') ? -1 : 1);
@@ -105,7 +105,7 @@ export default {
             : null);
         return [
             {
-                calendar: locale?.calendar || locale?.calendars?.[0] || null,
+                calendar: (locale?.calendar || locale?.calendars?.[0]) || null,
                 timeZone: locale?.timeZone || locale?.timeZones?.[0] || null,
                 uses24hourClock: (locale?.hourCycle || locale?.hourCycles?.[0])?.startsWith('h2') ?? null,
                 firstWeekday: locale?.weekInfo?.firstDay || null,

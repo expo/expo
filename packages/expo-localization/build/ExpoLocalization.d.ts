@@ -1,4 +1,4 @@
-import { Localization, PreferredCalendar, PreferredLocale } from './Localization.types';
+import { Localization, Calendar, Locale } from './Localization.types';
 declare const _default: {
     readonly currency: string | null;
     readonly decimalSeparator: string;
@@ -10,9 +10,9 @@ declare const _default: {
     readonly timezone: string;
     readonly isoCurrencyCodes: string[];
     readonly region: string | null;
-    getPreferredLocales(): PreferredLocale[];
-    getPreferredCalendars(): PreferredCalendar[];
-    getLocalizationAsync(): Promise<Omit<Localization, 'getPreferredCalendars' | 'getPreferredLocales'>>;
+    getLocales(): Locale[];
+    getCalendars(): Calendar[];
+    getLocalizationAsync(): Promise<Omit<Localization, 'getCalendars' | 'getLocales'>>;
 };
 export default _default;
 //# sourceMappingURL=ExpoLocalization.d.ts.map

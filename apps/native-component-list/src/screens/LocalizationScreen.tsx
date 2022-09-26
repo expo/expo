@@ -11,7 +11,7 @@ import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
 i18n.fallbacks = true;
-i18n.locale = Localization.getPreferredLocales()[0].languageTag;
+i18n.locale = Localization.getLocales()[0].languageTag;
 i18n.translations = {
   en: {
     phrase: 'Hello my friend',
@@ -82,16 +82,15 @@ export default class LocalizationScreen extends React.Component<{}, State> {
     i18n.locale = locale;
     this.setState({ locale });
   };
-
   render() {
     return (
       <ScrollView>
         <View style={styles.container}>
           <HeadingText>Locales in Preference Order</HeadingText>
-          <MonoText>{JSON.stringify(Localization.getPreferredLocales(), null, 2)}</MonoText>
+          <MonoText>{JSON.stringify(Localization.getLocales(), null, 2)}</MonoText>
 
           <HeadingText>Calendars in Preference Order</HeadingText>
-          <MonoText>{JSON.stringify(Localization.getPreferredCalendars(), null, 2)}</MonoText>
+          <MonoText>{JSON.stringify(Localization.getCalendars(), null, 2)}</MonoText>
 
           <HeadingText>Localization Table</HeadingText>
           <Picker
