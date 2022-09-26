@@ -64,8 +64,30 @@ describe('_getProjectOptions', () => {
     const middleware = new InterstitialPageMiddleware('/');
 
     expect(middleware._getProjectOptions('ios')).toEqual({
-      runtimeVersion: '123',
       appName: 'my-app',
+      projectVersion: {
+        type: 'runtime',
+        version: '123',
+      },
+    });
+    expect(getConfig).toBeCalled();
+    expect(getRuntimeVersionNullable).toBeCalledWith(
+      { name: 'my-app', sdkVersion: '45.0.0', slug: 'my-app' },
+      'ios'
+    );
+  });
+  it('returns the project settings from the config with SDK version', async () => {
+    asMock(getNameFromConfig).mockReturnValueOnce({ appName: 'my-app' });
+    asMock(getRuntimeVersionNullable).mockReturnValueOnce(null);
+
+    const middleware = new InterstitialPageMiddleware('/');
+
+    expect(middleware._getProjectOptions('ios')).toEqual({
+      appName: 'my-app',
+      projectVersion: {
+        type: 'sdk',
+        version: '45.0.0',
+      },
     });
     expect(getConfig).toBeCalled();
     expect(getRuntimeVersionNullable).toBeCalledWith(
@@ -81,7 +103,7 @@ describe('_getPageAsync', () => {
     vol.fromJSON(
       {
         'node_modules/expo/static/loading-page/index.html':
-          'AppName: "{{ AppName }}", RuntimeVersion "{{ RuntimeVersion }}", Path: {{ Path }}',
+          'AppName: "{{ AppName }}", {{ ProjectVersionType }} "{{ ProjectVersion }}", Path: {{ Path }}, Scheme: "{{ Scheme }}"',
       },
       projectRoot
     );
@@ -90,19 +112,47 @@ describe('_getPageAsync', () => {
     await expect(
       middleware._getPageAsync({
         appName: 'App',
-        runtimeVersion: '123',
+        projectVersion: {
+          type: 'runtime',
+          version: '123',
+        },
       })
-    ).resolves.toEqual('AppName: "App", RuntimeVersion "123", Path: /');
+    ).resolves.toEqual('AppName: "App", Runtime version "123", Path: /, Scheme: "Unknown"');
+    await expect(
+      middleware._getPageAsync({
+        appName: 'App',
+        projectVersion: {
+          type: 'sdk',
+          version: '45.0.0',
+        },
+      })
+    ).resolves.toEqual('AppName: "App", SDK version "45.0.0", Path: /, Scheme: "Unknown"');
+
+    const middlewareWithScheme = new InterstitialPageMiddleware(projectRoot, {
+      scheme: 'testscheme',
+    });
+    await expect(
+      middlewareWithScheme._getPageAsync({
+        appName: 'App',
+        projectVersion: {
+          type: 'runtime',
+          version: '123',
+        },
+      })
+    ).resolves.toEqual('AppName: "App", Runtime version "123", Path: /, Scheme: "testscheme"');
   });
 });
 
 describe('handleRequestAsync', () => {
-  it('returns the interstitial page', async () => {
+  it('returns the interstitial page with platform header', async () => {
     const middleware = new InterstitialPageMiddleware('/');
 
     middleware._getProjectOptions = jest.fn(() => ({
-      runtimeVersion: '123',
       appName: 'App',
+      projectVersion: {
+        type: 'runtime',
+        version: '123',
+      },
     }));
 
     middleware._getPageAsync = jest.fn(async () => 'mock-value');
@@ -115,6 +165,47 @@ describe('handleRequestAsync', () => {
 
     await middleware.handleRequestAsync(
       asReq({ url: 'http://localhost:3000', headers: { 'expo-platform': 'ios' } }),
+      response
+    );
+    expect(response.statusCode).toBe(200);
+    expect(response.end).toBeCalledWith('mock-value');
+    expect(response.setHeader).toHaveBeenNthCalledWith(
+      1,
+      'Cache-Control',
+      'private, no-cache, no-store, must-revalidate'
+    );
+    expect(response.setHeader).toHaveBeenNthCalledWith(2, 'Expires', '-1');
+    expect(response.setHeader).toHaveBeenNthCalledWith(3, 'Pragma', 'no-cache');
+    expect(response.setHeader).toHaveBeenNthCalledWith(4, 'Content-Type', 'text/html');
+  });
+
+  it('returns the interstitial page with user-agent header', async () => {
+    const middleware = new InterstitialPageMiddleware('/');
+
+    middleware._getProjectOptions = jest.fn(() => ({
+      appName: 'App',
+      projectVersion: {
+        type: 'runtime',
+        version: '123',
+      },
+    }));
+
+    middleware._getPageAsync = jest.fn(async () => 'mock-value');
+
+    const response = {
+      setHeader: jest.fn(),
+      end: jest.fn(),
+      statusCode: 200,
+    } as unknown as ServerResponse;
+
+    await middleware.handleRequestAsync(
+      asReq({
+        url: 'http://localhost:3000',
+        headers: {
+          'user-agent':
+            'Mozilla/5.0 (Linux; Android 11; Pixel 2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Mobile Safari/537.36',
+        },
+      }),
       response
     );
     expect(response.statusCode).toBe(200);

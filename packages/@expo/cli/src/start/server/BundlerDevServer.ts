@@ -400,26 +400,35 @@ export abstract class BundlerDevServer {
     return manager.openAsync({ runtime: 'custom', props: launchProps }, resolver);
   }
 
+  /** Get the URL for opening in Expo Go. */
+  protected getExpoGoUrl(): string {
+    return this.getUrlCreator().constructUrl({ scheme: 'exp' });
+  }
+
   /** Should use the interstitial page for selecting which runtime to use. */
-  protected shouldUseInterstitialPage(): boolean {
+  protected isRedirectPageEnabled(): boolean {
     return (
-      env.EXPO_ENABLE_INTERSTITIAL_PAGE &&
+      !env.EXPO_NO_REDIRECT_PAGE &&
+      // if user passed --dev-client flag, skip interstitial page
+      !this.isDevClient &&
       // Checks if dev client is installed.
-      !!resolveFrom.silent(this.projectRoot, 'expo-dev-launcher')
+      !!resolveFrom.silent(this.projectRoot, 'expo-dev-client')
     );
   }
 
-  /** Get the URL for opening in Expo Go. */
-  protected getExpoGoUrl(platform: keyof typeof PLATFORM_MANAGERS): string | null {
-    if (this.shouldUseInterstitialPage()) {
-      const loadingUrl =
-        platform === 'emulator'
-          ? this.urlCreator?.constructLoadingUrl({}, 'android')
-          : this.urlCreator?.constructLoadingUrl({ hostType: 'localhost' }, 'ios');
-      return loadingUrl ?? null;
+  /** Get the redirect URL when redirecting is enabled. */
+  public getRedirectUrl(platform: keyof typeof PLATFORM_MANAGERS | null = null): string | null {
+    if (!this.isRedirectPageEnabled()) {
+      debug('Redirect page is disabled');
+      return null;
     }
 
-    return this.urlCreator?.constructUrl({ scheme: 'exp' }) ?? null;
+    return (
+      this.getUrlCreator().constructLoadingUrl(
+        {},
+        platform === 'emulator' ? 'android' : platform === 'simulator' ? 'ios' : null
+      ) ?? null
+    );
   }
 
   protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {
@@ -435,7 +444,8 @@ export abstract class BundlerDevServer {
       debug(`Creating platform manager (platform: ${platform}, port: ${port})`);
       this.platformManagers[platform] = new Manager(this.projectRoot, port, {
         getCustomRuntimeUrl: this.urlCreator.constructDevClientUrl.bind(this.urlCreator),
-        getExpoGoUrl: this.getExpoGoUrl.bind(this, platform),
+        getExpoGoUrl: this.getExpoGoUrl.bind(this),
+        getRedirectUrl: this.getRedirectUrl.bind(this, platform),
         getDevServerUrl: this.getDevServerUrl.bind(this, { hostType: 'localhost' }),
       });
     }

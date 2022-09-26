@@ -5,6 +5,7 @@ import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../Bun
 import { UrlCreator } from '../UrlCreator';
 import { getPlatformBundlers } from '../platformBundlers';
 
+jest.mock(`../../../log`);
 jest.mock('../AsyncNgrok');
 jest.mock('../DevelopmentSession');
 jest.mock('../../platforms/ios/ApplePlatformManager', () => {
@@ -30,14 +31,16 @@ beforeAll(() => {
   process.chdir('/');
 });
 
+const originalEnv = process.env;
+
 beforeEach(() => {
   vol.reset();
-  delete process.env.EXPO_ENABLE_INTERSTITIAL_PAGE;
+  delete process.env.EXPO_NO_REDIRECT_PAGE;
 });
 
 afterAll(() => {
   process.chdir(originalCwd);
-  delete process.env.EXPO_ENABLE_INTERSTITIAL_PAGE;
+  process.env = originalEnv;
 });
 
 class MockBundlerDevServer extends BundlerDevServer {
@@ -45,7 +48,9 @@ class MockBundlerDevServer extends BundlerDevServer {
     return 'fake';
   }
 
-  public async startAsync(options: BundlerStartOptions): Promise<DevServerInstance> {
+  protected async startImplementationAsync(
+    options: BundlerStartOptions
+  ): Promise<DevServerInstance> {
     const port = options.port || 3000;
     this.urlCreator = new UrlCreator(
       {
@@ -78,7 +83,7 @@ class MockBundlerDevServer extends BundlerDevServer {
     });
     await this.postStartAsync(options);
 
-    return this.getInstance();
+    return this.getInstance()!;
   }
 
   getPublicUrlCreator() {
@@ -94,10 +99,6 @@ class MockBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./fake.config.js'];
   }
-
-  public getExpoGoUrl(platform: 'simulator' | 'emulator') {
-    return super.getExpoGoUrl(platform);
-  }
 }
 
 async function getRunningServer() {
@@ -110,7 +111,9 @@ describe('broadcastMessage', () => {
   it(`sends a message`, async () => {
     const devServer = await getRunningServer();
     devServer.broadcastMessage('reload', { foo: true });
-    expect(devServer.getInstance().messageSocket.broadcast).toBeCalledWith('reload', { foo: true });
+    expect(devServer.getInstance()!.messageSocket.broadcast).toBeCalledWith('reload', {
+      foo: true,
+    });
   });
 });
 
@@ -152,54 +155,130 @@ describe('stopAsync', () => {
     const devSession = server.getNgrok();
 
     // Ensure services were started.
-    expect(ngrok.startAsync).toHaveBeenCalled();
-    expect(devSession.startAsync).toHaveBeenCalled();
+    expect(ngrok?.startAsync).toHaveBeenCalled();
+    expect(devSession?.startAsync).toHaveBeenCalled();
 
     // Invoke the stop function
     await server.stopAsync();
 
     // Ensure services were stopped.
     expect(instance.server.close).toHaveBeenCalled();
-    expect(ngrok.stopAsync).toHaveBeenCalled();
-    expect(devSession.stopAsync).toHaveBeenCalled();
+    expect(ngrok?.stopAsync).toHaveBeenCalled();
+    expect(devSession?.stopAsync).toHaveBeenCalled();
     expect(server.getInstance()).toBeNull();
   });
 });
 
-describe('getExpoGoUrl', () => {
-  it(`gets the interstitial page URL`, async () => {
-    process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
+describe('isRedirectPageEnabled', () => {
+  beforeEach(() => {
+    vol.reset();
+    delete process.env.EXPO_NO_REDIRECT_PAGE;
+  });
+
+  function mockDevClientInstalled() {
     vol.fromJSON(
       {
-        'node_modules/expo-dev-launcher/package.json': '',
+        'node_modules/expo-dev-client/package.json': '',
       },
       '/'
     );
+  }
 
+  it(`is redirect enabled`, async () => {
+    mockDevClientInstalled();
+
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers({}),
+      // is Dev Client
+      false
+    );
+    expect(server['isRedirectPageEnabled']()).toBe(true);
+  });
+
+  it(`redirect can be disabled with env var`, async () => {
+    mockDevClientInstalled();
+
+    process.env.EXPO_NO_REDIRECT_PAGE = '1';
+
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers({}),
+      // is Dev Client
+      false
+    );
+    expect(server['isRedirectPageEnabled']()).toBe(false);
+  });
+
+  it(`redirect is disabled when running in dev client mode`, async () => {
+    mockDevClientInstalled();
+
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers({}),
+      // is Dev Client
+      true
+    );
+    expect(server['isRedirectPageEnabled']()).toBe(false);
+  });
+
+  it(`redirect is disabled when expo-dev-client is not installed in the project`, async () => {
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers({}),
+      // is Dev Client
+      false
+    );
+    expect(server['isRedirectPageEnabled']()).toBe(false);
+  });
+});
+
+describe('getRedirectUrl', () => {
+  it(`returns null when the redirect page functionality is disabled`, async () => {
+    const server = new MockBundlerDevServer(
+      '/',
+      getPlatformBundlers({}),
+      // is Dev Client
+      false
+    );
+    server['isRedirectPageEnabled'] = () => false;
+    expect(server['getRedirectUrl']()).toBe(null);
+  });
+
+  it(`gets the redirect page URL`, async () => {
     const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    server['isRedirectPageEnabled'] = () => true;
     await server.startAsync({
       location: {},
     });
 
-    const urlCreator = server.getPublicUrlCreator();
+    const urlCreator = server.getPublicUrlCreator()!;
     urlCreator.constructLoadingUrl = jest.fn(urlCreator.constructLoadingUrl);
 
-    expect(server.getExpoGoUrl('emulator')).toBe(
+    expect(server.getRedirectUrl('emulator')).toBe(
       'http://100.100.1.100:3000/_expo/loading?platform=android'
     );
-    expect(server.getExpoGoUrl('simulator')).toBe(
-      'http://127.0.0.1:3000/_expo/loading?platform=ios'
+    expect(server.getRedirectUrl('simulator')).toBe(
+      'http://100.100.1.100:3000/_expo/loading?platform=ios'
     );
-    expect(urlCreator.constructLoadingUrl).toBeCalledTimes(2);
+    expect(server.getRedirectUrl(null)).toBe('http://100.100.1.100:3000/_expo/loading');
+    expect(urlCreator.constructLoadingUrl).toBeCalledTimes(3);
   });
+});
+
+describe('getExpoGoUrl', () => {
+  it(`asserts if the dev server has not been started yet`, () => {
+    const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    expect(() => server['getExpoGoUrl']()).toThrow('Dev server instance not found');
+  });
+
   it(`gets the native Expo Go URL`, async () => {
     const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
     await server.startAsync({
       location: {},
     });
 
-    expect(server.getExpoGoUrl('emulator')).toBe('exp://100.100.1.100:3000');
-    expect(server.getExpoGoUrl('simulator')).toBe('exp://100.100.1.100:3000');
+    expect(await server['getExpoGoUrl']()).toBe('exp://100.100.1.100:3000');
   });
 });
 

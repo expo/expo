@@ -33,6 +33,11 @@ describe('constructLoadingUrl', () => {
       createDefaultCreator().constructLoadingUrl({ scheme: 'my-scheme' }, 'android')
     ).toMatchInlineSnapshot(`"my-scheme://100.100.1.100:8081/_expo/loading?platform=android"`);
   });
+  it(`allows null platform`, () => {
+    expect(createDefaultCreator().constructLoadingUrl({}, null)).toMatchInlineSnapshot(
+      `"http://100.100.1.100:8081/_expo/loading"`
+    );
+  });
 });
 
 describe('constructDevClientUrl', () => {
