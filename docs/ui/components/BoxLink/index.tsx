@@ -7,6 +7,7 @@ import {
   iconSize,
   shadows,
   ArrowUpRightIcon,
+  breakpoints,
 } from '@expo/styleguide';
 import type { IconProps } from '@expo/styleguide/dist/types';
 import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
@@ -69,8 +70,12 @@ const tileIconBackgroundStyle = css({
   alignSelf: 'center',
   alignItems: 'center',
   justifyContent: 'center',
-  width: 36,
+  minWidth: 36,
   height: 36,
+
+  [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
+    alignSelf: 'flex-start',
+  },
 });
 
 const arrowIconStyle = css({
