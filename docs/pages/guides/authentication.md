@@ -58,7 +58,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 
 - If `offline_access` isn't included then no refresh token will be returned.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import { Button, Text, View } from 'react-native';
@@ -68,11 +68,9 @@ import * as WebBrowser from 'expo-web-browser';
 /* @info <strong>Web only:</strong> This method should be invoked on the page that the auth popup gets redirected to on web, it'll ensure that authentication is completed properly. On native this does nothing. */
 WebBrowser.maybeCompleteAuthSession();
 /* @end */
-
 /* @info Using the Expo proxy will redirect the user through auth.expo.io enabling you to use web links when configuring your project with an OAuth provider. This is not available on web. */
 const useProxy = true;
 /* @end */
-
 const redirectUri = AuthSession.makeRedirectUri({
   useProxy,
 });
@@ -81,7 +79,6 @@ export default function App() {
   /* @info If the provider supports auto discovery then you can pass an issuer to the `useAutoDiscovery` hook to fetch the discovery document. */
   const discovery = AuthSession.useAutoDiscovery('https://demo.identityserver.io');
   /* @end */
-
   // Create and load an auth request
   const [request, result, promptAsync] = AuthSession.useAuthRequest(
     {
@@ -103,7 +100,7 @@ export default function App() {
 }
 ```
 
-<!-- End IdentityServer 4 -->
+{/* End IdentityServer 4 */}
 
 ### Azure
 
@@ -115,7 +112,7 @@ export default function App() {
 
 [c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -159,7 +156,7 @@ export default function App() {
 }
 ```
 
-<!-- End Azure -->
+{/* End Azure */}
 
 ### Coinbase
 
@@ -189,7 +186,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import {
   exchangeCodeAsync,
@@ -212,11 +209,7 @@ const discovery = {
   revocationEndpoint: "https://api.coinbase.com/oauth/revoke",
 };
 
-const redirectUri = makeRedirectUri({
-  /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
-  scheme: 'your.app'
-/* @end */});
-
+const redirectUri = makeRedirectUri({ /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */ scheme: 'your.app'/* @end */});
 const CLIENT_ID = "CLIENT_ID";
 
 export default function App() {
@@ -332,7 +325,7 @@ function useMounted() {
 </Tab>
 </Tabs>
 
-<!-- End Coinbase -->
+{/* End Coinbase */}
 
 ### Dropbox
 
@@ -355,7 +348,7 @@ function useMounted() {
 
 Auth code responses (`ResponseType.Code`) will only work in native with `useProxy: true`.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -423,7 +416,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -488,7 +481,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Dropbox -->
+{/* End Dropbox */}
 
 ### Facebook
 
@@ -519,13 +512,12 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 #### Custom Apps
 
-Consider using the [`expo-facebook`](/versions/latest/sdk/facebook) module for native auth as it supports some nonstandard OAuth features implemented by Facebook.
+For SDK 46 and above, we recommend using [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) module with [Development Builds](https://docs.expo.dev/development/introduction/).
 
-- The custom scheme provided by Facebook is `fb` followed by the **project ID** (ex: `fb145668956753819`):
-- Add `facebookScheme: 'fb<YOUR FBID>'` to your **app.config.js** or **app.json**. Example: `{ facebookScheme: "fb145668956753819" }` (notice the `fb` prefix).
-- You'll need to make a new native build to add this redirect URI into your app's **AndroidManifest.xml** and **Info.plist**:
-  - iOS: `eas build` or `expo build:ios`.
-  - Android: `eas build` or `expo build:android`.
+You'll have to rebuild after adding the `react-native-fbsdk-next` as a config plugin to **app.json** or **app.config.js**:
+
+- iOS: `eas build` or `npx expo run:ios`
+- Android: `eas build` or `npx expo run:android`
 - **Bare:**
   - Regenerate your native projects with `expo prebuild`, or add the redirects manually with `npx uri-scheme add fb<YOUR FBID>`
   - Rebuild the projects with `yarn ios` & `yarn android`
@@ -598,7 +590,7 @@ Then add `<data android:scheme="fb<YOUR ID>"/>` to the `.MainActivity` `intent-f
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -614,14 +606,14 @@ export default function App() {
   const [request, response, promptAsync] = Facebook.useAuthRequest({
     clientId: '<YOUR FBID>',
     /* @info Request that the server returns a <code>code</code> for server exchanges. */
-    responseType: ResponseType.Code,
-  /* @end */});
+    responseType: ResponseType.Code, /* @end */
+  });
 
   React.useEffect(() => {
     if (response?.type === 'success') {
       /* @info Exchange the code for an access token in a server. Alternatively you can use the <b>Implicit</b> auth method. */
-      const { code } = response.params;
-    /* @end */}
+      const { code } = response.params;/* @end */
+    }
   }, [response]);
 
   return (
@@ -643,7 +635,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -690,7 +682,7 @@ export default function App() {
 - 🔥 Create a new Firebase project
 - Enable Facebook auth, save the project.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -722,7 +714,6 @@ export default function App() {
       /* @info Use this access token to interact with user data on the provider's server. */
       const { access_token } = response.params;
       /* @end */
-
       /* @info Create a Facebook credential with the <code>access_token</code> */
       const auth = getAuth();
       const provider = new FacebookAuthProvider();
@@ -752,7 +743,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Facebook -->
+{/* End Facebook */}
 
 ### FitBit
 
@@ -774,7 +765,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -834,7 +825,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -901,7 +892,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End FitBit -->
+{/* End FitBit */}
 
 ### GitHub
 
@@ -924,7 +915,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -990,7 +981,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End GitHub -->
+{/* End GitHub */}
 
 ### Google
 
@@ -1081,7 +1072,7 @@ Expo web client ID for use in the browser.
 <Tabs tabs={["Standard", "Firebase"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1128,7 +1119,7 @@ export default function App() {
 
 <Tab>
 
-- 🔥 Create a new Firebase project
+- Create a new Firebase project
 - Enable Google auth
   - Open "Web SDK configuration"
   - Save "Web client ID" you'll need it later
@@ -1144,7 +1135,7 @@ export default function App() {
 
 <img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1178,7 +1169,6 @@ export default function App() {
       /* @info Use this access token to interact with user data on the provider's server. */
       const { id_token } = response.params;
       /* @end */
-
       /* @info Create a Google credential with the <code>id_token</code> */
       const auth = getAuth();
       const credential = GoogleAuthProvider.credential(id_token);
@@ -1207,7 +1197,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Google -->
+{/* End Google */}
 
 ### Imgur
 
@@ -1346,7 +1336,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Imgur -->
+{/* End Imgur */}
 
 ### Okta
 
@@ -1364,7 +1354,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1429,7 +1419,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Okta -->
+{/* End Okta */}
 
 ### Reddit
 
@@ -1452,7 +1442,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1512,7 +1502,7 @@ export default function App() {
 
 - You must select the `installed` option for your app on Reddit to use implicit grant.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1573,7 +1563,7 @@ export default function App() {
 </Tab>
 </Tabs>
 
-<!-- End Reddit -->
+{/* End Reddit */}
 
 ### Slack
 
@@ -1596,7 +1586,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1661,7 +1651,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Slack -->
+{/* End Slack */}
 
 ### Spotify
 
@@ -1690,7 +1680,7 @@ export default function App() {
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1752,7 +1742,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1816,7 +1806,7 @@ export default function App() {
 </Tab>
 </Tabs>
 
-<!-- End Spotify -->
+{/* End Spotify */}
 
 ### Strava
 
@@ -1835,7 +1825,7 @@ export default function App() {
 <Tabs tabs={["Auth Code"]}>
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1894,7 +1884,7 @@ export default function App() {
 Strava doesn't provide an implicit auth flow, you should send the code to a server or serverless function to perform the access token exchange.
 For **debugging** purposes, you can perform the exchange client-side using the following method:
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 const { accessToken } = await AuthSession.exchangeCodeAsync(
   {
@@ -1915,7 +1905,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 </Tabs>
 
-<!-- End Strava -->
+{/* End Strava */}
 
 ### Twitch
 
@@ -1934,7 +1924,7 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -1994,7 +1984,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2057,7 +2047,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Twitch -->
+{/* End Twitch */}
 
 ### Twitter
 
@@ -2086,7 +2076,7 @@ You must use the proxy service in the Expo Go app because `exp://localhost:19000
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2152,7 +2142,7 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Twitter -->
+{/* End Twitter */}
 
 ### Uber
 
@@ -2171,7 +2161,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2231,7 +2221,7 @@ export default function App() {
 
 <Tab>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2294,9 +2284,9 @@ export default function App() {
 
 </Tabs>
 
-<!-- End Uber -->
+{/* End Uber */}
 
-<!-- End Guides -->
+{/* End Guides */}
 
 ## Redirect URI patterns
 
@@ -2355,7 +2345,8 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - Bare workflow
     - `npx create-react-native-app` or `expo prebuild`
   - Standalone builds in the App or Play Store
-    - `expo build:ios` or `expo build:android`
+    - iOS: `eas build` or `expo build:ios`
+    - Android: `eas build` or `expo build:android`
   - Standalone builds for local testing
     - `expo build:ios -t simulator` or `expo build:android -t apk`
 
@@ -2379,7 +2370,7 @@ Here are a few tips you can use to make authentication quick, easy, and secure f
 
 On Android you can optionally warm up the web browser before it's used. This allows the browser app to pre-initialize itself in the background. Doing this can significantly speed up prompting the user for authentication.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2407,7 +2398,7 @@ You should never store your client secret locally in your bundle because there's
 
 Here is an example of logging into Spotify without using a client secret.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
@@ -2457,7 +2448,7 @@ On native platforms like iOS, and Android you can secure things like access toke
 
 You can store your authentication results and rehydrate them later to avoid having to prompt the user to login again.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```tsx
 import * as SecureStore from 'expo-secure-store';
 

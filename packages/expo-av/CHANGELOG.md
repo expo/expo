@@ -18,6 +18,7 @@
 
 ### 💡 Others
 
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unnecessary CocoaPods dependency on `ReactCommon` and `React-runtimeexecutor`. ([#19067](https://github.com/expo/expo/pull/19067) by [@tsapeta](https://github.com/tsapeta))
 

@@ -10,7 +10,7 @@ import { InlineCode } from '~/components/base/code';
 
 <VersionedRedirectNotification />
 
-The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope, GPS location, etc., in the form of packages. You can install any Expo SDK package using the `npx expo install` command. For example, three different packages are installed using the following command:
+The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope, GPS location, and so on, in the form of packages. You can install any Expo SDK package using the `npx expo install` command. For example, three different packages are installed using the following command:
 
 <Terminal cmd={['$ npx expo install expo-camera expo-contacts expo-sensors']} />
 
@@ -22,7 +22,7 @@ import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
 ```
 
-This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or start the phone's camera and take photos.
+This allows you to write [`Contacts.getContactsAsync()`](/versions/latest/sdk/contacts#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or start the phone's camera and take photos.
 
 ## These packages work in bare React Native apps too
 

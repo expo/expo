@@ -71,7 +71,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/expo/expo/issues/13114
     prependMiddleware(middleware, manifestMiddleware);
 
-    middleware.use(new InterstitialPageMiddleware(this.projectRoot).getHandler());
+    middleware.use(
+      new InterstitialPageMiddleware(this.projectRoot, {
+        // TODO: Prevent this from becoming stale.
+        scheme: options.location.scheme ?? null,
+      }).getHandler()
+    );
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
       onDeepLink: getDeepLinkHandler(this.projectRoot),

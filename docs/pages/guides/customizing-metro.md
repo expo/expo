@@ -32,8 +32,8 @@ To learn more, refer to the [`metro.config.js` docs](https://facebook.github.io/
 
 Metro resolves files as either source code or assets. Source code is JavaScript, TypeScript, JSON, and other files used by your application. [Asset](/guides/assets) are images, fonts, and other files that should not be transformed by Metro. To accommodate large-scale codebases, Metro requires all extensions for both source code and assets to be explicitly defined before starting the bundler. This is done by adding the `resolver.sourceExts` and `resolver.assetExts` options to the Metro configuration. By default, the following extensions are included:
 
-- [`resolver.assetExts`](https://github.com/facebook/metro/blob/main/packages/metro-config/src/defaults/defaults.js#L15)
-- [`resolver.sourceExts`](https://github.com/facebook/metro/blob/main/packages/metro-config/src/defaults/defaults.js#L15)
+- [`resolver.assetExts`](https://github.com/facebook/metro/blob/7028b7f51074f9ceef22258a8643d0f90de2388b/packages/metro-config/src/defaults/defaults.js#L15)
+- [`resolver.sourceExts`](https://github.com/facebook/metro/blob/7028b7f51074f9ceef22258a8643d0f90de2388b/packages/metro-config/src/defaults/defaults.js#L53)
 
 ### Adding more file extensions to `assetExts`
 

@@ -1,11 +1,13 @@
 # Expo Documentation
 
-This is the public documentation for **Expo**, its SDK, client, and services.
+This is the public documentation for **Expo**, its SDK, client, and services, like **EAS**.
 
-You can access this documentation online at https://docs.expo.dev/. It's built using Next.js on top of the https://github.com/vercel/docs codebase.
+This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
 
+> **Note**
 > **Contributors:** Please make sure that you edit the docs in the `pages/versions/unversioned` directory if you want your changes to apply to the next SDK version too!
 
+> **Note**
 > If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
 ## Running Locally
@@ -41,7 +43,8 @@ yarn run export-server
 
 You can find the content source of the documentation inside the `pages/` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). Our API documentation can all be found under `pages/versions/`; we keep separate versions of the documentation for each SDK version currently supported in Expo Go, see ["A note about versioning"](#a-note-about-versioning) for more info. The routes and navbar are automatically inferred from the directory structure within `versions`.
 
-> Note: We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
+> **Note**
+> We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
 
 Each markdown page can be provided metadata in the heading, distinguished by:
 
@@ -151,13 +154,14 @@ You can validate all current links by running `yarn lint-links`.
 
 ### Updating latest version of docs
 
-When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well. However, if you update the `version` key there, you need to `rm -rf node_modules/.cache/` before the change is picked up (why? [read this](https://github.com/vercel/next.js/blob/4.0.0/examples/with-universal-configuration/README.md#caveats)).
+When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well. 
 
 Make sure to also grab the upgrade instructions from the release notes blog post and put them in `upgrading-expo-sdk-walkthrough.md`.
 
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
-Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. So, if you wish to override the alphabetical ordering, manipulate page titles in **navigation.js**.
+Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. 
+So, if you wish to override the alphabetical ordering, manipulate page titles in **constants/navigation.js**.
 
 ### Syncing app.json / app.config.js with the schema
 
@@ -226,7 +230,8 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ### Embedding multiple options of code
 
-Sometimes it's useful to show multiple ways of doing something, for instance maybe you'd like to have an example using a React class component, and also an example of a functional component. The `Tabs` plugin is really useful for this, and this is how you'd use it an a markdown file:
+Sometimes it's useful to show multiple ways of doing something, for instance maybe you'd like to have an example using a React class component, and also an example of a functional component. 
+The `Tabs` plugin is really useful for this, and this is how you'd use it in a markdown file:
 
 <!-- prettier-ignore -->
 ```jsx
@@ -241,10 +246,8 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
     /* @end */
     };
 
-
 </Tab>
 <Tab label="Add 1 Another Way">
-
 
     addOne = async x => {
     /* @info This text will be shown onHover */
@@ -258,15 +261,16 @@ import { Tab, Tabs } from '~/components/plugins/Tabs';
 
 n.b. The components should not be indented or they will not be parsed correctly.
 
-### Excluding pages from Docsearch
+### Excluding pages from DocSearch
 
 To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page and filters it from our facet-based search.
 
-Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google. For a page to be hidden even from search engine results, you need to edit the sitemap that is generated via our Next.js config (**config.js**).
+Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google. 
+For a page to be hidden even from search engine results, you need to edit the sitemap that is generated via our Next.js config (**next.config.js**).
 
 ### Excluding directories from the sidebar
 
-Certain directories are excluded from the sidebar in order to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **navigation.js** under `hiddenSections`.
+Certain directories are excluded from the sidebar in order to prevent it from getting too long and unnavigable. You can find a list of these directories, and add new ones, in **constants/navigation.js** under `hiddenSections`.
 
 If you just want to hide a single page from the sidebar, set `hideInSidebar: true` in the page metadata.
 
@@ -296,10 +300,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
 
-If you have a codeblock using `/* @info */` highlighting, use `<!-- prettier-ignore -->` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
+If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
 
 ## TODOs:
 
 - Handle image sizing in imports better
-- Read from the appropriate version (configurable) of the React Native docs, not just main
 - Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks

@@ -65,7 +65,7 @@ def REACT_NATIVE_PATH = reactNative.absolutePath
 def CMAKE_OUTPUT_DIR = "$buildDir/reanimated-ndk/all"
 def RN_SO_DIR = "$reactNative/ReactAndroid/build/intermediates/library_*/*/jni"
 def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
-def FOR_HERMES = false
+def FOR_HERMES = true
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -199,6 +199,11 @@ android {
     extractHeaders
     extractSO
   }
+
+  buildFeatures {
+      prefab true
+  }
+
   // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
   buildTypes {
@@ -785,6 +790,13 @@ tasks.whenTaskAdded { task ->
   } else if (task.name.startsWith('generateJsonModel')) {
     def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
     task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
+  }
+}
+
+def hermesAAR = new File("${reactNative}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar")
+if (hermesAAR.exists()) {
+  dependencies {
+    compileOnly(files(hermesAAR))
   }
 }
 

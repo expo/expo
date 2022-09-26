@@ -1,6 +1,6 @@
 import { getAccountUsername } from '@expo/config';
-import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { AndroidConfig, IOSConfig } from 'expo/config-plugins';
 
 import withUpdates from '../withUpdates';
 

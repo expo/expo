@@ -98,7 +98,7 @@ By default, apps built with the Classic Build system will include **all** permis
 
 There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing your app since nothing in the app seems to use the camera, so why would it need that permission?
 
-To solve this, add the `android.permissions` key in your **app.json** file and specify which permissions your app will use. Refer to this [list of all Android permissions and configuration](/workflow/configuration#android) for more information.
+To solve this, add the `android.permissions` key in your **app.json** file and specify which permissions your app will use. Refer to this [list of all Android permissions and configuration](/versions/latest/config/app/#android) for more information.
 
 To use _only_ the minimum necessary permissions that React Native requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.
 

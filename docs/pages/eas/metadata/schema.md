@@ -16,9 +16,7 @@ import {
   MetadataDescriptionCell,
 } from '~/components/plugins/EasMetadataTable';
 
-<Callout type="warning">
-  EAS Metadata is in beta and subject to breaking changes.
-</Callout>
+<Callout type="warning">EAS Metadata is in beta and subject to breaking changes.</Callout>
 <br />
 
 The store config in EAS Metadata contains information that otherwise would be provided manually through the app store dashboards.

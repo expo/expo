@@ -15,9 +15,9 @@ Head over to [https://snack.expo.dev](https://snack.expo.dev) and start typing! 
 
 ## Adding a library
 
-You can add any library that works in a managed Expo project, like [`expo-camera`](../../versions/latest/sdk/camera.md) or [`React Navigation`](https://reactnavigation.org). Add the import in the file that you want, and Snack will prompt you to install that dependency. You can also specify the exact version by adding it to your **package.json** file.
+You can add any library that works in a managed Expo project, like [`expo-camera`](/versions/latest/sdk/camera.md) or [`React Navigation`](https://reactnavigation.org). Add the import in the file that you want, and Snack will prompt you to install that dependency. You can also specify the exact version by adding it to your **package.json** file.
 
-> Not all React Native libraries will work on Snack. First, [the same constraints](../../workflow/using-libraries.md) that apply to the Expo managed workflow apply here. Second, Snack bundles the code differently than Expo CLI and React Native CLI, so in some cases libraries that work locally on your machine will fail to load in Snack.
+> Not all React Native libraries will work on Snack. First, [the same constraints](/workflow/using-libraries.md) that apply to the Expo managed workflow apply here. Second, Snack bundles the code differently than Expo CLI and React Native CLI, so in some cases libraries that work locally on your machine will fail to load in Snack.
 
 ## Saving and sharing code
 

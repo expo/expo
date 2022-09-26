@@ -12,6 +12,12 @@
 
 ### 💡 Others
 
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
+
+## 5.2.0 — 2022-09-15
+
+### 💡 Others
+
 - On Android bumped `com.google.firebase:firebase-core:20.1.2 ➡️ 21.1.0` and `com.google.firebase:firebase-common:20.1.0 ➡️ 20.1.1`. ([#18908](https://github.com/expo/expo/pull/18908) by [@keith-kurak](https://github.com/keith-kurak))
 - On iOS bumped `Firebase/Core@8.14.0 ➡️ 9.5.0`. ([#18908](https://github.com/expo/expo/pull/18908) by [@keith-kurak](https://github.com/keith-kurak))
 

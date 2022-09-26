@@ -17,19 +17,16 @@ Save this image to the **assets** directory inside of your project and call it *
 
 We have displayed text using the `Text` component from React Native, and we can display the image using the `Image` component. When creating an `Image` component, you will need to explicitly specify a width and height, or the image won't be visible.
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { /* @info Add the Image component to your list of imports */ Image, /* @end */ StyleSheet, Text, View } from 'react-native';
 /* @info Import the logo image */ import logo from './assets/logo.png'; /* @end */
 
-
 export default function App() {
   return (
     <View style={styles.container}>
       /* @info Use the Image component */ <Image source={logo} style={{ width: 305, height: 159 }} /> /* @end */
-
-
       <Text style={{color: '#888', fontSize: 18}}> 
         To share a photo from your phone with a friend, just press the button below!
       </Text>
@@ -55,7 +52,7 @@ Sometimes you will want to load images from the web rather than from your projec
 
 <SnackInline>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -66,7 +63,6 @@ export default function App() {
       /* @info We can use a URL instead of importing the image from your local assets */
       <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} style={{ width: 305, height: 159 }} />
     /* @end */
-
       <Text style={{color: '#888', fontSize: 18}}> 
         To share a photo from your phone with a friend, just press the button below!
       </Text>
@@ -96,7 +92,7 @@ Let's organize our code a bit by moving our styles into one place so our code is
 
 <SnackInline>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
@@ -105,7 +101,6 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} /* @info See below for the styles! */ style={styles.logo} /* @end *//>
-
       <Text /* @info See below for the styles! */ style={styles.instructions} /* @end */>
         To share a photo from your phone with a friend, just press the button below!
       </Text>

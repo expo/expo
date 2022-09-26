@@ -27,6 +27,8 @@ class EnumTypeConverter(
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forEnum()
 
+  override fun isTrivial() = false
+
   override fun convertFromDynamic(value: Dynamic): Enum<*> {
     if (primaryConstructor.parameters.isEmpty()) {
       return convertEnumWithoutParameter(value.asString(), enumConstants)

@@ -7,12 +7,12 @@ packageName: 'expo-firebase-analytics'
 import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-
+import { Terminal } from '~/ui/components/Snippet';
 import { InlineCode } from '~/components/base/code';
 
 > **This is the only Firebase Analytics package for React Native that has universal platform support (iOS, Android, Web, and Electron).**
 
-`expo-firebase-analytics` enables the use of native Google Analytics for Firebase. Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
+`expo-firebase-analytics` provides a unified native and web API for Google Analytics for Firebase, including partial Expo Go compatibility. Google Analytics for Firebase is a free app measurement solution that provides insight on app usage and user engagement.
 Learn more in the official [Firebase Docs](https://firebase.google.com/docs/analytics/).
 
 <PlatformsSection android emulator ios simulator web />
@@ -25,7 +25,40 @@ When using the web platform, you'll also need to run `npx expo install firebase`
 
 ## Configuration
 
-> If you are using [`react-native-firebase`](https://rnfirebase.io/) library in your project, you should use [`@react-native-firebase/analytics`](https://rnfirebase.io/analytics/usage) package provided by the library. For more information on how to configure native Firebase library, see [using the native Firebase SDK](/guides/setup-native-firebase/).
+### Additional configuration for iOS
+
+`expo-firebase-analytics` uses native Firebase libraries on iOS that require additional configuration using the `expo-build-properties` config plugin. Install the plugin and apply the following configuration to your [Expo config](/workflow/configuration/) file.
+
+<Terminal cmd={["$ npx expo install expo-build-properties"]} />
+
+#### Example app.json with config plugin
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+### With native Firebase SDK
+
+If you are using `expo-firebase-analytics` with React Native Firebase, you'll have to install the native Firebase SDK using the `npx expo install` command:
+
+<Terminal cmd={["$ npx expo install @react-native-firebase/app"]} />
+
+This will ensure that the `@react-native-firebase/app` dependency version is compatible with the Expo SDK version your project uses.
+
+Also, make sure that you have React Native Firebase set up correctly in your project. For more information on how to configure it, see [using the native Firebase SDK](/guides/setup-native-firebase/#setup).
 
 ### Expo Go: Limitations & configuration
 

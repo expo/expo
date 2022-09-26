@@ -134,7 +134,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 
 ## Schema
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```json
 {
   "cli": {
@@ -146,17 +146,13 @@ This document is a reference that outlines the schema for the `"build"` key in *
   "build": {
     /* @info any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_1"/* @end */: {
       /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
-
       "android": {
         /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
         /* @info Options specific for Android and common to both platforms*/...ANDROID_OPTIONS/* @end */
-
       },
-
       "ios": {
         /* @info Options common to both platforms*/...COMMON_OPTIONS/* @end */,
         /* @info Options specific for iOS and common to both platforms*/...IOS_OPTIONS/* @end */
-
       }
     },
     /* @info Any arbitrary name - used as an identifier */"BUILD_PROFILE_NAME_2"/* @end */: {},
@@ -171,12 +167,12 @@ This document is a reference that outlines the schema for the `"build"` key in *
 
 ## Options common to both platforms
 
-<EasJsonPropertiesTable schema={commonSchema}/>
+<EasJsonPropertiesTable schema={commonSchema} />
 
 ## Android-specific options
 
-<EasJsonPropertiesTable schema={androidSchema}/>
+<EasJsonPropertiesTable schema={androidSchema} />
 
 ## iOS-specific options
 
-<EasJsonPropertiesTable schema={iosSchema}/>
+<EasJsonPropertiesTable schema={iosSchema} />
