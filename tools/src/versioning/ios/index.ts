@@ -379,8 +379,8 @@ async function generateReactNativePodScriptAsync(
     // hermes
     { find: /^\s+prepare_hermes[.\s\S]*abort unless prep_status == 0\n$/gm, replaceWith: '' },
     {
-      find: `pod '${versionName}hermes-engine', :podspec => "#{prefix}/sdks/hermes/hermes-engine.podspec"`,
-      replaceWith: `pod '${versionName}hermes-engine', :path => "#{prefix}/sdks/hermes-engine", :project_name => '${versionName}'`,
+      find: `pod '${versionName}hermes-engine', :podspec => "#{react_native_path}/sdks/hermes/hermes-engine.podspec"`,
+      replaceWith: `pod '${versionName}hermes-engine', :path => "#{react_native_path}/sdks/hermes-engine", :project_name => '${versionName}'`,
     },
     { find: new RegExp(`\\b${versionName}(libevent)\\b`, 'g'), replaceWith: '$1' },
   ];
