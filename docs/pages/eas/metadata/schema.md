@@ -4,7 +4,6 @@ sidebar_title: Metadata schema
 sidebar_depth: 4
 ---
 
-import { Callout } from '~/ui/components/Callout';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { markdownComponents as MD } from '~/ui/components/Markdown';
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
@@ -16,8 +15,7 @@ import {
   MetadataDescriptionCell,
 } from '~/components/plugins/EasMetadataTable';
 
-<Callout type="warning">EAS Metadata is in beta and subject to breaking changes.</Callout>
-<br />
+> **warning** EAS Metadata is in beta and subject to breaking changes.
 
 The store config in EAS Metadata contains information that otherwise would be provided manually through the app store dashboards.
 This document outlines the structure of the object in your store config.

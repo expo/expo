@@ -106,7 +106,8 @@ then register the plugin in your `app.json`. Using this module will require new 
 }
 ```
 
-> ⚠️ Because adding this module changes your native runtime, you'll need to generate a new development build before using it. If you forget to do so, you'll get an `Invariant Violation: Native module cannot be null.` error when you attempt to load your app.
+> **warning** Because adding this module changes your native runtime, you'll need to generate a new development build before using it. 
+> If you forget to do so, you'll get an `Invariant Violation: Native module cannot be null.` error when you attempt to load your app.
 
 Once you've generated new builds with EAS build or the `expo run:ios`/`expo run:android` commands, you can access the new capabilities in your app's code.
 

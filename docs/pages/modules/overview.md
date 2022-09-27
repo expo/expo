@@ -2,11 +2,9 @@
 title: Overview
 ---
 
-import { Callout } from '~/ui/components/Callout';
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-<Callout type="warning">Expo Modules APIs are in beta and subject to breaking changes.</Callout>
-<br />
+> **warning** Expo Modules APIs are in beta and subject to breaking changes.
 
 Expo provides a set of APIs and utilities to improve the process of developing native modules for Expo and React Native and expand your app capabilities.
 
