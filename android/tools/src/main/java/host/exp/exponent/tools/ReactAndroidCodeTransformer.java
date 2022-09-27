@@ -240,7 +240,7 @@ public class ReactAndroidCodeTransformer {
         return n;
       }
     });
-    FILES_TO_MODIFY.put("bridge/DefaultNativeModuleCallExceptionHandler.java", new MethodVisitor() {
+    FILES_TO_MODIFY.put("bridge/DefaultJSExceptionHandler.java", new MethodVisitor() {
 
       @Override
       public Node visit(String methodName, MethodDeclaration n) {
