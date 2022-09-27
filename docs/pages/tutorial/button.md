@@ -26,7 +26,6 @@ export default function App() {
         style={{ backgroundColor: 'blue' }}>
         <Text style={{ fontSize: 20, color: '#fff' }}>Pick a photo</Text>
       </TouchableOpacity>/* @end */
-
     </View>
   );
 }

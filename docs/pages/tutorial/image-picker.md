@@ -30,7 +30,6 @@ import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 /* @info Import the ImagePicker */import * as ImagePicker from 'expo-image-picker';/* @end */
 
-
 export default function App() {
   /* @info Launch the picker and log the result. */
   let openImagePickerAsync = async () => {    
@@ -45,7 +44,6 @@ export default function App() {
       <Text style={styles.instructions}>
         To share a photo from your phone with a friend, just press the button below!
       </Text>
-
       <TouchableOpacity onPress={/* @info This function is a bit long so we moved it out to a variable */openImagePickerAsync/* @end */} style={styles.button}>
         <Text style={styles.buttonText}>Pick a photo</Text>
       </TouchableOpacity>
@@ -73,7 +71,6 @@ Now we will take the data that we get from the image picker and use it to show t
 {/* prettier-ignore */}
 ```js
 /* @info Import React to use useState */import React from 'react';/* @end */
-
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 
@@ -100,7 +97,6 @@ export default function App() {
       </View>
     );
   }/* @end */
-
 
   return (
     <View style={styles.container}>
