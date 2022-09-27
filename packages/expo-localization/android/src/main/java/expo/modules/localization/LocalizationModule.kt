@@ -33,7 +33,7 @@ class LocalizationModule : Module() {
     }
 
     Function("getLocales") {
-      return@Function getLocales()
+      return@Function getPreferredLocales()
     }
 
     Function("getCalendars") {
@@ -103,7 +103,7 @@ class LocalizationModule : Module() {
     }
   }
 
-  private fun getLocales(): List<Map<String, Any?>> {
+  private fun getPreferredLocales(): List<Map<String, Any?>> {
     val locales = mutableListOf<Map<String, Any?>>()
     val localeList: LocaleListCompat = LocaleListCompat.getDefault()
     for (i in 0 until localeList.size()) {

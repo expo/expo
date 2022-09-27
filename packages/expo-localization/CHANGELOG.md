@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Added two new synchronous functions: `getPreferredLocales` and `getPreferredCalendars`. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))
+- Added two new synchronous functions: `getLocales` and `getCalendars`. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 

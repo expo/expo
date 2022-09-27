@@ -70,11 +70,11 @@ export type Localization = {
 
 export type Locale = {
   /**
-   * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) with a region code. Example: `en-US`, "es-419", "pl-PL".
+   * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) with a region code. Example: `'en-US'`, `'es-419'`, `'pl-PL'`.
    */
   languageTag: string;
   /**
-   * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) without the region code. Example: `en`, "es", "pl".
+   * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) without the region code. Example: `'en'`, `'es'`, `'pl'`.
    */
   languageCode: string;
   /**
@@ -82,29 +82,29 @@ export type Locale = {
    */
   regionCode: string | null;
   /**
-   * Currency code for the locale. Example: `USD`, "EUR", "PLN".
+   * Currency code for the locale. Example: `'USD'`, `'EUR'`, `'PLN'`.
    * Returns `null` on web, use a table lookup based on region instead.
    */
   currencyCode: string | null;
   /**
-   * Currency symbol for the locale. Example: `$`, "€", "zł".
+   * Currency symbol for the locale. Example: `'$'`, `'€'`, `'zł'`.
    * Returns `null` on web, use a table lookup based on region (if available) instead.
    */
   currencySymbol: string | null;
   /**
-   * Decimal separator used for formatting numbers with fractional parts. Example: `.`, `,`.
+   * Decimal separator used for formatting numbers with fractional parts. Example: `'.'`, `','`.
    */
   decimalSeparator: string | null;
   /**
-   * Digit grouping separator used for formatting large numbers. Example: `.`, `,`.
+   * Digit grouping separator used for formatting large numbers. Example: `'.'`, `','`.
    */
   digitGroupingSeparator: string | null;
   /**
-   * Text direction for the locale. One of: `ltr`, `rtl`, but can also be null on older browsers without support for the textInfo API.
+   * Text direction for the locale. One of: `'ltr'`, `'rtl'`, but can also be null on older browsers without support for the textInfo API.
    */
   textDirection: 'ltr' | 'rtl' | null;
   /**
-   * The measurement system used in the locale. On iOS is one of `metric`, `us`. On android is one of `metric`, `us`, `uk`.
+   * The measurement system used in the locale. On iOS is one of `'metric'`, `'us'`. On android is one of `'metric'`, `'us'`, `'uk'`.
    * Returns `null` on web, as user chosen measurement system is not exposed on the web and using locale to determine measurement is unreliable.
    * Ask for user preferences if possible.
    */
@@ -121,25 +121,27 @@ export enum Weekday {
   SATURDAY = 7,
 }
 
-export type UnicodeCalendarIdentifier =
-  | 'buddhist'
-  | 'chinese'
-  | 'coptic'
-  | 'dangi'
-  | 'ethioaa'
-  | 'ethiopic'
-  | 'gregory'
-  | 'hebrew'
-  | 'indian'
-  | 'islamic'
-  | 'islamic-civil'
-  | 'islamic-rgsa'
-  | 'islamic-tbla'
-  | 'islamic-umalqura'
-  | 'iso8601'
-  | 'japanese'
-  | 'persian'
-  | 'roc';
+export enum UnicodeCalendarIdentifier {
+  BUDDHIST = 'buddhist',
+  CHINESE = 'chinese',
+  COPTIC = 'coptic',
+  DANGI = 'dangi',
+  ETHIOAA = 'ethioaa',
+  ETHIOPIC = 'ethiopic',
+  GREGORY = 'gregory',
+  GREGORIAN = 'gregory',
+  HEBREW = 'hebrew',
+  INDIAN = 'indian',
+  ISLAMIC = 'islamic',
+  ISLAMIC_CIVIL = 'islamic-civil',
+  ISLAMIC_RGSA = 'islamic-rgsa',
+  ISLAMIC_TBLA = 'islamic-tbla',
+  ISLAMIC_UMALQURA = 'islamic-umalqura',
+  ISO8601 = 'iso8601',
+  JAPANESE = 'japanese',
+  PERSIAN = 'persian',
+  ROC = 'roc',
+}
 
 export type Calendar = {
   /**
@@ -147,13 +149,12 @@ export type Calendar = {
    *
    * On Android is limited to one of device's [available calendar types](https://developer.android.com/reference/java/util/Calendar#getAvailableCalendarTypes()).
    *
-   * On iOS uses [calendar identifiers](https://developer.apple.com/documentation/foundation/calendar/identifier), but maps them to the corresponding Unicode types, will also never contain `dangi` or `islamic-rgsa` due to it not being implemented on iOS.
+   * On iOS uses [calendar identifiers](https://developer.apple.com/documentation/foundation/calendar/identifier), but maps them to the corresponding Unicode types, will also never contain `'dangi'` or `'islamic-rgsa'` due to it not being implemented on iOS.
    */
   calendar: UnicodeCalendarIdentifier | null;
   /**
    * True when current device settings use 24 hour time format.
    * Can be null on older browsers that don't support the `hourCycle` API.
-   * Is one of: `true`, `false`.
    */
   uses24hourClock: boolean | null;
   /**
@@ -164,7 +165,7 @@ export type Calendar = {
   firstWeekday: Weekday | null;
   /**
    * Time zone for the calendar. Can be null on web.
-   * Example: `America/Los_Angeles`, `Europe/Warsaw`, `GMT+1`.
+   * Example: `'America/Los_Angeles'`, `'Europe/Warsaw'`, `'GMT+1'`.
    */
   timeZone: string | null;
 };
