@@ -3338,7 +3338,7 @@ SPEC CHECKSUMS:
   ABI46_0_0react-native-pager-view: 6811eabddc3dd8f24272e66842c8587a3589e894
   ABI46_0_0react-native-safe-area-context: 93911af12fe871df4eb3eba1d9b6acd8ec9525d1
   ABI46_0_0react-native-segmented-control: 88712b954346b6e10d4d463a5e56232154244a71
-  ABI46_0_0react-native-skia: fbd5f7b80fb88676d81acaaa5ce0eaa2e26fc519
+  ABI46_0_0react-native-skia: 3ad8c10c5fac413576c8ab7fc87a7763fcf73f5a
   ABI46_0_0react-native-webview: 6914e1a2f14e0ca64ad70510bf5a645790766577
   ABI46_0_0React-perflogger: 072d224605a449c872a8e089b72e3401603b92ab
   ABI46_0_0React-RCTActionSheet: 62f6aaee6fef914858813e3f7aaacda4d48359f2
