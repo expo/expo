@@ -4,7 +4,7 @@ sidebar_title: Environment variables
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { Tab, Tabs } from '~/components/plugins/Tabs';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 Environment variables are key-value pairs configured outside your source code that allow your app to behave differently depending on the environment. For example, you can enable or disable certain features when building a testing version of your app, or you can switch to a different API endpoint when building for production.
 
@@ -38,13 +38,7 @@ API_URL="https://production.example.com" npx expo start
 
 ### Reading environment variables
 
-To read `extra` properties in your app, you can use the [`expo-constants`](/versions/latest/sdk/constants.md) library. 
-
-<Tabs tabs={["SDK 46+", "Before SDK 46"]}>
-
-<Tab>
-
-For SDK 46 and above, it is available on the `Constants.expoConfig` property.
+To read `extra` properties in your app, you can use the [`expo-constants`](/versions/latest/sdk/constants.md) library. It is available on the `Constants.expoConfig` property.
 
 ```tsx
 import { Button } from 'react-native';
@@ -61,30 +55,11 @@ function Post() {
 }
 ```
 
-</Tab>
+<Collapsible summary="Using SDK 45 or below?">
 
-<Tab>
+The `extra` property is available on the `Constants.manifest` property.
 
-For SDK 45 and below, it is available on the `Constants.manifest` property.
-
-```tsx
-import { Button } from 'react-native';
-import Constants from 'expo-constants';
-
-function Post() {
-  const apiUrl = Constants.manifest.extra.apiUrl;
-
-  async function onPress() {
-    await fetch(apiUrl, { ... })
-  }
-
-  return <Button onPress={onPress} title="Post" />;
-}
-```
-
-</Tab>
-
-</Tabs>
+</Collapsible>
 
 ## Using Babel to inline environment variables during build time
 

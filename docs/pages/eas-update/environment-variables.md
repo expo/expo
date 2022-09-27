@@ -2,7 +2,7 @@
 title: Using environment variables with EAS Update
 ---
 
-import { Tab, Tabs } from '~/components/plugins/Tabs';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 EAS Build and EAS Update allow setting and getting environment variables at different times. There are multiple steps to ensure the proper environment variables are available when developing, building, and publishing an update.
 
@@ -41,7 +41,13 @@ API_URL="http://localhost:3000" expo start
 
 The command above will set the `API_URL` to `"http://localhost:3000"`. Now, it's time to access that value inside our project.
 
-To access it, we can use the `expo-constants` library. **For SDK 46 and above**, it's located at `Constants.expoConfig.extra.API_URL` property. For SDK 45 and below, it's located at `Constants.manifest.extra.API_URL` property.
+To access it, we can use the `expo-constants` library. It's located at `Constants.expoConfig.extra.API_URL` property.
+
+<Collapsible summary="Using SDK 45 or below?">
+
+The `API_URL` is located at `Constants.manifest2?.extra?.expoClient?.extra?.eas?.API_URL` property.
+
+</Collapsible>
 
 ## Setting and getting environment variables when building
 
@@ -66,7 +72,13 @@ To set the `API_URL` environment variable during a build, we can include an `"en
 
 Once we run a command like `eas build --profile production`, the `"env"` property in the "production" build profile will set the `API_URL` to `https://prod.example.com/` inside the build.
 
-To access it, we can use the `expo-constants` library. **For SDK 46 and above**, it's located at `Constants.expoConfig.extra.API_URL` property. For SDK 45 and below, it's located at `Constants.manifest.extra.API_URL` property.
+To access it, we can use the `expo-constants` library. It's located at `Constants.expoConfig.extra.API_URL` property.
+
+<Collapsible summary="Using SDK 45 or below?">
+
+The `API_URL` is located at `Constants.manifest?.extra?.eas?.API_URL` property.
+
+</Collapsible>
 
 ## Setting and getting environment variables when publishing an update
 
@@ -78,17 +90,19 @@ API_URL="https://prod.example.com" eas update --branch production
 
 When EAS CLI creates the update, it will set the `API_URL` to `https://prod.example.com` inside the update's bundle.
 
-To access it, we can use the `expo-constants` library. **For SDK 46 and above**, it's located at `Constants.expoConfig.extra.API_URL` property. For SDK 45 and below, it's located at `Constants.manifest.extra.API_URL` property.
+To access it, we can use the `expo-constants` library. It's located at `Constants.expoConfig.extra.API_URL` property.
 
 > We could also use the `expo-updates` library to access `API_URL`. It is under `Updates.manifest?.extra?.expoClient?.extra?.eas?.API_URL`. However, `Updates.manifest` is only present when an update is currently running. If the project is in development, `Updates.manifest` will be `undefined`. In addition, if a build is running without an update (for example, it was just downloaded or there are no updates yet), `Updates.manifest` will also be `undefined`.
+
+<Collapsible summary="Using SDK 45 or below?">
+
+The `API_URL` is located at `Constants.manifest2?.extra?.expoClient?.extra?.eas?.API_URL` property.
+
+</Collapsible>
 
 ## Creating an Env.ts file to get environment variables
 
 Many developers often create a file named **Env.ts** in their project, which they import into any file that needs to access environment variables. Combining the information above, we could write the following file to access `API_URL`:
-
-<Tabs tabs={["SDK 46+", "Before SDK 46"]}>
-
-<Tab>
 
 **Env.ts**
 
@@ -110,33 +124,17 @@ export const Env = {
 };
 ```
 
-</Tab>
+<Collapsible summary="Using SDK 45 or below?">
 
-<Tab>
-
-**Env.ts**
+Use the following snippet to access the `API_URL`:
 
 ```ts
-import * as Constants from 'expo-constants';
-
-function getApiUrl() {
-  const API_URL = Constants.manifest.extra.API_URL;
-
-  if (!API_URL) {
-    throw new Error('API_URL is missing.');
-  }
-
-  return API_URL;
-}
-
-export const Env = {
-  API_URL: getApiUrl(),
-};
+const API_URL =
+    Constants.manifest2?.extra?.expoClient?.extra?.eas?.API_URL ??
+    Constants.manifest?.extra?.eas?.API_URL;
 ```
 
-</Tab>
-
-</Tabs>
+</Collapsible>
 
 ## Using a Babel plugin
 
