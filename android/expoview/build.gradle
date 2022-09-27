@@ -71,9 +71,9 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${project(':ReactAndroid').projectDir}/prebuiltHermes")
+def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
 def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
-def currentHermesVersion = file("${rootDir}/sdks/.hermesversion").exists() ? file("${rootDir}/sdks/.hermesversion").text : null
+def currentHermesVersion = file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
 def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
 logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
 
