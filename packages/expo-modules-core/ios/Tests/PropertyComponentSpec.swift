@@ -61,33 +61,33 @@ class PropertyComponentSpec: ExpoSpec {
       }
 
       it("gets read-only property") {
-        let value = try runtime?.eval("ExpoModules.PropertyTest.readOnly")
+        let value = try runtime?.eval("expo.modules.PropertyTest.readOnly")
         expect(value?.getString()) == "foo"
       }
 
       it("gets writable property") {
-        let value = try runtime?.eval("ExpoModules.PropertyTest.writable")
+        let value = try runtime?.eval("expo.modules.PropertyTest.writable")
         expect(value?.getInt()) == 444
       }
 
       it("sets writable property") {
-        try runtime?.eval("ExpoModules.PropertyTest.writable = 777")
-        let value = try runtime?.eval("ExpoModules.PropertyTest.writable")
+        try runtime?.eval("expo.modules.PropertyTest.writable = 777")
+        let value = try runtime?.eval("expo.modules.PropertyTest.writable")
         expect(value?.getInt()) == 777
       }
 
       it("is enumerable") {
-        let keys = try runtime?.eval("Object.keys(ExpoModules.PropertyTest)").getArray().map { $0.getString() } ?? []
+        let keys = try runtime?.eval("Object.keys(expo.modules.PropertyTest)").getArray().map { $0.getString() } ?? []
         expect(keys).to(contain("readOnly", "writable", "withCaller", "undefined"))
       }
 
       it("is called with the caller") {
-        let value = try runtime?.eval("ExpoModules.PropertyTest.withCaller")
+        let value = try runtime?.eval("expo.modules.PropertyTest.withCaller")
         expect(value?.getString()) == "foo"
       }
 
       it("returns undefined when getter is not specified") {
-        let value = try runtime?.eval("ExpoModules.PropertyTest.undefined")
+        let value = try runtime?.eval("expo.modules.PropertyTest.undefined")
         expect(value?.isUndefined()) == true
       }
     }
