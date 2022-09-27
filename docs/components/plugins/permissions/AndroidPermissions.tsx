@@ -5,7 +5,7 @@ import { androidPermissions, AndroidPermission, PermissionReference } from './da
 
 import Permalink from '~/components/Permalink';
 import { InlineCode } from '~/components/base/code';
-import { Quote } from '~/components/base/paragraph';
+import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 
 // TODO(cedric): all commented code is related to the "granter" column.
@@ -67,14 +67,14 @@ function AndroidPermissionRow({
           <p css={(warning || explanation) && descriptionSpaceStyle}>{description}</p>
         )}
         {!!warning && (
-          <Quote css={quoteStyle}>
-            <span>⚠️ {warning}</span>
-          </Quote>
+          <Callout css={quoteStyle} type="warning">
+            {warning}
+          </Callout>
         )}
         {explanation && !warning && (
-          <Quote css={quoteStyle}>
+          <Callout css={quoteStyle}>
             <span dangerouslySetInnerHTML={{ __html: explanation }} />
-          </Quote>
+          </Callout>
         )}
       </Cell>
     </Row>

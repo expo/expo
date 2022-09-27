@@ -6,13 +6,13 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     class="css-rufzkc-Table"
   >
     <table
-      class="css-1gg2jm1-Table"
+      class="css-1rqdk7t-Table"
     >
       <thead
         class="css-3b8qij-TableHead"
       >
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <th
             class="css-1p6k6di-HeaderCell"
@@ -28,7 +28,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </thead>
       <tbody>
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <td
             class="css-1i3ovdz-Cell"
@@ -155,7 +155,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <td
             class="css-1i3ovdz-Cell"
@@ -326,7 +326,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <td
             class="css-1i3ovdz-Cell"
@@ -453,7 +453,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <td
             class="css-1i3ovdz-Cell"
@@ -536,7 +536,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <td
             class="css-1i3ovdz-Cell"
@@ -632,7 +632,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <td
             class="css-1i3ovdz-Cell"
@@ -757,13 +757,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </div>
             </details>
             <blockquote
-              class="css-1nn217x-Quote"
-              data-text="true"
+              class="css-1xjn6jt-Callout"
+              data-testid="callout-container"
             >
               <div
-                style="margin-top: 2px;"
+                class="css-ks2t0-Callout"
               >
                 <svg
+                  color="var(--expo-theme-icon-default)"
                   fill="none"
                   height="16"
                   role="img"
@@ -780,10 +781,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   />
                 </svg>
               </div>
-              <div>
+              <div
+                class="css-19syq17-Callout"
+              >
                 
 
-                [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
+                <span>
+                  [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
+                </span>
                 
 
               </div>
@@ -791,7 +796,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <td
             class="css-1i3ovdz-Cell"
@@ -874,7 +879,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <td
             class="css-1i3ovdz-Cell"
@@ -956,7 +961,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </td>
         </tr>
         <tr
-          class="css-1cjtxd5-Row"
+          class="css-29opv4-Row"
         >
           <td
             class="css-1i3ovdz-Cell"

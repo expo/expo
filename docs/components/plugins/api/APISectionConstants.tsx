@@ -24,7 +24,7 @@ const renderConstant = (
 ): JSX.Element => (
   <div key={`constant-definition-${name}`} css={STYLES_APIBOX}>
     <APISectionDeprecationNote comment={comment} />
-    <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
+    <APISectionPlatformTags comment={comment} prefix="Only for:" />
     <H3Code tags={getTagNamesList(comment)}>
       <InlineCode>
         {apiName ? `${apiName}.` : ''}
