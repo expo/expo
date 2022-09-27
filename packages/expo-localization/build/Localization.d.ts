@@ -1,5 +1,5 @@
 import { Localization } from './Localization.types';
-export { Localization };
+export * from './Localization.types';
 /**
  * @deprecated Use Localization.getLocales() instead.
  * Three-character ISO 4217 currency code. Returns `null` on web.
@@ -119,6 +119,8 @@ export declare const getCalendars: () => import("./Localization.types").Calendar
  *
  * const { locale } = await Localization.getLocalizationAsync();
  * ```
+ * @deprecated
+ * Use Localization.getLocales() or Localization.getCalendars() instead.
  */
-export declare function getLocalizationAsync(): Promise<Omit<Localization, 'getCalendars' | 'getLocales'>>;
+export declare function getLocalizationAsync(): Promise<Localization>;
 //# sourceMappingURL=Localization.d.ts.map

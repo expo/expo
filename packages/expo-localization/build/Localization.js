@@ -1,4 +1,5 @@
 import ExpoLocalization from './ExpoLocalization';
+export * from './Localization.types';
 // @needsAudit
 /**
  * @deprecated Use Localization.getLocales() instead.
@@ -129,6 +130,8 @@ export const getCalendars = ExpoLocalization.getCalendars;
  *
  * const { locale } = await Localization.getLocalizationAsync();
  * ```
+ * @deprecated
+ * Use Localization.getLocales() or Localization.getCalendars() instead.
  */
 export async function getLocalizationAsync() {
     return await ExpoLocalization.getLocalizationAsync();

@@ -1,7 +1,6 @@
 import ExpoLocalization from './ExpoLocalization';
 import { Localization } from './Localization.types';
-
-export { Localization };
+export * from './Localization.types';
 
 // @needsAudit
 /**
@@ -145,9 +144,9 @@ export const getCalendars = ExpoLocalization.getCalendars;
  *
  * const { locale } = await Localization.getLocalizationAsync();
  * ```
+ * @deprecated
+ * Use Localization.getLocales() or Localization.getCalendars() instead.
  */
-export async function getLocalizationAsync(): Promise<
-  Omit<Localization, 'getCalendars' | 'getLocales'>
-> {
+export async function getLocalizationAsync(): Promise<Localization> {
   return await ExpoLocalization.getLocalizationAsync();
 }

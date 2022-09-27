@@ -64,10 +64,9 @@ export type Localization = {
    * @example `'America/Los_Angeles'`
    */
   timezone: string;
-  getLocales: () => Locale[];
-  getCalendars: () => Calendar[];
 };
 
+// @needsAudit
 export type Locale = {
   /**
    * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) with a region code. Example: `'en-US'`, `'es-419'`, `'pl-PL'`.
@@ -105,7 +104,7 @@ export type Locale = {
   textDirection: 'ltr' | 'rtl' | null;
   /**
    * The measurement system used in the locale. On iOS is one of `'metric'`, `'us'`. On android is one of `'metric'`, `'us'`, `'uk'`.
-   * Returns `null` on web, as user chosen measurement system is not exposed on the web and using locale to determine measurement is unreliable.
+   * Returns `null` on web, as user chosen measurement system is not exposed on the web and using locale to determine measurement systems is unreliable.
    * Ask for user preferences if possible.
    */
   measurementSystem: `metric` | `us` | `uk` | null;
@@ -121,25 +120,49 @@ export enum Weekday {
   SATURDAY = 7,
 }
 
-export enum UnicodeCalendarIdentifier {
+/**
+ * The calendar identifier, one of [Unicode calendar types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/calendar).
+ * Gregorian calendar is aliased and can be referred to as both `CalendarIdentifier.GREGORIAN` and `CalendarIdentifier.GREGORY`.
+ */
+
+export enum CalendarIdentifier {
+  /** Thai Buddhist calendar */
   BUDDHIST = 'buddhist',
+  /** Traditional Chinese calendar */
   CHINESE = 'chinese',
+  /** Coptic calendar */
   COPTIC = 'coptic',
+  /** Traditional Korean calendar */
   DANGI = 'dangi',
+  /** Ethiopic calendar, Amete Alem (epoch approx. 5493 B.C.E) */
   ETHIOAA = 'ethioaa',
+  /** Ethiopic calendar, Amete Mihret (epoch approx, 8 C.E.) */
   ETHIOPIC = 'ethiopic',
+  /** Gregorian calendar */
   GREGORY = 'gregory',
+  /** Gregorian calendar (alias) */
   GREGORIAN = 'gregory',
+  /** Traditional Hebrew calendar */
   HEBREW = 'hebrew',
+  /** Indian calendar */
   INDIAN = 'indian',
+  /** Islamic calendar */
   ISLAMIC = 'islamic',
+  /** Islamic calendar, tabular (intercalary years [2,5,7,10,13,16,18,21,24,26,29] - civil epoch) */
   ISLAMIC_CIVIL = 'islamic-civil',
+  /** Islamic calendar, Saudi Arabia sighting */
   ISLAMIC_RGSA = 'islamic-rgsa',
+  /**Islamic calendar, tabular (intercalary years [2,5,7,10,13,16,18,21,24,26,29] - astronomical epoch) */
   ISLAMIC_TBLA = 'islamic-tbla',
+  /** Islamic calendar, Umm al-Qura */
   ISLAMIC_UMALQURA = 'islamic-umalqura',
+  /** ISO calendar (Gregorian calendar using the ISO 8601 calendar week rules) */
   ISO8601 = 'iso8601',
+  /** Japanese imperial calendar */
   JAPANESE = 'japanese',
+  /** Persian calendar */
   PERSIAN = 'persian',
+  /** Civil (algorithmic) Arabic calendar */
   ROC = 'roc',
 }
 
@@ -151,7 +174,7 @@ export type Calendar = {
    *
    * On iOS uses [calendar identifiers](https://developer.apple.com/documentation/foundation/calendar/identifier), but maps them to the corresponding Unicode types, will also never contain `'dangi'` or `'islamic-rgsa'` due to it not being implemented on iOS.
    */
-  calendar: UnicodeCalendarIdentifier | null;
+  calendar: CalendarIdentifier | null;
   /**
    * True when current device settings use 24 hour time format.
    * Can be null on older browsers that don't support the `hourCycle` API.
