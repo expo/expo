@@ -13,7 +13,7 @@ rootProject.name = 'BareExpo'
 include ':app'
 includeBuild(new File(["node", "--print", "require.resolve('react-native-gradle-plugin/package.json')"].execute(null, rootDir).text.trim()).getParentFile())
 
-if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true") {
+if ((settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true") || (settings.hasProperty("reactNativeNightly") && settings.reactNativeNightly == "true")) {
   include(":ReactAndroid")
   project(":ReactAndroid").projectDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../ReactAndroid");
   include(":ReactAndroid:hermes-engine")

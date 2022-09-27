@@ -29,7 +29,7 @@ export default function App() {
   );
 }
 
-/* @hide */
+/* @hide const styles = StyleSheet.create({ ... }); */
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -83,7 +83,7 @@ files={{
   }}
 dependencies={['@expo/vector-icons', 'expo-font']}>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```jsx
 import React from 'react';
 import { View, StyleSheet } from 'react-native';

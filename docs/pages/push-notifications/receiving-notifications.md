@@ -6,7 +6,7 @@ You can now successfully send a notification to your app! If all you wanted was 
 
 Like most things with Expo, handling notifications is simple and straightforward across all platforms. All you need to do is add a listener using the [`Notifications` API](../versions/latest/sdk/notifications.md).
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```javascript
 import React from 'react';
 import { Text, View } from 'react-native';
@@ -32,26 +32,21 @@ export default class App extends React.Component {
 
   componentDidMount() {
     registerForPushNotificationsAsync();
-
     /* @info This listener is fired whenever a notification is received while the app is foregrounded. */
     Notifications.addNotificationReceivedListener(this._handleNotification);
     /* @end */
-
     /* @info This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed). This listener is especially useful for routing users to a particular screen after they tap on a particular notification. */
     Notifications.addNotificationResponseReceivedListener(this._handleNotificationResponse);/* @end */
-
   }
 
   _handleNotification = notification => {
     /* @info Want to know what the format of the object this listener receives is? Find the specifics in the expo-notifications documentation */
     this.setState({ notification: notification });/* @end */
-
   };
 
   _handleNotificationResponse = response => {
     /* @info Want to know what the format of the object this listener receives is? Find the specifics in the expo-notifications documentation */
     console.log(response);/* @end */
-
   };
 
   render() {

@@ -1,5 +1,5 @@
 ---
-title: TypeScript
+title: Using TypeScript
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -12,7 +12,7 @@ To get started, create a **tsconfig.json** in your project root:
 
 <Terminal cmd={['$ touch tsconfig.json']} />
 
-Running `expo start` will prompt you to install the required dependencies (`typescript`, `@types/react`, `@types/react-native`), and automatically configure your **tsconfig.json**.
+Running `npx expo start` will prompt you to install the required dependencies (`typescript`, `@types/react`, `@types/react-native`), and automatically configure your **tsconfig.json**.
 
 Rename files to convert them to TypeScript. For example, you would rename **App.js** to **App.tsx**. Use the **.tsx** extension if the file includes React components (JSX). If the file did not include any JSX, you can use the **.ts** file extension.
 
@@ -24,7 +24,7 @@ You can now run `yarn tsc` or `npx tsc` to typecheck the project.
 
 > You can disable the TypeScript setup in Expo CLI with the environment variable `EXPO_NO_TYPESCRIPT_SETUP=1`
 
-An Expo app's **tsconfig.json** should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options][tsc-compileroptions] (which can be overwritten in your project's **tsconfig.json**):
+A project's **tsconfig.json** should extend the `expo/tsconfig.base` by default. This sets the following default [compiler options][tsc-compileroptions] (which can be overwritten in your project's **tsconfig.json**):
 
 - `"allowJs"`: `true`
   - Allow JavaScript files to be compiled. If you project requires more strictness, you can disable this.
@@ -138,6 +138,9 @@ module.exports = require('./app.config.ts');
 
 ```ts
 import { ExpoConfig } from '@expo/config-types';
+
+// In SDK 47 and higher, use the following import instead:
+// import { ExpoConfig } from 'expo/config';
 
 const config: ExpoConfig = {
   name: 'my-app',

@@ -52,7 +52,8 @@ Some plugins can be customized by passing an array, where the second argument is
       "expo-camera",
       {
         /* Values passed to the plugin */
-        "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to access your location"
+        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
       }
     ]
   ]
@@ -235,7 +236,7 @@ module.exports = {
 - The compiler iterates over all of the mods and asynchronously evaluates them, providing some base props like the `projectRoot`.
   - After each mod, error handling asserts if the mod chain was corrupted by an invalid mod.
 
-<!-- TODO: Move to a section about mod compiler -->
+{/* TODO: Move to a section about mod compiler */}
 
 ### Default mods
 
@@ -498,7 +499,61 @@ Because of this reasoning, the root of a Node module is searched instead of righ
 
 To make plugin development easier, we've added plugin support to [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts). Refer to the [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) for more info on using TypeScript, and Jest to build plugins.
 
-Plugins will generally have `@expo/config-plugins` installed as a dependency, and `expo-module-scripts`, `@expo/config-types` installed as a devDependencies.
+### Installing dependencies
+
+Use the following dependencies in a library that provides a config plugin:
+
+```json
+{
+  "dependencies": {},
+  "devDependencies": {
+    "expo": "^46.0.0"
+  },
+  "peerDependencies": {
+    "expo": ">=46.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  }
+}
+```
+
+- You may update the exact version of `expo` to build against a specific version.
+- For simple config plugins that depend on core, stable APIs, such as a plugin that only modifies **Info.plist** or **AndroidManifest.xml**, you can use a loose dependency such as in the example above.
+- You may also want to install [`expo-module-scripts`](https://github.com/expo/expo/blob/main/packages/expo-module-scripts/README.md) as a development dependency, but it's not required.
+
+### Importing the config plugins package
+
+#### SDK 46 and lower
+
+For SDK 46 and lower, it's best practice to import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package.
+
+```js
+const { .. } = require('@expo/config-plugins');
+```
+
+#### SDK 47 and higher
+
+> Note: SDK 47 is scheduled to be released in Q3 2022
+
+The `@expo/config-plugins` and `@expo/config` packages are re-exported from the `expo` package starting in SDK 47.
+
+```js
+const { .. } = require('expo/config-plugins');
+const { .. } = require('expo/config');
+```
+
+Importing through the `expo` package ensures that you are using the version of the `@expo/config-plugins` and `@expo/config` packages that are depended on by the `expo` package.
+
+If you do not import the package through the `expo` re-export in this way, you may accidentally be importing an incompatible version (depending on the implementation details of module hoisting in the package manager used by the developer consuming the module) or be unable to import the module at all (if using "plug and play" features of a package manager like Yarn Berry or pnpm).
+
+Config types are exported directly from `expo/config`, so there is no need to install or import from `@expo/config-types`:
+
+```ts
+import { ExpoConfig, ConfigContext } from 'expo/config';
+```
 
 ### Best practices for mods
 
@@ -515,9 +570,9 @@ We highly recommend installing the [Expo config VS Code plugin](https://marketpl
 
 ### Setting up a playground environment
 
-You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you're gonna want a monorepo.
+You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you will want a monorepo.
 
-A monorepo will enable you to work on a node module and import it in your Expo app like you would if it were published to NPM. Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
+A monorepo will enable you to work on a node module and import it in your Expo config like you would if it were published to NPM. Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
 
 We recommend using [`expo-yarn-workspaces`](https://www.npmjs.com/package/expo-yarn-workspaces) which makes Expo monorepos very easy to setup.
 In your monorepo's `packages/` folder, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
@@ -540,10 +595,9 @@ Here is an example of a package's AndroidManifest.xml, which injects a required 
 
 ```xml
 <!-- @info Include <code>xmlns:android="..."</code> to use <code>android:*</code> properties like <code>android:name</code> in your manifest. -->
-<manifest package="expo.modules.filesystem"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- @end -->
-    <uses-permission android:name="android.permission.INTERNET"/>
+<manifest package="expo.modules.filesystem" xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- @end -->
+  <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>
 ```
 
@@ -553,8 +607,13 @@ You can use built-in types and helpers to ease the process of working with compl
 Here's an example of adding a `<meta-data android:name="..." android:value="..."/>` to the default `<application android:name=".MainApplication" />`.
 
 ```ts
+// Use these imports in SDK 46 and lower
 import { AndroidConfig, ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
+
+// In SDK 47 and higher, use the following imports instead:
+// import { AndroidConfig, ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
+// import { ExpoConfig } from 'expo/config';
 
 // Using helpers keeps error messages unified and helps cut down on XML format changes.
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow } = AndroidConfig.Manifest;
@@ -595,8 +654,13 @@ Using the `withInfoPlist` is a bit safer than statically modifying the `expo.ios
 Here's an example of adding a `GADApplicationIdentifier` to the **Info.plist**:
 
 ```ts
+// Use these imports in SDK 46 and lower
 import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
+
+// In SDK 47 and higher, use the following imports instead:
+// import { ConfigPlugin, InfoPlist, withInfoPlist } from 'expo/config-plugins';
+// import { ExpoConfig } from 'expo/config';
 
 // Pass `<string>` to specify that this plugin requires a string property.
 export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
@@ -685,7 +749,7 @@ When Expo SDK upgrades to a new version of React Native for instance, the templa
 
 If your plugin is mostly using [static modifications](#static-modification) then it will work well across versions. If it's using a regular expression to transform application code, then you'll definitely want to document which Expo SDK version your plugin is intended for. Expo releases a new version quarterly (every 3 months), and there is a [beta period][expo-beta-docs] where you can test if your plugin works with the new version before it's released.
 
-<!-- TODO: versioned plugin wrapper -->
+{/* TODO: versioned plugin wrapper */}
 
 ### Plugin properties
 
@@ -871,7 +935,7 @@ Introspection works by creating custom base mods that work like the default base
 
 As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app, so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
 
-<!-- TODO: Link to VS Code extension after preview feature lands -->
+{/* TODO: Link to VS Code extension after preview feature lands */}
 
 ## Legacy plugins
 
@@ -932,10 +996,7 @@ Then later in a Gradle file:
 `app/build.gradle`
 
 ```groovy
-project.ext.react = [
-  /* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */
-  enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc'
-/* @end */]
+project.ext.react = [/* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */ enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc' /* @end */]
 ```
 
 - For keys in the `gradle.properties`, use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.
@@ -1118,7 +1179,4 @@ Please add the following to your Expo config
 [expo-plist]: https://www.npmjs.com/package/@expo/plist
 [memfs]: https://www.npmjs.com/package/memfs
 [emc]: https://github.com/expo/expo/tree/main/packages/expo-modules-core
-
-<!-- TODO: Better link for Expo autolinking docs -->
-
-[autolinking]: /bare/installing-unimodules/
+[autolinking]: /workflow/glossary-of-terms#autolinking

@@ -106,7 +106,7 @@ export const renderProp = (
   return (
     <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={extractedComment} />
-      <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <HeaderComponent tags={getTagNamesList(comment)}>
         <InlineCode css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
           {name}

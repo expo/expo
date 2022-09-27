@@ -8,7 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
-#import <EXCamera/EXCameraManager.h>
+#import <EXCamera/EXCamera.h>
 
 @interface EXCameraUtils : NSObject
 

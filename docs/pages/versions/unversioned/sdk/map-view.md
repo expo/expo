@@ -7,8 +7,9 @@ packageName: 'react-native-maps'
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
+import { Terminal } from '~/ui/components/Snippet';
 
-**`react-native-maps`** provides a Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo Go app. See below for instructions on how to configure for deployment as a standalone app on Android and iOS.
+**`react-native-maps`** provides a Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-native-maps/react-native-maps](https://github.com/react-native-maps/react-native-maps). No setup required for use within the Expo Go app. See below for instructions on how to configure for deployment as a standalone app on Android and iOS.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -55,7 +56,35 @@ const styles = StyleSheet.create({
 
 No additional configuration is necessary to use `react-native-maps` in Expo Go. However, once you want to deploy your standalone app you should follow instructions below.
 
-## Deploying Google Maps to an Android standalone app
+### Configuring for web
+
+> Web is experimental! We do not recommend using this library on web yet.
+
+To use this in web, add the following script to your **web/index.html**. This script may already be present, if this is the case, just replace the `API_KEY` with your Google Maps API key which you can obtain here: [Google Maps: Get API key](https://developers.google.com/maps/documentation/javascript/get-api-key)
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- At the end of the <head/> element... -->
+
+    <script
+      async
+      defer
+      src="https://maps.googleapis.com/maps/api/js?key=API_KEY"
+      type="text/javascript"
+    ></script>
+
+    <!-- Use your web API Key in place of API_KEY: https://developers.google.com/maps/documentation/javascript/get-api-key -->
+  </head>
+
+  <!-- <body /> -->
+</html>
+```
+
+## Deploying app with Google Maps
+
+### Android standalone app
 
 > If you've already registered a project for another Google service on Android, such as Google Sign In, you enable the **Maps SDK for Android** on your project and jump to step 4.
 
@@ -66,10 +95,10 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 
 #### 2. Have your app's SHA-1 certificate fingerprint ready
 
-- **If you are deploying your app to the Google Play Store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md) and [uploaded it to Google Play](../../../distribution/app-stores.md) at least once in order to have Google generate your app signing credentials.
+- **If you are deploying your app to the Google Play Store**, you will need to have [created a standalone app](/archive/classic-updates/building-standalone-apps) and [uploaded it to Google Play](/distribution/introduction) at least once in order to have Google generate your app signing credentials.
   - Go to the [Google Play Console](https://play.google.com/console) → (your app) → Setup → App Integrity
   - Copy the value of _SHA-1 certificate fingerprint_
-- **If you are sideloading your APK or deploying it to another store**, you will need to have [created a standalone app](../../../distribution/building-standalone-apps.md), then run `expo fetch:android:hashes` and copy the _Google Certificate Fingerprint_.
+- **If you are sideloading your APK or deploying it to another store**, you will need to have [created a standalone app](/archive/classic-updates/building-standalone-apps), then run `expo fetch:android:hashes` and copy the _Google Certificate Fingerprint_.
 - **If you are running a _debug_ build (development client or local debug build)**, your Android app will be signed using the debug keystore. See the instructions [below](#how-to-retrieve-your-debug-keystore-fingerprint) on how to retrieve your fingerprint.
 
 #### 3. Create an API key
@@ -87,7 +116,7 @@ No additional configuration is necessary to use `react-native-maps` in Expo Go. 
 - Copy your **API Key** into your **app.json** under the `android.config.googleMaps.apiKey` field.
 - Rebuild the app binary and re-submit to Google Play or sideload it (depending on how you configured your API key) to test that the configuration was successful.
 
-## Deploying Google Maps to an iOS standalone app
+### iOS standalone app
 
 > If you've already registered a project for another Google service on iOS, such as Google Sign In, you enable the **Maps SDK for iOS** on your project and jump to step 3.
 
@@ -122,27 +151,26 @@ To use this in web, add the following script to your **web/index.html**. This sc
 <html lang="en">
   <head>
     <!-- At the end of the <head/> element... -->
-
     <script
       async
       defer
       src="https://maps.googleapis.com/maps/api/js?key=API_KEY"
-      type="text/javascript"
-    ></script>
+      type="text/javascript"></script>
 
     <!-- Use your web API Key in place of API_KEY: https://developers.google.com/maps/documentation/javascript/get-api-key -->
   </head>
-
-  <!-- <body /> -->
+  <body />
 </html>
 ```
 
 ## How to retrieve your debug keystore fingerprint (Android only)
- 
+
 When building a debug version of your application outside of Expo Go (for example, when using a [development client](/development/introduction/) or a standalone debug build), your app will be signed with the debug keystore on Android.
+
 > All standard Expo templates use a debug keystore with fingerprint `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`, that you can enter directly in the Google Cloud Credential Manager. So if you are using one of the standard Expo templates, you don't need to perform the steps below.
 
 The debug keystore location and password is defined in your `android/app/build.gradle` file like this:
+
 ```groovy
 signingConfigs {
     debug {
@@ -153,9 +181,10 @@ signingConfigs {
     }
 }
 ``` 
+
 You can view the fingerprint for this keystore using the `keytool` command, and entering the storePassword. Copy the value shown after `SHA1:`
+
 ```bash
 ❯ keytool -list -v -keystore ./android/app/debug.keystore
-Enter keystore password: 
+Enter keystore password:
 ```
-

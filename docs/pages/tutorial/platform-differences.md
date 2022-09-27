@@ -21,13 +21,13 @@ We are going to work around spotty support for the Web Share API and the lack of
 
 To install a library to handle uploading the file for us run:
 
-<Terminal cmd={["$ expo install anonymous-files"]} />
+<Terminal cmd={["$ npx expo install anonymous-files"]} />
 
 Then make these changes to your app:
 
 <SnackInline label="Sharing web workaround" templateId="tutorial/sharing-web-workaround" dependencies={['expo-image-picker', 'expo-sharing', 'anonymous-files']} defaultPlatform="web">
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { Image, /* @info Import Platform, you can order imports however you like, here we did it alphabetically. */Platform,/* @end */ StyleSheet, Text, TouchableOpacity, View } from 'react-native';

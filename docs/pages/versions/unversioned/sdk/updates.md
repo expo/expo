@@ -22,9 +22,7 @@ Most of the methods and constants in this module can only be used or tested in r
 
 **To test manual updates in the Expo Go app**, run [`eas update`](/eas-update/introduction) and then open the published version of your app with Expo Go.
 
-**To test manual updates with managed workflow standalone apps**, you can create a [simulator build](/build-reference/simulators.md) or [APK](/build-reference/apk.md), or make a release build locally with `expo run:ios --configuration Release` and `expo run:android --variant release`.
-
-**To test manual updates in bare workflow apps**, make a release build with `expo run:ios --configuration Release` or `expo run:android --variant release` (you don't need to submit this build to the store to test).
+**To test manual updates with standalone apps**, you can create a [simulator build](/build-reference/simulators.md) or [APK](/build-reference/apk.md), or make a release build locally with `npx expo run:ios --configuration Release` and `npx expo run:android --variant release` (you don't need to submit this build to the store to test).
 
 ## API
 
@@ -36,10 +34,10 @@ import * as Updates from 'expo-updates';
 
 ## Error Codes
 
-| Code                   | Description                                                                                                                                                                                                                                                   |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ERR_UPDATES_DISABLED` | A method call was attempted when the Updates module was disabled, or the application was running in development mode                                                                                                                                          |
-| `ERR_UPDATES_RELOAD`   | An error occurred when trying to reload the application and it could not be reloaded. For bare workflow apps, double check the setup steps for this module to ensure it has been installed correctly and the proper native initialization methods are called. |
-| `ERR_UPDATES_CHECK`    | An unexpected error occurred when trying to check for new updates. Check the error message for more information.                                                                                                                                              |
-| `ERR_UPDATES_FETCH`    | An unexpected error occurred when trying to fetch a new update. Check the error message for more information.                                                                                                                                                 |
-| `ERR_UPDATES_READ_LOGS` | An unexpected error occurred when trying to read log entries. Check the error message for more information.                                                                                                                                                 |
+| Code                    | Description                                                                                                                                                                                                                                                   |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_UPDATES_DISABLED`  | A method call was attempted when the Updates module was disabled, or the application was running in development mode                                                                                                                                          |
+| `ERR_UPDATES_RELOAD`    | An error occurred when trying to reload the application and it could not be reloaded. For bare workflow apps, double check the setup steps for this module to ensure it has been installed correctly and the proper native initialization methods are called. |
+| `ERR_UPDATES_CHECK`     | An unexpected error occurred when trying to check for new updates. Check the error message for more information.                                                                                                                                              |
+| `ERR_UPDATES_FETCH`     | An unexpected error occurred when trying to fetch a new update. Check the error message for more information.                                                                                                                                                 |
+| `ERR_UPDATES_READ_LOGS` | An unexpected error occurred when trying to read log entries. Check the error message for more information.                                                                                                                                                   |

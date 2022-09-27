@@ -24,23 +24,15 @@ With the library installed in our project, we can now actually use it.
 
 <SnackInline label="Image picker" templateId="tutorial/image-picker-log" dependencies={['expo-image-picker']}>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 /* @info Import the ImagePicker */import * as ImagePicker from 'expo-image-picker';/* @end */
 
-
 export default function App() {
-  /* @info Request permissions to access the "camera roll", then launch the picker and log the result. */
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert("Permission to access camera roll is required!");
-      return;
-    }
-
+  /* @info Launch the picker and log the result. */
+  let openImagePickerAsync = async () => {    
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
     console.log(pickerResult);
   }
@@ -52,7 +44,6 @@ export default function App() {
       <Text style={styles.instructions}>
         To share a photo from your phone with a friend, just press the button below!
       </Text>
-
       <TouchableOpacity onPress={/* @info This function is a bit long so we moved it out to a variable */openImagePickerAsync/* @end */} style={styles.button}>
         <Text style={styles.buttonText}>Pick a photo</Text>
       </TouchableOpacity>
@@ -77,7 +68,7 @@ Now we will take the data that we get from the image picker and use it to show t
 
 <SnackInline label="Image picker show image" templateId="tutorial/image-picker-show" dependencies={['expo-image-picker']}>
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 /* @info Import React to use useState */import React from 'react';/* @end */
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -86,25 +77,13 @@ import * as ImagePicker from 'expo-image-picker';
 export default function App() {
   /* @info Initialize a variable to hold our selected image data */const [selectedImage, setSelectedImage] = React.useState(null);/* @end */
 
-
   let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
-    }
-
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
-
     /* @info Stop running the function here if the user cancelled the dialog */
     if (pickerResult.cancelled === true) {
       return;
     }/* @end */
-
-
     /* @info Store away the picked image uri */setSelectedImage({ localUri: pickerResult.uri });/* @end */
-
   };
 
   /* @info Show the selected image if we have one */
@@ -118,7 +97,6 @@ export default function App() {
       </View>
     );
   }/* @end */
-
 
   return (
     <View style={styles.container}>
@@ -135,7 +113,6 @@ const styles = StyleSheet.create({
     height: 300,
     resizeMode: "contain"
   }/* @end */
-
 });
 ```
 

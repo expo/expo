@@ -2,11 +2,15 @@
 title: Android Lifecycle Listeners
 ---
 
+import { Callout } from '~/ui/components/Callout';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
+
+<Callout type="warning">Expo Modules APIs are in beta and subject to breaking changes.</Callout>
+<br />
 
 In order to respond to certain Android system events relevant to an app, such as inbound links and configuration changes, it is necessary to override the corresponding lifecycle callbacks in **MainActivity.java** and/or **MainApplication.java**.
 
-The React Native module API does not provide any mechanism to hook into these, and so setup instructions for React Native libraries often include steps to copy code into these files. To simplify and automate setup and maintenance, the Expo module API provides a mechanism that allows your library to hook into `Activity` or `Application` functions.
+The React Native module API does not provide any mechanism to hook into these, and so setup instructions for React Native libraries often include steps to copy code into these files. To simplify and automate setup and maintenance, the Expo Modules API provides a mechanism that allows your library to hook into `Activity` or `Application` functions.
 
 ## Get Started
 

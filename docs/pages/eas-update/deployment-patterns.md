@@ -102,7 +102,7 @@ This flow is like an un-versioned variant of the "branch promotion flow". We do 
 
 **Testing changes:** (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
-**Publishing updates:** (c) Create update branches that are environment-based, like "staging" and "production".
+**Publishing updates:** (b) Create update branches that are environment-based, like "staging" and "production".
 
 ### Diagram of flow
 
@@ -134,7 +134,7 @@ This flow is for projects that need to build and update their Android and iOS ap
 
 **Testing changes:** (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
-**Publishing updates:** (c) Create update branches that are environment- and platform-based, like "ios-staging", "ios-production", "android-staging", and "android-production".
+**Publishing updates:** (b) Create update branches that are environment- and platform-based, like "ios-staging", "ios-production", "android-staging", and "android-production".
 
 ### Diagram of flow
 

@@ -5,6 +5,8 @@ hideTOC: true
 
 import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { InlineCode } from '~/components/base/code';
 
 <VersionedRedirectNotification />
 
@@ -20,11 +22,20 @@ import * as Contacts from 'expo-contacts';
 import { Gyroscope } from 'expo-sensors';
 ```
 
-This allows you to write [`Contacts.getContactsAsync()`](sdk/contacts.md#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or render a Camera view and take photos.
+This allows you to write [`Contacts.getContactsAsync()`](/versions/latest/sdk/contacts#contactsgetcontactsasynccontactquery) and read the contacts from the device, read the gyroscope sensor to detect device movement, or render a Camera view and take photos.
 
 ## These packages work in bare React Native apps too
 
-The easiest way to create a bare React Native app with support for the Expo SDK is `npx create-react-native-app myapp`. If you have an existing app that you would like to add Expo SDK packages to, read about [integrating into existing apps](../../bare/existing-apps.md).
+The easiest way to create a bare React Native app with support for the Expo SDK is by running the command:
+
+<Terminal cmd={[
+'# Create a project named my-app',
+'$ npx create-expo-app my-app --template bare-minimum',
+]} cmdCopy="npx create-expo-app my-app --template bare-minimum" />
+
+<BoxLink title="Existing apps" href="/bare/installing-expo-modules" description={<>Projects that were created with <InlineCode>npx react-native init</InlineCode> require additional setup to use the Expo SDK.</>} />
+
+<BoxLink title="Using libraries" description="Learn how to install Expo SDK packages in your project." href="/workflow/using-libraries" />
 
 ## Each Expo SDK version depends on a React Native version
 

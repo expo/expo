@@ -1,8 +1,10 @@
 ---
 title: InAppPurchases
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-44/packages/expo-in-app-purchases'
+packageName: 'expo-in-app-purchases'
 ---
 
+import {APIInstallSection} from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 

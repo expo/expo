@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import { InlineCode } from '~/components/base/code';
 import { LI, UL } from '~/components/base/list';
 import { H2, H3Code, H4, H4Code } from '~/components/plugins/Headings';
+import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   MethodDefinitionData,
   MethodSignatureData,
@@ -51,7 +52,7 @@ export const renderMethod = (
         key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
         css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <HeaderComponent tags={getTagNamesList(comment)}>
           <InlineCode css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
             {apiName && `${apiName}.`}
@@ -72,7 +73,7 @@ export const renderMethod = (
                   size={iconSize.small}
                   css={returnIconStyles}
                 />
-                <InlineCode>{resolveTypeName(type)}</InlineCode>
+                <APIDataType typeDefinition={type} />
               </LI>
             </UL>
             {comment?.returns && (

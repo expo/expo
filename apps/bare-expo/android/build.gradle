@@ -62,7 +62,16 @@ ext {
 allprojects {
     // [Custom]
     configurations.all {
-        resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
+        if (findProperty("reactNativeNightly") == "true") {
+            resolutionStrategy {
+                dependencySubstitution {
+                    substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+                    substitute module("com.facebook.react:react-native:${reactNativeVersion}") with project(":ReactAndroid")
+                }
+            }
+        } else {
+            resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
+        }
     }
 
     repositories {

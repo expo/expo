@@ -1,11 +1,9 @@
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
-#import <EXCamera/EXCameraManager.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
-
-@class EXCameraManager;
+#import <ExpoModulesCore/EXLegacyExpoViewProtocol.h>
 
 static const int EXFlashModeTorch = 3;
 
@@ -64,7 +62,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
   EXCameraVideoCodecAppleProRes4444 = 4,
 };
 
-@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXAppLifecycleListener, EXCameraInterface, AVCapturePhotoCaptureDelegate>
+@interface EXCamera : UIView <AVCaptureMetadataOutputObjectsDelegate, AVCaptureFileOutputRecordingDelegate, EXAppLifecycleListener, EXCameraInterface, AVCapturePhotoCaptureDelegate, EXLegacyExpoViewProtocol>
 
 @property (nonatomic, strong) dispatch_queue_t sessionQueue;
 @property (nonatomic, strong) AVCaptureSession *session;

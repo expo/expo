@@ -8,7 +8,7 @@ We're going to create our own custom button using the `TouchableOpacity` compone
 
 <SnackInline label="Simple button">
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, /* @info Add the TouchableOpacity component to your list of imports */ TouchableOpacity,/* @end */ View } from 'react-native';
@@ -20,14 +20,12 @@ export default function App() {
       <Text style={styles.instructions}>
         To share a photo from your phone with a friend, just press the button below!
       </Text>
-
       /* @info onPress takes a function that should be called when the button is pressed */
       <TouchableOpacity
         onPress={() => alert('Hello, world!')}
         style={{ backgroundColor: 'blue' }}>
         <Text style={{ fontSize: 20, color: '#fff' }}>Pick a photo</Text>
       </TouchableOpacity>/* @end */
-
     </View>
   );
 }
@@ -67,7 +65,7 @@ We can make our button bigger by adding some `padding` to our `TouchableOpacity`
 
 <SnackInline label="Simple button">
 
-<!-- prettier-ignore -->
+{/* prettier-ignore */}
 ```js
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -79,7 +77,6 @@ export default function App() {
       <Text style={styles.instructions}>
         To share a photo from your phone with a friend, just press the button below!
       </Text>
-
       <TouchableOpacity onPress={() => alert('Hello, world!')} /* @info We moved our our style down to the StyleSheet, keep scrolling! */ style={styles.button}/* @end */>
         <Text /* @info See StyleSheet */style={styles.buttonText}/* @end */>Pick a photo</Text>
       </TouchableOpacity>
@@ -125,4 +122,4 @@ const styles = StyleSheet.create({
 
 > Yikes, these code snippets are getting long. For the rest of the tutorial we'll show only relevant code here, and you can click through to Snack to see the full code.
 
-- We have a button! We can now make that button do what we want it to do: open an "image picker" - a screen with a gallery of images on your device. [Continue to the next section](/tutorial/image-picker).
+We have a button! We can now make that button do what we want it to do: open an "image picker" - a screen with a gallery of images on your device. [Continue to the next section](/tutorial/image-picker).

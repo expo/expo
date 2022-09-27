@@ -50,7 +50,6 @@ The following will only work if you have an Apple account with Apple Developer E
       "ios": {
         /* @info Valid values: universal, adhoc */
         "enterpriseProvisioning": "universal" /* @end */
-
       }
     }
   }
@@ -122,12 +121,13 @@ When the build completes, you will be given a URL that you can share with your t
 
 Press the "Install" button on the build page and follow the instructions presented in the modal.
 
+If you're running iOS 16 or above and haven't yet turned on Developer Mode, you will need to [enable it](../guides/ios-developer-mode) before you can run your build. (This doesn't apply if you're using enterprise provisioning.)
+
 ## 5. Automation on CI (optional)
 
 It's possible to run internal distribution builds non-interactively in CI using the `--non-interactive` flag; however, if you are using ad hoc provisioning on iOS you will not be able to add new devices to your provisioning profile when using this flag. After registering a device through `eas device:create`, you need to run `eas build` interactively and authenticate with Apple in order for EAS to add the device to your provisioning profile. [Learn more about triggering builds from CI](/build/building-on-ci.md).
 
-<!--
+{/*
 (@dsokal) this is not implemented yet
-
 When using iOS ad hoc provisioning managed by Expo, if a teammate navigates to this URL on an iOS device that is not yet registered, they will be able to register their device and initiate a new build to include the updated profile that will run on their device. If the ad hoc provisioning profile is not managed by Expo, the user will be asked to contact the organization admin in order to add their device UDID and create a new build compatible with their device.
--->
+*/}

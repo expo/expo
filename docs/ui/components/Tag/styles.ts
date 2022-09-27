@@ -26,11 +26,6 @@ export const tagStyle = css({
   },
 });
 
-export const tagFirstStyle = css({
-  marginBottom: 0,
-  marginTop: spacing[4],
-});
-
 export const labelStyle = css({
   lineHeight: `${spacing[4]}px`,
 });

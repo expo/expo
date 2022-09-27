@@ -4,6 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-apple-authe
 packageName: 'expo-apple-authentication'
 ---
 
+import { ConfigReactNative, ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import APISection from '~/components/plugins/APISection';
 import {APIInstallSection} from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -18,42 +19,42 @@ Beginning with iOS 13, any app that includes third-party authentication options 
 
 <APIInstallSection />
 
-## Configuration
+## Configuration in app.json / app.config.js
 
-### EAS Build
+You can configure `expo-apple-authentication` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use EAS Build, then you'll need to manually configure the package.
 
-This guide assumes [auto capability sync](../../../build-reference/ios-capabilities) is enabled (Default). Otherwise you'll need to manually enable the capabilities for your bundle identifier through the Apple Developer Console.
+<ConfigReactNative>
 
-#### Managed Workflow
+Apps that don't use [EAS Build](/build/introduction) must [manually configure](/build-reference/ios-capabilities#manual-setup) the **Apple Sign In** capability for their bundle identifier.
 
-1. Build with `eas build -p ios`. EAS Build and the config plugin will automatically configure this service with Apple.
+If you enable the **Apple Sign In** capability through the [Apple Developer Console](/build-reference/ios-capabilities#apple-developer-console), then be sure to add the following entitlements in your `ios/[app]/[app].entitlements` file:
 
-#### Bare Workflow
+```xml
+<key>com.apple.developer.applesignin</key>
+<array>
+  <string>Default</string>
+</array>
+```
 
-1. Ensure you've added enabled the Apple Sign In capability, either through the Xcode:
+Also be sure to set `CFBundleAllowMixedLocalizations` to `true` in your `ios/[app]/Info.plist` to ensure the sign in button uses the device locale.
 
-- Signing & Capabilities > + Capability > Sign in with Apple
-- Or by adding the entitlement to your `ios/[app]/[app].entitlements` file
-  ```xml
-  <key>com.apple.developer.applesignin</key>
-  <array>
-    <string>Default</string>
-  </array>
-  ```
+</ConfigReactNative>
 
-2. Add `"CFBundleAllowMixedLocalizations": true` to your `ios/[app]/Info.plist` to ensure the sign in button uses the device locale.
-3. Build with `eas build -p ios`. EAS Build will automatically configure this service with Apple.
+<ConfigPluginExample>
 
-### Classic Build
+> This plugin is included automatically when installed.
 
-1. For managed projects, set `ios.usesAppleSignIn` to `true` in `app.json`. For bare, enable the "Sign In with Apple" capability in your app. For bare projects, enable the capability in Xcode under "Signing & Capabilities" -- you'll need to be on Xcode 11 or later.
-2. Log into the Apple Developer Console, go to "Certificates, Identifiers, & Profiles" and then "Identifiers".
-3. You need to choose a primary app for the Apple Sign In configuration. This is the app whose icon will show up in the Apple Sign In system UI. If you have a set of related apps you might choose the "main" app as the primary, but most likely you'll want to just use the app you're working on now as the primary.
-4. In the list of identifiers, click on the one corresponding to your primary app. Enable the "Sign In with Apple" capability, click "Edit", and choose the "Enable as a primary App ID" option. Save the new configuration.
-5. If you chose a different app to be the primary, you'll also need to open up the configuration page for your current app, enable the "Sign In with Apple" capability, click "Edit" and choose the "Group with an existing primary App ID" option. Save this configuration as well.
-6. Next, go to the "Keys" page and register a new key. Add the "Sign In with Apple" capability, and make sure to choose the correct primary app on the configuration screen.
-7. Finally, when you want to make a standalone build to test with, run `expo build:ios --clear-provisioning-profile --revoke-credentials` so that your provisioning profile is regenerated with the new entitlement.
-8. (Optional) If you'd like to localize the button text, you can add `"CFBundleAllowMixedLocalizations": true` to your `ios.infoPlist` property [in your app.json](/workflow/configuration/#ios). Note: The localized value will only appear in your standalone app.
+Running [EAS Build](/build/introduction) locally will use [iOS capabilities signing](/build-reference/ios-capabilities) to enable the required capabilities before building.
+
+```json
+{
+  "expo": {
+    "plugins": ["expo-apple-authentication"]
+  }
+}
+```
+
+</ConfigPluginExample>
 
 ## Usage
 

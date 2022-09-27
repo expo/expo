@@ -1,14 +1,16 @@
 ---
-title: Module API
+title: Native Modules
 ---
 
+import { Callout } from '~/ui/components/Callout';
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
 
-> Note: This API is still experimental and subject to change. Some features that you need may not be implemented yet.
+<Callout type="warning">Expo Modules APIs are in beta and subject to breaking changes.</Callout>
+<br />
 
-The Expo module API provided by `expo-modules-core` is an abstraction layer on top of React Native modules that helps you build native modules in modern languages (Swift and Kotlin) with an easy to use and convenient API that is consistent across platforms where possible.
+The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primities that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy to use and convenient API that is consistent across platforms where possible.
 
 ## Design considerations
 
@@ -16,17 +18,17 @@ The Expo module API provided by `expo-modules-core` is an abstraction layer on t
 
 After several years of maintaining over 50 native modules in the Expo SDK, we have found out that many issues that have arisen were caused by unhandled null values or using incorrect types. Modern language features can help developers avoid these bugs; for example, the lack of optional types combined with the dynamism of Objective-C made it tough to catch certain classes of bugs that would have been caught by the compiler in Swift.
 
-This is one of the reasons why the Expo module ecosystem was designed from the ground up to be used with modern native languages: Swift and Kotlin.
+This is one of the reasons why the Expo Modules ecosystem was designed from the ground up to be used with modern native languages: Swift and Kotlin.
 
 ### Passing data between runtimes
 
-Another big pain point that we have encountered is the validation of arguments passed from JavaScript to native functions. This is especially error prone, time consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime and each property needs to be validated separately by the developer. A valuable feature of the Expo module API is that it has full knowledge of the argument types the native function expects, so it can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](#records). Knowing the argument types, it is also possible to [automatically convert arguments](#convertibles) to some platform-specific types (e.g. `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
+Another big pain point that we have encountered is the validation of arguments passed from JavaScript to native functions. This is especially error prone, time consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime and each property needs to be validated separately by the developer. A valuable feature of the Expo native modules API is that it has full knowledge of the argument types the native function expects, so it can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](#records). Knowing the argument types, it is also possible to [automatically convert arguments](#convertibles) to some platform-specific types (e.g. `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
 
 ## Get Started
 
 ### 1. Set up the library as an Expo module
 
-To use the Expo module API, you need [set up your library as an Expo module](overview). Once that is complete, create Swift and Kotlin files from the below templates.
+To use the Expo Modules API for native modules, you need [set up your library as an Expo module](overview). Once that is complete, create Swift and Kotlin files from the below templates.
 
 <CodeBlocksTable>
 
@@ -145,6 +147,8 @@ Defines a native synchronous function that will be exported to JavaScript. Synch
 
 The function can receive up to 8 arguments. This is due to the limitations of generics in both Swift and Kotlin, because this component must be implemented separately for each arity.
 
+See the [Argument Types](#argument-types) section for more details on what types can be used in the function body.
+
 <CodeBlocksTable>
 
 ```swift
@@ -183,6 +187,8 @@ Defines a JavaScript function that always returns a `Promise` and whose native c
 
 If the type of the last argument is `Promise`, the function will wait for the promise to be resolved or rejected before the response is passed back to JavaScript. Otherwise, the function is immediately resolved with the returned value or rejected if it throws an exception.
 The function can receive up to 8 arguments (including the promise).
+
+See the [Argument Types](#argument-types) section for more details on what types can be used in the function body.
 
 It is recommended to use `AsyncFunction` over `Function` when it:
 
@@ -237,6 +243,44 @@ Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
 
 </CodeBlocksTable>
 </APIBox>
+<APIBox header="ViewManager">
+
+Enables the module to be used as a view manager. The view manager definition is built from the definition components used in the closure passed to `viewManager`. Definition components that are accepted as part of the view manager definition: [`View`](#view), [`Prop`](#prop).
+
+<CodeBlocksTable>
+
+```swift
+ViewManager {
+  View {
+    MyNativeView()
+  }
+
+  Prop("isHidden") { (view: UIView, hidden: Bool) in
+    view.isHidden = hidden
+  }
+}
+```
+
+```kotlin
+ViewManager {
+  View { context ->
+    MyNativeView(context)
+  }
+
+  Prop("isHidden") { view: View, hidden: Bool ->
+    view.isVisible = !hidden
+  }
+}
+```
+
+</CodeBlocksTable>
+
+> **Note** The API for view managers is still experimental and subject to change.
+> We are investigating how to integrate with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer), which may require API changes.
+
+> **Note** Support for rendering SwiftUI views is planned. For now, you can use [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) and add its content view to your UIKit view.
+
+</APIBox>
 <APIBox header="View">
 
 Defines the factory creating a native view, when the module is used as a view.
@@ -285,43 +329,7 @@ Prop("background") { view: View, @ColorInt color: Int ->
 
 </CodeBlocksTable>
 
-> Note: Props of function type (callbacks) are not supported yet.
-
-</APIBox>
-<APIBox header="ViewManager">
-
-Enables the module to be used as a view manager. The view manager definition is built from the definition components used in the closure passed to `viewManager`. Definition components that are accepted as part of the view manager definition: [`View`](#view), [`Prop`](#prop).
-
-<CodeBlocksTable>
-
-```swift
-ViewManager {
-  View {
-    UIView()
-  }
-
-  Prop("isHidden") { (view: UIView, hidden: Bool) in
-    view.isHidden = hidden
-  }
-}
-```
-
-```kotlin
-ViewManager {
-  View { context ->
-    View(context)
-  }
-
-  Prop("isHidden") { view: View, hidden: Bool ->
-    view.isVisible = !hidden
-  }
-}
-```
-
-</CodeBlocksTable>
-
-> Note: The API for view managers is still experimental and subject to change.
-> We are investigating how to integrate it with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer) which may require us to make some API changes.
+> **Note** Props of function type (callbacks) are not supported yet.
 
 </APIBox>
 <APIBox header="OnCreate">
@@ -353,45 +361,59 @@ Defines module's lifecycle listener that is called when the app context owning t
 
 Defines the listener that is called when the app is about to enter the foreground mode.
 
-> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
+> **Note** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </APIBox>
 <APIBox header="OnAppEntersBackground" platforms={["ios"]}>
 
 Defines the listener that is called when the app enters the background mode.
 
-> Note: This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
+> **Note** This function is not available on Android — you may want to use [`OnActivityEntersBackground`](#onactivityentersbackground) instead.
 
 </APIBox>
 <APIBox header="OnAppBecomesActive" platforms={["ios"]}>
 
 Defines the listener that is called when the app becomes active again (after `OnAppEntersForeground`).
 
-> Note: This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
+> **Note** This function is not available on Android — you may want to use [`OnActivityEntersForeground`](#onactivityentersforeground) instead.
 
 </APIBox>
 <APIBox header="OnActivityEntersForeground" platforms={["android"]}>
 
-> Note: This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
+Defines the activity lifecycle listener that is called right after the activity is resumed.
+
+> **Note** This function is not available on iOS — you may want to use [`OnAppEntersForeground`](#onappentersforeground) instead.
 
 </APIBox>
 <APIBox header="OnActivityEntersBackground" platforms={["android"]}>
 
-> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
+Defines the activity lifecycle listener that is called right after the activity is paused.
+
+> **Note** This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
 </APIBox>
 <APIBox header="OnActivityDestroys" platforms={["android"]}>
 
-Defines the listener that is called when the activity owning the JavaScript context is about to be destroyed.
+Defines the activity lifecycle listener that is called when the activity owning the JavaScript context is about to be destroyed.
 
-> Note: This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
+> **Note** This function is not available on iOS — you may want to use [`OnAppEntersBackground`](#onappentersbackground) instead.
 
 </APIBox>
 
 ## Argument Types
 
-Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and casted on its own. The Expo module API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
+Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and casted on its own. The Expo Modules API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
 
+<APIBox header="Primitives">
+
+All functions and view prop setters accept all common primitive types in Swift and Kotlin as the arguments. This includes arrays, dictionaries/maps and optionals of these primitive types.
+
+| Language | Supported primitive types |
+| -------- | ------------------------- |
+| Swift    | `Bool`, `Int`, `Int8`, `Int16`, `Int32`, `Int64`, `UInt`, `UInt8`, `UInt16`, `UInt32`, `UInt64`, `Float32`, `Double`, `String` |
+| Kotlin   | `Boolean`, `Int`, `UInt`, `Float`, `Double`, `String`, `Pair` |
+
+</APIBox>
 <APIBox header="Convertibles">
 
 _Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. For example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers `(_x_, _y_)` or a JavaScript object with numeric `x` and `y` properties.
@@ -413,6 +435,7 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 <APIBox header="Records">
 
 _Record_ is a convertible type and an equivalent of the dictionary (Swift) or map (Kotlin), but represented as a struct where each field can have its own type and provide a default value.
+It is a better way to represent a JavaScript object with the native type-safety.
 
 <CodeBlocksTable>
 
@@ -522,10 +545,13 @@ class MyModule : Module() {
 
 For more examples from real modules, you can refer to Expo modules that already use this API on GitHub:
 
-- `expo-cellular` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-cellular/ios/CellularModule.swift), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular/CellularModule.kt))
-- `expo-linear-gradient` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios/LinearGradientModule.swift), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient/LinearGradientModule.kt))
-- `expo-haptics` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-haptics/ios/HapticsModule.swift))
-- `expo-clipboard` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios/ClipboardModule.swift), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard/ClipboardModule.kt))
-- `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios/LocalizationModule.swift))
-- `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI/ExpoSystemUIModule.swift))
-- `expo-image-manipulator` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios/ImageManipulatorModule.swift))
+- `expo-cellular` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-cellular/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular))
+- `expo-clipboard` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard))
+- `expo-crypto` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-crypto/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto))
+- `expo-haptics` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-haptics/ios))
+- `expo-image-manipulator` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios))
+- `expo-image-picker` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker))
+- `expo-linear-gradient` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient))
+- `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization))
+- `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI))
+- `expo-web-browser` ([Swift](https://github.com/expo/expo/blob/main/packages/expo-web-browser/ios), [Kotlin](https://github.com/expo/expo/blob/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser))

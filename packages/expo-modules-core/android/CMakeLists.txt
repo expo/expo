@@ -7,7 +7,7 @@ set(CMAKE_ANDROID_STL_TYPE c++_shared)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR}")
+set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR}")
 
 if (${NATIVE_DEBUG})
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
@@ -18,9 +18,18 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
 file(GLOB sources_android_types "${SRC_DIR}/main/cpp/types/*.cpp")
+file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/javaclasses/*.cpp")
 file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
+
+macro(createVarAsBoolToInt name value)
+  if(${value})
+    set(${name} "1")
+  else()
+    set(${name} "0")
+  endif()
+endmacro()
 
 add_library(CommonSettings INTERFACE)
 
@@ -30,6 +39,7 @@ add_library(
         ${common_sources}
         ${sources_android}
         ${sources_android_types}
+        ${sources_android_javaclasses}
 )
 
 if(IS_NEW_ARCHITECTURE_ENABLED)
@@ -41,13 +51,17 @@ else()
   set(NEW_ARCHITECTURE_COMPILE_OPTIONS "")
 endif()
 
+createVarAsBoolToInt("USE_HERMES_INT" ${USE_HERMES})
+createVarAsBoolToInt("UNIT_TEST_INT" ${UNIT_TEST})
+
 target_compile_options(CommonSettings INTERFACE
   -O2
   -frtti
   -fexceptions
   -Wall
   -fstack-protector-all
-  -DFOR_HERMES=${FOR_HERMES}
+  -DUSE_HERMES=${USE_HERMES_INT}
+  -DUNIT_TEST=${UNIT_TEST_INT}
   ${NEW_ARCHITECTURE_COMPILE_OPTIONS}
 )
 
@@ -60,7 +74,33 @@ if (NOT LIBRN_DIR)
 endif ()
 
 file(GLOB libfbjni_include_DIRS "${BUILD_DIR}/fbjni-*-headers.jar/")
-file(GLOB HERMES_SO_DIR "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}")
+
+# tests
+
+if(${UNIT_TEST})
+  if(${USE_HERMES})
+    file(GLOB HERMES_SO_DIR "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}")
+    find_library(
+        JSEXECUTOR_LIB
+        hermes
+        PATHS ${HERMES_SO_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+    )
+    set(JSEXECUTOR_INCLUDE "${HERMES_HEADER_DIR}")
+  else()
+    find_library(
+        JSEXECUTOR_LIB
+        jscexecutor
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+    )
+    set(JSEXECUTOR_INCLUDE "")
+  endif()
+else()
+  set(JSEXECUTOR_LIB "")
+  set(JSEXECUTOR_INCLUDE "")
+endif()
+
 
 # includes
 
@@ -71,17 +111,18 @@ target_include_directories(
         "${REACT_NATIVE_DIR}/React/Base"
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react"
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
         "${REACT_NATIVE_DIR}/ReactCommon"
         "${REACT_NATIVE_DIR}/ReactCommon/react/nativemodule/core"
         "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
         "${REACT_NATIVE_DIR}/ReactCommon/jsi"
-        "${HERMES_HEADER_DIR}"
         "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
         "${BUILD_DIR}/third-party-ndk/double-conversion"
         "${BUILD_DIR}/third-party-ndk/folly"
         "${libfbjni_include_DIRS}"
         "${COMMON_DIR}"
+        "${JSEXECUTOR_INCLUDE}"
         "${SRC_DIR}/fabric"
 )
 
@@ -133,20 +174,6 @@ find_library(
         NO_CMAKE_FIND_ROOT_PATH
 )
 
-find_library(
-        HERMES_LIB
-        hermes
-        PATHS ${HERMES_SO_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-)
-
-find_library(
-        JSEXECUTOR_LIB
-        jscexecutor
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-)
-
 #reactnativejni
 
 # linking
@@ -160,32 +187,16 @@ target_compile_options(
         -DFOLLY_MOBILE=1
 )
 
-if (${FOR_HERMES})
-    target_link_libraries(
-            ${PACKAGE_NAME}
-            CommonSettings
-            ${LOG_LIB}
-            ${FBJNI_LIB}
-            ${JSI_LIB}
-            ${HERMES_LIB}
-            ${REACT_NATIVE_JNI_LIB}
-            ${FOLLY_LIB}
-            ${REACT_NATIVE_MODULES_CORE}
-            android
-            ${NEW_ARCHITECTURE_DEPENDENCIES}
-    )
-else ()
-    target_link_libraries(
-            ${PACKAGE_NAME}
-            CommonSettings
-            ${LOG_LIB}
-            ${FBJNI_LIB}
-            ${JSI_LIB}
-            ${JSEXECUTOR_LIB}
-            ${REACT_NATIVE_JNI_LIB}
-            ${FOLLY_LIB}
-            ${REACT_NATIVE_MODULES_CORE}
-            android
-            ${NEW_ARCHITECTURE_DEPENDENCIES}
-    )
-endif ()
+target_link_libraries(
+        ${PACKAGE_NAME}
+        CommonSettings
+        ${LOG_LIB}
+        ${FBJNI_LIB}
+        ${JSI_LIB}
+        ${JSEXECUTOR_LIB}
+        ${REACT_NATIVE_JNI_LIB}
+        ${FOLLY_LIB}
+        ${REACT_NATIVE_MODULES_CORE}
+        android
+        ${NEW_ARCHITECTURE_DEPENDENCIES}
+)

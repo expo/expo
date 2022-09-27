@@ -10,10 +10,6 @@ import { logNewSection } from '../utils/ora';
 
 export type DependenciesMap = { [key: string]: string | number };
 
-export type PackageJsonModificationResults = DependenciesModificationResults & {
-  removedMainField: string | null;
-};
-
 export type DependenciesModificationResults = {
   /** Indicates that new values were added to the `dependencies` object in the `package.json`. */
   hasNewDependencies: boolean;
@@ -35,7 +31,7 @@ export async function updatePackageJSONAsync(
   }
 ): Promise<DependenciesModificationResults> {
   const updatingPackageJsonStep = logNewSection(
-    'Updating your package.json scripts, dependencies, and main file'
+    'Updating your package.json scripts, and dependencies'
   );
 
   const templatePkg = getPackageJson(templateDirectory);
@@ -53,17 +49,7 @@ export async function updatePackageJSONAsync(
     JSON.stringify(pkg, null, 2) + '\n'
   );
 
-  updatingPackageJsonStep.succeed(
-    'Updated package.json and added index.js entry point for iOS and Android'
-  );
-
-  if (results.removedMainField) {
-    Log.log(
-      `\u203A Removed ${chalk.bold(
-        `"main": "${results.removedMainField}"`
-      )} from package.json because we recommend using index.js as main instead\n`
-    );
-  }
+  updatingPackageJsonStep.succeed('Updated package.json');
 
   return results;
 }
@@ -73,7 +59,6 @@ export async function updatePackageJSONAsync(
  *
  * 1. Update `package.json` `scripts`.
  * 2. Update `package.json` `dependencies` and `devDependencies`.
- * 3. Update `package.json` `main`.
  *
  * @param projectRoot The root directory of the project.
  * @param props.templatePkg Template project package.json as JSON.
@@ -92,18 +77,14 @@ function modifyPackageJson(
     pkg: PackageJSONConfig;
     skipDependencyUpdate?: string[];
   }
-): PackageJsonModificationResults {
+) {
   updatePkgScripts({ pkg });
 
-  const results = updatePkgDependencies(projectRoot, {
+  return updatePkgDependencies(projectRoot, {
     pkg,
     templatePkg,
     skipDependencyUpdate,
   });
-
-  const removedMainField = updatePkgMain({ pkg });
-
-  return { ...results, removedMainField };
 }
 
 /**
@@ -251,45 +232,6 @@ function updatePkgScripts({ pkg }: { pkg: PackageJSONConfig }) {
   }
 }
 
-/**
- * Add new app entry points
- */
-function updatePkgMain({ pkg }: { pkg: PackageJSONConfig }): string | null {
-  let removedPkgMain: null | string = null;
-  // Check that the pkg.main doesn't match:
-  // - ./node_modules/expo/AppEntry
-  // - ./node_modules/expo/AppEntry.js
-  // - node_modules/expo/AppEntry.js
-  // - expo/AppEntry.js
-  // - expo/AppEntry
-  if (shouldDeleteMainField(pkg.main)) {
-    // Save the custom
-    removedPkgMain = pkg.main;
-    delete pkg.main;
-  }
-
-  return removedPkgMain;
-}
-
-/**
- * Returns true if the input string matches the default expo main field.
- *
- * - ./node_modules/expo/AppEntry
- * - ./node_modules/expo/AppEntry.js
- * - node_modules/expo/AppEntry.js
- * - expo/AppEntry.js
- * - expo/AppEntry
- *
- * @param input package.json main field
- */
-export function isPkgMainExpoAppEntry(input?: string): boolean {
-  const main = input || '';
-  if (main.startsWith('./')) {
-    return main.includes('node_modules/expo/AppEntry');
-  }
-  return main.includes('expo/AppEntry');
-}
-
 function normalizeDependencyMap(deps: DependenciesMap): string[] {
   return Object.keys(deps)
     .map((dependency) => `${dependency}@${deps[dependency]}`)
@@ -305,12 +247,4 @@ export function hashForDependencyMap(deps: DependenciesMap = {}): string {
 export function createFileHash(contents: string): string {
   // this doesn't need to be secure, the shorter the better.
   return crypto.createHash('sha1').update(contents).digest('hex');
-}
-
-export function shouldDeleteMainField(main?: any): boolean {
-  if (!main || !isPkgMainExpoAppEntry(main)) {
-    return false;
-  }
-
-  return !main?.startsWith('index.');
 }

@@ -3,7 +3,7 @@ install! 'cocoapods',
          :incremental_installation => true,
          :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
-platform :ios, '12.4'
+platform :ios, '13.0'
 inhibit_all_warnings!
 
 # Import the auto-linking packages
@@ -16,6 +16,11 @@ podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {
 
 abstract_target 'BareExpoMain' do
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
+
+  # Required by latest firebase versions
+  # See https://github.com/invertase/react-native-firebase/issues/6332#issuecomment-1189734581
+  pod 'FirebaseCore', :modular_headers => true
+  pod 'GoogleUtilities', :modular_headers => true
 
   use_expo_modules!(
     tests: [
@@ -52,7 +57,7 @@ abstract_target 'BareExpoMain' do
           # See https://github.com/react-native-community/upgrade-support/issues/91 and https://github.com/facebook/flipper/issues/834
           config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
         else
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
         end
       end
     end

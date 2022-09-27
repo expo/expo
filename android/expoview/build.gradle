@@ -65,7 +65,7 @@ def REACT_NATIVE_PATH = reactNative.absolutePath
 def CMAKE_OUTPUT_DIR = "$buildDir/reanimated-ndk/all"
 def RN_SO_DIR = "$reactNative/ReactAndroid/build/intermediates/library_*/*/jni"
 def FBJNI_HEADERS_DIR = "$reactNative/ReactAndroid/src/main/jni/first-party/fbjni/headers"
-def FOR_HERMES = false
+def FOR_HERMES = true
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -199,6 +199,11 @@ android {
     extractHeaders
     extractSO
   }
+
+  buildFeatures {
+      prefab true
+  }
+
   // WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE
 
   buildTypes {
@@ -313,9 +318,6 @@ dependencies {
   // BEGIN_SDK_45
   versionedApi 'host.exp:reactandroid-abi45_0_0:1.0.0'
   // END_SDK_45
-  // BEGIN_SDK_44
-  versionedApi 'host.exp:reactandroid-abi44_0_0:1.0.0'
-  // END_SDK_44
   // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -443,7 +445,8 @@ useVendoredModulesForExpoView('unversioned')
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
 // After that we build native code from src/main/jni with module path pointing at third-party-ndk.
 
-def downloadsDir = new File("$buildDir/downloads")
+def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
+def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
 def thirdPartyNdkDir = new File("$buildDir/third-party-ndk")
 
 def reactNativeThirdParty = new File("$reactNative/ReactAndroid/src/main/jni/third-party")
@@ -787,6 +790,13 @@ tasks.whenTaskAdded { task ->
   } else if (task.name.startsWith('generateJsonModel')) {
     def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
     task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
+  }
+}
+
+def hermesAAR = new File("${reactNative}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar")
+if (hermesAAR.exists()) {
+  dependencies {
+    compileOnly(files(hermesAAR))
   }
 }
 

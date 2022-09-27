@@ -123,6 +123,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         replace: /@"(ExpoModulesProvider)"/,
         with: `@"${versionName}$1"`,
       },
+      {
+        paths: `${versionName}EXVersionManager.mm`,
+        replace: `#import <${versionName}Reacthermes/HermesExecutorFactory.h>`,
+        with: `#import <${versionName}reacthermes/${versionName}HermesExecutorFactory.h>`,
+      },
 
       // react-native-maps
       {

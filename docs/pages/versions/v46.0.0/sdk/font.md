@@ -44,7 +44,6 @@ export default function App() {
       await SplashScreen.preventAutoHideAsync();
     }
     /* @end */
-
     prepare();
   }, []);
 

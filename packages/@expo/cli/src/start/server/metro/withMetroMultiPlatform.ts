@@ -85,7 +85,10 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
   // this needs to be unified since you can't dynamically
   // swap out the transformer based on platform.
   const assetRegistryPath = fs.realpathSync(
-    path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
+    // This is the native asset registry alias for native.
+    path.resolve(resolveFrom(projectRoot, 'react-native/Libraries/Image/AssetRegistry'))
+    // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
+    // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
   );
 
   // Create a resolver which dynamically disables support for

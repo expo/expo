@@ -13,8 +13,6 @@ import { AnalyticsProvider } from '~/providers/Analytics';
 import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import 'tippy.js/dist/tippy.css';
-import '../public/static/libs/algolia/algolia.css';
-import '../public/static/libs/algolia/algolia-mobile.css';
 
 Sentry.init({
   dsn: 'https://1a2f5c8cec574bcea3971b74f91504d6@o30871.ingest.sentry.io/1526800',

@@ -36,6 +36,11 @@ class UpdateEntity(
 
   var keep = false
 
+  val loggingId: String
+    get() {
+      return id.toString().lowercase()
+    }
+
   @ColumnInfo(name = "last_accessed")
   var lastAccessed: Date = Date()
 

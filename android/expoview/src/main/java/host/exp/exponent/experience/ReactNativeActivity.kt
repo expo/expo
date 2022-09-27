@@ -614,6 +614,9 @@ abstract class ReactNativeActivity :
   val devSupportManager: RNObject?
     get() = reactInstanceManager.takeIf { it.isNotNull }?.callRecursive("getDevSupportManager")
 
+  val jsExecutorName: String?
+    get() = reactInstanceManager.takeIf { it.isNotNull }?.callRecursive("getJsExecutorName")?.get() as? String
+
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this
   private val linkingUri: String?
