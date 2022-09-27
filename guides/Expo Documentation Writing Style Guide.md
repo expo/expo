@@ -246,7 +246,11 @@ Avoid mentioning or using the terms to represent outdated/archived workflows: ma
 
 To avoid using the term "managed workflow", use "using Expo" to represent the current state of the Expo ecosystem. This is now the default way of explaining things.
 
-When offering guidance for projects that require manually editing native code/directories, put those instructions in a drop down saying "manual setup" or "usage in bare React Native projects"
+When offering guidance for projects that require manually editing native code/directories, put those instructions in a dropdown saying "manual setup" or "usage in bare React Native projects".
+
+### Numbered Lists
+
+Any numbered list should start with `1` instead of `0`. This avoids inconsistency across all areas in the documentation.
 
 ## Tools to use when using visualization or interactivity to communicate
 
