@@ -13,6 +13,10 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Added support fo React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
+
 ## 1.3.0 — 2022-09-16
 
 ### 🎉 New features
