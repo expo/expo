@@ -1,7 +1,7 @@
 {
   "name": "expo-template-blank",
   "description": "The Blank project template includes the minimum dependencies to run and an empty root component.",
-  "version": "46.0.23",
+  "version": "46.0.24",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -13,7 +13,7 @@
     "expo": "~46.0.13",
     "expo-status-bar": "~1.4.0",
     "react": "18.0.0",
-    "react-native": "0.69.5"
+    "react-native": "0.69.6"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
