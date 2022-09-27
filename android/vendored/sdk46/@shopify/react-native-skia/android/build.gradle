@@ -86,7 +86,7 @@ def prebuiltDir = sourceBuild
 
 
 def reactProperties = new Properties()
-file("$nodeModules/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+file("$defaultDir/gradle.properties").withInputStream { reactProperties.load(it) }
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
 
 logger.warn("react-native-skia: React Native version: ${REACT_NATIVE_VERSION}")
