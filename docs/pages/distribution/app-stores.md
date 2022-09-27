@@ -54,9 +54,9 @@ Apple will ask you a series of questions when you submit the app. Depending on w
 
 ## Localizing your iOS app
 
-If you plan on shipping your app to different countries, or regions, or want it to support various languages, you can provide [localized](/versions/latest/sdk/localization) strings for things like the display name and system dialogs. All of this is easily set up [in your app.json](/workflow/configuration). First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
+If you plan on shipping your app to different countries, or regions, or want it to support various languages, you can provide [localized](/versions/latest/sdk/localization) strings for things like the display name and system dialogs. All of this is easily set up [in your `app.json`](/workflow/configuration) file. First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
 
-```json
+```json app.json
 {
   "expo": {
     "ios": {
@@ -73,8 +73,7 @@ If you plan on shipping your app to different countries, or regions, or want it 
 
 The keys provided to `locales` should be the [language identifier](https://developer.apple.com/documentation/xcode/choosing-localization-regions-and-scripts), made up of a [2-letter language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) of your desired language, with an optional region code (e.g. `en-US` or `en-GB`), and the value should point to a JSON file that looks something like this:
 
-```json
-// japanese.json
+```json japanese.json
 {
   "CFBundleDisplayName": "こんにちは",
   "NSContactsUsageDescription": "日本語のこれらの言葉"

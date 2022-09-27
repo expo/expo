@@ -6,6 +6,11 @@ import tippy, { roundArrow } from 'tippy.js';
 
 import { installLanguages } from './languages';
 
+import { Snippet } from '~/ui/components/Snippet/Snippet';
+import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
+import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
+import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
+
 // @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
 
@@ -71,14 +76,17 @@ const STYLES_INLINE_CODE = css`
   }
 `;
 
-const STYLES_CODE_CONTAINER = css`
+const STYLES_CODE_CONTAINER_BLOCK = css`
   border: 1px solid ${theme.border.default};
   padding: 16px;
   margin: 16px 0;
+  background-color: ${theme.background.secondary};
+`;
+
+const STYLES_CODE_CONTAINER = css`
   white-space: pre;
   overflow: auto;
   -webkit-overflow-scrolling: touch;
-  background-color: ${theme.background.secondary};
   line-height: 120%;
   border-radius: 4px;
 
@@ -174,13 +182,32 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
       .replace(/\s*<span class="token comment">\/\* @end \*\/<\/span>/g, '</span>');
   }
 
+  private parseValue(value: string) {
+    if (value.startsWith('@@@')) {
+      const valueChunks = value.split('@@@');
+      return {
+        title: valueChunks[1],
+        value: valueChunks[2],
+      };
+    }
+    return {
+      value,
+    };
+  }
+
+  private cleanCopyValue(value: string) {
+    return value.replace(/ *(\/\*|#|<!--)+\s@.+(\*\/|-->)\r?\n/g, '');
+  }
+
   render() {
     // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
     // which results in this nesting mess, we should fix it in the future
     const child = this.props.className
       ? this
       : (React.Children.toArray(this.props.children)[0] as JSX.Element);
-    let html = child?.props?.children?.toString() || '';
+
+    const value = this.parseValue(child?.props?.children?.toString() || '');
+    let html = value.value;
 
     // mdx will add the class `language-foo` to codeblocks with the tag `foo`
     // if this class is present, we want to slice out `language-`
@@ -208,8 +235,22 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
       }
     }
 
-    return (
-      <pre css={STYLES_CODE_CONTAINER} {...attributes}>
+    return value?.title ? (
+      <Snippet>
+        <SnippetHeader title={value.title}>
+          <CopyAction text={this.cleanCopyValue(value.value)} />
+        </SnippetHeader>
+        <SnippetContent>
+          <pre css={STYLES_CODE_CONTAINER} {...attributes}>
+            <code
+              css={STYLES_CODE_BLOCK}
+              dangerouslySetInnerHTML={{ __html: html.replace(/^@@@.+@@@/g, '') }}
+            />
+          </pre>
+        </SnippetContent>
+      </Snippet>
+    ) : (
+      <pre css={[STYLES_CODE_CONTAINER, STYLES_CODE_CONTAINER_BLOCK]} {...attributes}>
         <code css={STYLES_CODE_BLOCK} dangerouslySetInnerHTML={{ __html: html }} />
       </pre>
     );
