@@ -2,8 +2,7 @@ import { css, CSSObject } from '@emotion/react';
 import { typography } from '@expo/styleguide';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
-import { Blockquote } from './Blockquote';
-
+import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { A, CODE, P, BOLD, UL, OL, LI, createTextComponent } from '~/ui/components/Text';
 import { TextElement } from '~/ui/components/Text/types';
@@ -95,7 +94,7 @@ const markdownStyles: Record<string, Config | null> = {
     style: { margin: `2ch 0` },
   },
   blockquote: {
-    Component: Blockquote,
+    Component: Callout,
     style: {
       marginBottom: paragraphMarginBottom,
     },

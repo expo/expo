@@ -81,6 +81,10 @@ const STYLES_CODE_CONTAINER = css`
   background-color: ${theme.background.secondary};
   line-height: 120%;
   border-radius: 4px;
+
+  table &:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 type Props = {

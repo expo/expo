@@ -4,7 +4,8 @@ import { Code, InlineCode } from '~/components/base/code';
 import { H1, H2, H3, H4 } from '~/components/base/headings';
 import Link from '~/components/base/link';
 import { UL, OL, LI } from '~/components/base/list';
-import { PDIV, B, Quote } from '~/components/base/paragraph';
+import { PDIV, B } from '~/components/base/paragraph';
+import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { KBD } from '~/ui/components/Text';
 
@@ -24,7 +25,7 @@ export const h4 = createPermalinkedComponent(H4, { baseNestingLevel: 4 });
 export const code = InlineCode;
 export const pre = Code;
 export const a = Link;
-export const blockquote = Quote;
+export const blockquote = Callout;
 export const table = Table;
 export const thead = TableHead;
 export const tr = Row;

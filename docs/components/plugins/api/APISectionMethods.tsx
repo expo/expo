@@ -52,7 +52,7 @@ export const renderMethod = (
         key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
         css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
         <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <HeaderComponent tags={getTagNamesList(comment)}>
           <InlineCode css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
             {apiName && `${apiName}.`}
