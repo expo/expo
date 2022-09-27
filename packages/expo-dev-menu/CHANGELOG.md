@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix compilation error when the `compileSdkVersion` is set to 33.
+
 ### 💡 Others
 
 - [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
