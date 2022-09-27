@@ -37,7 +37,6 @@ public class LocalizationModule: Module {
    (https://github.com/unicode-org/cldr/blob/main/common/bcp47/calendar.xml)
    */
   static func getUnicodeCalendarIdentifier(calendar: Calendar) -> String {
-    // swiftlint:disable:previous cyclomatic_complexity
     switch calendar.identifier {
     case .buddhist:
       return "buddhist"
