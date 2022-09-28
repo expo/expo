@@ -1274,7 +1274,7 @@ SPEC CHECKSUMS:
   Expo: f35ce9004f13fe930476bd8e667eeb170166ca4e
   expo-dev-client: 4aea43e3e4495cd676c7954c33bd3bd604cfab3a
   expo-dev-launcher: 54354885ddd62fd30d2a47b642368ed6609e5dfe
-  expo-dev-menu: 849a756eb23c06c153d689757bf55094888ff0fe
+  expo-dev-menu: 4b6c7bcd6cb6c8ece9c3003bd8484b0a98c35d08
   expo-dev-menu-interface: 3629393147ac495c03ef22bdcef66e6fa42b78c3
   ExpoCellular: 5cd085987f010055ab92c81d60e948ce0c4b5a89
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
