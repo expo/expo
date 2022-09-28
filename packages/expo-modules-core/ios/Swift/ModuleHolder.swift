@@ -93,7 +93,7 @@ public final class ModuleHolder {
   /**
    Creates the JavaScript object that will be used to communicate with the native module.
    The object is prefilled with module's constants and functions.
-   JavaScript can access it through `global.ExpoModules[moduleName]`.
+   JavaScript can access it through `global.expo.modules[moduleName]`.
    - Note: The object will be `nil` when the runtime is unavailable (e.g. remote debugger is enabled).
    */
   private func createJavaScriptModuleObject() -> JavaScriptObject? {

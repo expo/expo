@@ -67,6 +67,12 @@ NS_SWIFT_NAME(JavaScriptRuntime)
 - (nonnull EXJavaScriptObject *)global;
 
 /**
+ The main object of the Expo runtime that is used to scope native Expo-specific functionalities.
+ It gets installed into the runtime as the `global.expo` object.
+ */
+- (nonnull EXJavaScriptObject *)mainObject;
+
+/**
  Creates a new object for use in Swift.
  */
 - (nonnull EXJavaScriptObject *)createObject;
