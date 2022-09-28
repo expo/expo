@@ -144,7 +144,11 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
 }
 ```
 
-It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS. First, you must publish a JSON file at `/.well-known/assetlinks.json` specifying your app ID and which links should be opened by your app. See [Android's documentation](https://developer.android.com/training/app-links/verify-site-associations) for details about formatting this file. Second, add `"autoVerify": true` to the intent filter in your Expo config (**app.json**, **app.config.js**); this tells Android to check for your **assetlinks.json** on your server and register your app as the automatic handler for the specified paths:
+It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS.
+
+First, you must publish a JSON file at `/.well-known/assetlinks.json` specifying your app ID and which links should be opened by your app. You need to format this file that includes `package_name` (app ID) and `sha256_cert_fingerprints`. You can get these values from your app's [Google Play Console](https://play.google.com/console/) account and then go to **Release** > **Setup** > **App integrity** > **App Signing**. Under **Digital Asset Links JSON**, you will see a list of fingerprints for your app. Copy and paste the JSON into the **assetlinks.json**. For more information, see [Android's documentation](https://developer.android.com/training/app-links/verify-site-associations#web-assoc).
+
+Second, add `"autoVerify": true` to the intent filter in your Expo config (**app.json**, **app.config.js**). This tells Android to check for your **assetlinks.json** on your server and register your app as the automatic handler for the specified paths:
 
 ```json
 {
