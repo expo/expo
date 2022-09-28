@@ -61,7 +61,7 @@ export function createProxyForNativeModules(NativeModules) {
                 !additionalModulesToIgnore.has(prop) &&
                 !alreadyErroredModules.has(prop)) {
                 alreadyErroredModules.add(prop);
-                const isRunningInStoreClient = global.ExpoModules?.NativeModulesProxy?.modulesConstants.ExponentConstants
+                const isRunningInStoreClient = global.expo?.modules?.NativeModulesProxy?.modulesConstants.ExponentConstants
                     ?.executionEnvironment === ExecutionEnvironment.StoreClient ||
                     target.NativeUnimoduleProxy?.modulesConstants.ExponentConstants?.executionEnvironment ===
                         ExecutionEnvironment.StoreClient;

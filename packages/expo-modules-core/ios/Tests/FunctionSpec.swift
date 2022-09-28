@@ -222,13 +222,13 @@ class FunctionSpec: ExpoSpec {
       }
       
       it("returns values") {
-        expect(try runtime?.eval("ExpoModules.TestModule.returnPi()").asDouble()) == Double.pi
-        expect(try runtime?.eval("ExpoModules.TestModule.returnNull()").isNull()) == true
+        expect(try runtime?.eval("expo.modules.TestModule.returnPi()").asDouble()) == Double.pi
+        expect(try runtime?.eval("expo.modules.TestModule.returnNull()").isNull()) == true
       }
       
       it("accepts optional arguments") {
-        expect(try runtime?.eval("ExpoModules.TestModule.isArgNull(3.14)").asBool()) == false
-        expect(try runtime?.eval("ExpoModules.TestModule.isArgNull(null)").asBool()) == true
+        expect(try runtime?.eval("expo.modules.TestModule.isArgNull(3.14)").asBool()) == false
+        expect(try runtime?.eval("expo.modules.TestModule.isArgNull(null)").asBool()) == true
       }
     }
   }

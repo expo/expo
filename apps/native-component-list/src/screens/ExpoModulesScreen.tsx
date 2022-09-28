@@ -11,7 +11,7 @@ const customJsonReplacer = (_: string, value: any) => {
 
 export default class ExpoModulesScreen extends React.PureComponent<any, any> {
   render() {
-    const modules = { ...global.ExpoModules };
+    const modules = { ...global.expo?.modules };
     const moduleNames = Object.keys(modules);
 
     return (
@@ -21,7 +21,7 @@ export default class ExpoModulesScreen extends React.PureComponent<any, any> {
 
         <HeadingText>Available Expo modules</HeadingText>
         <MonoText>
-          {`Object.keys(global.ExpoModules) => [\n  ${moduleNames.join(',\n  ')}\n]`}
+          {`Object.keys(global.expo.modules) => [\n  ${moduleNames.join(',\n  ')}\n]`}
         </MonoText>
 
         {moduleNames.map((moduleName) => {
