@@ -11,6 +11,8 @@
 ### 💡 Others
 
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+- Get detox tests running locally. ([#19254](https://github.com/expo/expo/pull/19254) by [@esamelson](https://github.com/esamelson))
+
 ## 1.3.0 — 2022-09-16
 
 ### 🐛 Bug fixes
