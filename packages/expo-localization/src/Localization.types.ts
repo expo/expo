@@ -123,7 +123,6 @@ export enum Weekday {
  * The calendar identifier, one of [Unicode calendar types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/calendar).
  * Gregorian calendar is aliased and can be referred to as both `CalendarIdentifier.GREGORIAN` and `CalendarIdentifier.GREGORY`.
  */
-
 export enum CalendarIdentifier {
   /** Thai Buddhist calendar */
   BUDDHIST = 'buddhist',
