@@ -59,8 +59,7 @@ module.exports = {
 
 Extras can be accessed via `expo-constants`:
 
-```ts
-// App.js
+```ts App.js
 import Constants from 'expo-constants';
 
 Constants.manifest.extra.fact === 'kittens are cool';
@@ -70,7 +69,7 @@ You can access and modify incoming config values by exporting a function that re
 
 For example, your **app.json** could look like this:
 
-```json
+```json app.json
 {
   "expo": {
     "name": "My App"
@@ -80,7 +79,7 @@ For example, your **app.json** could look like this:
 
 And in your **app.config.js**, you are provided with that configuration in the arguments to the exported function:
 
-```js
+```js app.config.js
 module.exports = ({ config }) => {
   console.log(config.name); // prints 'My App'
   return {
@@ -93,7 +92,7 @@ module.exports = ({ config }) => {
 
 It's common to have some different configuration in development, staging, and production environments, or to swap out configuration entirely in order to white label an app. To accomplish this, you can use **app.config.js** along with environment variables.
 
-```js
+```js app.config.js
 module.exports = () => {
   if (process.env.MY_ENVIRONMENT === 'production') {
     return {
@@ -113,9 +112,7 @@ To use this configuration with Expo CLI commands, set the environment variable e
 
 You can use autocomplete and doc-blocks with a TypeScript Expo config **app.config.ts**. Create an **app.config.ts** with the following contents:
 
-```ts
-// app.config.ts
-
+```ts app.config.ts
 // `@expo/config` is installed with the `expo` package
 // ensuring the versioning is correct.
 import { ExpoConfig, ConfigContext } from '@expo/config';

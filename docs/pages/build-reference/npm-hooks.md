@@ -2,8 +2,6 @@
 title: Build lifecycle hooks
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
-
 There are five EAS Build lifecycle npm hooks that you can set in your **package.json**. See the [Android build process](android-builds.md) and [iOS build process](ios-builds.md) docs to get a better understanding about the internals of the build process.
 
 - `eas-build-pre-install` - executed before EAS Build runs `npm install`.
@@ -16,7 +14,7 @@ There are five EAS Build lifecycle npm hooks that you can set in your **package.
 
 This is an example of how your **package.json** might look like:
 
-```json
+```json package.json
 {
   "name": "my-app",
   "scripts": {
@@ -38,9 +36,11 @@ This is an example of how your **package.json** might look like:
 
 If you would like to run a script (or some part of a script) only for iOS builds or only for Android builds, you can fork the behavior depending on the platform within the script; iOS builds run on macOS (Darwin) and Android builds run on Ubuntu (Linux). See examples for common ways to do this through a shell script or a Node script below.
 
-<Collapsible summary="Example package.json and shell script">
+## Examples
 
-```json
+### `package.json` and shell script
+
+```json package.json
 {
   "name": "my-app",
   "scripts": {
@@ -54,23 +54,21 @@ If you would like to run a script (or some part of a script) only for iOS builds
 }
 ```
 
-```bash
+```bash pre-install
 #!/bin/bash
 # This is a file called "pre-install" in the root of the project
 
 unamestr=$(uname)
 if [[ "$unamestr" == 'Linux' ]]; then
-	echo "Linux detected, run commands for Android builds here"
+  echo "Linux detected, run commands for Android builds here"
 elif [[ "$unamestr" == 'Darwin' ]]; then
-	echo "macOS detected, run commands for iOS builds here"
+  echo "macOS detected, run commands for iOS builds here"
 fi
 ```
 
-</Collapsible>
+### `package.json` and Node script
 
-<Collapsible summary="Example package.json and Node script">
-
-```json
+```json package.json
 {
   "name": "my-app",
   "scripts": {
@@ -84,7 +82,7 @@ fi
 }
 ```
 
-```javascript
+```js pre-install.js
 // This is a file called "pre-install.js" in the root of the project
 if (process.platform === 'linux') {
   console.log('Linux detected, run commands for Android builds here');
@@ -92,5 +90,3 @@ if (process.platform === 'linux') {
   console.log('macOS detected, run commands for iOS builds here');
 }
 ```
-
-</Collapsible>

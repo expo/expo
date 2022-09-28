@@ -16,8 +16,7 @@ By default, `--auto-submit` will try to use a submission profile with the same n
 
 When running `eas build --profile <profile-name> --auto-submit`, the project's **app.config.js** will be evaluated using any environment variables associated with the build profile `<profile-name>`. For example, suppose we ran `eas build -p ios --profile production --auto-submit` with the following configuration:
 
-```json
-// eas.json
+```json eas.json
 {
   "build": {
     "production": {
@@ -34,8 +33,7 @@ When running `eas build --profile <profile-name> --auto-submit`, the project's *
 }
 ```
 
-```js
-// app.config.js
+```js app.config.js
 export default () => {
   return {
     name: process.env.APP_ENV === 'production' ? 'My App' : 'My App (DEV)',

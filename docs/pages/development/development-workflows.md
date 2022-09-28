@@ -83,7 +83,7 @@ Developers on your team with expertise working with Xcode and Android Studio can
 
 If you need to look at release builds of your project, it is convenient to not overwrite the development build of your app every time you do so. You can accomplish this by using [**app.config.js**](../workflow/configuration.md) to set the bundle identifier or package name based on an environment variable. When changing the ID of your project, be aware that some modules will expect you to perform installation steps for each bundle identifier or package name you use. [Learn more about how to use this pattern on EAS Build with build variants](/build-reference/variants.md).
 
-```js
+```js app.config.js
 // Example app.config.js where the bundle identifier and package name are
 // swapped out depending on an environment variable
 module.exports = () => {

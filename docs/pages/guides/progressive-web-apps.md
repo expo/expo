@@ -72,8 +72,7 @@ In order to add offline support, you'll need to add service workers to your proj
 
 Related applications can be inferred automatically from the following native **app.config.js** properties:
 
-```js
-// app.config.js
+```js app.config.js
 export default {
   ios: {
     bundleIdentifier: 'com.myapp',
@@ -89,7 +88,7 @@ export default {
 
 **Optionally** you could override these values by manually defining the related applications:
 
-```js
+```js app.config.js
 export default {
   web: {
     relatedApplications: [
@@ -120,7 +119,7 @@ Firstly, you'll need to generate the **web/index.html** with `npx expo customize
 - `touch web/manifest.json` or `expo-pwa manifest`
 - Add the following line to the `<head/>` element of your **web/index.html**:
 
-```html
+```html web/index.html
 <link rel="manifest" href="/manifest.json" />
 ```
 

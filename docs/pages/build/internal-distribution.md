@@ -20,7 +20,7 @@ The following three steps will guide you through adding internal distribution to
 
 Open up **eas.json** and add a new build profile for iOS and/or Android.
 
-```json
+```json eas.json
 {
   "build": {
     "preview": {
