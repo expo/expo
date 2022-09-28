@@ -13,7 +13,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 <PlatformsSection android ios web />
 
-> 💡 Android devices can use one of two available Camera APIs: you can opt-in to using [`Camera2`](https://developer.android.com/reference/android/hardware/camera2/package-summary) with the `useCamera2Api` prop.
+> **info** Android devices can use one of two available Camera APIs: you can opt-in to using [`Camera2`](https://developer.android.com/reference/android/hardware/camera2/package-summary) with the `useCamera2Api` prop.
 
 ## Installation
 
@@ -21,7 +21,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ## Usage
 
-> ⚠️ Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
+> **warning** Only one Camera preview can be active at any given time. If you have multiple screens in your app, you should unmount `Camera` components whenever a screen is unfocused.
 
 <SnackInline label='Basic Camera usage' dependencies={['expo-camera']}>
 

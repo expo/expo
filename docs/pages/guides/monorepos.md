@@ -7,7 +7,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 Monorepos, or _"monolithic repositories"_, are single repositories containing multiple apps or packages. It can help speed up development for larger projects, makes it easier to share code, and act as a single source of truth. This guide will set up a simple monorepo with an Expo project. We currently have first-class support for yarn workspaces. If you want to use another tool, make sure you know how to configure it.
 
-> ⚠️ Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds more complexity, and often requires specific tooling configuration. You can get far with just a single repository.
+> **warning** Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds more complexity, and often requires specific tooling configuration. You can get far with just a single repository.
 
 <Collapsible summary="Using SDK older than 43?">
 
@@ -49,7 +49,7 @@ Yarn and other tooling have a concept called _"workspaces"_. Every package and a
 }
 ```
 
-> ⚠️ Yarn workspaces require the root **package.json** to be private. If you don't set this, `yarn install` will error with a message mentioning this.
+> **warning** Yarn workspaces require the root **package.json** to be private. If you don't set this, `yarn install` will error with a message mentioning this.
 
 ### Create our first app
 
@@ -201,7 +201,7 @@ import App from './App';
 registerRootComponent(App);
 ```
 
-> 💡 This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
+> **info** This new entrypoint already exists for bare projects. You only need to add this if you have a managed project.
 
 ### Create a package
 

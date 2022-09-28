@@ -25,7 +25,7 @@ Most configuration from **app.json** is accessible at runtime from your JavaScri
 
 **app.json** configures many things, from your app name to icon to splash screen and even deep linking scheme and API keys to use for some services. To see a full list of available properties, please refer to the [app.json / app.config.js reference](/versions/latest/config/app/).
 
-> 💡 Do you use Visual Studio Code? If so, we recommend that you install the [vscode-expo](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) extension to get auto-completion of properties in **app.json** files.
+> **info** Do you use Visual Studio Code? If so, we recommend that you install the [vscode-expo](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) extension to get auto-completion of properties in **app.json** files.
 
 ## Extending
 

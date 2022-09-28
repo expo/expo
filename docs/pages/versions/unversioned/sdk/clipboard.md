@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
 import * as Clipboard from 'expo-clipboard';
 ```
 
-> ⚠️ On Web, this module uses the [`AsyncClipboard` API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API),
+> **warning** On Web, this module uses the [`AsyncClipboard` API](https://developer.mozilla.org/en-US/docs/Web/API/Clipboard_API),
 > which might behave differently between browsers or not be fully supported.
 > Especially on WebKit, there's an issue which makes this API unusable in asynchronous code.
 > [Click here for more details](https://bugs.webkit.org/show_bug.cgi?id=222262).

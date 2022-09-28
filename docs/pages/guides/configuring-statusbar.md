@@ -92,7 +92,7 @@ export default function Playlists() {
 
 If you use `expo-status-bar` to control your status bar style, the `style="auto"` configuration will automatically pick the appropriate default style depending on the color scheme currently used by the app (this is the default behavior, if you leave out the style prop entirely then `auto` will be used). Please note that if you provide a way for users to toggle between color schemes rather than using the operating system theme, this will not have the intended behavior, and you should use `style="light"` and `style="dark"` as needed depending on the selected color scheme.
 
-> 💡Automatic theme detection is only supported in SDK 38 or higher. Prior to SDK 38, `auto` will not change depending on your color scheme, it will always assume that the theme is light.
+> **info** Automatic theme detection is only supported in SDK 38 or higher. Prior to SDK 38, `auto` will not change depending on your color scheme, it will always assume that the theme is light.
 
 ## Factoring the status bar in with your layout
 

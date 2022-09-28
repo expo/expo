@@ -42,7 +42,7 @@ To install EAS CLI in your project, run:
 npm install --save-dev eas-cli
 ```
 
-> 💡 Make sure to update this dependency frequently to stay up to date with the EAS API interface. */}
+> **info** Make sure to update this dependency frequently to stay up to date with the EAS API interface. */}
 
 ### Provide a personal access token to authenticate with your Expo account on CI
 
