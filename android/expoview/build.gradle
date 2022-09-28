@@ -5,6 +5,8 @@ apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
+def hasHermesEngineDeps = false
+
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
@@ -302,6 +304,7 @@ dependencies {
       exclude(group:'com.facebook.fbjni', module: 'fbjni')
     }
   }
+  hasHermesEngineDeps = true
 
   // Expo modules
   api project(':expo')
@@ -794,7 +797,7 @@ tasks.whenTaskAdded { task ->
 }
 
 def hermesAAR = new File("${reactNative}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar")
-if (hermesAAR.exists()) {
+if (hermesAAR.exists() && !hasHermesEngineDeps) {
   dependencies {
     compileOnly(files(hermesAAR))
   }
