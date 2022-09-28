@@ -37,7 +37,8 @@ JavaScriptRuntime::JavaScriptRuntime()
   : jsInvoker(std::make_shared<SyncCallInvoker>()),
     nativeInvoker(std::make_shared<SyncCallInvoker>()) {
 #if !UNIT_TEST
-  throw std::logic_error("The JavaScriptRuntime constructor is only avaiable when UNIT_TEST is defined.");
+  throw std::logic_error(
+    "The JavaScriptRuntime constructor is only avaiable when UNIT_TEST is defined.");
 #else
 #if USE_HERMES
   auto config = ::hermes::vm::RuntimeConfig::Builder()
@@ -89,6 +90,8 @@ JavaScriptRuntime::JavaScriptRuntime()
     ),
     "<<evaluated>>"
   );
+
+  installMainObject();
 #endif // !UNIT_TEST
 }
 
@@ -101,6 +104,7 @@ JavaScriptRuntime::JavaScriptRuntime(
   // In this code flow, the runtime should be owned by something else like the CatalystInstance.
   // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
   this->runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
+  installMainObject();
 }
 
 jsi::Runtime &JavaScriptRuntime::get() const {
@@ -145,4 +149,29 @@ jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() {
 void JavaScriptRuntime::drainJSEventLoop() {
   while (!runtime->drainMicrotasks()) {}
 }
+
+void JavaScriptRuntime::installMainObject() {
+  mainObject = std::make_shared<jsi::Object>(*runtime);
+  auto global = runtime->global();
+  auto objectClass = global.getPropertyAsObject(*runtime, "Object");
+  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
+    *runtime,
+    "defineProperty"
+  );
+
+  jsi::Object descriptor = JavaScriptObject::preparePropertyDescriptor(*runtime, 1 << 1);
+
+  descriptor.setProperty(*runtime, "value", jsi::Value(*runtime, *mainObject));
+
+  definePropertyFunction.callWithThis(*runtime, objectClass, {
+    jsi::Value(*runtime, global),
+    jsi::String::createFromUtf8(*runtime, "expo"),
+    std::move(descriptor)
+  });
+}
+
+std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() {
+  return mainObject;
+}
+
 } // namespace expo
