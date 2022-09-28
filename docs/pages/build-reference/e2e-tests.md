@@ -245,7 +245,7 @@ If you have set up everything correctly you should see the successful test resul
 
 ### 6. Upload screenshots of failed test cases
 
-> This step is optional but highly recommended. 
+> This step is optional but highly recommended.
 
 When an E2E test case fails, it can be helpful to see the screenshot of the application state. EAS Build makes it easy to upload any arbitrary build artifacts using the [`buildArtifactPaths`](/build-reference/eas-json.md#buildartifactpaths) field in **eas.json**.
 
@@ -357,3 +357,117 @@ Run a build with `eas build -p ios --profile test` and wait for the build to fin
 ## Repository
 
 The full example from this guide is available at https://github.com/expo/eas-tests-example.
+
+## Alternative Approaches
+
+### Using development builds to speed up test run time
+
+The above guide explains how to run E2E tests against a release build of your project, which requires executing a full native build before each test run. Re-building the native app each time you run E2E tests may not be desirable if only the project JavaScript or assets have changed. However, this is necessary for release builds because the app JavaScript bundle is embedded into the binary.
+
+Instead, we can use [development builds](/development/introduction/) to load from a local development server or from [published updates](/eas-update/introduction/) to save time and CI resources. This can be done by having your E2E test runner invoke the app with a URL that points to a specific update bundle URL, as described in the [development builds deep linking URLs guide](/development/development-workflows/#deep-linking-urls).
+
+Development builds typically display an onboarding welcome screen when an app is launched for the first time, which intends to provide context about the `expo-dev-client` UI for developers. However, it can interfere with your E2E tests (which expect to interact with your app and not an onboarding screen). To skip the onboarding screen in a test environment, the query parameter `disableOnboarding=1` can be appended to the project URL (an EAS Update URL or a local development server URL).
+
+An example of such a Detox test is shown below. Full example code is available on the [eas-tests-example repository](https://github.com/expo/eas-tests-example).
+
+<Collapsible summary="homeScreen.e2e.js">
+
+```js
+const {
+  sleepAsync,
+  getConfigurationName,
+  // getDevLauncherPackagerUrl,
+  getLatestUpdateUrl,
+  getDeepLinkUrl,
+} = require('./utils');
+
+describe('Home screen', () => {
+  beforeEach(async () => {
+    await device.launchApp({
+      newInstance: true,
+    });
+    if (getConfigurationName().indexOf('debug') !== -1) {
+      await device.openURL({
+        // Local testing with packager
+        //url: getDeepLinkUrl(getDevLauncherPackagerUrl(platform)),
+        // Testing latest published EAS update for the test_debug channel
+        url: getDeepLinkUrl(getLatestUpdateUrl()),
+      });
+    }
+    await sleepAsync(3000);
+  });
+
+  it('"Click me" button should be visible', async () => {
+    await expect(element(by.id('click-me-button'))).toBeVisible();
+  });
+
+  it('shows "Hi!" after tapping "Click me"', async () => {
+    await element(by.id('click-me-button')).tap();
+    await expect(element(by.text('Hi!'))).toBeVisible();
+  });
+});
+```
+
+</Collapsible>
+
+<Collapsible summary="utils.js">
+
+```js
+const { exec } = require('child_process');
+const argparse = require('detox/src/utils/argparse');
+const appConfig = require('../app.json');
+
+/**
+ * General util methods
+ */
+
+/**
+ * Async wait for n milliseconds
+ */
+const sleepAsync = t => new Promise(res => setTimeout(res, t));
+
+/**
+ * Get Detox configuration being used
+ */
+const getConfigurationName = () => argparse.getArgValue('configuration');
+
+/**
+ * Get EAS app ID
+ */
+const getAppId = () => appConfig?.expo?.extra?.eas?.projectId || '';
+
+/**
+ * Methods to construct test URLs
+ */
+ 
+/**
+ * For local dev testing, returns the packager URL with the disable onboarding query param
+ */
+const getDevLauncherPackagerUrl = platform => {
+  return `http://localhost:8081/index.bundle?platform=${platform}&dev=true&minify=false&disableOnboarding=1`;
+};
+
+/**
+ * Returns the URL for the most recent update for the 'test_debug' EAS update channel
+ */
+const getLatestUpdateUrl = () =>
+  `https://u.expo.dev/${getAppId()}?channel-name=test_debug&disableOnboarding=1`;
+
+/**
+ * Wraps a React Native bundle URL in the deep link form required by expo-dev-launcher for this app
+ */
+const getDeepLinkUrl = url =>
+  `eastestsexample://expo-development-client/?url=${encodeURIComponent(url)}`;
+
+module.exports = {
+  sleepAsync,
+  getConfigurationName,
+  getAppId,
+  getDevLauncherPackagerUrl,
+  getLatestUpdateUrl,
+  getDeepLinkUrl,
+  invokeDevLauncherUrl,
+};
+```
+
+</Collapsible>
