@@ -14,15 +14,13 @@ If you're just starting your project, you can create a new project from our temp
 
 <Terminal cmd={['$ npx crna -t with-dev-client']} />
 
-If you have an existing project, you'll need to [install the package and make a few changes](installation.mdx) to your **AppDelegate.m**, **MainActivity.java** and **MainApplication.java**.
+Otherwise, follow this guide to add `expo-dev-client` to your existing React Native or Bare project.
 
-If you created your project with `expo init` or `create-expo-app`, or you already have `expo` and/or other Expo modules up and running, use the tabs marked **With Expo modules**.
+## 0. Set up Expo modules
 
-If you created your project with `expo init` or `create-expo-app` before SDK 43 and have `react-native-unimodules` up and running, use the tabs marked **With unimodules**. When you're ready, consider upgrading to the newer Expo modules by [following these steps](https://expo.fyi/expo-modules-migration).
+If you created your project with `npx react-native init` and do not have any other Expo packages installed, **you'll need to [install Expo modules](../bare/installing-expo-modules)** before proceeding.
 
-If you created your project with `npx react-native init` and do not have any other Expo packages installed, **starting from version `0.8.0` you'll need to [install Expo modules](../bare/installing-expo-modules)** in order to use `expo-dev-client`.
-
-> **Note**: if you are using _SDK 43 or above_, you'll need to install `expo-dev-client@0.6.0` or above.
+If you created your project with `expo init` or `create-expo-app`, or you already have `expo` and/or other Expo modules up and running, you can skip this step.
 
 ## 1. Installation
 
@@ -30,24 +28,21 @@ Add the `expo-dev-client` library to your package.json.
 
 <InstallSection
   packageName="expo-development-client"
-  cmd={['npm install expo-dev-client']}
+  cmd={['npx expo install expo-dev-client']}
   hideBareInstructions
 />
-
-### iOS
 
 <Tabs tabs={["SDK 45+", "SDK below 45"]}>
 
 <Tab >
 
-Make sure that your project is configured to deploy on an iOS version _above 10_.
-To do that, open Xcode and go to General > Deployment Info, and select an iOS version of at least 11.0.
-
-<img src="/static/images/client/check_ios_version.png" style={{ maxWidth: '100%' }} />
+No additional changes are needed to install the package on SDK 45+.
 
 </Tab >
 
 <Tab >
+
+### iOS
 
 Add the following lines to your **Podfile**:
 
@@ -66,15 +61,29 @@ To do that, open Xcode and go to General > Deployment Info, and select an iOS ve
 
 <img src="/static/images/client/check_ios_version.png" style={{ maxWidth: '100%' }} />
 
-</Tab >
-
-</Tabs >
-
 ### Android
 
 No additional changes are needed to install the package on Android.
 
+</Tab >
+
+</Tabs >
+
 ## 2. Basic configuration
+
+<Tabs tabs={["SDK 45+", "SDK below 45"]}>
+
+<Tab >
+
+If you already have your `ios` or `android` directories on disk, you will need to rerun the config plugin in order to configure `expo-dev-client`:
+
+<Terminal cmd={["$ npx expo prebuild"]} />
+
+If you don't have an `ios` or `android` directory, you can skip this step.
+
+</Tab >
+
+<Tab >
 
 Development builds use deep links to open projects from the QR code. If you have added a custom deep link scheme to your project, your development build will use it. However, if this isn't the case, you need to configure the deep link support for your app. The `uri-scheme` package will do this for you once you have chosen a scheme.
 
@@ -88,52 +97,16 @@ See the [uri-scheme package](https://www.npmjs.com/package/uri-scheme) for more 
 
 ### iOS
 
-<Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
-
-<Tab >
-
-No additional changes are needed to configure the package on iOS.
-
-</Tab >
-
-<Tab >
-
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
 <DiffBlock source="/static/diffs/client/app-delegate-expo-modules.diff" />
-</Tab>
-
-<Tab >
-
-Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
-
-<DiffBlock source="/static/diffs/client/app-delegate.diff" />
-</Tab>
-
-</Tabs>
 
 ### Android
-
-<Tabs tabs={["SDK 45+/expo-modules-core@0.9.1+", "With Expo modules", "With unimodules"]}>
-
-<Tab >
-
-No additional changes are needed to configure the package on Android.
-
-</Tab >
-
-<Tab >
 
 Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
 
 <DiffBlock source="/static/diffs/client/main-activity-and-application-expo-modules.diff" />
-</Tab>
 
-<Tab >
-
-Make the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
-
-<DiffBlock source="/static/diffs/client/main-activity-and-application.diff" />
 </Tab>
 
 </Tabs>
@@ -141,12 +114,6 @@ Make the following changes to allow the `expo-dev-client` library to control pro
 ## 3. Optional configuration
 
 There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/development/getting-started/#building-and-installing-your-first-development-build) if you prefer.
-
-### Enable development with Expo CLI
-
-Expo CLI requires you to have the `expo` package installed so it can maintain consistent behavior in your project when new versions of the Expo SDK are released. The package will not be used directly by your project unless you import it in your application code, which is not recommended.
-
-<InstallSection packageName="expo" cmd={['npm install expo --save-dev']} hideBareInstructions />
 
 ### Disable packager autostart when building for iOS
 
@@ -168,7 +135,25 @@ import App from "./App";
 
 ### Loading published updates
 
-Development builds can also open and preview published updates to your app. To add this feature, add `expo-updates@0.8.0` or newer to your app if it isn't already installed, and add a small additional integration in your **AppDelegate.m** and **MainApplication.java** files.
+Development builds can also open and preview published updates to your app.
+
+<Tabs tabs={["SDK 45+", "SDK below 45"]}>
+
+<Tab>
+
+To add this feature, install `expo-updates` in your project:
+
+<Terminal cmd={["$ npx expo install expo-updates"]} />
+
+You may need to rerun the config plugin for `expo-dev-client` after doing so.
+
+<Terminal cmd={["$ npx expo prebuild"]} />
+
+</Tab>
+
+<Tab>
+
+To add this feature, add `expo-updates@0.8.0` or newer to your app if it isn't already installed, and add a small additional integration in your **AppDelegate.m** and **MainApplication.java** files.
 
 1. [Install `expo-modules` in your project](../bare/installing-expo-modules.mdx).
 2. [Install `expo-updates` in your project](../bare/installing-updates.mdx).
@@ -177,6 +162,10 @@ Development builds can also open and preview published updates to your app. To a
 <DiffBlock source="/static/diffs/client/app-delegate-updates.diff" />
 
 <DiffBlock source="/static/diffs/client/main-application-updates.diff" />
+
+</Tab>
+
+</Tabs>
 
 ## 4. Build and Install
 
