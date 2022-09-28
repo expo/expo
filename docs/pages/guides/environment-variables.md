@@ -4,6 +4,7 @@ sidebar_title: Environment variables
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 Environment variables are key-value pairs configured outside your source code that allow your app to behave differently depending on the environment. For example, you can enable or disable certain features when building a testing version of your app, or you can switch to a different API endpoint when building for production.
 
@@ -35,7 +36,7 @@ API_URL="https://production.example.com" npx expo start
 
 ### Reading environment variables
 
-To read `extra` properties in your app, you can use the [`expo-constants`](/versions/latest/sdk/constants.md) library. The `extra` property is available on the `Constants.expoConfig` property.
+To read `extra` properties in your app, you can use the [`expo-constants`](/versions/latest/sdk/constants.md) library. It is available on the `Constants.expoConfig` property.
 
 ```tsx
 import { Button } from 'react-native';
@@ -51,6 +52,12 @@ function Post() {
   return <Button onPress={onPress} title="Post" />;
 }
 ```
+
+<Collapsible summary="Using SDK 45 or below?">
+
+The `extra` property is available on the `Constants.manifest` property.
+
+</Collapsible>
 
 ## Using Babel to inline environment variables during build time
 
