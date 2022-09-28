@@ -9,6 +9,7 @@ import remarkMdxDisableExplicitJsx from 'remark-mdx-disable-explicit-jsx';
 import remarkMDXFrontmatter from 'remark-mdx-frontmatter';
 import semver from 'semver';
 
+import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
 import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
@@ -53,6 +54,7 @@ export default {
               [remarkMdxDisableExplicitJsx, { whiteList: ['kbd'] }],
               remarkFrontmatter,
               [remarkMDXFrontmatter, { name: 'meta' }],
+              remarkCodeTitle,
               remarkExportHeadings,
               remarkLinkRewrite,
               [remarkCreateStaticProps, `{ meta: meta || {}, headings: headings || [] }`],

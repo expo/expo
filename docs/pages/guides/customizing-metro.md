@@ -39,8 +39,7 @@ Metro resolves files as either source code or assets. Source code is JavaScript,
 
 The most common customization is to include extra asset extensions to Metro. In the **metro.config.js** file, add the file extension (without a leading `.`) to `resolver.assetExts`:
 
-```js
-// metro.config.js
+```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
