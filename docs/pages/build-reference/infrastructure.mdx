@@ -163,12 +163,8 @@ When selecting an image for the build you can use the full name provided below o
   enableImmutableInstalls: false
   ```
 
+- cocoapods-nexus-plugin. [Learn more](https://github.com/expo/eas-build/tree/main/packages/cocoapods-nexus-plugin)
 
-- Project's `Podfile` will have CocoaPods cache server URL added as a source during the build step called `Install pods` (if `Podfile` already contains explicitly specified `https://cdn.cocoapods.org/` source, it will be replaced with CocoaPods cache server URL).
-
-  ```ruby
-  source "http://10.254.24.7:8081/repository/cocoapods-proxy/"
-  ```
 #### Image `macos-monterey-12.6-xcode-14.0` (alias `latest`)
 
 <Collapsible summary="Details">
