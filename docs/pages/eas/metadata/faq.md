@@ -3,9 +3,7 @@ title: EAS Metadata - FAQ
 sidebar_title: FAQ
 ---
 
-import { Callout } from '~/ui/components/Callout';
-
-<Callout type="warning">EAS Metadata is in beta and subject to breaking changes.</Callout>
+> **warning** EAS Metadata is in beta and subject to breaking changes.
 
 ## Pitch
 

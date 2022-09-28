@@ -6,7 +6,7 @@ import Head from '~/components/Head'
 
 <Head title="EAS Update Code Signing" />
 
-> ⚠️ Expo Updates code signing is in early beta, meaning that it is not yet ready for use in production apps. We may still make breaking changes to the developer-facing portion and the end-user portion as well.
+> **warning** Expo Updates code signing is in early beta, meaning that it is not yet ready for use in production apps. We may still make breaking changes to the developer-facing portion and the end-user portion as well.
 
 > EAS Update Code Signing is only available to accounts subscribed to the EAS Enterprise plan. [Sign up](https://expo.dev/pricing).
 

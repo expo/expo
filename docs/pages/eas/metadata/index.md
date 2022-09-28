@@ -5,11 +5,9 @@ hideTOC: true
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Callout } from '~/ui/components/Callout';
 import { Terminal } from '~/ui/components/Snippet';
 
-<Callout type="warning">  EAS Metadata is in beta and subject to breaking changes.</Callout>
-<br />
+> **warning** EAS Metadata is in beta and subject to breaking changes.
 
 **EAS Metadata** enables you to automate and maintain your app store presence from the command line.
 
