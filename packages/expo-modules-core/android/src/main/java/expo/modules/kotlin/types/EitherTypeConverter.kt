@@ -36,10 +36,10 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
     }
 
     return convertValueIfNeeded(
-      firstType.possibleTypes,
+      firstType.getPossibleTypes(),
       firstTypeConverter
     ) ?: convertValueIfNeeded(
-      secondType.possibleTypes,
+      secondType.getPossibleTypes(),
       secondTypeConverter
     )
       ?: throw TypeCastException("Cannot cast '$value' to 'Either<$firstJavaType, $secondJavaType>'")
@@ -84,13 +84,13 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
     }
 
     return convertValueIfNeeded(
-      firstType.possibleTypes,
+      firstType.getPossibleTypes(),
       firstTypeConverter
     ) ?: convertValueIfNeeded(
-      secondType.possibleTypes,
+      secondType.getPossibleTypes(),
       secondTypeConverter
     ) ?: convertValueIfNeeded(
-      thirdType.possibleTypes,
+      thirdType.getPossibleTypes(),
       thirdTypeConverter
     )
       ?: throw TypeCastException("Cannot cast '$value' to 'EitherOfThree<$firstJavaType, $secondJavaType, $thirdJavaType>'")
@@ -140,16 +140,16 @@ class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : A
     }
 
     return convertValueIfNeeded(
-      firstType.possibleTypes,
+      firstType.getPossibleTypes(),
       firstTypeConverter
     ) ?: convertValueIfNeeded(
-      secondType.possibleTypes,
+      secondType.getPossibleTypes(),
       secondTypeConverter
     ) ?: convertValueIfNeeded(
-      thirdType.possibleTypes,
+      thirdType.getPossibleTypes(),
       thirdTypeConverter
     ) ?: convertValueIfNeeded(
-      fourthType.possibleTypes,
+      fourthType.getPossibleTypes(),
       fourthTypeConverter
     )
       ?: throw TypeCastException("Cannot cast '$value' to 'EitherOfFourth<$firstJavaType, $secondJavaType, $thirdJavaType, $fourthJavaType>'")
