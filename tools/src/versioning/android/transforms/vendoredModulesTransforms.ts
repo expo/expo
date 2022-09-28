@@ -17,12 +17,12 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
         {
           paths: 'build.gradle',
           // The `android/versioned-react-native/ReactAndroid/gradle.properties` is not committed to git,
-          // we use the `android/ReactAndroid/gradle.properties` for versioned skia instead.
+          // we use the `ReactAndroid/gradle.properties` for versioned skia instead.
           // Even though it not always correct, e.g. when ReactAndroid upgrades to newer version, the versions are inconsistent.
           // Since skia current only uses the `REACT_NATIVE_VERSION` property,
           // after we prebuild the lib and cleanup CMakeLists.txt, these properties are actually not be used.
-          find: '/versioned-react-native/ReactAndroid/gradle.properties',
-          replaceWith: '/ReactAndroid/gradle.properties',
+          find: '$nodeModules/versioned-react-native/ReactAndroid/gradle.properties',
+          replaceWith: '$defaultDir/gradle.properties',
         },
         {
           paths: 'ExponentPackage.kt',

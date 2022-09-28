@@ -41,7 +41,7 @@ public:
     SkPath result;
 
     if (!SkParsePath::FromSVGString(svgString.c_str(), &result)) {
-      jsi::detail::throwJSError(runtime, "Could not parse Svg path");
+      throw jsi::JSError(runtime, "Could not parse Svg path");
       return jsi::Value(nullptr);
     }
 
