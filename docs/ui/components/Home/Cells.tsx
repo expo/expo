@@ -3,6 +3,7 @@ import {
   ArrowRightIcon,
   ArrowUpRightIcon,
   borderRadius,
+  breakpoints,
   iconSize,
   palette,
   shadows,
@@ -15,6 +16,15 @@ import { Col, ColProps } from 'react-grid-system';
 
 import { P } from '~/ui/components/Text';
 
+const CustomCol = ({ children, sm, md, lg, xl, xxl }: PropsWithChildren<ColProps>) => (
+  <>
+    <Col css={cellWrapperStyle} sm={sm} md={md} lg={lg} xl={xl} xxl={xxl}>
+      {children}
+    </Col>
+    <div css={mobileCellWrapperStyle}>{children}</div>
+  </>
+);
+
 export const GridCell = ({
   children,
   sm,
@@ -24,11 +34,11 @@ export const GridCell = ({
   xxl,
   className,
 }: PropsWithChildren<ColProps>) => (
-  <Col css={cellWrapperStyle} sm={sm} md={md} lg={lg} xl={xl} xxl={xxl}>
+  <CustomCol css={cellWrapperStyle} sm={sm} md={md} lg={lg} xl={xl} xxl={xxl}>
     <div css={cellStyle} className={className}>
       {children}
     </div>
-  </Col>
+  </CustomCol>
 );
 
 type APIGridCellProps = ColProps & {
@@ -47,7 +57,7 @@ export const APIGridCell = ({
   lg = 6,
   xl = 3,
 }: APIGridCellProps) => (
-  <Col css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
+  <CustomCol css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
     <a href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} className={className}>
       <div css={cellIconWrapperStyle}>{icon}</div>
       <div css={cellTitleWrapperStyle}>
@@ -55,7 +65,7 @@ export const APIGridCell = ({
         <ArrowRightIcon color={theme.icon.secondary} />
       </div>
     </a>
-  </Col>
+  </CustomCol>
 );
 
 type CommunityGridCellProps = APIGridCellProps & {
@@ -72,7 +82,7 @@ export const CommunityGridCell = ({
   className,
   md = 6,
 }: CommunityGridCellProps) => (
-  <Col css={cellWrapperStyle} md={md}>
+  <CustomCol css={cellWrapperStyle} md={md}>
     <a
       href={link}
       css={[cellStyle, cellCommunityStyle, cellCommunityHoverStyle]}
@@ -86,13 +96,25 @@ export const CommunityGridCell = ({
       </div>
       <ArrowUpRightIcon color={theme.icon.secondary} css={cellCommunityLinkIconStyle} />
     </a>
-  </Col>
+  </CustomCol>
 );
 
 const cellWrapperStyle = css`
   padding-left: 0 !important;
   padding-right: 0 !important;
+
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    display: none;
+  }
 `;
+
+const mobileCellWrapperStyle = css({
+  width: '100%',
+
+  [`@media screen and (min-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
+    display: 'none',
+  },
+});
 
 const cellHoverStyle = css`
   & {
