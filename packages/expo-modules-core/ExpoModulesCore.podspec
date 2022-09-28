@@ -43,7 +43,9 @@ Pod::Spec.new do |s|
     s.dependency 'RCT-Folly', folly_version
   end
 
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("ios/#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
+  ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
+
+  if !ex_updates_native_debug && !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("ios/#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = 'ios/**/*.h', 'common/cpp/**/*.h'
     s.vendored_frameworks = "ios/#{s.name}.xcframework"
   else

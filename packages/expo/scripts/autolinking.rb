@@ -30,4 +30,25 @@ def expo_patch_react_imports!(installer, options = {})
   end
 
   Expo::ReactImportPatcher.new(installer, options).run!
+  expo_patch_for_updates_debug!(installer)
+end
+
+def expo_patch_for_updates_debug!(installer)
+  projects = installer.aggregate_targets
+    .map{ |t| t.user_project }
+    .uniq{ |p| p.path }
+    .push(installer.pods_project)
+
+  ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
+
+  projects.each do |project|
+    project.build_configurations.each do |config|
+      if ex_updates_native_debug
+        config.build_settings['OTHER_CFLAGS'] = "$(inherited) -DEX_UPDATES_NATIVE_DEBUG=1"
+      else
+        config.build_settings['OTHER_CFLAGS'] = "$(inherited)"
+      end
+    end
+    project.save()
+  end
 end

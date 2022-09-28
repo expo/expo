@@ -5,7 +5,7 @@ import EXUpdatesInterface
 
 public class ExpoUpdatesAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    if EXAppDefines.APP_DEBUG {
+    if (EXAppDefines.APP_DEBUG && !EXAppDefines.APP_UPDATES_DEBUG) {
       EXUpdatesControllerRegistry.sharedInstance().controller = EXUpdatesDevLauncherController.sharedInstance()
     }
     return true

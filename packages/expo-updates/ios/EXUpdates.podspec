@@ -30,7 +30,9 @@ Pod::Spec.new do |s|
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
 
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
+  ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
+
+  if !ex_updates_native_debug && !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "#{s.name}/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
@@ -38,9 +40,10 @@ Pod::Spec.new do |s|
   end
 
   if $expo_updates_create_manifest != false
+    force_bundling_flag = ex_updates_native_debug ? "export FORCE_BUNDLING=1\n" : ""
     s.script_phase = {
       :name => 'Generate app.manifest for expo-updates',
-      :script => 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-manifest-ios.sh"',
+      :script => force_bundling_flag + 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-manifest-ios.sh"',
       :execution_position => :before_compile
     }
 

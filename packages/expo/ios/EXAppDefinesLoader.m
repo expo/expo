@@ -17,6 +17,11 @@
 #else
     @"APP_DEBUG": @(NO),
 #endif
+#if EX_UPDATES_NATIVE_DEBUG
+    @"APP_UPDATES_DEBUG": @(YES),
+#else
+    @"APP_UPDATES_DEBUG": @(NO),
+#endif
     @"APP_RCT_DEBUG": @(RCT_DEBUG),
     @"APP_RCT_DEV": @(RCT_DEV),
 #if RCT_NEW_ARCH_ENABLED

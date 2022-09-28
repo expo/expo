@@ -20,6 +20,12 @@ static BOOL _loaded = NO;
   return [_storage[@"APP_RCT_DEBUG"] boolValue];
 }
 
++ (BOOL)APP_UPDATES_DEBUG
+{
+  [self throwIfNotLoaded];
+  return [_storage[@"APP_UPDATES_DEBUG"] boolValue];
+}
+
 + (BOOL)APP_RCT_DEV
 {
   [self throwIfNotLoaded];

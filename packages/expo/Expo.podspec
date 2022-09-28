@@ -18,4 +18,12 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
 
   s.source_files = 'ios/**/*.{h,m,swift}'
+
+
+  ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
+  if ex_updates_native_debug
+    s.pod_target_xcconfig = {
+      'OTHER_CFLAGS[config=Debug]' => "$(inherited) -DEX_UPDATES_NATIVE_DEBUG=1" 
+    }
+  end  
 end
