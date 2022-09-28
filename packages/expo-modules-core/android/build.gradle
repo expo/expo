@@ -42,6 +42,12 @@ buildscript {
 def isAndroidTest = {
   Gradle gradle = getGradle()
   String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
+  return tskReqStr.contains("AndroidTest")
+}.call()
+
+def isExpoModulesCoreTests = {
+  Gradle gradle = getGradle()
+  String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
   if (tskReqStr =~ /:expo-modules-core:connected\w*AndroidTest/) {
     def androidTests = project.file("src/androidTest")
     return androidTests.exists() && androidTests.isDirectory()
@@ -97,8 +103,8 @@ if (findProject(":app")) {
   USE_HERMES = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
 }
 
-// Currently the needs for hermes/jsc are only for androidTest, so we turn on this flag only when `isAndroidTest` is true
-USE_HERMES = USE_HERMES && isAndroidTest
+// Currently the needs for hermes/jsc are only for androidTest, so we turn on this flag only when `isExpoModulesCoreTests` is true
+USE_HERMES = USE_HERMES && isExpoModulesCoreTests
 
 if (USE_HERMES) {
   if (prebuiltHermesCacheHit) {
@@ -186,7 +192,7 @@ android {
           "-DPROJECT_BUILD_DIR=$buildDir",
           "-DREACT_ANDROID_DIR=${REACT_NATIVE_DIR}/ReactAndroid",
           "-DREACT_ANDROID_BUILD_DIR=${REACT_NATIVE_DIR}/ReactAndroid/build",
-          "-DUNIT_TEST=${isAndroidTest}"
+          "-DUNIT_TEST=${isExpoModulesCoreTests}"
       }
     }
   }
@@ -229,15 +235,16 @@ android {
 
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
     // Otherwise, those files should be excluded, because will be loaded by the application.
-    if (isAndroidTest) {
-      excludes = [
-        "META-INF/MANIFEST.MF",
-        "META-INF/com.android.tools/proguard/coroutines.pro",
-        "META-INF/proguard/coroutines.pro"
-      ]
+    if (isExpoModulesCoreTests) {
+      excludes = []
       pickFirsts = sharedLibraries
     } else {
       excludes = sharedLibraries
+    }
+    if (isExpoModulesCoreTests || isAndroidTest) {
+      excludes.add("META-INF/MANIFEST.MF")
+      excludes.add("META-INF/com.android.tools/proguard/coroutines.pro")
+      excludes.add("META-INF/proguard/coroutines.pro")
     }
   }
 
