@@ -1,14 +1,9 @@
 package expo.modules.filesystem
 
+import expo.modules.interfaces.filesystem.Directories
 import android.content.Context
-import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.core.interfaces.InternalModule
-import expo.modules.interfaces.filesystem.Permission
-import expo.modules.interfaces.filesystem.ScopedDirectories
-import expo.modules.interfaces.filesystem.ScopedDirectoriesModuleInterface
-import java.io.File
-import java.io.IOException
-import java.util.*
+import expo.modules.interfaces.filesystem.DirectoriesModuleInterface
 
 /*
 New Sweet API modules don't have an easy way to access scoped context. We can't initialize them with scoped context as they need a ReactApplicationContext instead.
@@ -18,13 +13,13 @@ This module is a stopgap solution to provide modules with a way to access Scoped
  */
 
 // The class needs to be 'open', because it's inherited in expoview
-open class ScopedDirectoriesModule(private val context: Context) : ScopedDirectoriesModuleInterface, InternalModule {
+open class DirectoriesModule(private val context: Context) : DirectoriesModuleInterface, InternalModule {
 
   override fun getExportedInterfaces(): List<Class<*>> =
-    listOf(ScopedDirectoriesModuleInterface::class.java)
+    listOf(DirectoriesModuleInterface::class.java)
 
-  override fun getScopedDirectories(): ScopedDirectories {
-    return ScopedDirectories(context.cacheDir, context.filesDir)
-  }
-
+  override val directories: Directories
+    get() {
+      return Directories(context.cacheDir, context.filesDir)
+    }
 }

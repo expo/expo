@@ -13,7 +13,7 @@ import expo.modules.imagepicker.contracts.CropImageContractOptions
 import expo.modules.imagepicker.contracts.ImageLibraryContract
 import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.imagepicker.contracts.ImagePickerContractResult
-import expo.modules.interfaces.filesystem.ScopedDirectories
+import expo.modules.interfaces.filesystem.Directories
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsStatus
 import expo.modules.kotlin.Promise
@@ -58,10 +58,10 @@ class ImagePickerModule : Module() {
       ensureTargetActivityIsAvailable(options)
       ensureCameraPermissionsAreGranted()
 
-      val scopedDirectoriesModule = appContext.scopedDirectories ?: throw ModuleNotFoundException("ScopedDirectories")
-      val scopedDirectories: ScopedDirectories = scopedDirectoriesModule.scopedDirectories;
+      val directoriesModule = appContext.directories ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.Directories")
+      val directories: Directories = directoriesModule.directories;
 
-      val mediaFile = createOutputFile(scopedDirectories.cacheDir, options.mediaTypes.toFileExtension())
+      val mediaFile = createOutputFile(directories.cacheDir, options.mediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
       val contractOptions = options.toCameraContractOptions(uri)
 

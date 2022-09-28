@@ -1,5 +1,6 @@
 package expo.modules.clipboard
 
+import expo.modules.interfaces.filesystem.Directories
 import android.content.Context
 import android.content.ClipData
 import android.content.ClipDescription
@@ -13,7 +14,6 @@ import android.util.Log
 import androidx.core.os.bundleOf
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.utilities.ifNull
-import expo.modules.interfaces.filesystem.ScopedDirectories
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.functions.Coroutine
 
@@ -141,8 +141,8 @@ class ClipboardModule : Module() {
       ?: throw ClipboardUnavailableException()
 
   private val clipboardCacheDir: File by lazy {
-    val scopedDirectories: ScopedDirectories = appContext.scopedDirectories?.scopedDirectories ?: throw ModuleNotFoundException("ScopedDirectories")
-    File(scopedDirectories.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
+    val directories: Directories = appContext.directories?.directories ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.Directories")
+    File(directories.cacheDir, CLIPBOARD_DIRECTORY_NAME).also { it.mkdirs() }
   }
 
   // region Clipboard event emitter

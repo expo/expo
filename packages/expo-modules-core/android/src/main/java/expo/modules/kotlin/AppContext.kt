@@ -20,7 +20,7 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
 import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
-import expo.modules.interfaces.filesystem.ScopedDirectoriesModuleInterface
+import expo.modules.interfaces.filesystem.DirectoriesModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
@@ -155,7 +155,7 @@ class AppContext(
   /**
    * Provides access to the scoped directories from the legacy module registry.
    */
-  val scopedDirectories: ScopedDirectoriesModuleInterface?
+  val directories: DirectoriesModuleInterface?
     get() = legacyModule()
 
 

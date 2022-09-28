@@ -9,7 +9,7 @@ import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
-import expo.modules.interfaces.filesystem.ScopedDirectories
+import expo.modules.interfaces.filesystem.Directories
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -70,7 +70,7 @@ class CameraViewModule : Module() {
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("takePicture") { options: PictureOptions, viewTag: Int, promise: Promise ->
-      val cacheDirectory = scopedDirectories.cacheDir
+      val cacheDirectory = directories.cacheDir
       val view = findView(viewTag)
 
       if (!EmulatorUtilities.isRunningOnEmulator()) {
@@ -90,7 +90,7 @@ class CameraViewModule : Module() {
         throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
       }
 
-      val cacheDirectory = scopedDirectories.cacheDir
+      val cacheDirectory = directories.cacheDir
       val view = findView(viewTag)
 
       if (!view.cameraView.isCameraOpened) {
@@ -253,8 +253,11 @@ class CameraViewModule : Module() {
     }
   }
 
-  private val scopedDirectories: ScopedDirectories
-    get() = appContext.scopedDirectories?.scopedDirectories ?: throw ModuleNotFoundException("ScopedDirectories")
+  private val reactContext: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+
+  private val directories: Directories
+    get() = appContext.directories?.directories ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.Directories")
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()

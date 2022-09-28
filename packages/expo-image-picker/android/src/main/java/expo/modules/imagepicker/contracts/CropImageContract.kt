@@ -1,5 +1,6 @@
 package expo.modules.imagepicker.contracts
 
+import expo.modules.interfaces.filesystem.Directories
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -17,7 +18,6 @@ import expo.modules.imagepicker.copyExifData
 import expo.modules.imagepicker.createOutputFile
 import expo.modules.imagepicker.toBitmapCompressFormat
 import expo.modules.imagepicker.toImageFileExtension
-import expo.modules.interfaces.filesystem.ScopedDirectories
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.providers.AppContextProvider
 import kotlinx.coroutines.runBlocking
@@ -29,10 +29,10 @@ internal class CropImageContract(
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, CropImageActivity::class.java).apply {
     val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri)
     val compressFormat = mediaType.toBitmapCompressFormat()
-    val scopedDirectoriesModule = appContextProvider.appContext.scopedDirectories ?: throw ModuleNotFoundException("ScopedDirectories")
-    val scopedDirectories: ScopedDirectories = scopedDirectoriesModule.scopedDirectories;
+    val directoriesModule = appContextProvider.appContext.directories ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.Directories")
+    val directories: Directories = directoriesModule.directories;
 
-    val outputUri = createOutputFile(scopedDirectories.cacheDir, compressFormat.toImageFileExtension()).toUri()
+    val outputUri = createOutputFile(directories.cacheDir, compressFormat.toImageFileExtension()).toUri()
 
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,
