@@ -103,7 +103,7 @@ const cellWrapperStyle = css`
   padding-left: 0 !important;
   padding-right: 0 !important;
 
-  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+  @media screen and (max-width: ${breakpoints.medium}px) {
     display: none;
   }
 `;
@@ -111,7 +111,7 @@ const cellWrapperStyle = css`
 const mobileCellWrapperStyle = css({
   width: '100%',
 
-  [`@media screen and (min-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
+  [`@media screen and (min-width: ${breakpoints.medium}px)`]: {
     display: 'none',
   },
 });

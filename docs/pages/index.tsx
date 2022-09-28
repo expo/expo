@@ -342,7 +342,7 @@ const quickStartCellStyle = css({
   backgroundBlendMode: 'multiply',
   minHeight: 250,
 
-  [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
+  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     minHeight: 200,
   },
 });
@@ -353,7 +353,7 @@ const tutorialCellStyle = css({
   backgroundBlendMode: 'multiply',
   minHeight: 250,
 
-  [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
+  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     minHeight: 200,
   },
 });
