@@ -9,7 +9,7 @@ const sleep = (duration: number) =>
 
 async function pressElementByString(buttonString: string) {
   const button = element(by.text(buttonString));
-  expect(button).toBeVisible();
+  await expect(button).toBeVisible();
   await tapButton(button);
 }
 
@@ -114,7 +114,7 @@ describe('DevLauncher', () => {
     const loadButton = element(by.id('DevLauncherLoadAppButton'));
 
     await expect(urlToggle).toBeVisible();
-    urlToggle.tap();
+    await urlToggle.tap();
 
     await expect(urlInput).toBeVisible();
     await expect(loadButton).toBeVisible();
