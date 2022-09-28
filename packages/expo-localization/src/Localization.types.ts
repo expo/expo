@@ -66,7 +66,6 @@ export type Localization = {
   timezone: string;
 };
 
-// @needsAudit
 export type Locale = {
   /**
    * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) with a region code. Example: `'en-US'`, `'es-419'`, `'pl-PL'`.
