@@ -18,7 +18,7 @@
 
 ### ⚠️ Notices
 
-- Added support fo React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
 
 ## 11.4.0 — 2022-07-07
 
