@@ -19,9 +19,7 @@ Pod::Spec.new do |s|
 
   s.source_files = 'ios/**/*.{h,m,swift}'
 
-
-  ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
-  if ex_updates_native_debug
+  if ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
     s.pod_target_xcconfig = {
       'OTHER_CFLAGS[config=Debug]' => "$(inherited) -DEX_UPDATES_NATIVE_DEBUG=1" 
     }

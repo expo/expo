@@ -35,8 +35,8 @@ end
 
 def expo_patch_for_updates_debug!(installer)
   projects = installer.aggregate_targets
-    .map{ |t| t.user_project }
-    .uniq{ |p| p.path }
+    .map { |t| t.user_project }
+    .uniq { |p| p.path }
     .push(installer.pods_project)
 
   ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
