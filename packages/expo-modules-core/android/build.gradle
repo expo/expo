@@ -77,7 +77,7 @@ def reactNativeArchitectures() {
 }
 
 // HERMES
-def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${REACT_NATIVE_DIR}/ReactAndroid/prebuiltHermes")
+def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
 def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
 def currentHermesVersion = file("${REACT_NATIVE_DIR}/sdks/.hermesversion").exists() ? file("${REACT_NATIVE_DIR}/sdks/.hermesversion").text : null
 def hasHermesProject = findProject(":ReactAndroid:hermes-engine") != null

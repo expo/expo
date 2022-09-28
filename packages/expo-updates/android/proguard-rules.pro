@@ -3,5 +3,5 @@
 }
 
 -keepclassmembers class com.facebook.react.devsupport.DisabledDevSupportManager {
-  private final com.facebook.react.bridge.DefaultNativeModuleCallExceptionHandler mDefaultNativeModuleCallExceptionHandler;
+  private final com.facebook.react.bridge.DefaultJSExceptionHandler mDefaultJSExceptionHandler;
 }

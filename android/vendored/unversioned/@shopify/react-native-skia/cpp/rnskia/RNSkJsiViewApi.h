@@ -112,12 +112,12 @@ public:
         image = info->view->makeImageSnapshot(nullptr);
       }
       if(image == nullptr) {
-        jsi::detail::throwJSError(runtime, "Could not create image from current surface.");
+        throw jsi::JSError(runtime, "Could not create image from current surface.");
         return jsi::Value::undefined();
       }
       return jsi::Object::createFromHostObject(runtime, std::make_shared<JsiSkImage>(_platformContext, image));
     }
-    jsi::detail::throwJSError(runtime, "No Skia View currently available.");
+    throw jsi::JSError(runtime, "No Skia View currently available.");
     return jsi::Value::undefined();
   }
   
@@ -152,7 +152,7 @@ public:
   JSI_HOST_FUNCTION(registerValuesInView) {
     // Check params
     if(!arguments[1].isObject() || !arguments[1].asObject(runtime).isArray(runtime)) {
-      jsi::detail::throwJSError(runtime, "Expected array of Values as second parameter");
+      throw jsi::JSError(runtime, "Expected array of Values as second parameter");
       return jsi::Value::undefined();
     }
     

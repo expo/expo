@@ -22,7 +22,7 @@ class JsiSkPictureFactory : public JsiSkHostObject {
 public:
   JSI_HOST_FUNCTION(MakePicture) {
     if(!arguments[0].isObject()) {
-      jsi::detail::throwJSError(runtime, "Expected arraybuffer as first parameter");
+      throw jsi::JSError(runtime, "Expected arraybuffer as first parameter");
     }
     auto array = arguments[0].asObject(runtime);
     jsi::ArrayBuffer buffer = array

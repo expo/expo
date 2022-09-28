@@ -71,7 +71,7 @@ private:
   static jsi::Value getJavascriptConsole(jsi::Runtime& runtime) {
     auto console = runtime.global().getProperty(runtime, "console");
     if(console.isUndefined() || console.isNull()) {
-      jsi::detail::throwJSError(runtime, "Could not find console object.");
+      throw jsi::JSError(runtime, "Could not find console object.");
       return jsi::Value::undefined();
     }
     return console;
