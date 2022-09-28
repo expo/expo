@@ -30,7 +30,7 @@ EOF
 
 git submodule update --init
 
-if [ ! -z "$EAS_BUILD_NPM_CACHE_URL" ]; then
+if [ -n "${EAS_BUILD_NPM_CACHE_URL-}" ]; then
   sed -i -e "s#https://registry.yarnpkg.com#$EAS_BUILD_NPM_CACHE_URL#g" $ROOT_DIR/yarn.lock || true
 fi
 
