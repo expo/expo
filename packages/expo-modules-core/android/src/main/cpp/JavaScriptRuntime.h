@@ -81,7 +81,12 @@ public:
 
   std::shared_ptr<react::CallInvoker> jsInvoker;
   std::shared_ptr<react::CallInvoker> nativeInvoker;
+
+  std::shared_ptr<jsi::Object> getMainObject();
 private:
   std::shared_ptr<jsi::Runtime> runtime;
+  std::shared_ptr<jsi::Object> mainObject;
+
+  void installMainObject();
 };
 } // namespace expo

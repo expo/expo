@@ -35,11 +35,11 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("boolF") { a: Boolean -> a }
     }
   ) { methodQueue ->
-    val stringValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.stringF('expo')").getString()
-    val intValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.intF(123)").getDouble().toInt()
-    val doubleValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.doubleF(123.3)").getDouble()
-    val floatValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.floatF(123.3)").getDouble().toFloat()
-    val boolValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.boolF(true)").getBool()
+    val stringValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.stringF('expo')").getString()
+    val intValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.intF(123)").getDouble().toInt()
+    val doubleValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.doubleF(123.3)").getDouble()
+    val floatValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.floatF(123.3)").getDouble().toFloat()
+    val boolValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.boolF(true)").getBool()
 
     Truth.assertThat(stringValue).isEqualTo("expo")
     Truth.assertThat(intValue).isEqualTo(123)
@@ -55,7 +55,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("listF") { a: List<String> -> a }
     }
   ) { methodQueue ->
-    val value = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.listF(['expo', 'is', 'awesome'])").getArray()
+    val value = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.listF(['expo', 'is', 'awesome'])").getArray()
     Truth.assertThat(value).hasLength(3)
     val e1 = value[0].getString()
     val e2 = value[1].getString()
@@ -72,7 +72,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("listF") { a: List<List<Int>> -> a }
     }
   ) { methodQueue ->
-    val value = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.listF([[1,2,3], [4,5,6]])").getArray()
+    val value = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.listF([[1,2,3], [4,5,6]])").getArray()
     Truth.assertThat(value).hasLength(2)
     val e1 = value[0].getArray()
     val e2 = value[1].getArray()
@@ -92,7 +92,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("mapF") { a: Map<String, String> -> a }
     }
   ) { methodQueue ->
-    val value = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.mapF({ 'k1': 'v1', 'k2': 'v2' })").getObject()
+    val value = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.mapF({ 'k1': 'v1', 'k2': 'v2' })").getObject()
     val k1 = value.getProperty("k1").getString()
     val k2 = value.getProperty("k2").getString()
 
@@ -125,9 +125,9 @@ class JSIAsyncFunctionsTest {
         }
       }
     ) { methodQueue ->
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f1('V2')")
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f2('V2')")
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f3(2)")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f1('V2')")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f2('V2')")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f3(2)")
       Truth.assertThat(f1WasCalled).isTrue()
       Truth.assertThat(f2WasCalled).isTrue()
       Truth.assertThat(f3WasCalled).isTrue()
@@ -153,7 +153,7 @@ class JSIAsyncFunctionsTest {
         }
       }
     ) { methodQueue ->
-      val result = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f({ 'x': 123, 's': 'expo' })").getObject()
+      val result = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f({ 'x': 123, 's': 'expo' })").getObject()
 
       val x = result.getProperty("x").getDouble().toInt()
       val s = result.getProperty("s").getString()
@@ -173,7 +173,7 @@ class JSIAsyncFunctionsTest {
     }
   ) { methodQueue ->
     val exception = Assert.assertThrows(PromiseException::class.java) {
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f()")
     }
 
     Truth.assertThat(exception.code).isEqualTo("Code")
@@ -190,7 +190,7 @@ class JSIAsyncFunctionsTest {
     }
   ) { methodQueue ->
     val exception = Assert.assertThrows(PromiseException::class.java) {
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f()")
     }
 
     Truth.assertThat(exception.code).isEqualTo("ERR_UNEXPECTED")
@@ -204,7 +204,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("f") { _: Int -> }
     }
   ) { methodQueue ->
-    waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f(Symbol())")
+    waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f(Symbol())")
   }
 
   @Test
@@ -214,7 +214,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("intArray") { a: IntArray -> a }
     }
   ) { methodQueue ->
-    val array = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.intArray([1, 2, 3])").getArray()
+    val array = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.intArray([1, 2, 3])").getArray()
     Truth.assertThat(array.size).isEqualTo(3)
 
     val e1 = array[0].getDouble().toInt()
@@ -233,7 +233,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("stringArray") { a: Array<String> -> a }
     }
   ) { methodQueue ->
-    val array = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.stringArray(['a', 'b', 'c'])").getArray()
+    val array = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.stringArray(['a', 'b', 'c'])").getArray()
     Truth.assertThat(array.size).isEqualTo(3)
 
     val e1 = array[0].getString()
@@ -252,7 +252,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("array") { a: Array<IntArray> -> a }
     }
   ) { methodQueue ->
-    val array = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.array([[1,2], [3, 4]])").getArray()
+    val array = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.array([[1,2], [3, 4]])").getArray()
     Truth.assertThat(array.size).isEqualTo(2)
 
     val a1 = array[0].getArray()

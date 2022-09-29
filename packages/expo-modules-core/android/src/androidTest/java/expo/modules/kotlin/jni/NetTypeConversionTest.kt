@@ -17,7 +17,7 @@ class NetTypeConversionTest {
       Function("url") { a: URL -> a.toString() }
     }
   ) {
-    val stringValue = evaluateScript("ExpoModules.TestModule.url('https://expo.dev/')").getString()
+    val stringValue = evaluateScript("expo.modules.TestModule.url('https://expo.dev/')").getString()
     Truth.assertThat(stringValue).isEqualTo("https://expo.dev/")
   }
 
@@ -28,7 +28,7 @@ class NetTypeConversionTest {
       Function("uri") { a: Uri -> a.toString() }
     }
   ) {
-    val stringValue = evaluateScript("ExpoModules.TestModule.uri('http://api.example.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7')").getString()
+    val stringValue = evaluateScript("expo.modules.TestModule.uri('http://api.example.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7')").getString()
     Truth.assertThat(stringValue).isEqualTo("http://api.example.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7")
   }
 
@@ -39,7 +39,7 @@ class NetTypeConversionTest {
       Function("uri") { a: URI -> a.toString() }
     }
   ) {
-    val stringValue = evaluateScript("ExpoModules.TestModule.uri('http://api.example.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7')").getString()
+    val stringValue = evaluateScript("expo.modules.TestModule.uri('http://api.example.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7')").getString()
     Truth.assertThat(stringValue).isEqualTo("http://api.example.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7")
   }
 }

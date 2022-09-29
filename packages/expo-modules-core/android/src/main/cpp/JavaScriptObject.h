@@ -59,6 +59,8 @@ public:
 
   void setProperty(const std::string &name, jsi::Value value);
 
+  static jsi::Object preparePropertyDescriptor(jsi::Runtime &jsRuntime, int options);
+
 protected:
   WeakRuntimeHolder runtimeHolder;
   std::shared_ptr<jsi::Object> jsObject;
@@ -128,7 +130,5 @@ private:
       std::move(descriptor)
     });
   }
-
-  static jsi::Object preparePropertyDescriptor(jsi::Runtime &jsRuntime, int options);
 };
 } // namespace expo
