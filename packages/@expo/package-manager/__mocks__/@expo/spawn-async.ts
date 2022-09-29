@@ -1,4 +1,4 @@
-import { mockSpawnPromise } from '../../src/new/__tests__/spawn-utils';
+import { mockSpawnPromise } from '../../src/__tests__/spawn-utils';
 
 const actualModule = jest.requireActual('@expo/spawn-async');
 
