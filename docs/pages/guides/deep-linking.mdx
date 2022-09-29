@@ -46,32 +46,35 @@ As of iOS 13, [a new `details` format is supported](https://developer.apple.com/
 ```json
 {
   "applinks": {
-  "details": [
-    {
-      "appIDs": [ "ABCDE12345.com.example.app", "ABCDE12345.com.example.app2" ],
-      "components": [
-         {
+    "details": [
+      {
+        "appIDs": ["ABCDE12345.com.example.app", "ABCDE12345.com.example.app2"],
+        "components": [
+          {
             "#": "no_universal_links",
             "exclude": true,
             "comment": "Matches any URL whose fragment equals no_universal_links and instructs the system not to open it as a universal link"
-         },
-         {
+          },
+          {
             "/": "/buy/*",
             "comment": "Matches any URL whose path starts with /buy/"
-         },
-         {
+          },
+          {
             "/": "/help/website/*",
             "exclude": true,
             "comment": "Matches any URL whose path starts with /help/website/ and instructs the system not to open it as a universal link"
-         },
-         {
+          },
+          {
             "/": "/help/*",
-            "?": { "articleNumber": "????" },
+            "?": {
+              "articleNumber": "????"
+            },
             "comment": "Matches any URL whose path starts with /help/ and which has a query item with name 'articleNumber' and a value of exactly 4 characters"
-        }
-      ]
-    }
-  ]
+          }
+        ]
+      }
+    ]
+  }
 }
 ```
 
