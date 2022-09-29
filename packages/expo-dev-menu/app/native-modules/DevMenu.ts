@@ -74,9 +74,6 @@ export async function toggleFastRefreshAsync() {
 }
 
 export async function openJSInspector() {
-  if (Platform.OS !== 'android') {
-    return;
-  }
   return await dispatchCallableAsync('js-inspector');
 }
 
