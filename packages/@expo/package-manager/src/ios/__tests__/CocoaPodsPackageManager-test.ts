@@ -9,6 +9,7 @@ import {
   getPodRepoUpdateMessage,
   getPodUpdateMessage,
 } from '../CocoaPodsPackageManager';
+import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
 
 const projectRoot = getTemporaryPath();
 
@@ -19,22 +20,12 @@ function getRoot(...args) {
   return path.join(projectRoot, ...args);
 }
 
-beforeAll(() => {
-  jest.mock('@expo/spawn-async', () => {
-    return () => {
-      if (process.env.TEST_COCOAPODS_MANAGER_SPAWN_VALUE_TO_RETURN) {
-        return JSON.parse(process.env.TEST_COCOAPODS_MANAGER_SPAWN_VALUE_TO_RETURN);
-      }
-      return { stdout: '', stderr: '' };
-    };
-  });
-});
+jest.mock('@expo/spawn-async');
 
 const originalForceColor = process.env.FORCE_COLOR;
 
 beforeEach(() => {
   process.env.FORCE_COLOR = '1';
-  delete process.env.TEST_COCOAPODS_MANAGER_SPAWN_VALUE_TO_RETURN;
 });
 
 afterAll(() => {
@@ -242,14 +233,22 @@ it(`throws for unimplemented methods`, async () => {
 it(`gets the cocoapods version`, async () => {
   const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
-  process.env.TEST_COCOAPODS_MANAGER_SPAWN_VALUE_TO_RETURN = JSON.stringify({ stdout: '1.9.1' });
+
+  mockedSpawnAsync.mockImplementation(() =>
+    mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' }))
+  );
+
   expect(await manager.versionAsync()).toBe('1.9.1');
 });
 
 it(`can detect if the CLI is installed`, async () => {
   const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
-  process.env.TEST_COCOAPODS_MANAGER_SPAWN_VALUE_TO_RETURN = JSON.stringify({ stdout: '1.9.1' });
+
+  mockedSpawnAsync.mockImplementation(() =>
+    mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' }))
+  );
+
   expect(await manager.isCLIInstalledAsync()).toBe(true);
 });
 
