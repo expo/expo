@@ -45,42 +45,42 @@ describe('githubUrl', () => {
   const EDIT_URL_PREFIX = 'https://github.com/expo/expo/edit/main/docs/pages';
 
   test('non-versioned page', () => {
-    expect(githubUrl('/guides')).toBe(EDIT_URL_PREFIX + '/guides.md');
+    expect(githubUrl('/guides')).toBe(EDIT_URL_PREFIX + '/guides.mdx');
   });
 
   test('nested non-versioned page', () => {
-    expect(githubUrl('/build/introduction')).toBe(EDIT_URL_PREFIX + '/build/introduction.md');
+    expect(githubUrl('/build/introduction')).toBe(EDIT_URL_PREFIX + '/build/introduction.mdx');
   });
 
   test('versioned index page', () => {
-    expect(githubUrl('/versions/v42.0.0')).toBe(EDIT_URL_PREFIX + '/versions/v42.0.0/index.md');
+    expect(githubUrl('/versions/v42.0.0')).toBe(EDIT_URL_PREFIX + '/versions/v42.0.0/index.mdx');
   });
 
   test('nested versioned page', () => {
     expect(githubUrl('/versions/v42.0.0/sdk/av')).toBe(
-      EDIT_URL_PREFIX + '/versions/v42.0.0/sdk/av.md'
+      EDIT_URL_PREFIX + '/versions/v42.0.0/sdk/av.mdx'
     );
   });
 
   test('latest index page', () => {
-    expect(githubUrl('/versions/latest')).toBe(EDIT_URL_PREFIX + '/versions/unversioned/index.md');
+    expect(githubUrl('/versions/latest')).toBe(EDIT_URL_PREFIX + '/versions/unversioned/index.mdx');
   });
 
   test('nested latest page', () => {
     expect(githubUrl('/versions/latest/sdk/av')).toBe(
-      EDIT_URL_PREFIX + '/versions/unversioned/sdk/av.md'
+      EDIT_URL_PREFIX + '/versions/unversioned/sdk/av.mdx'
     );
   });
 
   test('unversioned index page', () => {
     expect(githubUrl('/versions/unversioned')).toBe(
-      EDIT_URL_PREFIX + '/versions/unversioned/index.md'
+      EDIT_URL_PREFIX + '/versions/unversioned/index.mdx'
     );
   });
 
   test('nested unversioned page', () => {
     expect(githubUrl('/versions/unversioned/sdk/av')).toBe(
-      EDIT_URL_PREFIX + '/versions/unversioned/sdk/av.md'
+      EDIT_URL_PREFIX + '/versions/unversioned/sdk/av.mdx'
     );
   });
 });

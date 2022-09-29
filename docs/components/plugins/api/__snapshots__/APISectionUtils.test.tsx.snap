@@ -47,7 +47,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
   </p>
   <div
-    class="css-12a4dfj-CommentTextBlock"
+    class="css-1wdnwk5"
   >
     <h4
       class="css-uucypz-H4"
@@ -58,7 +58,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
   </div>
   <pre>
     <pre
-      class="css-1kjja91"
+      class="css-apshsk"
       data-text="true"
     >
       <code

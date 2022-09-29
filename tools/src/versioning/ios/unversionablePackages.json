@@ -9,5 +9,6 @@
   "expo-module-scripts",
   "expo-module-template",
   "jest-expo",
-  "expo-modules-test-core"
+  "expo-modules-test-core",
+  "expo-test-runner"
 ]

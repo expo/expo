@@ -5,6 +5,7 @@ import getDevClientProperties from '../../../utils/analytics/getDevClientPropert
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import {
@@ -70,7 +71,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/expo/expo/issues/13114
     prependMiddleware(middleware, manifestMiddleware);
 
-    middleware.use(new InterstitialPageMiddleware(this.projectRoot).getHandler());
+    middleware.use(
+      new InterstitialPageMiddleware(this.projectRoot, {
+        // TODO: Prevent this from becoming stale.
+        scheme: options.location.scheme ?? null,
+      }).getHandler()
+    );
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
       onDeepLink: getDeepLinkHandler(this.projectRoot),
@@ -85,6 +91,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
     });
     middleware.use(deepLinkMiddleware.getHandler());
+
+    middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {

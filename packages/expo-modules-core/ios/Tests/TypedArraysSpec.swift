@@ -19,7 +19,7 @@ final class TypedArraysSpec: ExpoSpec {
         let intValue = try runtime
           .eval([
             "typedArray = new Int8Array([2, 1, 3, 7])",
-            "ExpoModules.TypedArrays.int8_subscript_get(typedArray, 3)",
+            "expo.modules.TypedArrays.int8_subscript_get(typedArray, 3)",
           ])
           .asInt()
 
@@ -32,7 +32,7 @@ final class TypedArraysSpec: ExpoSpec {
         let array = try runtime
           .eval([
             "typedArray = new Int8Array(3)",
-            "ExpoModules.TypedArrays.int8_subscript_set(typedArray, 1, \(randomInt))",
+            "expo.modules.TypedArrays.int8_subscript_set(typedArray, 1, \(randomInt))",
             "Array.from(typedArray)",
           ])
           .asArray()
@@ -47,7 +47,7 @@ final class TypedArraysSpec: ExpoSpec {
         let values = try runtime
           .eval([
             "typedArray = new Uint16Array([0, 8, 4, 1])",
-            "ExpoModules.TypedArrays.uint16_subscript_range_get(typedArray, 1, 3)"
+            "expo.modules.TypedArrays.uint16_subscript_range_get(typedArray, 1, 3)"
           ])
           .asArray()
           .map({ try $0?.asInt() })
@@ -65,7 +65,7 @@ final class TypedArraysSpec: ExpoSpec {
         let values = try runtime
           .eval([
             "typedArray = new Uint16Array(4)",
-            "ExpoModules.TypedArrays.uint16_subscript_range_set(typedArray, 1, 2, [\(random1), \(random2)])",
+            "expo.modules.TypedArrays.uint16_subscript_range_set(typedArray, 1, 2, [\(random1), \(random2)])",
             "Array.from(typedArray)",
           ])
           .asArray()
@@ -78,7 +78,7 @@ final class TypedArraysSpec: ExpoSpec {
 
       it("returns itself") {
         let input = try runtime.eval("typedArray = new Float32Array([1.2, 3.4]); typedArray").asTypedArray()
-        let output = try runtime.eval("ExpoModules.TypedArrays.return(typedArray)").asTypedArray()
+        let output = try runtime.eval("expo.modules.TypedArrays.return(typedArray)").asTypedArray()
 
         expect(input.getProperty("0").getDouble()) == output.getProperty("0").getDouble()
         expect(input.getProperty("1").getDouble()) == output.getProperty("1").getDouble()
@@ -90,7 +90,7 @@ final class TypedArraysSpec: ExpoSpec {
         let values = try runtime
           .eval([
             "typedArray = new Uint8Array(\(count))",
-            "Array.from(ExpoModules.TypedArrays.writeToUnsafeRawPointer(typedArray))",
+            "Array.from(expo.modules.TypedArrays.writeToUnsafeRawPointer(typedArray))",
           ])
           .asArray()
           .map({ $0?.getInt() ?? 0 })

@@ -3,22 +3,25 @@ import { info as logInfo } from 'next/dist/build/output/log.js';
 import { join } from 'path';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
+import remarkGFM from 'remark-gfm';
+import remarkMDX from 'remark-mdx';
+import remarkMdxDisableExplicitJsx from 'remark-mdx-disable-explicit-jsx';
+import remarkMDXFrontmatter from 'remark-mdx-frontmatter';
 import semver from 'semver';
-import { fileURLToPath } from 'url';
 
-import * as navigation from './constants/navigation.cjs';
-import { VERSIONS } from './constants/versions.cjs';
-import remarkExportHeadings from './mdx-plugins/remark-export-headings.cjs';
-import remarkExportYaml from './mdx-plugins/remark-export-yaml.cjs';
-import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.cjs';
-import createSitemap from './scripts/create-sitemap.cjs';
+import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
+import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
+import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
+import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
+import createSitemap from './scripts/create-sitemap.js';
 
 const { copySync, removeSync, readJsonSync } = fsExtra;
 
 // note(simek): We cannot use direct JSON import because ESLint do not support `assert { type: 'json' }` syntax yet:
 // * https://github.com/eslint/eslint/discussions/15305
 const { version, betaVersion } = readJsonSync('./package.json');
-const dirname = fileURLToPath(new URL('.', import.meta.url));
+const { VERSIONS } = readJsonSync('./public/static/constants/versions.json');
+const navigation = readJsonSync('./public/static/constants/navigation.json');
 
 // Prepare the latest version by copying the actual exact latest version
 const vLatest = join('pages', 'versions', `v${version}/`);
@@ -30,27 +33,11 @@ logInfo(`Copied latest Expo SDK version from v${version}`);
 /** @type {import('next').NextConfig}  */
 export default {
   trailingSlash: true,
+  experimental: { esmExternals: true },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: { emotion: true },
   swcMinify: true,
   webpack: (config, options) => {
-    // Add preval support for `constants/*` only and move it to the `.next/preval` cache.
-    // It's to prevent over-usage and separate the cache to allow manually invalidation.
-    // See: https://github.com/kentcdodds/babel-plugin-preval/issues/19
-    config.module.rules.push({
-      test: /.js$/,
-      include: [join(dirname, 'constants')],
-      use: {
-        loader: 'babel-loader',
-        options: {
-          // Keep this path in sync with package.json and other scripts that clear the cache
-          cacheDirectory: '.next/preval',
-          plugins: ['preval'],
-          presets: ['next/babel'],
-        },
-      },
-    });
-
     // Add support for MDX with our custom loader
     config.module.rules.push({
       test: /.mdx?$/,
@@ -58,12 +45,19 @@ export default {
         options.defaultLoaders.babel,
         {
           loader: '@mdx-js/loader',
+          /** @type {import('@mdx-js/loader').Options} */
           options: {
+            providerImportSource: '@mdx-js/react',
             remarkPlugins: [
-              [remarkFrontmatter, ['yaml']],
-              remarkExportYaml,
+              remarkMDX,
+              remarkGFM,
+              [remarkMdxDisableExplicitJsx, { whiteList: ['kbd'] }],
+              remarkFrontmatter,
+              [remarkMDXFrontmatter, { name: 'meta' }],
+              remarkCodeTitle,
               remarkExportHeadings,
               remarkLinkRewrite,
+              [remarkCreateStaticProps, `{ meta: meta || {}, headings: headings || [] }`],
             ],
             rehypePlugins: [rehypeSlug],
           },
@@ -90,7 +84,7 @@ export default {
         } else {
           // Remove newer unreleased versions from the exported side
           const versionMatch = pathname.match(/\/v(\d\d\.\d\.\d)\//);
-          if (versionMatch?.[1] && semver.gt(versionMatch[1], betaVersion || version)) {
+          if (versionMatch?.[1] && semver.gt(versionMatch[1], betaVersion || version, false)) {
             return {};
           }
         }
@@ -111,7 +105,7 @@ export default {
         ...VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap
-      pathsHidden: navigation.previewDirectories,
+      pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories],
     });
     logInfo(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
 

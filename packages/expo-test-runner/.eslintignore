@@ -1,0 +1,3 @@
+node_modules
+**/ts-declarations/*
+/build

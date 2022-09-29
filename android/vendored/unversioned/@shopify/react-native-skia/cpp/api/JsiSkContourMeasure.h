@@ -29,7 +29,7 @@ namespace RNSkia
         {
             if (contourMeasure == nullptr)
             {
-                jsi::detail::throwJSError(*context->getJsRuntime(), "Contour measure is null");
+                throw jsi::JSError(*context->getJsRuntime(), "Contour measure is null");
             }
         };
 
@@ -41,7 +41,7 @@ namespace RNSkia
             auto result = getObject()->getPosTan(dist, &position, &tangent);
             if (!result)
             {
-                jsi::detail::throwJSError(runtime, "getSegment() failed");
+                throw jsi::JSError(runtime, "getSegment() failed");
             }
             auto posTan = jsi::Object(runtime);
             posTan.setProperty(runtime, "px", position.x());
@@ -70,7 +70,7 @@ namespace RNSkia
             auto result = getObject()->getSegment(start, end, &path, startWithMoveTo);
             if (!result)
             {
-                jsi::detail::throwJSError(runtime, "getSegment() failed");
+                throw jsi::JSError(runtime, "getSegment() failed");
             }
             return JsiSkPath::toValue(runtime, getContext(), std::move(path));
         }
