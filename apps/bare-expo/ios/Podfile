@@ -34,18 +34,6 @@ abstract_target 'BareExpoMain' do
 
   config = use_native_modules!
 
-  use_react_native!(
-    :path => config[:reactNativePath],
-    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
-    :fabric_enabled => flags[:fabric_enabled],
-    # An absolute path to your application root.
-    :app_path => "#{Pod::Config.instance.installation_root}/.."
-    #
-    # Uncomment to opt-in to using Flipper
-    # Note that if you have use_frameworks! enabled, Flipper will not work
-    # :flipper_configuration => !ENV['CI'] ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
-  )
-
   # Fix Google Sign-in and Flipper
   post_install do |installer|
     # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
@@ -85,7 +73,7 @@ abstract_target 'BareExpoMain' do
   target 'BareExpo' do
     use_react_native!(
       :path => config[:reactNativePath],
-      :hermes_enabled => flags[:hermes_enabled] || podfile_properties['expo.jsEngine'] == 'hermes',
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
       :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
@@ -99,7 +87,7 @@ abstract_target 'BareExpoMain' do
   target 'BareExpoDetox' do
     use_react_native!(
       :path => config[:reactNativePath],
-      :hermes_enabled => flags[:hermes_enabled] || podfile_properties['expo.jsEngine'] == 'hermes',
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
       :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
