@@ -1,7 +1,6 @@
-git---
+---
 title: Using FCM for Push Notifications
 sidebar_title: Using FCM
-
 ---
 
 **Firebase Cloud Messaging is required for all Android apps using Expo SDK**, unless you're still running your app in the Expo Go app. To set up your Expo Android app to get push notifications using your own FCM credentials, follow this guide closely.
