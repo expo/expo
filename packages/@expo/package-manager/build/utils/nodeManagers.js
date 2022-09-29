@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createForProject = exports.createFromOptions = exports.resolvePackageManager = exports.findWorkspaceRoot = exports.RESOLUTION_ORDER = void 0;
+exports.createForProject = exports.resolvePackageManager = exports.findWorkspaceRoot = exports.RESOLUTION_ORDER = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const NpmPackageManager_1 = require("../node/NpmPackageManager");
@@ -62,29 +62,19 @@ function resolvePackageManager(projectRoot, preferredManager) {
 exports.resolvePackageManager = resolvePackageManager;
 /**
  * This creates a Node package manager from the provided options.
- * If all of these options are non-true, it will fallback to `createForProject`.
- */
-function createFromOptions(projectRoot, options = {}) {
-    let Manager;
-    if (options.npm) {
-        Manager = NpmPackageManager_1.NpmPackageManager;
-    }
-    else if (options.yarn) {
-        Manager = YarnPackageManager_1.YarnPackageManager;
-    }
-    else if (options.pnpm) {
-        Manager = PnpmPackageManager_1.PnpmPackageManager;
-    }
-    return Manager
-        ? new Manager({ cwd: projectRoot, ...options })
-        : createForProject(projectRoot, options);
-}
-exports.createFromOptions = createFromOptions;
-/**
- * Create a Node package manager by infering the project's lockfiles.
- * If none is found, it will fallback to the npm package manager.
+ * If these options are not provided, it will infer the package manager from lockfiles.
+ * When no package manager is found, it falls back to npm.
  */
 function createForProject(projectRoot, options = {}) {
+    if (options.npm) {
+        return new NpmPackageManager_1.NpmPackageManager({ cwd: projectRoot, ...options });
+    }
+    else if (options.yarn) {
+        return new YarnPackageManager_1.YarnPackageManager({ cwd: projectRoot, ...options });
+    }
+    else if (options.pnpm) {
+        return new PnpmPackageManager_1.PnpmPackageManager({ cwd: projectRoot, ...options });
+    }
     switch (resolvePackageManager(projectRoot)) {
         case 'npm':
             return new NpmPackageManager_1.NpmPackageManager({ cwd: projectRoot, ...options });

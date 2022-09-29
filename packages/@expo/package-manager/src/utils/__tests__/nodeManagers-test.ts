@@ -4,7 +4,7 @@ import path from 'path';
 import { NpmPackageManager } from '../../node/NpmPackageManager';
 import { PnpmPackageManager } from '../../node/PnpmPackageManager';
 import { YarnPackageManager } from '../../node/YarnPackageManager';
-import { createFromOptions, createForProject, resolvePackageManager } from '../nodeManagers';
+import { createForProject, resolvePackageManager } from '../nodeManagers';
 import {
   NPM_LOCK_FILE,
   PNPM_LOCK_FILE,
@@ -14,34 +14,26 @@ import {
 
 jest.mock('fs');
 
-describe(createFromOptions, () => {
-  const projectRoot = '/foo/';
-
-  it(`creates npm package manager from options`, () => {
-    const manager = createFromOptions(projectRoot, { npm: true });
-    expect(manager.name).toBe('npm');
-  });
-
-  it(`creates yarn package manager from options`, () => {
-    const manager = createFromOptions(projectRoot, { yarn: true });
-    expect(manager.name).toBe('yarn');
-  });
-
-  it(`creates pnpm package manager from options`, () => {
-    const manager = createFromOptions(projectRoot, { pnpm: true });
-    expect(manager.name).toBe('pnpm');
-  });
-
-  it(`defaults to npm package manager`, () => {
-    const manager = createFromOptions(projectRoot);
-    expect(manager.name).toBe('npm');
-  });
-});
-
 describe(createForProject, () => {
   const projectRoot = '/foo';
 
   afterEach(() => vol.reset());
+
+  it(`creates npm package manager from options`, () => {
+    expect(createForProject(projectRoot, { npm: true })).toBeInstanceOf(NpmPackageManager);
+  });
+
+  it(`creates yarn package manager from options`, () => {
+    expect(createForProject(projectRoot, { yarn: true })).toBeInstanceOf(YarnPackageManager);
+  });
+
+  it(`creates pnpm package manager from options`, () => {
+    expect(createForProject(projectRoot, { pnpm: true })).toBeInstanceOf(PnpmPackageManager);
+  });
+
+  it(`defaults to npm package manager`, () => {
+    expect(createForProject(projectRoot)).toBeInstanceOf(NpmPackageManager);
+  });
 
   it(`creates npm package manager from project`, () => {
     vol.fromJSON(
