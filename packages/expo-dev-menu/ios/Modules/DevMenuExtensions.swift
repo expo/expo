@@ -33,7 +33,7 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     inspector.isEnabled = { devSettings.isElementInspectorShown }
 
     #if DEBUG
-    let jsInspector = DevMenuExtensions.jsInspctorAction(devDelegate.openJSInspector)
+    let jsInspector = DevMenuExtensions.jsInspectorAction(devDelegate.openJSInspector)
     jsInspector.isAvailable = { bridge.batched.isInspectable }
     jsInspector.isEnabled = { true }
 
@@ -91,12 +91,12 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     return inspector
   }
 
-  private static func jsInspctorAction(_ action: @escaping () -> Void) -> DevMenuAction {
-    let jsInspctror = DevMenuAction(withId: "js-inspector", action: action)
-    jsInspctror.label = { "Open JS debugger" }
-    jsInspctror.glyphName = { "language-javascript" }
-    jsInspctror.importance = DevMenuScreenItem.ImportanceLow
-    return jsInspctror
+  private static func jsInspectorAction(_ action: @escaping () -> Void) -> DevMenuAction {
+    let jsInspectror = DevMenuAction(withId: "js-inspector", action: action)
+    jsInspectror.label = { "Open JS debugger" }
+    jsInspectror.glyphName = { "language-javascript" }
+    jsInspectror.importance = DevMenuScreenItem.ImportanceLow
+    return jsInspectror
   }
 
   private static func remoteDebugAction(_ action: @escaping () -> Void) -> DevMenuAction {
