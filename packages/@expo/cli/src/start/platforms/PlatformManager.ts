@@ -72,8 +72,12 @@ export class PlatformManager<
       try {
         applicationId = await this._getAppIdResolver().getAppIdAsync();
       } catch {
-        // do nothing, expected if the applicationId is not defined anywhere (e.g. managed project
-        // without ios.bundleIdentifier)
+        Log.warn(
+          chalk`\u203A Launching in Expo Go. If you want to use a ` +
+            `development build, you need to create and install one first, or, if you already ` +
+            chalk`have a build, add {bold ios.bundleIdentifier} and {bold android.package} to ` +
+            `this project's app config.\n${learnMore('https://docs.expo.dev/development/build/')}`
+        );
       }
       if (applicationId) {
         debug(`Resolving launch URL: (appId: ${applicationId}, redirect URL: ${redirectUrl})`);
