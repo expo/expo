@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
 import path from 'path';
+import { PNPM_WORKSPACE_FILE } from '../../utils/nodeWorkspaces';
 
 import { mockSpawnPromise, mockedSpawnAsync, STUB_SPAWN_CHILD } from '../../__tests__/spawn-utils';
 import { PnpmPackageManager } from '../PnpmPackageManager';
@@ -296,6 +297,41 @@ describe('PnpmPackageManager', () => {
         ['remove', '--global', 'expo-cli', 'eas-cli'],
         expect.objectContaining({ cwd: projectRoot })
       );
+    });
+  });
+
+  describe('workspaceRoot', () => {
+    const workspaceRoot = '/monorepo';
+    const projectRoot = '/monorepo/packages/test';
+
+    it('returns null for non-monorepo project', () => {
+      vol.fromJSON(
+        {
+          'package.json': JSON.stringify({ name: 'project' }),
+        },
+        projectRoot
+      );
+
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      expect(pnpm.workspaceRoot()).toBeNull();
+    });
+
+    it('returns new instance for monorepo project', () => {
+      vol.fromJSON(
+        {
+          'packages/test/package.json': JSON.stringify({ name: 'project' }),
+          'package.json': JSON.stringify({
+            name: 'monorepo',
+          }),
+          [PNPM_WORKSPACE_FILE]: 'packages:\n  - packages/*',
+        },
+        workspaceRoot
+      );
+
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      const root = pnpm.workspaceRoot();
+      expect(root).toBeInstanceOf(PnpmPackageManager);
+      expect(root).not.toBe(pnpm);
     });
   });
 });

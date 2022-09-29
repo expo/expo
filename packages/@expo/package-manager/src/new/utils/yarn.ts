@@ -2,26 +2,6 @@ import { execSync } from 'child_process';
 import dns from 'dns';
 import url from 'url';
 
-import { isUsingNpm } from './nodeManagers';
-
-/** @depreacted use `resolvePackageManager` instead */
-export function shouldUseYarn(): boolean {
-  if (process.env.npm_config_user_agent?.startsWith('yarn')) {
-    return true;
-  }
-
-  if (isUsingNpm(process.cwd())) {
-    return false;
-  }
-
-  try {
-    execSync('yarnpkg --version', { stdio: 'ignore' });
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 /** Determine if you should use yarn offline or not */
 export async function isYarnOfflineAsync(): Promise<boolean> {
   if (await isUrlAvailableAsync('registry.yarnpkg.com')) {
@@ -42,7 +22,7 @@ export async function isYarnOfflineAsync(): Promise<boolean> {
   return !(await isUrlAvailableAsync(hostname));
 }
 
-/** Exposed ror testing */
+/** Exposed for testing */
 export function getNpmProxy(): string | null {
   if (process.env.https_proxy) {
     return process.env.https_proxy ?? null;

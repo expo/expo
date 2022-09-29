@@ -2,13 +2,28 @@ import JsonFile from '@expo/json-file';
 import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 
+import { findYarnOrNpmWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeWorkspaces';
 import { createPendingSpawnAsync } from '../utils/spawn';
 import { BasePackageManager } from './BasePackageManager';
 
 export class NpmPackageManager extends BasePackageManager {
   readonly name = 'npm';
   readonly bin = 'npm';
-  readonly lockFile = 'package-lock.json';
+  readonly lockFile = NPM_LOCK_FILE;
+
+  workspaceRoot() {
+    const root = findYarnOrNpmWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
+    if (root) {
+      return new NpmPackageManager({
+        ...this.options,
+        logger: this.logger,
+        silent: this.silent,
+        cwd: root,
+      });
+    }
+
+    return null;
+  }
 
   addAsync(namesOrFlags: string[] = []) {
     if (!namesOrFlags.length) {

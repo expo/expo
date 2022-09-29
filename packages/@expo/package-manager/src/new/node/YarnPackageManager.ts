@@ -1,3 +1,4 @@
+import { findYarnOrNpmWorkspaceRoot, YARN_LOCK_FILE } from '../utils/nodeWorkspaces';
 import { createPendingSpawnAsync } from '../utils/spawn';
 import { isYarnOfflineAsync } from '../utils/yarn';
 import { BasePackageManager } from './BasePackageManager';
@@ -5,11 +6,25 @@ import { BasePackageManager } from './BasePackageManager';
 export class YarnPackageManager extends BasePackageManager {
   readonly name = 'yarn';
   readonly bin = 'yarnpkg';
-  readonly lockFile = 'yarn.lock';
+  readonly lockFile = YARN_LOCK_FILE;
 
   /** Check if Yarn is running in offline mode, and add the `--offline` flag */
   private async withOfflineFlagAsync(namesOrFlags: string[]): Promise<string[]> {
     return (await isYarnOfflineAsync()) ? [...namesOrFlags, '--offline'] : namesOrFlags;
+  }
+
+  workspaceRoot() {
+    const root = findYarnOrNpmWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
+    if (root) {
+      return new YarnPackageManager({
+        ...this.options,
+        logger: this.logger,
+        silent: this.silent,
+        cwd: root,
+      });
+    }
+
+    return null;
   }
 
   installAsync(flags: string[] = []) {

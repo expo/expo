@@ -1,19 +1,23 @@
-import findWorkspaceDir from '@pnpm/find-workspace-dir';
-
+import { findPnpmWorkspaceRoot, PNPM_LOCK_FILE } from '../utils/nodeWorkspaces';
 import { BasePackageManager } from './BasePackageManager';
 
 export class PnpmPackageManager extends BasePackageManager {
   readonly name = 'pnpm';
   readonly bin = 'pnpm';
-  readonly lockFile = 'pnpm-lock.yaml';
+  readonly lockFile = PNPM_LOCK_FILE;
 
-  async workspaceRootAsync(): Promise<string | null> {
-    const cwd = this.ensureCwdDefined('workspaceRootAsync');
-    try {
-      return (await findWorkspaceDir(cwd)) ?? null;
-    } finally {
-      return null;
+  workspaceRoot() {
+    const root = findPnpmWorkspaceRoot(this.ensureCwdDefined('workspaceRoot'));
+    if (root) {
+      return new PnpmPackageManager({
+        ...this.options,
+        logger: this.logger,
+        silent: this.silent,
+        cwd: root,
+      });
     }
+
+    return null;
   }
 
   addAsync(namesOrFlags: string[] = []) {

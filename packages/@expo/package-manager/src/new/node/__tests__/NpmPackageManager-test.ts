@@ -414,4 +414,39 @@ describe('NpmPackageManager', () => {
       );
     });
   });
+
+  describe('workspaceRoot', () => {
+    const workspaceRoot = '/monorepo';
+    const projectRoot = '/monorepo/packages/test';
+
+    it('returns null for non-monorepo project', () => {
+      vol.fromJSON(
+        {
+          'package.json': JSON.stringify({ name: 'project' }),
+        },
+        projectRoot
+      );
+
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      expect(npm.workspaceRoot()).toBeNull();
+    });
+
+    it('returns new instance for monorepo project', () => {
+      vol.fromJSON(
+        {
+          'packages/test/package.json': JSON.stringify({ name: 'project' }),
+          'package.json': JSON.stringify({
+            name: 'monorepo',
+            workspaces: ['packages/*'],
+          }),
+        },
+        workspaceRoot
+      );
+
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      const root = npm.workspaceRoot();
+      expect(root).toBeInstanceOf(NpmPackageManager);
+      expect(root).not.toBe(npm);
+    });
+  });
 });
