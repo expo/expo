@@ -187,7 +187,6 @@ const general = [
   ]),
   makeSection('Expo Modules API', [
     makePage('modules/overview.mdx'),
-    makePage('modules/get-started.mdx'),
     makePage('modules/module-api.mdx'),
     makePage('modules/android-lifecycle-listeners.mdx'),
     makePage('modules/appdelegate-subscribers.mdx'),
