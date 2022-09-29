@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createFromProject = exports.createFromOptions = exports.resolvePackageManager = exports.findWorkspaceRoot = exports.RESOLUTION_ORDER = void 0;
+exports.createForProject = exports.createFromOptions = exports.resolvePackageManager = exports.findWorkspaceRoot = exports.RESOLUTION_ORDER = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const NpmPackageManager_1 = require("../node/NpmPackageManager");
@@ -62,7 +62,7 @@ function resolvePackageManager(projectRoot, preferredManager) {
 exports.resolvePackageManager = resolvePackageManager;
 /**
  * This creates a Node package manager from the provided options.
- * If all of these options are non-true, it will fallback to `createFromProject`.
+ * If all of these options are non-true, it will fallback to `createForProject`.
  */
 function createFromOptions(projectRoot, options = {}) {
     let Manager;
@@ -77,14 +77,14 @@ function createFromOptions(projectRoot, options = {}) {
     }
     return Manager
         ? new Manager({ cwd: projectRoot, ...options })
-        : createFromProject(projectRoot, options);
+        : createForProject(projectRoot, options);
 }
 exports.createFromOptions = createFromOptions;
 /**
  * Create a Node package manager by infering the project's lockfiles.
  * If none is found, it will fallback to the npm package manager.
  */
-function createFromProject(projectRoot, options = {}) {
+function createForProject(projectRoot, options = {}) {
     switch (resolvePackageManager(projectRoot)) {
         case 'npm':
             return new NpmPackageManager_1.NpmPackageManager({ cwd: projectRoot, ...options });
@@ -96,5 +96,5 @@ function createFromProject(projectRoot, options = {}) {
             return new NpmPackageManager_1.NpmPackageManager({ cwd: projectRoot, ...options });
     }
 }
-exports.createFromProject = createFromProject;
+exports.createForProject = createForProject;
 //# sourceMappingURL=nodeManagers.js.map

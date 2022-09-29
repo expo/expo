@@ -19,11 +19,11 @@ export declare function findWorkspaceRoot(projectRoot: string, preferredManager?
 export declare function resolvePackageManager(projectRoot: string, preferredManager?: NodePackageManager['name']): NodePackageManager['name'] | null;
 /**
  * This creates a Node package manager from the provided options.
- * If all of these options are non-true, it will fallback to `createFromProject`.
+ * If all of these options are non-true, it will fallback to `createForProject`.
  */
 export declare function createFromOptions(projectRoot: string, options?: NodePackageManagerFromOptions): NodePackageManager;
 /**
  * Create a Node package manager by infering the project's lockfiles.
  * If none is found, it will fallback to the npm package manager.
  */
-export declare function createFromProject(projectRoot: string, options?: PackageManagerOptions): NodePackageManager;
+export declare function createForProject(projectRoot: string, options?: PackageManagerOptions): NodePackageManager;
