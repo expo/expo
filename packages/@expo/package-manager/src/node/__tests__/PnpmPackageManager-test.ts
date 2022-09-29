@@ -9,6 +9,11 @@ import { PnpmPackageManager } from '../PnpmPackageManager';
 jest.mock('@expo/spawn-async');
 jest.mock('fs');
 
+beforeAll(() => {
+  // Disable logging to clean up test ouput
+  jest.spyOn(console, 'log').mockImplementation();
+});
+
 describe('PnpmPackageManager', () => {
   const projectRoot = '/project/with-pnpm';
 
