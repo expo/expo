@@ -8,7 +8,7 @@ import { URL } from 'url';
  */
 
 const DEFAULT_OPTIONS = {
-  extension: 'md',
+  extension: 'mdx',
   pagesDir: 'pages',
   trailingSlash: true,
 };
