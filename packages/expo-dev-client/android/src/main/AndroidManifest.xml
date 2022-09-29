@@ -1,3 +1,1 @@
-<manifest package="expo.modules.devclient">
-
-</manifest>
+<manifest package="expo.modules.devclient" />
