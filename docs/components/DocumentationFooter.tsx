@@ -44,7 +44,7 @@ export function githubUrl(path: string) {
     }
   }
 
-  let pathAsMarkdown = path.replace(/\/$/, '') + '.md';
+  let pathAsMarkdown = path.replace(/\/$/, '') + '.mdx';
   if (pathAsMarkdown.startsWith('/versions/latest')) {
     pathAsMarkdown = pathAsMarkdown.replace('/versions/latest', '/versions/unversioned');
   }
