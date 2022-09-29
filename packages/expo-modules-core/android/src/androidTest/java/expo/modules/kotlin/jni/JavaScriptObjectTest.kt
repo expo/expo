@@ -173,7 +173,7 @@ class JavaScriptObjectTest {
       val result = evaluateScript(
         """
         const x = {};
-        ExpoModules.TestModule.f(x);
+        expo.modules.TestModule.f(x);
         x
         """.trimIndent()
       ).getObject()
