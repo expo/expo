@@ -27,7 +27,7 @@ object DevMenuDevSettings {
           "isJSInspectorAvailable",
           run {
             val jsExecutorName = reactInstanceManager.jsExecutorName
-            jsExecutorName.contains("Hermes")
+            jsExecutorName.contains("Hermes") || jsExecutorName.contains("V8")
           }
         )
       }
