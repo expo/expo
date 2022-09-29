@@ -1,126 +1,106 @@
 import { vol } from 'memfs';
 import path from 'path';
 
+import { NpmPackageManager } from '../../node/NpmPackageManager';
+import { PnpmPackageManager } from '../../node/PnpmPackageManager';
+import { YarnPackageManager } from '../../node/YarnPackageManager';
+import { createFromOptions, createFromProject, resolvePackageManager } from '../nodeManagers';
 import {
-  findWorkspaceRoot,
-  findYarnOrNpmWorkspaceRootSafe,
-  createFromOptions,
   NPM_LOCK_FILE,
   PNPM_LOCK_FILE,
   PNPM_WORKSPACE_FILE,
-  resolvePackageManager,
   YARN_LOCK_FILE,
-} from '../nodeManagers';
+} from '../nodeWorkspaces';
 
 jest.mock('fs');
 
 describe(createFromOptions, () => {
   const projectRoot = '/foo/';
+
   it(`creates npm package manager from options`, () => {
     const manager = createFromOptions(projectRoot, { npm: true });
     expect(manager.name).toBe('npm');
   });
+
   it(`creates yarn package manager from options`, () => {
     const manager = createFromOptions(projectRoot, { yarn: true });
     expect(manager.name).toBe('yarn');
   });
+
   it(`creates pnpm package manager from options`, () => {
     const manager = createFromOptions(projectRoot, { pnpm: true });
     expect(manager.name).toBe('pnpm');
   });
+
   it(`defaults to npm package manager`, () => {
     const manager = createFromOptions(projectRoot);
     expect(manager.name).toBe('npm');
   });
 });
 
-describe(findYarnOrNpmWorkspaceRootSafe, () => {
+describe(createFromProject, () => {
+  const projectRoot = '/foo';
+
   afterEach(() => vol.reset());
-  it(`doesn't throw when the upper level has a malformed package.json`, () => {
+
+  it(`creates npm package manager from project`, () => {
     vol.fromJSON(
       {
-        'packages/test/package.json': '{}',
-        'package.json': '',
+        'package.json': JSON.stringify({ name: 'project' }),
+        [NPM_LOCK_FILE]: '',
       },
-      '/'
+      projectRoot
     );
 
-    expect(findYarnOrNpmWorkspaceRootSafe('/packages/test')).toBe(null);
+    expect(createFromProject(projectRoot)).toBeInstanceOf(NpmPackageManager);
+  });
+
+  it(`creates yarn package manager from project`, () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'project' }),
+        [YARN_LOCK_FILE]: '',
+      },
+      projectRoot
+    );
+
+    expect(createFromProject(projectRoot)).toBeInstanceOf(YarnPackageManager);
+  });
+
+  it(`creates pnpm package manager from project`, () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'project' }),
+        [PNPM_LOCK_FILE]: '',
+      },
+      projectRoot
+    );
+
+    expect(createFromProject(projectRoot)).toBeInstanceOf(PnpmPackageManager);
+  });
+
+  it(`defaults to npm package manager`, () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ name: 'project' }),
+      },
+      projectRoot
+    );
+
+    expect(createFromProject(projectRoot)).toBeInstanceOf(NpmPackageManager);
   });
 });
 
-describe(findWorkspaceRoot, () => {
-  // Resolve these paths to avoid posix vs windows path issues when validating
+describe(resolvePackageManager, () => {
   const workspaceRoot = path.resolve('/monorepo/');
   const projectRoot = path.resolve('/monorepo/packages/test/');
 
   afterEach(() => vol.reset());
 
-  it('resolves npm workspace root', () => {
+  it(`resolves npm from monorepo workspace`, () => {
     vol.fromJSON(
       {
-        'packages/test/package.json': '{}',
-        'package.json': JSON.stringify({
-          private: true,
-          name: 'monorepo',
-          workspaces: ['packages/*'],
-        }),
-        [NPM_LOCK_FILE]: '',
-      },
-      workspaceRoot
-    );
-
-    expect(findWorkspaceRoot(projectRoot)).toBe(workspaceRoot);
-    expect(findWorkspaceRoot(projectRoot, 'npm')).toBe(workspaceRoot);
-  });
-
-  it('resolves yarn workspace root', () => {
-    vol.fromJSON(
-      {
-        'packages/test/package.json': '{}',
-        'package.json': JSON.stringify({
-          private: true,
-          name: 'monorepo',
-          workspaces: ['packages/*'],
-        }),
-        [YARN_LOCK_FILE]: '',
-      },
-      workspaceRoot
-    );
-
-    expect(findWorkspaceRoot(projectRoot)).toBe(workspaceRoot);
-    expect(findWorkspaceRoot(projectRoot, 'yarn')).toBe(workspaceRoot);
-  });
-
-  it('resolves pnpm workspace root', () => {
-    vol.fromJSON(
-      {
-        'packages/test/package.json': '{}',
-        'package.json': JSON.stringify({
-          private: true,
-          name: 'monorepo',
-        }),
-        [PNPM_LOCK_FILE]: '',
-        [PNPM_WORKSPACE_FILE]: '',
-      },
-      workspaceRoot
-    );
-
-    expect(findWorkspaceRoot(projectRoot)).toBe(workspaceRoot);
-    expect(findWorkspaceRoot(projectRoot, 'pnpm')).toBe(workspaceRoot);
-  });
-});
-
-describe(resolvePackageManager, () => {
-  const workspaceRoot = '/monorepo/';
-  const projectRoot = '/monorepo/packages/test/';
-
-  afterEach(() => vol.reset());
-
-  it('resolves npm from monorepo', () => {
-    vol.fromJSON(
-      {
-        'packages/test/package.json': '{}',
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
         'package.json': JSON.stringify({
           private: true,
           name: 'monorepo',
@@ -133,32 +113,47 @@ describe(resolvePackageManager, () => {
 
     expect(resolvePackageManager(projectRoot)).toBe('npm');
     expect(resolvePackageManager(projectRoot, 'npm')).toBe('npm');
+    expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
   });
 
-  it('resolves yarn from project', () => {
+  it(`resolves pnpm from monorepo workspace`, () => {
     vol.fromJSON(
       {
-        'package.json': '{}',
-        [YARN_LOCK_FILE]: '',
-      },
-      projectRoot
-    );
-
-    expect(resolvePackageManager(projectRoot)).toBe('yarn');
-    expect(resolvePackageManager(projectRoot, 'yarn')).toBe('yarn');
-  });
-
-  it('resolves pnpm from project', () => {
-    vol.fromJSON(
-      {
-        'package.json': '{}',
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
+        'package.json': JSON.stringify({
+          private: true,
+          name: 'monorepo',
+        }),
         [PNPM_LOCK_FILE]: '',
-        [PNPM_WORKSPACE_FILE]: '',
+        [PNPM_WORKSPACE_FILE]: 'packages:\n  - packages/*',
       },
-      projectRoot
+      workspaceRoot
     );
 
     expect(resolvePackageManager(projectRoot)).toBe('pnpm');
     expect(resolvePackageManager(projectRoot, 'pnpm')).toBe('pnpm');
+    expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'yarn')).toBeNull();
+  });
+
+  it(`resolves yarn from monorepo workspace`, () => {
+    vol.fromJSON(
+      {
+        'packages/test/package.json': JSON.stringify({ name: 'project' }),
+        'package.json': JSON.stringify({
+          private: true,
+          name: 'monorepo',
+          workspaces: ['packages/*'],
+        }),
+        [YARN_LOCK_FILE]: '',
+      },
+      workspaceRoot
+    );
+
+    expect(resolvePackageManager(projectRoot)).toBe('yarn');
+    expect(resolvePackageManager(projectRoot, 'yarn')).toBe('yarn');
+    expect(resolvePackageManager(projectRoot, 'npm')).toBeNull();
+    expect(resolvePackageManager(projectRoot, 'pnpm')).toBeNull();
   });
 });

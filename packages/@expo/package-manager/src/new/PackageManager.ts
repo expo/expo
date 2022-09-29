@@ -20,8 +20,8 @@ export interface PackageManager {
   configAsync(key: string): Promise<string>;
   /** Remove the lock file within the project, if any */
   removeLockFileAsync(): Promise<void>;
-  /** Get the workspace root, if this project is within a workspace/monorepo */
-  workspaceRootAsync(): Promise<string | null>;
+  /** Get the workspace root package manager, if this project is within a workspace/monorepo */
+  workspaceRoot(): PackageManager | null;
 
   /** Install all current dependencies using the package manager */
   installAsync():

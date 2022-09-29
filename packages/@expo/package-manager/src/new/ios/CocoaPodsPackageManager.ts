@@ -125,6 +125,10 @@ export class CocoaPodsPackageManager implements PackageManager {
     throw new Error('Unimplemented');
   }
 
+  workspaceRoot(): PackageManager | null {
+    throw new Error('Unimplemented');
+  }
+
   static getPodProjectRoot(projectRoot: string): string | null {
     if (CocoaPodsPackageManager.isUsingPods(projectRoot)) return projectRoot;
     const iosProject = path.join(projectRoot, 'ios');

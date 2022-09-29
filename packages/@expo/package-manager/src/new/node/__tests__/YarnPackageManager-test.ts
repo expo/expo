@@ -327,6 +327,41 @@ describe('YarnPackageManager', () => {
     });
   });
 
+  describe('workspaceRoot', () => {
+    const workspaceRoot = '/monorepo';
+    const projectRoot = '/monorepo/packages/test';
+
+    it('returns null for non-monorepo project', () => {
+      vol.fromJSON(
+        {
+          'package.json': JSON.stringify({ name: 'project' }),
+        },
+        projectRoot
+      );
+
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+      expect(yarn.workspaceRoot()).toBeNull();
+    });
+
+    it('returns new instance for monorepo project', () => {
+      vol.fromJSON(
+        {
+          'packages/test/package.json': JSON.stringify({ name: 'project' }),
+          'package.json': JSON.stringify({
+            name: 'monorepo',
+            workspaces: ['packages/*'],
+          }),
+        },
+        workspaceRoot
+      );
+
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+      const root = yarn.workspaceRoot();
+      expect(root).toBeInstanceOf(YarnPackageManager);
+      expect(root).not.toBe(yarn);
+    });
+  });
+
   // describe('offline support', () => {
   //   // TODO
   // });

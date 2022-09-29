@@ -1,6 +1,5 @@
 import spawnAsync, { SpawnPromise, SpawnResult } from '@expo/spawn-async';
 import assert from 'assert';
-import findWorkspaceRoot from 'find-yarn-workspace-root';
 import fs from 'fs';
 import path from 'path';
 import rimraf from 'rimraf';
@@ -46,6 +45,8 @@ export abstract class BasePackageManager implements PackageManager {
     namesOrFlags: string[]
   ): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
 
+  abstract workspaceRoot(): PackageManager | null;
+
   /** Ensure the CWD is set to a non-empty string */
   protected ensureCwdDefined(method?: string): string {
     const cwd = this.options.cwd?.toString();
@@ -69,15 +70,6 @@ export abstract class BasePackageManager implements PackageManager {
 
   async configAsync(key: string) {
     return await this.runAsync(['config', 'get', key]).then(({ stdout }) => stdout.trim());
-  }
-
-  async workspaceRootAsync() {
-    const cwd = this.ensureCwdDefined('workspaceRootAsync');
-    try {
-      return findWorkspaceRoot(path.resolve(cwd)) ?? null;
-    } finally {
-      return null;
-    }
   }
 
   async removeLockFileAsync() {

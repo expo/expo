@@ -2,9 +2,10 @@ export * from './PackageManager';
 
 export * from './ios/CocoaPodsPackageManager';
 
-export { NpmPackageManager } from './node/NpmPackageManager';
-export { PnpmPackageManager } from './node/PnpmPackageManager';
-export { YarnPackageManager } from './node/YarnPackageManager';
+export * from './node/NpmPackageManager';
+export * from './node/PnpmPackageManager';
+export * from './node/YarnPackageManager';
 
 export * from './utils/nodeManagers';
-export { isYarnOfflineAsync, shouldUseYarn } from './utils/yarn';
+export * from './utils/nodeWorkspaces';
+export { isYarnOfflineAsync } from './utils/yarn';

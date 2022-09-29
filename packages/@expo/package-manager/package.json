@@ -37,12 +37,13 @@
   "dependencies": {
     "@expo/json-file": "8.2.36",
     "@expo/spawn-async": "^1.5.0",
-    "@pnpm/find-workspace-dir": "^4.0.2",
     "ansi-regex": "^5.0.0",
     "chalk": "^4.0.0",
     "find-up": "^5.0.0",
     "find-yarn-workspace-root": "~2.0.0",
     "npm-package-arg": "^7.0.0",
+    "read-yaml-file": "^2.1.0",
+    "micromatch": "^4.0.5",
     "rimraf": "^3.0.2",
     "split": "^1.0.1",
     "sudo-prompt": "9.1.1"
