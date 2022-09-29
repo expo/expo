@@ -84,7 +84,7 @@ export function resolvePackageManager(
 
 /**
  * This creates a Node package manager from the provided options.
- * If all of these options are non-true, it will fallback to `createFromProject`.
+ * If all of these options are non-true, it will fallback to `createForProject`.
  */
 export function createFromOptions(
   projectRoot: string,
@@ -102,14 +102,14 @@ export function createFromOptions(
 
   return Manager
     ? new Manager({ cwd: projectRoot, ...options })
-    : createFromProject(projectRoot, options);
+    : createForProject(projectRoot, options);
 }
 
 /**
  * Create a Node package manager by infering the project's lockfiles.
  * If none is found, it will fallback to the npm package manager.
  */
-export function createFromProject(
+export function createForProject(
   projectRoot: string,
   options: PackageManagerOptions = {}
 ): NodePackageManager {
