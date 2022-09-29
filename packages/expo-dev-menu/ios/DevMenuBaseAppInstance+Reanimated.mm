@@ -42,7 +42,7 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
   auto executorFactory = std::make_unique<ExecutorFactory>(installer);
 #endif
 
-#if RNVERSION >= 70 && RNPATCHVERSION >= 1
+#if (RNVERSION > 70 || (RNVERSION >= 70 && RNPATCHVERSION >= 1)) && (__has_include(<reacthermes/HermesExecutorFactory.h>) || __has_include(<React/HermesExecutorFactory.h>))
   executorFactory->setEnableDebugger(false);
 #endif
   
