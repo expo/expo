@@ -5,6 +5,7 @@ title: Native Modules
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
+import { Callout } from '~/ui/components/Callout';
 
 > **warning** Expo Modules APIs are in beta and subject to breaking changes.
 
@@ -171,8 +172,13 @@ Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
 </CodeBlocksTable>
 </APIBox>
 <APIBox header="ViewManager">
+<Callout type="warning">
 
-Enables the module to be used as a view manager. The view manager definition is built from the definition components used in the closure passed to `viewManager`. Definition components that are accepted as part of the view manager definition: [`View`](#view), [`Prop`](#prop).
+**Deprecated**: In order to better integrate with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer) and its recycling mechanism, as of SDK47 the `ViewManager` component is deprecated in favor of [`View`](#view) with a view class passed as the first argument. This component will be removed in SDK48.
+
+</Callout>
+
+Enables the module to be used as a view manager. The view manager definition is built from the definition components used in the closure passed to `ViewManager`. Definition components that are accepted as part of the view manager definition: [`View`](#view), [`Prop`](#prop).
 
 <CodeBlocksTable>
 
@@ -201,33 +207,36 @@ ViewManager {
 ```
 
 </CodeBlocksTable>
-
-> **Note** The API for view managers is still experimental and subject to change.
-> We are investigating how to integrate with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer), which may require API changes.
-
-> **Note** Support for rendering SwiftUI views is planned. For now, you can use [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) and add its content view to your UIKit view.
-
 </APIBox>
 <APIBox header="View">
 
-Defines the factory creating a native view, when the module is used as a view.
-On Android, the factory function also receives [Android Context](https://developer.android.com/reference/android/content/Context) which is required to create any view.
+Enables the module to be used as a native view. Definition components that are accepted as part of the view definition: [`Prop`](#prop), [`Events`](#events).
+
+#### Arguments
+
+- **viewType** — The class of the native view that will be rendered.
+- **definition**: `() -> ViewDefinition` — A builder of the view definition.
 
 <CodeBlocksTable>
 
 ```swift
-View {
-  UITextView()
+View(UITextView.self) {
+  Prop("text") { ... }
 }
 ```
 
 ```kotlin
-View { context ->
-  TextView(context)
+View(TextView::class) {
+  Prop("text") { ... }
 }
 ```
 
 </CodeBlocksTable>
+<Callout type="info">
+
+**Note**: Support for rendering SwiftUI views is planned. For now, you can use [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) and add its content view to your UIKit view.
+
+</Callout>
 </APIBox>
 <APIBox header="Prop">
 
