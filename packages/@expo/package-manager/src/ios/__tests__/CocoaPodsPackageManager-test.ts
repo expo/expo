@@ -44,43 +44,43 @@ afterAll(() => {
 const fakePodRepoUpdateErrorOutput = {
   pid: 74312,
   output: [
-    'Using Expo modules\n' +
-      'Auto-linking React Native modules for target `yolo74`: RNGestureHandler, RNReanimated, RNScreens, and react-native-safe-area-context\n' +
-      'Analyzing dependencies\n' +
-      '[!] CocoaPods could not find compatible versions for pod "EXFileSystem":\n' +
-      '  In snapshot (Podfile.lock):\n' +
-      '    EXFileSystem (from `../node_modules/expo-file-system/ios`)\n' +
-      '\n' +
-      '  In Podfile:\n' +
-      '    EXFileSystem (from `../node_modules/expo-file-system/ios`)\n' +
-      '\n' +
-      '\n' +
-      'You have either:\n' +
-      ' * out-of-date source repos which you can update with `pod repo update` or with `pod install --repo-update`.\n' +
-      ' * changed the constraints of dependency `EXFileSystem` inside your development pod `EXFileSystem`.\n' +
+    'Using Expo modules' + os.EOL +
+      'Auto-linking React Native modules for target `yolo74`: RNGestureHandler, RNReanimated, RNScreens, and react-native-safe-area-context' + os.EOL +
+      'Analyzing dependencies' + os.EOL +
+      '[!] CocoaPods could not find compatible versions for pod "EXFileSystem":' + os.EOL +
+      '  In snapshot (Podfile.lock):' + os.EOL +
+      '    EXFileSystem (from `../node_modules/expo-file-system/ios`)' + os.EOL +
+      '' + os.EOL +
+      '  In Podfile:' + os.EOL +
+      '    EXFileSystem (from `../node_modules/expo-file-system/ios`)' + os.EOL +
+      '' + os.EOL +
+      '' + os.EOL +
+      'You have either:' + os.EOL +
+      ' * out-of-date source repos which you can update with `pod repo update` or with `pod install --repo-update`.' + os.EOL +
+      ' * changed the constraints of dependency `EXFileSystem` inside your development pod `EXFileSystem`.' + os.EOL +
       "   You should run `pod update EXFileSystem` to apply changes you've made.\n",
     'Ignoring ffi-1.13.1 because its extensions are not built. Try: gem pristine ffi --version 1.13.1\n',
   ],
   stdout:
-    'Using Expo modules\n' +
-    'Auto-linking React Native modules for target `yolo74`: RNGestureHandler, RNReanimated, RNScreens, and react-native-safe-area-context\n' +
-    'Analyzing dependencies\n' +
-    '[!] CocoaPods could not find compatible versions for pod "EXFileSystem":\n' +
-    '  In snapshot (Podfile.lock):\n' +
-    '    EXFileSystem (from `../node_modules/expo-file-system/ios`)\n' +
-    '\n' +
-    '  In Podfile:\n' +
-    '    EXFileSystem (from `../node_modules/expo-file-system/ios`)\n' +
-    '\n' +
-    '\n' +
-    'You have either:\n' +
-    ' * out-of-date source repos which you can update with `pod repo update` or with `pod install --repo-update`.\n' +
-    ' * changed the constraints of dependency `EXFileSystem` inside your development pod `EXFileSystem`.\n' +
+    'Using Expo modules' + os.EOL +
+    'Auto-linking React Native modules for target `yolo74`: RNGestureHandler, RNReanimated, RNScreens, and react-native-safe-area-context' + os.EOL +
+    'Analyzing dependencies' + os.EOL +
+    '[!] CocoaPods could not find compatible versions for pod "EXFileSystem":' + os.EOL +
+    '  In snapshot (Podfile.lock):' + os.EOL +
+    '    EXFileSystem (from `../node_modules/expo-file-system/ios`)' + os.EOL +
+    '' + os.EOL +
+    '  In Podfile:' + os.EOL +
+    '    EXFileSystem (from `../node_modules/expo-file-system/ios`)' + os.EOL +
+    '' + os.EOL +
+    '' + os.EOL +
+    'You have either:' + os.EOL +
+    ' * out-of-date source repos which you can update with `pod repo update` or with `pod install --repo-update`.' + os.EOL +
+    ' * changed the constraints of dependency `EXFileSystem` inside your development pod `EXFileSystem`.' + os.EOL +
     "   You should run `pod update EXFileSystem` to apply changes you've made.\n",
   stderr:
-    'Ignoring ffi-1.13.1 because its extensions are not built. Try: gem pristine ffi --version 1.13.1\n' +
-    'Ignoring digest-crc-0.6.1 because its extensions are not built. Try: gem pristine digest-crc --version 0.6.1\n' +
-    'Ignoring ffi-1.13.1 because its extensions are not built. Try: gem pristine ffi --version 1.13.1\n' +
+    'Ignoring ffi-1.13.1 because its extensions are not built. Try: gem pristine ffi --version 1.13.1' + os.EOL +
+    'Ignoring digest-crc-0.6.1 because its extensions are not built. Try: gem pristine digest-crc --version 0.6.1' + os.EOL +
+    'Ignoring ffi-1.13.1 because its extensions are not built. Try: gem pristine ffi --version 1.13.1' + os.EOL +
     'Ignoring unf_ext-0.0.7.7 because its extensions are not built. Try: gem pristine unf_ext --version 0.0.7.7\n',
   status: 1,
   signal: null,
