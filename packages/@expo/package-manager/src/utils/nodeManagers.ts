@@ -15,7 +15,7 @@ import {
 
 export type NodePackageManager = NpmPackageManager | PnpmPackageManager | YarnPackageManager;
 
-export type NodePackageManagerFromOptions = PackageManagerOptions &
+export type NodePackageManagerForProject = PackageManagerOptions &
   Partial<Record<NodePackageManager['name'], boolean>>;
 
 /** The order of the package managers to use when resolving automatically */
@@ -84,35 +84,21 @@ export function resolvePackageManager(
 
 /**
  * This creates a Node package manager from the provided options.
- * If all of these options are non-true, it will fallback to `createForProject`.
- */
-export function createFromOptions(
-  projectRoot: string,
-  options: NodePackageManagerFromOptions = {}
-): NodePackageManager {
-  let Manager;
-
-  if (options.npm) {
-    Manager = NpmPackageManager;
-  } else if (options.yarn) {
-    Manager = YarnPackageManager;
-  } else if (options.pnpm) {
-    Manager = PnpmPackageManager;
-  }
-
-  return Manager
-    ? new Manager({ cwd: projectRoot, ...options })
-    : createForProject(projectRoot, options);
-}
-
-/**
- * Create a Node package manager by infering the project's lockfiles.
- * If none is found, it will fallback to the npm package manager.
+ * If these options are not provided, it will infer the package manager from lockfiles.
+ * When no package manager is found, it falls back to npm.
  */
 export function createForProject(
   projectRoot: string,
-  options: PackageManagerOptions = {}
+  options: NodePackageManagerForProject = {}
 ): NodePackageManager {
+  if (options.npm) {
+    return new NpmPackageManager({ cwd: projectRoot, ...options });
+  } else if (options.yarn) {
+    return new YarnPackageManager({ cwd: projectRoot, ...options });
+  } else if (options.pnpm) {
+    return new PnpmPackageManager({ cwd: projectRoot, ...options });
+  }
+
   switch (resolvePackageManager(projectRoot)) {
     case 'npm':
       return new NpmPackageManager({ cwd: projectRoot, ...options });

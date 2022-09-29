@@ -3,7 +3,7 @@ import { NpmPackageManager } from '../node/NpmPackageManager';
 import { PnpmPackageManager } from '../node/PnpmPackageManager';
 import { YarnPackageManager } from '../node/YarnPackageManager';
 export declare type NodePackageManager = NpmPackageManager | PnpmPackageManager | YarnPackageManager;
-export declare type NodePackageManagerFromOptions = PackageManagerOptions & Partial<Record<NodePackageManager['name'], boolean>>;
+export declare type NodePackageManagerForProject = PackageManagerOptions & Partial<Record<NodePackageManager['name'], boolean>>;
 /** The order of the package managers to use when resolving automatically */
 export declare const RESOLUTION_ORDER: NodePackageManager['name'][];
 /**
@@ -19,11 +19,7 @@ export declare function findWorkspaceRoot(projectRoot: string, preferredManager?
 export declare function resolvePackageManager(projectRoot: string, preferredManager?: NodePackageManager['name']): NodePackageManager['name'] | null;
 /**
  * This creates a Node package manager from the provided options.
- * If all of these options are non-true, it will fallback to `createForProject`.
+ * If these options are not provided, it will infer the package manager from lockfiles.
+ * When no package manager is found, it falls back to npm.
  */
-export declare function createFromOptions(projectRoot: string, options?: NodePackageManagerFromOptions): NodePackageManager;
-/**
- * Create a Node package manager by infering the project's lockfiles.
- * If none is found, it will fallback to the npm package manager.
- */
-export declare function createForProject(projectRoot: string, options?: PackageManagerOptions): NodePackageManager;
+export declare function createForProject(projectRoot: string, options?: NodePackageManagerForProject): NodePackageManager;
