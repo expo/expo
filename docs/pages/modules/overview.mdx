@@ -13,61 +13,38 @@ Expo provides a set of APIs and utilities to improve the process of developing n
 - [iOS AppDelegate Subscribers](./appdelegate-subscribers.mdx) — Respond to iOS AppDelegate events.
 - [Module Config](./module-config.mdx) — Configure and opt in to features.
 
-## Create a new module
+## Design considerations
 
-To create a new Expo module from scratch, just run `yarn create expo-module` or `npm create expo-module`.
-The script will ask you a few questions and then generate the native Expo module along with the example app for iOS and Android that uses your new module.
+Our team needs to maintain a large set of libraries, and maintaining native modules over time and in a constantly changing environment is quite expensive.
+We found out that the existing React Native API for native modules is not scaling very well and is giving us some additional overhead on many levels, from onboarding new contributors (lack of good documentation) to writing a lot of boilerplate code.
+To make the maintenance easier and let the community iterate faster, we decided to create a module system that reduces the costs and technical debt to a minimum.
 
-## Use the Expo Modules API in an existing React Native library
+### Why Swift and Kotlin?
 
-You may want to use the Expo Modules API in existing React Native libraries, for example with [AppDelegate Subscribers](./appdelegate-subscribers.mdx) you can hook into `AppDelegate` methods without requiring developers to copy any code over to their own `AppDelegate`. This is particularly useful to add seamless support for Expo managed projects to a library. The following steps will set up your existing React Native library to have access to the Expo Modules API.
+After several years of maintaining over 50 native modules in the Expo SDK, we have discovered that many issues were caused by unhandled null values or incorrect types.
+Modern language features can help developers avoid these bugs; for example, the lack of optional types combined with the dynamism of Objective-C made it tough to catch certain classes of bugs that would have been caught by the compiler in Swift.
 
-### 1. Initialize the module config
+Another difficulty of writing React Native modules is context switching between the vastly different languages and paradigms for writing native modules on each platform.
+Due to the differences between these platforms, it cannot be avoided completely. We feel the need to have just one common API and documentation to simplify the development as much as possible and make it easier for a single developer to maintain a library on multiple platforms.
 
-Create the [module config](module-config) **expo-module.config.json** file just near your **package.json** and start from the empty object `{}` in there. We will fill it in later to enable specific features. <br/>
+This is one of the reasons why the Expo Modules ecosystem was designed from the ground up to be used with modern native languages: Swift and Kotlin.
 
-### 2. Add the `expo-modules-core` native dependency
+### Passing data between runtimes
 
-Add `expo-modules-core` as a dependency in your podspec and **build.gradle** files.<br/>
+Another big pain point we have encountered is the validation of arguments passed from JavaScript to native functions.
+This is especially error prone, time consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime, and each property needs to be validated separately by the developer.
+A valuable feature of the Expo native modules API is its full knowledge of the argument types the native function expects. It can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](./module-api.md#records).
+Knowing the argument types, it is also possible to [automatically convert arguments](./module-api.md#convertibles) to some platform-specific types (for example, `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
 
-<CodeBlocksTable tabs={["*.podspec", "build.gradle"]}>
+### React Native New Architecture
 
-```ruby
-# ...
-Pod::Spec.new do |s|
-  # ...
-  s.dependency 'ExpoModulesCore'
-end
-```
+React Native version 0.68 introduced the [New Architecture](https://reactnative.dev/docs/the-new-architecture/landing-page), which offers developers new capabilities for building mobile apps.
+It consists of the new native modules system called [Turbo Modules](https://reactnative.dev/docs/the-new-architecture/pillars-turbomodules) and the new rendering system called [Fabric](https://reactnative.dev/architecture/fabric-renderer).
+Native libraries need to be adapted to take advantage of these new systems. For Fabric, it needs even more work as it doesn't provide any compatibility layer, which means that view managers written in the old way don't work with Fabric and the other way around — Fabric native components don't work with the old renderer.
+It basically implies that existing libraries have to provide support for both architectures for a while, increasing the technical debt.
 
-```groovy
-// ...
-dependencies {
-  // ...
-  implementation project(':expo-modules-core')
-}
-```
+The new architecture is mostly written in C++, so you may end up writing some C++ code for your library as well.
+As we all, React Native developers, use high-level JavaScript on a daily basis, we are rather reluctant to write C++, which is on the opposite side of the spectrum.
+Moreover, including C++ code in the library has a negative impact on build times, especially on Android, and can be more difficult to debug.
 
-</CodeBlocksTable>
-
-### 3. Add Expo packages to dependencies
-
-Add `expo` package as a peer dependency in your **package.json** — we recommend using `*` as a version range so as not to cause any duplicated packages in user's **node_modules** folder. Your library also needs to depend on `expo-modules-core` but only as a dev dependency — it's already provided in the projects depending on your library by the `expo` package with the version of core that is compatible with the specific SDK used in the project.<br/>
-
-<CodeBlocksTable tabs={["package.json"]}>
-
-```json
-{
-  // ...
-  "devDependencies": {
-    "expo-modules-core": "^X.Y.Z"
-  },
-  "peerDependencies": {
-    "expo": "*"
-  }
-}
-```
-
-</CodeBlocksTable>
-
-You can now use Expo Modules APIs in your library. You may be interested in referring to the [Android Lifecycle Listeners](./android-lifecycle-listeners.mdx) and [iOS AppDelegate Subscribers](./appdelegate-subscribers.mdx) guides next.
+We took these into account when designing the Expo Modules API with the goal in mind to make it renderer-agnostic, so that the module doesn't need to know whether the app is run on the new architecture or not, significantly reducing the cost for library developers.

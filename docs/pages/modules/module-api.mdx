@@ -10,81 +10,10 @@ import { APIBox } from '~/components/plugins/APIBox';
 
 The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primities that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy to use and convenient API that is consistent across platforms where possible.
 
-## Design considerations
-
-### Why Swift and Kotlin?
-
-After several years of maintaining over 50 native modules in the Expo SDK, we have found out that many issues that have arisen were caused by unhandled null values or using incorrect types. Modern language features can help developers avoid these bugs; for example, the lack of optional types combined with the dynamism of Objective-C made it tough to catch certain classes of bugs that would have been caught by the compiler in Swift.
-
-This is one of the reasons why the Expo Modules ecosystem was designed from the ground up to be used with modern native languages: Swift and Kotlin.
-
-### Passing data between runtimes
-
-Another big pain point that we have encountered is the validation of arguments passed from JavaScript to native functions. This is especially error prone, time consuming, and difficult to maintain when it comes to `NSDictionary` or `ReadableMap`, where the type of values is unknown in runtime and each property needs to be validated separately by the developer. A valuable feature of the Expo native modules API is that it has full knowledge of the argument types the native function expects, so it can pre-validate and convert the arguments for you! The dictionaries can be represented as native structs that we call [Records](#records). Knowing the argument types, it is also possible to [automatically convert arguments](#convertibles) to some platform-specific types (e.g. `{ x: number, y: number }` or `[number, number]` can be translated to CoreGraphics's `CGPoint` for your convenience).
-
-## Get Started
-
-### 1. Set up the library as an Expo module
-
-To use the Expo Modules API for native modules, you need [set up your library as an Expo module](overview). Once that is complete, create Swift and Kotlin files from the below templates.
-
-<CodeBlocksTable>
-
-```swift
-import ExpoModulesCore
-
-public class MyModule: Module {
-  public func definition() -> ModuleDefinition {
-    // Definition components go here
-  }
-}
-```
-
-```kotlin
-package my.module.package
-
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
-
-class MyModule : Module() {
-  override fun definition() = ModuleDefinition {
-    // Definition components go here
-  }
-}
-```
-
-</CodeBlocksTable>
-
-### 2. Set up module config
-
-Add your classes to iOS and/or Android `modules` in the [module config](module-config).
-
-<CodeBlocksTable tabs={["expo-module.config.json"]}>
-
-```json
-{
-  "ios": {
-    "modules": ["MyModule"]
-  },
-  "android": {
-    "modules": ["my.module.package.MyModule"]
-  }
-}
-```
-
-</CodeBlocksTable>
-
-### 3. Ensure the module is linked
-
-**On iOS** you also need to run `pod install` to link the new class.
-
-**On Android** it will be linked automatically before building.
-
-Now that the class is set up and linked, you can start to add functionality. The rest of this guide is a reference for the module API, along with links to [examples](#examples) of simple to moderately complex real-world modules that you can reference to better understand how to use the API.
-
 ## Definition Components
 
-As you might have noticed in the snippets above, each module class must implement the `definition` function. The definition consists of components that describe the module's functionality and behavior.
+As you might have noticed in the snippets on the [Get Started](./get-started.mdx) page, each module class must implement the `definition` function.
+The module definition consists of the DSL components that describe the module's functionality and behavior.
 
 <APIBox header="Name">
 
