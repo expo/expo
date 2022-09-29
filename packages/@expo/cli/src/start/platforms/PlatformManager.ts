@@ -68,7 +68,13 @@ export class PlatformManager<
     const redirectUrl = this.props.getRedirectUrl();
     if (redirectUrl) {
       // If the redirect page feature is enabled, check if the project has a resolvable native identifier.
-      const applicationId = await this._getAppIdResolver().getAppIdAsync();
+      let applicationId;
+      try {
+        applicationId = await this._getAppIdResolver().getAppIdAsync();
+      } catch {
+        // do nothing, expected if the applicationId is not defined anywhere (e.g. managed project
+        // without ios.bundleIdentifier)
+      }
       if (applicationId) {
         debug(`Resolving launch URL: (appId: ${applicationId}, redirect URL: ${redirectUrl})`);
         // NOTE(EvanBacon): This adds considerable amount of time to the command, we should consider removing or memoizing it.
