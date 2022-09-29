@@ -5,7 +5,7 @@ import { ProxyNativeModule } from './NativeModulesProxy.types';
 const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
 // Fixes `cannot find name 'global'.` in tests
 // @ts-ignore
-const ExpoNativeProxy = global.ExpoModules?.NativeModulesProxy;
+const ExpoNativeProxy = global.expo?.modules?.NativeModulesProxy;
 
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';

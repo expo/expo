@@ -16,7 +16,7 @@ class IOTypeConversionTest {
       Function("file") { a: File -> a.toString() }
     }
   ) {
-    val stringValue = evaluateScript("ExpoModules.TestModule.file('/path/to/file')").getString()
+    val stringValue = evaluateScript("expo.modules.TestModule.file('/path/to/file')").getString()
     Truth.assertThat(stringValue).isEqualTo("/path/to/file")
   }
 
@@ -27,7 +27,7 @@ class IOTypeConversionTest {
       Function("path") { a: Path -> a.toString() }
     }
   ) {
-    val stringValue = evaluateScript("ExpoModules.TestModule.path('/path/to/file')").getString()
+    val stringValue = evaluateScript("expo.modules.TestModule.path('/path/to/file')").getString()
     Truth.assertThat(stringValue).isEqualTo("/path/to/file")
   }
 }
