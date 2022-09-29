@@ -4,7 +4,7 @@ import path from 'path';
 import { NpmPackageManager } from '../../node/NpmPackageManager';
 import { PnpmPackageManager } from '../../node/PnpmPackageManager';
 import { YarnPackageManager } from '../../node/YarnPackageManager';
-import { createFromOptions, createFromProject, resolvePackageManager } from '../nodeManagers';
+import { createFromOptions, createForProject, resolvePackageManager } from '../nodeManagers';
 import {
   NPM_LOCK_FILE,
   PNPM_LOCK_FILE,
@@ -38,7 +38,7 @@ describe(createFromOptions, () => {
   });
 });
 
-describe(createFromProject, () => {
+describe(createForProject, () => {
   const projectRoot = '/foo';
 
   afterEach(() => vol.reset());
@@ -52,7 +52,7 @@ describe(createFromProject, () => {
       projectRoot
     );
 
-    expect(createFromProject(projectRoot)).toBeInstanceOf(NpmPackageManager);
+    expect(createForProject(projectRoot)).toBeInstanceOf(NpmPackageManager);
   });
 
   it(`creates yarn package manager from project`, () => {
@@ -64,7 +64,7 @@ describe(createFromProject, () => {
       projectRoot
     );
 
-    expect(createFromProject(projectRoot)).toBeInstanceOf(YarnPackageManager);
+    expect(createForProject(projectRoot)).toBeInstanceOf(YarnPackageManager);
   });
 
   it(`creates pnpm package manager from project`, () => {
@@ -76,7 +76,7 @@ describe(createFromProject, () => {
       projectRoot
     );
 
-    expect(createFromProject(projectRoot)).toBeInstanceOf(PnpmPackageManager);
+    expect(createForProject(projectRoot)).toBeInstanceOf(PnpmPackageManager);
   });
 
   it(`defaults to npm package manager`, () => {
@@ -87,7 +87,7 @@ describe(createFromProject, () => {
       projectRoot
     );
 
-    expect(createFromProject(projectRoot)).toBeInstanceOf(NpmPackageManager);
+    expect(createForProject(projectRoot)).toBeInstanceOf(NpmPackageManager);
   });
 });
 
