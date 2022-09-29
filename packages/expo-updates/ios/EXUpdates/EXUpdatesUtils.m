@@ -151,6 +151,15 @@ static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
   }];
 }
 
++ (BOOL)isNativeDebuggingEnabled
+{
+#if EX_UPDATES_NATIVE_DEBUG
+  return YES;
+#else
+  return NO;
+#endif
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

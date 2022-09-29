@@ -10,7 +10,7 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
   private lazy var shouldEnableAutoSetup: Bool = {
-    if EXAppDefines.APP_DEBUG {
+    if EXAppDefines.APP_DEBUG && !EXUpdatesUtils.isNativeDebuggingEnabled() {
       return false
     }
     // if Expo.plist not found or its content is invalid, disable the auto setup
