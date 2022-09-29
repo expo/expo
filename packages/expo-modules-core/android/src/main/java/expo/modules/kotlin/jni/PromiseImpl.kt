@@ -24,9 +24,9 @@ private const val STACK_FRAME_KEY_LINE_NUMBER = "lineNumber"
 private const val STACK_FRAME_KEY_METHOD_NAME = "methodName"
 
 @DoNotStrip
-class PromiseImpl(
-  internal val resolveBlock: JavaCallback,
-  internal val rejectBlock: JavaCallback
+class PromiseImpl @DoNotStrip internal constructor(
+  @DoNotStrip internal val resolveBlock: JavaCallback,
+  @DoNotStrip internal val rejectBlock: JavaCallback
 ) : Promise {
   private var wasResolve = false
 
