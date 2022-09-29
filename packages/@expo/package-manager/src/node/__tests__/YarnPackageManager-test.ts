@@ -8,6 +8,11 @@ import { YarnPackageManager } from '../YarnPackageManager';
 jest.mock('@expo/spawn-async');
 jest.mock('fs');
 
+beforeAll(() => {
+  // Disable logging to clean up test ouput
+  jest.spyOn(console, 'log').mockImplementation();
+});
+
 describe('YarnPackageManager', () => {
   const projectRoot = '/project/with-yarn';
 
