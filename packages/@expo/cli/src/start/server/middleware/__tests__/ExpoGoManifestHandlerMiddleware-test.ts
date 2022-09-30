@@ -101,7 +101,7 @@ beforeEach(() => {
   vol.reset();
 });
 
-describe.only('getParsedHeaders', () => {
+describe('getParsedHeaders', () => {
   const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
 
   it('defaults to "ios" with no platform header', () => {
