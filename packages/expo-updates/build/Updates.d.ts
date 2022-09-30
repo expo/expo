@@ -12,7 +12,7 @@ export declare const updateId: string | null;
  * The name of the release channel currently configured in this standalone or bare app when using
  * classic updates. When using Expo Updates, the value of this field is always `"default"`.
  */
-export declare const releaseChannel: string;
+export declare const releaseChannel: string | null;
 /**
  * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
  */
