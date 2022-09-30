@@ -1,5 +1,8 @@
 import { sync as findUpSync } from 'find-up';
 import findYarnOrNpmWorkspaceRootUnsafe from 'find-yarn-workspace-root';
+import fs from 'fs';
+import yaml from 'js-yaml';
+import micromatch from 'micromatch';
 import path from 'path';
 
 export const NPM_LOCK_FILE = 'package-lock.json';
@@ -33,6 +36,24 @@ export function findPnpmWorkspaceRoot(projectRoot: string): string | null {
     ? path.join(workspaceEnvValue, PNPM_WORKSPACE_FILE)
     : findUpSync(PNPM_WORKSPACE_FILE, { cwd: projectRoot });
 
-  // TODO: add check to see if this project is defined within the workspace file
-  return workspaceFile ? path.dirname(workspaceFile) : null;
+  if (!workspaceFile || !fs.existsSync(workspaceFile)) {
+    return null;
+  }
+
+  try {
+    // See: https://pnpm.io/pnpm-workspace_yaml
+    const { packages: workspaces } = yaml.load(fs.readFileSync(workspaceFile, 'utf8'));
+    // See: https://github.com/square/find-yarn-workspace-root/blob/11f6e31d3fa15a5bb7b7419f0091390e4c16204c/index.js#L26-L33
+    const workspaceRoot = path.dirname(workspaceFile);
+    const relativePath = path.relative(workspaceRoot, projectRoot);
+
+    if (relativePath === '' || micromatch([relativePath], workspaces).length > 0) {
+      return workspaceRoot;
+    }
+  } catch {
+    // TODO: implement debug logger?
+    return null;
+  }
+
+  return null;
 }
