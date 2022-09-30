@@ -107,7 +107,7 @@ export class ExternalModule<TModule> {
       const packageManager = shouldGloballyInstall
         ? new PackageManager.NpmPackageManager({
             cwd: this.projectRoot,
-            logger: Log.log,
+            log: Log.log,
             silent: !env.EXPO_DEBUG,
           })
         : PackageManager.createForProject(this.projectRoot, {
