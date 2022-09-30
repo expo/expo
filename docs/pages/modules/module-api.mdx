@@ -19,13 +19,10 @@ The module definition consists of the DSL components that describe the module's 
 
 Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument. Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
 
-<CodeBlocksTable tabs={["Swift / Kotlin"]}>
-
-```swift
+```swift Swift / Kotlin
 Name("MyModuleName")
 ```
 
-</CodeBlocksTable>
 </APIBox>
 <APIBox header="Constants">
 
@@ -90,7 +87,9 @@ Function("syncFunction") { message: String ->
 }
 ```
 
-```javascript
+</CodeBlocksTable>
+
+```js JavaScript
 import { requireNativeModule } from 'expo-modules-core';
 
 // Assume that we have named the module "MyModule"
@@ -101,7 +100,6 @@ function getMessage() {
 }
 ```
 
-</CodeBlocksTable>
 </APIBox>
 <APIBox header="AsyncFunction">
 
@@ -141,7 +139,9 @@ AsyncFunction("asyncFunction") { message: String, promise: Promise ->
 }
 ```
 
-```javascript
+</CodeBlocksTable>
+
+```js JavaScript
 import { requireNativeModule } from 'expo-modules-core';
 
 // Assume that we have named the module "MyModule"
@@ -152,7 +152,6 @@ async function getMessageAsync() {
 }
 ```
 
-</CodeBlocksTable>
 </APIBox>
 <APIBox header="Events">
 

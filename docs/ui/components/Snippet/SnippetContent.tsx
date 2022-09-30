@@ -6,10 +6,12 @@ type SnippetContentProps = PropsWithChildren<{
   alwaysDark?: boolean;
   hideOverflow?: boolean;
   skipPadding?: boolean;
+  className?: string;
 }>;
 
 export const SnippetContent = ({
   children,
+  className,
   alwaysDark = false,
   hideOverflow = false,
   skipPadding = false,
@@ -20,7 +22,8 @@ export const SnippetContent = ({
       alwaysDark && contentDarkStyle,
       hideOverflow && contentHideOverflow,
       skipPadding && skipPaddingStyle,
-    ]}>
+    ]}
+    className={className}>
     {children}
   </div>
 );

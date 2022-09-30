@@ -63,9 +63,8 @@ Parental controls on the App Store use this calculated age rating.
 EAS Metadata uses the least restrictive answer for each of these questions by default.
 
 <Collapsible summary="Complete advisory with the least restrictive answers">
-  <CodeBlocksTable tabs={['store.config.json']} style={{ marginTop: 0 }}>
 
-```json
+```json store.config.json
 {
   "configVersion": 0,
   "apple": {
@@ -91,7 +90,6 @@ EAS Metadata uses the least restrictive answer for each of these questions by de
 }
 ```
 
-  </CodeBlocksTable>
 </Collapsible>
 
 <MetadataTable>
@@ -151,9 +149,8 @@ EAS Metadata uses the least restrictive answer for each of these questions by de
 The App Store helps users discover new apps by [categorizing apps into categories](https://developer.apple.com/app-store/categories/), using primary, secondary, and possible subcategories.
 
 <Collapsible summary="Primary and secondary category">
-  <CodeBlocksTable tabs={['store.config.json']} style={{ marginTop: 0 }}>
 
-```json
+```json store.config.json
 {
   "configVersion": 0,
   "apple": {
@@ -162,13 +159,11 @@ The App Store helps users discover new apps by [categorizing apps into categorie
 }
 ```
 
-  </CodeBlocksTable>
 </Collapsible>
 
 <Collapsible summary="Primary, subcategories, and secondary category">
-  <CodeBlocksTable tabs={['store.config.json']} style={{ marginTop: 0 }}>
 
-```json
+```json store.config.json
 {
   "configVersion": 0,
   "apple": {
@@ -180,7 +175,6 @@ The App Store helps users discover new apps by [categorizing apps into categorie
 }
 ```
 
-  </CodeBlocksTable>
 </Collapsible>
 
 <MetadataTable key='apple.categories' headers={['Name', 'Description']}>
@@ -228,9 +222,8 @@ The App Store is a global service used by many people in different languages.
 You can localize your App Store presence in [multiple languages](#apple-info-languages).
 
 <Collapsible summary="Minimal localized info in English (U.S.)">
-  <CodeBlocksTable tabs={['store.config.json']} style={{ marginTop: 0 }}>
 
-```json
+```json store.config.json
 {
   "configVersion": 0,
   "apple": {
@@ -244,13 +237,11 @@ You can localize your App Store presence in [multiple languages](#apple-info-lan
 }
 ```
 
-  </CodeBlocksTable>
 </Collapsible>
 
 <Collapsible summary="Complete localized info written in English (U.S.)">
-  <CodeBlocksTable tabs={['store.config.json']} style={{ marginTop: 0 }}>
 
-```json
+```json store.config.json
 {
   "configVersion": 0,
   "apple": {
@@ -272,7 +263,6 @@ You can localize your App Store presence in [multiple languages](#apple-info-lan
 }
 ```
 
-  </CodeBlocksTable>
 </Collapsible>
 
 <MetadataTable>
@@ -362,9 +352,8 @@ There are multiple strategies to put the app in the hands of your users.
 You can release the app automatically after store approval or gradually release an update to your users.
 
 <Collapsible summary="Automatic release after 25th of December, 2022 (UTC)">
-  <CodeBlocksTable tabs={['store.config.json']} style={{ marginTop: 0 }}>
 
-```json
+```json store.config.json
 {
   "configVersion": 0,
   "apple": {
@@ -375,7 +364,6 @@ You can release the app automatically after store approval or gradually release 
 }
 ```
 
-  </CodeBlocksTable>
 </Collapsible>
 
 <MetadataTable>
@@ -412,9 +400,8 @@ Before publishing the app on the App Store, store approval is required.
 The App Store review team must have all the information to test your app, or you risk an app rejection.
 
 <Collapsible summary="Minimal review information">
-  <CodeBlocksTable tabs={['store.config.json']} style={{ marginTop: 0 }}>
 
-```json
+```json store.config.json
 {
   "configVersion": 0,
   "apple": {
@@ -428,13 +415,11 @@ The App Store review team must have all the information to test your app, or you
 }
 ```
 
-  </CodeBlocksTable>
 </Collapsible>
 
 <Collapsible summary="Complete review information">
-  <CodeBlocksTable tabs={['store.config.json']} style={{ marginTop: 0 }}>
 
-```json
+```json store.config.json
 {
   "configVersion": 0,
   "apple": {
@@ -452,7 +437,6 @@ The App Store review team must have all the information to test your app, or you
 }
 ```
 
-  </CodeBlocksTable>
 </Collapsible>
 
 <MetadataTable>
