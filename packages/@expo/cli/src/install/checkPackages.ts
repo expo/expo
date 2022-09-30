@@ -29,10 +29,7 @@ export async function checkPackagesAsync(
      */
     packages: string[];
     /** Package manager to use when installing the versioned packages. */
-    packageManager:
-      | PackageManager.NpmPackageManager
-      | PackageManager.YarnPackageManager
-      | PackageManager.PnpmPackageManager;
+    packageManager: PackageManager.NodePackageManager;
 
     /** How the check should resolve */
     options: Pick<Options, 'fix'>;

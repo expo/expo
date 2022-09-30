@@ -107,7 +107,7 @@ export class ExternalModule<TModule> {
       const packageManager = shouldGloballyInstall
         ? new PackageManager.NpmPackageManager({
             cwd: this.projectRoot,
-            log: Log.log,
+            logger: Log.log,
             silent: !env.EXPO_DEBUG,
           })
         : PackageManager.createForProject(this.projectRoot, {
@@ -116,9 +116,9 @@ export class ExternalModule<TModule> {
 
       try {
         if (shouldGloballyInstall) {
-          await packageManager.addGlobalAsync(packageName);
+          await packageManager.addGlobalAsync([packageName]);
         } else {
-          await packageManager.addDevAsync(packageName);
+          await packageManager.addDevAsync([packageName]);
         }
         Log.log(`Installed ${packageName}`);
       } catch (error: any) {
