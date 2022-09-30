@@ -18,8 +18,8 @@ export class YarnPackageManager extends BasePackageManager {
     if (root) {
       return new YarnPackageManager({
         ...this.options,
-        logger: this.logger,
         silent: this.silent,
+        log: this.log,
         cwd: root,
       });
     }

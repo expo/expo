@@ -9,12 +9,12 @@ import { PendingSpawnPromise } from '../utils/spawn';
 
 export abstract class BasePackageManager implements PackageManager {
   readonly silent: boolean;
-  readonly logger: (...args: any) => void;
+  readonly log?: (...args: any) => void;
   readonly options: PackageManagerOptions;
 
-  constructor({ silent, logger, ...options }: PackageManagerOptions = {}) {
+  constructor({ silent, log, ...options }: PackageManagerOptions = {}) {
     this.silent = !!silent;
-    this.logger = logger || console.log;
+    this.log = log ?? (!silent ? console.log : undefined);
     this.options = options;
   }
 
@@ -57,10 +57,7 @@ export abstract class BasePackageManager implements PackageManager {
   }
 
   runAsync(command: string[]) {
-    if (!this.silent && !this.options.ignoreStdio) {
-      this.logger?.(`> ${this.name} ${command.join(' ')}`);
-    }
-
+    this.log?.(`> ${this.name} ${command.join(' ')}`);
     return spawnAsync(this.bin, command, this.options);
   }
 

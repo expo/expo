@@ -16,8 +16,8 @@ export class NpmPackageManager extends BasePackageManager {
     if (root) {
       return new NpmPackageManager({
         ...this.options,
-        logger: this.logger,
         silent: this.silent,
+        log: this.log,
         cwd: root,
       });
     }
