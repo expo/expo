@@ -109,12 +109,6 @@ android {
   }
 }
 
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r245459'
-  }
-}
-
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -216,7 +210,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
+  api 'org.webkit:android-jsc:r250230' // needs to be before react-native
   api 'com.facebook.react:react-native:+'
   END UNCOMMENT WHEN DISTRIBUTING */
 
