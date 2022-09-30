@@ -158,7 +158,6 @@ class AppContext(
   val directories: DirectoriesModuleInterface?
     get() = legacyModule()
 
-
   /**
    * Provides access to the permissions manager from the legacy module registry
    */

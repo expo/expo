@@ -69,8 +69,7 @@ internal class MediaHandler(
 
   private suspend fun handleVideo(
     sourceUri: Uri,
-  ): ImagePickerResponse.Single.Video
-  {
+  ): ImagePickerResponse.Single.Video {
     val outputFile = createOutputFile(directories.cacheDir, ".mp4")
     copyFile(sourceUri, outputFile, context.contentResolver)
     val outputUri = outputFile.toUri()
