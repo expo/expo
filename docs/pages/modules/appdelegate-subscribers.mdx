@@ -44,9 +44,7 @@ In this scenario, `ExpoAppDelegate` passes a new completion block to each subscr
 
 ## Example
 
-<CodeBlocksTable tabs={['AppLifecycleDelegate.swift']}>
-
-```swift
+```swift AppLifecycleDelegate.swift
 import ExpoModulesCore
 
 public class AppLifecycleDelegate: ExpoAppDelegateSubscriber {
@@ -72,16 +70,10 @@ public class AppLifecycleDelegate: ExpoAppDelegateSubscriber {
 }
 ```
 
-</CodeBlocksTable>
-
-<CodeBlocksTable tabs={['expo-module.config.json']}>
-
-```json
+```json expo-module.config.json
 {
   "ios": {
     "appDelegateSubscribers": ["AppLifecycleDelegate"]
   }
 }
 ```
-
-</CodeBlocksTable>
