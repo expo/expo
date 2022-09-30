@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PnpmPackageManager = void 0;
+const env_1 = require("../utils/env");
 const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
 const BasePackageManager_1 = require("./BasePackageManager");
 class PnpmPackageManager extends BasePackageManager_1.BasePackageManager {
@@ -21,6 +22,12 @@ class PnpmPackageManager extends BasePackageManager_1.BasePackageManager {
             });
         }
         return null;
+    }
+    installAsync(namesOrFlags = []) {
+        if ((0, env_1.isCI)() && !namesOrFlags.join(' ').includes('frozen-lockfile')) {
+            namesOrFlags.unshift('--no-frozen-lockfile');
+        }
+        return this.runAsync(['install', ...namesOrFlags]);
     }
     addAsync(namesOrFlags = []) {
         if (!namesOrFlags.length) {
