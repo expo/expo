@@ -588,10 +588,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@expo/styleguide@^4.1.2":
-  version "4.1.2"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-4.1.2.tgz#b27480ca32f0644ce14d776c643c648674df7f5e"
-  integrity sha512-9EeYwwvpd0jferqsqZLu3o5bZacOZpW+uTkW2krFDDgdzwjnvaUZL6kvEZc3LO+Mo13qu5rv6cI41hW12UhvAQ==
+"@expo/styleguide@^4.3.0":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-4.3.0.tgz#dd711ebd2879e62796eca1f0d58c1ce48e603f51"
+  integrity sha512-UPjkXEUMhlM1BNKS2waK1hYJJ3xy0OQksJbqzREPk5ZfqgofDH8lSMZ0Rc7yQMI8Akfaj/pOglSfJH8wVKV1bg==
 
 "@humanwhocodes/config-array@^0.9.2":
   version "0.9.5"
