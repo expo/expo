@@ -12,7 +12,7 @@ To get started, you'll need to install `jest-expo`. It's a Jest preset that mock
 
 To install a compatible version of `jest-expo` for your project, run:
 
-<Terminal cmd={[ '$ npx expo install jest-expo jest' ]} />
+<Terminal cmd={['$ npx expo install jest-expo jest']} />
 
 Then, we need to add/update **package.json** to include:
 
@@ -28,12 +28,14 @@ Then, we need to add/update **package.json** to include:
 
 Now let's add `react-test-renderer` to our project. Pick a version that is compatible with the React version used by your project. For example, if you use React 17.x then you should install `react-test-renderer@17`:
 
-<Terminal cmd={[
-'# Using yarn',
-'$ yarn add react-test-renderer@17 --dev',
-'# Using npm',
-'$ npm i react-test-renderer@17 --save-dev'
-]}/>
+<Terminal
+  cmd={[
+    '# Using yarn',
+    '$ yarn add react-test-renderer@17 --dev',
+    '# Using npm',
+    '$ npm i react-test-renderer@17 --save-dev',
+  ]}
+/>
 
 That's it! Now we can start writing Jest tests!
 

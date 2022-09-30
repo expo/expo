@@ -90,8 +90,7 @@ const config = require('./store.config.json');
 
 module.exports = async () => {
   const year = new Date().getFullYear();
-  const info = await fetchLocalizations('...')
-    .then(response => response.json());
+  const info = await fetchLocalizations('...').then(response => response.json());
 
   config.apple.copyright = `${year} Acme, Inc.`;
   config.apple.info = info;

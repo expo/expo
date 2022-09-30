@@ -3,7 +3,7 @@ title: Build configuration process
 sidebar_title: Configuration process
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 In this guide, you will learn what happens when EAS CLI configures your project with `eas build:configure` (or `eas build` - which runs this same process if the project is not yet configured).
 
@@ -13,7 +13,11 @@ EAS CLI performs the following steps when configuring your project:
 
 If you only want to use EAS Build for a single platform, that's fine. If you change your mind, you can come back and configure the other later.
 
-<ImageSpotlight alt="Terminal running eas build command with platform iOS and Android options available" src="/static/images/eas-build/configure/01-configure-platform.png" containerStyle={{ paddingBottom: 0 }} />
+<ImageSpotlight
+  alt="Terminal running eas build command with platform iOS and Android options available"
+  src="/static/images/eas-build/configure/01-configure-platform.png"
+  containerStyle={{ paddingBottom: 0 }}
+/>
 
 #### 2. Create eas.json
 
@@ -49,7 +53,11 @@ If you haven't configured your **app.json** with `android.package` and/or `ios.b
 - `android.package` will be used as the Android application id which is used to identify your app on the Google Play Store
 - `ios.bundleIdentifier` will be used to identify you app on the Apple App Store
 
-<ImageSpotlight alt="Application identifier prompts in eas build:configure" src="/static/images/eas-build/configure/02-configure-app-ids.png" containerStyle={{ paddingBottom: 0 }} />
+<ImageSpotlight
+  alt="Application identifier prompts in eas build:configure"
+  src="/static/images/eas-build/configure/02-configure-app-ids.png"
+  containerStyle={{ paddingBottom: 0 }}
+/>
 
 In the example above, we defined exactly the same Android application id and iOS bundle identifier. However, they don't need to match.
 
@@ -62,4 +70,8 @@ There are no additional steps for bare workflow projects.
 That's all there is to configuring a project to be compatible with EAS Build.
 There is one final step if you set `cli.requireCommit` to `true` in your **eas.json** — you'll be prompted to commit all the changes we made for you. You can choose to review them before committing, and you can either specify the git commit message or use a default message.
 
-<ImageSpotlight alt="Application identifier prompts in eas build:configure" src="/static/images/eas-build/configure/03-next-steps.png" containerStyle={{ paddingBottom: 0 }} />
+<ImageSpotlight
+  alt="Application identifier prompts in eas build:configure"
+  src="/static/images/eas-build/configure/03-next-steps.png"
+  containerStyle={{ paddingBottom: 0 }}
+/>

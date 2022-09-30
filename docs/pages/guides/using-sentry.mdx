@@ -25,9 +25,9 @@ It notifies you of exceptions or errors that your users run into while using you
 
 <PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
-## Installating and configuring Sentry
+## Installing and configuring Sentry
 
-### Step 0: Sign up for a Sentry account and create a project
+### Step 1: Sign up for a Sentry account and create a project
 
 Before getting real-time updates on errors and making your app generally incredible, you'll need to make sure you've created a Sentry project. Here's how to do that:
 
@@ -41,7 +41,7 @@ Before getting real-time updates on errors and making your app generally incredi
 
 Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
 
-### Step 1: Installation
+### Step 2: Installation
 
 In your project directory, run:
 
@@ -50,10 +50,12 @@ In your project directory, run:
 `sentry-expo` also requires some additional Expo module packages. To install them, run:
 
 <Terminal
-cmd={['$ npx expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
+  cmd={[
+    '$ npx expo install expo-application expo-constants expo-device expo-updates @sentry/react-native',
+  ]}
 />
 
-### Step 2: Code
+### Step 3: Code
 
 #### Initialization
 
@@ -91,7 +93,7 @@ try {
 }
 ```
 
-### Step 3: App Configuration
+### Step 4: App Configuration
 
 Configuring sentry-expo is done through the config plugin in your **app.json** or **app.config.js**.
 
@@ -117,7 +119,7 @@ to your root project file (usually **App.js**), so make sure you remove it (but 
 
 </ConfigReactNative>
 
-#### 3.1: Configure a `postPublish` hook
+#### 4.1: Configure a `postPublish` hook
 
 Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 
@@ -143,7 +145,6 @@ Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 
 The `authToken` value can be generated from the [Sentry API page](https://sentry.io/settings/account/api/).
 
-
 <Collapsible summary="Prefer to use environment variables instead of storing values in app.json?">
 
 You can also use environment variables for your config, if you prefer:
@@ -153,7 +154,6 @@ You can also use environment variables for your config, if you prefer:
 - authToken → `SENTRY_AUTH_TOKEN`
 
 </Collapsible>
-
 
 <Collapsible summary="Additional configuration options">
 
@@ -175,7 +175,7 @@ In addition to the required config fields above, you can also provide these **op
 
 </Collapsible>
 
-#### 3.2: Add the Config Plugin
+#### 4.2: Add the Config Plugin
 
 Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 

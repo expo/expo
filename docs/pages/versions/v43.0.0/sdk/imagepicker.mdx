@@ -3,7 +3,12 @@ title: ImagePicker
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-image-picker'
 ---
 
-import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import {
+  ConfigClassic,
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -12,7 +17,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
-<Video file={"sdk/imagepicker.mp4"} loop={false} />
+<Video file={'sdk/imagepicker.mp4'} loop={false} />
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -63,16 +68,32 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-{/*
-  Look in the plugin directory for the library and see what the options are, then fill in the below table as needed.
-  Here's an example plugin: https://github.com/expo/expo/blob/main/packages/expo-image-picker/plugin/src/withImagePicker.ts#L70-L73
-*/}
+{/* Look in the plugin directory for the library and see what the options are, then fill in the below table as needed. */}
 
-<ConfigPluginProperties properties={[
-{ name: 'photosPermission', platform: 'ios', description: 'A string to set the NSPhotoLibraryUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your photos"' },
-{ name: 'cameraPermission', platform: 'ios', description: 'A string to set the NSCameraUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your camera"' },
-{ name: 'microphonePermission', platform: 'ios', description: 'A string to set the NSMicrophoneUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your microphone"' }
-]} />
+{/* Here's an example plugin: https://github.com/expo/expo/blob/main/packages/expo-image-picker/plugin/src/withImagePicker.ts#L70-L73 */}
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'photosPermission',
+      platform: 'ios',
+      description: 'A string to set the NSPhotoLibraryUsageDescription permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your photos"',
+    },
+    {
+      name: 'cameraPermission',
+      platform: 'ios',
+      description: 'A string to set the NSCameraUsageDescription permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your camera"',
+    },
+    {
+      name: 'microphonePermission',
+      platform: 'ios',
+      description: 'A string to set the NSMicrophoneUsageDescription permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your microphone"',
+    },
+  ]}
+/>
 
 ## Usage
 
@@ -137,7 +158,6 @@ When you run this example and pick an image, you will see the image that you pic
 ## Using ImagePicker with AWS S3
 
 Please refer to the [with-aws-storage-upload example](https://github.com/expo/examples/tree/master/with-aws-storage-upload). Follow [Amplify docs](https://docs.amplify.aws/) to set your project up correctly.
-
 
 ## Using ImagePicker with Firebase
 
@@ -316,16 +336,16 @@ Android system sometimes kills the `MainActivity` after the `ImagePicker` finish
 
 ### `ImagePicker.UIImagePickerPresentationStyle`
 
-| Preset                                             | Value |
-| --------------------------------------------       | ----- |
-| `UIImagePickerPresentationStyle.FullScreen`        | 0     |
-| `UIImagePickerPresentationStyle.PageSheet`         | 1     |
-| `UIImagePickerPresentationStyle.FormSheet`         | 2     |
-| `UIImagePickerPresentationStyle.CurrentContext`    | 3     |
-| `UIImagePickerPresentationStyle.OverFullScreen`    | 5     |
-| `UIImagePickerPresentationStyle.OverCurrentContext`| 6     |
-| `UIImagePickerPresentationStyle.Popover`           | 7     |
-| `UIImagePickerPresentationStyle.Automatic`         | -2    |
+| Preset                                              | Value |
+| --------------------------------------------------- | ----- |
+| `UIImagePickerPresentationStyle.FullScreen`         | 0     |
+| `UIImagePickerPresentationStyle.PageSheet`          | 1     |
+| `UIImagePickerPresentationStyle.FormSheet`          | 2     |
+| `UIImagePickerPresentationStyle.CurrentContext`     | 3     |
+| `UIImagePickerPresentationStyle.OverFullScreen`     | 5     |
+| `UIImagePickerPresentationStyle.OverCurrentContext` | 6     |
+| `UIImagePickerPresentationStyle.Popover`            | 7     |
+| `UIImagePickerPresentationStyle.Automatic`          | -2    |
 
 ### `ImagePicker.UIImagePickerControllerType`
 
@@ -381,7 +401,13 @@ The following permissions are added automatically through the library **AndroidM
 
 The following usage description keys are used by the APIs in this library.
 
-<IOSPermissions permissions={[ 'NSMicrophoneUsageDescription', 'NSPhotoLibraryUsageDescription', 'NSCameraUsageDescription' ]} />
+<IOSPermissions
+  permissions={[
+    'NSMicrophoneUsageDescription',
+    'NSPhotoLibraryUsageDescription',
+    'NSCameraUsageDescription',
+  ]}
+/>
 
 {/* if no permissions required, just use this text: */}
 

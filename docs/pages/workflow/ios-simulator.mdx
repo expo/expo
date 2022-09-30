@@ -2,8 +2,8 @@
 title: iOS Simulator
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import Video from '~/components/plugins/Video'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 
 It's often convenient to develop your app directly on your computer rather than having to physically interact with an iPhone and iPad and load your app over the network, which may be slow under some conditions such as if you need to use a tunnel connection because LAN isn't possible on your network.
@@ -13,7 +13,7 @@ This guide explains how you can install the iOS simulator on your Mac and use it
 ## Step 1: Install Xcode
 
 Open up the Mac App Store, search for [Xcode](https://apps.apple.com/us/app/xcode/id497799835), and hit install (or update if you have it already).
-If you're unable to update, it is because your operating system might be out of date. We recommend updating your operating system to the latest version and then updating Xcode. 
+If you're unable to update, it is because your operating system might be out of date. We recommend updating your operating system to the latest version and then updating Xcode.
 You may run into issues further down the line if your Xcode version is out of date. For example, you may not be able to submit your app to the App Store.
 
 ## Step 2: Install Xcode Command Line Tools
@@ -24,12 +24,12 @@ Open Xcode, then choose **Preferences...** from the Xcode menu (or press <kbd>Cm
 
 ## Step 3: Try it out
 
-Run your app with `npx expo start` and press <kbd>I</kbd> from the command line. 
+Run your app with `npx expo start` and press <kbd>I</kbd> from the command line.
 
 You may get a warning about needing to accept the Xcode license. Run the command that it suggests. Open your app again to see if it was successful.
 If not, check the [troubleshooting](#troubleshooting) tips below.
 
-If the troubleshooting tips are not helpful, seek help on [Expo Development Tools section of the forums](https://forums.expo.dev/c/expo-dev-tools), StackOverflow, or Google. 
+If the troubleshooting tips are not helpful, seek help on [Expo Development Tools section of the forums](https://forums.expo.dev/c/expo-dev-tools), StackOverflow, or Google.
 
 <Video file="open-in-ios-simulator.mp4" />
 
@@ -54,7 +54,10 @@ It should also be noted that Simulator suspends background apps and processes on
 
 Sometimes the iOS simulator doesn't respond to the open command. If it seems stuck on this prompt, you can open the iOS simulator manually (`open -a Simulator`) and then in the macOS toolbar, choose **Hardware** &rarr; **Device**, and select an iOS version and device that you'd like to open.
 
-<ImageSpotlight alt="Hardware > Device toolbar in Xcode" src="/static/images/open-simulator-manually.png" />
+<ImageSpotlight
+  alt="Hardware > Device toolbar in Xcode"
+  src="/static/images/open-simulator-manually.png"
+/>
 
 You can also use this menu to open any version of the simulator that you like. You can open multiple simulators at the same time but Expo CLI will always target the most recently opened simulator.
 
@@ -66,13 +69,15 @@ The first time you install the app in the simulator, iOS will ask if you'd like 
 
 Create a project with the desired SDK version and open it in a simulator to install a particular version of Expo Go.
 
-<Terminal cmd={[
-'# Bootstrap an SDK 46 project',
-'$ npx create-expo-app --template blank@46',
-'',
-'# Open the app on a simulator to install the required Expo Go app',
-'$ npx expo start --ios'
-]} />
+<Terminal
+  cmd={[
+    '# Bootstrap an SDK 46 project',
+    '$ npx create-expo-app --template blank@46',
+    '',
+    '# Open the app on a simulator to install the required Expo Go app',
+    '$ npx expo start --ios',
+  ]}
+/>
 
 ### Expo CLI is printing an error message about xcrun, what do I do?
 

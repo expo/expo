@@ -3,7 +3,7 @@ title: Configuring the Status Bar
 ---
 
 import { InlineCode } from '~/components/base/code';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { APIBox } from '~/components/plugins/APIBox';
 
@@ -12,7 +12,10 @@ When you have a white status bar on a white background, you just know something 
 
 This guide is intended to help you know what tools are at your disposal to configure the status bar for your iOS and Android apps.
 
-<ImageSpotlight src="/static/images/status-bar-style-comparison.png" alt="A comparison of good and bad status bar styling" />
+<ImageSpotlight
+  src="/static/images/status-bar-style-comparison.png"
+  alt="A comparison of good and bad status bar styling"
+/>
 
 > Notice how bad the contrast is between the status bar text and the background in the second image. This is what we want to try to avoid.
 
@@ -96,8 +99,8 @@ export default function Playlists() {
 <Collapsible summary={<span>How is <InlineCode>expo-status-bar</InlineCode> different from the StatusBar component included in React Native?</span>}>
 
 `expo-status-bar` builds on top of the `StatusBar` component that React Native provides in order to give you better defaults when you're building an app with Expo tools.
-  For example, the `translucent` property of `expo-status-bar` defaults to `true` or, if you have changed that property in `androidStatusBar`, it will use that value instead.
-  The default in React Native for `translucent` is always `false`, which can be confusing when in projects created using Expo tools, because the default is `true` for consistency with iOS.
+For example, the `translucent` property of `expo-status-bar` defaults to `true` or, if you have changed that property in `androidStatusBar`, it will use that value instead.
+The default in React Native for `translucent` is always `false`, which can be confusing when in projects created using Expo tools, because the default is `true` for consistency with iOS.
 
 </Collapsible>
 

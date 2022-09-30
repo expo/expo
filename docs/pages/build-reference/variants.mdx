@@ -228,7 +228,11 @@ end
 
 Open project in Xcode, click on the project name in the navigation panel, right click on the existing target, and click "Duplicate":
 
-<ImageSpotlight alt="Duplicate Xcode target" src="/static/images/eas-build/variants/1-ios-duplicate-target.png" style={{maxWidth: 720}} />
+<ImageSpotlight
+  alt="Duplicate Xcode target"
+  src="/static/images/eas-build/variants/1-ios-duplicate-target.png"
+  style={{ maxWidth: 720 }}
+/>
 
 Rename the target to something more meaningful, e.g. `myapp copy` -> `myapp-dev`.
 
@@ -239,7 +243,11 @@ Configure a scheme for the new target:
 - Change scheme name `myapp copy` -> `myapp-dev`.
 - By default, the new scheme should be marked as shared, but Xcode does not create `.xcscheme` files. To fix that, uncheck the "Shared" checkbox and check it again, after that new `.xcscheme` file should show up in the **ios/myapp.xcodeproj/xcshareddata/xcschemes** directory.
 
-<ImageSpotlight alt="Xcode scheme list" src="/static/images/eas-build/variants/2-scheme-list.png" style={{maxWidth: 720}} />
+<ImageSpotlight
+  alt="Xcode scheme list"
+  src="/static/images/eas-build/variants/2-scheme-list.png"
+  style={{ maxWidth: 720 }}
+/>
 
 By default, the newly created target has separate **Info.plist** file (in our case it's **ios/myapp copy-Info.plist**). To simplify your project we recommend using the same file for all targets:
 
@@ -250,7 +258,11 @@ By default, the newly created target has separate **Info.plist** file (in our ca
 - Change **Info.plist** value - **myapp copy-Info.plist** -> **myapp/Info.plist**.
 - Change `Product Bundle Identifier`.
 
-<ImageSpotlight alt="Xcode build settings" src="/static/images/eas-build/variants/3-target-build-settings.png" style={{maxWidth: 720}} />
+<ImageSpotlight
+  alt="Xcode build settings"
+  src="/static/images/eas-build/variants/3-target-build-settings.png"
+  style={{ maxWidth: 720 }}
+/>
 
 To change the display name:
 

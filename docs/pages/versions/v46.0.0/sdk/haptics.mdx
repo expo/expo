@@ -5,7 +5,7 @@ packageName: 'expo-haptics'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -48,19 +48,58 @@ export default function App() {
     <View style={styles.container}>
       <Text style={styles.text}>Haptics.selectionAsync</Text>
       <View style={styles.buttonContainer}>
-        <Button title='Selection' onPress={() => /* @info */ Haptics.selectionAsync() /* @end */} />
+        <Button title="Selection" onPress={() => /* @info */ Haptics.selectionAsync() /* @end */} />
       </View>
       <Text style={styles.text}>Haptics.notificationAsync</Text>
       <View style={styles.buttonContainer}>
-        <Button title='Success' onPress={() => /* @info */ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success) /* @end */} />
-        <Button title='Error' onPress={() => /* @info */ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error) /* @end */} />
-        <Button title='Warning' onPress={() => /* @info */ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning) /* @end */} />
+        <Button
+          title="Success"
+          onPress={
+            () =>
+              /* @info */ Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Success
+              ) /* @end */
+          }
+        />
+        <Button
+          title="Error"
+          onPress={
+            () =>
+              /* @info */ Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Error
+              ) /* @end */
+          }
+        />
+        <Button
+          title="Warning"
+          onPress={
+            () =>
+              /* @info */ Haptics.notificationAsync(
+                Haptics.NotificationFeedbackType.Warning
+              ) /* @end */
+          }
+        />
       </View>
       <Text style={styles.text}>Haptics.impactAsync</Text>
       <View style={styles.buttonContainer}>
-        <Button title='Light' onPress={() => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) /* @end */} />
-        <Button title='Medium' onPress={() => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium) /* @end */} />
-        <Button title='Heavy' onPress={() => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) /* @end */} />
+        <Button
+          title="Light"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) /* @end */
+          }
+        />
+        <Button
+          title="Medium"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium) /* @end */
+          }
+        />
+        <Button
+          title="Heavy"
+          onPress={
+            () => /* @info */ Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy) /* @end */
+          }
+        />
       </View>
     </View>
   );
@@ -78,7 +117,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     marginTop: 10,
     marginBottom: 30,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
 });
 /* @end */

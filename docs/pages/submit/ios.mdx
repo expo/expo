@@ -41,6 +41,7 @@ The command will perform the following steps:
   > If you already have an App Store Connect app, this step can be skipped by providing the `ascAppId` in the submit profile. The [ASC App ID](https://expo.fyi/asc-app-id) can be found either on App Store Connect, or later during this command in the _Submission Summary_ table.
 
 - Ensure you have the proper credentials set up. If none can be found, you can let EAS CLI set some up for you.
+
   <Collapsible summary="🔐 Do you want to use your own credentials?">
 
   **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
@@ -71,6 +72,7 @@ You must do the following:
 - Make sure that the iOS Bundle Identifier is present in your [app config file](/workflow/configuration.mdx).
 - Set the ASC App ID (`ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple Developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
 - Set up your App Store Connect API Key with EAS Servers. You can check the state of your credentials by running `eas credentials` or by running `eas submit -p ios` interactively.
+
   <Collapsible summary="🔐 Do you want to use your own credentials?">
 
   **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
@@ -81,7 +83,10 @@ You must do the following:
 
 Example usage:
 
-<Terminal cmd={['$ eas submit -p ios --latest --profile foobar']} copyCmd="eas submit -p ios --latest --profile foobar" />
+<Terminal
+  cmd={['$ eas submit -p ios --latest --profile foobar']}
+  copyCmd="eas submit -p ios --latest --profile foobar"
+/>
 
 ## Manual submissions
 

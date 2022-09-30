@@ -16,26 +16,28 @@ This guide explains how to run E2E tests with Detox in a bare workflow project. 
 
 ## Running iOS tests
 
-### 0. Initialize a new Bare Workflow project
+### 1. Initialize a new Bare Workflow project
 
 Let's start by initializing a new Expo project and running `npx expo prebuild` to generate the native projects.
 
-<Terminal cmd={[
-'# Initialize a new project',
-'$ npx create-expo-app eas-tests-example',
-'# cd into the project directory',
-'$ cd eas-tests-example',
-'# Generate native code',
-'$ npx expo prebuild --platform ios'
-]} />
+<Terminal
+  cmd={[
+    '# Initialize a new project',
+    '$ npx create-expo-app eas-tests-example',
+    '# cd into the project directory',
+    '$ cd eas-tests-example',
+    '# Generate native code',
+    '$ npx expo prebuild --platform ios',
+  ]}
+/>
 
-### 1. Make home screen interactive
+### 2. Make home screen interactive
 
 The first step to writing E2E tests is to have something to test - we have an empty app, so let's make our app interactive. We can add a button and display some new text when it's pressed.
 Later, we're going to write a test that's going to tap the button and check whether the text has been displayed.
 
-<img src="/static/images/eas-build/tests/01-click-me.png" style={{maxWidth: "50%" }} />
-<img src="/static/images/eas-build/tests/02-hi.png" style={{maxWidth: "50%" }} />
+<img src="/static/images/eas-build/tests/01-click-me.png" style={{ maxWidth: '50%' }} />
+<img src="/static/images/eas-build/tests/02-hi.png" style={{ maxWidth: '50%' }} />
 
 <Collapsible summary="👀 See the source code">
 
@@ -93,18 +95,20 @@ const styles = StyleSheet.create({
 
 </Collapsible>
 
-### 2. Set up Detox
+### 3. Set up Detox
 
 #### Install dependencies
 
 Let's add two development dependencies to the project - `jest` and `detox`. `jest` (or `mocha`) is required because `detox` does not have its own test-runner.
 
-<Terminal cmd={[
-'# Install jest & detox',
-'$ npm install --save-dev jest detox',
-'# Create Detox configuration files',
-'$ npx detox init -r jest',
-]} />
+<Terminal
+  cmd={[
+    '# Install jest & detox',
+    '$ npm install --save-dev jest detox',
+    '# Create Detox configuration files',
+    '$ npx detox init -r jest',
+  ]}
+/>
 
 > See the official Detox docs at https://wix.github.io/Detox/docs/introduction/getting-started/ and https://wix.github.io/Detox/docs/guide/jest to learn about any potential updates to this process.
 
@@ -129,7 +133,7 @@ Edit **.detoxrc.json** and replace the `ios` configuration with:
 }
 ```
 
-### 3. Write E2E tests
+### 4. Write E2E tests
 
 Next, we'll add our first E2E tests. Delete the auto-generated **e2e/firstTest.e2e.js** and create our own **e2e/homeScreen.e2e.js** with the following contents:
 
@@ -162,13 +166,14 @@ There are two tests in the suite:
 
 Both tests assume the button has the `testID` set to `click-me-button`. See [the source code](#1-make-home-screen-interactive) for details.
 
-### 4. Configure EAS Build
+### 5. Configure EAS Build
 
 Now that we have configured Detox and written our first E2E test, let's configure EAS Build and run the tests in the cloud.
 
 #### Create eas.json
 
 The following command creates [eas.json](/build/eas-json.mdx) in the project's root directory:
+
 <Terminal cmd={['$ eas build:configure']} />
 
 #### Configure EAS Build
@@ -233,7 +238,7 @@ Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) t
 
 > Don't forget to add executable permissions to **eas-build-pre-install.sh** and **eas-build-on-success.sh**. Run `chmod +x eas-hooks/*.sh`.
 
-### 5. Run tests on EAS Build
+### 6. Run tests on EAS Build
 
 Running the tests on EAS Build is like running a regular build:
 
@@ -241,9 +246,9 @@ Running the tests on EAS Build is like running a regular build:
 
 If you have set up everything correctly you should see the successful test result in the build logs:
 
-<img src="/static/images/eas-build/tests/03-logs.png" style={{maxWidth: "100%" }} />
+<img src="/static/images/eas-build/tests/03-logs.png" style={{ maxWidth: '100%' }} />
 
-### 6. Upload screenshots of failed test cases
+### 7. Upload screenshots of failed test cases
 
 > This step is optional but highly recommended.
 
@@ -352,7 +357,7 @@ index e28acfa..c65e90c 100644
 
 Run a build with `eas build -p ios --profile test` and wait for the build to finish. After going to the build details page you should see that the build failed. Use the **"Download artifacts"** button to download and examine the screenshot:
 
-<img src="/static/images/eas-build/tests/04-artifacts.png" style={{maxWidth: "100%" }} />
+<img src="/static/images/eas-build/tests/04-artifacts.png" style={{ maxWidth: '100%' }} />
 
 ## Repository
 
@@ -439,7 +444,7 @@ const getAppId = () => appConfig?.expo?.extra?.eas?.projectId || '';
 /**
  * Methods to construct test URLs
  */
- 
+
 /**
  * For local dev testing, returns the packager URL with the disable onboarding query param
  */

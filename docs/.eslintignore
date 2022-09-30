@@ -1,5 +1,6 @@
 .expo
 .next
+.swc
 dangerfile.js
 /global-styles/nprogress.ts
 out

@@ -3,10 +3,15 @@ title: Notifications
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-44/packages/expo-notifications'
 ---
 
-import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import {
+  ConfigClassic,
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import SnackInline from '~/components/plugins/SnackInline';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -31,7 +36,13 @@ The **`expo-notifications`** provides an API to fetch push notification tokens a
 
 <PlatformsSection title="Push notifications Platform Compatibility" android ios />
 
-<PlatformsSection title="Local notifications Platform Compatibility" android emulator ios simulator />
+<PlatformsSection
+  title="Local notifications Platform Compatibility"
+  android
+  emulator
+  ios
+  simulator
+/>
 
 ## Installation
 
@@ -79,11 +90,28 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-<ConfigPluginProperties properties={[
-{ name: 'icon', platform: 'android', description: 'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.' },
-{ name: 'color', default: '#ffffff', platform: 'android', description: 'Tint color for the push notification image when it appears in the notification tray.' },
-{ name: 'sounds', description: 'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.' },
-]} />
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'icon',
+      platform: 'android',
+      description:
+        'Local path to an image to use as the icon for push notifications. 96x96 all-white png with transparency.',
+    },
+    {
+      name: 'color',
+      default: '#ffffff',
+      platform: 'android',
+      description:
+        'Tint color for the push notification image when it appears in the notification tray.',
+    },
+    {
+      name: 'sounds',
+      description:
+        'Array of local paths to sound files (.wav recommended) that can be used as custom notification sounds.',
+    },
+  ]}
+/>
 
 ## Credentials configuration
 
@@ -211,8 +239,7 @@ export default function App() {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'space-around',
-      }}
-    >
+      }}>
       <Text>Your expo push token: {expoPushToken}</Text>
       <View style={{ alignItems: 'center', justifyContent: 'center' }}>
         <Text>Title: {notification && notification.request.content.title} </Text>
@@ -374,7 +401,11 @@ await Notifications.scheduleNotificationAsync({
 });
 ```
 
-<ImageSpotlight alt="notification.wav inside of app resources in Xcode project organizer" src="/static/images/notification-sound-ios.jpeg" style={{maxWidth: 305}} />
+<ImageSpotlight
+  alt="notification.wav inside of app resources in Xcode project organizer"
+  src="/static/images/notification-sound-ios.jpeg"
+  style={{ maxWidth: 305 }}
+/>
 
 </Collapsible>
 
@@ -1246,7 +1277,11 @@ A `Promise` resolving once the channel group is removed (or if there was no chan
 
 Notification categories allow you to create interactive push notifications, so that a user can respond directly to the incoming notification either via buttons or a text response. A category defines the set of actions a user can take, and then those actions are applied to a notification by specifying the `categoryIdentifier` in the [`NotificationContent`](#notificationcontent).
 
-<ImageSpotlight src="/static/images/sdk/notifications/categories.png" style={{maxWidth: 800}} alt="image of notification categories on iOS and Android"/>
+<ImageSpotlight
+  src="/static/images/sdk/notifications/categories.png"
+  style={{ maxWidth: 800 }}
+  alt="image of notification categories on iOS and Android"
+/>
 
 On iOS, notification categories also allow you to customize your notifications further. With each category, not only can you set interactive actions a user can take, but you can also configure things like the placeholder text to display when the user disables notification previews for your app.
 

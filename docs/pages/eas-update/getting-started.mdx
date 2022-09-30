@@ -40,16 +40,19 @@ Create a project by running:
 
 To configure your project, run the following commands in the order they are specified:
 
-<Terminal cmd={[
-'# Install the latest `expo-updates` library',
-'$ npx expo install expo-updates',
-'',
-'# Initialize your project with EAS Update',
-'$ eas update:configure',
-'',
-'# Set up the configuration file for builds',
-'$ eas build:configure',
-]} cmdCopy="expo install expo-updates && eas update:configure && eas build:configure" />
+<Terminal
+  cmd={[
+    '# Install the latest `expo-updates` library',
+    '$ npx expo install expo-updates',
+    '',
+    '# Initialize your project with EAS Update',
+    '$ eas update:configure',
+    '',
+    '# Set up the configuration file for builds',
+    '$ eas build:configure',
+  ]}
+  cmdCopy="expo install expo-updates && eas update:configure && eas build:configure"
+/>
 
 After running these commands, **eas.json** file will be created in the root directory of your project.
 
@@ -86,11 +89,7 @@ Once you have a build running on your device or in a simulator, we'll be ready t
 
 Once we've created a build, we're ready to iterate on our project. Start a local development server with:
 
-<Terminal cmd={[
-'$ yarn start',
-'# or',
-'$ npx expo start',
-]} />
+<Terminal cmd={['$ yarn start', '# or', '$ npx expo start']} />
 
 Then, make any desired changes to your project's JavaScript, styling, or image assets.
 

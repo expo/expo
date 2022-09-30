@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/react-native-maps/react-native-maps'
 packageName: 'react-native-maps'
 ---
 
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import { Terminal } from '~/ui/components/Snippet';
@@ -72,8 +72,7 @@ To use this in web, add the following script to your **web/index.html**. This sc
       async
       defer
       src="https://maps.googleapis.com/maps/api/js?key=API_KEY"
-      type="text/javascript"
-    ></script>
+      type="text/javascript"></script>
 
     <!-- Use your web API Key in place of API_KEY: https://developers.google.com/maps/documentation/javascript/get-api-key -->
   </head>
@@ -143,9 +142,11 @@ To use this in web, add the following script to your **web/index.html**. This sc
 ## How to retrieve your debug keystore fingerprint (Android only)
 
 When building a debug version of your application outside of Expo Go (for example, when using a [development client](/development/introduction/) or a standalone debug build), your app will be signed with the debug keystore on Android.
+
 > All standard Expo templates use a debug keystore with fingerprint `5E:8F:16:06:2E:A3:CD:2C:4A:0D:54:78:76:BA:A6:F3:8C:AB:F6:25`, that you can enter directly in the Google Cloud Credential Manager. So if you are using one of the standard Expo templates, you don't need to perform the steps below.
 
 The debug keystore location and password is defined in your `android/app/build.gradle` file like this:
+
 ```groovy
 signingConfigs {
     debug {
@@ -159,7 +160,6 @@ signingConfigs {
 
 You can view the fingerprint for this keystore using the `keytool` command, and entering the storePassword. Copy the value shown after `SHA1:`.
 
-<Terminal cmd={[
-'$ keytool -list -v -keystore ./android/app/debug.keystore',
-'# Enter keystore password:'
-]} />
+<Terminal
+  cmd={['$ keytool -list -v -keystore ./android/app/debug.keystore', '# Enter keystore password:']}
+/>

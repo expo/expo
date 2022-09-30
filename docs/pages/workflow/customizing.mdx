@@ -18,13 +18,16 @@ Learn how to start using custom native code in your app by switching from Expo G
 
 If you would like to move from a JavaScript based project and take ownership over the iOS and Android native projects, you can generate them by running `npx expo prebuild`, or `npx expo run:[ios|android]` (which will run `prebuild` automatically). You can also use development builds in this context - the easiest way to do this is to run `npx expo install expo-dev-client` prior to `prebuild` or `run`, and it's also possible to add the library at any later time ([learn more](/development/installation)).
 
-<Terminal cmd={[
-  '# Build your native Android project',
-  '$ npx expo run:android',
-  '',
-  '# Build your native iOS project',
-  '$ npx expo run:ios'
-]} cmdCopy="npx expo run:android && npx expo run:ios" />
+<Terminal
+  cmd={[
+    '# Build your native Android project',
+    '$ npx expo run:android',
+    '',
+    '# Build your native iOS project',
+    '$ npx expo run:ios',
+  ]}
+  cmdCopy="npx expo run:android && npx expo run:ios"
+/>
 
 - `expo run:ios` requires Xcode (macOS only) installed on your computer. See the [setup guide](https://reactnative.dev/docs/environment-setup).
 - `expo run:android` requires Android Studio and the Android SDK to be installed. See the [setup guide](https://reactnative.dev/docs/environment-setup).
@@ -53,10 +56,7 @@ Once you have customized the native code in your project, you can use the [`expo
 
 When you're ready to ship your app, you can [build it with EAS Build](/build/introduction) exactly the same as you were building it before adding custom native code. Alternatively, you can archive and sign it locally. Unsurprisingly, we recommend EAS Build!
 
-<Terminal cmd={[
-  '# Install the CLI',
-  '$ npm i -g eas-cli',
-  '',
-  '# Build your app!',
-  '$ eas build -p all'
-]} cmdCopy="npm i -g eas-cli && eas build -p all" />
+<Terminal
+  cmd={['# Install the CLI', '$ npm i -g eas-cli', '', '# Build your app!', '$ eas build -p all']}
+  cmdCopy="npm i -g eas-cli && eas build -p all"
+/>

@@ -16,7 +16,11 @@ Expo Go is a native app that is installed on your device. When you run `npx expo
 
 <Terminal cmd={['$ npx expo start']} />
 
-<ImageSpotlight alt="Expo Go connecting to Expo CLI" src="/static/images/fetch-app-development.png" style={{ maxWidth: 600}} />
+<ImageSpotlight
+  alt="Expo Go connecting to Expo CLI"
+  src="/static/images/fetch-app-development.png"
+  style={{ maxWidth: 600 }}
+/>
 
 The dev server returns a JSON manifest file that describes the project. Expo Go uses this manifest to download the JavaScript bundle and any assets required to run the project. Then, the [JavaScript engine](/workflow/glossary-of-terms#javascript-engine) executes this JavaScript bundle to render the React Native app.
 
@@ -64,13 +68,13 @@ You can create your own Expo Go-type app by using the [`expo-dev-client`](/devel
 
 ## Next
 
-<BoxLink 
+<BoxLink
   title="CLI"
   description="Learn about the Expo CLI and how to use it to develop your app."
   href="/workflow/expo-cli"
 />
 
-<BoxLink 
+<BoxLink
   title="App config"
   description="Configure the Expo CLI and Expo Go with the app.json."
   href="/workflow/configuration"
