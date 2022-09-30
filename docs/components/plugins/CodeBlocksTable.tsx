@@ -37,9 +37,11 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
   return (
     <div css={[codeBlocksWrapperStyle, connected && codeBlockConnectedWrapperStyle]} {...rest}>
       {codeBlocks.map((codeBlock, index) => (
-        <Snippet key={index}>
+        <Snippet key={index} css={snippetWrapperStyle}>
           <SnippetHeader title={tabNames[index]} />
-          <SnippetContent skipPadding>{codeBlock}</SnippetContent>
+          <SnippetContent skipPadding css={snippetContentStyle}>
+            {codeBlock}
+          </SnippetContent>
         </Snippet>
       ))}
     </div>
@@ -56,19 +58,12 @@ const codeBlocksWrapperStyle = css({
     border: 0,
     margin: 0,
     gridTemplateRows: 'minmax(100px, 1fr)',
+    height: '100%',
   },
 
   [`@media screen and (max-width: ${breakpoints.large}px)`]: {
     gridTemplateColumns: 'minmax(0, 1fr)',
     gridAutoRows: 'auto',
-
-    '> div': {
-      marginBottom: 0,
-
-      '&:last-of-type': {
-        marginBottom: spacing[4],
-      },
-    },
   },
 });
 
@@ -84,14 +79,25 @@ const codeBlockConnectedWrapperStyle = css({
       },
     },
 
-    '& > div:nth-of-type(even)': {
+    '> div:nth-of-type(even)': {
       '> div': {
         borderTopLeftRadius: 0,
         borderBottomLeftRadius: 0,
       },
     },
-    '> div > div:nth-of-type(even)': {
-      height: '100%',
+  },
+});
+
+const snippetWrapperStyle = css({
+  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
+    marginBottom: 0,
+
+    '&:last-of-type': {
+      marginBottom: spacing[4],
     },
   },
+});
+
+const snippetContentStyle = css({
+  height: '100%',
 });
