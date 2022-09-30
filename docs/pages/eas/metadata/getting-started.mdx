@@ -5,7 +5,6 @@ sidebar_title: Getting started
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
-import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
 > **warning** EAS Metadata is in beta and subject to breaking changes.
 
@@ -27,9 +26,7 @@ If you already have an app in the stores, you can pull the information into a st
 
 If you don't have an app in the stores yet, EAS Metadata can't generate the store config for you. Instead, create a new store config file.
 
-<CodeBlocksTable tabs={['store.config.json']}>
-
-```json
+```json store.config.json
 {
   "configVersion": 0,
   "apple": {
@@ -47,8 +44,6 @@ If you don't have an app in the stores yet, EAS Metadata can't generate the stor
   }
 }
 ```
-
-</CodeBlocksTable>
 
 > By default, EAS Metadata uses the **store.config.json** file at the root of your project. You can change the name and location of this file by setting the **eas.json** [`metadataPath`](../../submit/eas-json.mdx#metadatapath) property.
 
