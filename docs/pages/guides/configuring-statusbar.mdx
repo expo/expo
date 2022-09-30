@@ -121,7 +121,7 @@ Projects initialized with Expo tools make the status bar `translucent` by defaul
 Unfortunately, some libraries don't support `translucent` status bars. This is generally bad practice and those libraries should be fixed,
 but if you must use one of them, there are some options available for you to accommodate their limitations:
 
-### Workaround #1
+### Opaque colored background
 
 Setting solely `backgroundColor` to an opaque color will disable the `transparency` of the status bar, but preserve `translucency`.
 You need to explicitly set `translucent` to `false` if you want your app's status bar to take up space on the device's screen.
@@ -138,7 +138,7 @@ This is a good option if your status bar color never needs to change, for exampl
 }
 ```
 
-### Workaround #2
+### Empty `View`
 
 You can place an empty `View` on top of your screen with a background color to act as a status bar, or set a top padding.
 You can get the height of the status bar (and notch, if there is one) by using the top inset value provided by [`react-native-safe-area-context`](../versions/latest/sdk/safe-area-context.mdx).
