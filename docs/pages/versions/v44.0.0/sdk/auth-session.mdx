@@ -6,7 +6,11 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-44/packages/expo-auth-sess
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 
-import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
+import {
+  SocialGrid,
+  SocialGridItem,
+  CreateAppButton,
+} from '~/components/plugins/AuthSessionElements';
 import SnackInline from '~/components/plugins/SnackInline';
 import { InlineCode } from '~/components/base/code';
 import { Terminal } from '~/ui/components/Snippet';
@@ -35,14 +39,17 @@ You should now be able to see a list of all your project's schemes by running:
 
 You can test it to ensure it works like this:
 
-<Terminal cmd={[
-'# Rebuild the native apps, be sure to use an emulator',
-'yarn android',
-'yarn ios',
-'',
-'# Open a URI scheme',
-'npx uri-scheme open mycoolredirect://some/redirect'
-]} cmdCopy="yarn android && yarn ios && npx uri-scheme open mycoolredirect://some/redirect" />
+<Terminal
+  cmd={[
+    '# Rebuild the native apps, be sure to use an emulator',
+    'yarn android',
+    'yarn ios',
+    '',
+    '# Open a URI scheme',
+    'npx uri-scheme open mycoolredirect://some/redirect',
+  ]}
+  cmdCopy="yarn android && yarn ios && npx uri-scheme open mycoolredirect://some/redirect"
+/>
 
 ### Usage in standalone apps
 

@@ -4,8 +4,7 @@ This is the public documentation for **Expo**, its SDK, client, and services, li
 
 This documentation is built using Next.js and you can access it online at https://docs.expo.dev/.
 
-> **Note**
-> **Contributors:** Please make sure that you edit the docs in the `pages/versions/unversioned` directory if you want your changes to apply to the next SDK version too!
+> **Note** **Contributors:** Please make sure that you edit the docs in the `pages/versions/unversioned` directory if you want your changes to apply to the next SDK version too!
 
 > **Note**
 > If you are looking for Expo Documentation Writing Style guidelines, please refer [Expo Documentation Style Guide](https://github.com/expo/expo/blob/main/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
@@ -154,13 +153,13 @@ You can validate all current links by running `yarn lint-links`.
 
 ### Updating latest version of docs
 
-When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well. 
+When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well.
 
 Make sure to also grab the upgrade instructions from the release notes blog post and put them in `upgrading-expo-sdk-walkthrough.md`.
 
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
-Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX. 
+Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX.
 So, if you wish to override the alphabetical ordering, manipulate page titles in **constants/navigation.js**.
 
 ### Syncing app.json / app.config.js with the schema
@@ -230,7 +229,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 ### Embedding multiple options of code
 
-Sometimes it's useful to show multiple ways of doing something, for instance maybe you'd like to have an example using a React class component, and also an example of a functional component. 
+Sometimes it's useful to show multiple ways of doing something, for instance maybe you'd like to have an example using a React class component, and also an example of a functional component.
 The `Tabs` plugin is really useful for this, and this is how you'd use it in a markdown file:
 
 <!-- prettier-ignore -->
@@ -265,7 +264,7 @@ n.b. The components should not be indented or they will not be parsed correctly.
 
 To ignore a page from the search result, use `hideFromSearch: true` on that page. This removes the `<meta name="docsearch:version">` tag from that page and filters it from our facet-based search.
 
-Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google. 
+Please note that `hideFromSearch` only prevents the page from showing up in the internal docs search (Algolia). The page will still show up in search engine results like Google.
 For a page to be hidden even from search engine results, you need to edit the sitemap that is generated via our Next.js config (**next.config.js**).
 
 ### Excluding directories from the sidebar

@@ -14,26 +14,44 @@ Before you get started with a React Native app, make sure you set up your enviro
 
 To bootstrap a new React Native project, you can use `create-expo-app`. If you have an existing project or want to bootstrap with `npx react-native init`, then you will need to [install the `expo` package](/bare/installing-expo-modules) manually.
 
-<Terminal cmd={[
-"# Create a new native project",
-"$ npx create-expo-app --template bare-minimum",
-]} cmdCopy="npx create-expo-app --template bare-minimum" />
+<Terminal
+  cmd={['# Create a new native project', '$ npx create-expo-app --template bare-minimum']}
+  cmdCopy="npx create-expo-app --template bare-minimum"
+/>
 
 Navigate into your project directory, then build the apps locally:
 
-<Terminal cmd={[
-'# Build your native Android project',
-'$ npx expo run:android',
-'',
-'# Build your native iOS project',
-'$ npx expo run:ios'
-]} />
+<Terminal
+  cmd={[
+    '# Build your native Android project',
+    '$ npx expo run:android',
+    '',
+    '# Build your native iOS project',
+    '$ npx expo run:ios',
+  ]}
+/>
 
 > Learn more about [compiling native apps](/workflow/expo-cli#compiling).
 
 ## Next
 
-<BoxLink title="Installing libraries" description="Learn how to install and configure native libraries." href="/workflow/using-libraries#installing-a-third-party-library" />
-<BoxLink title="Using the Expo SDK" description="Start adding features to your app." href="/versions/" />
-<BoxLink title="Adopting Prebuild" description="Automate your native directories using the app.json." href="/guides/adopting-prebuild" />
-<BoxLink title="Distributing your app" description="Build and submit your app to the app store with a single command!" href="/distribution/introduction" />
+<BoxLink
+  title="Installing libraries"
+  description="Learn how to install and configure native libraries."
+  href="/workflow/using-libraries#installing-a-third-party-library"
+/>
+<BoxLink
+  title="Using the Expo SDK"
+  description="Start adding features to your app."
+  href="/versions/"
+/>
+<BoxLink
+  title="Adopting Prebuild"
+  description="Automate your native directories using the app.json."
+  href="/guides/adopting-prebuild"
+/>
+<BoxLink
+  title="Distributing your app"
+  description="Build and submit your app to the app store with a single command!"
+  href="/distribution/introduction"
+/>

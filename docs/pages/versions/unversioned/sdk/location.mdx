@@ -5,7 +5,7 @@ packageName: 'expo-location'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import { AndroidPermissions } from '~/components/plugins/permissions';
@@ -30,7 +30,14 @@ When you install the `expo-location` module, it automatically adds the following
 
 To use background location features, you must add the `ACCESS_BACKGROUND_LOCATION` in **app.json** and [submit your app for review and request access to use the background location permission](https://support.google.com/googleplay/android-developer/answer/9799150?hl=en).
 
-<AndroidPermissions permissions={['ACCESS_COARSE_LOCATION', 'ACCESS_FINE_LOCATION', 'FOREGROUND_SERVICE', 'ACCESS_BACKGROUND_LOCATION']} />
+<AndroidPermissions
+  permissions={[
+    'ACCESS_COARSE_LOCATION',
+    'ACCESS_FINE_LOCATION',
+    'FOREGROUND_SERVICE',
+    'ACCESS_BACKGROUND_LOCATION',
+  ]}
+/>
 
 #### Excluding a permission
 

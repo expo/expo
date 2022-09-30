@@ -12,12 +12,15 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 ## Installation
 
-<InstallSection packageName="react-native-reanimated" href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation" />
+<InstallSection
+  packageName="react-native-reanimated"
+  href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation"
+/>
 
 **In all cases,** after the installation completes, you must also add the Babel plugin to **babel.config.js**:
 
 ```jsx
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
     presets: ['babel-preset-expo'],

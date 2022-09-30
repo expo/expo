@@ -1,6 +1,7 @@
 ---
 title: App version management
 ---
+
 import { Collapsible } from '~/ui/components/Collapsible';
 
 Android and iOS each expose two values that identify the version of an application; one that is visible in stores, and another that is visible only to developers.
@@ -13,7 +14,6 @@ In managed projects, we use fields `version`/`android.versionCode`/`ios.buildNum
 - [`android.versionCode`][config-android-versioncode] field in **app.json** represents `versionCode` in **android/app/build.gradle**.
 
 One of the most frequent causes of app store rejections is submitting a build with a duplicate version number. This happens when a developer forgets to increment the version number prior to running a build.
-
 
 EAS Build can manage automatically incrementing these versions for you if you opt in to using the "remote" app version source. The default behavior is to use a "local" app version source, which means you control versions manually in their respective config files.
 
@@ -79,7 +79,7 @@ If you want to build your project locally in Android Studio or Xcode using the s
 
 Enabling the `autoIncrement` option in the remote app version source mode is currently only available for `versionCode`/`buildNumber`.
 
-When using a remote app version source, the values in **app.json** will not be updated when the version is incremented remotely, and so the local and remote values will fall out of sync. The remote source values will be set on the native project when running a build, and they are the source of truth  — however, the values specified in your **app.json** will be present in `Constants.expoConfig` and `Constants.manifest` exposed by `expo-constants`. Use `expo-application` to determine your application version at runtime instead, and remove `versionCode`/`buildNumber` from your **app.json**.
+When using a remote app version source, the values in **app.json** will not be updated when the version is incremented remotely, and so the local and remote values will fall out of sync. The remote source values will be set on the native project when running a build, and they are the source of truth — however, the values specified in your **app.json** will be present in `Constants.expoConfig` and `Constants.manifest` exposed by `expo-constants`. Use `expo-application` to determine your application version at runtime instead, and remove `versionCode`/`buildNumber` from your **app.json**.
 
 ### Limitations
 
@@ -106,7 +106,6 @@ In the case of bare React Native projects, values in native code take precedence
 - With `autoIncrement`, you need to commit your changes on every build if you want the version change to persist. This can be difficult to coordinate when building on CI.
 - `autoIncrement` is not supported if you are using a dynamic config (**app.config.js**).
 - For bare React Native projects with Gradle configuration that supports multiple flavors, EAS CLI is not able to read or modify the version, so `autoIncrement` option is not supported and versions will not be listed in the build details page on [expo.dev](https://expo.dev).
-
 
 [config-version]: /versions/latest/config/app/#version
 [config-android-versioncode]: /versions/latest/config/app/#versioncode

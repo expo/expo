@@ -3,7 +3,12 @@ title: Facebook
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-44/packages/expo-facebook'
 ---
 
-import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import {
+  ConfigClassic,
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
@@ -96,9 +101,17 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-<ConfigPluginProperties properties={[
-{ name: 'userTrackingPermission', platform: 'ios', description: 'A string to set the NSUserTrackingUsageDescription permission message, or set to the boolean value false to omit the field entirely.', default: '"This identifier will be used to deliver personalized ads to you."' },
-]} />
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'userTrackingPermission',
+      platform: 'ios',
+      description:
+        'A string to set the NSUserTrackingUsageDescription permission message, or set to the boolean value false to omit the field entirely.',
+      default: '"This identifier will be used to deliver personalized ads to you."',
+    },
+  ]}
+/>
 
 ## Example
 

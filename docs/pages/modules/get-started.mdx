@@ -104,9 +104,10 @@ Then, add your classes to Android and/or iOS `modules` in the [module config](./
 ```
 
 If you already have an example app in your workspace, ensure that the module is linked correctly.
+
 - **On Android** the native module class will be linked automatically before building, as part of the Gradle build task.
 - **On iOS** you need to run `pod install` to link the new class.
-These module classes can now be accessed from the JavaScript code using the `requireNativeModule` function from the `expo-modules-core` package. We recommend creating a separate file that exports the native module for simplicity.
+  These module classes can now be accessed from the JavaScript code using the `requireNativeModule` function from the `expo-modules-core` package. We recommend creating a separate file that exports the native module for simplicity.
 
 ```ts MyModule.ts
 import { requireNativeModule } from 'expo-modules-core';

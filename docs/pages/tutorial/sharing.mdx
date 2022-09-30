@@ -42,7 +42,7 @@ export default function App() {
   };
 
   /* @info Share the selected image if sharing is available on the user's device */
-  let openShareDialogAsync = async () => {    
+  let openShareDialogAsync = async () => {
     if (Platform.OS === 'web') {
       alert(`Uh oh, sharing isn't available on your platform`);
       return;
@@ -76,13 +76,13 @@ export default function App() {
 
 ## Running the app on Android and iOS
 
-<Video file={"tutorial/sharing-native.mp4"} />
+<Video file={'tutorial/sharing-native.mp4'} />
 
 Everything is working great! The operating system share dialog opens up and is ready to share our selected image.
 
 ## Platform differences with web
 
-<Video file={"tutorial/sharing-web-unavailable.mp4"} />
+<Video file={'tutorial/sharing-web-unavailable.mp4'} />
 
 On running the app in a web browser, when we hit "Share this photo" we see that our `alert` warns us that sharing is not available. This is happening because the desktop Chrome browser does not currently provide a way for users to share content.
 
@@ -107,11 +107,12 @@ It's time to shift our focus towards the purely aesthetic. In the next step of t
 
 {/* TODO(brentvatne): when we have a better workflow for https in expo-cli and a way to open Snack web on mobile we should revisit this */}
 
-{/* ### Getting it working with another browser
+{/* ### Getting it working with another browser */}
 
-Sharing is supported on the following browsers at the time of writing:
+{/* Sharing is supported on the following browsers at the time of writing: */}
 
-- Recent versions of mobile and desktop Safari.
-- Recent versions of Chrome for Android.
+{/* - Recent versions of mobile and desktop Safari. */}
 
-There is just one small catch &mdash; we need to use `https`. Close `expo-cli` and run it again with `expo start --https`. Now we can copy and paste the URL into Safari and try again. */}
+{/* - Recent versions of Chrome for Android. */}
+
+{/* There is just one small catch &mdash; we need to use `https`. Close `expo-cli` and run it again with `expo start --https`. Now we can copy and paste the URL into Safari and try again. */}

@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-46/packages/expo-av'
 packageName: 'expo-av'
 ---
 
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 import APISection from '~/components/plugins/APISection';
@@ -42,7 +42,9 @@ export default function App() {
 
   async function playSound() {
     console.log('Loading Sound');
-    /* @info */ const { sound } = await Audio.Sound.createAsync(/* @end */require('./assets/Hello.mp3'));
+    /* @info */ const { sound } = await Audio.Sound.createAsync(
+      /* @end */ require('./assets/Hello.mp3')
+    );
     setSound(sound);
 
     console.log('Playing Sound');
@@ -145,8 +147,8 @@ const styles = StyleSheet.create({
 
 ### Playing or recording audio in background (iOS)
 
-On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration. 
-On iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file. 
+On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration.
+On iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file.
 In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your **app.json** configuration.
 
 See an example of **app.json** that enables audio playback in background:
@@ -168,13 +170,13 @@ See an example of **app.json** that enables audio playback in background:
 }
 ```
 
-### Notes on web usage 
+### Notes on web usage
 
 - A MediaRecorder issue on Chrome produces WebM files missing the duration metadata. [See the open Chromium issue](https://bugs.chromium.org/p/chromium/issues/detail?id=642012)
 - MediaRecorder encoding options and other configurations are inconsistent across browsers, utilising a Polyfill such as [kbumsik/opus-media-recorder](https://github.com/kbumsik/opus-media-recorder)
-  or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience. 
+  or [ai/audio-recorder-polyfill](https://github.com/ai/audio-recorder-polyfill) in your application will improve your experience.
   Any options passed to `prepareToRecordAsync` will be passed directly to the MediaRecorder API and as such the polyfill.
-- Web browsers require sites to be served securely in order for them to listen to a mic. 
+- Web browsers require sites to be served securely in order for them to listen to a mic.
   See [MediaDevices#getUserMedia Security](https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia#security) for more details.
 
 ## API

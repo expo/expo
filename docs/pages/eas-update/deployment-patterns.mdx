@@ -2,7 +2,7 @@
 title: Deployment patterns
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 Once we've created features and fixed bugs in our app, we want to deliver those features and bug fixes out to our users as quickly and safely as we can. Often "safe" and "fast" are opposing forces when delivering code to our users.
 We could push our code directly to production, which would be fast yet less safe since we never tested our code. On the other hand, we could make test builds, share them with a QA team, and release periodically, which would be safer but slower to deliver changes to our users.
@@ -41,7 +41,11 @@ This flow is the simplest and fastest flow, with the fewest amount of safety che
 
 ### Diagram of flow
 
-<ImageSpotlight alt="Two command deployment diagram" src="/static/images/eas-update/deployment-two-command.png" style={{maxWidth: 1200}} />
+<ImageSpotlight
+  alt="Two command deployment diagram"
+  src="/static/images/eas-update/deployment-two-command.png"
+  style={{ maxWidth: 1200 }}
+/>
 
 ### Explanation of flow
 
@@ -70,7 +74,11 @@ This flow is great for managing versioned releases. Here are the parts of the de
 
 ### Diagram of flow
 
-<ImageSpotlight alt="Branch deployment diagram" src="/static/images/eas-update/deployment-branch.png" style={{maxWidth: 1200}} />
+<ImageSpotlight
+  alt="Branch deployment diagram"
+  src="/static/images/eas-update/deployment-branch.png"
+  style={{ maxWidth: 1200 }}
+/>
 
 ### Explanation of flow
 
@@ -106,7 +114,11 @@ This flow is like an un-versioned variant of the "branch promotion flow". We do 
 
 ### Diagram of flow
 
-<ImageSpotlight alt="Staging deployment diagram" src="/static/images/eas-update/deployment-staging.png" style={{maxWidth: 1200}} />
+<ImageSpotlight
+  alt="Staging deployment diagram"
+  src="/static/images/eas-update/deployment-staging.png"
+  style={{ maxWidth: 1200 }}
+/>
 
 ### Explanation of flow
 
@@ -138,7 +150,11 @@ This flow is for projects that need to build and update their Android and iOS ap
 
 ### Diagram of flow
 
-<ImageSpotlight alt="Platform specific deployment diagram" src="/static/images/eas-update/deployment-platform-specific.png" style={{maxWidth: 1200}} />
+<ImageSpotlight
+  alt="Platform specific deployment diagram"
+  src="/static/images/eas-update/deployment-platform-specific.png"
+  style={{ maxWidth: 1200 }}
+/>
 
 ### Explanation of flow
 

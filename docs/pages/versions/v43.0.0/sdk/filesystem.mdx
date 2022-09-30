@@ -3,7 +3,7 @@ title: FileSystem
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-file-system'
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { ConfigClassic, ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
@@ -16,7 +16,12 @@ import SnackInline from '~/components/plugins/SnackInline';
 
 {/* TODO: update this image so we don't have to force a white background on it */}
 
-<ImageSpotlight alt="Diagram of the various pieces of expo-file-system and how they interact with different resources" src="/static/images/sdk/file-system/file-system-diagram.png" style={{ maxWidth: 850, maxHeight: 600 }} containerStyle={{ backgroundColor: "#fff" }} />
+<ImageSpotlight
+  alt="Diagram of the various pieces of expo-file-system and how they interact with different resources"
+  src="/static/images/sdk/file-system/file-system-diagram.png"
+  style={{ maxWidth: 850, maxHeight: 600 }}
+  containerStyle={{ backgroundColor: '#fff' }}
+/>
 
 <PlatformsSection android emulator ios simulator />
 
@@ -797,7 +802,7 @@ Alias to [FileSystem.copyAsync(options)](#filesystemcopyasyncoptions)
 In this table, you can see what type of URI can be handled by each method. For example, if you have an URI, which begins with `content://`, you cannot use `FileSystem.readAsStringAsync()`, but you can use `FileSystem.copyAsync()` which supports this scheme.
 
 | Method name               | Android                                                                                                                              | iOS                                                                                             |
-| ------------------------- |--------------------------------------------------------------------------------------------------------------------------------------| ----------------------------------------------------------------------------------------------- |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------- |
 | `getInfoAsync`            | `file:///`,<br/>`content://`,<br/>`asset://`,<br/>no scheme                                                                          | `file://`,<br/>`ph://`,<br/>`assets-library://`                                                 |
 | `readAsStringAsync`       | `file:///`,<br/>`asset://`,<br/>[SAF URI](#saf-uri)                                                                                  | `file://`                                                                                       |
 | `writeAsStringAsync`      | `file:///`,<br/>[SAF URI](#saf-uri)                                                                                                  | `file://`                                                                                       |

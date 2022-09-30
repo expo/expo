@@ -4,16 +4,24 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-screen-orie
 packageName: 'expo-screen-orientation'
 ---
 
-import { ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { palette } from '@expo/styleguide';
-import APISection from '~/components/plugins/APISection'
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](devicemotion.mdx).
 
-<ImageSpotlight alt="Portrait orientation in different physical orientations" src="/static/images/screen-orientation-portrait.png" containerStyle={{ backgroundColor: palette.light.gray['300'] }} />
+<ImageSpotlight
+  alt="Portrait orientation in different physical orientations"
+  src="/static/images/screen-orientation-portrait.png"
+  containerStyle={{ backgroundColor: palette.light.gray['300'] }}
+/>
 
 On both iOS and Android platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
 
@@ -62,9 +70,17 @@ You can configure `expo-screen-orientation` using its built-in [config plugin](/
 
 </ConfigPluginExample>
 
-<ConfigPluginProperties properties={[
-{ name: 'initialOrientation', platform: 'ios', description: 'Sets the iOS initial screen orientation. Options: `DEFAULT`, `ALL`, `PORTRAIT`, `PORTRAIT_UP`, `PORTRAIT_DOWN`, `LANDSCAPE`, `LANDSCAPE_LEFT`, `LANDSCAPE_RIGHT`', default: 'undefined' },
-]} />
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'initialOrientation',
+      platform: 'ios',
+      description:
+        'Sets the iOS initial screen orientation. Options: `DEFAULT`, `ALL`, `PORTRAIT`, `PORTRAIT_UP`, `PORTRAIT_DOWN`, `LANDSCAPE`, `LANDSCAPE_LEFT`, `LANDSCAPE_RIGHT`',
+      default: 'undefined',
+    },
+  ]}
+/>
 
 ## API
 

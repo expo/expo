@@ -89,23 +89,21 @@ Once a build has a channel name, we can make sure that EAS' servers know about t
 
 or
 
-<Terminal cmd={[
-'# eas channel:view [channel-name]',
-'',
-'',
-'# Example',
-'$ eas channel:view production',
-]} />
+<Terminal
+  cmd={['# eas channel:view [channel-name]', '', '', '# Example', '$ eas channel:view production']}
+/>
 
 We'd expect the output of these commands to display the same channel name that our build has. If it's not there, we can create the channel on EAS' servers with:
 
-<Terminal cmd={[
-'# eas channel:create [channel-name]',
-'',
-'',
-'# Example',
-'eas channel:create production',
-]} />
+<Terminal
+  cmd={[
+    '# eas channel:create [channel-name]',
+    '',
+    '',
+    '# Example',
+    'eas channel:create production',
+  ]}
+/>
 
 ### 2. Verify the channel/branch mapping
 
@@ -113,23 +111,21 @@ There is a link that is defined by the developer between a channel and a branch.
 
 To verify which branch is linked to a channel, we can run:
 
-<Terminal cmd={[
-'# eas channel:view [channel-name]',
-'',
-'',
-'# Example',
-'eas channel:view production',
-]} />
+<Terminal
+  cmd={['# eas channel:view [channel-name]', '', '', '# Example', 'eas channel:view production']}
+/>
 
 If the channel is not linked to the branch we expect, we can change the link with:
 
-<Terminal cmd={[
-'# eas channel:edit [channel-name] --branch [branch-name]',
-'',
-'',
-'# Example',
-'eas channel:edit production --branch release-1.0',
-]} />
+<Terminal
+  cmd={[
+    '# eas channel:edit [channel-name] --branch [branch-name]',
+    '',
+    '',
+    '# Example',
+    'eas channel:edit production --branch release-1.0',
+  ]}
+/>
 
 ### 3. Verify the update
 
@@ -137,13 +133,9 @@ Every branch contains a list of updates. When a build makes a call for an update
 
 To inspect which updates are on a branch, we can run:
 
-<Terminal cmd={[
-'# eas branch:view [branch-name]',
-'',
-'',
-'# Example',
-'eas branch:view production',
-]} />
+<Terminal
+  cmd={['# eas branch:view [branch-name]', '', '', '# Example', 'eas branch:view production']}
+/>
 
 The output of this command will show us a list of updates and their runtime versions and platforms. From this list, we should be able to figure out which update should apply to a given build, by matching the build's runtime version and platform to update's runtime version and platform. The most recent update that is compatible will be available for a build to download and execute.
 
@@ -215,7 +207,10 @@ As for all requests, we expect to see either `200` response codes, or `304` if n
 
 Below is a screenshot showing the request of a successful update manifest request:
 
-<ImageSpotlight alt="Successful manifest request" src="/static/images/eas-update/network-request.png" />
+<ImageSpotlight
+  alt="Successful manifest request"
+  src="/static/images/eas-update/network-request.png"
+/>
 
 ### Inspecting a build manually
 
@@ -286,13 +281,15 @@ updates: [
 
 If "update 2" turned out to be a bad update, we can re-publish "update 1" with a command like this:
 
-<Terminal cmd={[
-'# eas update --branch [branch-name] --republish --group [update-group-id]',
-'',
-'',
-'# Example',
-'$ eas update --branch production --republish --group abc1',
-]} />
+<Terminal
+  cmd={[
+    '# eas update --branch [branch-name] --republish --group [update-group-id]',
+    '',
+    '',
+    '# Example',
+    '$ eas update --branch production --republish --group abc1',
+  ]}
+/>
 
 The example command above would result in a branch that now appears like this:
 

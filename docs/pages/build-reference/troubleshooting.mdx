@@ -27,19 +27,23 @@ Regardless of the phase, **it's common to see log entries prefixed with `[stderr
 
 For example, you might see something like this on your Android builds:
 
-<Terminal cmd={[
-`[stderr] Note: /build/workingdir/build/app/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java uses or overrides a deprecated API.`,
-`[stderr] Note: Recompile with -Xlint:deprecation for details.`
-]} />
+<Terminal
+  cmd={[
+    `[stderr] Note: /build/workingdir/build/app/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java uses or overrides a deprecated API.`,
+    `[stderr] Note: Recompile with -Xlint:deprecation for details.`,
+  ]}
+/>
 
 While you may or may not be interested in following up on that warning, it is not the cause of your failed build. So how do you know which logs are truly responsible? If you are building a bare project, you will already be good at this. If you are building a [managed project](/introduction/managed-vs-bare.mdx), it may be tricky because you don't directly interact with the native code, only write JavaScript.
 
 A good path forward is to **determine if the build failed due to a native or JavaScript error**. When your build fails due to a JavaScript build error, you will usually see something like this:
 
-<Terminal cmd={[
-`❌ Metro encountered an error:`,
-`Unable to resolve module ./src/Routes from /Users/expo/workingdir/build/App.js`,
-]} />
+<Terminal
+  cmd={[
+    `❌ Metro encountered an error:`,
+    `Unable to resolve module ./src/Routes from /Users/expo/workingdir/build/App.js`,
+  ]}
+/>
 
 This particular error means that the app is importing `./src/Routes` and it is not found. The cause could be that the filename case being different in Git than the developer's filesystem (eg: `routes.js` in Git instead of `Routes.js`), or maybe the project has a build step and it wasn't set up to run on EAS Build. In this case, it turns out that in this case `./src/Routes` was intended to import `./src/Routes/index.js`, but that path was accidentally excluded in the developer's `.gitignore`.
 
@@ -79,9 +83,7 @@ It's not yet possible to increase memory limits on your build workers, [only one
 
 When you get the `Metro encountered an error` during a native iOS build, it means Metro bundler failed to bundle the app. This unfortunately runs at the end of the native build process, meaning it takes a while to fail.
 
-<Terminal cmd={[
-`❌ Metro encountered an error:`
-]} />
+<Terminal cmd={[`❌ Metro encountered an error:`]} />
 
 You can reproduce this production bundle locally by running `expo export --experimental-bundle` which simply creates a production bundle. Continue doing this until the command passes without throwing. In general this should save you hours of debugging time.
 
@@ -97,13 +99,15 @@ If the logs weren't enough to immediately help you understand and fix the root c
 
 You can verify that your project builds on your local machine with the `expo run` commands with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. (Learn more about the [iOS build process](/build-reference/ios-builds.mdx) and [Android build process](/build-reference/android-builds.mdx)).
 
-<Terminal cmd={[
-'# Locally compile and run the Android app in release mode',
-'$ expo run:android --variant release',
-'',
-'# Locally compile and run the iOS app in release mode',
-'$ expo run:ios --configuration Release'
-]} />
+<Terminal
+  cmd={[
+    '# Locally compile and run the Android app in release mode',
+    '$ expo run:android --variant release',
+    '',
+    '# Locally compile and run the iOS app in release mode',
+    '$ expo run:ios --configuration Release',
+  ]}
+/>
 
 > In managed projects, these commands will run `expo prebuild` to generate native projects &mdash; you likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting.
 

@@ -6,7 +6,7 @@ sidebar_title: Using Expo Go
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { InlineCode } from '~/components/base/code';
-import SnackInline from '~/components/plugins/SnackInline'
+import SnackInline from '~/components/plugins/SnackInline';
 
 The [Expo Go][expo-go] app is capable of running most React Native apps regardless of how they are bootstrapped. Developing any React Native app in Expo Go is useful because you can distribute your project instantly to the members of your [organization](/accounts/account-types/#organizations), and no native build or provisioning is required.
 
@@ -21,9 +21,21 @@ This guide will demonstrate achieving the second option by compatible library ve
 
 Inside any React Native app, start a [development server with Expo CLI](/workflow/expo-cli#develop):
 
-<Terminal cmd={["$ npx expo start"]} />
+<Terminal cmd={['$ npx expo start']} />
 
-<BoxLink title={<>Don't have <InlineCode>npx expo start</InlineCode>?</>} href="/bare/installing-expo-modules" description={<>Install and configure the <InlineCode>expo</InlineCode> package in your project.</>} />
+<BoxLink
+  title={
+    <>
+      Don't have <InlineCode>npx expo start</InlineCode>?
+    </>
+  }
+  href="/bare/installing-expo-modules"
+  description={
+    <>
+      Install and configure the <InlineCode>expo</InlineCode> package in your project.
+    </>
+  }
+/>
 
 Then, launch your app in Expo Go by pressing <kbd>i</kbd> or <kbd>a</kbd> in the Terminal UI. Some features may cause your app to throw errors because certain native code is missing, continue reading to learn how you can conditionally skip unsupported APIs.
 
@@ -37,7 +49,7 @@ Ensure your app uses the most compatible library versions for the project's `rea
 
 The easiest way to detect where the JavaScript bundle is running is to check the [`Constants.executionEnvironment`](/versions/latest/sdk/constants/#nativeconstants--properties).
 
-<Terminal cmd={[ "$ npx expo install expo-constants"]} />
+<Terminal cmd={['$ npx expo install expo-constants']} />
 
 ```tsx
 import Constants, { ExecutionEnvironment } from 'expo-constants';

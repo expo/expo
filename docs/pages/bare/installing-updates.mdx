@@ -14,7 +14,11 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 Like most Expo modules, **this package requires that you have already [installed and configured Expo modules](/bare/installing-expo-modules.mdx). Be sure to install it before continuing.**
 
-<InstallSection packageName="expo-updates" cmd={["expo install expo-updates", "npx pod-install"]} hideBareInstructions />
+<InstallSection
+  packageName="expo-updates"
+  cmd={['expo install expo-updates', 'npx pod-install']}
+  hideBareInstructions
+/>
 
 Once installation is complete, apply the changes from the following diffs to configure expo-updates in your project. This is expected to take about five minutes, and you may need to adapt it slightly depending on how customized your project is.
 
@@ -63,7 +67,8 @@ Add the **"Supporting"** directory containing **Expo.plist** to your project in 
 
 Apply the following change to your **AndroidManifest.xml** file:
 
-<DiffBlock raw={`
+<DiffBlock
+  raw={`
 diff --git a/apps/bare-update/android/app/src/main/AndroidManifest.xml b/apps/bare-update/android/app/src/main/AndroidManifest.xml
 --- a/apps/bare-update/android/app/src/main/AndroidManifest.xml
 +++ b/apps/bare-update/android/app/src/main/AndroidManifest.xml
@@ -76,7 +81,8 @@ diff --git a/apps/bare-update/android/app/src/main/AndroidManifest.xml b/apps/ba
      <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen">
        <intent-filter>
          <action android:name="android.intent.action.MAIN"/>
-`} />
+`}
+/>
 
 ## Customizing Automatic Setup for iOS
 

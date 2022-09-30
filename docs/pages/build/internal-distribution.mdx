@@ -4,7 +4,7 @@ title: Internal distribution
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
-import { theme } from '@expo/styleguide'
+import { theme } from '@expo/styleguide';
 
 Uploading your app to TestFlight and Google Play beta can be time consuming (e.g. waiting for the build to run through static analysis before becoming available to testers) and limiting (e.g. TestFlight can only have one active build at a time). Both Android and iOS provide alternative mechanisms to distribute apps directly to testers, so they can download and install them to physical devices directly from a web browser as soon as the builds are completed.
 
@@ -76,10 +76,7 @@ Apps signed with an ad hoc provisioning profile can be installed by any iOS devi
 
 Setting up ad hoc provisioning consists of two steps. In the first step, you'll register devices that you want to be able to install your app. Run the following command to generate a URL (and QR code, for convenience) that you can open on your devices, and then follow the instructions on the registration page.
 
-<Terminal cmd={[
-  '# Register Apple Devices for internal distribution',
-  '$ eas device:create'
-]} />
+<Terminal cmd={['# Register Apple Devices for internal distribution', '$ eas device:create']} />
 
 You can register new devices at any time, but builds that were created before the device was registered will not run on newly registered devices; only builds that are created after the device is registered will be installable.
 
@@ -108,10 +105,13 @@ If so, make sure to point your **credentials.json** to an ad hoc or enterprise p
 
 Now that we have set up our build profile and app signing, running a build for internal distribution is just like any other build.
 
-<Terminal cmd={[
-  '# Create iOS and Android builds for internal distribution',
-  '$ eas build --profile preview --platform all'
-]} cmdCopy="eas build --profile preview --platform all" />
+<Terminal
+  cmd={[
+    '# Create iOS and Android builds for internal distribution',
+    '$ eas build --profile preview --platform all',
+  ]}
+  cmdCopy="eas build --profile preview --platform all"
+/>
 
 > If you're using ad hoc provisioning but you haven't registered any devices yet, you'll be asked to register them now (or exit the current command and run `eas device:create` again). The build command will wait for the new device to register. Scan the QR code that is presented in the terminal and follow the instructions on that page to register your device. When you're done, return to the terminal and continue.
 
@@ -127,7 +127,6 @@ If you're running iOS 16 or above and haven't yet turned on Developer Mode, you 
 
 It's possible to run internal distribution builds non-interactively in CI using the `--non-interactive` flag; however, if you are using ad hoc provisioning on iOS you will not be able to add new devices to your provisioning profile when using this flag. After registering a device through `eas device:create`, you need to run `eas build` interactively and authenticate with Apple in order for EAS to add the device to your provisioning profile. [Learn more about triggering builds from CI](/build/building-on-ci.mdx).
 
-{/*
-(@dsokal) this is not implemented yet
-When using iOS ad hoc provisioning managed by Expo, if a teammate navigates to this URL on an iOS device that is not yet registered, they will be able to register their device and initiate a new build to include the updated profile that will run on their device. If the ad hoc provisioning profile is not managed by Expo, the user will be asked to contact the organization admin in order to add their device UDID and create a new build compatible with their device.
-*/}
+{/* (@dsokal) this is not implemented yet */}
+
+{/* When using iOS ad hoc provisioning managed by Expo, if a teammate navigates to this URL on an iOS device that is not yet registered, they will be able to register their device and initiate a new build to include the updated profile that will run on their device. If the ad hoc provisioning profile is not managed by Expo, the user will be asked to contact the organization admin in order to add their device UDID and create a new build compatible with their device. */}

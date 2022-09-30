@@ -2,7 +2,7 @@
 title: Developing with EAS Update
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 EAS Update can help us fix critical bugs in production. It can also help us iterate faster with our team.
 
@@ -31,7 +31,11 @@ The process flows like this:
 - The developer then runs `eas update --auto`. This will publish an update to a branch named `typo-fix`, which is linked by default to a channel named `typo-fix`.
 - Then, the developer can create a URL that will open the previously created internal distribution app. They can either send that link to their teammates/reviewers, or they can create a QR code that teammates/reviewers may scan. To help with this last part, developers can navigate to their public project page and see the following UI to configure the correct URL for previewing a published EAS Update:
 
-<ImageSpotlight alt="Preview EAS Update QR Code configuration" src="/static/images/eas-update/qr-preview.png" style={{ maxHeight: "700px", width: "auto" }} />
+<ImageSpotlight
+  alt="Preview EAS Update QR Code configuration"
+  src="/static/images/eas-update/qr-preview.png"
+  style={{ maxHeight: '700px', width: 'auto' }}
+/>
 
 [Learn more](/eas-update/expo-dev-client) on using EAS Update with development builds.
 

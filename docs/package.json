@@ -11,7 +11,7 @@
     "export-server": "http-server out -p 8000",
     "import-react-native-docs": "node ./scripts/import-react-native-docs.js",
     "test-links": "node --async-stack-traces --unhandled-rejections=strict ./scripts/test-links.js",
-    "prettier": "prettier --write '**/*.{js,ts,tsx,md}'",
+    "prettier": "prettier --write **/*.{md,mdx}",
     "lint": "tsc --noEmit && eslint .",
     "lint-case": "case-police 'pages/**/*.mdx' -p brands,general,products,softwares -d expo-dict.json",
     "lint-links": "remark -u validate-links ./pages",

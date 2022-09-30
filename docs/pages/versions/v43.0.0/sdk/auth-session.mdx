@@ -6,7 +6,11 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-auth-sess
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 
-import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
+import {
+  SocialGrid,
+  SocialGridItem,
+  CreateAppButton,
+} from '~/components/plugins/AuthSessionElements';
 import { Terminal } from '~/ui/components/Snippet';
 import SnackInline from '~/components/plugins/SnackInline';
 import { InlineCode } from '~/components/base/code';
@@ -27,7 +31,10 @@ In **bare-workflow** you can use the [`uri-scheme` package][n-uri-scheme] to eas
 
 To make your native app handle `mycoolredirect://` simply run:
 
-<Terminal cmd={['$ npx uri-scheme add mycoolredirect']} copyCmd="npx uri-scheme add mycoolredirect" />
+<Terminal
+  cmd={['$ npx uri-scheme add mycoolredirect']}
+  copyCmd="npx uri-scheme add mycoolredirect"
+/>
 
 You should now be able to see a list of all your project's schemes by running:
 
@@ -35,14 +42,16 @@ You should now be able to see a list of all your project's schemes by running:
 
 You can test it to ensure it works like this:
 
-<Terminal cmd={[
-'# Rebuild the native apps, be sure to use an emulator',
-'$ yarn ios',
-'$ yarn android',
-'',
-'# Open a URI scheme',
-'$ npx uri-scheme open mycoolredirect://some/redirect'
-]} />
+<Terminal
+  cmd={[
+    '# Rebuild the native apps, be sure to use an emulator',
+    '$ yarn ios',
+    '$ yarn android',
+    '',
+    '# Open a URI scheme',
+    '$ npx uri-scheme open mycoolredirect://some/redirect',
+  ]}
+/>
 
 ### Usage in standalone apps
 

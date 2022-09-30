@@ -50,37 +50,39 @@ export default function App() {
     /* @info */ await Print.printAsync({
       html,
       printerUrl: selectedPrinter?.url, // iOS only
-    });/* @end */
-  }
+    }); /* @end */
+  };
 
   const printToFile = async () => {
     // On iOS/android prints the given html. On web prints the HTML from the current page.
-    /* @info */const { uri } = await Print.printToFileAsync({
-      html
+    /* @info */ const { uri } = await Print.printToFileAsync({
+      html,
     });
-    /* @end */console.log('File has been saved to:', uri);
+    /* @end */ console.log('File has been saved to:', uri);
     await shareAsync(uri, { UTI: '.pdf', mimeType: 'application/pdf' });
-  }
+  };
 
   const selectPrinter = async () => {
-    /* @info */const printer = await Print.selectPrinterAsync(); // iOS only
+    /* @info */ const printer = await Print.selectPrinterAsync(); // iOS only
     /* @end */
     setSelectedPrinter(printer);
-  }
+  };
 
   return (
     <View style={styles.container}>
-      <Button title='Print' onPress={print}  />
+      <Button title="Print" onPress={print} />
       <View style={styles.spacer} />
-      <Button title='Print to PDF file' onPress={printToFile}/>
-      {Platform.OS === 'ios' &&
+      <Button title="Print to PDF file" onPress={printToFile} />
+      {Platform.OS === 'ios' && (
         <>
           <View style={styles.spacer} />
-          <Button title='Select printer' onPress={selectPrinter}/>
+          <Button title="Select printer" onPress={selectPrinter} />
           <View style={styles.spacer} />
-          {selectedPrinter ? <Text style={styles.printer}>{`Selected printer: ${selectedPrinter.name}`}</Text> : undefined}
+          {selectedPrinter ? (
+            <Text style={styles.printer}>{`Selected printer: ${selectedPrinter.name}`}</Text>
+          ) : undefined}
         </>
-      }
+      )}
     </View>
   );
 }
@@ -95,11 +97,11 @@ const styles = StyleSheet.create({
     padding: 8,
   },
   spacer: {
-    height: 8
+    height: 8,
   },
   printer: {
     textAlign: 'center',
-  }
+  },
 });
 /* @end */
 ```
@@ -125,11 +127,7 @@ import { manipulateAsync } from 'expo-image-manipulator';
 
 async function generateHTML() {
   const asset = Asset.fromModule(require('../../assets/logo.png'));
-  const image = await manipulateAsync(
-    asset.localUri ?? asset.uri,
-    [],
-    { base64: true }
-  );
+  const image = await manipulateAsync(asset.localUri ?? asset.uri, [], { base64: true });
   return `
     <html>
       <img

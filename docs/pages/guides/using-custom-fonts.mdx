@@ -80,8 +80,8 @@ Let's take a look at a minimal example that uses Inter font family. It uses [`us
 ```jsx
 import { useCallback } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-/* @info Import useFonts hook from 'expo-font'. */import { useFonts } from 'expo-font';/* @end */
-/* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */import * as SplashScreen from 'expo-splash-screen';/* @end */
+/* @info Import useFonts hook from 'expo-font'. */ import { useFonts } from 'expo-font'; /* @end */
+/* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
 
 /* @info This prevents SplashScreen from auto hiding while the fonts are loaded. */
 SplashScreen.preventAutoHideAsync();
@@ -129,11 +129,15 @@ Inter Black is very bold and dark and pretty distinctive so you should be able t
 
 When you load it on your device, you should see something like this:
 
-<ImageSpotlight alt="Enter a name of your new organization." src="/static/images/font-example-custom-font.jpg" style={{maxWidth: 305}} />
+<ImageSpotlight
+  alt="Enter a name of your new organization."
+  src="/static/images/font-example-custom-font.jpg"
+  style={{ maxWidth: 305 }}
+/>
 
 To create a new project including this example, run in your terminal:
 
-<Terminal cmd={["$ npx create-react-native-app --template with-custom-font"]} />
+<Terminal cmd={['$ npx create-react-native-app --template with-custom-font']} />
 
 > **Note**: The above example also uses [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. To learn why, read about it more in the [Waiting for fonts to load](#waiting-for-fonts-to-load) section.
 
@@ -157,7 +161,7 @@ Expo has first-class support for all fonts listed in [Google Fonts](https://font
 
 For example, to use Inter font you can install the [`@expo-google-fonts/inter`](https://www.npmjs.com/package/@expo-google-fonts/inter) package with the command below.
 
-<Terminal cmd={["$ npx expo install expo-font @expo-google-fonts/inter"]} />
+<Terminal cmd={['$ npx expo install expo-font @expo-google-fonts/inter']} />
 
 Then, you can integrate it in your project by using the `useFonts` hook. You can directly use this hook from the Google Fonts package. Under the hood, the hook uses [`Font.loadAsync`](/versions/latest/sdk/font/#loadasyncfontfamilyorfontmap-source). You do not have to explicitly import the font file since that is done by the package itself.
 
@@ -256,7 +260,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-> **warning**  **If loading remote fonts, make sure they are being served from an origin with CORS properly configured**. If you don't do this, your remote font might not load properly on the web platform.
+> **warning** **If loading remote fonts, make sure they are being served from an origin with CORS properly configured**. If you don't do this, your remote font might not load properly on the web platform.
 
 ### Using `Font.loadAsync` instead of the `useFonts` hook
 

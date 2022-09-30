@@ -5,7 +5,7 @@ packageName: 'expo-firebase-analytics'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Terminal } from '~/ui/components/Snippet';
 import { InlineCode } from '~/components/base/code';
@@ -29,7 +29,7 @@ When using the web platform, you'll also need to run `npx expo install firebase`
 
 `expo-firebase-analytics` uses native Firebase libraries on iOS that require additional configuration using the `expo-build-properties` config plugin. Install the plugin and apply the following configuration to your [Expo config](/workflow/configuration/) file.
 
-<Terminal cmd={["$ npx expo install expo-build-properties"]} />
+<Terminal cmd={['$ npx expo install expo-build-properties']} />
 
 #### Example app.json with config plugin
 
@@ -54,7 +54,7 @@ When using the web platform, you'll also need to run `npx expo install firebase`
 
 If you are using `expo-firebase-analytics` with React Native Firebase, you'll have to install the native Firebase SDK using the `npx expo install` command:
 
-<Terminal cmd={["$ npx expo install @react-native-firebase/app"]} />
+<Terminal cmd={['$ npx expo install @react-native-firebase/app']} />
 
 This will ensure that the `@react-native-firebase/app` dependency version is compatible with the Expo SDK version your project uses.
 

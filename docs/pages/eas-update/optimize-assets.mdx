@@ -21,7 +21,7 @@ In **./dist/bundles**, we can see the size of the **index.ios.js** and **index.a
 
 Users will have to download any new images or other assets when they detect a new update, if those assets are not already a part of their build. You can view all the assets uploaded to EAS' servers in **./dist/assets**. The assets there are hashed with their extensions removed, so it is difficult to know what assets are there. To see a pretty-printed list of assets, we can run:
 
-<Terminal cmd={["$ npx expo export"]} />
+<Terminal cmd={['$ npx expo export']} />
 
 You can compress images using tools such as [guetzli](https://github.com/google/guetzli), [pngcrush](https://pmt.sourceforge.io/pngcrush/), or [optipng](http://optipng.sourceforge.net/). [imagemin](https://github.com/imagemin/imagemin) is another program and JS library that supports plugins for various optimizers. There are also many online services that can optimize your images for you.
 

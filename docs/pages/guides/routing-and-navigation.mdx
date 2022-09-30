@@ -3,15 +3,15 @@ title: Routing & Navigation
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
-import Video from '~/components/plugins/Video'
+import Video from '~/components/plugins/Video';
 import { Collapsible } from '~/ui/components/Collapsible';
-import SnackInline from '~/components/plugins/SnackInline'
+import SnackInline from '~/components/plugins/SnackInline';
 
 Routing and navigation refer to organizing an app into distinct screens, mapping screens to URLs, moving between those screens, and displaying the appropriate platform-specific navigation-related user interface elements (eg: tabs, navigation bar, screen transition animations and gestures, drawers). Navigation has very nuanced behavior on each platform and is extremely complicated to build entirely on your own, so you should always use a library to ensure that your app looks and behaves as users expect.
 
 [React Navigation](https://github.com/react-navigation/react-navigation) is the most popular navigation library in the React Native ecosystem and the best choice for most apps. It is maintained by the Expo team and supports Android, iOS, and the web.
 
-<Video file={"routing-and-navigation/preview.mp4"} loop={false} />
+<Video file={'routing-and-navigation/preview.mp4'} loop={false} />
 
 > This video demonstrates using React Navigation on iOS, Android, and web. Notice that it adapts to the platform conventions in each case. The code that powers this example app is available on GitHub in [react-navigation/example](https://github.com/react-navigation/react-navigation/tree/main/example).
 
@@ -57,9 +57,21 @@ export default App;
 
 ## Next
 
-<BoxLink title="Linking" description="Create links and handle incoming URL requests for your app." href="/guides/linking" />
-<BoxLink title="Deep linking" description="Connect an app to a website to enable universal links and deep links." href="/guides/deep-linking" />
-<BoxLink title="React Navigation linking" description="Forward URLs to React Navigation screens." href="https://reactnavigation.org/docs/configuring-links" />
+<BoxLink
+  title="Linking"
+  description="Create links and handle incoming URL requests for your app."
+  href="/guides/linking"
+/>
+<BoxLink
+  title="Deep linking"
+  description="Connect an app to a website to enable universal links and deep links."
+  href="/guides/deep-linking"
+/>
+<BoxLink
+  title="React Navigation linking"
+  description="Forward URLs to React Navigation screens."
+  href="https://reactnavigation.org/docs/configuring-links"
+/>
 
 ## FAQ
 

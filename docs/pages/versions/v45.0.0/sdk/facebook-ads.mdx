@@ -4,10 +4,15 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-45/packages/expo-ads-faceb
 packageName: 'expo-ads-facebook'
 ---
 
-import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import {
+  ConfigClassic,
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 > **Deprecated.** This module will be removed in SDK 46. There will be no replacement that works with the classic build service (`expo build`) because [the classic build service has been superseded by **EAS Build**](https://blog.expo.dev/turtle-goes-out-to-sea-d334db2a6b60). With **EAS Build** and [Development Builds](/development/introduction.mdx), you should use [react-native-fbads](https://github.com/callstack/react-native-fbads) instead.
@@ -73,9 +78,17 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-<ConfigPluginProperties properties={[
-{ name: 'userTrackingPermission', platform: 'ios', description: 'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.', default: '"This identifier will be used to deliver personalized ads to you."' },
-]} />
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'userTrackingPermission',
+      platform: 'ios',
+      description:
+        'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.',
+      default: '"This identifier will be used to deliver personalized ads to you."',
+    },
+  ]}
+/>
 
 ### Development vs Production
 
@@ -435,7 +448,7 @@ _No permissions required_.
 
 The following usage description keys are used by this library:
 
-<IOSPermissions permissions={[ 'NSUserTrackingUsageDescription' ]} />
+<IOSPermissions permissions={['NSUserTrackingUsageDescription']} />
 
 ## Troubleshooting
 

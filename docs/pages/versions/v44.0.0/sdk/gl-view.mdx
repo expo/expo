@@ -207,7 +207,7 @@ function render(gl) {
 function onContextCreate(gl) {
   runOnUI((contextId: number) => {
     'worklet';
-    const gl = GLView.getWorkletContext(contextId)
+    const gl = GLView.getWorkletContext(contextId);
     render(gl);
   })(gl.contextId);
 }
@@ -228,11 +228,12 @@ For more in-depth example on how to use `expo-gl` with Reanimated and Gesture Ha
 ### Limitations
 
 Worklet runtime is imposing some limitations on the code that runs inside it, so if you have existing WebGL code, it'll likely require some modifications to run inside a worklet thread.
+
 - Third-party libraries like Pixi.js or Three.js won't work inside the worklet, you can only use functions that have `'worklet'` added at the start.
 - If you need to load some assets to pass to the WebGL code, it needs to be done on the main thread and passed via some reference to the worklet. If you are using `expo-assets` you can just pass asset object returned by `Asset.fromModule` or from hook `useAssets` to the `runOnUI` function.
 - To implement a rendering loop you need to use `requestAnimationFrame`, APIs like `setTimeout` are not supported.
 - It's supported only on Android and iOS, it doesn't work on Web.
- 
+
 Check [Reanimated documentation](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/worklets) to learn more.
 
 ## Remote Debugging & GLView

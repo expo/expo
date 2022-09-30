@@ -14,7 +14,7 @@ You can customize the Metro bundler by creating a **metro.config.js** file at th
 
 Run the following to generate the template file:
 
-<Terminal cmd={["$ npx expo customize metro.config.js"]} />
+<Terminal cmd={['$ npx expo customize metro.config.js']} />
 
 The **metro.config.js** file looks something like this:
 
@@ -160,7 +160,7 @@ To enable Metro web support, be sure to use Expo SDK 46, then modify your Expo c
 
 To start the development server:
 
-<Terminal cmd={["$ npx expo start --web"]} />
+<Terminal cmd={['$ npx expo start --web']} />
 
 Or start normally and press `w` in the Terminal UI.
 
@@ -170,7 +170,7 @@ Or start normally and press `w` in the Terminal UI.
 
 You can bundle the project for hosting just like you would for native:
 
-<Terminal cmd={["$ npx expo export"]} />
+<Terminal cmd={['$ npx expo export']} />
 
 You should see something like this:
 
@@ -184,13 +184,13 @@ Web ./index.tsx ░░░░░░░░░░░░░░░░  4.0% ( 5/5
 
 You can skip bundling for all platforms by using the `--platform` flag:
 
-<Terminal cmd={["$ npx expo export --platform web"]} />
+<Terminal cmd={['$ npx expo export --platform web']} />
 
 Your output will be found in the `dist` folder.
 
 The output can be tested locally by using the [Serve CLI](https://www.npmjs.com/package/serve).
 
-<Terminal cmd={["$ npx serve dist"]} />
+<Terminal cmd={['$ npx serve dist']} />
 
 You can deploy the website using any popular web host, follow any of the guides in [publishing websites](/distribution/publishing-websites/), just substitute the `web-build/` folder for the `dist/` folder.
 

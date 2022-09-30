@@ -175,14 +175,17 @@ You should now be able to see a list of all your project's schemes by running:
 
 You can test it to ensure it works like this:
 
-<Terminal cmd={[
-'# Rebuild the native apps, be sure to use an emulator',
-'yarn android',
-'yarn ios',
-'',
-'# Open a URI scheme',
-'npx uri-scheme open myapp://some/redirect'
-]} cmdCopy="yarn android && yarn ios && npx uri-scheme open myapp://some/redirect" />
+<Terminal
+  cmd={[
+    '# Rebuild the native apps, be sure to use an emulator',
+    'yarn android',
+    'yarn ios',
+    '',
+    '# Open a URI scheme',
+    'npx uri-scheme open myapp://some/redirect',
+  ]}
+  cmdCopy="yarn android && yarn ios && npx uri-scheme open myapp://some/redirect"
+/>
 
 </ConfigReactNative>
 
@@ -246,23 +249,37 @@ function App() {
 
 You can open a URL like:
 
-<Terminal cmd={[
-'# Custom builds',
-'$ npx uri-scheme open myapp://somepath/into/app?hello=world --ios',
-'',
-'# Expo Go in development (adjust the `127.0.0.1:19000` to match your dev server URL)',
-'$ npx uri-scheme open exp://127.0.0.1:19000/--/somepath/into/app?hello=world --ios']}
+<Terminal
+  cmd={[
+    '# Custom builds',
+    '$ npx uri-scheme open myapp://somepath/into/app?hello=world --ios',
+    '',
+    '# Expo Go in development (adjust the `127.0.0.1:19000` to match your dev server URL)',
+    '$ npx uri-scheme open exp://127.0.0.1:19000/--/somepath/into/app?hello=world --ios',
+  ]}
 />
 
 You can _also_ open a URL by searching for it on the device's native browser. For example, opening Safari on iOS and typing `exp://` then searching will prompt you to open [Expo Go][expo-go] (if installed).
 
 ## Next
 
-<BoxLink title="Deep linking" description="Setup iOS universal links and Android deep links." href="/guides/deep-linking" />
+<BoxLink
+  title="Deep linking"
+  description="Setup iOS universal links and Android deep links."
+  href="/guides/deep-linking"
+/>
 
-<BoxLink title="Authentication" description="Use linking to implement web-based authentication." href="/guides/authentication" />
+<BoxLink
+  title="Authentication"
+  description="Use linking to implement web-based authentication."
+  href="/guides/authentication"
+/>
 
-<BoxLink title="Routing" description="Setup React Navigation linking for in-app routing." href="https://reactnavigation.org/docs/configuring-links" />
+<BoxLink
+  title="Routing"
+  description="Setup React Navigation linking for in-app routing."
+  href="https://reactnavigation.org/docs/configuring-links"
+/>
 
 [expo-go]: https://expo.dev/expo-go
 [n-uri-scheme]: https://www.npmjs.com/package/uri-scheme

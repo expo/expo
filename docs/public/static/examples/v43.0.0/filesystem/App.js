@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Text, View, StyleSheet, Image, Button, Platform } from 'react-native';
 
-import { findGifs } from './GifFetching';
 import { addMultipleGifs, deleteAllGifs, getSingleGif } from './GifManagement';
 
 // those are Giphy.com ID's - they are hardcoded here,

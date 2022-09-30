@@ -5,14 +5,18 @@ packageName: 'expo-screen-orientation'
 ---
 
 import { palette } from '@expo/styleguide';
-import APISection from '~/components/plugins/APISection'
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import APISection from '~/components/plugins/APISection';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](devicemotion.mdx).
 
-<ImageSpotlight alt="Portrait orientation in different physical orientations" src="/static/images/screen-orientation-portrait.png" containerStyle={{ backgroundColor: palette.light.gray['300'] }}  />
+<ImageSpotlight
+  alt="Portrait orientation in different physical orientations"
+  src="/static/images/screen-orientation-portrait.png"
+  containerStyle={{ backgroundColor: palette.light.gray['300'] }}
+/>
 
 `ScreenOrientation` from **`expo`** allows changing supported screen orientations at runtime, and subscribing to orientation changes. This will take priority over the `orientation` key in **app.json**.
 
@@ -64,6 +68,6 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK  | The platform does not support the [`OrientationLock`](#screenorientationorientationlock) policy. |
 | ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK      | An invalid [`OrientationLock`](#screenorientationorientationlock) was passed in.                 |
-| ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK          | __Android Only.__ An unknown error occurred when trying to get the orientation lock.             |
-| ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK | __Android Only.__ An unknown error occurred when trying to get the platform orientation lock.    |
-| ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY              | __Android Only.__ Could not get the current activity.                                            |
+| ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK          | **Android Only.** An unknown error occurred when trying to get the orientation lock.             |
+| ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK | **Android Only.** An unknown error occurred when trying to get the platform orientation lock.    |
+| ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY              | **Android Only.** Could not get the current activity.                                            |
