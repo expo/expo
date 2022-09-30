@@ -37,10 +37,11 @@ object DevMenuAppInfo {
       hostUrl = DevMenuManager.currentManifestURL
     }
 
-    val engine = if (instanceManager.jsExecutorName.contains("Hermes")) {
-      "Hermes"
-    } else {
-      "JSC"
+    val jsExecutorName = instanceManager.jsExecutorName
+    val engine = when {
+      jsExecutorName.contains("Hermes") -> "Hermes"
+      jsExecutorName.contains("V8") -> "V8"
+      else -> "JSC"
     }
 
     return Bundle().apply {

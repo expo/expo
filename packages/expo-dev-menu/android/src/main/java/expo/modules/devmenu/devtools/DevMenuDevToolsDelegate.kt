@@ -67,7 +67,7 @@ class DevMenuDevToolsDelegate(
     }
   }
 
-  fun openJsInspector() = runWithDevSupportEnabled {
+  fun openJSInspector() = runWithDevSupportEnabled {
     val devSettings = (devSettings as? DevInternalSettings) ?: return
     val reactContext = reactContext ?: return
     val metroHost = "http://${devSettings.packagerConnectionSettings.debugServerHost}"

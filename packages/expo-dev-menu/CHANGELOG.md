@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix compilation error when the `compileSdkVersion` is set to 33. ([#19271](https://github.com/expo/expo/pull/19271) by [@lukmccall](https://github.com/lukmccall))
+- Fixed the *Local dev tools* menu doesn't work for Hermes. ([#19301](https://github.com/expo/expo/pull/19301) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
