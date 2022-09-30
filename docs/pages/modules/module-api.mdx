@@ -96,7 +96,7 @@ import { requireNativeModule } from 'expo-modules-core';
 const MyModule = requireNativeModule('MyModule');
 
 function getMessage() {
-return MyModule.syncFunction('bar');
+  return MyModule.syncFunction('bar');
 }
 ```
 
@@ -148,7 +148,7 @@ import { requireNativeModule } from 'expo-modules-core';
 const MyModule = requireNativeModule('MyModule');
 
 async function getMessageAsync() {
-return await MyModule.asyncFunction('bar');
+  return await MyModule.asyncFunction('bar');
 }
 ```
 
