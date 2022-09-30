@@ -12,13 +12,14 @@ If you build your native app with the Expo SDK, then you can also run it directl
 
 Install the `expo` package which contains the [Expo CLI](/workflow/expo-cli.mdx) used for starting the dev server:
 
-<Terminal cmd={["$ yarn add expo"]} />
+<Terminal cmd={['$ yarn add expo']} />
 
 Then you can use Expo CLI to install the web dependencies in your project:
 
-<Terminal cmd={[
-"$ npx expo install react-dom react-native-web @expo/webpack-config",
-]} cmdCopy="npx expo install react-dom react-native-web @expo/webpack-config" />
+<Terminal
+  cmd={['$ npx expo install react-dom react-native-web @expo/webpack-config']}
+  cmdCopy="npx expo install react-dom react-native-web @expo/webpack-config"
+/>
 
 ### Update the entry file
 
@@ -41,9 +42,7 @@ import App from './App';
 
 Finally you can start the Webpack dev server with:
 
-<Terminal cmd={[
-"$ npx expo start --web",
-]} cmdCopy="npx expo start --web" />
+<Terminal cmd={['$ npx expo start --web']} cmdCopy="npx expo start --web" />
 
 You can test secure web APIs like the camera and user location by adding the `--https` flag to `npx expo start`. This will host your app from a secure origin like `https://localhost:19006`.
 
@@ -67,6 +66,18 @@ The ability to use Expo web with these other React frameworks is what makes it t
 
 ## Next
 
-<BoxLink title="Publishing websites" description="Export your website and upload to any web host." href="/distribution/publishing-websites" />
-<BoxLink title="Progressive web app" description="Learn how to make your website run offline." href="/guides/progressive-web-apps" />
-<BoxLink title="Responsive design" description="Make your website work across different screens." href="https://blog.expo.dev/media-queries-with-react-native-for-ios-android-and-web-e0b73ed5777b" />
+<BoxLink
+  title="Publishing websites"
+  description="Export your website and upload to any web host."
+  href="/distribution/publishing-websites"
+/>
+<BoxLink
+  title="Progressive web app"
+  description="Learn how to make your website run offline."
+  href="/guides/progressive-web-apps"
+/>
+<BoxLink
+  title="Responsive design"
+  description="Make your website work across different screens."
+  href="https://blog.expo.dev/media-queries-with-react-native-for-ios-android-and-web-e0b73ed5777b"
+/>

@@ -8,7 +8,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 **`expo-background-fetch`** provides an API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks, allowing you to run specific code periodically in the background to update your app. This module uses [TaskManager](task-manager.mdx) Native API under the hood.
 
@@ -146,7 +146,10 @@ For iOS, you can use the `Instruments` app on macOS to manually trigger backgrou
 4. Press the `Record` button in the top left corner
 5. Navigate to the `Document` Menu and select `Simulate Background Fetch - Expo Go`:
 
-<ImageSpotlight alt="Xcode Menu with Simulate Background Fetch option" src="/static/images/simulate-background-fetch-instruments.png" />
+<ImageSpotlight
+  alt="Xcode Menu with Simulate Background Fetch option"
+  src="/static/images/simulate-background-fetch-instruments.png"
+/>
 
 For Android, you can set the `minimumInterval` option of your task to a small number and background your application like so:
 

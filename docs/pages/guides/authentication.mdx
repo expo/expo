@@ -5,7 +5,11 @@ title: Authentication
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import InstallSection from '~/components/plugins/InstallSection';
 
-import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
+import {
+  SocialGrid,
+  SocialGridItem,
+  CreateAppButton,
+} from '~/components/plugins/AuthSessionElements';
 import { Tab, Tabs } from '~/components/plugins/Tabs';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -25,25 +29,120 @@ Here are some **important rules** that apply to all authentication providers:
 If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit/main/docs/pages/guides/authentication.mdx) or [vote on canny](https://expo.canny.io/feature-requests).
 
 <SocialGrid>
-  <SocialGridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} href="#identityserver-4" image="/static/images/sdk/auth-session/identity4.png" />
-  <SocialGridItem title="Azure" protocol={['OAuth 2', 'OpenID']} href="#azure" image="/static/images/sdk/auth-session/azure.png" />
-  <SocialGridItem title="Apple" protocol={['iOS Only']} href="/versions/latest/sdk/apple-authentication" image="/static/images/sdk/auth-session/apple.png" />
-  <SocialGridItem title="Coinbase" protocol={['OAuth 2']} href="#coinbase" image="/static/images/sdk/auth-session/coinbase.png" />
-  <SocialGridItem title="Dropbox" protocol={['OAuth 2']} href="#dropbox" image="/static/images/sdk/auth-session/dropbox.png" />
-  <SocialGridItem title="Facebook" protocol={['OAuth 2']} href="#facebook" image="/static/images/sdk/auth-session/facebook.png" />
-  <SocialGridItem title="Fitbit" protocol={['OAuth 2']} href="#fitbit" image="/static/images/sdk/auth-session/fitbit.png" />
-  <SocialGridItem title="Firebase Phone" protocol={['Recaptcha']} href="/versions/latest/sdk/firebase-recaptcha" image="/static/images/sdk/auth-session/firebase-phone.png" />
-  <SocialGridItem title="GitHub" protocol={['OAuth 2']} href="#github" image="/static/images/sdk/auth-session/github.png" />
-  <SocialGridItem title="Google" protocol={['OAuth 2', 'OpenID']} href="#google" image="/static/images/sdk/auth-session/google.png" />
-  <SocialGridItem title="Imgur" protocol={['OAuth 2']} href="#imgur" image="/static/images/sdk/auth-session/imgur.png" />
-  <SocialGridItem title="Okta" protocol={['OAuth 2', 'OpenID']} href="#okta" image="/static/images/sdk/auth-session/okta.png" />
-  <SocialGridItem title="Reddit" protocol={['OAuth 2']} href="#reddit" image="/static/images/sdk/auth-session/reddit.png" />
-  <SocialGridItem title="Slack" protocol={['OAuth 2']} href="#slack" image="/static/images/sdk/auth-session/slack.png" />
-  <SocialGridItem title="Spotify" protocol={['OAuth 2']} href="#spotify" image="/static/images/sdk/auth-session/spotify.png" />
-  <SocialGridItem title="Strava" protocol={['OAuth 2']} href="#strava" image="/static/images/sdk/auth-session/strava.png" />
-  <SocialGridItem title="Twitch" protocol={['OAuth 2']} href="#twitch" image="/static/images/sdk/auth-session/twitch.png" />
-  <SocialGridItem title="Twitter" protocol={['OAuth 2']} href="#twitter" image="/static/images/sdk/auth-session/twitter.png" />
-  <SocialGridItem title="Uber" protocol={['OAuth 2']} href="#uber" image="/static/images/sdk/auth-session/uber.png" />
+  <SocialGridItem
+    title="IdentityServer 4"
+    protocol={['OAuth 2', 'OpenID']}
+    href="#identityserver-4"
+    image="/static/images/sdk/auth-session/identity4.png"
+  />
+  <SocialGridItem
+    title="Azure"
+    protocol={['OAuth 2', 'OpenID']}
+    href="#azure"
+    image="/static/images/sdk/auth-session/azure.png"
+  />
+  <SocialGridItem
+    title="Apple"
+    protocol={['iOS Only']}
+    href="/versions/latest/sdk/apple-authentication"
+    image="/static/images/sdk/auth-session/apple.png"
+  />
+  <SocialGridItem
+    title="Coinbase"
+    protocol={['OAuth 2']}
+    href="#coinbase"
+    image="/static/images/sdk/auth-session/coinbase.png"
+  />
+  <SocialGridItem
+    title="Dropbox"
+    protocol={['OAuth 2']}
+    href="#dropbox"
+    image="/static/images/sdk/auth-session/dropbox.png"
+  />
+  <SocialGridItem
+    title="Facebook"
+    protocol={['OAuth 2']}
+    href="#facebook"
+    image="/static/images/sdk/auth-session/facebook.png"
+  />
+  <SocialGridItem
+    title="Fitbit"
+    protocol={['OAuth 2']}
+    href="#fitbit"
+    image="/static/images/sdk/auth-session/fitbit.png"
+  />
+  <SocialGridItem
+    title="Firebase Phone"
+    protocol={['Recaptcha']}
+    href="/versions/latest/sdk/firebase-recaptcha"
+    image="/static/images/sdk/auth-session/firebase-phone.png"
+  />
+  <SocialGridItem
+    title="GitHub"
+    protocol={['OAuth 2']}
+    href="#github"
+    image="/static/images/sdk/auth-session/github.png"
+  />
+  <SocialGridItem
+    title="Google"
+    protocol={['OAuth 2', 'OpenID']}
+    href="#google"
+    image="/static/images/sdk/auth-session/google.png"
+  />
+  <SocialGridItem
+    title="Imgur"
+    protocol={['OAuth 2']}
+    href="#imgur"
+    image="/static/images/sdk/auth-session/imgur.png"
+  />
+  <SocialGridItem
+    title="Okta"
+    protocol={['OAuth 2', 'OpenID']}
+    href="#okta"
+    image="/static/images/sdk/auth-session/okta.png"
+  />
+  <SocialGridItem
+    title="Reddit"
+    protocol={['OAuth 2']}
+    href="#reddit"
+    image="/static/images/sdk/auth-session/reddit.png"
+  />
+  <SocialGridItem
+    title="Slack"
+    protocol={['OAuth 2']}
+    href="#slack"
+    image="/static/images/sdk/auth-session/slack.png"
+  />
+  <SocialGridItem
+    title="Spotify"
+    protocol={['OAuth 2']}
+    href="#spotify"
+    image="/static/images/sdk/auth-session/spotify.png"
+  />
+  <SocialGridItem
+    title="Strava"
+    protocol={['OAuth 2']}
+    href="#strava"
+    image="/static/images/sdk/auth-session/strava.png"
+  />
+  <SocialGridItem
+    title="Twitch"
+    protocol={['OAuth 2']}
+    href="#twitch"
+    image="/static/images/sdk/auth-session/twitch.png"
+  />
+  <SocialGridItem
+    title="Twitter"
+    protocol={['OAuth 2']}
+    href="#twitter"
+    image="/static/images/sdk/auth-session/twitter.png"
+  />
+  <SocialGridItem
+    title="Uber"
+    protocol={['OAuth 2']}
+    href="#uber"
+    image="/static/images/sdk/auth-session/uber.png"
+  />
 </SocialGrid>
 
 <br />
@@ -104,7 +203,10 @@ export default function App() {
 
 ### Azure
 
-<CreateAppButton name="Azure" href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview" />
+<CreateAppButton
+  name="Azure"
+  href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview"
+/>
 
 | Website                     | Provider | PKCE      | Auto Discovery |
 | --------------------------- | -------- | --------- | -------------- |
@@ -501,7 +603,10 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 - Go to: (Sidebar) Products > Facebook Login > Settings > Client OAuth Settings. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/fb-login/settings/`
 
-<img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-proxy-guide.png" />
+<img
+  alt="Facebook Console for URIs"
+  src="/static/images/sdk/auth-session/guide/facebook-proxy-guide.png"
+/>
 
 - Under "Valid OAuth Redirect URIs" add `https://auth.expo.io/@username/slug` and any other web URLs you may want to add.
 - Press "Save Changes" in the footer.
@@ -527,7 +632,10 @@ You'll have to rebuild after adding the `react-native-fbsdk-next` as a config pl
 - Go to: (Sidebar) Settings > Basic. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/settings/basic/`
 - Scroll all the way down and click **`+ Add Platform`**, then select **`iOS`**.
 
-<img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-ios-guide.png" />
+<img
+  alt="Facebook Console for URIs"
+  src="/static/images/sdk/auth-session/guide/facebook-ios-guide.png"
+/>
 
 - Under iOS > Bundle ID: Add your app's bundle identifier, this should match the value in your **app.json** - `expo.ios.bundleIdentifier`. If you don't have one set, run `expo prebuild` to create one (then rebuild the native app).
 - Press "Save Changes" in the footer.
@@ -539,7 +647,10 @@ You'll have to rebuild after adding the `react-native-fbsdk-next` as a config pl
 - Go to: (Sidebar) Settings > Basic. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/settings/basic/`
 - Scroll all the way down and click **`+ Add Platform`**, then select **`Android`**.
 
-<img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-android-guide.png" />
+<img
+  alt="Facebook Console for URIs"
+  src="/static/images/sdk/auth-session/guide/facebook-android-guide.png"
+/>
 
 - Under Android > Google Play Package Name: Add your app's android package, this should match the value in your **app.json** - `expo.android.package`. If you don't have one set, run `expo prebuild` to create one (then rebuild the native app).
 - Under Android > Class Name: This should match the package name + `.MainActivity`, i.e. `com.bacon.yolo15.MainActivity`.
@@ -579,7 +690,10 @@ Then add `<data android:scheme="fb<YOUR ID>"/>` to the `.MainActivity` `intent-f
 
 - Go to: (Sidebar) Products > Facebook Login > Settings > Client OAuth Settings. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/fb-login/settings/`
 
-<img alt="Facebook Console for URIs" src="/static/images/sdk/auth-session/guide/facebook-web-dev-guide.png" />
+<img
+  alt="Facebook Console for URIs"
+  src="/static/images/sdk/auth-session/guide/facebook-web-dev-guide.png"
+/>
 
 - Under "Valid OAuth Redirect URIs" add `https://localhost:19006` and any other web URLs you may want to add.
 - Press "Save Changes" in the footer.
@@ -1133,7 +1247,10 @@ export default function App() {
   - Web dev: https://localhost:19006 -- this is assuming you want to invoke `WebBrowser.maybeCompleteAuthSession();` from the root URL of your app.
   - Expo Go Proxy: https://auth.expo.io/@yourname/your-app
 
-<img alt="Google Firebase Console for URIs" src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png" />
+<img
+  alt="Google Firebase Console for URIs"
+  src="/static/images/sdk/auth-session/guide/google-firebase-auth-console.png"
+/>
 
 {/* prettier-ignore */}
 ```tsx
@@ -2146,7 +2263,10 @@ export default function App() {
 
 ### Uber
 
-<CreateAppButton name="Uber" href="https://developer.uber.com/docs/riders/guides/authentication/introduction" />
+<CreateAppButton
+  name="Uber"
+  href="https://developer.uber.com/docs/riders/guides/authentication/introduction"
+/>
 
 | Website                   | Provider  | PKCE      | Auto Discovery |
 | ------------------------- | --------- | --------- | -------------- |

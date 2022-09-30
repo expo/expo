@@ -44,7 +44,6 @@ You can find all configuration options in the [store config schema](./schema.mdx
 
 </CodeBlocksTable>
 
-
 ## Dynamic store config
 
 At times, Metadata properties can benefit from dynamic values. For example, the Metadata **copyright notice** should contain the current year. This can be automated with EAS Metadata.
@@ -95,8 +94,7 @@ const config = require('./store.config.json');
 
 module.exports = async () => {
   const year = new Date().getFullYear();
-  const info = await fetchLocalizations('...')
-    .then(response => response.json());
+  const info = await fetchLocalizations('...').then(response => response.json());
 
   config.apple.copyright = `${year} Acme, Inc.`;
   config.apple.info = info;

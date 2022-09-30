@@ -4,17 +4,22 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-image-picke
 packageName: 'expo-image-picker'
 ---
 
-import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import {
+  ConfigClassic,
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import Video from '~/components/plugins/Video';
 import SnackInline from '~/components/plugins/SnackInline';
 
 **`expo-image-picker`** provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 
-<Video file={"sdk/imagepicker.mp4"} loop={false} />
+<Video file={'sdk/imagepicker.mp4'} loop={false} />
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -57,11 +62,28 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-<ConfigPluginProperties properties={[
-{ name: 'photosPermission', platform: 'ios', description: 'A string to set the NSPhotoLibraryUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your photos"' },
-{ name: 'cameraPermission', platform: 'ios', description: 'A string to set the NSCameraUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your camera"' },
-{ name: 'microphonePermission', platform: 'ios', description: 'A string to set the NSMicrophoneUsageDescription permission message.', default: '"Allow $(PRODUCT_NAME) to access your microphone"' }
-]} />
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'photosPermission',
+      platform: 'ios',
+      description: 'A string to set the NSPhotoLibraryUsageDescription permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your photos"',
+    },
+    {
+      name: 'cameraPermission',
+      platform: 'ios',
+      description: 'A string to set the NSCameraUsageDescription permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your camera"',
+    },
+    {
+      name: 'microphonePermission',
+      platform: 'ios',
+      description: 'A string to set the NSMicrophoneUsageDescription permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your microphone"',
+    },
+  ]}
+/>
 
 ## Usage
 
@@ -141,4 +163,10 @@ The following permissions are added automatically through the library **AndroidM
 
 The following usage description keys are used by the APIs in this library.
 
-<IOSPermissions permissions={[ 'NSMicrophoneUsageDescription', 'NSPhotoLibraryUsageDescription', 'NSCameraUsageDescription' ]} />
+<IOSPermissions
+  permissions={[
+    'NSMicrophoneUsageDescription',
+    'NSPhotoLibraryUsageDescription',
+    'NSCameraUsageDescription',
+  ]}
+/>

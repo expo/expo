@@ -76,11 +76,7 @@ The changes above affect the native code layer inside builds, which means we'll 
 
 EAS Update uses a [modern manifest format](/technical-specs/expo-updates-0). When you have a EAS Update url in your app config at `updates.url`, Expo CLI will automatically serve the correct manifest format for your project. This will ensure that the code you develop locally will work as an update when published later. You can start a locally development session just like before, with:
 
-<Terminal cmd={[
-'$ yarn start',
-'# or',
-'$ npx expo start',
-]} />
+<Terminal cmd={['$ yarn start', '# or', '$ npx expo start']} />
 
 ## Publishing an update
 
@@ -95,7 +91,10 @@ eas update --branch production --message "Fixes typo"
 
 EAS Update adds a new type of object called a "branch". A branch is a list of updates, and it is linked to a channel. In the diagram below, builds with a channel of "production" are linked to a branch named "production". By default, channels and branches of the same name are linked until changed.
 
-<ImageSpotlight alt={`Channel "production" linked to branch "production"`} src="/static/images/eas-update/channel-branch.png" />
+<ImageSpotlight
+  alt={`Channel "production" linked to branch "production"`}
+  src="/static/images/eas-update/channel-branch.png"
+/>
 
 ## Additional possible migration steps
 

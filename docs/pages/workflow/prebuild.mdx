@@ -15,9 +15,7 @@ Before a native app can be compiled, the native source code must be generated. E
 
 Prebuild can be used by running:
 
-<Terminal cmd={[
-'$ npx expo prebuild',
-]} cmdCopy="npx expo prebuild" />
+<Terminal cmd={['$ npx expo prebuild']} cmdCopy="npx expo prebuild" />
 
 This creates the `ios/` and `android/` folders for running your React code. If you modify the generated directories manually then you risk losing your changes the next time you run `npx expo prebuild --clean`. Instead, you should create ["config plugins"][config-plugins] — functions that perform modifications on native projects during prebuild.
 
@@ -31,13 +29,15 @@ You can configure EAS Build to run `npx expo prebuild` before building by using 
 
 You can perform a native build locally by running:
 
-<Terminal cmd={[
-'# Build your native Android project',
-'$ npx expo run:android',
-'',
-'# Build your native iOS project',
-'$ npx expo run:ios'
-]} />
+<Terminal
+  cmd={[
+    '# Build your native Android project',
+    '$ npx expo run:android',
+    '',
+    '# Build your native iOS project',
+    '$ npx expo run:ios',
+  ]}
+/>
 
 If native build directories are not present `npx expo prebuild` will be run one time for the specific platform you wish to run. On subsequent uses of the run commands, you will need to manually run `npx expo prebuild` to ensure the native code is freshly synchronized with your local configuration.
 
@@ -45,9 +45,7 @@ If native build directories are not present `npx expo prebuild` will be run one 
 
 Prebuild currently supports iOS and Android. Web support is not required because there is no native project to generate for web — the app it runs in is always your web browser. You can build for individual platforms by using the `--platform` flag:
 
-<Terminal cmd={[
-'$ npx expo prebuild --platform ios',
-]} cmdCopy="npx expo prebuild --platform ios"/>
+<Terminal cmd={['$ npx expo prebuild --platform ios']} cmdCopy="npx expo prebuild --platform ios" />
 
 ## Dependencies
 
@@ -55,9 +53,10 @@ The first step in prebuild is to initialize new native projects from a template.
 
 You can skip changing npm package versions with the `--skip-dependency-update` flag:
 
-<Terminal cmd={[
-'$ npx expo prebuild --skip-dependency-update react-native,react',
-]} cmdCopy="npx expo prebuild --skip-dependency-update react-native,react"/>
+<Terminal
+  cmd={['$ npx expo prebuild --skip-dependency-update react-native,react']}
+  cmdCopy="npx expo prebuild --skip-dependency-update react-native,react"
+/>
 
 ## Package managers
 

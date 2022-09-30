@@ -49,10 +49,7 @@ export default function App() {
   const _rotate90andFlip = async () => {
     const manipResult = await manipulateAsync(
       image.localUri || image.uri,
-      [
-        { rotate: 90 },
-        { flip: FlipType.Vertical },
-      ],
+      [{ rotate: 90 }, { flip: FlipType.Vertical }],
       { compress: 1, format: SaveFormat.PNG }
     );
     setImage(manipResult);
@@ -60,10 +57,7 @@ export default function App() {
 
   const _renderImage = () => (
     <View style={styles.imageContainer}>
-      <Image
-        source={{ uri: image.localUri || image.uri }}
-        style={styles.image}
-      />
+      <Image source={{ uri: image.localUri || image.uri }} style={styles.image} />
     </View>
   );
 
@@ -102,4 +96,4 @@ const styles = StyleSheet.create({
 import * as ImageManipulator from 'expo-image-manipulator';
 ```
 
-<APISection packageName="expo-image-manipulator" apiName="ImageManipulator"/>
+<APISection packageName="expo-image-manipulator" apiName="ImageManipulator" />

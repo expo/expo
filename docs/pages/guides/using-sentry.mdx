@@ -50,7 +50,9 @@ In your project directory, run:
 `sentry-expo` also requires some additional Expo module packages. To install them, run:
 
 <Terminal
-cmd={['$ npx expo install expo-application expo-constants expo-device expo-updates @sentry/react-native']}
+  cmd={[
+    '$ npx expo install expo-application expo-constants expo-device expo-updates @sentry/react-native',
+  ]}
 />
 
 ### Step 2: Code
@@ -143,7 +145,6 @@ Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 
 The `authToken` value can be generated from the [Sentry API page](https://sentry.io/settings/account/api/).
 
-
 <Collapsible summary="Prefer to use environment variables instead of storing values in app.json?">
 
 You can also use environment variables for your config, if you prefer:
@@ -153,7 +154,6 @@ You can also use environment variables for your config, if you prefer:
 - authToken → `SENTRY_AUTH_TOKEN`
 
 </Collapsible>
-
 
 <Collapsible summary="Additional configuration options">
 

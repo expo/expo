@@ -41,7 +41,10 @@ Once we've created builds, we can change the update layer of our project by publ
 To publish an update, we can run `eas update --auto`. This command will create a local update bundle inside the `./dist` folder in our project. Once it's created an update bundle, it will upload that bundle to EAS' servers, in a database object named a _branch_. A branch has a name, and contains a list of updates, where the most recent update is the active update on the branch.
 We can think of EAS branches just like Git branches. Just as Git branches contain a list of commits, EAS branches contain a list of updates.
 
-<ImageSpotlight alt="Branches with its most recent update pointed out as the active one" src="/static/images/eas-update/branch.png" />
+<ImageSpotlight
+  alt="Branches with its most recent update pointed out as the active one"
+  src="/static/images/eas-update/branch.png"
+/>
 
 ### Matching updates and builds
 
@@ -54,7 +57,10 @@ Like builds, every update on a branch includes a target runtime version and targ
 Let's focus on that last point. Every build has a channel, and we, as developers, can link that channel to any branch, which will make its most recent compatible update available on the branch to the linked channel.
 To simplify this linking, by default we auto-link channels to branches of the same name. For instance, if we created builds with the channel named "production", we could publish updates to a branch named "production" and our builds would get the updates from the branch named "production", even though we did not manually link anything.
 
-<ImageSpotlight alt={`Channel "production" linked to branch "production" by default`} src="/static/images/eas-update/default-link.png" />
+<ImageSpotlight
+  alt={`Channel "production" linked to branch "production" by default`}
+  src="/static/images/eas-update/default-link.png"
+/>
 
 This default linking works great if you have a deployment process where you have multiple consistent Git and EAS branches.
 For instance, we could have a "production" branch and a "staging" branch, both on Git and on EAS. Paired with a [GitHub Action](/eas-update/github-actions), we could make it so that every time a commit is pushed to the "staging" Git branch, we publish to the "staging" EAS Update branch, which would make that update apply to all our builds with the "staging" channel.
@@ -65,19 +71,28 @@ This flow makes it so that we can push to GitHub, then see our builds update wit
 While this flow works for many developers, there's another flow we can accomplish since we have the ability to change the link between channels and branches. Imagine we name our branches like "version-1.0", "version-2.0", and "version-3.0". We could link the "version-1.0" EAS Update branch to the "production" channel, to make it available to our "production" builds.
 We could also link the "version-2.0" EAS Update branch to the "staging" channel to make it available to testers. Finally, we could make a "version-3.0" EAS Update branch that is not linked to any builds yet, that only developers are testing with a development build.
 
-<ImageSpotlight alt={`Channel "production" linked to branch "version-1.0", channel "staging" linked to branch "version-2.0"`} src="/static/images/eas-update/custom-link-1.png" />
+<ImageSpotlight
+  alt={`Channel "production" linked to branch "version-1.0", channel "staging" linked to branch "version-2.0"`}
+  src="/static/images/eas-update/custom-link-1.png"
+/>
 
 Once testers verify that the update on the "version-2.0" EAS Update branch is ready for production, we can update the "production" channel so that it's linked to the "version-2.0" branch. To accomplish this, we could run:
 
 <Terminal cmd={['$ eas channel:edit production --branch version-2.0']} />
 
-<ImageSpotlight alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-2.0"`} src="/static/images/eas-update/custom-link-2.png" />
+<ImageSpotlight
+  alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-2.0"`}
+  src="/static/images/eas-update/custom-link-2.png"
+/>
 
 After this state, we'd be ready to start testing the "version-3.0" EAS Update branch. Similarly to the last step, we could link the "staging" channel to the "version-3.0" EAS Update branch with this command:
 
 <Terminal cmd={['$ eas channel:edit staging --branch version-3.0']} />
 
-<ImageSpotlight alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-3.0"`} src="/static/images/eas-update/custom-link-3.png" />
+<ImageSpotlight
+  alt={`Channel "production" linked to branch "version-2.0", channel "staging" linked to branch "version-3.0"`}
+  src="/static/images/eas-update/custom-link-3.png"
+/>
 
 ## Practical overview
 

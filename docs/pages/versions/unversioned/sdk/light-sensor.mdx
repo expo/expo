@@ -4,7 +4,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
 packageName: 'expo-sensors'
 ---
 
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import SnackInline from '~/components/plugins/SnackInline';
 
@@ -47,7 +47,7 @@ export default function App() {
       _subscribe();
     }
   };
-  
+
   const _subscribe = () => {
     this._subscription = LightSensor.addListener(lightSensorData => {
       setIlluminance(lightSensorData.illuminance);
@@ -62,7 +62,9 @@ export default function App() {
   return (
     <View style={styles.sensor}>
       <Text>Light Sensor:</Text>
-      <Text>Illuminance: {Platform.OS === 'android' ? `${illuminance} lx` : `Only available on Android`}</Text>
+      <Text>
+        Illuminance: {Platform.OS === 'android' ? `${illuminance} lx` : `Only available on Android`}
+      </Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={_toggle} style={styles.button}>
           <Text>Toggle</Text>
@@ -125,7 +127,7 @@ Returns a promise which resolves into a boolean denoting the availability of the
 Subscribe for updates to the light sensor.
 
 ```js
-const subscription = LightSensor.addListener((lightSensorData) => {
+const subscription = LightSensor.addListener(lightSensorData => {
   console.log(lightSensorData.illuminance);
 });
 ```
@@ -152,14 +154,14 @@ type LightSensorMeasurement = {
 };
 ```
 
-| Name             | Type                                         | Format   | iOS | Android | Web |
-| ---------------- | -------------------------------------------- | -------- | --- | ------- | --- |
-| illuminance         | `number`                                     | `lx`    | ❌  | ✅      | ❌  |
+| Name        | Type     | Format | iOS | Android | Web |
+| ----------- | -------- | ------ | --- | ------- | --- |
+| illuminance | `number` | `lx`   | ❌  | ✅      | ❌  |
 
 ## Units and Providers
 
-| OS      | Units   | Provider                                                                                                | Description                                                                                                                         |
-| ------- | ------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| iOS     | `N/A`   | Not implemented... see([here](https://github.com/expo/expo/discussions/18101))
-| Android | _`lx`_ | [`Sensor.TYPE_LIGHT`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_LIGHT) | illuminance changes.                                                                                                    |
-| Web     | `N/A` |          Not implemented... see([here](https://github.com/expo/expo/discussions/18101))
+| OS      | Units  | Provider                                                                                          | Description          |
+| ------- | ------ | ------------------------------------------------------------------------------------------------- | -------------------- |
+| iOS     | `N/A`  | Not implemented... see([here](https://github.com/expo/expo/discussions/18101))                    |
+| Android | _`lx`_ | [`Sensor.TYPE_LIGHT`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_LIGHT) | illuminance changes. |
+| Web     | `N/A`  | Not implemented... see([here](https://github.com/expo/expo/discussions/18101))                    |

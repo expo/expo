@@ -4,10 +4,15 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-media-libra
 packageName: 'expo-media-library'
 ---
 
-import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import {
+  ConfigClassic,
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 **`expo-media-library`** provides access to the user's media library, allowing them to access their existing images and videos from your app, as well as save new ones. You can also subscribe to any updates made to the user's media library.
@@ -57,11 +62,31 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-<ConfigPluginProperties properties={[
-{ name: 'photosPermission', platform: 'ios', description: 'Sets the iOS `NSPhotoLibraryUsageDescription` permission message in Info.plist.', default: '"Allow $(PRODUCT_NAME) to access your photos."' },
-{ name: 'savePhotosPermission', platform: 'ios', description: 'Sets the iOS `NSPhotoLibraryAddUsageDescription` permission message in Info.plist.', default: '"Allow $(PRODUCT_NAME) to save photos."' },
-{ name: 'isAccessMediaLocationEnabled', platform: 'android', description: 'Sets whether or not to request the `ACCESS_MEDIA_LOCATION` permission on Android.', default: 'false' },
-]} />
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'photosPermission',
+      platform: 'ios',
+      description:
+        'Sets the iOS `NSPhotoLibraryUsageDescription` permission message in Info.plist.',
+      default: '"Allow $(PRODUCT_NAME) to access your photos."',
+    },
+    {
+      name: 'savePhotosPermission',
+      platform: 'ios',
+      description:
+        'Sets the iOS `NSPhotoLibraryAddUsageDescription` permission message in Info.plist.',
+      default: '"Allow $(PRODUCT_NAME) to save photos."',
+    },
+    {
+      name: 'isAccessMediaLocationEnabled',
+      platform: 'android',
+      description:
+        'Sets whether or not to request the `ACCESS_MEDIA_LOCATION` permission on Android.',
+      default: 'false',
+    },
+  ]}
+/>
 
 ## API
 
@@ -83,4 +108,6 @@ The following permissions are added automatically through this library's `Androi
 
 The following usage description keys are used by this library:
 
-<IOSPermissions permissions={[ 'NSPhotoLibraryUsageDescription', 'NSPhotoLibraryAddUsageDescription' ]} />
+<IOSPermissions
+  permissions={['NSPhotoLibraryUsageDescription', 'NSPhotoLibraryAddUsageDescription']}
+/>
