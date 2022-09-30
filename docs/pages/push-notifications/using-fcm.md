@@ -3,9 +3,9 @@ title: Using FCM for Push Notifications
 sidebar_title: Using FCM
 ---
 
-**Firebase Cloud Messaging is required for all managed and bare workflow Android apps made with Expo**, unless you're still running your app in the Expo Go app. To set up your Expo Android app to get push notifications using your own FCM credentials, follow this guide closely.
+**Firebase Cloud Messaging is required for all Android apps using Expo SDK**, unless you're still running your app in the Expo Go app. To set up your Expo Android app to get push notifications using your own FCM credentials, follow this guide closely.
 
-Note that FCM is not currently available for Expo iOS apps.
+Note that FCM is not currently available for `expo-notifications` on iOS.
 
 ## Client Setup
 
@@ -13,38 +13,38 @@ Note that FCM is not currently available for Expo iOS apps.
 
 2. In your new project console, click **Add Firebase to your Android app** and follow the setup steps. **Make sure that the Android package name you enter is the same as the value of `android.package` in your app.json.**
 
-3. Download the `google-services.json` file and place it in your Expo app's root directory.
-
+3. Download the `google-services.json` file and place it in your app's root directory.
+   > **Note:** The `google-services.json` file contains unique and non-secret identifiers of your Firebase project. For more information, see [Understand Firebase Projects](https://firebase.google.com/docs/projects/learn-more#config-files-objects).
 4. In your app.json, add an `android.googleServicesFile` field with the relative path to the `google-services.json` file you just downloaded. If you placed it in the root directory, this will probably look like
 
-  ```javascript
-  {
+```javascript
+{
+  ...
+  "android": {
+    "googleServicesFile": "./google-services.json",
     ...
-    "android": {
-      "googleServicesFile": "./google-services.json",
-      ...
-    }
   }
-  ```
+}
+```
 
 5. Confirm that your API key in `google-services.json` has the correct "API restrictions" in the [Google Cloud Platform API Credentials console](https://console.cloud.google.com/apis/credentials). For push notifications to work correctly, Firebase requires the API key to either be unrestricted (the key can call any API), or have access to both `Firebase Cloud Messaging API` and `Firebase Installations API`. The API key can be found under the `client.api_key.current_key` field in `google-services.json`.
 
-  ```javascript
-  {
-    ...
-    "client": [
-      {
-        "api_key": [
-          {
-            "current_key" "<your Google Cloud Platform API key>",
-          }
-        ],
-      }
-    ]
-  }
-  ```
+```javascript
+{
+  ...
+  "client": [
+    {
+      "api_key": [
+        {
+          "current_key" "<your Google Cloud Platform API key>",
+        }
+      ],
+    }
+  ]
+}
+```
 
-  > **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
+> **Note:** Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
 
 6. Finally, make a new build of your app by running `eas build --platform android` (or `expo build:android` if you're using the classic build system).
 
@@ -65,9 +65,17 @@ In order for Expo to send notifications from our servers using your credentials,
 
 3. Copy the token listed next to **Server key**.
 
-4. Run `expo push:android:upload --api-key <your-token-here>`, replacing `<your-token-here>` with the string you just copied. We'll store your token securely on our servers, where it will only be accessed when you send a push notification.
+> Server Key is only available in **Cloud Messaging API (Legacy)**, which may be disabled by default. Enable it by clicking the 3-dot menu > Manage API in Google Cloud Console and follow the flow there. Once the legacy messaging API is enabled, you should see Server Key in that section.
 
-That's it -- users who run this new version of the app will now receive notifications through FCM using your project's credentials. You just send the push notifications as you normally would (see [guide](sending-notifications.md)). We'll take care of choosing the correct service to send the notification.
+4. In your [Expo account's](https://expo.dev/) dashboard, select your project, and click on **Credentials** in the navigation menu. Then, click on your **Application Identifier** that follows the pattern:`com.company.app`.
+
+> For Legacy Application Identifiers, run `expo push:android:upload --api-key <your-token-here>`, replacing `<your-token-here>` with the string you just copied. We'll store your token securely on our servers, where it will only be accessed when you send a push notification.
+
+5. Check that all of your **Service Credentials** are filled correctly. If the **FCM Server Key** is empty, then you can add the copied **Server key** from **Step 3**. If the FCM Server Key is populated, verify that the last characters match the **Server Key** from **Step 3**.
+
+> **warning** Having Service Credentials in both Legacy and non-legacy Application Identifiers can prevent push notifications from working on android devices. If you have a Legacy Application Identifier, you might need to remove all of its Service Credentials.
+
+Users who run this new version of the app will now receive notifications through FCM using your project's credentials. You can now send push notifications normally. For more information, see [Sending Notifications](/push-notifications/sending-notifications/). We'll take care of choosing the correct service to send the notification.
 
 ## See also
 
