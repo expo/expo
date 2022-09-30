@@ -6,9 +6,13 @@ packageName: 'expo-auth-session'
 
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-import { SocialGrid, SocialGridItem, CreateAppButton } from '~/components/plugins/AuthSessionElements';
+import {
+  SocialGrid,
+  SocialGridItem,
+  CreateAppButton,
+} from '~/components/plugins/AuthSessionElements';
 import { Terminal } from '~/ui/components/Snippet';
 import SnackInline from '~/components/plugins/SnackInline';
 import { InlineCode } from '~/components/base/code';
@@ -37,14 +41,16 @@ You should now be able to see a list of all your project's schemes by running:
 
 You can test it to ensure it works like this:
 
-<Terminal cmd={[
-'# Rebuild the native apps, be sure to use an emulated device',
-'$ yarn ios',
-'$ yarn android',
-'',
-'# Open a URI scheme',
-'$ npx uri-scheme open mycoolredirect://some/redirect'
-]} />
+<Terminal
+  cmd={[
+    '# Rebuild the native apps, be sure to use an emulated device',
+    '$ yarn ios',
+    '$ yarn android',
+    '',
+    '# Open a URI scheme',
+    '$ npx uri-scheme open mycoolredirect://some/redirect',
+  ]}
+/>
 
 ### Usage in standalone apps
 
@@ -202,7 +208,7 @@ const redirect = (response, url) => {
     Location: url,
   });
   response.end();
-}
+};
 
 http
   .createServer((request, response) => {

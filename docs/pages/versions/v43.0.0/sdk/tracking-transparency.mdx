@@ -3,7 +3,12 @@ title: TrackingTransparency
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-43/packages/expo-tracking-transparency'
 ---
 
-import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import {
+  ConfigClassic,
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
@@ -55,9 +60,18 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-<ConfigPluginProperties properties={[
-{ name: 'userTrackingPermission', platform: 'ios', description: 'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.', default: '"Allow this app to collect app-related data that can be used for tracking you or your device."' },
-]} />
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'userTrackingPermission',
+      platform: 'ios',
+      description:
+        'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.',
+      default:
+        '"Allow this app to collect app-related data that can be used for tracking you or your device."',
+    },
+  ]}
+/>
 
 ## Usage
 
@@ -119,4 +133,4 @@ _No permissions required_.
 
 The following usage description keys are used by this library:
 
-<IOSPermissions permissions={[ 'NSUserTrackingUsageDescription' ]} />
+<IOSPermissions permissions={['NSUserTrackingUsageDescription']} />

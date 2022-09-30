@@ -14,7 +14,7 @@ import SnackInline from '~/components/plugins/SnackInline';
 <PlatformsSection android emulator ios simulator web />
 
 > **Web support**
-> 
+>
 > There is no API available on the web for controlling the operating system status bar, so `expo-status-bar` will noop, so it will do nothing, it will also **not** error.
 
 ## Installation
@@ -38,9 +38,7 @@ const App = () => (
       alignItems: 'center',
       justifyContent: 'center',
     }}>
-    <Text style={{ color: '#fff' }}>
-      Notice that the status bar has light text!
-    </Text>
+    <Text style={{ color: '#fff' }}>Notice that the status bar has light text!</Text>
     <StatusBar style="light" />
   </View>
 );

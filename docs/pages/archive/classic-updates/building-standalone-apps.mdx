@@ -20,7 +20,9 @@ You must have an Expo account and be logged in to create a build. When running t
 
 Developers using the **Windows** operating system must have WSL enabled. If you do not have it installed, follow this [installation guide](https://docs.microsoft.com/en-us/windows/wsl/install). When it prompts for choosing a Linux distribution, we recommend picking Ubuntu from the Windows Store. Launch Ubuntu at least once and then use an admin PowerShell to run the command:
 
-<Terminal cmd={['$ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux']} />
+<Terminal
+  cmd={['$ Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux']}
+/>
 
 ## 2. Configure app.json
 
@@ -167,7 +169,11 @@ One of the easiest ways to test your standalone app is using a [simulator build]
 - Provide the app identifier and the distribution certificate you created in the first step. **If you don't provide those exact certificates, your build will fail.**
 - Download the provisioning profile, and then pass it to the build command:
 
-<Terminal cmd={['$ expo build:ios --provisioning-profile-path ~/Path/To/provisioningProfileYouCreated.mobileprovision']} />
+<Terminal
+  cmd={[
+    '$ expo build:ios --provisioning-profile-path ~/Path/To/provisioningProfileYouCreated.mobileprovision',
+  ]}
+/>
 
 - Make sure the other certificates you use match the ones you selected when creating your adhoc provisioning profile in the previous step.
 

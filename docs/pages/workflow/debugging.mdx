@@ -2,7 +2,7 @@
 title: Debugging
 ---
 
-import Video from '~/components/plugins/Video'
+import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 
 Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors out into two categories:
@@ -163,8 +163,13 @@ You're now good to go! If you are experiencing any issues or want to learn more 
 React DevTools is a great way to get a look at each of your components' props and state. First, you'll need to run
 
 <Terminal
-cmdCopy="npm install -g react-devtools"
-cmd={['# Install React DevTools with npm', '$ npm install -g react-devtools', '', '# If you are using Expo SDK <= 37: npm install -g react-devtools@^3']}
+  cmdCopy="npm install -g react-devtools"
+  cmd={[
+    '# Install React DevTools with npm',
+    '$ npm install -g react-devtools',
+    '',
+    '# If you are using Expo SDK <= 37: npm install -g react-devtools@^3',
+  ]}
 />
 
 (if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).
