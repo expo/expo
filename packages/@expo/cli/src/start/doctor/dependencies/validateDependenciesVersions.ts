@@ -14,6 +14,7 @@ const debug = require('debug')('expo:doctor:dependencies:validate') as typeof co
 
 interface IncorrectDependency {
   packageName: string;
+  packageType: 'dependencies' | 'devDependencies';
   expectedVersionOrRange: string;
   actualVersion: string;
 }
@@ -98,8 +99,8 @@ export async function getVersionedDependenciesAsync(
   const resolvedDependencies = packagesToCheck?.length
     ? // Diff the provided packages to ensure we only check against installed packages.
       getFilteredObject(packagesToCheck, { ...pkg.dependencies, ...pkg.devDependencies })
-    : // If no packages are provided, check against the `package.json` `dependencies` object.
-      pkg.dependencies;
+    : // If no packages are provided, check against the `package.json` `dependencies` + `devDependencies` object.
+      { ...pkg.dependencies, ...pkg.devDependencies };
   debug(`Checking dependencies for ${exp.sdkVersion}: %O`, resolvedDependencies);
 
   // intersection of packages from package.json and bundled native modules
@@ -113,7 +114,7 @@ export async function getVersionedDependenciesAsync(
   const packageVersions = await resolvePackageVersionsAsync(projectRoot, resolvedPackagesToCheck);
   debug(`Package versions: %O`, packageVersions);
   // find incorrect dependencies by comparing the actual package versions with the bundled native module version ranges
-  const incorrectDeps = findIncorrectDependencies(packageVersions, combinedKnownPackages);
+  const incorrectDeps = findIncorrectDependencies(pkg, packageVersions, combinedKnownPackages);
   debug(`Incorrect dependencies: %O`, incorrectDeps);
 
   return incorrectDeps;
@@ -177,6 +178,7 @@ async function getPackageVersionAsync(projectRoot: string, packageName: string):
 }
 
 function findIncorrectDependencies(
+  pkg: PackageJSONConfig,
   packageVersions: Record<string, string>,
   bundledNativeModules: BundledNativeModules
 ): IncorrectDependency[] {
@@ -191,10 +193,22 @@ function findIncorrectDependencies(
     ) {
       incorrectDeps.push({
         packageName,
+        packageType: findDependencyType(pkg, packageName),
         expectedVersionOrRange,
         actualVersion,
       });
     }
   }
   return incorrectDeps;
+}
+
+function findDependencyType(
+  pkg: PackageJSONConfig,
+  packageName: string
+): IncorrectDependency['packageType'] {
+  if (pkg.devDependencies && packageName in pkg.devDependencies) {
+    return 'devDependencies';
+  }
+
+  return 'dependencies';
 }

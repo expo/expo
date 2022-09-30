@@ -3,7 +3,12 @@ import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
 import * as Log from '../log';
-import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
+import {
+  getOperationLog,
+  getVersionedPackagesAsync,
+} from '../start/doctor/dependencies/getVersionedPackages';
+import { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
+import { groupBy } from '../utils/array';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { checkPackagesAsync } from './checkPackages';
 import { Options } from './resolveOptions';
@@ -61,7 +66,7 @@ export async function installPackagesAsync(
     packageManagerArguments,
   }: {
     /**
-     * List of packages to version
+     * List of packages to version, grouped by the type of dependency.
      * @example ['uuid', 'react-native-reanimated@latest']
      */
     packages: string[];
@@ -94,6 +99,64 @@ export async function installPackagesAsync(
   await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
+}
+
+export async function fixPackagesAsync(
+  projectRoot: string,
+  {
+    packages,
+    packageManager,
+    sdkVersion,
+    packageManagerArguments,
+  }: {
+    packages: Awaited<ReturnType<typeof getVersionedDependenciesAsync>>;
+    /** Package manager to use when installing the versioned packages. */
+    packageManager: PackageManager.NodePackageManager;
+    /**
+     * SDK to version `packages` for.
+     * @example '44.0.0'
+     */
+    sdkVersion: string;
+    /**
+     * Extra parameters to pass to the `packageManager` when installing versioned packages.
+     * @example ['--no-save']
+     */
+    packageManagerArguments: string[];
+  }
+): Promise<void> {
+  if (!packages.length) {
+    return;
+  }
+
+  const { dependencies = [], devDependencies = [] } = groupBy(packages, (dep) => dep.packageType);
+  const versioningMessages = getOperationLog({
+    othersCount: 0, // All fixable packages are versioned
+    nativeModulesCount: packages.length,
+    sdkVersion,
+  });
+
+  Log.log(
+    chalk`\u203A Installing ${
+      versioningMessages.length ? versioningMessages.join(' and ') + ' ' : ''
+    }using {bold ${packageManager.name}}`
+  );
+
+  if (dependencies.length) {
+    const versionedPackages = dependencies.map(
+      (dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`
+    );
+
+    await packageManager.addAsync([...packageManagerArguments, ...versionedPackages]);
+
+    await applyPluginsAsync(projectRoot, versionedPackages);
+  }
+
+  if (devDependencies.length) {
+    await packageManager.addDevAsync([
+      ...packageManagerArguments,
+      ...devDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
+    ]);
+  }
 }
 
 /**

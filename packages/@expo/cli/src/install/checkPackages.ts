@@ -9,7 +9,7 @@ import {
 } from '../start/doctor/dependencies/validateDependenciesVersions';
 import { isInteractive } from '../utils/interactive';
 import { confirmAsync } from '../utils/prompts';
-import { installPackagesAsync } from './installAsync';
+import { fixPackagesAsync } from './installAsync';
 import { Options } from './resolveOptions';
 
 const debug = require('debug')('expo:install:check') as typeof console.log;
@@ -62,13 +62,11 @@ export async function checkPackagesAsync(
     (isInteractive() && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
 
   if (value) {
-    // Just pass in the names, the install function will resolve the versions again.
-    const fixedDependencies = dependencies.map((dependency) => dependency.packageName);
-    debug('Installing fixed dependencies:', fixedDependencies);
+    debug('Installing fixed dependencies:', dependencies);
     // Install the corrected dependencies.
-    return installPackagesAsync(projectRoot, {
+    return fixPackagesAsync(projectRoot, {
       packageManager,
-      packages: fixedDependencies,
+      packages: dependencies,
       packageManagerArguments,
       sdkVersion: exp.sdkVersion!,
     });
