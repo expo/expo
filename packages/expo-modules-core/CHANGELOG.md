@@ -8,19 +8,21 @@
 
 ### 🐛 Bug fixes
 
+- Give precedence to `UIBackgroundFetchResult.newData` over `.failed` in proxied `ExpoAppDelegate.swift` completion handlers. ([#19311](https://github.com/expo/expo/pull/19311) by [@ferologics](https://github.com/ferologics))
+
 ### 💡 Others
 
 ## 0.11.5 — 2022-09-01
 
 ### 🐛 Bug fixes
 
-- Removed the hard dependency to Hermes or JSC in *libexpo-modules-core.so* on Android and fixed the broken support for react-native-v8. ([#18899](https://github.com/expo/expo/pull/18899) by [@kudo](https://github.com/kudo))
+- Removed the hard dependency to Hermes or JSC in _libexpo-modules-core.so_ on Android and fixed the broken support for react-native-v8. ([#18899](https://github.com/expo/expo/pull/18899) by [@kudo](https://github.com/kudo))
 
 ## 0.11.4 — 2022-08-18
 
 ### 🐛 Bug fixes
 
-- Fix issue with Android builds when gradle clean and build were called concurrently.  ([#18518](https://github.com/expo/expo/pull/18518) by [EdwardDrapkin](https://github.com/EdwardDrapkin))
+- Fix issue with Android builds when gradle clean and build were called concurrently. ([#18518](https://github.com/expo/expo/pull/18518) by [EdwardDrapkin](https://github.com/EdwardDrapkin))
 - Fixed `FabricUIManager` errors when turning on new architecture mode on Android. ([#18472](https://github.com/expo/expo/pull/18472) by [@kudo](https://github.com/kudo))
 
 ## 0.11.3 — 2022-07-18
