@@ -16,7 +16,7 @@ This guide explains how to run E2E tests with Detox in a bare workflow project. 
 
 ## Running iOS tests
 
-### 0. Initialize a new Bare Workflow project
+### 1. Initialize a new Bare Workflow project
 
 Let's start by initializing a new Expo project and running `npx expo prebuild` to generate the native projects.
 
@@ -29,7 +29,7 @@ Let's start by initializing a new Expo project and running `npx expo prebuild` t
 '$ npx expo prebuild --platform ios'
 ]} />
 
-### 1. Make home screen interactive
+### 2. Make home screen interactive
 
 The first step to writing E2E tests is to have something to test - we have an empty app, so let's make our app interactive. We can add a button and display some new text when it's pressed.
 Later, we're going to write a test that's going to tap the button and check whether the text has been displayed.
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
 
 </Collapsible>
 
-### 2. Set up Detox
+### 3. Set up Detox
 
 #### Install dependencies
 
@@ -129,7 +129,7 @@ Edit **.detoxrc.json** and replace the `ios` configuration with:
 }
 ```
 
-### 3. Write E2E tests
+### 4. Write E2E tests
 
 Next, we'll add our first E2E tests. Delete the auto-generated **e2e/firstTest.e2e.js** and create our own **e2e/homeScreen.e2e.js** with the following contents:
 
@@ -162,7 +162,7 @@ There are two tests in the suite:
 
 Both tests assume the button has the `testID` set to `click-me-button`. See [the source code](#1-make-home-screen-interactive) for details.
 
-### 4. Configure EAS Build
+### 5. Configure EAS Build
 
 Now that we have configured Detox and written our first E2E test, let's configure EAS Build and run the tests in the cloud.
 
@@ -233,7 +233,7 @@ Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) t
 
 > Don't forget to add executable permissions to **eas-build-pre-install.sh** and **eas-build-on-success.sh**. Run `chmod +x eas-hooks/*.sh`.
 
-### 5. Run tests on EAS Build
+### 6. Run tests on EAS Build
 
 Running the tests on EAS Build is like running a regular build:
 
@@ -243,7 +243,7 @@ If you have set up everything correctly you should see the successful test resul
 
 <img src="/static/images/eas-build/tests/03-logs.png" style={{maxWidth: "100%" }} />
 
-### 6. Upload screenshots of failed test cases
+### 7. Upload screenshots of failed test cases
 
 > This step is optional but highly recommended.
 
