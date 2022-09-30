@@ -81,8 +81,8 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
     }
 
     if (devSettings is DevInternalSettings) {
-      action("js-inspector", devDelegate::openJsInspector) {
-        label = { "Open JavaScript Inspector" }
+      action("js-inspector", devDelegate::openJSInspector) {
+        label = { "Open JavaScript debugger" }
         glyphName = { "language-javascript" }
         importance = DevMenuItemImportance.LOW.value
       }
