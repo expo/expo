@@ -110,8 +110,8 @@ import * as Localization from 'expo-localization';
 
 ### Behavior
 
-You can use synchronous `getLocales()` and `getCalendars()` methods to get locale settings of the user device. On iOS the results will remain the same while the app is running. 
+You can use synchronous `getLocales()` and `getCalendars()` methods to get the locale settings of the user device. On iOS, the results will remain the same while the app is running. 
 
-On Android the user can change some locale preferences in Settings without restarting apps. To keep the localization current, you can rerun the `getLocales()` and `getCalendars()` methods every time the app returns to foreground. Use `AppState` to detect this.
+On Android, the user can change locale preferences in Settings without restarting apps. To keep the localization current, you can rerun the `getLocales()` and `getCalendars()` methods every time the app returns to the foreground. Use `AppState` to detect this.
 
 <APISection packageName="expo-localization" apiName="Localization" />
