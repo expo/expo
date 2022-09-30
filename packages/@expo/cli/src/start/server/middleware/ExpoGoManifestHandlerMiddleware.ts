@@ -21,12 +21,10 @@ import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
 import { stripPort } from '../../../utils/url';
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
-import {
-  assertMissingRuntimePlatform,
-  assertRuntimePlatform,
-  parsePlatformHeader,
-} from './resolvePlatform';
+import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { ServerHeaders, ServerRequest } from './server.types';
+
+const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
 
 interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
   explicitlyPrefersMultipartMixed: boolean;
@@ -35,8 +33,15 @@ interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
 
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoManifestRequestInfo> {
   public getParsedHeaders(req: ServerRequest): ExpoGoManifestRequestInfo {
-    const platform = parsePlatformHeader(req);
-    assertMissingRuntimePlatform(platform);
+    let platform = parsePlatformHeader(req);
+
+    if (!platform) {
+      debug(
+        `No "expo-platform" header or "platform" query parameter specified. Falling back to "ios".`
+      );
+      platform = 'ios';
+    }
+
     assertRuntimePlatform(platform);
 
     // Expo Updates clients explicitly accept "multipart/mixed" responses while browsers implicitly
