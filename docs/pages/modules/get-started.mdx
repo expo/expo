@@ -47,9 +47,7 @@ dependencies {
 
 Add `expo` package as a peer dependency in your **package.json** — we recommend using `*` as a version range so as not to cause any duplicated packages in user's **node_modules** folder. Your library also needs to depend on `expo-modules-core` but only as a dev dependency — it's already provided in the projects depending on your library by the `expo` package with the version of core that is compatible with the specific SDK used in the project.<br/>
 
-<CodeBlocksTable tabs={["package.json"]}>
-
-```json
+```json package.json
 {
   // ...
   "devDependencies": {
@@ -60,8 +58,6 @@ Add `expo` package as a peer dependency in your **package.json** — we recommen
   }
 }
 ```
-
-</CodeBlocksTable>
 
 ## Create a native module
 
@@ -96,9 +92,7 @@ class MyModule : Module() {
 
 Then, add your classes to Android and/or iOS `modules` in the [module config](./module-config.mdx). Expo Autolinking will automatically link these classes as native modules in the user's project.
 
-<CodeBlocksTable tabs={["expo-module.config.json"]}>
-
-```json
+```json expo-module.config.json
 {
   "ios": {
     "modules": ["MyModule"]
@@ -109,22 +103,16 @@ Then, add your classes to Android and/or iOS `modules` in the [module config](./
 }
 ```
 
-</CodeBlocksTable>
-
 If you already have an example app in your workspace, ensure that the module is linked correctly.
 
 - **On Android** the native module class will be linked automatically before building, as part of the Gradle build task.
 - **On iOS** you need to run `pod install` to link the new class.
   These module classes can now be accessed from the JavaScript code using the `requireNativeModule` function from the `expo-modules-core` package. We recommend creating a separate file that exports the native module for simplicity.
 
-<CodeBlocksTable tabs={["MyModule.ts"]}>
-
-```typescript
+```ts MyModule.ts
 import { requireNativeModule } from 'expo-modules-core';
 
 export default requireNativeModule('MyModule');
 ```
-
-</CodeBlocksTable>
 
 Now that the class is set up and linked, you can start to implement its functionality. See the [native module API](./module-api.mdx) reference page and links to [examples](./module-api.mdx#examples) from simple to moderately complex real-world modules for your reference to better understand how to use the API.
