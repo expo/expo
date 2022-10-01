@@ -24,7 +24,7 @@ describe('YarnPackageManager', () => {
   describe('runAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
-      const yarn = new YarnPackageManager({ cwd: projectRoot, logger: log });
+      const yarn = new YarnPackageManager({ cwd: projectRoot, log });
       await yarn.runAsync(['install', '--some-flag']);
       expect(log).toHaveBeenCalledWith('> yarn install --some-flag');
     });

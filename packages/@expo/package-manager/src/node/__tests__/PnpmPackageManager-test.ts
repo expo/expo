@@ -25,7 +25,7 @@ describe('PnpmPackageManager', () => {
   describe('runAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
-      const pnpm = new PnpmPackageManager({ cwd: projectRoot, logger: log });
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot, log });
       await pnpm.runAsync(['install', '--some-flag']);
       expect(log).toHaveBeenCalledWith('> pnpm install --some-flag');
     });

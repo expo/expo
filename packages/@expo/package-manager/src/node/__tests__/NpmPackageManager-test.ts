@@ -24,7 +24,7 @@ describe('NpmPackageManager', () => {
   describe('runAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
-      const npm = new NpmPackageManager({ cwd: projectRoot, logger: log });
+      const npm = new NpmPackageManager({ cwd: projectRoot, log });
       await npm.runAsync(['install', '--some-flag']);
       expect(log).toHaveBeenCalledWith('> npm install --some-flag');
     });
