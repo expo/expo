@@ -10,9 +10,9 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const rimraf_1 = __importDefault(require("rimraf"));
 class BasePackageManager {
-    constructor({ silent, logger, ...options } = {}) {
+    constructor({ silent, log, ...options } = {}) {
         this.silent = !!silent;
-        this.logger = logger || console.log;
+        this.log = log ?? (!silent ? console.log : undefined);
         this.options = options;
     }
     /** Ensure the CWD is set to a non-empty string */
@@ -24,9 +24,7 @@ class BasePackageManager {
         return cwd;
     }
     runAsync(command) {
-        if (!this.silent && !this.options.ignoreStdio) {
-            this.logger?.(`> ${this.name} ${command.join(' ')}`);
-        }
+        this.log?.(`> ${this.name} ${command.join(' ')}`);
         return (0, spawn_async_1.default)(this.bin, command, this.options);
     }
     async versionAsync() {

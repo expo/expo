@@ -1,8 +1,18 @@
 import { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
 import { PendingSpawnPromise } from './utils/spawn';
 export interface PackageManagerOptions extends SpawnOptions {
-    logger?: (...args: any[]) => void;
+    /**
+     * If the package manager should run in silent mode.
+     * Note, this will hide possible error output from executed commands.
+     * When running in silent mode, make sure you handle them properly.
+     */
     silent?: boolean;
+    /**
+     * The logging method used to communicate the command which is executed.
+     * Without `silent`, this defaults to `console.log`.
+     * When `silent` is set to `true`, this defaults to a no-op.
+     */
+    log?: (...args: any[]) => void;
 }
 export interface PackageManager {
     /** The options for this package manager */

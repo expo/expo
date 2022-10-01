@@ -15,8 +15,8 @@ class PnpmPackageManager extends BasePackageManager_1.BasePackageManager {
         if (root) {
             return new PnpmPackageManager({
                 ...this.options,
-                logger: this.logger,
                 silent: this.silent,
+                log: this.log,
                 cwd: root,
             });
         }
