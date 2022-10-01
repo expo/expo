@@ -3,9 +3,9 @@ import { PackageManager, PackageManagerOptions } from '../PackageManager';
 import { PendingSpawnPromise } from '../utils/spawn';
 export declare abstract class BasePackageManager implements PackageManager {
     readonly silent: boolean;
-    readonly logger: (...args: any) => void;
+    readonly log?: (...args: any) => void;
     readonly options: PackageManagerOptions;
-    constructor({ silent, logger, ...options }?: PackageManagerOptions);
+    constructor({ silent, log, ...options }?: PackageManagerOptions);
     /** Get the name of the package manager */
     abstract readonly name: string;
     /** Get the executable binary of the package manager */

@@ -21,8 +21,8 @@ class YarnPackageManager extends BasePackageManager_1.BasePackageManager {
         if (root) {
             return new YarnPackageManager({
                 ...this.options,
-                logger: this.logger,
                 silent: this.silent,
+                log: this.log,
                 cwd: root,
             });
         }
