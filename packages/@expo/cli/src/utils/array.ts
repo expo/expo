@@ -45,7 +45,7 @@ export function chunk<T>(array: T[], size: number): T[][] {
   return chunked;
 }
 
-/** `lodash.chunk` */
+/** `lodash.groupBy` */
 export function groupBy<T, K extends keyof any>(list: T[], getKey: (item: T) => K): Record<K, T[]> {
   return list.reduce((previous, currentItem) => {
     const group = getKey(currentItem);
