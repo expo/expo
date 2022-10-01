@@ -3086,26 +3086,6 @@
   dependencies:
     "@octokit/openapi-types" "^12.10.0"
 
-"@pnpm/constants@6.1.0":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@pnpm/constants/-/constants-6.1.0.tgz#2db43ae0e029095df7959bc640081beae38a631b"
-  integrity sha512-L6AiU3OXv9kjKGTJN9j8n1TeJGDcLX9atQlZvAkthlvbXjvKc5SKNWESc/eXhr5nEfuMWhQhiKHDJCpYejmeCQ==
-
-"@pnpm/error@3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@pnpm/error/-/error-3.0.1.tgz#dc232f1717eba895eb842624755c753599b10c9b"
-  integrity sha512-hMlbWbFcfcfolNfSjKjpeaZFow71kNg438LZ8rAd01swiVIYRUf/sRv8gGySru6AijYfz5UqslpIJRDbYBkgQA==
-  dependencies:
-    "@pnpm/constants" "6.1.0"
-
-"@pnpm/find-workspace-dir@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@pnpm/find-workspace-dir/-/find-workspace-dir-4.0.2.tgz#347130cb8dead805e6593404c4eae946bcafa8a9"
-  integrity sha512-gU7ycFSWuEGJh7RE/STa33Ch27geODTXIfc+ntiE1BietxfpJIAk34zz51kTUuCFthBkpHlO6yV7jgHD2Tuc3g==
-  dependencies:
-    "@pnpm/error" "3.0.1"
-    find-up "^5.0.0"
-
 "@protobufjs/aspromise@^1.1.1", "@protobufjs/aspromise@^1.1.2":
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/@protobufjs/aspromise/-/aspromise-1.1.2.tgz#9b8b0cc663d669a7d8f6f5d0893a14d348f30fbf"
