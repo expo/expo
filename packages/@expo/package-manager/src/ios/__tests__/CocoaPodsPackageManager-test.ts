@@ -4,12 +4,12 @@ import os from 'os';
 import path from 'path';
 import stripAnsi from 'strip-ansi';
 
+import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
 import {
   CocoaPodsPackageManager,
   getPodRepoUpdateMessage,
   getPodUpdateMessage,
 } from '../CocoaPodsPackageManager';
-import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
 
 const projectRoot = getTemporaryPath();
 
@@ -34,6 +34,7 @@ afterAll(() => {
 
 const fakePodRepoUpdateErrorOutput = {
   pid: 74312,
+  // prettier-ignore
   output: [
     'Using Expo modules' + os.EOL +
       'Auto-linking React Native modules for target `yolo74`: RNGestureHandler, RNReanimated, RNScreens, and react-native-safe-area-context' + os.EOL +
@@ -52,6 +53,7 @@ const fakePodRepoUpdateErrorOutput = {
       "   You should run `pod update EXFileSystem` to apply changes you've made.\n",
     'Ignoring ffi-1.13.1 because its extensions are not built. Try: gem pristine ffi --version 1.13.1\n',
   ],
+  // prettier-ignore
   stdout:
     'Using Expo modules' + os.EOL +
     'Auto-linking React Native modules for target `yolo74`: RNGestureHandler, RNReanimated, RNScreens, and react-native-safe-area-context' + os.EOL +
@@ -68,6 +70,7 @@ const fakePodRepoUpdateErrorOutput = {
     ' * out-of-date source repos which you can update with `pod repo update` or with `pod install --repo-update`.' + os.EOL +
     ' * changed the constraints of dependency `EXFileSystem` inside your development pod `EXFileSystem`.' + os.EOL +
     "   You should run `pod update EXFileSystem` to apply changes you've made.\n",
+  // prettier-ignore
   stderr:
     'Ignoring ffi-1.13.1 because its extensions are not built. Try: gem pristine ffi --version 1.13.1' + os.EOL +
     'Ignoring digest-crc-0.6.1 because its extensions are not built. Try: gem pristine digest-crc --version 0.6.1' + os.EOL +
@@ -234,9 +237,7 @@ it(`gets the cocoapods version`, async () => {
   const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
 
-  mockedSpawnAsync.mockImplementation(() =>
-    mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' }))
-  );
+  mockedSpawnAsync.mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
 
   expect(await manager.versionAsync()).toBe('1.9.1');
 });
@@ -245,9 +246,7 @@ it(`can detect if the CLI is installed`, async () => {
   const { CocoaPodsPackageManager } = require('../CocoaPodsPackageManager');
   const manager = new CocoaPodsPackageManager({ cwd: projectRoot });
 
-  mockedSpawnAsync.mockImplementation(() =>
-    mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' }))
-  );
+  mockedSpawnAsync.mockImplementation(() => mockSpawnPromise(Promise.resolve({ stdout: '1.9.1' })));
 
   expect(await manager.isCLIInstalledAsync()).toBe(true);
 });
@@ -303,7 +302,7 @@ describe('isAvailable', () => {
     await fs.ensureDir(projectRoot);
 
     let message = '';
-    console.log = jest.fn(msg => (message = msg));
+    console.log = jest.fn((msg) => (message = msg));
 
     expect(CocoaPodsPackageManager.isAvailable(projectRoot, false)).toBe(false);
     expect(console.log).toBeCalledTimes(1);
