@@ -6,6 +6,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.findPnpmWorkspaceRoot = exports.findYarnOrNpmWorkspaceRoot = exports.PNPM_WORKSPACE_FILE = exports.PNPM_LOCK_FILE = exports.YARN_LOCK_FILE = exports.NPM_LOCK_FILE = void 0;
 const find_up_1 = require("find-up");
 const find_yarn_workspace_root_1 = __importDefault(require("find-yarn-workspace-root"));
+const fs_1 = __importDefault(require("fs"));
+const js_yaml_1 = __importDefault(require("js-yaml"));
+const micromatch_1 = __importDefault(require("micromatch"));
 const path_1 = __importDefault(require("path"));
 exports.NPM_LOCK_FILE = 'package-lock.json';
 exports.YARN_LOCK_FILE = 'yarn.lock';
@@ -35,8 +38,24 @@ function findPnpmWorkspaceRoot(projectRoot) {
     const workspaceFile = workspaceEnvValue
         ? path_1.default.join(workspaceEnvValue, exports.PNPM_WORKSPACE_FILE)
         : (0, find_up_1.sync)(exports.PNPM_WORKSPACE_FILE, { cwd: projectRoot });
-    // TODO: add check to see if this project is defined within the workspace file
-    return workspaceFile ? path_1.default.dirname(workspaceFile) : null;
+    if (!workspaceFile || !fs_1.default.existsSync(workspaceFile)) {
+        return null;
+    }
+    try {
+        // See: https://pnpm.io/pnpm-workspace_yaml
+        const { packages: workspaces } = js_yaml_1.default.load(fs_1.default.readFileSync(workspaceFile, 'utf8'));
+        // See: https://github.com/square/find-yarn-workspace-root/blob/11f6e31d3fa15a5bb7b7419f0091390e4c16204c/index.js#L26-L33
+        const workspaceRoot = path_1.default.dirname(workspaceFile);
+        const relativePath = path_1.default.relative(workspaceRoot, projectRoot);
+        if (relativePath === '' || (0, micromatch_1.default)([relativePath], workspaces).length > 0) {
+            return workspaceRoot;
+        }
+    }
+    catch {
+        // TODO: implement debug logger?
+        return null;
+    }
+    return null;
 }
 exports.findPnpmWorkspaceRoot = findPnpmWorkspaceRoot;
 //# sourceMappingURL=nodeWorkspaces.js.map
