@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 46.0.14 — 2022-10-02
+
+_This version does not introduce any user-facing changes._
+
 ## 46.0.13 — 2022-09-26
 
 _This version does not introduce any user-facing changes._

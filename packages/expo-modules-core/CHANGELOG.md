@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Give precedence to `UIBackgroundFetchResult.newData` over `.failed` in proxied `ExpoAppDelegate.swift` completion handlers. ([#19311](https://github.com/expo/expo/pull/19311) by [@ferologics](https://github.com/ferologics))
-
 ### 💡 Others
+
+## 0.11.6 — 2022-10-02
+
+### 🐛 Bug fixes
+
+- Give precedence to `UIBackgroundFetchResult.newData` over `.failed` in proxied `ExpoAppDelegate.swift` completion handlers. ([#19311](https://github.com/expo/expo/pull/19311) by [@ferologics](https://github.com/ferologics))
 
 ## 0.11.5 — 2022-09-01
 
