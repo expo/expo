@@ -195,7 +195,8 @@ class ExpoCameraView(
         BarCodeScannedEvent(
           target = id,
           data = barCode.value,
-          type = barCode.type
+          type = barCode.type,
+          cornerPoints = barCode.getCornerPoints()
         )
       )
     }
