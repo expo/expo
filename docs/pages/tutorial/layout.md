@@ -17,7 +17,7 @@ Once the user selects an image, they'll be able to select and add a sticker to t
 
 Before we build this screen by writing code, let's break it down into some essential elements. Most of these elements directly correspond to the built-in [Core Components](https://reactnative.dev/docs/components-and-apis) from React Native.
 
-<ImageSpotlight alt="Break down of initial layout." src="/static/images/tutorial/breakdown-of-layout.jpg" style={{ maxWidth: 300 }} containerStyle={{ marginBottom: 0 }} />
+<ImageSpotlight alt="Break down of initial layout." src="/static/images/tutorial/breakdown-of-layout.jpg" style={{ maxWidth: 300 }} containerStyle={{ marginBottom: 10 }} />
 
 There are three essential elements:
 
@@ -27,7 +27,7 @@ There are three essential elements:
 
 The first button is composed of multiple components. The parent element provides a yellow border and contains both an icon component and a text component.
 
-<ImageSpotlight alt="Break down of the button component with row." src="/static/images/tutorial/breakdown-of-buttons.jpg" style={{ maxWidth: 480 }} containerStyle={{ marginBottom: 0 }} />
+<ImageSpotlight alt="Break down of the button component with row." src="/static/images/tutorial/breakdown-of-buttons.jpg" style={{ maxWidth: 480 }} containerStyle={{ marginBottom: 10 }} />
 
 These elements use custom styles. In React Native, styling is done using JavaScript. All of the React Native core components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see [Styling in React Native](https://reactnative.dev/docs/styles).
 
@@ -37,7 +37,7 @@ Now that we've broken down the UI into smaller chunks, we're ready to start codi
 
 First, let's change the background color. This value is defined in the `styles` object in **App.js**.
 
-Replace the default value of `#fff` with `#25292e` for the  `styles.container.backgroundColor` property. It will change the background color of the screen.
+Replace the default value of `#fff` with `#25292e` for the `styles.container.backgroundColor` property. It will change the background color of the screen.
 
 <!-- prettier-ignore -->
 ```js
@@ -118,7 +118,7 @@ Next, import and use the `Image` component from React Native. Also, import `back
 <!-- prettier-ignore -->
 ```js
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, View, /* @info Import the image component. */ Image /* @end */ } from 'react-native';
+import { StyleSheet, View, /* @info Import the image component. */Image/* @end */} from 'react-native';
 
 /* @info Import the image from the "/assets/images" directory. Since this picture is a static resource, you have to reference it using "require". */
 const PlaceholderImage = require('./assets/images/background-image.png');
@@ -128,9 +128,9 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info Wrap the Image component inside a container. Also, add the image component to display the placeholder image. */
-        <View style={styles.imageContainer}>
-         <Image source={PlaceholderImage} style={styles.image} />
-        </View>
+      <View style={styles.imageContainer}>
+        <Image source={PlaceholderImage} style={styles.image} />
+      </View>
       /* @end */
       <StatusBar style="auto" />
     </View>
@@ -224,7 +224,6 @@ const styles = StyleSheet.create({
 
 ## Step 6: Create buttons using Pressable
 
-
 React Native provides various components to handle touch events on native platforms. For this tutorial, we’ll use the [`<Pressable>`](https://reactnative.dev/docs/pressable) component. It is a core component wrapper that can detect various stages of interactions, from basic single tap events to advanced events such as a long press.
 
 In the design, there are two buttons we need to implement. Each has different styles and labels. Let's start by creating a function component that can be reused to create the two buttons.
@@ -271,7 +270,6 @@ const styles = StyleSheet.create({
   },
 });
 ```
-
 
 Now, in the app, when the user taps any of the buttons on the screen, an alert will be displayed. This happens because the `<Pressable>` uses an `alert()` function with its `onPress` prop.
 
@@ -358,7 +356,7 @@ export default function Button({ label, /* @info The prop theme to detect the bu
     >
       <Pressable
         style={[styles.button, { backgroundColor: "#fff" }]}
-        onPress={onPressHandler}
+        onPress={() => alert('You pressed a button.')}
       >
         <FontAwesome
           name="picture-o"
@@ -375,7 +373,7 @@ export default function Button({ label, /* @info The prop theme to detect the bu
 
  return (
     <View style={styles.buttonContainer}>
-      <Pressable style={styles.button} onPress={onPressHandler}>
+      <Pressable style={styles.button} onPress={() => alert('You pressed a button.')}>
         <Text style={styles.buttonLabel}>{label}</Text>
       </Pressable>
     </View>
