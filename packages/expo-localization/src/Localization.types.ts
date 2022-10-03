@@ -187,12 +187,12 @@ export type Calendar = {
   /**
    * The first day of the week. For most calendars Sunday is numbered 1, with Saturday being number 7.
    * Can be null on older browsers that don't support the `weekInfo` API.
-   * Example: `1`, `7`.
+   * @example `1`, `7`.
    */
   firstWeekday: Weekday | null;
   /**
    * Time zone for the calendar. Can be null on web.
-   * Example: `'America/Los_Angeles'`, `'Europe/Warsaw'`, `'GMT+1'`.
+   * @example `'America/Los_Angeles'`, `'Europe/Warsaw'`, `'GMT+1'`.
    */
   timeZone: string | null;
 };
