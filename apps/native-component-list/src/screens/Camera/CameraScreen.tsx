@@ -196,7 +196,10 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   onBarCodeScanned = (code: BarCodeScanningResult) => {
     console.log('Found: ', code);
-    this.setState((state) => ({ barcodeData: code.data, cornerPoints: code.cornerPoints }));
+    this.setState((state) => ({
+      barcodeData: code.data,
+      cornerPoints: code.cornerPoints,
+    }));
   };
 
   onFacesDetected = ({ faces }: { faces: any }) => this.setState({ faces });
@@ -358,8 +361,9 @@ export default class CameraScreen extends React.Component<{}, State> {
 
         <Svg.Polygon
           points={this.state.cornerPoints?.map((coord) => `${coord.x},${coord.y}`).join(' ')}
+          // points="0,0 360,0 360,620 0,620"
           stroke="green"
-          strokeWidth={1}
+          strokeWidth={10}
         />
       </Svg.Svg>
     );
