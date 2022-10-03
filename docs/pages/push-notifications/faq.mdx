@@ -13,9 +13,7 @@ There is no cost associated with sending notifications through Expo's classic pu
 
 ### How many notifications can I send through Expo?
 
-We don't impose any limit on the number of push notifications you can send. For best results, we do recommend you add throttling (handled automatically in the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node)) and retry logic to your server.
-
-Total notifications is much less important than your maximum notification throughput—how many notifications you send per second at peak. If this number is more than a couple hundred, reach out to us because we'd love to hear about what you're working on!
+There is a limit of 600 notifications per second per project that can be sent. If you exceed this rate, subsequent requests will fail until the rate falls below 600 per second again. For best results, we do recommend you add throttling (handled automatically in the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node)) and retry logic to your server.
 
 ### How do I set up push notifications?
 
