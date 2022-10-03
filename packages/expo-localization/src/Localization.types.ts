@@ -68,11 +68,13 @@ export type Localization = {
 
 export type Locale = {
   /**
-   * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) with a region code. Example: `'en-US'`, `'es-419'`, `'pl-PL'`.
+   * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) with a region code.
+   * @example `'en-US'`, `'es-419'`, `'pl-PL'`.
    */
   languageTag: string;
   /**
-   * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) without the region code. Example: `'en'`, `'es'`, `'pl'`.
+   * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) without the region code.
+   * @example `'en'`, `'es'`, `'pl'`.
    */
   languageCode: string;
   /**
@@ -80,21 +82,25 @@ export type Locale = {
    */
   regionCode: string | null;
   /**
-   * Currency code for the locale. Example: `'USD'`, `'EUR'`, `'PLN'`.
+   * Currency code for the locale.
+   * @example `'USD'`, `'EUR'`, `'PLN'`.
    * Returns `null` on web, use a table lookup based on region instead.
    */
   currencyCode: string | null;
   /**
-   * Currency symbol for the locale. Example: `'$'`, `'€'`, `'zł'`.
+   * Currency symbol for the locale.
+   * @example `'$'`, `'€'`, `'zł'`.
    * Returns `null` on web, use a table lookup based on region (if available) instead.
    */
   currencySymbol: string | null;
   /**
-   * Decimal separator used for formatting numbers with fractional parts. Example: `'.'`, `','`.
+   * Decimal separator used for formatting numbers with fractional parts.
+   * @example `'.'`, `','`.
    */
   decimalSeparator: string | null;
   /**
-   * Digit grouping separator used for formatting large numbers. Example: `'.'`, `','`.
+   * Digit grouping separator used for formatting large numbers.
+   * @example `'.'`, `','`.
    */
   digitGroupingSeparator: string | null;
   /**
