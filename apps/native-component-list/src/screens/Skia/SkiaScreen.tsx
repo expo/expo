@@ -1,6 +1,6 @@
 import type { SkiaValue } from '@shopify/react-native-skia';
 import {
-  useDerivedValue,
+  useComputedValue,
   useLoop,
   BlurMask,
   vec,
@@ -12,14 +12,11 @@ import {
   Easing,
   mix,
 } from '@shopify/react-native-skia';
-import React from 'react';
-import { Dimensions, StyleSheet } from 'react-native';
+import React, { useMemo } from 'react';
+import { StyleSheet, useWindowDimensions } from 'react-native';
 
-const { width, height } = Dimensions.get('window');
 const c1 = '#61bea2';
 const c2 = '#529ca0';
-const R = width / 4;
-const center = vec(width / 2, height / 2 - 64);
 
 interface RingProps {
   index: number;
@@ -27,27 +24,32 @@ interface RingProps {
 }
 
 const Ring = ({ index, progress }: RingProps) => {
+  const { width, height } = useWindowDimensions();
+  const R = width / 4;
+  const center = useMemo(() => vec(width / 2, height / 2 - 64), [height, width]);
   const theta = (index * (2 * Math.PI)) / 6;
-  const transform = useDerivedValue(() => {
+  const transform = useComputedValue(() => {
     const { x, y } = polar2Canvas({ theta, radius: progress.current * R }, { x: 0, y: 0 });
     const scale = mix(progress.current, 0.3, 1);
     return [{ translateX: x }, { translateY: y }, { scale }];
   }, [progress]);
 
   return (
-    <Group origin={center} transform={transform}>
-      <Circle c={center} r={R} color={index % 2 ? c1 : c2} />
-    </Group>
+    <Circle c={center} r={R} color={index % 2 ? c1 : c2} origin={center} transform={transform} />
   );
 };
 
 export default function SkiaScreen() {
+  const { width, height } = useWindowDimensions();
+  const R = width / 4;
+  const center = useMemo(() => vec(width / 2, height / 2 - 64), [height, width]);
+
   const progress = useLoop({
     duration: 3000,
     easing: Easing.inOut(Easing.ease),
   });
 
-  const transform = useDerivedValue(
+  const transform = useComputedValue(
     () => [{ rotate: mix(progress.current, -Math.PI, 0) }],
     [progress]
   );
