@@ -44,6 +44,7 @@
 - Update gradle excludes to fix detox tests. ([#19254](https://github.com/expo/expo/pull/19254) by [@esamelson](https://github.com/esamelson))
 - Fixed event listeners do not work when running with remote debugging mode on iOS. ([#19211](https://github.com/expo/expo/pull/19211) by [@kudo](https://github.com/kudo))
 - Give precedence to `UIBackgroundFetchResult.newData` over `.failed` in proxied `ExpoAppDelegate.swift` completion handlers. ([#19311](https://github.com/expo/expo/pull/19311) by [@ferologics](https://github.com/ferologics))
+- Use shared C++ runtime to reduce library size on Android. ([#19372](https://github.com/expo/expo/pull/19372) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
