@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-av/package.json');
 const MICROPHONE_USAGE = 'Allow $(PRODUCT_NAME) to access your microphone';
 const withAV = (config, { microphonePermission } = {}) => {

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setNotificationSounds = exports.withNotificationSounds = exports.withNotificationsIOS = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = require("fs");
 const path_1 = require("path");
 const ERROR_MSG_PREFIX = 'An error occurred while configuring iOS notifications. ';

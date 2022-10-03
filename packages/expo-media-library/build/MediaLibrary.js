@@ -99,7 +99,7 @@ export async function getPermissionsAsync(writeOnly = false) {
  *
  * @example
  * ```ts
- * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook({
@@ -236,7 +236,7 @@ export async function deleteAssetsAsync(assets) {
  * Provides more information about an asset, including GPS location, local URI and EXIF metadata.
  * @param asset An [Asset](#asset) or its ID.
  * @param options
- * @return [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
+ * @return An [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
  */
 export async function getAssetInfoAsync(asset, options = { shouldDownloadFromNetwork: true }) {
     if (!MediaLibrary.getAssetInfoAsync) {
