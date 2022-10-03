@@ -22,8 +22,8 @@ export async function installAsync(
     npm: options.npm,
     yarn: options.yarn,
     pnpm: options.pnpm,
-    log: Log.log,
     silent: options.silent,
+    log: Log.log,
   });
 
   if (options.check || options.fix) {
@@ -66,10 +66,7 @@ export async function installPackagesAsync(
      */
     packages: string[];
     /** Package manager to use when installing the versioned packages. */
-    packageManager:
-      | PackageManager.NpmPackageManager
-      | PackageManager.YarnPackageManager
-      | PackageManager.PnpmPackageManager;
+    packageManager: PackageManager.NodePackageManager;
     /**
      * SDK to version `packages` for.
      * @example '44.0.0'
@@ -94,7 +91,7 @@ export async function installPackagesAsync(
     }using {bold ${packageManager.name}}`
   );
 
-  await packageManager.addWithParametersAsync(versioning.packages, packageManagerArguments);
+  await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
 }
