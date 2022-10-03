@@ -1,5 +1,5 @@
-import { AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { AndroidConfig, ConfigPlugin } from 'expo/config-plugins';
 import { NotificationsPluginProps } from './withNotifications';
 declare type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 declare type dpiMap = Record<DPIString, {
