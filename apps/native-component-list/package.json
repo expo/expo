@@ -144,7 +144,7 @@
     "react": "18.1.0",
     "react-dom": "18.0.0",
     "react-native": "0.70.1",
-    "react-native-gesture-handler": "~2.5.0",
+    "react-native-gesture-handler": "~2.6.2",
     "react-native-iphone-x-helper": "^1.3.0",
     "react-native-maps": "0.31.1",
     "react-native-pager-view": "5.4.24",

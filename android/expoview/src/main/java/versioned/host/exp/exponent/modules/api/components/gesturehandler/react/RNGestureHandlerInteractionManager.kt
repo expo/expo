@@ -4,6 +4,7 @@ import android.util.SparseArray
 import com.facebook.react.bridge.ReadableMap
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandler
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureHandlerInteractionController
+import versioned.host.exp.exponent.modules.api.components.gesturehandler.NativeViewGestureHandler
 
 class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
   private val waitForRelations = SparseArray<IntArray>()
@@ -42,8 +43,13 @@ class RNGestureHandlerInteractionManager : GestureHandlerInteractionController {
     otherHandler: GestureHandler<*>,
   ) = false
 
-  override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>) = false
+  override fun shouldHandlerBeCancelledBy(handler: GestureHandler<*>, otherHandler: GestureHandler<*>): Boolean {
+    if (otherHandler is NativeViewGestureHandler) {
+      return otherHandler.disallowInterruption
+    }
 
+    return false
+  }
   override fun shouldRecognizeSimultaneously(
     handler: GestureHandler<*>,
     otherHandler: GestureHandler<*>,

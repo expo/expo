@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler
 
 import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureUtils.getLastPointerX
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.GestureUtils.getLastPointerY
@@ -70,7 +71,7 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
 
   private fun startTap() {
     if (handler == null) {
-      handler = Handler() // TODO: lazy init (handle else branch correctly)
+      handler = Handler(Looper.getMainLooper()) // TODO: lazy init (handle else branch correctly)
     } else {
       handler!!.removeCallbacksAndMessages(null)
     }
@@ -79,7 +80,7 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
 
   private fun endTap() {
     if (handler == null) {
-      handler = Handler()
+      handler = Handler(Looper.getMainLooper())
     } else {
       handler!!.removeCallbacksAndMessages(null)
     }

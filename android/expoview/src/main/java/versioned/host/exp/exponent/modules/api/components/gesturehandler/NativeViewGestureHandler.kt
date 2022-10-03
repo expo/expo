@@ -9,7 +9,8 @@ import com.facebook.react.views.textinput.ReactEditText
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
   private var shouldActivateOnStart = false
-  private var disallowInterruption = false
+  var disallowInterruption = false
+    private set
 
   private var hook: NativeViewGestureHandlerHook = defaultHook
 

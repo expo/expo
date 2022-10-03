@@ -2,6 +2,7 @@ package versioned.host.exp.exponent.modules.api.components.gesturehandler
 
 import android.content.Context
 import android.os.Handler
+import android.os.Looper
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
@@ -233,7 +234,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
 
       if (activateAfterLongPress > 0) {
         if (handler == null) {
-          handler = Handler()
+          handler = Handler(Looper.getMainLooper())
         }
         handler!!.postDelayed(activateDelayed, activateAfterLongPress)
       }

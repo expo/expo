@@ -90,7 +90,7 @@
   "react-native": "0.70.1",
   "react-native-web": "~0.18.9",
   "react-native-branch": "^5.4.0",
-  "react-native-gesture-handler": "~2.5.0",
+  "react-native-gesture-handler": "~2.6.2",
   "react-native-get-random-values": "~1.8.0",
   "react-native-maps": "0.31.1",
   "react-native-pager-view": "5.4.24",
