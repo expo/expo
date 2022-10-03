@@ -10,6 +10,8 @@ class AutoLayoutShadow {
     var blankOffsetAtStart = 0 // Tracks blank area from the top
     var blankOffsetAtEnd = 0 // Tracks blank area from the bottom
 
+    var lastMaxBoundOverall = 0 // Tracks where the last pixel is drawn in the overall
+
     private var lastMaxBound = 0 // Tracks where the last pixel is drawn in the visible window
     private var lastMinBound = 0 // Tracks where first pixel is drawn in the visible window
 
@@ -19,6 +21,7 @@ class AutoLayoutShadow {
         var maxBound = 0
         var minBound = Int.MAX_VALUE
         var maxBoundNeighbour = 0
+        lastMaxBoundOverall = 0
         for (i in 0 until sortedItems.size - 1) {
             val cell = sortedItems[i]
             val neighbour = sortedItems[i + 1]
@@ -65,6 +68,8 @@ class AutoLayoutShadow {
                     }
                 }
             }
+            lastMaxBoundOverall = kotlin.math.max(lastMaxBoundOverall, if (horizontal) cell.right else cell.bottom)
+            lastMaxBoundOverall = kotlin.math.max(lastMaxBoundOverall, if (horizontal) neighbour.right else neighbour.bottom)
         }
         lastMaxBound = maxBoundNeighbour
         lastMinBound = minBound

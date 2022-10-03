@@ -1,6 +1,6 @@
 {
   "name": "RNFlashList",
-  "version": "1.1.0",
+  "version": "1.3.0",
   "summary": "FlashList is a more performant FlatList replacement",
   "homepage": "https://shopify.github.io/flash-list/",
   "license": "MIT",
@@ -11,7 +11,7 @@
   },
   "source": {
     "git": "https://github.com/shopify/flash-list.git",
-    "tag": "v#{s.version}"
+    "tag": "v1.3.0"
   },
   "source_files": "ios/Sources/**/*",
   "requires_arc": true,
