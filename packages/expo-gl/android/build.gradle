@@ -92,7 +92,9 @@ android {
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
-        arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}", "-DRN_SO_DIR=${RN_SO_DIR}"
+        arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+          "-DANDROID_STL=c++_shared",
+          "-DRN_SO_DIR=${RN_SO_DIR}"
       }
     }
   }
