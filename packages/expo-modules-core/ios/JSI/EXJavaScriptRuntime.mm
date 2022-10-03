@@ -43,10 +43,7 @@ static NSString *mainObjectPropertyName = @"expo";
     _runtime = jsc::makeJSCRuntime();
 #endif
     _jsCallInvoker = nil;
-
-    // Add the main object to the runtime (`global.expo`).
-    _mainObject = [self createObject];
-    [[self global] defineProperty:mainObjectPropertyName value:_mainObject options:EXJavaScriptObjectPropertyDescriptorEnumerable];
+    [self initializeMainObject];
   }
   return self;
 }
@@ -60,6 +57,7 @@ static NSString *mainObjectPropertyName = @"expo";
     // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
     _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
     _jsCallInvoker = callInvoker;
+    [self initializeMainObject];
   }
   return self;
 }
@@ -187,6 +185,15 @@ static NSString *mainObjectPropertyName = @"expo";
 }
 
 #pragma mark - Private
+
+- (void)initializeMainObject
+{
+  if (!_mainObject) {
+    // Add the main object to the runtime (`global.expo`).
+    _mainObject = [self createObject];
+    [[self global] defineProperty:mainObjectPropertyName value:_mainObject options:EXJavaScriptObjectPropertyDescriptorEnumerable];
+  }
+}
 
 - (nonnull EXJavaScriptObject *)createHostFunction:(nonnull NSString *)name
                                          argsCount:(NSInteger)argsCount
