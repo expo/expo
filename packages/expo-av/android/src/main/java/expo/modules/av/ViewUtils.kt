@@ -40,4 +40,30 @@ object ViewUtils {
       }
     }
   }
+
+  @UiThread
+  private fun tryRunWithVideoViewOnUiThread(moduleRegistry: ModuleRegistry, viewTag: Int, callback: VideoViewCallback, promise: expo.modules.kotlin.Promise) {
+    val videoWrapperView = moduleRegistry.getModule(UIManager::class.java).resolveView(viewTag) as VideoViewWrapper?
+    val videoView = videoWrapperView?.videoViewInstance
+    if (videoView != null) {
+      callback.runWithVideoView(videoView)
+    } else {
+      promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.", null)
+    }
+  }
+
+  /**
+   * Rejects the promise if the VideoView is not found, otherwise executes the callback.
+   */
+  @AnyThread
+  @Deprecated("Use `dispatchCommands` in favor of finding view with imperative calls")
+  fun tryRunWithVideoView(moduleRegistry: ModuleRegistry, viewTag: Int, callback: VideoViewCallback, promise: expo.modules.kotlin.Promise) {
+    if (UiThreadUtil.isOnUiThread()) {
+      tryRunWithVideoViewOnUiThread(moduleRegistry, viewTag, callback, promise)
+    } else {
+      UiThreadUtil.runOnUiThread {
+        tryRunWithVideoViewOnUiThread(moduleRegistry, viewTag, callback, promise)
+      }
+    }
+  }
 }
