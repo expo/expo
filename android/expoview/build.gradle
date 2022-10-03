@@ -7,6 +7,9 @@ apply from: new File(rootDir, "versioning_linking.gradle")
 
 def hasHermesEngineDeps = false
 
+def reactProperties = new Properties()
+file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
@@ -49,14 +52,12 @@ import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
-def reactProperties = new Properties()
 def reactNative = new File("$projectDir/../../versioned-react-native")
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 reactNative = new File("$projectDir/../../react-native-lab/react-native")
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
-file("$reactNative/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
 def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
@@ -326,29 +327,33 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
-  api 'androidx.appcompat:appcompat:1.2.0'
-  api 'androidx.autofill:autofill:1.1.0'
-  api 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-  api 'com.facebook.fbjni:fbjni-java-only:0.2.2'
-  api 'com.facebook.fresco:fresco:2.5.0'
-  api 'com.facebook.fresco:animated-gif:2.5.0'
-  api 'com.facebook.fresco:animated-webp:2.5.0'
-  api 'com.facebook.fresco:webpsupport:2.5.0'
-  api 'com.facebook.fresco:imagepipeline-okhttp3:2.5.0'
-  api 'com.facebook.fresco:ui-common:2.5.0'
-  api 'com.facebook.infer.annotation:infer-annotation:0.18.0'
-  api 'com.facebook.soloader:soloader:0.10.3'
-  api 'com.facebook.yoga:proguard-annotations:1.19.0'
-  api 'com.google.code.findbugs:jsr305:3.0.2'
-  api 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
-  api 'com.squareup.okhttp3:okhttp:4.9.2'
-  api 'com.squareup.okio:okio:2.9.0'
-  api 'javax.inject:javax.inject:1'
+  api("androidx.appcompat:appcompat-resources:${reactProperties.getProperty('ANDROIDX_APPCOMPAT_VERSION')}")
+  api("androidx.appcompat:appcompat:${reactProperties.getProperty('ANDROIDX_APPCOMPAT_VERSION')}")
+  api("androidx.autofill:autofill:${reactProperties.getProperty('ANDROIDX_AUTOFILL_VERSION')}")
+  api("androidx.swiperefreshlayout:swiperefreshlayout:${reactProperties.getProperty('SWIPEREFRESH_LAYOUT_VERSION')}")
+
+  api("com.facebook.fbjni:fbjni-java-only:${reactProperties.getProperty('FBJNI_VERSION')}")
+  api("com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.infer.annotation:infer-annotation:${reactProperties.getProperty('INFER_ANNOTATIONS_VERSION')}")
+  api("com.facebook.soloader:soloader:${reactProperties.getProperty('SO_LOADER_VERSION')}")
+  api("com.facebook.yoga:proguard-annotations:${reactProperties.getProperty('PROGUARD_ANNOTATIONS_VERSION')}")
+
+  api("com.google.code.findbugs:jsr305:${reactProperties.getProperty('JSR305_VERSION')}")
+  api("com.squareup.okhttp3:okhttp-urlconnection:${reactProperties.getProperty('OKHTTP_VERSION')}")
+  api("com.squareup.okhttp3:okhttp:${reactProperties.getProperty('OKHTTP_VERSION')}")
+  api("com.squareup.okio:okio:${reactProperties.getProperty('OKIO_VERSION')}")
+  api("javax.inject:javax.inject:${reactProperties.getProperty('JAVAX_INJECT_VERSION')}")
 
   // Our dependencies
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
   api "androidx.room:room-runtime:2.1.0"
+
+  api("com.facebook.fresco:animated-gif:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.fresco:animated-webp:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.fresco:webpsupport:${reactProperties.getProperty('FRESCO_VERSION')}")
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
