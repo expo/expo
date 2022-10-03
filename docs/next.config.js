@@ -33,10 +33,19 @@ logInfo(`Copied latest Expo SDK version from v${version}`);
 /** @type {import('next').NextConfig}  */
 export default {
   trailingSlash: true,
-  experimental: { esmExternals: true },
+  experimental: {
+    esmExternals: true,
+  },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
-  compiler: { emotion: true },
+  compiler: {
+    emotion: true,
+    reactRemoveProperties: true,
+    removeConsole: {
+      exclude: ['error'],
+    },
+  },
   swcMinify: true,
+  poweredByHeader: false,
   webpack: (config, options) => {
     // Add support for MDX with our custom loader
     config.module.rules.push({
@@ -72,6 +81,7 @@ export default {
   },
 
   // Create a map of all pages to export
+  // https://nextjs.org/docs/api-reference/next.config.js/exportPathMap
   async exportPathMap(defaultPathMap, { dev, outDir }) {
     if (dev) {
       return defaultPathMap;
