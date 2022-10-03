@@ -67,7 +67,12 @@ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { react
 def FOLLY_VERSION = reactProperties.getProperty("FOLLY_VERSION")
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
 def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
-def REACT_NATIVE_TARGET_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
+def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
+if (REACT_NATIVE_VERSION.startsWith("0.0.0-")) {
+  // react-native nightly build published as `0.0.0-20221002-2027-2319f75c8` form, but its semantic is latest
+  REACT_NATIVE_VERSION = "9999.9999.9999"
+}
+def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
 def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
 
