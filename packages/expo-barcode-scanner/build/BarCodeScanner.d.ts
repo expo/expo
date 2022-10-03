@@ -126,7 +126,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
      *
      * @example
      * ```ts
-     * const [status, requestPermission] = BarCodeScanner.usePermissions();
+     * const [permissionResponse, requestPermission] = BarCodeScanner.usePermissions();
      * ```
      */
     static usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];

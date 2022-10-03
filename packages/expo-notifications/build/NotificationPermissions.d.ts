@@ -7,7 +7,7 @@ export declare function requestPermissionsAsync(permissions?: NotificationPermis
  *
  * @example
  * ```ts
- * const [status, requestPermission] = Notifications.usePermissions();
+ * const [permissionResponse, requestPermission] = Notifications.usePermissions();
  * ```
  */
 export declare const usePermissions: (options?: import("expo-modules-core").PermissionHookOptions<NotificationPermissionsRequest> | undefined) => [NotificationPermissionsStatus | null, () => Promise<NotificationPermissionsStatus>, () => Promise<NotificationPermissionsStatus>];

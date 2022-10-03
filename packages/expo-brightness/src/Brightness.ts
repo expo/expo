@@ -205,7 +205,7 @@ export async function requestPermissionsAsync(): Promise<PermissionResponse> {
  *
  * @example
  * ```ts
- * const [status, requestPermission] = Brightness.usePermissions();
+ * const [permissionResponse, requestPermission] = Brightness.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook({

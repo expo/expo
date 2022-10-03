@@ -7411,7 +7411,7 @@ This can be used to quickly create specific permission hooks in every module.
           >
             [
           </span>
-          status
+          permissionResponse
           <span
             class="token punctuation"
           >

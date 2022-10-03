@@ -27,7 +27,7 @@ export async function requestPermissionsAsync(permissions) {
  *
  * @example
  * ```ts
- * const [status, requestPermission] = Notifications.usePermissions();
+ * const [permissionResponse, requestPermission] = Notifications.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook({
