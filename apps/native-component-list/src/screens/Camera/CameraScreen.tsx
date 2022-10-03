@@ -1,11 +1,9 @@
-import Foundation from '@expo/vector-icons/build/Foundation';
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
-import Octicons from '@expo/vector-icons/build/Octicons';
+import React from 'react';
+
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
   AutoFocus,
+  BarCodePoint,
   BarCodeScanningResult,
   Camera,
   CameraType,
@@ -15,9 +13,15 @@ import {
 } from 'expo-camera';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
-import React from 'react';
-import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import * as Svg from 'react-native-svg';
+
+import Foundation from '@expo/vector-icons/build/Foundation';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import Octicons from '@expo/vector-icons/build/Octicons';
 
 import { face, landmarks } from '../../components/Face';
 import GalleryScreen from './GalleryScreen';
@@ -80,6 +84,8 @@ interface State {
   barcodeScanning: boolean;
   faceDetecting: boolean;
   faces: any[];
+  cornerPoints?: BarCodePoint[];
+  barcodeData: string;
   newPhotos: boolean;
   permissionsGranted: boolean;
   permission?: PermissionStatus;
@@ -105,6 +111,8 @@ export default class CameraScreen extends React.Component<{}, State> {
     barcodeScanning: false,
     faceDetecting: false,
     faces: [],
+    cornerPoints: undefined,
+    barcodeData: '',
     newPhotos: false,
     permissionsGranted: false,
     pictureSizes: [],
@@ -188,10 +196,16 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   onBarCodeScanned = (code: BarCodeScanningResult) => {
     console.log('Found: ', code);
-    this.setState(
-      (state) => ({ barcodeScanning: !state.barcodeScanning }),
-      () => Alert.alert(`Barcode found: ${code.data}`)
-    );
+    const arrPoints = code.cornerPoints as unknown as number[];
+    let objPoints: BarCodePoint[] | undefined;
+    if (code.cornerPoints) {
+      objPoints = [];
+
+      for (let i = 0; i < arrPoints.length; i += 2) {
+        objPoints.push({ y: arrPoints[i], x: arrPoints[i + 1] });
+      }
+    }
+    this.setState((state) => ({ barcodeData: code.data, cornerPoints: objPoints }));
   };
 
   onFacesDetected = ({ faces }: { faces: any }) => this.setState({ faces });
@@ -339,7 +353,26 @@ export default class CameraScreen extends React.Component<{}, State> {
       </View>
     </View>
   );
+  renderBarCodePoints = () => {
+    const origin: BarCodePoint | undefined = this.state.cornerPoints
+      ? this.state.cornerPoints[0]
+      : undefined;
+    return (
+      <Svg.Svg style={styles.svg}>
+        {origin && (
+          <Svg.Text fill="#CF4048" stroke="#CF4048" fontSize="14" x={origin.x} y={origin.y - 8}>
+            {this.state.barcodeData}
+          </Svg.Text>
+        )}
 
+        <Svg.Polygon
+          points={this.state.cornerPoints?.map((coord) => `${coord.x},${coord.y}`).join(' ')}
+          stroke="green"
+          strokeWidth={1}
+        />
+      </Svg.Svg>
+    );
+  };
   renderCamera = () => (
     <View style={{ flex: 1 }}>
       <Camera
@@ -366,10 +399,12 @@ export default class CameraScreen extends React.Component<{}, State> {
         }}
         onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
         {this.renderTopBar()}
+
         {this.renderBottomBar()}
       </Camera>
       {this.state.faceDetecting && this.renderFaces()}
       {this.state.faceDetecting && this.renderLandmarks()}
+      {this.state.barcodeScanning && this.renderBarCodePoints()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>
   );
@@ -491,5 +526,10 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+  },
+  svg: {
+    position: 'absolute',
+    borderWidth: 2,
+    borderColor: 'red',
   },
 });
