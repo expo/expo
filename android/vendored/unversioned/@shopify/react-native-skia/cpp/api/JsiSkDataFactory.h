@@ -75,7 +75,7 @@ namespace RNSkia {
               throw jsi::JSError(runtime, "Error decoding base64 string");
               return jsi::Value::undefined();
             }
-          
+
             return jsi::Object::createFromHostObject(runtime,
                                                      std::make_shared<JsiSkData>(
                                                              getContext(), std::move(data)));

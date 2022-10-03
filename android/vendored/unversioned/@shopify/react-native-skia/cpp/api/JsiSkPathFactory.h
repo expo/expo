@@ -165,7 +165,7 @@ public:
                        JSI_EXPORT_FUNC(JsiSkPathFactory, MakeFromCmds),
                        JSI_EXPORT_FUNC(JsiSkPathFactory, MakeFromText))
 
-  JsiSkPathFactory(std::shared_ptr<RNSkPlatformContext> context)
+    JsiSkPathFactory(std::shared_ptr<RNSkPlatformContext> context)
       : JsiSkHostObject(std::move(context)) {}
 };
 
