@@ -41,7 +41,6 @@ const Ring = ({ index, progress }: RingProps) => {
 
 export default function SkiaScreen() {
   const { width, height } = useWindowDimensions();
-  const R = width / 4;
   const center = useMemo(() => vec(width / 2, height / 2 - 64), [height, width]);
 
   const progress = useLoop({
