@@ -38,7 +38,11 @@ Add the `expo-dev-client` library to your package.json.
 
 If your project has an `ios` directory on disk, run the following command to fully install the native code for `expo-dev-client`:
 
-<InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
+<InstallSection
+  packageName="expo-development-client"
+  cmd={['npx pod-install']}
+  hideBareInstructions
+/>
 
 If your project doesn't have an `ios` directory, you can skip this step.
 
@@ -143,11 +147,15 @@ Development builds can also open and preview published updates to your app.
 
 To add this feature, install `expo-updates` in your project:
 
-<Terminal cmd={["$ npx expo install expo-updates"]} />
+<Terminal cmd={['$ npx expo install expo-updates']} />
 
 After doing so, if your project has an `ios` directory on disk, you will need to reinstall CocoaPods:
 
-<InstallSection packageName="expo-development-client" cmd={["npx pod-install"]} hideBareInstructions />
+<InstallSection
+  packageName="expo-development-client"
+  cmd={['npx pod-install']}
+  hideBareInstructions
+/>
 
 </Tab>
 
