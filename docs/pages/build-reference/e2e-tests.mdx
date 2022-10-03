@@ -4,15 +4,17 @@ sidebar_title: Running E2E tests
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import { Terminal } from '~/ui/components/Snippet';
+import { Terminal, DiffBlock } from '~/ui/components/Snippet';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-> **Warning** EAS Build support for E2E testing is in a _very early_ state. The intention of this guide is to explain how you can run E2E tests on the service today, without all of the affordances that we plan to build in the future. This guide will evolve over time as support for testing workflows in EAS Build improves.
+> **Warning** EAS Build support for E2E testing is in a _very early_ state. The intention of this guide is to explain how you can run E2E tests on the service today,
+> without all of the affordances that we plan to build in the future. This guide will evolve over time as support for testing workflows in EAS Build improves.
 
-> **Android not yet supported**: EAS Build does not yet support running tests on an Android Emulator — this will be coming soon.
+> **info** **Android not yet supported**: EAS Build does not yet support running tests on an Android Emulator — this will be coming soon.
 
 With EAS Build, you can build a workflow for running E2E tests for your application. In this guide, you will learn how to use one of the most popular libraries ([Detox](https://wix.github.io/Detox)) to do that.
 
-This guide explains how to run E2E tests with Detox in a bare workflow project. You can use [@config-plugins/detox](https://github.com/expo/config-plugins/tree/main/packages/detox) for a managed project, but you may need to adjust some of the instructions in this guide in order to do so.
+This guide explains how to run E2E tests with Detox in a bare workflow project. You can use [`@config-plugins/detox`](https://github.com/expo/config-plugins/tree/main/packages/detox) for a managed project, but you may need to adjust some of the instructions in this guide in order to do so.
 
 ## Running iOS tests
 
@@ -36,13 +38,14 @@ Let's start by initializing a new Expo project and running `npx expo prebuild` t
 The first step to writing E2E tests is to have something to test - we have an empty app, so let's make our app interactive. We can add a button and display some new text when it's pressed.
 Later, we're going to write a test that's going to tap the button and check whether the text has been displayed.
 
-<img src="/static/images/eas-build/tests/01-click-me.png" style={{ maxWidth: '50%' }} />
-<img src="/static/images/eas-build/tests/02-hi.png" style={{ maxWidth: '50%' }} />
+<div style={{ display: 'flex', justifyContent: 'center' }}>
+  <img src="/static/images/eas-build/tests/01-click-me.png" style={{ maxWidth: '45%' }} />
+  <img src="/static/images/eas-build/tests/02-hi.png" style={{ maxWidth: '45%' }} />
+</div>
 
 <Collapsible summary="👀 See the source code">
 
-```js
-// App.js
+```js App.js
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
@@ -118,8 +121,7 @@ Detox requires you to specify both the build command and path to the binary prod
 
 Edit **.detoxrc.json** and replace the `ios` configuration with:
 
-```json
-// .detoxrc.json
+```json .detoxrc.json
 {
   "apps": {
     "ios": {
@@ -137,8 +139,7 @@ Edit **.detoxrc.json** and replace the `ios` configuration with:
 
 Next, we'll add our first E2E tests. Delete the auto-generated **e2e/firstTest.e2e.js** and create our own **e2e/homeScreen.e2e.js** with the following contents:
 
-```js
-// homeScreen.e2e.js
+```js homeScreen.e2e.js
 describe('Home screen', () => {
   beforeAll(async () => {
     await device.launchApp();
@@ -186,8 +187,7 @@ There are three more steps to configure EAS Build for running E2E tests as part 
 
 Edit **eas.json** and add the `test` build profile:
 
-```json
-// eas.json
+```json eas.json
 {
   "build": {
     "test": {
@@ -201,7 +201,7 @@ Edit **eas.json** and add the `test` build profile:
 
 Create **eas-hooks/eas-build-pre-install.sh** that will be used to install `applesimutils` with `brew`:
 
-```sh
+```sh eas-hooks/eas-build-pre-install.sh
 #!/usr/bin/env bash
 
 set -eox pipefail
@@ -214,7 +214,7 @@ fi
 
 Next, create **eas-hooks/eas-build-on-success.sh** with the following contents. The script runs Detox tests in headless mode:
 
-```sh
+```sh eas-hooks/eas-build-on-success.sh
 #!/usr/bin/env bash
 
 set -eox pipefail
@@ -226,8 +226,7 @@ fi
 
 Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) to run the above scripts on EAS Build:
 
-```json
-// package.json
+```json package.json
 {
   "scripts": {
     "eas-build-pre-install": "./eas-hooks/eas-build-pre-install.sh",
@@ -246,7 +245,7 @@ Running the tests on EAS Build is like running a regular build:
 
 If you have set up everything correctly you should see the successful test result in the build logs:
 
-<img src="/static/images/eas-build/tests/03-logs.png" style={{ maxWidth: '100%' }} />
+<ImageSpotlight src="/static/images/eas-build/tests/03-logs.png" style={{ maxWidth: '90%' }} />
 
 ### 7. Upload screenshots of failed test cases
 
@@ -262,8 +261,7 @@ Neither `jest` nor `detox` offers a simple way to detect when a particular test 
 
 Edit **e2e/environment.js** and add the `handleTestEvent` method to the `CustomDetoxEnvironment` class. The function handles test events and sets a global `testFailed` variable for test case failure. See the snippet below:
 
-```ts
-// e2e/environment.js
+```ts e2e/environment.js
 class CustomDetoxEnvironment extends DetoxCircusEnvironment {
   // ...
 
@@ -283,10 +281,9 @@ class CustomDetoxEnvironment extends DetoxCircusEnvironment {
 }
 ```
 
-After modifying the environment class, define an `afterEach` hook that calls `device.takeScreenshot()` for failed tests. Create the `e2e/setup.ts` file with the following snippet:
+After modifying the environment class, define an `afterEach` hook that calls `device.takeScreenshot()` for failed tests. Create the **e2e/setup.ts** file with the following snippet:
 
-```ts
-// e2e/setup.ts
+```ts e2e/setup.ts
 afterEach(async () => {
   if (testFailed) {
     await device.takeScreenshot('screenshot');
@@ -296,8 +293,7 @@ afterEach(async () => {
 
 The last step is to configure `jest` to load `e2e/setup.ts` before running tests. This way, you don't need to include the `afterEach` hook in every test suite:
 
-```json
-// e2e/config.json
+```json e2e/config.json
 {
   /// ...
   "setupFilesAfterEnv": ["./setup.js"]
@@ -310,8 +306,7 @@ After making those changes, screenshots for failed tests will be saved in the `a
 
 Edit **eas.json** and add `buildArtifactPaths` to the `test` build profile:
 
-```json
-// eas.json
+```json eas.json
 {
   "build": {
     "test": {
@@ -328,8 +323,7 @@ In contrast to `applicationArchivePath`, the build artifacts defined at `buildAr
 
 If you run E2E tests locally, remember to add `artifacts` to `.gitignore`:
 
-```stylus
-// .gitignore
+```stylus .gitignore
 artifacts/
 ```
 
@@ -337,9 +331,10 @@ artifacts/
 
 To test the new configuration, let's break a test and see that EAS Build uploads the screenshots.
 
-Edit `e2e/homeScreen.e2e.js` and make the following change:
+Edit **e2e/homeScreen.e2e.js** and make the following change:
 
-```diff
+<DiffBlock
+  raw={`
 diff --git a/e2e/homeScreen.e2e.js b/e2e/homeScreen.e2e.js
 index e28acfa..c65e90c 100644
 --- a/e2e/homeScreen.e2e.js
@@ -353,11 +348,15 @@ index e28acfa..c65e90c 100644
    });
 
    it('shows "Hi!" after tapping "Click me"', async () => {
-```
+`} />
 
-Run a build with `eas build -p ios --profile test` and wait for the build to finish. After going to the build details page you should see that the build failed. Use the **"Download artifacts"** button to download and examine the screenshot:
+Run a build with the following command and wait for it to finish:
 
-<img src="/static/images/eas-build/tests/04-artifacts.png" style={{ maxWidth: '100%' }} />
+<Terminal cmd={['eas build -p ios --profile test']} />
+
+After going to the build details page you should see that the build failed. Use the **"Download artifacts"** button to download and examine the screenshot:
+
+<ImageSpotlight src="/static/images/eas-build/tests/04-artifacts.png" style={{ maxWidth: '90%' }} />
 
 ## Repository
 
