@@ -37,6 +37,11 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
+import expo.modules.camera.utils.mapX
+import expo.modules.camera.utils.mapY
+import kotlin.math.roundToInt
+import kotlin.math.max
+import kotlin.math.min
 
 class ExpoCameraView(
   context: Context,
@@ -189,14 +194,58 @@ class ExpoCameraView(
     barCodeScanner?.setSettings(settings)
   }
 
+  private fun transformBarCodeScannerResultToViewCoordinates(barCode: BarCodeScannerResult) {
+    val cornerPoints = barCode.cornerPoints
+    val previewWidth = width * 2
+    val previewHeight = height * 2
+
+    
+
+    cornerPoints.mapX {
+      (cornerPoints[it] * previewWidth / barCode.referenceImageWidth.toFloat())
+        .roundToInt()
+    }
+    cornerPoints.mapY {
+      (cornerPoints[it] * previewHeight / barCode.referenceImageHeight.toFloat())
+        .roundToInt()
+    }
+    barCode.referenceImageHeight = height
+    barCode.referenceImageWidth = width
+    barCode.cornerPoints = cornerPoints
+  }
+
+  private fun getCornerPoints(cornerPoints: List<Int>): ArrayList<Bundle> {
+    val density = cameraView.resources.displayMetrics.density
+    val convertedCornerPoints = ArrayList<Bundle>()
+    var minX = Float.MAX_VALUE
+    var minY = Float.MAX_VALUE
+    var maxX = Float.MIN_VALUE
+    var maxY = Float.MIN_VALUE
+    for (i in cornerPoints.indices step 2) {
+      val x = cornerPoints[i].toFloat() / density
+      val y = cornerPoints[i + 1].toFloat() / density
+      // finding bounding-box Coordinates
+      minX = min(minX, x)
+      minY = min(minY, y)
+      maxX = max(maxX, x)
+      maxY = max(maxY, y)
+      convertedCornerPoints.add(Bundle().apply {
+        putFloat("x", x)
+        putFloat("y", y)
+      })
+    }
+    return convertedCornerPoints
+  }
+
   override fun onBarCodeScanned(barCode: BarCodeScannerResult) {
     if (mShouldScanBarCodes) {
+      transformBarCodeScannerResultToViewCoordinates(barCode)
       onBarCodeScanned(
         BarCodeScannedEvent(
           target = id,
           data = barCode.value,
           type = barCode.type,
-          cornerPoints = barCode.getCornerPoints()
+          cornerPoints = getCornerPoints(barCode.getCornerPoints())
         )
       )
     }

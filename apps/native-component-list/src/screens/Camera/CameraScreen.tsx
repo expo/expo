@@ -196,16 +196,7 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   onBarCodeScanned = (code: BarCodeScanningResult) => {
     console.log('Found: ', code);
-    const arrPoints = code.cornerPoints as unknown as number[];
-    let objPoints: BarCodePoint[] | undefined;
-    if (code.cornerPoints) {
-      objPoints = [];
-
-      for (let i = 0; i < arrPoints.length; i += 2) {
-        objPoints.push({ y: arrPoints[i], x: arrPoints[i + 1] });
-      }
-    }
-    this.setState((state) => ({ barcodeData: code.data, cornerPoints: objPoints }));
+    this.setState((state) => ({ barcodeData: code.data, cornerPoints: code.cornerPoints }));
   };
 
   onFacesDetected = ({ faces }: { faces: any }) => this.setState({ faces });

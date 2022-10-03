@@ -8,7 +8,7 @@ data class BarCodeScannedEvent(
   @Field val target: Int,
   @Field val data: String,
   @Field val type: Int,
-  @Field val cornerPoints: List<Int>
+  @Field val cornerPoints: ArrayList<Bundle>
 ) : Record
 
 data class CameraMountErrorEvent(
