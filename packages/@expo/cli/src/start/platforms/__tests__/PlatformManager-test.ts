@@ -23,15 +23,12 @@ afterAll(() => {
 });
 
 describe('openAsync', () => {
-  beforeEach(() => {
-    delete process.env.EXPO_ENABLE_INTERSTITIAL_PAGE;
-  });
-
   // Mock haven
   function createManager({
     customUrl = 'custom://path',
     isAppInstalled = true,
-  }: { customUrl?: string | null; isAppInstalled?: boolean } = {}) {
+    hasAppId = true,
+  }: { customUrl?: string | null; isAppInstalled?: boolean; hasAppId?: boolean } = {}) {
     const getRedirectUrl = jest.fn((): null | string => null);
     const getExpoGoUrl = jest.fn(() => 'exp://localhost:19000/');
     const getDevServerUrl = jest.fn(() => 'http://localhost:19000/');
@@ -57,8 +54,12 @@ describe('openAsync', () => {
 
     // @ts-expect-error
     manager._getAppIdResolver = jest.fn(() => ({
-      getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
-      resolveAppIdFromNativeAsync: jest.fn(() => 'dev.bacon.app'),
+      getAppIdAsync: jest.fn(() => {
+        if (!hasAppId) {
+          throw new Error('No application ID');
+        }
+        return 'dev.bacon.app';
+      }),
     }));
     return {
       manager,
@@ -104,8 +105,6 @@ describe('openAsync', () => {
   });
 
   it(`opens a project using the redirect page`, async () => {
-    process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
-
     const { manager, getRedirectUrl, getExpoGoUrl, device, resolveDeviceAsync } = createManager({
       isAppInstalled: true,
     });
@@ -136,8 +135,6 @@ describe('openAsync', () => {
   });
 
   it(`opens a project using Expo Go because no dev client could handle the redirect page`, async () => {
-    process.env.EXPO_ENABLE_INTERSTITIAL_PAGE = '1';
-
     const { manager, getRedirectUrl, getExpoGoUrl, device, resolveDeviceAsync } = createManager({
       isAppInstalled: false,
     });
@@ -166,6 +163,34 @@ describe('openAsync', () => {
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
     expect(Log.warn).toHaveBeenCalledTimes(1);
     expect(Log.warn).toHaveBeenNthCalledWith(1, expect.stringMatching(/iPhone 13/gm));
+    expect(Log.error).toHaveBeenCalledTimes(0);
+  });
+
+  it(`opens a project using Expo Go because dev client application ID couldn't be resolved`, async () => {
+    const { manager, getRedirectUrl, getExpoGoUrl, device, resolveDeviceAsync } = createManager({
+      hasAppId: false,
+    });
+
+    const url = 'exp://localhost:19000/';
+    getRedirectUrl.mockImplementationOnce(() => 'http://localhost:19000/_expo/loading');
+
+    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+      url,
+    });
+
+    expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
+    expect(getRedirectUrl).toHaveBeenCalledTimes(1);
+    expect(getExpoGoUrl).toHaveBeenCalledTimes(1);
+
+    expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
+    expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
+    expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+
+    // Logging
+    expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
+    expect(Log.warn).toHaveBeenCalledTimes(1);
+    expect(Log.warn).toHaveBeenNthCalledWith(1, expect.stringMatching(/ios.bundleIdentifier/gm));
     expect(Log.error).toHaveBeenCalledTimes(0);
   });
 

@@ -68,7 +68,17 @@ export class PlatformManager<
     const redirectUrl = this.props.getRedirectUrl();
     if (redirectUrl) {
       // If the redirect page feature is enabled, check if the project has a resolvable native identifier.
-      const applicationId = await this._getAppIdResolver().getAppIdAsync();
+      let applicationId;
+      try {
+        applicationId = await this._getAppIdResolver().getAppIdAsync();
+      } catch {
+        Log.warn(
+          chalk`\u203A Launching in Expo Go. If you want to use a ` +
+            `development build, you need to create and install one first, or, if you already ` +
+            chalk`have a build, add {bold ios.bundleIdentifier} and {bold android.package} to ` +
+            `this project's app config.\n${learnMore('https://docs.expo.dev/development/build/')}`
+        );
+      }
       if (applicationId) {
         debug(`Resolving launch URL: (appId: ${applicationId}, redirect URL: ${redirectUrl})`);
         // NOTE(EvanBacon): This adds considerable amount of time to the command, we should consider removing or memoizing it.
