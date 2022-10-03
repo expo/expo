@@ -58,7 +58,13 @@ export abstract class BasePackageManager implements PackageManager {
 
   runAsync(command: string[]) {
     this.log?.(`> ${this.name} ${command.join(' ')}`);
-    return spawnAsync(this.bin, command, this.options);
+    const spawn = spawnAsync(this.bin, command, this.options);
+
+    if (!this.silent) {
+      spawn.child.stderr?.pipe(process.stderr);
+    }
+
+    return spawn;
   }
 
   async versionAsync() {

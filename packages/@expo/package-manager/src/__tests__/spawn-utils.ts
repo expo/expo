@@ -19,9 +19,10 @@ export const mockedSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAs
  * Note, this is used inside the root mock for `@expo/spawn-async`.
  */
 export function mockSpawnPromise(
-  promise: Promise<any> = Promise.resolve(STUB_SPAWN_RESULT)
+  promise: Promise<any> = Promise.resolve(STUB_SPAWN_RESULT),
+  child: any = STUB_SPAWN_CHILD
 ): SpawnPromise<SpawnResult> {
   // @ts-expect-error We are modifying the promise, typescript doesnt know how to type it
-  promise.child = STUB_SPAWN_CHILD;
+  promise.child = child;
   return promise as SpawnPromise<SpawnResult>;
 }

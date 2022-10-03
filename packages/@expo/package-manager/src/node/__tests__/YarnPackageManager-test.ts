@@ -22,6 +22,37 @@ describe('YarnPackageManager', () => {
   });
 
   describe('runAsync', () => {
+    it('logs executed command', async () => {
+      const log = jest.fn();
+      const yarn = new YarnPackageManager({ cwd: projectRoot, log });
+      await yarn.runAsync(['install', '--some-flag']);
+      expect(log).toHaveBeenCalledWith('> yarn install --some-flag');
+    });
+
+    it('pipes error output without silent', async () => {
+      const stderr = { pipe: jest.fn() };
+      const yarn = new YarnPackageManager({ cwd: projectRoot });
+
+      mockedSpawnAsync.mockImplementationOnce(() =>
+        mockSpawnPromise(Promise.reject(new Error('test')), { stderr })
+      );
+
+      await expect(yarn.runAsync(['install'])).rejects.toThrowError();
+      expect(stderr.pipe).toHaveBeenCalledWith(process.stderr);
+    });
+
+    it('does not pipe error output with silent', async () => {
+      const stderr = { pipe: jest.fn() };
+      const yarn = new YarnPackageManager({ cwd: projectRoot, silent: true });
+
+      mockedSpawnAsync.mockImplementationOnce(() =>
+        mockSpawnPromise(Promise.reject(new Error('test')), { stderr })
+      );
+
+      await expect(yarn.runAsync(['install'])).rejects.toThrowError();
+      expect(stderr.pipe).not.toHaveBeenCalledWith();
+    });
+
     it('adds a single package with custom parameters', async () => {
       const yarn = new YarnPackageManager({ cwd: projectRoot });
       await yarn.runAsync(['add', '--peer', '@babel/core']);

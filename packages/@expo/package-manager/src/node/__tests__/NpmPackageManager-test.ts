@@ -22,6 +22,37 @@ describe('NpmPackageManager', () => {
   });
 
   describe('runAsync', () => {
+    it('logs executed command', async () => {
+      const log = jest.fn();
+      const npm = new NpmPackageManager({ cwd: projectRoot, log });
+      await npm.runAsync(['install', '--some-flag']);
+      expect(log).toHaveBeenCalledWith('> npm install --some-flag');
+    });
+
+    it('pipes error output without silent', async () => {
+      const stderr = { pipe: jest.fn() };
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+
+      mockedSpawnAsync.mockImplementationOnce(() =>
+        mockSpawnPromise(Promise.reject(new Error('test')), { stderr })
+      );
+
+      await expect(npm.runAsync(['install'])).rejects.toThrowError();
+      expect(stderr.pipe).toHaveBeenCalledWith(process.stderr);
+    });
+
+    it('does not pipe error output with silent', async () => {
+      const stderr = { pipe: jest.fn() };
+      const npm = new NpmPackageManager({ cwd: projectRoot, silent: true });
+
+      mockedSpawnAsync.mockImplementationOnce(() =>
+        mockSpawnPromise(Promise.reject(new Error('test')), { stderr })
+      );
+
+      await expect(npm.runAsync(['install'])).rejects.toThrowError();
+      expect(stderr.pipe).not.toHaveBeenCalledWith();
+    });
+
     it('returns spawn promise with child', () => {
       const npm = new NpmPackageManager({ cwd: projectRoot });
       expect(npm.runAsync(['install'])).toHaveProperty(

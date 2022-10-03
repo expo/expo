@@ -23,6 +23,37 @@ describe('PnpmPackageManager', () => {
   });
 
   describe('runAsync', () => {
+    it('logs executed command', async () => {
+      const log = jest.fn();
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot, log });
+      await pnpm.runAsync(['install', '--some-flag']);
+      expect(log).toHaveBeenCalledWith('> pnpm install --some-flag');
+    });
+
+    it('pipes error output without silent', async () => {
+      const stderr = { pipe: jest.fn() };
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+
+      mockedSpawnAsync.mockImplementationOnce(() =>
+        mockSpawnPromise(Promise.reject(new Error('test')), { stderr })
+      );
+
+      await expect(pnpm.runAsync(['install'])).rejects.toThrowError();
+      expect(stderr.pipe).toHaveBeenCalledWith(process.stderr);
+    });
+
+    it('does not pipe error output with silent', async () => {
+      const stderr = { pipe: jest.fn() };
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot, silent: true });
+
+      mockedSpawnAsync.mockImplementationOnce(() =>
+        mockSpawnPromise(Promise.reject(new Error('test')), { stderr })
+      );
+
+      await expect(pnpm.runAsync(['install'])).rejects.toThrowError();
+      expect(stderr.pipe).not.toHaveBeenCalledWith();
+    });
+
     it('adds a single package with custom parameters', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
       await pnpm.runAsync(['add', '--save-peer', '@babel/core']);
