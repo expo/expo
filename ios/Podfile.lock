@@ -1944,7 +1944,7 @@ PODS:
     - React
     - React-callinvoker
     - React-Core
-  - react-native-webview (11.22.4):
+  - react-native-webview (11.23.1):
     - React-Core
   - React-perflogger (0.70.1)
   - React-RCTActionSheet (0.70.1):
@@ -3495,7 +3495,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-skia: faacd6a970a757d67c4f4a44a31d347651abbb8e
-  react-native-webview: a1ed211d50a5047a4fe54e07140991e277cd66e6
+  react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: 48c6b363e867d64b682e84f80ca45636bd65e19c
   React-RCTActionSheet: 33c74fe5c754835e3715c300618da9aa2f7203fa
   React-RCTAnimation: 2dbf0120d4d1ab7716079b4180f2ca89c465e46b
