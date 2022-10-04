@@ -2,7 +2,7 @@
 title: Picking an image
 ---
 
-import SnackInline from '~/components/plugins/SnackInline';
+import { SnackInline}  from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 
@@ -32,7 +32,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function App() {
   /* @info Launch the picker and log the result. */
-  let openImagePickerAsync = async () => {    
+  let openImagePickerAsync = async () => {
     let pickerResult = await ImagePicker.launchImageLibraryAsync();
     console.log(pickerResult);
   }

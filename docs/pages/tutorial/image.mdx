@@ -3,7 +3,7 @@ title: Adding an image
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import SnackInline from '~/components/plugins/SnackInline';
+import { SnackInline}  from '~/ui/components/Snippet';
 
 Let's imagine that our designer has provided us with a beautiful logo:
 
@@ -31,7 +31,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* @info Use the Image component */ <Image source={logo} style={{ width: 305, height: 159 }} /> /* @end */
-      <Text style={{color: '#888', fontSize: 18}}> 
+      <Text style={{color: '#888', fontSize: 18}}>
         To share a photo from your phone with a friend, just press the button below!
       </Text>
     </View>
@@ -67,7 +67,7 @@ export default function App() {
       /* @info We can use a URL instead of importing the image from your local assets */
       <Image source={{ uri: "https://i.imgur.com/TkIrScD.png" }} style={{ width: 305, height: 159 }} />
     /* @end */
-      <Text style={{color: '#888', fontSize: 18}}> 
+      <Text style={{color: '#888', fontSize: 18}}>
         To share a photo from your phone with a friend, just press the button below!
       </Text>
     </View>

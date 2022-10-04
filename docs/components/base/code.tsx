@@ -88,7 +88,8 @@ const STYLES_CODE_CONTAINER = css`
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   line-height: 120%;
-  border-radius: 4px;
+  border-radius: ${borderRadius.small}px;
+  padding: ${spacing[4]}px;
 
   table &:last-child {
     margin-bottom: 0;
@@ -240,7 +241,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
         <SnippetHeader title={value.title}>
           <CopyAction text={this.cleanCopyValue(value.value)} />
         </SnippetHeader>
-        <SnippetContent>
+        <SnippetContent skipPadding>
           <pre css={STYLES_CODE_CONTAINER} {...attributes}>
             <code
               css={STYLES_CODE_BLOCK}

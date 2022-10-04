@@ -1,5 +1,6 @@
-import { darkTheme, iconSize } from '@expo/styleguide';
-import React from 'react';
+import { css } from '@emotion/react';
+import { darkTheme, iconSize, palette, shadows, theme } from '@expo/styleguide';
+import { cloneElement } from 'react';
 
 import { Button, ButtonProps } from '~/ui/components/Button';
 import { FOOTNOTE } from '~/ui/components/Text';
@@ -15,11 +16,39 @@ export const SnippetAction = (props: SnippetActionProps) => {
     size: iconSize.small,
   };
 
-  const styledIcon = icon && React.cloneElement(icon as any, iconStyle);
+  const styledIcon = icon && cloneElement(icon as any, iconStyle);
 
   return (
-    <Button size="mini" theme="transparent" icon={styledIcon} {...rest}>
+    <Button
+      size="mini"
+      theme="ghost"
+      icon={styledIcon}
+      css={[!alwaysDark && snippetActionStyle, alwaysDark && alwaysDarkStyle]}
+      {...rest}>
       <FOOTNOTE css={alwaysDark && { color: darkTheme.text.default }}>{children}</FOOTNOTE>
     </Button>
   );
 };
+
+const snippetActionStyle = css({
+  border: 0,
+  borderRadius: 0,
+  borderLeft: `1px solid ${theme.border.default}`,
+  height: 42,
+  lineHeight: 42,
+  padding: `0 16px`,
+
+  ':hover': {
+    backgroundColor: theme.background.secondary,
+    boxShadow: 'none',
+  },
+});
+
+const alwaysDarkStyle = css({
+  borderColor: 'transparent',
+
+  ':hover': {
+    borderColor: palette.dark.gray[500],
+    boxShadow: shadows.button,
+  },
+});

@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 type SnippetProps = {
   includeMargin?: boolean;
