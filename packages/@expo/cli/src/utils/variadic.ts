@@ -72,7 +72,7 @@ export function assertUnexpectedVariadicFlags(
 
     throw new CommandError(
       'BAD_ARGS',
-      `Unexpected: ${unexpectedFlags.join(', ')}\nDid you mean: ${cmd}`
+      `Unexpected: ${unexpectedFlags.join(', ')}\nDid you mean: ${cmd.trim()}`
     );
   }
 }

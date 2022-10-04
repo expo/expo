@@ -28,7 +28,7 @@ describe(parseVariadicArguments, () => {
 
 describe(assertUnexpectedVariadicFlags, () => {
   it(`splits unknown flags into extras`, () => {
-    expect(
+    expect(() =>
       assertUnexpectedVariadicFlags(['--yarn'], {
         variadic: ['chalk'],
         flags: { '-D': true },
@@ -38,7 +38,7 @@ describe(assertUnexpectedVariadicFlags, () => {
   });
 
   it(`splits unknown flags and combines existing extras`, () => {
-    expect(
+    expect(() =>
       assertUnexpectedVariadicFlags(['--npm'], {
         variadic: ['chalk'],
         flags: { '-D': true },
@@ -48,7 +48,7 @@ describe(assertUnexpectedVariadicFlags, () => {
   });
 
   it(`accepts empty variadic`, () => {
-    expect(
+    expect(() =>
       assertUnexpectedVariadicFlags(['--pnpm'], {
         variadic: [],
         flags: { '--ignore-scripts': true, '-D': true },
@@ -58,7 +58,7 @@ describe(assertUnexpectedVariadicFlags, () => {
   });
 
   it('prepends command prefix', () => {
-    expect(
+    expect(() =>
       assertUnexpectedVariadicFlags(
         ['--yarn'],
         {
