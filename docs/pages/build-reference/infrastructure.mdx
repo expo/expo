@@ -30,8 +30,8 @@ When selecting an image for the build you can use the full name provided below o
 - Android workers run on Kubernetes in an isolated environment
   - Every build gets its own container running on a dedicated Kubernetes node
   - Build resources: 4 CPU, 12 GB RAM
-- NPM cache deployed with Kubernetes. [Learn more](caching/#javascript-dependencies)
-- Maven cache deployed with Kubernetes. [Learn more](caching/#android-dependencies)
+- [npm cache deployed with Kubernetes](caching/#javascript-dependencies)
+- [Maven cache deployed with Kubernetes](caching/#android-dependencies)
 - Global Gradle configuration in `~/.gradle/gradle.properties`:
 
   ```ini
@@ -146,11 +146,12 @@ When selecting an image for the build you can use the full name provided below o
   - Every build gets its own fresh macOS VM
   - Hardware: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
   - Build resource limits: 3 cores, 12 GB RAM
-- npm cache. [Learn more](caching/#javascript-dependencies)
+- [npm cache](caching/#javascript-dependencies)
+- [CocoaPods cache](caching/#ios-dependencies)
 - `~/.npmrc`
 
   ```ini
-  registry=http://10.254.24.8:4873
+  registry=http://10.254.24.9:4873
   ```
 
 - `~/.yarnrc.yml`
@@ -158,9 +159,11 @@ When selecting an image for the build you can use the full name provided below o
   ```yml
   unsafeHttpWhitelist:
     - '*'
-  npmRegistryServer: 'registry=http://10.254.24.8:4873'
+  npmRegistryServer: 'registry=http://10.254.24.9:4873'
   enableImmutableInstalls: false
   ```
+
+- [cocoapods-nexus-plugin](https://github.com/expo/eas-build/tree/main/packages/cocoapods-nexus-plugin)
 
 #### Image `macos-monterey-12.6-xcode-14.0` (alias `latest`)
 
