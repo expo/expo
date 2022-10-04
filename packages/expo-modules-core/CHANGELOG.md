@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `ModuleRegistry` be initialized twice when startup on Android. ([#19384](https://github.com/expo/expo/pull/19384) by [@kudo](https://github.com/kudo) and [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 0.11.6 — 2022-10-02
