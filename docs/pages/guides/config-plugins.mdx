@@ -363,13 +363,9 @@ The strings passed to the `plugins` array can be resolved in a few different way
 
 You can quickly create a plugin in your project and use it in your config.
 
-- <YesIcon />{' '}
+- <YesIcon /> `'./my-config-plugin'`
 
-  `'./my-config-plugin'`
-
-- <NoIcon />{' '}
-
-  `'./my-config-plugin.js'`
+- <NoIcon /> `'./my-config-plugin.js'`
 
 ```
 ╭── app.config.js ➡️ Expo Config
@@ -381,13 +377,9 @@ You can quickly create a plugin in your project and use it in your config.
 Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) may be different.
 If an **app.plugin.js** file is present in the root of a Node module's folder, it'll be used instead of the package's `main` file.
 
-- <YesIcon />{' '}
+- <YesIcon /> `'expo-splash-screen'`
 
-  `'expo-splash-screen'`
-
-- <NoIcon />{' '}
-
-  `'expo-splash-screen/app.plugin.js'`
+- <NoIcon /> `'expo-splash-screen/app.plugin.js'`
 
 ```
 ╭── app.config.js ➡️ Expo Config
@@ -401,13 +393,9 @@ If an **app.plugin.js** file is present in the root of a Node module's folder, i
 
 A config plugin in a node module (without an **app.plugin.js**) will use the `main` file defined in the **package.json**.
 
-- <YesIcon />{' '}
+- <YesIcon /> `'expo-splash-screen'`
 
-  `'expo-splash-screen'`
-
-- <NoIcon />{' '}
-
-  `'expo-splash-screen/build/index'`
+- <NoIcon /> `'expo-splash-screen/build/index'`
 
 ```
 ╭── app.config.js ➡️ Expo Config
@@ -418,13 +406,9 @@ A config plugin in a node module (without an **app.plugin.js**) will use the `ma
 
 ### Project folder
 
-- <YesIcon />{' '}
+- <YesIcon /> `'./my-config-plugin'`
 
-  `'./my-config-plugin'`
-
-- <NoIcon />{' '}
-
-  `'./my-config-plugin.js'`
+- <NoIcon /> `'./my-config-plugin.js'`
 
 This is different to how Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
 
@@ -439,13 +423,9 @@ This is different to how Node modules work because **app.plugin.js** won't be re
 If a file inside a Node module is specified, then the module's root **app.plugin.js** resolution will be skipped. This is referred to as "reaching inside a package" and is considered **bad form**.
 We support this to make testing, and plugin authoring easier, but we don't expect library authors to expose their plugins like this as a public API.
 
-- <NoIcon />{' '}
+- <NoIcon /> `'expo-splash-screen/build/index.js'`
 
-  `'expo-splash-screen/build/index.js'`
-
-- <NoIcon />{' '}
-
-  `'expo-splash-screen/build'`
+- <NoIcon /> `'expo-splash-screen/build'`
 
 ```
 ╭── app.config.js ➡️ Expo Config
