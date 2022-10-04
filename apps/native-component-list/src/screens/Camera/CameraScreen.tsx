@@ -347,12 +347,12 @@ export default class CameraScreen extends React.Component<{}, State> {
       </View>
     </View>
   );
-  renderBarCodePoints = () => {
+  renderBarCode = () => {
     const origin: BarCodePoint | undefined = this.state.cornerPoints
       ? this.state.cornerPoints[0]
       : undefined;
     return (
-      <Svg.Svg style={styles.svg}>
+      <Svg.Svg style={styles.barcode} pointerEvents="none">
         {origin && (
           <Svg.Text fill="#CF4048" stroke="#CF4048" fontSize="14" x={origin.x} y={origin.y - 8}>
             {this.state.barcodeData}
@@ -399,7 +399,7 @@ export default class CameraScreen extends React.Component<{}, State> {
       </Camera>
       {this.state.faceDetecting && this.renderFaces()}
       {this.state.faceDetecting && this.renderLandmarks()}
-      {this.state.barcodeScanning && this.renderBarCodePoints()}
+      {this.state.barcodeScanning && this.renderBarCode()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>
   );
@@ -522,7 +522,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
   },
-  svg: {
+  barcode: {
     position: 'absolute',
     borderWidth: 2,
     borderColor: 'red',
