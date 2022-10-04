@@ -14,7 +14,7 @@
 ### 🐛 Bug fixes
 
 - Fix images taken with `launchCameraAsync` being translated incorrectly on some camera orientations. ([#19185](https://github.com/expo/expo/pull/19185) by [@jacobjaffe](https://github.com/JacobJaffe) and [@reececox](https://github.com/reececox))
-- Fix error where `launchImageLibraryAsync()` saved the photo to a global cache directory that was inaccessible in Expo Go.
+- Fix error where `launchImageLibraryAsync()` saved the photo to a global cache directory that was inaccessible in Expo Go. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
