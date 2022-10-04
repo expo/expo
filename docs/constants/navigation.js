@@ -115,6 +115,7 @@ const general = [
   makeSection('Integrations', [
     makePage('guides/using-firebase.mdx'),
     makePage('guides/setup-native-firebase.mdx'),
+    makePage('guides/migrating-to-react-native-firebase.mdx'),
     makePage('guides/using-sentry.mdx'),
     makePage('guides/using-bugsnag.mdx'),
     makePage('guides/using-clojurescript.mdx'),

@@ -1,0 +1,148 @@
+---
+title: Migrating to React Native Firebase
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+The `expo-firebase-analytics` and `expo-firebase-recaptcha` packages were created to allow use of some Firebase features across Classic Builds, Expo Go, and Expo for Web. However, they had the disadvantage of being tied to specific versions of the [Firebase](https://firebase.google.com/) native iOS and Android SDK's, preventing developers from upgrading to the latest version of [React Native Firebase](https://rnfirebase.io/) when they were ready to use additional Firebase features. With EAS Build and Development Builds, it is much easier to use React Native Firebase in your entire development workflow, so these packages have been deprecated. Read on for advice on migrating from the Expo Firebase packages to React Native Firebase.
+
+> **Note:** These instructions assume you have already been successfully using the Expo Firebase packages. If you're adding Firebase to your app for the first time, follow our [Using Firebase](/guides/using-firebase) guide.
+
+## Install React Native Firebase
+
+Run the following commands to remove `expo-firebase-analytics` and install the React Native Firebase packages:
+
+<Terminal cmd={[
+'# Remove Expo Firebase packages',
+'$ yarn remove expo-firebase-analytics',
+'',
+'# Install RN Firebase, etc.',
+'$ yarn add @react-native-firebase/app @react-native-firebase/analytics'
+]} />
+
+If you are using [Expo Prebuild](/guides/adopting-prebuild) (also known as Managed Workflow) and building your app for iOS, install the `expo-build-properties` plugin and apply the following configuration to your [Expo config]() file.
+
+<Terminal cmd={["$ npx expo install expo-build-properties"]} />
+
+#### Example app.json with config plugin
+
+```json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "useFrameworks": "static"
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+If you are using the Bare Workflow, follow [React Native Firebase's installation instructions](https://rnfirebase.io/#bare-workflow).
+
+## Update analytics requests
+
+Firebase Analytics requests in React Native Firebase are almost the same- mostly, they are just imported a little differently. Update your code as shown here:
+
+```diff
+// update imports
+- import * as Analytics from "expo-firebase-analytics";
++ import analytics from "@react-native-firebase/analytics";
+
+// update each request to analytics
+- Analytics.logEvent("test_analytics_event", {
+-  additionaParam: "test",
+- });
++ analytics().logEvent("test_analytics_event", {
++  additionaParam: "test",
++ });
+```
+
+`logEvent` is asynchronous, so be sure to use `await` in front of the function call if you are using it in an `async` function.
+
+## Creating a development build
+
+If you have previously used Expo Go for development and testing, at this point, you will need to migrate to a [development build](https://docs.expo.dev/development/introduction/#from-expo-go-to-development-builds), as Expo Go does not include the native code used in React Native Firebase. A development build supports the same workflows as Expo Go, allowing you to develop from your local machine or test updates via a QR code, except it is compatible with all of the native code you include in your standalone app.
+
+[Follow these instructions for creating a development build](https://docs.expo.dev/development/getting-started/). Once you are finished, you should have an **eas.json** file that includes a build profile that looks like this:
+```
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    }
+  }
+}
+```
+If you wish to run a development build on an iOS simulator instead of a device, your profile may also include:
+```
+{
+  "ios": {
+    "simulator": true
+  }
+}
+```
+`expo-dev-client` should be present in your **package.json**, as well. Once you run `eas build` with your development build profile and platfrom of choice, you will have an app binary file that you can install on your device or simulator.
+
+If you are already using a development build, just rebuild your app, as your native code dependencies have changed.
+
+## Test your changes
+
+Test your changes locally on your development build by running
+<Terminal cmd={[
+'npx expo start --dev-client'
+]} />
+Then follow the prompts on the terminal to run it on your simulator, or scan the QR code to run it on your device. Try an action that will register a Firebase Analytics event. Note that it may take a few minutes for events to show up in the Firebase Console.
+
+## Other migration scenarios
+
+### Analytics for Expo for web
+
+React Native Firebase only supports iOS and Android. If you previously used `expo-firebase-analytics` to send events from an Expo for web client, you will need to use the Firebase JavaScript SDK. In, the Firebase Console, go to Project Settings, and then your web app, and copy the code under "SDK setup and configuration." Then you can switch between React Native Firebase and Firebase JS requests using the `Platform` component:
+```
+import { Platform } from 'react-native';
+// for native
+import analytics from "@react-native-firebase/analytics";
+// for web
+import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+
+// configure and initialize Firebase for web (copy this from the Firebase Console Project Settings for the exact values)
+
+const firebaseConfig = {
+  apiKey: 'api-key',
+  authDomain: 'project-id.firebaseapp.com',
+  databaseURL: 'https://project-id.firebaseio.com',
+  projectId: 'project-id',
+  storageBucket: 'project-id.appspot.com',
+  messagingSenderId: 'sender-id',
+  appId: 'app-id',
+  measurementId: 'G-measurement-id',
+};
+
+const app = initializeApp(firebaseConfig);
+const webAnalytics = getAnalytics(app);
+
+// later, when calling analytics...
+
+if (Platform.OS === 'web') {
+  webAnalytics.logEvent("test_analytics_event", {
+    additionaParam: "test",
+  });
+} else {
+  analytics().logEvent("test_analytics_event", {
+    additionaParam: "test",
+  });
+}
+```
+
+
+### Migrating from expo-firebase-recaptcha
+
+This migration guide demonstrates specifically migrating Firebase Analytics usage from `expo-firebase-analytics` to React Native Firebase. If you are migrating from `expo-firebase-recaptcha`, follow the steps above to add React Native Firebase and create a development build, and then consult React Native Firebase's [Phone Authentication](https://rnfirebase.io/auth/phone-auth) guide to configure app verification. With the full native capabilities of React Native Firebase now at your disposal, your app can generally use automatic app verification, which uses reCAPTCHA as a fallback mechanism.
