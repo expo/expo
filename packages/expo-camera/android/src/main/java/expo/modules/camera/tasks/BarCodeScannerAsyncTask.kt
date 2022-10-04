@@ -14,7 +14,7 @@ class BarCodeScannerAsyncTask(
   private val rotation: Int
 ) : AsyncTask<Void?, Void?, BarCodeScannerResult?>() {
   override fun doInBackground(vararg params: Void?) = if (!isCancelled) {
-    barCodeScanner.scan(imageData, height, width, rotation)
+    barCodeScanner.scan(imageData, width, height, rotation)
   } else null
 
   override fun onPostExecute(result: BarCodeScannerResult?) {

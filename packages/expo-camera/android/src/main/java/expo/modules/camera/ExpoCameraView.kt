@@ -196,25 +196,36 @@ class ExpoCameraView(
     barCodeScanner?.setSettings(settings)
   }
 
+  // Even = portrait, odd = landscape
   private fun getDeviceOrientation() =
           (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
 
 
   private fun transformBarCodeScannerResultToViewCoordinates(barCode: BarCodeScannerResult) {
     val cornerPoints = barCode.cornerPoints
+    
+    //For some reason they're swapped, I don't know anymore...
+    val cameraWidth = barCode.referenceImageHeight
+    val cameraHeight = barCode.referenceImageWidth
 
-    // fix for problem with rotation when back camera is in use
-    if (cameraView.facing == CameraView.FACING_BACK) {
-      cornerPoints.mapX { barCode.referenceImageWidth - cornerPoints[it] }
+    val facingBack = cameraView.facing == CameraView.FACING_BACK
+    val facingFront = cameraView.facing == CameraView.FACING_FRONT
+    val portrait = getDeviceOrientation() % 2 == 0
+    val landscape = getDeviceOrientation() % 2 == 1
+
+    if (facingBack && portrait) {
+      cornerPoints.mapX { cameraWidth - cornerPoints[it] }
+    }
+    if (facingBack && landscape) {
+      cornerPoints.mapY { cameraHeight - cornerPoints[it] }
+    }
+    if (facingFront) {
+      cornerPoints.mapX { cameraWidth - cornerPoints[it] }
+      cornerPoints.mapY { cameraHeight - cornerPoints[it] }
     }
 
-    val scaleX = barCode.referenceImageWidth.toDouble() / width
-    val scaleY = barCode.referenceImageHeight.toDouble() / height
-
-    // Log.e("Camera", "real: width - "+width+" height - "+height)
-    // Log.e("Camera", "camera: width - "+barCode.referenceImageWidth+" height - "+barCode.referenceImageHeight)
-    // Log.e("Camera", "scaleX: "+scaleX)
-    // Log.e("Camera", "x: "+cornerPoints[1]+" -> "+(cornerPoints[1]*scaleX).roundToInt())
+    val scaleX = width / cameraWidth.toDouble()
+    val scaleY = height / cameraHeight.toDouble()
 
     cornerPoints.mapX {
       (cornerPoints[it] * scaleX)
@@ -244,7 +255,7 @@ class ExpoCameraView(
 
   override fun onBarCodeScanned(barCode: BarCodeScannerResult) {
     if (mShouldScanBarCodes) {
-      // transformBarCodeScannerResultToViewCoordinates(barCode)
+      transformBarCodeScannerResultToViewCoordinates(barCode)
       onBarCodeScanned(
         BarCodeScannedEvent(
           target = id,
