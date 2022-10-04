@@ -59,7 +59,7 @@ class ImagePickerModule : Module() {
       ensureCameraPermissionsAreGranted()
 
       val directoriesModule = appContext.directories ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.Directories")
-      val directories: Directories = directoriesModule.directories;
+      val directories: Directories = directoriesModule.directories
 
       val mediaFile = createOutputFile(directories.cacheDir, options.mediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)

@@ -30,7 +30,7 @@ internal class CropImageContract(
     val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri)
     val compressFormat = mediaType.toBitmapCompressFormat()
     val directoriesModule = appContextProvider.appContext.directories ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.Directories")
-    val directories: Directories = directoriesModule.directories;
+    val directories: Directories = directoriesModule.directories
 
     val outputUri = createOutputFile(directories.cacheDir, compressFormat.toImageFileExtension()).toUri()
 

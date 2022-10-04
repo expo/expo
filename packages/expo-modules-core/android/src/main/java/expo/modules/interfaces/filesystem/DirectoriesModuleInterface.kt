@@ -1,8 +1,5 @@
-package expo.modules.interfaces.filesystem;
-
-import expo.modules.interfaces.filesystem.Directories
+package expo.modules.interfaces.filesystem
 
 interface DirectoriesModuleInterface {
-  val directories: Directories;
+  val directories: Directories
 }
-
