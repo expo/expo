@@ -6,6 +6,9 @@ apply plugin: 'maven-publish'
 group = 'host.exp.exponent'
 version = '0.14.3'
 
+def ex_updates_native_debug_env = System.getenv("EX_UPDATES_NATIVE_DEBUG") ?: "0"
+def ex_updates_native_debug = ex_updates_native_debug_env == "1" ? "true" : "false"
+
 apply from: "../scripts/create-manifest-android.gradle"
 
 buildscript {
@@ -80,6 +83,7 @@ android {
     versionName '0.14.3'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", ex_updates_native_debug)
     // uncomment below to export the database schema when making changes
     /* javaCompileOptions {
       annotationProcessorOptions {
