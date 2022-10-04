@@ -442,6 +442,47 @@ class FileReadOptions : Record {
 
 </CodeBlocksTable>
 </APIBox>
+<APIBox header="Eithers">
+
+There are some use cases where you want to pass various types for a single function argument. This is where Either types might come in handy.
+They act as a container for a value of one of a couple of types.
+
+<CodeBlocksTable>
+
+```swift
+Function("foo") { (bar: Either<String, Int>) in
+  if let bar: String = bar.get() {
+    // `bar` is a String
+  }
+  if let bar: Int = bar.get() {
+    // `bar` is an Int
+  }
+}
+```
+
+```kotlin
+Function("foo") { bar: Either<String, Int> ->
+  bar.get(String::class).let {
+    // `it` is a String
+  }
+  bar.get(Int::class).let {
+    // `it` is an Int
+  }
+}
+```
+
+</CodeBlocksTable>
+
+The implementation for three Either types is currently provided out of the box, allowing you to use up to four different subtypes.
+
+- `Either<FirstType, SecondType>` — A container for one of two types.
+- `EitherOfThree<FirstType, SecondType, ThirdType>` — A container for one of three types.
+- `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` — A container for one of four types.
+
+> **info**
+> Either types are available as of SDK 47.
+
+</APIBox>
 
 ## Examples
 
