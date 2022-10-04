@@ -7,7 +7,7 @@
 #import <react/renderer/components/rnscreens/Props.h>
 #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
 
-#import "RCTFabricComponentsPlugins.h"
+#import <React/RCTFabricComponentsPlugins.h>
 
 #else
 #import <React/RCTBridge.h>
@@ -823,7 +823,7 @@
   RNSScreenView *topScreen = _reactSubviews.lastObject;
 
   if (![topScreen isKindOfClass:[RNSScreenView class]] || !topScreen.gestureEnabled ||
-      _controller.viewControllers.count < 2) {
+      _controller.viewControllers.count < 2 || [topScreen isModal]) {
     return NO;
   }
 
@@ -969,7 +969,7 @@
 - (void)mountingTransactionWillMount:(facebook::react::MountingTransaction const &)transaction
                 withSurfaceTelemetry:(facebook::react::SurfaceTelemetry const &)surfaceTelemetry
 {
-  for (auto mutation : transaction.getMutations()) {
+  for (auto &mutation : transaction.getMutations()) {
     if (mutation.type == facebook::react::ShadowViewMutation::Type::Remove &&
         mutation.parentShadowView.componentName != nil &&
         strcmp(mutation.parentShadowView.componentName, "RNSScreenStack") == 0) {

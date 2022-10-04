@@ -3,9 +3,9 @@
 #import "RNSScreenContainer.h"
 
 #ifdef RN_FABRIC_ENABLED
+#import <React/RCTFabricComponentsPlugins.h>
 #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
 #import <react/renderer/components/rnscreens/Props.h>
-#import "RCTFabricComponentsPlugins.h"
 #endif
 
 @implementation RNScreensContainerNavigationController

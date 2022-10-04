@@ -1,11 +1,11 @@
 #ifdef RN_FABRIC_ENABLED
 #import <React/RCTConversions.h>
+#import <React/RCTFabricComponentsPlugins.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
 #import <react/renderer/components/rnscreens/EventEmitters.h>
 #import <react/renderer/components/rnscreens/Props.h>
 #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
-#import "RCTFabricComponentsPlugins.h"
 #else
 #import <React/RCTBridge.h>
 #import <React/RCTImageLoader.h>
@@ -118,7 +118,7 @@
   }
 
   // we want updates sent to the VC below modal too since it is also visible
-  BOOL isPresentingVC = vc.presentedViewController == nextVC;
+  BOOL isPresentingVC = nextVC != nil && vc.presentedViewController == nextVC;
 
   BOOL isInFullScreenModal = nav == nil && _screenView.stackPresentation == RNSScreenStackPresentationFullScreenModal;
   // if nav is nil, it means we can be in a fullScreen modal, so there is no nextVC, but we still want to update
@@ -459,7 +459,6 @@
     return;
   }
 
-  navitem.title = config.title;
 #if !TARGET_OS_TV
   if (config.backTitle != nil || config.backTitleFontFamily || config.backTitleFontSize ||
       config.disableBackButtonMenu) {
@@ -580,12 +579,16 @@
       }
       case RNSScreenStackHeaderSubviewTypeBackButton: {
 #ifdef RN_FABRIC_ENABLED
-        RCTLogWarn(@"Back button subivew is not yet Fabric compatible in react-native-screens");
+        RCTLogWarn(@"Back button subview is not yet Fabric compatible in react-native-screens");
 #endif
         break;
       }
     }
   }
+
+  // This assignment should be done after `navitem.titleView = ...` assignment (iOS 16.0 bug).
+  // See: https://github.com/software-mansion/react-native-screens/issues/1570 (comments)
+  navitem.title = config.title;
 
   if (animated && vc.transitionCoordinator != nil &&
       vc.transitionCoordinator.presentationStyle == UIModalPresentationNone && !wasHidden) {
