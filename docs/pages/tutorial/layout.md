@@ -4,18 +4,19 @@ title: Build a screen
 
 import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import { LinkBase } from '~/ui/components/Text';
 
 In this chapter, we will create the first screen of the app.
 
 <ImageSpotlight alt="Initial layout." src="/static/images/tutorial/initial-layout.jpg" style={{ maxWidth: 300 }} />
 
-The screen above displays an image and two buttons. The user will select an image using one of the two buttons provided. The first button allows the user to select an image from their device. The second button allows the user to use a default image.
+The screen above displays an image and two buttons. The user can select an image using one of the two buttons provided. The first button allows the user to select an image from their device. The second button allows the user to continue with a default image provided by the app.
 
 Once the user selects an image, they'll be able to select and add a sticker to the image. So, let's get started creating this screen.
 
 ## Step 1: Break down the layout
 
-Before we build this screen by writing code, let's break it down into some essential elements. Most of these elements directly correspond to the built-in [Core Components](https://reactnative.dev/docs/components-and-apis) from React Native.
+Before we build this screen by writing code, let's break it down into some essential elements. Most of these elements directly correspond to the built-in <LinkBase href="https://reactnative.dev/docs/components-and-apis" openInNewTab>Core Components</LinkBase> from React Native.
 
 <ImageSpotlight alt="Break down of initial layout." src="/static/images/tutorial/breakdown-of-layout.jpg" style={{ maxWidth: 300 }} containerStyle={{ marginBottom: 10 }} />
 
@@ -29,7 +30,7 @@ The first button is composed of multiple components. The parent element provides
 
 <ImageSpotlight alt="Break down of the button component with row." src="/static/images/tutorial/breakdown-of-buttons.jpg" style={{ maxWidth: 480 }} containerStyle={{ marginBottom: 10 }} />
 
-These elements use custom styles. In React Native, styling is done using JavaScript. All of the React Native core components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see [Styling in React Native](https://reactnative.dev/docs/styles).
+In React Native, styling (such as yellow border) is done using JavaScript as compared to the web where CSS is used. Most of the React Native core components accept a `style` prop that accepts a JavaScript object as its value. For detailed information on styling, see <LinkBase href="https://reactnative.dev/docs/style" openInNewTab>Styling in React Native</LinkBase>.
 
 Now that we've broken down the UI into smaller chunks, we're ready to start coding.
 
@@ -65,9 +66,11 @@ const styles = StyleSheet.create({
 });
 ```
 
+> React Native uses the same color format as the web. It supports hex triplets (this is what `#fff` is), `rgba`, `hsl`, and a set of named colors like `red`, `green`, `blue`, `peru` and `papayawhip`. For more information, see <LinkBase href="https://reactnative.dev/docs/colors" openInNewTab>Colors in React Native</LinkBase>.
+
 ## Step 3: Change the text color
 
-Now that the background is a dark color, the text is difficult to read. By default, the `<Text>` component uses `#000` (black) as its default color. Let's add a style to the `<Text>` component to change the text color to `#fff` (white).
+Now that the background is a dark color, the text is difficult to read. The `<Text>` component uses `#000` (black) as its default color. Let's add a style to the `<Text>` component to change the text color to `#fff` (white).
 
 <SnackInline label="Styled Background" dependencies={['expo-status-bar']}>
 
@@ -101,11 +104,9 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-> React Native uses the same color format as the web. It supports hex triplets (this is what `#fff` is), `rgba`, `hsl`, and a set of named colors like `red`, `green`, `blue`, `peru` and `papayawhip`. For more information, see [Colors in React Native](https://reactnative.dev/docs/colors).
-
 ## Step 4: Display the image
 
-We can use React Native's `<Image>` component to display the image in the app. The `<Image>` component requires a source of an image. This source can be a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source can be required from the app's **./assets/images** directory, or the source can come from the [Network](https://reactnative.dev/docs/images#network-images) in the form of a `uri` property.
+We can use React Native's `<Image>` component to display the image in the app. The `<Image>` component requires a source of an image. This source can be a <LinkBase href="https://reactnative.dev/docs/images#static-image-resources" openInNewTab>static asset</LinkBase> or a URL. For example, the source can be required from the app's **./assets/images** directory, or the source can come from the <LinkBase href="https://reactnative.dev/docs/images#network-images" openInNewTab>Network</LinkBase> in the form of a `uri` property.
 
 <ImageSpotlight alt="Background image that we are going to use as a placeholder for the tutorial." src="/static/images/tutorial/background-image.png" style={{ maxWidth: 250 }} />
 
@@ -224,11 +225,11 @@ const styles = StyleSheet.create({
 
 ## Step 6: Create buttons using Pressable
 
-React Native provides various components to handle touch events on native platforms. For this tutorial, we’ll use the [`<Pressable>`](https://reactnative.dev/docs/pressable) component. It is a core component wrapper that can detect various stages of interactions, from basic single tap events to advanced events such as a long press.
+React Native provides various components to handle touch events on native platforms. For this tutorial, we’ll use the <LinkBase href="https://reactnative.dev/docs/pressable" openInNewTab>`<Pressable>`</LinkBase> component. It is a core component wrapper that can detect various stages of interactions, from basic single tap events to advanced events such as a long press.
 
-In the design, there are two buttons we need to implement. Each has different styles and labels. Let's start by creating a function component that can be reused to create the two buttons.
+In the design, there are two buttons we need to implement. Each has different styles and labels. Let's start by creating a component that can be reused to create the two buttons.
 
-Create a new file called **Button.js** inside the **components** folder with the following code snippet:
+Create a new file called **Button.js** inside the **components** directory with the following code snippet:
 
 <!-- prettier-ignore -->
 ```js
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-Now, in the app, when the user taps any of the buttons on the screen, an alert will be displayed. This happens because the `<Pressable>` uses an `alert()` function with its `onPress` prop.
+Now, in the app, when the user taps any of the buttons on the screen, an alert will be displayed. This happens because the `<Pressable>` calls an `alert()` in its `onPress` prop.
 
 Let's import this component into **App.js** and see it in action:
 
@@ -332,9 +333,9 @@ The second button with the label "Use this photo" resembles the actual button fr
 
 ## Step 7: Enhance the reusable button component
 
-The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme that will allow us to apply a `primary` theme.
+The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme.
 
-This button also has an icon before the label. [`@expo/vector-icons` library](/guides/icons/#expovector-icons) provides icons from popular icon sets such as Ionicons, Feather, FontAwesome, MaterialCommunityIcons and so on. To load and display the icon on the button, let's use `<FontAwesome>` from the library.
+This button also has an icon before the label. <LinkBase href="/guides/icons/#expovector-icons" openInNewTab>`@expo/vector-icons` library</LinkBase> provides icons from popular icon sets. To load and display the icon on the button, let's use `FontAwesome` from the library.
 
 Modify **Button.js** to add the following code snippet:
 
@@ -388,7 +389,7 @@ const styles = StyleSheet.create({
 
 Let's learn what the above code does:
 
-- The primary theme button uses **inline styles** to apply styles to override the styles defined in `styles`.
+- The primary theme button uses **inline styles**. This overrides the styles defined in the `StyleSheet.create()` with style object directly passed in the `style` prop. Inline styles use JavaScript.
 - The `<Pressable>` component in the primary theme uses a `backgroundColor` property of `#fff` to set the background color of the button. If we add this property to the `styles.button`, then the background color value will be set for both the primary theme and the unstyled one.
 - Using inline styles allows overriding the default styles for a specific value.
 

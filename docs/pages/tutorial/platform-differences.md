@@ -5,16 +5,21 @@ title: Handle platform differences
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
+import { LinkBase } from '~/ui/components/Text';
 
 Android, iOS, and the web have different capabilities. In our case, Android and iOS both are able to capture a screenshot with the `react-native-view-shot` library, however web browsers cannot.
 
 In this chapter, we’ll learn how to make an exception for web browsers to get the same functionality on all platforms.
 
-## Step 1: Use dom-to-image
+## Step 1: Install and import dom-to-image
 
-To capture a screenshot and save it as an image, we’ll use a third-party library called [dom-to-image](https://github.com/tsayen/dom-to-image#readme). It allows taking a screenshot of any DOM node and turning it into a vector (SVG) or raster (PNG or JPEG) image.
+To capture a screenshot and save it as an image, we’ll use a third-party library called <LinkBase href="https://github.com/tsayen/dom-to-image#readme" openInNewTab>dom-to-image</LinkBase>. It allows taking a screenshot of any DOM node and turning it into a vector (SVG) or raster (PNG or JPEG) image.
 
-Import it into **App.js**:
+Run the following command to install it:
+
+<Terminal cmd={['$ npm install dom-to-image']} />
+
+To use it, let's import it into **App.js**:
 
 ```js
 import domtoimage from 'dom-to-image';
@@ -22,7 +27,7 @@ import domtoimage from 'dom-to-image';
 
 ## Step 2: Add platform-specific code
 
-React Native provides a `Platform` module that returns the currently running platform. With it, we can implement platform-specific code.
+React Native provides a `Platform` module that returns the platform on which the app is currently running. Using it, we can implement platform-specific code.
 
 Import the `Platform` module in **App.js**:
 
@@ -31,7 +36,6 @@ import { StyleSheet, View, Platform } from 'react-native';
 ```
 
 Inside the `onSaveImageAsync()` function in the `<App>` component, we’ll use `Platform.OS` to check whether the platform is `"web"`. If it is not `"web"`, we’ll run the logic added previously. If it is `"web"`, we’ll use the `domtoimage.toJpeg()` method to convert and capture the current `<View>` as a JPEG image.
-
 
 <SnackInline
 label="Take a screenshot"

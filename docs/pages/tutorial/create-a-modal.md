@@ -5,8 +5,9 @@ title: Create a modal
 import SnackInline from '~/components/plugins/SnackInline';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import Video from '~/components/plugins/Video';
+import { LinkBase } from '~/ui/components/Text';
 
-React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above an underlying view. In general, modals are used to draw a user's attention toward critical information or guide them to take action.
+React Native provides a <LinkBase href="https://reactnative.dev/docs/modal" openInNewTab>`<Modal>`</LinkBase> component that presents content above an underlying view. In general, modals are used to draw a user's attention toward critical information or guide them to take action.
 
 In this chapter, we’ll create a modal that shows an emoji picker list.
 
@@ -88,7 +89,7 @@ For now, an empty `<View>` component is rendered when the value of `showAppOptio
 
 Let's break down the layout of the option buttons we will implement in this chapter. The design looks like this:
 
-<ImageSpotlight alt="Break down of the layout of the buttons row." src="/static/images/tutorial/buttons-layout.jpg" style={{ maxWidth: 400 }} containerStyle={{ marginBottom: 0 }} />
+<ImageSpotlight alt="Break down of the layout of the buttons row." src="/static/images/tutorial/buttons-layout.jpg" style={{ maxWidth: 400 }} containerStyle={{ marginBottom: 10 }} />
 
 It contains a parent `<View>` with three buttons aligned in a row. The button in the middle with the plus icon (+) will open the model and is styled differently than the other two buttons.
 
@@ -138,7 +139,6 @@ The other two buttons also use `<MaterialIcons>` to show a text label and an ico
 - `icon`: the name that corresponds to the icon in the `MaterialIcons` library.
 - `label`: the text label displayed on the button.
 - `onPress`: the function called when the button is pressed.
-
 
 ```js
 import { Pressable, StyleSheet, Text } from 'react-native';
@@ -256,7 +256,6 @@ The modal allows the user to choose an emoji from a list of available emoji. Cre
 - `onClose`: a function that closes the modal.
 - `children`: used later to display a list of emoji.
 
-
 <!-- prettier-ignore -->
 ```js
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
@@ -281,8 +280,8 @@ export default function EmojiPicker({ isVisible, children, onClose }) {
 
 Let's learn what the above code does.
 
-- The `<Modal>` component displays a title and a close button. 
-- Its `visible` prop takes the value of `isVisible` and controls if the modal is open or closed. 
+- The `<Modal>` component displays a title and a close button.
+- Its `visible` prop takes the value of `isVisible` and controls if the modal is open or closed.
 - Its `transparent` prop is a boolean value that determines whether the modal fills the entire view.
 - Its `animationType` prop determines how it enters and leaves the screen. In this case, it is sliding from the bottom of the screen.
 - Lastly, its `onClose` prop is called when the user presses the close button on the `<Pressable>` component.
@@ -324,7 +323,6 @@ const styles = StyleSheet.create({
   },
 });
 ```
-
 
 Now, let's modify the **App.js** to:
 
@@ -409,7 +407,7 @@ Here is the result after this step:
 
 ## Step 4: Display a list of emoji
 
-Let's implement a list of emoji in the modal's content. The component we’ll use is the  [`<FlatList>`](https://reactnative.dev/docs/flatlist) component from React Native, which will display a horizontal list of emoji.
+Let's implement a list of emoji in the modal's content. The component we’ll use is the <LinkBase href="https://reactnative.dev/docs/flatlist" openInNewTab>`<FlatList>`</LinkBase> component from React Native, which will display a horizontal list of emoji.
 
 Create a file named **EmojiList.js** file in the **components** directory and add the following code:
 
@@ -530,13 +528,11 @@ This component receives two props:
 - `imageSize`: a value defined inside the `<App>` component. We will use this value in the next chapter to scale the image’s size when tapped.
 - `stickerSource`: the source of the selected emoji image.
 
-
 We’ll import this component in **App.js**:
 
 ```js
 // rest of the import statements
 import EmojiSticker from './components/EmojiSticker';
-
 ```
 
 We’ll also update the `<App>` component to display the emoji sticker on the image conditionally. We’ll do this by checking if the `pickedEmoji` state is not `null`.

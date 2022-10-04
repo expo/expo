@@ -5,18 +5,25 @@ title: Use an image picker
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
+import { LinkBase } from '~/ui/components/Text';
 
-React Native provides pre-built components that work on iOS, Android, and web, such as `<View>`, `<Text>`, and `<Pressable>`. However, React Native does not provide a way to select an image from the device's media library. The app we are building requires this functionality to replace the placeholder image with an image selected from the media library.
+React Native provides built-in components that are standard building blocks used by every application such as `<View>`, `<Text>`, and `<Pressable>`. We want to build a feature that isn’t possible with these core components and API such as selecting an image from device’s media library. For that we will need a library.
 
-At the same time, the tutorial requires a solution that works on all platforms and does not have to worry about supporting each platform from scratch by writing native code.
-
-To achieve this, we’ll use an Expo library called [expo-image-picker](/versions/latest/sdk/imagepicker). Here is a brief description of what the library does:
+To achieve this, we’ll use an Expo SDK library called <LinkBase href="/versions/latest/sdk/imagepicker" openInNewTab>`expo-image-picker`</LinkBase>.
 
 > `expo-image-picker` provides access to the system's UI to select images and videos from the phone's library or take a photo with the camera.
 
-## Step 1: Pick an image from the device's media library
+## Step 1: Install expo-image-picker
 
-`expo-image-picker` provides the `launchImageLibraryAsync()` method that displays the system UI for choosing an image or a video from the device’s library.
+To install the library, run the following command:
+
+<Terminal cmd={['$ npx expo install expo-image-picker']} />
+
+The <LinkBase href="/workflow/expo-cli/#install" openInNewTab>`npx expo install`</LinkBase> command will install the library and add it to the project's dependencies in **package.json**.
+
+## Step 2: Pick an image from the device's media library
+
+`expo-image-picker` provides the `launchImageLibraryAsync()` method that displays the system UI for choosing an image or a video from the device’s media library.
 
 We can use the button with the primary theme that we created in the previous chapter to pick an image from the device's media library. To implement this functionality, we’ll create a function to launch the device’s image library.
 
@@ -54,11 +61,10 @@ export default function App() {
 
 Let's learn what the above code does.
 
-- The `launchImageLibraryAsync()` receives an object in which different options are specified. This is known as an [`ImagePickerOptions` object](/versions/latest/sdk/imagepicker/#imagepickeroptions). We can pass the object to specify different options when invoking the method.
+- The `launchImageLibraryAsync()` receives an object in which different options are specified. This is known as an <LinkBase href="/versions/latest/sdk/imagepicker/#imagepickeroptions" openInNewTab>`ImagePickerOptions` object</LinkBase>. We can pass the object to specify different options when invoking the method.
 - When `allowsEditing` is set to `true`, the user is allowed to crop the image during the selection process on Android and iOS.
 
-
-## Step 2: Update the button component
+## Step 3: Update the button component
 
 Now we need to call the `pickImageAsync()` function when the primary themed button gets pressed. To call it, update the `onPress` property of the `<Button>` component in **components/Button.js**:
 
@@ -112,13 +118,13 @@ To demonstrate what properties the `result` object contains, here is an example 
 }
 ```
 
-## Step 3: Use the selected image
+## Step 4: Use the selected image
 
 The `result` object provides the local `uri` of the selected image. Let's take this value from the image picker and use it to show the selected image in the app.
 
 Modify the **App.js** file in the following steps:
 
-- Declare a state variable called `selectedImage` using the [`useState`](https://reactjs.org/docs/hooks-state.html) hook from React. We’ll use this state variable to hold the URI of the selected image.
+- Declare a state variable called `selectedImage` using the <LinkBase href="https://reactjs.org/docs/hooks-state.html" openInNewTab>`useState`</LinkBase> hook from React. We’ll use this state variable to hold the URI of the selected image.
 - Update the `pickImageAsync()` function to save the image URI in the `selectedImage` state variable.
 - Then, pass the `selectedImage` as a prop to the `ImageViewer` component.
 
@@ -184,17 +190,16 @@ export default function ImageViewer({ placeholderImageSource, selectedImage }) {
 
 </SnackInline>
 
-In the above snippet, the `<Image>` component uses a conditional operator to load the source of the image. This is because the image picked from the image picker is a [`uri` string](https://reactnative.dev/docs/images#network-images) and not a local asset like the placeholder image. 
+In the above snippet, the `<Image>` component uses a conditional operator to load the source of the image. This is because the image picked from the image picker is a <LinkBase href="https://reactnative.dev/docs/images#network-images" openInNewTab>`uri` string</LinkBase> and not a local asset like the placeholder image.
 
 Let's take a look at our app now:
 
 <Video file="tutorial/image-picker-demo.mp4" />
 
-> The images used for demo in this tutorial are hand picked from [Unsplash](https://unsplash.com/photos/hpTH5b6mo2s).
+> The images used for demo in this tutorial are hand picked from <LinkBase href="https://unsplash.com/photos/hpTH5b6mo2s" openInNewTab>Unsplash</LinkBase>.
 
 ## Up next
 
 We added the functionality to pick an image from the device's media library.
 
 In the next chapter, we’ll learn how to [create an emoji picker modal component](/tutorial/create-a-modal).
-

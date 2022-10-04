@@ -5,6 +5,7 @@ title: Introduction
 import Highlight from '~/components/plugins/Highlight';
 import SnackInline from '~/components/plugins/SnackInline';
 import Video from '~/components/plugins/Video';
+import { LinkBase } from '~/ui/components/Text';
 
 We’re about to embark on a journey of building universal apps. In this tutorial, we’ll create a universal app that runs on Android, iOS, and the web; all with a single codebase. Let's get started!
 
@@ -14,7 +15,7 @@ The objective of this tutorial is to get started with Expo and become familiar w
 
 - Create an Expo App
 - Break down the app layout and implement it with flexbox
-- Use a native image picker UI to select an image from the platform's media library
+- Use the platform’s UI to select an image from the media library
 - Create a sticker modal using the Modal and FlatList components from React Native
 - Add touch gestures to interact with a sticker
 - Use third-party libraries to capture a screenshot and save it to the disk
@@ -31,7 +32,7 @@ Each chapter also contains all the necessary code so that you can follow along e
 
 ## How to use this tutorial
 
-We believe in "learning by doing" so this tutorial emphasizes doing over explaining. You can follow along the journey of building the app by cloning the starter template that we will provide.
+We believe in <LinkBase href="https://en.wikipedia.org/wiki/Learning-by-doing" openInNewTab>"learn by doing"</LinkBase> so this tutorial emphasizes doing over explaining. You can follow along the journey of building the app by creating the app from scratch.
 
 Throughout the tutorial, any important code or code that has changed between examples will be <Highlight>highlighted in yellow</Highlight>. You can hover over the highlights (on desktop) or tap them (on mobile) to see more context on the change. For example, the code highlighted in the snippet below explains what it does:
 
@@ -71,4 +72,4 @@ const styles = StyleSheet.create({
 
 ## Up next
 
-If you're already familiar with Expo, feel free to jump ahead to specific chapters. However, if you'd like to start from scratch, continue to the next step in which we will learn [how to create an app with Expo](/tutorial/initialize-app/).
+If you're already familiar with Expo, feel free to jump ahead to specific chapters. However, if you'd like to start from scratch, continue to the next chapter in which we will learn [how to create an app with Expo](/tutorial/initialize-app/).
