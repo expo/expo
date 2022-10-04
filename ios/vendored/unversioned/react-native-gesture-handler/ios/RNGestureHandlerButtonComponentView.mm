@@ -5,10 +5,10 @@
 #import <React/RCTConversions.h>
 #import <React/RCTFabricComponentsPlugins.h>
 
-#import <react/renderer/components/rngesturehandler/ComponentDescriptors.h>
-#import <react/renderer/components/rngesturehandler/EventEmitters.h>
-#import <react/renderer/components/rngesturehandler/Props.h>
-#import <react/renderer/components/rngesturehandler/RCTComponentViewHelpers.h>
+#import <react/renderer/components/rngesturehandler_codegen/ComponentDescriptors.h>
+#import <react/renderer/components/rngesturehandler_codegen/EventEmitters.h>
+#import <react/renderer/components/rngesturehandler_codegen/Props.h>
+#import <react/renderer/components/rngesturehandler_codegen/RCTComponentViewHelpers.h>
 
 #import "RNGestureHandlerButton.h"
 

@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler
 
+import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.ViewConfiguration
 import kotlin.math.abs
@@ -9,10 +10,10 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     private set
   var velocity = 0.0
     private set
-  val focalPointX: Float
-    get() = scaleGestureDetector?.focusX ?: Float.NaN
-  val focalPointY: Float
-    get() = scaleGestureDetector?.focusY ?: Float.NaN
+  var focalPointX: Float = Float.NaN
+    private set
+  var focalPointY: Float = Float.NaN
+    private set
 
   private var scaleGestureDetector: ScaleGestureDetector? = null
   private var startingSpan = 0f
@@ -47,7 +48,7 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
     }
   }
 
-  override fun onHandle(event: MotionEvent) {
+  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       val context = view!!.context
       resetProgress()
@@ -56,14 +57,19 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       spanSlop = configuration.scaledTouchSlop.toFloat()
       begin()
     }
-    scaleGestureDetector?.onTouchEvent(event)
-    var activePointers = event.pointerCount
-    if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) {
+    scaleGestureDetector?.onTouchEvent(sourceEvent)
+    scaleGestureDetector?.let {
+      val point = transformPoint(PointF(it.focusX, it.focusY))
+      this.focalPointX = point.x
+      this.focalPointY = point.y
+    }
+    var activePointers = sourceEvent.pointerCount
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_POINTER_UP) {
       activePointers -= 1
     }
     if (state == STATE_ACTIVE && activePointers < 2) {
       end()
-    } else if (event.actionMasked == MotionEvent.ACTION_UP) {
+    } else if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
       fail()
     }
   }
@@ -78,6 +84,8 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
 
   override fun onReset() {
     scaleGestureDetector = null
+    focalPointX = Float.NaN
+    focalPointY = Float.NaN
     resetProgress()
   }
 

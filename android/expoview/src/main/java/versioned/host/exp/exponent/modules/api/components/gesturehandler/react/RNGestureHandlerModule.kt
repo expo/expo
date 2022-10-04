@@ -347,7 +347,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
   val registry: RNGestureHandlerRegistry = RNGestureHandlerRegistry()
   private val interactionManager = RNGestureHandlerInteractionManager()
   private val roots: MutableList<RNGestureHandlerRootHelper> = ArrayList()
-  private val enqueuedRootViewInit: MutableList<Int> = ArrayList()
+  private val reanimatedEventDispatcher = ReanimatedEventDispatcher()
   override fun getName() = MODULE_NAME
 
   @ReactMethod
@@ -594,7 +594,7 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?)
     // Delivers the event to Reanimated.
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       // Send event directly to Reanimated
-      // ReanimatedEventDispatcher.sendEvent(event, reactApplicationContext) // COMMENTED OUT BY VENDORING SCRIPT
+      reanimatedEventDispatcher.sendEvent(event, reactApplicationContext)
     } else {
       // In the old architecture, Reanimated subscribes for specific direct events.
       sendEventForDirectEvent(event)

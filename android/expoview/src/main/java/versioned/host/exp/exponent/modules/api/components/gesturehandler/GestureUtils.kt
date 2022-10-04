@@ -4,14 +4,13 @@ import android.view.MotionEvent
 
 object GestureUtils {
   fun getLastPointerX(event: MotionEvent, averageTouches: Boolean): Float {
-    val offset = event.rawX - event.x
     val excludeIndex = if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) event.actionIndex else -1
     return if (averageTouches) {
       var sum = 0f
       var count = 0
       for (i in 0 until event.pointerCount) {
         if (i != excludeIndex) {
-          sum += event.getX(i) + offset
+          sum += event.getX(i)
           count++
         }
       }
@@ -21,19 +20,18 @@ object GestureUtils {
       if (lastPointerIdx == excludeIndex) {
         lastPointerIdx--
       }
-      event.getX(lastPointerIdx) + offset
+      event.getX(lastPointerIdx)
     }
   }
 
   fun getLastPointerY(event: MotionEvent, averageTouches: Boolean): Float {
-    val offset = event.rawY - event.y
     val excludeIndex = if (event.actionMasked == MotionEvent.ACTION_POINTER_UP) event.actionIndex else -1
     return if (averageTouches) {
       var sum = 0f
       var count = 0
       for (i in 0 until event.pointerCount) {
         if (i != excludeIndex) {
-          sum += event.getY(i) + offset
+          sum += event.getY(i)
           count++
         }
       }
@@ -43,7 +41,7 @@ object GestureUtils {
       if (lastPointerIdx == excludeIndex) {
         lastPointerIdx -= 1
       }
-      event.getY(lastPointerIdx) + offset
+      event.getY(lastPointerIdx)
     }
   }
 }

@@ -37,13 +37,13 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
     return this
   }
 
-  override fun onHandle(event: MotionEvent) {
+  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       previousTime = SystemClock.uptimeMillis()
       startTime = previousTime
       begin()
-      startX = event.rawX
-      startY = event.rawY
+      startX = sourceEvent.rawX
+      startY = sourceEvent.rawY
       handler = Handler(Looper.getMainLooper())
       if (minDurationMs > 0) {
         handler!!.postDelayed({ activate() }, minDurationMs)
@@ -51,7 +51,7 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
         activate()
       }
     }
-    if (event.actionMasked == MotionEvent.ACTION_UP) {
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
       handler?.let {
         it.removeCallbacksAndMessages(null)
         handler = null
@@ -63,8 +63,8 @@ class LongPressGestureHandler(context: Context) : GestureHandler<LongPressGestur
       }
     } else {
       // calculate distance from start
-      val deltaX = event.rawX - startX
-      val deltaY = event.rawY - startY
+      val deltaX = sourceEvent.rawX - startX
+      val deltaY = sourceEvent.rawY - startY
       val distSq = deltaX * deltaX + deltaY * deltaY
       if (distSq > maxDistSq) {
         if (state == STATE_ACTIVE) {

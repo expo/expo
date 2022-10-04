@@ -104,28 +104,28 @@ class TapGestureHandler : GestureHandler<TapGestureHandler>() {
     return maxDistSq != MAX_VALUE_IGNORE && dist > maxDistSq
   }
 
-  override fun onHandle(event: MotionEvent) {
+  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     val state = state
-    val action = event.actionMasked
+    val action = sourceEvent.actionMasked
     if (state == STATE_UNDETERMINED) {
       offsetX = 0f
       offsetY = 0f
-      startX = event.rawX
-      startY = event.rawY
+      startX = getLastPointerX(sourceEvent, true)
+      startY = getLastPointerY(sourceEvent, true)
     }
     if (action == MotionEvent.ACTION_POINTER_UP || action == MotionEvent.ACTION_POINTER_DOWN) {
       offsetX += lastX - startX
       offsetY += lastY - startY
-      lastX = getLastPointerX(event, true)
-      lastY = getLastPointerY(event, true)
+      lastX = getLastPointerX(sourceEvent, true)
+      lastY = getLastPointerY(sourceEvent, true)
       startX = lastX
       startY = lastY
     } else {
-      lastX = getLastPointerX(event, true)
-      lastY = getLastPointerY(event, true)
+      lastX = getLastPointerX(sourceEvent, true)
+      lastY = getLastPointerY(sourceEvent, true)
     }
-    if (currentMaxNumberOfPointers < event.pointerCount) {
-      currentMaxNumberOfPointers = event.pointerCount
+    if (currentMaxNumberOfPointers < sourceEvent.pointerCount) {
+      currentMaxNumberOfPointers = sourceEvent.pointerCount
     }
     if (shouldFail()) {
       fail()

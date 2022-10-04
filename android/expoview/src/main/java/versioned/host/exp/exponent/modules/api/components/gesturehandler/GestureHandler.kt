@@ -4,6 +4,7 @@ import host.exp.expoview.BuildConfig
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
+import android.graphics.PointF
 import android.graphics.Rect
 import android.view.MotionEvent
 import android.view.MotionEvent.PointerCoords
@@ -326,7 +327,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     while handling event: $event
   """.trimIndent(), e) {}
 
-  fun handle(origEvent: MotionEvent) {
+  fun handle(transformedEvent: MotionEvent, sourceEvent: MotionEvent) {
     if (!isEnabled
       || state == STATE_CANCELLED
       || state == STATE_FAILED
@@ -336,20 +337,20 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     }
 
     // a workaround for https://github.com/software-mansion/react-native-gesture-handler/issues/1188
-    val event = if (BuildConfig.DEBUG) {
-      adaptEvent(origEvent)
+    val (adaptedTransformedEvent, adaptedSourceEvent) = if (BuildConfig.DEBUG) {
+      arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
     } else {
       try {
-        adaptEvent(origEvent)
+        arrayOf(adaptEvent(transformedEvent), adaptEvent(sourceEvent))
       } catch (e: AdaptEventException) {
         fail()
         return
       }
     }
 
-    x = event.x
-    y = event.y
-    numberOfPointers = event.pointerCount
+    x = adaptedTransformedEvent.x
+    y = adaptedTransformedEvent.y
+    numberOfPointers = adaptedTransformedEvent.pointerCount
     isWithinBounds = isWithinBounds(view, x, y)
     if (shouldCancelWhenOutside && !isWithinBounds) {
       if (state == STATE_ACTIVE) {
@@ -359,13 +360,16 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       }
       return
     }
-    lastAbsolutePositionX = GestureUtils.getLastPointerX(event, true)
-    lastAbsolutePositionY = GestureUtils.getLastPointerY(event, true)
-    lastEventOffsetX = event.rawX - event.x
-    lastEventOffsetY = event.rawY - event.y
-    onHandle(event)
-    if (event != origEvent) {
-      event.recycle()
+    lastAbsolutePositionX = GestureUtils.getLastPointerX(adaptedTransformedEvent, true)
+    lastAbsolutePositionY = GestureUtils.getLastPointerY(adaptedTransformedEvent, true)
+    lastEventOffsetX = adaptedTransformedEvent.rawX - adaptedTransformedEvent.x
+    lastEventOffsetY = adaptedTransformedEvent.rawY - adaptedTransformedEvent.y
+    onHandle(adaptedTransformedEvent, adaptedSourceEvent)
+    if (adaptedTransformedEvent != transformedEvent) {
+      adaptedTransformedEvent.recycle()
+    }
+    if (adaptedSourceEvent != sourceEvent) {
+      adaptedSourceEvent.recycle()
     }
   }
 
@@ -586,11 +590,11 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
     var top = 0f
     var right = view!!.width.toFloat()
     var bottom = view.height.toFloat()
-    if (hitSlop != null) {
-      val padLeft = hitSlop!![HIT_SLOP_LEFT_IDX]
-      val padTop = hitSlop!![HIT_SLOP_TOP_IDX]
-      val padRight = hitSlop!![HIT_SLOP_RIGHT_IDX]
-      val padBottom = hitSlop!![HIT_SLOP_BOTTOM_IDX]
+    hitSlop?.let { hitSlop ->
+      val padLeft = hitSlop[HIT_SLOP_LEFT_IDX]
+      val padTop = hitSlop[HIT_SLOP_TOP_IDX]
+      val padRight = hitSlop[HIT_SLOP_RIGHT_IDX]
+      val padBottom = hitSlop[HIT_SLOP_BOTTOM_IDX]
       if (hitSlopSet(padLeft)) {
         left -= padLeft
       }
@@ -603,8 +607,8 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
       if (hitSlopSet(padBottom)) {
         bottom += padBottom
       }
-      val width = hitSlop!![HIT_SLOP_WIDTH_IDX]
-      val height = hitSlop!![HIT_SLOP_HEIGHT_IDX]
+      val width = hitSlop[HIT_SLOP_WIDTH_IDX]
+      val height = hitSlop[HIT_SLOP_HEIGHT_IDX]
       if (hitSlopSet(width)) {
         if (!hitSlopSet(padLeft)) {
           left = right - width
@@ -660,13 +664,29 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   // if the handler is waiting for failure of other one)
   open fun resetProgress() {}
 
-  protected open fun onHandle(event: MotionEvent) {
+  protected open fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     moveToState(STATE_FAILED)
   }
 
   protected open fun onStateChange(newState: Int, previousState: Int) {}
   protected open fun onReset() {}
   protected open fun onCancel() {}
+
+  /**
+   * Transforms a point in the coordinate space of the wrapperView (GestureHandlerRootView) to
+   * coordinate space of the view the gesture is attached to.
+   *
+   * If the gesture handler is not currently attached to a view, it will return (NaN, NaN).
+   *
+   * This method modifies and transforms the received point.
+   */
+  protected fun transformPoint(point: PointF): PointF {
+    return orchestrator?.transformPointToViewCoords(this.view, point) ?: run {
+      point.x = Float.NaN
+      point.y = Float.NaN
+      point
+    }
+  }
   fun reset() {
     view = null
     orchestrator = null
@@ -690,14 +710,14 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   }
 
   val lastRelativePositionX: Float
-    get() = lastAbsolutePositionX - lastEventOffsetX
+    get() = lastAbsolutePositionX
   val lastRelativePositionY: Float
-    get() = lastAbsolutePositionY - lastEventOffsetY
+    get() = lastAbsolutePositionY
 
   val lastPositionInWindowX: Float
-    get() = lastAbsolutePositionX - windowOffset[0]
+    get() = lastAbsolutePositionX + lastEventOffsetX - windowOffset[0]
   val lastPositionInWindowY: Float
-    get() = lastAbsolutePositionY - windowOffset[1]
+    get() = lastAbsolutePositionY + lastEventOffsetY - windowOffset[1]
 
   companion object {
     const val STATE_UNDETERMINED = 0

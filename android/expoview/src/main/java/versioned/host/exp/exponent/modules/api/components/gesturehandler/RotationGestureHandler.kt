@@ -1,5 +1,6 @@
 package versioned.host.exp.exponent.modules.api.components.gesturehandler
 
+import android.graphics.PointF
 import android.view.MotionEvent
 import versioned.host.exp.exponent.modules.api.components.gesturehandler.RotationGestureDetector.OnRotationGestureListener
 import kotlin.math.abs
@@ -10,11 +11,10 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     private set
   var velocity = 0.0
     private set
-
-  val anchorX: Float
-    get() = rotationGestureDetector?.anchorX ?: Float.NaN
-  val anchorY: Float
-    get() = rotationGestureDetector?.anchorY ?: Float.NaN
+  var anchorX: Float = Float.NaN
+    private set
+  var anchorY: Float = Float.NaN
+    private set
 
   init {
     setShouldCancelWhenOutside(false)
@@ -41,14 +41,19 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     }
   }
 
-  override fun onHandle(event: MotionEvent) {
+  override fun onHandle(event: MotionEvent, sourceEvent: MotionEvent) {
     if (state == STATE_UNDETERMINED) {
       resetProgress()
       rotationGestureDetector = RotationGestureDetector(gestureListener)
       begin()
     }
-    rotationGestureDetector?.onTouchEvent(event)
-    if (event.actionMasked == MotionEvent.ACTION_UP) {
+    rotationGestureDetector?.onTouchEvent(sourceEvent)
+    rotationGestureDetector?.let {
+      val point = transformPoint(PointF(it.anchorX, it.anchorY))
+      anchorX = point.x
+      anchorY = point.y
+    }
+    if (sourceEvent.actionMasked == MotionEvent.ACTION_UP) {
       if (state == STATE_ACTIVE) {
         end()
       } else {
@@ -67,6 +72,8 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
 
   override fun onReset() {
     rotationGestureDetector = null
+    anchorX = Float.NaN
+    anchorY = Float.NaN
     resetProgress()
   }
 

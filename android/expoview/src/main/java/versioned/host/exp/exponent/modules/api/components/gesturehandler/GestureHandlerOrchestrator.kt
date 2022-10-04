@@ -242,7 +242,7 @@ class GestureHandlerOrchestrator(
     }
   }
 
-  private fun deliverEventToGestureHandler(handler: GestureHandler<*>, event: MotionEvent) {
+  private fun deliverEventToGestureHandler(handler: GestureHandler<*>, sourceEvent: MotionEvent) {
     if (!isViewAttachedUnderWrapper(handler.view)) {
       handler.cancel()
       return
@@ -250,18 +250,9 @@ class GestureHandlerOrchestrator(
     if (!handler.wantEvents()) {
       return
     }
-    val action = event.actionMasked
-    val coords = tempCoords
-    extractCoordsForView(handler.view, event, coords)
-    val oldX = event.x
-    val oldY = event.y
-    // TODO: we may consider scaling events if necessary using MotionEvent.transform
-    // for now the events are only offset to the top left corner of the view but if
-    // view or any ot the parents is scaled the other pointers position will not reflect
-    // their actual place in the view. On the other hand not scaling seems like a better
-    // approach when we want to use pointer coordinates to calculate velocity or distance
-    // for pinch so I don't know yet if we should transform or not...
-    event.setLocation(coords[0], coords[1])
+
+    val action = sourceEvent.actionMasked
+    val event = transformEventToViewCoords(handler.view, MotionEvent.obtain(sourceEvent))
     
     // Touch events are sent before the handler itself has a chance to process them,
     // mainly because `onTouchesUp` shoul be send befor gesture finishes. This means that
@@ -277,7 +268,7 @@ class GestureHandlerOrchestrator(
 
     if (!handler.isAwaiting || action != MotionEvent.ACTION_MOVE) {
       val isFirstEvent = handler.state == 0
-      handler.handle(event)
+      handler.handle(event, sourceEvent)
       if (handler.isActive) {
         // After handler is done waiting for other one to fail its progress should be
         // reset, otherwise there may be a visible jump in values sent by the handler.
@@ -305,7 +296,7 @@ class GestureHandlerOrchestrator(
       }
     }
 
-    event.setLocation(oldX, oldY)
+    event.recycle()
   }
 
   /**
@@ -329,19 +320,75 @@ class GestureHandlerOrchestrator(
     return parent === wrapperView
   }
 
-  private fun extractCoordsForView(view: View?, event: MotionEvent, outputCoords: FloatArray) {
-    if (view === wrapperView) {
-      outputCoords[0] = event.x
-      outputCoords[1] = event.y
-      return
+  /**
+   * Transforms an event in the coordinates of wrapperView into the coordinate space of the received view.
+   *
+   * This modifies and returns the same event as it receives
+   *
+   * @param view - view to which coordinate space the event should be transformed
+   * @param event - event to transform
+   */
+  fun transformEventToViewCoords(view: View?, event: MotionEvent): MotionEvent {
+    if (view == null) {
+      return event
     }
-    require(!(view == null || view.parent !is ViewGroup)) { "Parent is null? View is no longer in the tree" }
-    val parent = view.parent as ViewGroup
-    extractCoordsForView(parent, event, outputCoords)
-    val childPoint = tempPoint
-    transformTouchPointToViewCoords(outputCoords[0], outputCoords[1], parent, view, childPoint)
-    outputCoords[0] = childPoint.x
-    outputCoords[1] = childPoint.y
+
+    val parent = view.parent as? ViewGroup
+    // Events are passed down to the orchestrator by the wrapperView, so they are already in the
+    // relevant coordinate space. We want to stop traversing the tree when we reach it.
+    if (parent != wrapperView) {
+      transformEventToViewCoords(parent, event)
+    }
+
+    if (parent != null) {
+      val localX = event.x + parent.scrollX - view.left
+      val localY = event.y + parent.scrollY - view.top
+      event.setLocation(localX, localY)
+    }
+
+    if (!view.matrix.isIdentity) {
+      view.matrix.invert(inverseMatrix)
+      event.transform(inverseMatrix)
+    }
+
+    return event
+  }
+
+  /**
+   * Transforms a point in the coordinates of wrapperView into the coordinate space of the received view.
+   *
+   * This modifies and returns the same point as it receives
+   *
+   * @param view - view to which coordinate space the point should be transformed
+   * @param point - point to transform
+   */
+  fun transformPointToViewCoords(view: View?, point: PointF): PointF {
+    if (view == null) {
+      return point
+    }
+
+    val parent = view.parent as? ViewGroup
+    // Events are passed down to the orchestrator by the wrapperView, so they are already in the
+    // relevant coordinate space. We want to stop traversing the tree when we reach it.
+    if (parent != wrapperView) {
+      transformPointToViewCoords(parent, point)
+    }
+
+    if (parent != null) {
+      point.x += parent.scrollX - view.left
+      point.y += parent.scrollY - view.top
+    }
+
+    if (!view.matrix.isIdentity) {
+      view.matrix.invert(inverseMatrix)
+      tempCoords[0] = point.x
+      tempCoords[1] = point.y
+      inverseMatrix.mapPoints(tempCoords)
+      point.x = tempCoords[0]
+      point.y = tempCoords[1]
+    }
+
+    return point
   }
 
   private fun addAwaitingHandler(handler: GestureHandler<*>) {
@@ -451,7 +498,7 @@ class GestureHandlerOrchestrator(
       val child = viewConfigHelper.getChildInDrawingOrderAtIndex(viewGroup, i)
       if (canReceiveEvents(child)) {
         val childPoint = tempPoint
-        transformTouchPointToViewCoords(coords[0], coords[1], viewGroup, child, childPoint)
+        transformPointToChildViewCoords(coords[0], coords[1], viewGroup, child, childPoint)
         val restoreX = coords[0]
         val restoreY = coords[1]
         coords[0] = childPoint.x
@@ -564,7 +611,7 @@ class GestureHandlerOrchestrator(
       return isLeafOrTransparent && isTransformedTouchPointInView(coords[0], coords[1], view)
     }
 
-    private fun transformTouchPointToViewCoords(
+    private fun transformPointToChildViewCoords(
       x: Float,
       y: Float,
       parent: ViewGroup,
