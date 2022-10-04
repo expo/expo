@@ -346,7 +346,7 @@ All functions and view prop setters accept all common primitive types in Swift a
 </APIBox>
 <APIBox header="Convertibles">
 
-_Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. For example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers `(_x_, _y_)` or a JavaScript object with numeric `x` and `y` properties.
+_Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. For example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers `(x, y)` or a JavaScript object with numeric `x` and `y` properties.
 
 Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
@@ -358,8 +358,7 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 | `CGSize`    | `{ width: number, height: number }` or `number[]` with _width_ and _height_                                        |
 | `CGVector`  | `{ dx: number, dy: number }` or `number[]` with _dx_ and _dy_ vector differentials                                 |
 | `CGRect`    | `{ x: number, y: number, width: number, height: number }` or `number[]` with _x_, _y_, _width_ and _height_ values |
-| `CGColor`   | Color hex strings in formats: `#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`                                              |
-| `UIColor`   | Color hex strings in formats: `#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`                                              |
+| `CGColor`<br/>`UIColor`   | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
 
 </APIBox>
 <APIBox header="Records">
