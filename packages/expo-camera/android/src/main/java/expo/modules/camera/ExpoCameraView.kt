@@ -43,6 +43,7 @@ import kotlin.math.roundToInt
 import kotlin.math.max
 import kotlin.math.min
 import android.view.WindowManager
+import android.util.Log
 
 class ExpoCameraView(
   context: Context,
@@ -195,7 +196,7 @@ class ExpoCameraView(
     barCodeScanner?.setSettings(settings)
   }
 
-  private fun getDeviceOrientation(context: Context) =
+  private fun getDeviceOrientation() =
           (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
 
 
@@ -207,14 +208,23 @@ class ExpoCameraView(
       cornerPoints.mapX { barCode.referenceImageWidth - cornerPoints[it] }
     }
 
+    val scaleX = barCode.referenceImageWidth.toDouble() / width
+    val scaleY = barCode.referenceImageHeight.toDouble() / height
+
+    // Log.e("Camera", "real: width - "+width+" height - "+height)
+    // Log.e("Camera", "camera: width - "+barCode.referenceImageWidth+" height - "+barCode.referenceImageHeight)
+    // Log.e("Camera", "scaleX: "+scaleX)
+    // Log.e("Camera", "x: "+cornerPoints[1]+" -> "+(cornerPoints[1]*scaleX).roundToInt())
+
     cornerPoints.mapX {
-      (cornerPoints[it] * width / barCode.referenceImageWidth.toFloat())
+      (cornerPoints[it] * scaleX)
         .roundToInt()
     }
     cornerPoints.mapY {
-      (cornerPoints[it] * height / barCode.referenceImageHeight.toFloat())
+      (cornerPoints[it] * scaleY)
         .roundToInt()
     }
+
     barCode.cornerPoints = cornerPoints
   }
 
@@ -234,18 +244,13 @@ class ExpoCameraView(
 
   override fun onBarCodeScanned(barCode: BarCodeScannerResult) {
     if (mShouldScanBarCodes) {
-      transformBarCodeScannerResultToViewCoordinates(barCode)
+      // transformBarCodeScannerResultToViewCoordinates(barCode)
       onBarCodeScanned(
         BarCodeScannedEvent(
           target = id,
           data = barCode.value,
           type = barCode.type,
-          cornerPoints = getCornerPoints(barCode.getCornerPoints()),
-          w = barCode.referenceImageWidth,
-          h = barCode.referenceImageHeight,
-          width = width,
-          height = height,
-                density = cameraView.resources.displayMetrics.density
+          cornerPoints = getCornerPoints(barCode.getCornerPoints())
         )
       )
     }
