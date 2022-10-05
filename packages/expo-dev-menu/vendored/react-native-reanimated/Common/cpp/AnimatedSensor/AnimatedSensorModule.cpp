@@ -35,10 +35,10 @@ jsi::Value AnimatedSensorModule::registerSensor(
     setter = [&, mutableObject](double newValues[]) {
       jsi::Runtime &runtime = *runtimeManager_->runtime.get();
       jsi::Object value(runtime);
-      value.setProperty(runtime, "qw", newValues[0]);
-      value.setProperty(runtime, "qx", newValues[1]);
-      value.setProperty(runtime, "qy", newValues[2]);
-      value.setProperty(runtime, "qz", newValues[3]);
+      value.setProperty(runtime, "qx", newValues[0]);
+      value.setProperty(runtime, "qy", newValues[1]);
+      value.setProperty(runtime, "qz", newValues[2]);
+      value.setProperty(runtime, "qw", newValues[3]);
       value.setProperty(runtime, "yaw", newValues[4]);
       value.setProperty(runtime, "pitch", newValues[5]);
       value.setProperty(runtime, "roll", newValues[6]);

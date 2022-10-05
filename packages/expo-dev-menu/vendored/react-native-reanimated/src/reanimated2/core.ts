@@ -41,14 +41,18 @@ const testWorklet: BasicWorkletFunction<void> = () => {
   'worklet';
 };
 
+const throwUninitializedReanimatedException = () => {
+  throw new Error(
+    "Failed to initialize react-native-reanimated library, make sure you followed installation steps here: https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation/ \n1) Make sure reanimated's babel plugin is installed in your babel.config.js (you should have 'react-native-reanimated/plugin' listed there - also see the above link for details) \n2) Make sure you reset build cache after updating the config, run: yarn start --reset-cache"
+  );
+};
+
 export const checkPluginState: (throwError: boolean) => boolean = (
   throwError = true
 ) => {
   if (!testWorklet.__workletHash && !shouldBeUseWeb()) {
     if (throwError) {
-      throw new Error(
-        "Reanimated 2 failed to create a worklet, maybe you forgot to add Reanimated's babel plugin?"
-      );
+      throwUninitializedReanimatedException();
     }
     return false;
   }
@@ -62,11 +66,7 @@ export const isConfigured: (throwError?: boolean) => boolean = (
 };
 
 export const isConfiguredCheck: () => void = () => {
-  if (!isConfigured(true)) {
-    throw new Error(
-      'If you want to use Reanimated 2 then go through our installation steps https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation'
-    );
-  }
+  checkPluginState(true);
 };
 
 function pushFrame(frame: (timestamp: Timestamp) => void): void {

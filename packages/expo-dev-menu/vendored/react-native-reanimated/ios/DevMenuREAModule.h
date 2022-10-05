@@ -11,6 +11,7 @@
 
 @property (nonatomic, readonly) DevMenuREANodesManager *nodesManager;
 
+// Method added by devmenu
 - (void)setUpUiManager:(RCTBridge *)bridge;
 
 @end

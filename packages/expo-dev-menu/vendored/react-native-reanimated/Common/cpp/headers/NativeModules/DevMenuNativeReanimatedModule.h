@@ -89,6 +89,12 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
       const jsi::Value &interval,
       const jsi::Value &sensorDataContainer) override;
   void unregisterSensor(jsi::Runtime &rt, const jsi::Value &sensorId) override;
+  jsi::Value subscribeForKeyboardEvents(
+      jsi::Runtime &rt,
+      const jsi::Value &keyboardEventContainer) override;
+  void unsubscribeFromKeyboardEvents(
+      jsi::Runtime &rt,
+      const jsi::Value &listenerId) override;
 
  private:
   std::shared_ptr<MapperRegistry> mapperRegistry;
@@ -103,6 +109,8 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
   std::shared_ptr<LayoutAnimationsProxy> layoutAnimationsProxy;
   AnimatedSensorModule animatedSensorModule;
   ConfigurePropsFunction configurePropsPlatformFunction;
+  KeyboardEventSubscribeFunction subscribeForKeyboardEventsFunction;
+  KeyboardEventUnsubscribeFunction unsubscribeFromKeyboardEventsFunction;
 };
 
 } // namespace devmenureanimated
