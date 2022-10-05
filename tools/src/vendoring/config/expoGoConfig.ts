@@ -109,7 +109,13 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-screens.git',
       semverPrefix: '~',
       ios: {},
-      android: {},
+      android: {
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+        ],
+      },
     },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
