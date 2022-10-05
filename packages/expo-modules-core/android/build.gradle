@@ -182,7 +182,8 @@ android {
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
-        arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+        arguments "-DANDROID_STL=c++_shared",
+          "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",
           "-DBOOST_VERSION=${BOOST_VERSION}",
