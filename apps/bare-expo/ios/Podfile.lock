@@ -1357,18 +1357,18 @@ SPEC CHECKSUMS:
   react-native-view-shot: da768466e1cd371de50a3a5c722d1e95456b5b2c
   react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78
   react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
-  React-perflogger: 6009895616a455781293950bbd63d53cfc7ffbc5
-  React-RCTActionSheet: 5e90aa5712af18bfc86c2c6d97d4dbe0e5451c1d
-  React-RCTAnimation: 50c44d6501f8bfb2fe885e544501f8798b4ff3d6
-  React-RCTBlob: 3cc08e7112dd7b77faf3fa481ba22ca2bba5f20a
-  React-RCTImage: ca8335860b5f64c383ad27f52a28d85089d49b7a
-  React-RCTLinking: 297cd91bdbf427efc861fc7943e6d683e61860fa
-  React-RCTNetwork: 8a197bff6f1dc5353484507a4cdcd47e9356316f
-  React-RCTSettings: d3db1f1e61a5ad8deb50f44f5cb6c7c3ef32b3ac
-  React-RCTText: c2c05ab3dbfb1cf5855b14802f392148970e48da
-  React-RCTVibration: 89e2cbea456ac5ec623943661d00e4dc45fe74b9
-  React-runtimeexecutor: 80065f60af4f4b05603661070c8622bb3740bf16
-  ReactCommon: 1209130f460e4aa9d255ddc75fa0a827ebf93dfb
+  React-perflogger: 48c6b363e867d64b682e84f80ca45636bd65e19c
+  React-RCTActionSheet: 33c74fe5c754835e3715c300618da9aa2f7203fa
+  React-RCTAnimation: 2dbf0120d4d1ab7716079b4180f2ca89c465e46b
+  React-RCTBlob: ccf17363f809c5030746fdb56641527e6bf9adb7
+  React-RCTImage: 88a61b23cd5a6feb8d4436f1e306d9f2ecee3462
+  React-RCTLinking: c63a07ce60a6cb7642acebc80a447fb3f1872eba
+  React-RCTNetwork: f79b6e7c64e7317d34dec7dcfabd1279a6c1d2e7
+  React-RCTSettings: 1ff0f34d41646c7942adea36ab5706320e693756
+  React-RCTText: 7cb05abb91cae0ab7841d551e811ccefa3714dbd
+  React-RCTVibration: e9164827303fb6a5cf79e4c4af4846a09956b11f
+  React-runtimeexecutor: a11d0c2e14140baf1e449264ca9168ae9ae6bbd0
+  ReactCommon: 7f86326b92009925c6dcf93f8e825060171c379f
   RNCAsyncStorage: 466b9df1a14bccda91da86e0b7d9a345d78e1673
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNCPicker: 2f71e09c52ab6327e2c393213368ea0e5bfbcb65

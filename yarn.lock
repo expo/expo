@@ -17305,10 +17305,10 @@ react-native-svg@12.3.0:
     css-select "^4.2.1"
     css-tree "^1.0.0-alpha.39"
 
-react-native-view-shot@3.3.0:
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-3.3.0.tgz#7f0c6d2e09e5af770f5b74231a72625b379d60f8"
-  integrity sha512-dc3ZHCd0lvn1jtSI8bPQDta8YxzCvZ73vA8zzFH4S3TRlXLe8r5DF3wUUBlWv1p/bxbEa/A0J4kMUPeVt/v8TQ==
+react-native-view-shot@3.4.0:
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-3.4.0.tgz#787b31b2d0525a197864e12aaea214e905e97f9a"
+  integrity sha512-b0CcWJGO0xLCXRsstIYRUEg/UStrR7uujQV9jFHRIVyPfBH0gRplT7Vlgimr+PX+Xg+9/rCyIKPjqK1Knv8hxg==
 
 react-native-web@~0.18.9:
   version "0.18.9"
