@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `ModuleRegistry` be initialized twice when startup on Android. ([#19384](https://github.com/expo/expo/pull/19384) by [@kudo](https://github.com/kudo) and [@lukmccall](https://github.com/lukmccall))
+- Ensure that AppDelegate callbacks are invoked. ([#19393](https://github.com/expo/expo/pull/19393) by [@ferologics](https://github.com/ferologics))
 
 ### 💡 Others
 
