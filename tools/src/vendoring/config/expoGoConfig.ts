@@ -58,6 +58,7 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-gesture-handler.git',
       semverPrefix: '~',
       ios: {},
+      android: {},
     },
     'react-native-reanimated': {
       source: 'https://github.com/software-mansion/react-native-reanimated.git',

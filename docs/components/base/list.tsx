@@ -74,7 +74,6 @@ export const OL = ({ children }: OLProps) => (
 
 const STYLES_LIST_ITEM = css`
   margin-left: ${spacing[4]}px;
-  padding: ${spacing[1]}px 0;
 
   :before {
     font-size: 130%;
@@ -82,10 +81,6 @@ const STYLES_LIST_ITEM = css`
     margin: 0 ${spacing[2]}px 0 -${spacing[4]}px;
     position: relative;
     color: ${theme.text.default};
-  }
-
-  > div {
-    display: inline;
   }
 `;
 
