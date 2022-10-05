@@ -83,14 +83,14 @@ export type Locale = {
   regionCode: string | null;
   /**
    * Currency code for the locale.
+   * Is `null` on Web, use a table lookup based on region instead.
    * @example `'USD'`, `'EUR'`, `'PLN'`.
-   * Returns `null` on Web, use a table lookup based on region instead.
    */
   currencyCode: string | null;
   /**
    * Currency symbol for the locale.
+   * Is `null` on Web, use a table lookup based on region (if available) instead.
    * @example `'$'`, `'€'`, `'zł'`.
-   * Returns `null` on Web, use a table lookup based on region (if available) instead.
    */
   currencySymbol: string | null;
   /**
@@ -104,17 +104,22 @@ export type Locale = {
    */
   digitGroupingSeparator: string | null;
   /**
-   * Text direction for the locale. One of: `'ltr'`, `'rtl'`, but can also be `null` on older browsers without support for the [textInfo](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/textInfo) property in [Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) API.
+   * Text direction for the locale. One of: `'ltr'`, `'rtl'`, but can also be `null` on some browsers without support for the [textInfo](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/textInfo) property in [Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) API.
    */
   textDirection: 'ltr' | 'rtl' | null;
   /**
-   * The measurement system used in the locale. On iOS is one of `'metric'`, `'us'`. On Android is one of `'metric'`, `'us'`, `'uk'`.
-   * Returns `null` on Web, as user chosen measurement system is not exposed on the web and using locale to determine measurement systems is unreliable.
+   * The measurement system used in the locale.
+   * On iOS is one of `'metric'`, `'us'`. On Android is one of `'metric'`, `'us'`, `'uk'`.
+   *
+   * Is `null` on Web, as user chosen measurement system is not exposed on the web and using locale to determine measurement systems is unreliable.
    * Ask for user preferences if possible.
    */
   measurementSystem: `metric` | `us` | `uk` | null;
 };
 
+/**
+ * An enum mapping days of the week in Gregorian calendar to their index as returned by the `firstWeekday` property.
+ */
 export enum Weekday {
   SUNDAY = 1,
   MONDAY = 2,
@@ -181,12 +186,12 @@ export type Calendar = {
   calendar: CalendarIdentifier | null;
   /**
    * True when current device settings use 24 hour time format.
-   * Can be null on older browsers that don't support the `hourCycle` API.
+   * Can be null on some browsers that don't support the [hourCycle](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/hourCycle) property in [Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) API.
    */
   uses24hourClock: boolean | null;
   /**
    * The first day of the week. For most calendars Sunday is numbered `1`, with Saturday being number `7`.
-   * Can be null on older browsers that don't support the `weekInfo` API.
+   * Can be null on some browsers that don't support the [weekInfo](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/weekInfo) property in [Intl](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl) API.
    * @example `1`, `7`.
    */
   firstWeekday: Weekday | null;

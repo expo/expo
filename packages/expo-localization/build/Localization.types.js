@@ -1,3 +1,6 @@
+/**
+ * An enum mapping days of the week in Gregorian calendar to their index as returned by the `firstWeekday` property.
+ */
 export var Weekday;
 (function (Weekday) {
     Weekday[Weekday["SUNDAY"] = 1] = "SUNDAY";
