@@ -22,6 +22,10 @@
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove unnecessary CocoaPods dependency on `ReactCommon` and `React-runtimeexecutor`. ([#19067](https://github.com/expo/expo/pull/19067) by [@tsapeta](https://github.com/tsapeta))
 
+### 📚 3rd party library updates
+
+- Upgraded ExoPlayer dependencies to 2.18.1 on Android. ([#19332](https://github.com/expo/expo/pull/19332) by [@kudo](https://github.com/kudo))
+
 ## 12.0.2 — 2022-07-18
 
 ### 🐛 Bug fixes

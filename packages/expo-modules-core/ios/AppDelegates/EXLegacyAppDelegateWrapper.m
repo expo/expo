@@ -90,9 +90,13 @@ static dispatch_once_t onceToken;
       }
     }
   };
-  
-  for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
-    [subcontractor application:application performFetchWithCompletionHandler:handler];
+
+  if (subcontractorsLeft == 0) {
+    completionHandler(fetchResult);
+  } else {
+    for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
+      [subcontractor application:application performFetchWithCompletionHandler:handler];
+    }
   }
 }
 
@@ -201,9 +205,13 @@ static dispatch_once_t onceToken;
       }
     }
   };
-  
-  for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
-    [subcontractor application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:handler];
+
+  if (subcontractorsLeft == 0) {
+    completionHandler(fetchResult);
+  } else {
+    for (id<UIApplicationDelegate> subcontractor in subcontractorsArray) {
+      [subcontractor application:application didReceiveRemoteNotification:userInfo fetchCompletionHandler:handler];
+    }
   }
 }
 
