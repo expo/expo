@@ -11,13 +11,32 @@
 #import <React/RCTUtils.h>
 
 @implementation AIRGoogleMapCircle
+{
+  BOOL _didMoveToWindow;
+}
 
 - (instancetype)init
 {
   if (self = [super init]) {
+    _didMoveToWindow = false;
     _circle = [[GMSCircle alloc] init];
   }
   return self;
+}
+
+- (void)didMoveToWindow {
+  [super didMoveToWindow];
+  if(_didMoveToWindow) return;
+  _didMoveToWindow = true;
+  if(_fillColor) {
+    _circle.fillColor = _fillColor;
+  }
+  if(_strokeColor) {
+    _circle.strokeColor = _strokeColor;
+  }
+  if(_strokeWidth) {
+    _circle.strokeWidth = _strokeWidth;
+  }
 }
 
 - (void)setRadius:(double)radius
@@ -35,19 +54,25 @@
 -(void)setStrokeColor:(UIColor *)strokeColor
 {
   _strokeColor = strokeColor;
-  _circle.strokeColor = strokeColor;
+  if(_didMoveToWindow) {
+    _circle.strokeColor = strokeColor;
+  }
 }
 
 -(void)setStrokeWidth:(double)strokeWidth
 {
   _strokeWidth = strokeWidth;
-  _circle.strokeWidth = strokeWidth;
+  if(_didMoveToWindow) {
+    _circle.strokeWidth = strokeWidth;
+  }
 }
 
 -(void)setFillColor:(UIColor *)fillColor
 {
   _fillColor = fillColor;
-  _circle.fillColor = fillColor;
+  if(_didMoveToWindow) {
+    _circle.fillColor = fillColor;
+  }
 }
 
 -(void)setZIndex:(int)zIndex
