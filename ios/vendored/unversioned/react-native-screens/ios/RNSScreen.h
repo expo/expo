@@ -103,6 +103,7 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 
 - (void)notifyTransitionProgress:(double)progress closing:(BOOL)closing goingForward:(BOOL)goingForward;
+- (BOOL)isModal;
 
 @end
 
