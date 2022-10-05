@@ -37,7 +37,7 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
 ### Set up documentation
 
-If you plan to contribute to the documentation, run  `npm run setup:docs`. 
+If you plan to contribute to the documentation, run `npm run setup:docs`.
 
 ### Set up Android
 
@@ -62,7 +62,7 @@ If you will be working with the iOS project, ensure **ruby 2.7** is installed on
    - Web: `yarn web`
    - iOS: `yarn ios`
    - Android: `yarn android`
-   - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="Konsole"`)
+   - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="konsole"`)
 
 3. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 
