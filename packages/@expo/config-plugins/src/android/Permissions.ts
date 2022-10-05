@@ -24,15 +24,15 @@ export const withPermissions: ConfigPlugin<string[] | void> = (config, permissio
 
 /** Given a permission or list of permissions, block permissions in the final `AndroidManifest.xml` to ensure no installed library or plugin can add them. */
 export const withBlockedPermissions: ConfigPlugin<string[] | string> = (config, permissions) => {
-  const resolvedPermissions = (Array.isArray(permissions) ? permissions : [permissions]).filter(
-    Boolean
+  const resolvedPermissions = prefixAndroidPermissionsIfNecessary(
+    (Array.isArray(permissions) ? permissions : [permissions]).filter(Boolean)
   );
 
   if (config?.android?.permissions && Array.isArray(config.android.permissions)) {
     // Remove any static config permissions
-    config.android.permissions = config.android.permissions.filter(
-      (permission) => !resolvedPermissions.includes(permission)
-    );
+    config.android.permissions = prefixAndroidPermissionsIfNecessary(
+      config.android.permissions
+    ).filter((permission) => !resolvedPermissions.includes(permission));
   }
 
   return withAndroidManifest(config, async (config) => {
@@ -57,7 +57,7 @@ export function addBlockedPermissions(androidManifest: AndroidManifest, permissi
     androidManifest.manifest['uses-permission'] = [];
   }
 
-  for (const permission of permissions) {
+  for (const permission of prefixAndroidPermissionsIfNecessary(permissions)) {
     androidManifest.manifest['uses-permission'] = ensureBlockedPermission(
       androidManifest.manifest['uses-permission'],
       permission
