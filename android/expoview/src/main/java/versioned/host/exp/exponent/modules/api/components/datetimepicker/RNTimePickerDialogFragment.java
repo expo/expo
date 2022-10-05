@@ -8,8 +8,6 @@
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
-import host.exp.expoview.R;
-
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -17,10 +15,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.DialogInterface.OnClickListener;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
@@ -37,6 +35,7 @@ public class RNTimePickerDialogFragment extends DialogFragment {
   @Nullable
   private static OnClickListener mOnNeutralButtonActionListener;
 
+  @NonNull
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     final Bundle args = getArguments();
@@ -118,7 +117,7 @@ public class RNTimePickerDialogFragment extends DialogFragment {
   }
 
   @Override
-  public void onDismiss(DialogInterface dialog) {
+  public void onDismiss(@NonNull DialogInterface dialog) {
     super.onDismiss(dialog);
     if (mOnDismissListener != null) {
       mOnDismissListener.onDismiss(dialog);

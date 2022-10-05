@@ -7,8 +7,6 @@
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
-import host.exp.expoview.R;
-
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
