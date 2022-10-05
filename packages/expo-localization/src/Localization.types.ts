@@ -78,7 +78,7 @@ export type Locale = {
    */
   languageCode: string;
   /**
-   * The region code for your device that comes from the Region setting under Language & Region on iOS, Region settings on android and is parsed from locale on web (can be null on web).
+   * The region code for your device that comes from the Region setting under Language & Region on iOS, Region settings on Android and is parsed from locale on Web (can be `null` on Web).
    */
   regionCode: string | null;
   /**
