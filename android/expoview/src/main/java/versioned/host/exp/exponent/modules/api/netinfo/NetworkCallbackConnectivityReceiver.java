@@ -125,6 +125,10 @@ public class NetworkCallbackConnectivityReceiver extends ConnectivityReceiver {
                             NetworkCapabilities.NET_CAPABILITY_VALIDATED)
                             && !isInternetSuspended;
 
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                isInternetReachable = isInternetReachable && capabilities.getLinkDownstreamBandwidthKbps() != 0;
+            }
+
             // Get the cellular network type
             if (network != null && connectionType == ConnectionType.CELLULAR && isInternetReachable) {
                 cellularGeneration = CellularGeneration.fromNetworkInfo(networkInfo);

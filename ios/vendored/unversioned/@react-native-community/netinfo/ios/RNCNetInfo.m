@@ -11,7 +11,7 @@
 #include <ifaddrs.h>
 #include <arpa/inet.h>
 
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_MACCATALYST
 #import <CoreTelephony/CTCarrier.h>
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
@@ -130,7 +130,7 @@ RCT_EXPORT_METHOD(configure:(NSDictionary *)config)
   } else if ([requestedInterface isEqualToString: RNCConnectionTypeWifi] || [requestedInterface isEqualToString: RNCConnectionTypeEthernet]) {
     details[@"ipAddress"] = [self ipAddress] ?: NSNull.null;
     details[@"subnet"] = [self subnet] ?: NSNull.null;
-    #if !TARGET_OS_TV && !TARGET_OS_OSX   
+    #if !TARGET_OS_TV && !TARGET_OS_OSX && !TARGET_OS_MACCATALYST
       /*
         Without one of the conditions needed to use CNCopyCurrentNetworkInfo, it will leak memory.
         Clients should only set the shouldFetchWiFiSSID to true after ensuring requirements are met to get (B)SSID.
@@ -146,7 +146,7 @@ RCT_EXPORT_METHOD(configure:(NSDictionary *)config)
 
 - (NSString *)carrier
 {
-#if (TARGET_OS_TV || TARGET_OS_OSX)
+#if (TARGET_OS_TV || TARGET_OS_OSX || TARGET_OS_MACCATALYST)
   return nil;
 #else
   CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
@@ -227,7 +227,7 @@ RCT_EXPORT_METHOD(configure:(NSDictionary *)config)
   return subnet;
 }
 
-#if !TARGET_OS_TV && !TARGET_OS_OSX
+#if !TARGET_OS_TV && !TARGET_OS_OSX && !TARGET_OS_MACCATALYST
 - (NSString *)ssid
 {
   NSArray *interfaceNames = CFBridgingRelease(CNCopySupportedInterfaces());
