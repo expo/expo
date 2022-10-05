@@ -74,7 +74,7 @@ To provide your build jobs with access to values that are too sensitive to inclu
 
 A secret is made up of a name and a value. The name can only contain alphanumeric characters and underscores. The value is limited to 32 KiB.
 
-The value can be either a file or a string value. For a file, its constents are saved to a temporary file on EAS Build servers. The file path is available via the environment variable. For example, if you created a file secret named `SECRET_FILE`, EAS Build will create a file at `/Users/expo/workingdir/environment-secrets/__UNIQUE_RANDOM_UUID__`, and `SECRET_FILE` will be set to that path.
+The value can be either a file or a string value. For a file, its contents are saved to a temporary file on EAS Build servers. The file path is available via the environment variable. For example, if you created a file secret named `SECRET_FILE`, EAS Build will create a file at `/Users/expo/workingdir/environment-secrets/__UNIQUE_RANDOM_UUID__`, and `SECRET_FILE` will be set to that path.
 
 The secret values are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
 
@@ -106,21 +106,23 @@ To create a new secret, run `eas secret:create`
 
 To view any existing secrets for this project, run `eas secret:list`:
 
-```
-> eas secret:list
-Secrets for this account and project:
-┌────────────────┬────────┬─────────┬──────────────────────────────────────┬─────────────────┐
-│ Name           │ Type   │ Scope   │ ID                                   │ Updated at      │
-├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤
-│ APP_UPLOAD_KEY │ string │ account │ 366bd434-b538-4192-887c-036c0eddedec │ Oct 05 11:51:46 │
-├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤
-│ NPM_TOKEN      │ string │ project │ 03f4881f-88fd-4d94-9e35-a5c34d39c2f2 │ Oct 05 11:51:33 │
-├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤
-│ SECRET_FILE    │ file   │ project │ 72c7ac1e-78d0-4fa2-b105-229260cecc88 │ Oct 05 11:52:12 │
-├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤
-│ sentryApiKey   │ string │ project │ 88dd0296-9119-4d50-a91b-1f646733f569 │ Oct 05 11:51:40 │
-└────────────────┴────────┴─────────┴──────────────────────────────────────┴─────────────────┘
-```
+<Terminal
+  cmd={[
+    '$ eas secret:list',
+    'Secrets for this account and project:',
+    '┌────────────────┬────────┬─────────┬──────────────────────────────────────┬─────────────────┐',
+    '│ Name           │ Type   │ Scope   │ ID                                   │ Updated at      │',
+    '├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤',
+    '│ APP_UPLOAD_KEY │ string │ account │ 366bd434-b538-4192-887c-036c0eddedec │ Oct 05 11:51:46 │',
+    '├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤',
+    '│ NPM_TOKEN      │ string │ project │ 03f4881f-88fd-4d94-9e35-a5c34d39c2f2 │ Oct 05 11:51:33 │',
+    '├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤',
+    '│ SECRET_FILE    │ file   │ project │ 72c7ac1e-78d0-4fa2-b105-229260cecc88 │ Oct 05 11:52:12 │',
+    '├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤',
+    '│ sentryApiKey   │ string │ project │ 88dd0296-9119-4d50-a91b-1f646733f569 │ Oct 05 11:51:40 │',
+    '└────────────────┴────────┴─────────┴──────────────────────────────────────┴─────────────────┘',
+  ]}
+/>
 
 ### Accessing secrets in EAS Build
 
