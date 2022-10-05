@@ -6,11 +6,11 @@
  */
 
 #import "RNCConnectionState.h"
-#if !TARGET_OS_TV
+#if !TARGET_OS_TV && !TARGET_OS_MACCATALYST
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 
-#if TARGET_OS_TV || TARGET_OS_OSX
+#if TARGET_OS_TV || TARGET_OS_OSX || TARGET_OS_MACCATALYST
 #include <ifaddrs.h>
 #endif
 
@@ -36,16 +36,16 @@
         _type = RNCConnectionTypeUnknown;
         _cellularGeneration = nil;
         _expensive = false;
-        
+
         if ((flags & kSCNetworkReachabilityFlagsReachable) == 0 ||
             (flags & kSCNetworkReachabilityFlagsConnectionRequired) != 0) {
             _type = RNCConnectionTypeNone;
         }
-#if !TARGET_OS_TV && !TARGET_OS_OSX
+#if !TARGET_OS_TV && !TARGET_OS_OSX && !TARGET_OS_MACCATALYST
         else if ((flags & kSCNetworkReachabilityFlagsIsWWAN) != 0) {
             _type = RNCConnectionTypeCellular;
             _expensive = true;
-            
+
             CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
             if (netinfo) {
                 if ([netinfo.currentRadioAccessTechnology isEqualToString:CTRadioAccessTechnologyGPRS] ||
@@ -73,7 +73,7 @@
 #endif
         else {
             _type = RNCConnectionTypeWifi;
-#if TARGET_OS_TV || TARGET_OS_OSX
+#if TARGET_OS_TV || TARGET_OS_OSX || TARGET_OS_MACCATALYST
             struct ifaddrs *interfaces = NULL;
             struct ifaddrs *temp_addr = NULL;
             int success = 0;
