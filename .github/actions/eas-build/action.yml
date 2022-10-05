@@ -54,7 +54,7 @@ runs:
       run: |
         while true
         do
-          STATUS=$(eas build:view $BUILD_ID --json 2>/dev/null | jq -r ".status")
+          STATUS=$(eas build:view $BUILD_ID --json 2>/dev/null | jq -r ".status" || true)
           if [[ "$STATUS" == "ERRORED" || "$STATUS" == "CANCELLED" ]] ; then
             echo "Build failed"
             exit 1;
