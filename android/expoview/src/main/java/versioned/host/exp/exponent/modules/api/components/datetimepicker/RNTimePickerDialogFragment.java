@@ -8,6 +8,8 @@
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
+import host.exp.expoview.R;
+
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
