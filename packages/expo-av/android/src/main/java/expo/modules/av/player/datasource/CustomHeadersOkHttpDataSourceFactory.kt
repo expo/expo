@@ -1,5 +1,6 @@
-package abi46_0_0.host.exp.exponent.modules.universal.av
+package expo.modules.av.player.datasource
 
+import androidx.collection.ArrayMap
 import com.google.android.exoplayer2.upstream.HttpDataSource.BaseFactory
 import com.google.android.exoplayer2.upstream.HttpDataSource.RequestProperties
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
@@ -15,16 +16,15 @@ class CustomHeadersOkHttpDataSourceFactory(
 ) : BaseFactory() {
   private val cacheControl: CacheControl? = null
 
-  private fun updateRequestProperties(
-    requestProperties: RequestProperties,
-    requestHeaders: Map<String, Any>?
-  ) {
+  private fun updateRequestProperties(requestHeaders: Map<String, Any>?) {
     if (requestHeaders != null) {
+      val requestProperties = ArrayMap<String, String>()
       for ((key, value) in requestHeaders) {
         if (value is String) {
           requestProperties[key] = value
         }
       }
+      setDefaultRequestProperties(requestProperties)
     }
   }
 
@@ -33,6 +33,6 @@ class CustomHeadersOkHttpDataSourceFactory(
   }
 
   init {
-    updateRequestProperties(defaultRequestProperties, requestHeaders)
+    updateRequestProperties(requestHeaders)
   }
 }

@@ -151,8 +151,8 @@ dependencies {
   extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
   extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
 
-  api 'com.google.android.exoplayer:exoplayer:2.13.3'
-  api 'com.google.android.exoplayer:extension-okhttp:2.13.3'
+  api 'com.google.android.exoplayer:exoplayer:2.18.1'
+  api 'com.google.android.exoplayer:extension-okhttp:2.18.1'
 
   api "com.squareup.okhttp3:okhttp:3.14.9"
   api "com.squareup.okhttp3:okhttp-urlconnection:3.14.9"
