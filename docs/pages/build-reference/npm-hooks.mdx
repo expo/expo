@@ -34,7 +34,7 @@ This is an example of how your **package.json** might look like:
 
 ## Platform-specific hook behavior
 
-If you would like to run a script (or some part of a script) only for iOS builds or only for Android builds, you can fork the behavior depending on the platform within the script; iOS builds run on macOS (Darwin) and Android builds run on Ubuntu (Linux). See examples for common ways to do this through a shell script or a Node script below.
+If you would like to run a script (or some part of a script) only for iOS builds or only for Android builds, you can fork the behavior depending on the platform within the script. See examples for common ways to do this through a shell script or a Node script below.
 
 ## Examples
 
@@ -56,13 +56,13 @@ If you would like to run a script (or some part of a script) only for iOS builds
 
 ```bash pre-install
 #!/bin/bash
+
 # This is a file called "pre-install" in the root of the project
 
-unamestr=$(uname)
-if [[ "$unamestr" == 'Linux' ]]; then
-  echo "Linux detected, run commands for Android builds here"
-elif [[ "$unamestr" == 'Darwin' ]]; then
-  echo "macOS detected, run commands for iOS builds here"
+if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+  echo "Run commands for Android builds here"
+elif [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
+  echo "Run commands for iOS builds here"
 fi
 ```
 
@@ -84,9 +84,10 @@ fi
 
 ```js pre-install.js
 // This is a file called "pre-install.js" in the root of the project
-if (process.platform === 'linux') {
-  console.log('Linux detected, run commands for Android builds here');
-} else if (process.platform === 'darwin') {
-  console.log('macOS detected, run commands for iOS builds here');
+
+if (process.env.EAS_BUILD_PLATFORM === 'android') {
+  console.log('Run commands for Android builds here');
+} else if (process.env.EAS_BUILD_PLATFORM === 'ios') {
+  console.log('Run commands for iOS builds here');
 }
 ```
