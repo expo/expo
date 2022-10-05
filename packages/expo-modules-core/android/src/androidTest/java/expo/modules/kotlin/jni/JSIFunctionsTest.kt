@@ -303,17 +303,17 @@ class JSIFunctionsTest {
     Truth.assertThat(exception.getProperty("message").getString()).contains("java.lang.IllegalStateException")
   }
 
-  @Test(expected = JavaScriptEvaluateException::class)
-  fun uncaught_error_should_be_piped_to_host_language() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      Function("f") { ->
-        throw IllegalStateException()
-      }
-    }
-  ) {
-    evaluateScript("expo.modules.TestModule.f()")
-  }
+//  @Test(expected = JavaScriptEvaluateException::class)
+//  fun uncaught_error_should_be_piped_to_host_language() = withJSIInterop(
+//    inlineModule {
+//      Name("TestModule")
+//      Function("f") { ->
+//        throw IllegalStateException()
+//      }
+//    }
+//  ) {
+//    evaluateScript("expo.modules.TestModule.f()")
+//  }
 
   @Test
   fun typed_arrays_should_be_obtainable_as_function_argument() = withJSIInterop(
@@ -357,15 +357,15 @@ class JSIFunctionsTest {
     )
   }
 
-  @Test(expected = JavaScriptEvaluateException::class)
-  fun should_throw_if_js_value_cannnot_be_passed() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      Function("f") { _: Int -> }
-    }
-  ) {
-    evaluateScript("expo.modules.TestModule.f(Symbol())")
-  }
+//  @Test(expected = JavaScriptEvaluateException::class)
+//  fun should_throw_if_js_value_cannnot_be_passed() = withJSIInterop(
+//    inlineModule {
+//      Name("TestModule")
+//      Function("f") { _: Int -> }
+//    }
+//  ) {
+//    evaluateScript("expo.modules.TestModule.f(Symbol())")
+//  }
 
   @Test
   fun int_array_should_be_convertible() = withJSIInterop(
