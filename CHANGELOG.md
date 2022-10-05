@@ -9,6 +9,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 - Updated `@stripe/stripe-react-native` from `0.13.1` to `0.18.1` on iOS. ([#19055](https://github.com/expo/expo/pull/19055) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@shopify/flash-list` from `1.1.0` to `1.3.0`. ([#19317](https://github.com/expo/expo/pull/19317) by [@kudo](https://github.com/kudo))
+- Updated `react-native-view-shot` from `3.3.0` to `3.4.0`. ([#19405](https://github.com/expo/expo/pull/19405) by [@douglowder](https://github.com/douglowder))
 - Updated `react-native-webview` from `11.23.0` to `11.23.1`. ([#19375](https://github.com/expo/expo/pull/19375) by [@aleqsio](https://github.com/aleqsio))
 - Updated `react-native-gesture-handler` from `2.5.0` to `2.7.0`. ([#19362](https://github.com/expo/expo/pull/19362) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@react-native-picker/picker` from `2.4.2` to `2.4.6`. ([#19390](https://github.com/expo/expo/pull/19390) by [@aleqsio](https://github.com/aleqsio))
@@ -31,7 +32,6 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-picker/picker` from `2.4.0` to `2.4.2`. ([#18098](https://github.com/expo/expo/pull/18098) by [@bbarthec](https://github.com/bbarthec))
 - Updated `lottie-react-native` from `5.0.1` to `5.1.3`. ([#18051](https://github.com/expo/expo/pull/18051) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-view-shot` from `3.1.2` to `3.3.0`. ([#18050](https://github.com/expo/expo/pull/18050) by [@lukmccall](https://github.com/lukmccall))
-- Updated `react-native-view-shot` from `3.3.0` to `3.4.0`. ([#19405](https://github.com/expo/expo/pull/19405) by [@douglowder](https://github.com/douglowder))
 - Updated `react-native-maps` from `0.30.2` to `0.31.1`. ([#18052](https://github.com/expo/expo/pull/18052) by [@lukmccall](https://github.com/lukmccall))
 - Updated `@react-native-community/netinfo` from `8.2.0` to `9.1.0`. ([#18045](https://github.com/expo/expo/pull/18045) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-webview` from `11.18.1` to `11.23.0`. ([#18047](https://github.com/expo/expo/pull/18047) by [@lukmccall](https://github.com/lukmccall))
