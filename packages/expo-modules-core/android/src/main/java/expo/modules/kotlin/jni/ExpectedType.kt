@@ -16,16 +16,19 @@ class SingleType(
   /**
    * The representation of the type.
    */
+  @DoNotStrip
   fun getCppType() = expectedCppType.value
 
   /**
    * A convenient property to return the type of the first parameter.
    */
+  @DoNotStrip
   fun getFirstParameterType() = parameterTypes?.get(0)
 
   /**
    * A convenient property to return the type of the second parameter.
    */
+  @DoNotStrip
   fun getSecondParameterType() = parameterTypes?.get(1)
 }
 
@@ -46,15 +49,16 @@ class ExpectedType(
   val innerCombinedTypes: Int = innerPossibleTypes.fold(0) { acc, current -> acc or current.getCppType() }
 
   // Needed by JNI
+  @DoNotStrip
   fun getCombinedTypes() = innerCombinedTypes
 
   // Needed by JNI
+  @DoNotStrip
   fun getPossibleTypes() = innerPossibleTypes
 
-  /**
-   * A convenient property to return the first of possible types.
-   */
-  val firstType = innerPossibleTypes.first()
+  // Needed by JNI
+  @DoNotStrip
+  fun getFirstType() = innerPossibleTypes.first()
 
   operator fun plus(other: ExpectedType): ExpectedType {
     return ExpectedType(
