@@ -8,7 +8,13 @@
 
 ### 🎉 New features
 
+- Added two new synchronous functions: `getLocales` and `getCalendars`. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🐛 Bug fixes
+
+### ⚠️ Notices
+
+- Deprecated existing constants API while keeping backwards compatibility. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

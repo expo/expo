@@ -1,10 +1,10 @@
 import ExpoLocalization from './ExpoLocalization';
 import { Localization } from './Localization.types';
-
-export { Localization };
+export * from './Localization.types';
 
 // @needsAudit
 /**
+ * @deprecated Use Localization.getLocales() instead.
  * Three-character ISO 4217 currency code. Returns `null` on web.
  *
  * @example `'USD'`, `'EUR'`, `'CNY'`, `null`
@@ -13,6 +13,7 @@ export const currency = ExpoLocalization.currency;
 
 // @needsAudit
 /**
+ * @deprecated Use Localization.getLocales() instead.
  * Decimal separator used for formatting numbers.
  *
  * @example `','`, `'.'`
@@ -21,6 +22,7 @@ export const decimalSeparator = ExpoLocalization.decimalSeparator;
 
 // @needsAudit
 /**
+ * @deprecated Use Localization.getLocales() instead.
  * Digit grouping separator used when formatting numbers larger than 1000.
  *
  * @example `'.'`, `''`, `','`
@@ -29,12 +31,14 @@ export const digitGroupingSeparator = ExpoLocalization.digitGroupingSeparator;
 
 // @needsAudit
 /**
+ * @deprecated Use Localization.getLocales() instead.
  * A list of all the supported language ISO codes.
  */
 export const isoCurrencyCodes = ExpoLocalization.isoCurrencyCodes;
 
 // @needsAudit
 /**
+ * @deprecated Use Localization.getLocales() instead.
  * Boolean value that indicates whether the system uses the metric system.
  * On Android and web, this is inferred from the current region.
  */
@@ -42,6 +46,7 @@ export const isMetric = ExpoLocalization.isMetric;
 
 // @needsAudit
 /**
+ * @deprecated Use Localization.getLocales() instead.
  * Returns if the system's language is written from Right-to-Left.
  * This can be used to build features like [bidirectional icons](https://material.io/design/usability/bidirectionality.html).
  *
@@ -51,6 +56,7 @@ export const isRTL = ExpoLocalization.isRTL;
 
 // @needsAudit
 /**
+ * Consider using Localization.getLocales() for a list of user preferred locales instead.
  * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag),
  * consisting of a two-character language code and optional script, region and variant codes.
  *
@@ -60,6 +66,7 @@ export const locale = ExpoLocalization.locale;
 
 // @needsAudit
 /**
+ * @deprecated Use Localization.getLocales() instead.
  * List of all the native languages provided by the user settings.
  * These are returned in the order the user defines in their device settings.
  *
@@ -69,6 +76,7 @@ export const locales = ExpoLocalization.locales;
 
 // @needsAudit
 /**
+ * @deprecated Use Localization.getLocales() instead.
  * The current time zone in display format.
  * On Web time zone is calculated with Intl.DateTimeFormat().resolvedOptions().timeZone. For a
  * better estimation you could use the moment-timezone package but it will add significant bloat to
@@ -80,12 +88,48 @@ export const timezone = ExpoLocalization.timezone;
 
 // @needsAudit
 /**
+ * @deprecated Use Localization.getLocales() instead.
  * The region code for your device that comes from the Region setting under Language & Region on iOS.
  * This value is always available on iOS, but might return `null` on Android or web.
  *
  * @example `'US'`, `'NZ'`, `null`
  */
 export const region = ExpoLocalization.region;
+
+/**
+ * List of user's locales, returned as an array of objects of type `Locale`.
+ * Guaranteed to contain at least 1 element.
+ * These are returned in the order the user defines in their device settings.
+ * On the web currency and measurements systems are not provided, instead returned as null.
+ * If needed, you can infer them from the current region using a lookup table.
+ * @example `[{
+    "languageTag": "pl-PL",
+    "languageCode": "pl",
+    "textDirection": "ltr",
+    "digitGroupingSeparator": " ",
+    "decimalSeparator": ",",
+    "measurementSystem": "metric",
+    "currencyCode": "PLN",
+    "currencySymbol": "zł",
+    "regionCode": "PL"
+  }]`
+ */
+export const getLocales = ExpoLocalization.getLocales;
+
+/**
+ * List of user's preferred calendars, returned as an array of objects of type `Calendar`.
+ * Guaranteed to contain at least 1 element.
+ * For now always returns a single element, but it's likely to return a user preference list on some platforms in the future.
+ * @example `[
+    {
+      "calendar": "gregory",
+      "timeZone": "Europe/Warsaw",
+      "uses24hourClock": true,
+      "firstWeekday": 1
+    }
+  ]`
+ */
+export const getCalendars = ExpoLocalization.getCalendars;
 
 // @needsAudit
 /**
@@ -100,6 +144,8 @@ export const region = ExpoLocalization.region;
  *
  * const { locale } = await Localization.getLocalizationAsync();
  * ```
+ * @deprecated
+ * Use Localization.getLocales() or Localization.getCalendars() instead.
  */
 export async function getLocalizationAsync(): Promise<Localization> {
   return await ExpoLocalization.getLocalizationAsync();
