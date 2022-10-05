@@ -198,7 +198,7 @@ class ExpoCameraView(
 
   // Even = portrait, odd = landscape
   private fun getDeviceOrientation() =
-          (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
+    (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
 
 
   private fun transformBarCodeScannerResultToViewCoordinates(barCode: BarCodeScannerResult) {
