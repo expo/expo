@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoLocalization.d.ts","sourceRoot":"","sources":["../src/ExpoLocalization.ts"],"names":[],"mappings":"AAIA,OAAO,EAAE,YAAY,EAAE,MAAM,sBAAsB,CAAC;;;;;;;;;;;;4BAqEpB,QAAQ,YAAY,CAAC;;AAnErD,wBA6FE"}
+{"version":3,"file":"ExpoLocalization.d.ts","sourceRoot":"","sources":["../src/ExpoLocalization.ts"],"names":[],"mappings":"AAIA,OAAO,EAAE,YAAY,EAAE,QAAQ,EAAE,MAAM,EAAsB,MAAM,sBAAsB,CAAC;;;;;;;;;;;;kBAqF1E,MAAM,EAAE;oBA8BN,QAAQ,EAAE;4BAkBI,QAAQ,KAAK,YAAY,EAAE,cAAc,GAAG,YAAY,CAAC,CAAC;;AApH1F,wBA8IE"}
