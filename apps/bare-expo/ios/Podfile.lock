@@ -638,7 +638,7 @@ PODS:
     - React-Core
   - react-native-viewpager (5.0.11):
     - React-Core
-  - react-native-webview (11.22.4):
+  - react-native-webview (11.23.1):
     - React-Core
   - React-perflogger (0.70.1)
   - React-RCTActionSheet (0.70.1):
@@ -710,11 +710,11 @@ PODS:
     - React-Core
   - RNCMaskedView (0.2.6):
     - React-Core
-  - RNCPicker (2.4.2):
+  - RNCPicker (2.4.6):
     - React-Core
   - RNDateTimePicker (6.2.0):
     - React-Core
-  - RNGestureHandler (2.5.0):
+  - RNGestureHandler (2.7.0):
     - React-Core
   - RNReanimated (2.10.0):
     - DoubleConversion
@@ -1356,7 +1356,7 @@ SPEC CHECKSUMS:
   react-native-slider: 98b724cd3e44c3454a6d0724e796d4e9c52189ce
   react-native-view-shot: da768466e1cd371de50a3a5c722d1e95456b5b2c
   react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78
-  react-native-webview: a1ed211d50a5047a4fe54e07140991e277cd66e6
+  react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: 48c6b363e867d64b682e84f80ca45636bd65e19c
   React-RCTActionSheet: 33c74fe5c754835e3715c300618da9aa2f7203fa
   React-RCTAnimation: 2dbf0120d4d1ab7716079b4180f2ca89c465e46b
@@ -1371,9 +1371,9 @@ SPEC CHECKSUMS:
   ReactCommon: 7f86326b92009925c6dcf93f8e825060171c379f
   RNCAsyncStorage: 466b9df1a14bccda91da86e0b7d9a345d78e1673
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
-  RNCPicker: 0250e95ad170569a96f5b0555cdd5e65b9084dca
+  RNCPicker: 2f71e09c52ab6327e2c393213368ea0e5bfbcb65
   RNDateTimePicker: 30e6733efc179d1e49d6008ea5fce42cdc9aeeca
-  RNGestureHandler: bad495418bcbd3ab47017a38d93d290ebd406f50
+  RNGestureHandler: 7673697e7c0e9391adefae4faa087442bc04af33
   RNReanimated: 60e291d42c77752a0f6d6f358387bdf225a87c6e
   RNScreens: 4a1af06327774490d97342c00aee0c2bafb497b7
   RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377

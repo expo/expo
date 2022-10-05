@@ -10,6 +10,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@stripe/stripe-react-native` from `0.13.1` to `0.18.1` on iOS. ([#19055](https://github.com/expo/expo/pull/19055) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@shopify/flash-list` from `1.1.0` to `1.3.0`. ([#19317](https://github.com/expo/expo/pull/19317) by [@kudo](https://github.com/kudo))
 - Updated `react-native-webview` from `11.23.0` to `11.23.1`. ([#19375](https://github.com/expo/expo/pull/19375) by [@aleqsio](https://github.com/aleqsio))
+- Updated `react-native-gesture-handler` from `2.5.0` to `2.7.0`. ([#19362](https://github.com/expo/expo/pull/19362) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🛠 Breaking changes
 
