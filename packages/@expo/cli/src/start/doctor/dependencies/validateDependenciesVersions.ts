@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
 import semver from 'semver';
 
+import { APISettings } from '../../../api/settings';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { BundledNativeModules } from './bundledNativeModules';
@@ -20,6 +21,7 @@ interface IncorrectDependency {
 
 /**
  * Print a list of incorrect dependency versions.
+ * This only checks dependencies when not running in offline mode.
  *
  * @param projectRoot Expo project root.
  * @param exp Expo project config.
@@ -32,7 +34,12 @@ export async function validateDependenciesVersionsAsync(
   exp: Pick<ExpoConfig, 'sdkVersion'>,
   pkg: PackageJSONConfig,
   packagesToCheck?: string[]
-): Promise<boolean> {
+): Promise<boolean | null> {
+  if (APISettings.isOffline) {
+    debug('Skipping dependency validation in offline mode');
+    return null;
+  }
+
   const incorrectDeps = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packagesToCheck);
   return logIncorrectDependencies(incorrectDeps);
 }
