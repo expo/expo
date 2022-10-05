@@ -60,11 +60,11 @@ exports.withPermissions = withPermissions;
 const withBlockedPermissions = (config, permissions) => {
   var _config$android;
 
-  const resolvedPermissions = (Array.isArray(permissions) ? permissions : [permissions]).filter(Boolean);
+  const resolvedPermissions = prefixAndroidPermissionsIfNecessary((Array.isArray(permissions) ? permissions : [permissions]).filter(Boolean));
 
   if (config !== null && config !== void 0 && (_config$android = config.android) !== null && _config$android !== void 0 && _config$android.permissions && Array.isArray(config.android.permissions)) {
     // Remove any static config permissions
-    config.android.permissions = config.android.permissions.filter(permission => !resolvedPermissions.includes(permission));
+    config.android.permissions = prefixAndroidPermissionsIfNecessary(config.android.permissions).filter(permission => !resolvedPermissions.includes(permission));
   }
 
   return (0, _androidPlugins().withAndroidManifest)(config, async config => {
@@ -95,7 +95,7 @@ function addBlockedPermissions(androidManifest, permissions) {
     androidManifest.manifest['uses-permission'] = [];
   }
 
-  for (const permission of permissions) {
+  for (const permission of prefixAndroidPermissionsIfNecessary(permissions)) {
     androidManifest.manifest['uses-permission'] = ensureBlockedPermission(androidManifest.manifest['uses-permission'], permission);
   }
 
