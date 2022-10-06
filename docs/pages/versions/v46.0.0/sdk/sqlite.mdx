@@ -54,7 +54,7 @@ To open a new SQLite database using an existing `.db` file you already have, you
 
 ### Executing statements outside of a transaction
 
-> Please note that you should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions (like eg. `PRAGMA foreign_keys = ON;`).
+> **info** You should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions. For example, `PRAGMA foreign_keys = ON;`.
 
 ```js
 const db = SQLite.openDatabase('dbName', version);
