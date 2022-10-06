@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
+package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils
 
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +12,22 @@ internal fun createResult(key: String, value: WritableMap): WritableMap {
   val map = WritableNativeMap()
   map.putMap(key, value)
   return map
+}
+
+internal fun createCanAddCardResult(canAddCard: Boolean, status: String? = null, token: WritableMap? = null): WritableNativeMap {
+  val result = WritableNativeMap()
+  val details = WritableNativeMap()
+  if (status != null) {
+    result.putBoolean("canAddCard", false)
+    details.putString("status", status)
+  } else {
+    result.putBoolean("canAddCard", canAddCard)
+    if (token != null) {
+      details.putMap("token", token)
+    }
+  }
+  result.putMap("details", details)
+  return result
 }
 
 internal fun mapIntentStatus(status: StripeIntent.Status?): String {
@@ -108,6 +124,7 @@ internal fun mapPaymentMethodType(type: PaymentMethod.Type?): String {
     PaymentMethod.Type.Klarna -> "Klarna"
     PaymentMethod.Type.USBankAccount -> "USBankAccount"
     PaymentMethod.Type.PayPal -> "PayPal"
+    PaymentMethod.Type.Affirm -> "Affirm"
     else -> "Unknown"
   }
 }
@@ -136,6 +153,7 @@ internal fun mapToPaymentMethodType(type: String?): PaymentMethod.Type? {
     "Klarna" -> PaymentMethod.Type.Klarna
     "USBankAccount" -> PaymentMethod.Type.USBankAccount
     "PayPal" -> PaymentMethod.Type.PayPal
+    "Affirm" -> PaymentMethod.Type.Affirm
     else -> null
   }
 }
@@ -199,12 +217,11 @@ internal fun mapFromBankAccountStatus(status: BankAccount.Status?): String {
 }
 
 internal fun mapFromBankAccount(bankAccount: BankAccount?): WritableMap? {
-  val bankAccountMap: WritableMap = WritableNativeMap()
-
   if (bankAccount == null) {
     return null
   }
 
+  val bankAccountMap: WritableMap = WritableNativeMap()
   bankAccountMap.putString("id", bankAccount.id)
   bankAccountMap.putString("bankName", bankAccount.bankName)
   bankAccountMap.putString("accountHolderName", bankAccount.accountHolderName)
@@ -213,6 +230,8 @@ internal fun mapFromBankAccount(bankAccount: BankAccount?): WritableMap? {
   bankAccountMap.putString("country", bankAccount.countryCode)
   bankAccountMap.putString("routingNumber", bankAccount.routingNumber)
   bankAccountMap.putString("status", mapFromBankAccountStatus(bankAccount.status))
+  bankAccountMap.putString("fingerprint", bankAccount.fingerprint)
+  bankAccountMap.putString("last4", bankAccount.last4)
 
   return bankAccountMap
 }
@@ -294,13 +313,13 @@ internal fun mapFromCard(card: Card?): WritableMap? {
 
 internal fun mapFromToken(token: Token): WritableMap {
   val tokenMap: WritableMap = WritableNativeMap()
-
   tokenMap.putString("id", token.id)
-  tokenMap.putString("created", token.created.time.toString())
+  tokenMap.putDouble("created", token.created.time.toDouble())
   tokenMap.putString("type", mapTokenType(token.type))
   tokenMap.putBoolean("livemode", token.livemode)
   tokenMap.putMap("bankAccount", mapFromBankAccount(token.bankAccount))
   tokenMap.putMap("card", mapFromCard(token.card))
+  tokenMap.putBoolean("used", token.used)
 
   return tokenMap
 }

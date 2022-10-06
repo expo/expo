@@ -48,14 +48,17 @@ class Errors {
         
         return ["error": value]
     }
+    
     class func createError (_ code: String, _ error: NSError?) -> NSDictionary {
+        let rootError = getRootError(error)
+
         let value: NSDictionary = [
             "code": code,
-            "message": error?.userInfo[STPError.errorMessageKey] ?? error?.localizedDescription ?? NSNull(),
-            "localizedMessage": error?.localizedDescription ?? NSNull(),
-            "declineCode": error?.userInfo[STPError.stripeDeclineCodeKey] ?? NSNull(),
-            "stripeErrorCode": error?.userInfo[STPError.stripeErrorCodeKey] ?? NSNull(),
-            "type": error?.userInfo[STPError.stripeErrorTypeKey] ?? NSNull(),
+            "message": rootError?.userInfo[STPError.errorMessageKey] ?? rootError?.localizedDescription ?? NSNull(),
+            "localizedMessage": rootError?.localizedDescription ?? NSNull(),
+            "declineCode": rootError?.userInfo[STPError.stripeDeclineCodeKey] ?? NSNull(),
+            "stripeErrorCode": rootError?.userInfo[STPError.stripeErrorCodeKey] ?? NSNull(),
+            "type": rootError?.userInfo[STPError.stripeErrorTypeKey] ?? NSNull(),
         ]
         
         return ["error": value]
@@ -91,7 +94,15 @@ class Errors {
             return createError(code, NSError.stp_error(from: stripeError))
         }
         
-        return createError(code, error as NSError)
+        return createError(code, error as NSError?)
+    }
+    
+    class func getRootError(_ error: NSError?) -> NSError? {
+        // Dig and find the underlying error, otherwise we'll throw errors like "Try again"
+        if let underlyingError = error?.userInfo[NSUnderlyingErrorKey] as? NSError {
+            return getRootError(underlyingError)
+        }
+        return error
     }
     
     static let MISSING_INIT_ERROR = Errors.createError(ErrorType.Failed, "Stripe has not been initialized. Initialize Stripe in your app with the StripeProvider component or the initStripe method.")

@@ -16,10 +16,10 @@
   "dependencies": {
     "ABI45_0_0React-Core": [],
     "Stripe": [
-      "~> 22.7.0"
+      "~> 22.8.1"
     ],
     "StripeFinancialConnections": [
-      "~> 22.7.0"
+      "~> 22.8.1"
     ]
   },
   "pod_target_xcconfig": {

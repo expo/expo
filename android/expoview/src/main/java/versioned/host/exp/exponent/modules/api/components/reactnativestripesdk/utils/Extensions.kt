@@ -1,8 +1,11 @@
-package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
+package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils
 
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import com.facebook.react.bridge.ReactApplicationContext
 
 fun View.showSoftKeyboard() {
   post {
@@ -17,5 +20,13 @@ fun View.hideSoftKeyboard() {
   if (this.requestFocus()) {
     val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager?
     imm?.hideSoftInputFromWindow(windowToken, 0)
+  }
+}
+
+fun Fragment.removeFragment(context: ReactApplicationContext) {
+  (context.currentActivity as? AppCompatActivity)?.supportFragmentManager?.let {
+    if (it.findFragmentByTag(this.tag) != null) {
+      it.beginTransaction().remove(this).commitAllowingStateLoss()
+    }
   }
 }
