@@ -623,8 +623,8 @@ PODS:
     - ABI45_0_0React-RCTImage
   - ABI45_0_0stripe-react-native (0.6.0):
     - ABI45_0_0React-Core
-    - Stripe (~> 22.7.0)
-    - StripeFinancialConnections (~> 22.7.0)
+    - Stripe (~> 22.8.1)
+    - StripeFinancialConnections (~> 22.8.1)
   - ABI45_0_0UMAppLoader (3.1.0)
   - ABI45_0_0Yoga (1.14.0)
   - ABI46_0_0EASClient (0.3.0):
@@ -1269,8 +1269,8 @@ PODS:
     - ABI46_0_0React-RCTImage
   - ABI46_0_0stripe-react-native (0.13.1):
     - ABI46_0_0React-Core
-    - Stripe (~> 22.7.0)
-    - StripeFinancialConnections (~> 22.7.0)
+    - Stripe (~> 22.8.1)
+    - StripeFinancialConnections (~> 22.8.1)
   - ABI46_0_0UMAppLoader (3.1.0)
   - ABI46_0_0Yoga (1.14.0)
   - Amplitude (6.0.0)
@@ -2046,27 +2046,27 @@ PODS:
   - RNScreens (3.18.0):
     - React-Core
     - React-RCTImage
-  - Stripe (22.7.1):
-    - Stripe/Stripe3DS2 (= 22.7.1)
-    - StripeApplePay (= 22.7.1)
-    - StripeCore (= 22.7.1)
-    - StripeUICore (= 22.7.1)
-  - stripe-react-native (0.18.1):
+  - Stripe (22.8.3):
+    - Stripe/Stripe3DS2 (= 22.8.3)
+    - StripeApplePay (= 22.8.3)
+    - StripeCore (= 22.8.3)
+    - StripeUICore (= 22.8.3)
+  - stripe-react-native (0.19.0):
     - React-Core
-    - Stripe (~> 22.7.0)
-    - StripeFinancialConnections (~> 22.7.0)
-  - Stripe/Stripe3DS2 (22.7.1):
-    - StripeApplePay (= 22.7.1)
-    - StripeCore (= 22.7.1)
-    - StripeUICore (= 22.7.1)
-  - StripeApplePay (22.7.1):
-    - StripeCore (= 22.7.1)
-  - StripeCore (22.7.1)
-  - StripeFinancialConnections (22.7.1):
-    - StripeCore (= 22.7.1)
-    - StripeUICore (= 22.7.1)
-  - StripeUICore (22.7.1):
-    - StripeCore (= 22.7.1)
+    - Stripe (~> 22.8.1)
+    - StripeFinancialConnections (~> 22.8.1)
+  - Stripe/Stripe3DS2 (22.8.3):
+    - StripeApplePay (= 22.8.3)
+    - StripeCore (= 22.8.3)
+    - StripeUICore (= 22.8.3)
+  - StripeApplePay (22.8.3):
+    - StripeCore (= 22.8.3)
+  - StripeCore (22.8.3)
+  - StripeFinancialConnections (22.8.3):
+    - StripeCore (= 22.8.3)
+    - StripeUICore (= 22.8.3)
+  - StripeUICore (22.8.3):
+    - StripeCore (= 22.8.3)
   - UMAppLoader (3.1.0)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
@@ -3249,7 +3249,7 @@ SPEC CHECKSUMS:
   ABI45_0_0RNGestureHandler: c6a3399e797896b51aaafa5ffd9ef3217a965554
   ABI45_0_0RNReanimated: 7dbc4ffd288bfbb8657e5d28d8c633108a4fbc7a
   ABI45_0_0RNScreens: 09474fa5b21fada696fcfda7029ea1de53af363b
-  ABI45_0_0stripe-react-native: 48734eb853a923bbf041ceab5ac065c9a2c08d49
+  ABI45_0_0stripe-react-native: d7346ed066d4ef66def5e132789555422e1c9ea2
   ABI45_0_0UMAppLoader: 9f4f8ab793e254030a3e1986ce2d75b89308168b
   ABI45_0_0Yoga: 59ff587f79c3e37f52418bef27055ecf8e0bce1c
   ABI46_0_0EASClient: c419fef100fbdac83e755c790d6b427594d4263e
@@ -3356,7 +3356,7 @@ SPEC CHECKSUMS:
   ABI46_0_0RNGestureHandler: 42f00c4ce0ac12c4c51081de65e2ba831dfd5cb7
   ABI46_0_0RNReanimated: c68969af1eae15d09ee5b8b3b61407feb5db9884
   ABI46_0_0RNScreens: f521a4613dc2207aab4fcd72b5bb7cef74104a39
-  ABI46_0_0stripe-react-native: 599bc13001fb6eae9a687e1eb587c720d04ee744
+  ABI46_0_0stripe-react-native: 608f940005eaa49b26166ddb85d1b5f996e962a2
   ABI46_0_0UMAppLoader: 271ab738d153f711d91da6b1b7a3a981d668dcfe
   ABI46_0_0Yoga: 898c6ba86e91d19b0810efa11e8a6c7e5559a64d
   Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
@@ -3512,12 +3512,12 @@ SPEC CHECKSUMS:
   RNGestureHandler: 7673697e7c0e9391adefae4faa087442bc04af33
   RNReanimated: 5c8c17e26787fd8984cd5accdc70fef2ca70aafd
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
-  Stripe: fb29a476e4866fec4ef22fb76207363dd32795aa
-  stripe-react-native: 5663bf9de94bff6b3d92c16d32784433b5e94cf7
-  StripeApplePay: 09955cdf3f49b367af2feadd9c5b3bddb35446c0
-  StripeCore: 39ea580c26ccc324fb9671288a2ae21114e54dca
-  StripeFinancialConnections: 0e1d638388572d52ce829416fbc7b0af2bde3865
-  StripeUICore: eed17e95a4517fc02482e250a6422c2a81a14ce8
+  Stripe: 90c12b350ae9e8a262efa87d230c00110c741f88
+  stripe-react-native: 001c3d794839be02fd3857f1284adfc0c7dea5c7
+  StripeApplePay: ce1edb7b3cb8b1abe29734f0fb887ee839a08043
+  StripeCore: 7197196aa2344c5c5eaf4a1ba406950c06b1c01c
+  StripeFinancialConnections: ff08ef2f655b8f577f0bf70f10b588517dfa667e
+  StripeUICore: 5b635db49163d62f9aa831269031de382bcb2bbd
   UMAppLoader: 90a8e7f4b09b576588e7c2939321860fba47343e
   Yoga: 043f8eb97345d0171f27fead4d1849cacf0472a5
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
