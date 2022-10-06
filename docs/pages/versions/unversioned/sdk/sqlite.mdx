@@ -7,8 +7,9 @@ packageName: 'expo-sqlite'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { Terminal } from '~/ui/components/Snippet';
 
-**`expo-sqlite`** gives your app access to a database that can be queried through a [WebSQL](https://www.w3.org/TR/webdatabase/)-like API. The database is persisted across restarts of your app.
+`expo-sqlite` gives your app access to a database that can be queried through a [WebSQL](https://www.w3.org/TR/webdatabase/)-like API. The database is persisted across restarts of your app.
 
 An [example to do list app](https://github.com/expo/examples/tree/master/with-sqlite) is available that uses this module for storage.
 
@@ -18,35 +19,38 @@ An [example to do list app](https://github.com/expo/examples/tree/master/with-sq
 
 ### Importing an existing database
 
-In order to open a new SQLite database using an existing `.db` file you already have, you need to do three things:
+To open a new SQLite database using an existing `.db` file you already have, you'll need to do three things:
 
-- `npx expo install expo-file-system expo-asset`
-- create a **metro.config.js** file in the root of your project with the following contents ([curious why? read here](/guides/customizing-metro.mdx#adding-more-file-extensions-to--assetexts)):
+- Install `expo-file-system` and `expo-asset` packages:
 
-```ts
-const { getDefaultConfig } = require('expo/metro-config');
+  <Terminal cmd={['$ npx expo install expo-file-system expo-asset']} />
 
-const defaultConfig = getDefaultConfig(__dirname);
+- Create a **metro.config.js** file at the root of your project with the following contents ([curious why? read here](/guides/customizing-metro.mdx#adding-more-file-extensions-to--assetexts)):
 
-defaultConfig.resolver.assetExts.push('db');
+  ```ts
+  const { getDefaultConfig } = require('expo/metro-config');
 
-module.exports = defaultConfig;
-```
+  const defaultConfig = getDefaultConfig(__dirname);
+
+  defaultConfig.resolver.assetExts.push('db');
+
+  module.exports = defaultConfig;
+  ```
 
 - Use the following function (or similar) to open your database:
 
-```ts
-async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
-  if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
-    await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
+  ```ts
+  async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
+    if (!(await FileSystem.getInfoAsync(FileSystem.documentDirectory + 'SQLite')).exists) {
+      await FileSystem.makeDirectoryAsync(FileSystem.documentDirectory + 'SQLite');
+    }
+    await FileSystem.downloadAsync(
+      Asset.fromModule(require(pathToDatabaseFile)).uri,
+      FileSystem.documentDirectory + 'SQLite/myDatabaseName.db'
+    );
+    return SQLite.openDatabase('myDatabaseName.db');
   }
-  await FileSystem.downloadAsync(
-    Asset.fromModule(require(pathToDatabaseFile)).uri,
-    FileSystem.documentDirectory + 'SQLite/myDatabaseName.db'
-  );
-  return SQLite.openDatabase('myDatabaseName.db');
-}
-```
+  ```
 
 ### Executing statements outside of a transaction
 
