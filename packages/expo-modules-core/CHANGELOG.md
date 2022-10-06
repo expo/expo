@@ -8,11 +8,15 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.11.7 — 2022-10-06
+
+### 🐛 Bug fixes
+
 - Fixed `ModuleRegistry` be initialized twice when startup on Android. ([#19384](https://github.com/expo/expo/pull/19384) by [@kudo](https://github.com/kudo) and [@lukmccall](https://github.com/lukmccall))
 - Ensure that AppDelegate callbacks are invoked. ([#19393](https://github.com/expo/expo/pull/19393) by [@ferologics](https://github.com/ferologics))
 - Fixed Android crash when Activity is destroyed before `AppContext.onHostDestroy` call. ([#19406](https://github.com/expo/expo/pull/19406) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.11.6 — 2022-10-02
 
