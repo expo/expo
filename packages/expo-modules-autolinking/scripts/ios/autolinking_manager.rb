@@ -42,6 +42,16 @@ module Expo
             end
 
             podspec_dir_path = Pathname.new(pod.podspec_dir).relative_path_from(project_directory).to_path
+            podspec_file_path = File.join(podspec_dir_path, pod.pod_name + ".podspec")
+            podspec = Pod::Specification.from_file(podspec_file_path)
+
+            # Ensure that the dependencies of packages with Swift code use modular headers, otherwise
+            # `pod install` may fail if there is no `use_modular_headers!` declaration or
+            # `:modular_headers => true` is not used for this particular dependency.
+            # The latter require adding transitive dependencies to user's Podfile that we'd rather like to avoid.
+            if package.has_swift_modules_to_link?
+              use_modular_headers_for_dependencies(podspec.all_dependencies)
+            end
 
             pod_options = {
               :path => podspec_dir_path,
@@ -49,8 +59,6 @@ module Expo
             }.merge(global_flags, package.flags)
 
             if tests_only || include_tests
-              podspec_file_path = File.join(podspec_dir_path, pod.pod_name + ".podspec")
-              podspec = Pod::Specification.from_file(podspec_file_path)
               test_specs_names = podspec.test_specs.map { |test_spec|
                 test_spec.name.delete_prefix(podspec.name + "/")
               }
@@ -156,6 +164,15 @@ module Expo
         '--target',
         target_path
       ])
+    end
+
+    private def use_modular_headers_for_dependencies(dependencies)
+      dependencies.each { |dependency|
+        unless @target_definition.build_pod_as_module?(dependency.name)
+          # This is an equivalent to setting `:modular_headers => true` for the specific dependency.
+          @target_definition.set_use_modular_headers_for_pod(dependency.name, true)
+        end
+      }
     end
 
   end # class AutolinkingManager
