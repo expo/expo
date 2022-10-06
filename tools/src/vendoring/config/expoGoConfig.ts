@@ -274,6 +274,10 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/callstack/react-native-slider',
       rootDir: 'src',
       ios: {},
+      android: {
+        includeFiles: 'android/**',
+        excludeFiles: ['android/gradle{/**,**}'],
+      },
     },
     '@shopify/react-native-skia': {
       source: '@shopify/react-native-skia',
