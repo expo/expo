@@ -61,7 +61,7 @@ RCT_EXPORT_MODULE()
   slider.lastValue = slider.value;
   float value = slider.minimumValue + (rangeWidth * sliderPercent);
 
-  [slider setValue:discreteValue(slider, value) animated: YES];
+  [slider setValue:[slider discreteValue:value] animated: YES];
 
   if (slider.onRNCSliderSlidingStart) {
     slider.onRNCSliderSlidingStart(@{
@@ -83,43 +83,9 @@ RCT_EXPORT_MODULE()
   }
 }
 
-static float discreteValue(RNCSlider *sender, float value) {
-  // Check if thumb should reach the maximum value and put it on the end of track if yes.
-  // To avoid affecting the thumb when on maximum, the `step >= (value - maximum)` is not checked.
-  if (sender.step > 0 && value >= sender.maximumValue) {
-    return sender.maximumValue;
-  }
-
-  // If step is set and less than or equal to difference between max and min values,
-  // pick the closest discrete multiple of step to return.
-  if (sender.step > 0 && sender.step <= (sender.maximumValue - sender.minimumValue)) {
-    
-    // Round up when increase, round down when decrease.
-    double (^_round)(double) = ^(double x) {
-      if (!UIAccessibilityIsVoiceOverRunning()) {
-        return round(x);
-      } else if (sender.lastValue > value) {
-        return floor(x);
-      } else {
-        return ceil(x);
-      }
-    };
-
-    return
-      MAX(sender.minimumValue,
-        MIN(sender.maximumValue,
-            sender.minimumValue + _round((value - sender.minimumValue) / sender.step) * sender.step
-        )
-      );
-  }
-
-  // Otherwise, leave value unchanged.
-  return value;
-}
-
 static void RNCSendSliderEvent(RNCSlider *sender, BOOL continuous, BOOL isSlidingStart)
 {
-  float value = discreteValue(sender, sender.value);
+  float value = [sender discreteValue:sender.value];
 
   if(!sender.isSliding) {
     [sender setValue:value animated:NO];

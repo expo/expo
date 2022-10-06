@@ -1944,6 +1944,8 @@ PODS:
     - React
     - React-callinvoker
     - React-Core
+  - react-native-slider (4.2.4):
+    - React-Core
   - react-native-webview (11.23.1):
     - React-Core
   - React-perflogger (0.70.2)
@@ -2408,6 +2410,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `./vendored/unversioned/react-native-safe-area-context`)
   - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `./vendored/unversioned/@shopify/react-native-skia`)"
+  - "react-native-slider (from `./vendored/unversioned/@react-native-community/slider`)"
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-perflogger (from `../react-native-lab/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../react-native-lab/react-native/Libraries/ActionSheetIOS`)
@@ -3101,6 +3104,8 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
   react-native-skia:
     :path: "./vendored/unversioned/@shopify/react-native-skia"
+  react-native-slider:
+    :path: "./vendored/unversioned/@react-native-community/slider"
   react-native-webview:
     :path: "./vendored/unversioned/react-native-webview"
   React-perflogger:
@@ -3495,6 +3500,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-skia: faacd6a970a757d67c4f4a44a31d347651abbb8e
+  react-native-slider: cecabb58ecffad671d2ad3ccc58c7f4d2d029e95
   react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: 6009895616a455781293950bbd63d53cfc7ffbc5
   React-RCTActionSheet: 5e90aa5712af18bfc86c2c6d97d4dbe0e5451c1d

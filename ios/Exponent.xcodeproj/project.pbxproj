@@ -196,7 +196,6 @@
 		A12E8B64266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */; };
 		A1C33FE42667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
 		A1C33FE52667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
-		ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
@@ -289,7 +288,6 @@
 		BBD03196200011C9009F0434 /* RNAWSCognito.m in Sources */ = {isa = PBXBuildFile; fileRef = BBD03192200011C9009F0434 /* RNAWSCognito.m */; };
 		BBE4333C268BE5AE000D016A /* EXManagedAppSplashScreenViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A12E8B63266E8E51003ADA8F /* EXManagedAppSplashScreenViewController.m */; };
 		BBE8539422B98829001FF9C2 /* EXScopedFontLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = BBE8539322B98828001FF9C2 /* EXScopedFontLoader.m */; };
-		BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BE23D5E5DA574BA3A73C19C3 /* RNSharedElementTransition.m in Sources */ = {isa = PBXBuildFile; fileRef = C97E31ABB8C341358B20C89C /* RNSharedElementTransition.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		BE988DDEFEFD40FEA5C44BFE /* RNDateTimePickerManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D86827B3D57944D8A25F37F8 /* RNDateTimePickerManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		C07CF8B597D24E3D9BAF4D31 /* AIRGoogleMapHeatmap.m in Sources */ = {isa = PBXBuildFile; fileRef = 65028F8B8C154DE59D8AC3E3 /* AIRGoogleMapHeatmap.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -550,8 +548,6 @@
 		F1421903262CB68600BB97E6 /* RNSVGForeignObject.m in Sources */ = {isa = PBXBuildFile; fileRef = A0DCD2EBCF2B4FDC80E8EBE3 /* RNSVGForeignObject.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F1421904262CB68600BB97E6 /* RNSVGForeignObjectManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 8796D576855445C7AE7F4659 /* RNSVGForeignObjectManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F1421905262CB68600BB97E6 /* RNSharedElementCornerRadii.m in Sources */ = {isa = PBXBuildFile; fileRef = 780F0BF062134A048B33344C /* RNSharedElementCornerRadii.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		F1421906262CB68600BB97E6 /* RNCSlider.m in Sources */ = {isa = PBXBuildFile; fileRef = EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */; settings = {COMPILER_FLAGS = "-w"; }; };
-		F1421908262CB68600BB97E6 /* RNCSliderManager.m in Sources */ = {isa = PBXBuildFile; fileRef = CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		F142190C262CB68600BB97E6 /* SafariServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F77DDB921E04AC1100624CA2 /* SafariServices.framework */; };
 		F142190F262CB68600BB97E6 /* Exponent.entitlements in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B551D1346FA00AA6436 /* Exponent.entitlements */; };
 		F1421910262CB68600BB97E6 /* EXSDKVersions.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E49B621D1347B800AA6436 /* EXSDKVersions.plist */; };
@@ -669,7 +665,6 @@
 		19B2EF731FB25A1A003F2E1B /* EXCachedResourceManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXCachedResourceManager.h; sourceTree = "<group>"; };
 		19B2EF741FB25A1A003F2E1B /* EXCachedResourceManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXCachedResourceManager.m; sourceTree = "<group>"; };
 		1A7952F30F72271C821848D7 /* Pods-ExponentIntegrationTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.debug.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.debug.xcconfig"; sourceTree = "<group>"; };
-		1CF1D8E66E5B4C7A9476C145 /* RNCSliderManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSliderManager.h; sourceTree = "<group>"; };
 		1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransitionManager.m; sourceTree = "<group>"; };
 		2168B25A23E3058500A94C0D /* EXScopedFirebaseCore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedFirebaseCore.m; sourceTree = "<group>"; };
 		2168B25B23E3058500A94C0D /* EXScopedFirebaseCore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedFirebaseCore.h; sourceTree = "<group>"; };
@@ -1202,7 +1197,6 @@
 		C97E31ABB8C341358B20C89C /* RNSharedElementTransition.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementTransition.m; sourceTree = "<group>"; };
 		CB140B5293CF4E4B9FA74E62 /* RNSVGForeignObjectManager.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSVGForeignObjectManager.h; sourceTree = "<group>"; };
 		CC72501D815B491FBC42AACA /* RNSharedElementTypes.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTypes.h; sourceTree = "<group>"; };
-		CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSliderManager.m; sourceTree = "<group>"; };
 		D1919BD72DB8244D157FA9EC /* libPods-Expo Go-Expo Go (unversioned).a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Expo Go-Expo Go (unversioned).a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		D29BDFCEEA8F4701829ADCD1 /* RNSharedElementNode.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSharedElementNode.m; sourceTree = "<group>"; };
 		D47336D662754EDA8EA4BC55 /* RNDateTimePicker.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNDateTimePicker.m; sourceTree = "<group>"; };
@@ -1213,7 +1207,6 @@
 		E307EED1B62C455182DBF80B /* RNSharedElementTransitionItem.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransitionItem.h; sourceTree = "<group>"; };
 		E37EA5BB197945508A6A14F0 /* RNCPickerLabel.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCPickerLabel.m; sourceTree = "<group>"; };
 		E3D76D11068A74897B9A37EC /* Pods-Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tests.release.xcconfig"; path = "Target Support Files/Pods-Tests/Pods-Tests.release.xcconfig"; sourceTree = "<group>"; };
-		EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNCSlider.m; sourceTree = "<group>"; };
 		EE5757442E5343FAAC728C45 /* RNCMaskedView.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCMaskedView.h; sourceTree = "<group>"; };
 		F10869892448B11D00B7DC04 /* EXDevMenuMotionInterceptor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuMotionInterceptor.h; sourceTree = "<group>"; };
 		F108698A2448B11D00B7DC04 /* EXDevMenuMotionInterceptor.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuMotionInterceptor.m; sourceTree = "<group>"; };
@@ -1236,7 +1229,6 @@
 		F1D6AF62244720E100AC1C74 /* EXDevMenuManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuManager.h; sourceTree = "<group>"; };
 		F1D6AF63244720E100AC1C74 /* EXDevMenuManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXDevMenuManager.m; sourceTree = "<group>"; };
 		F1D6AF6524472BA900AC1C74 /* EXDevMenuDelegateProtocol.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXDevMenuDelegateProtocol.h; sourceTree = "<group>"; };
-		F1E9894638084CB4956C637C /* RNCSlider.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNCSlider.h; sourceTree = "<group>"; };
 		F1F7433C24ABECD400EA5023 /* Exponent-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Exponent-Bridging-Header.h"; sourceTree = "<group>"; };
 		F1F7433D24ABECD500EA5023 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		F4B751B511314328B86D13C6 /* RNSVGTopAlignedLabel.ios.m */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.objc; path = RNSVGTopAlignedLabel.ios.m; sourceTree = "<group>"; };
@@ -1316,17 +1308,6 @@
 			children = (
 			);
 			name = SegmentedControl;
-			sourceTree = "<group>";
-		};
-		0E05846EF744409D93CC1ED6 /* Slider */ = {
-			isa = PBXGroup;
-			children = (
-				F1E9894638084CB4956C637C /* RNCSlider.h */,
-				EC7E234A4A564DFE84B2B1D0 /* RNCSlider.m */,
-				1CF1D8E66E5B4C7A9476C145 /* RNCSliderManager.h */,
-				CCF7710E4F58478DA6A63F09 /* RNCSliderManager.m */,
-			);
-			path = Slider;
 			sourceTree = "<group>";
 		};
 		255747E7222D515400D91513 /* EXScopedFileSystem */ = {
@@ -2202,7 +2183,6 @@
 				65B902B660654403B6731F7E /* SharedElement */,
 				E3BD4F6E1BF543B697AFB794 /* DateTimePicker */,
 				6999211AF26A46738FB9E106 /* MaskedView */,
-				0E05846EF744409D93CC1ED6 /* Slider */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -3301,8 +3281,6 @@
 				B75F881E8F9641B785F76CB0 /* RNSVGForeignObject.m in Sources */,
 				C1A9EE2CB1DF4BD8936C3C7F /* RNSVGForeignObjectManager.m in Sources */,
 				F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */,
-				ABC18CFCC0224BF0B95B691A /* RNCSlider.m in Sources */,
-				BCB61D782B4944E89A1F0371 /* RNCSliderManager.m in Sources */,
 				6782D340A0024AF58B3805D0 /* RNSVGTopAlignedLabel.ios.m in Sources */,
 				8353B820277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */,
 				827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */,
@@ -3602,8 +3580,6 @@
 				F1421904262CB68600BB97E6 /* RNSVGForeignObjectManager.m in Sources */,
 				F1421905262CB68600BB97E6 /* RNSharedElementCornerRadii.m in Sources */,
 				837259A9280671D200E204C1 /* AIRMapUrlTileCachedOverlay.m in Sources */,
-				F1421906262CB68600BB97E6 /* RNCSlider.m in Sources */,
-				F1421908262CB68600BB97E6 /* RNCSliderManager.m in Sources */,
 				19762DC50FD4D897EDAF61A5 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

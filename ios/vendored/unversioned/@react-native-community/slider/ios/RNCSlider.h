@@ -27,4 +27,6 @@
 @property (nonatomic, strong) NSString *accessibilityUnits;
 @property (nonatomic, strong) NSArray *accessibilityIncrements;
 
+- (float) discreteValue:(float)value;
+
 @end
