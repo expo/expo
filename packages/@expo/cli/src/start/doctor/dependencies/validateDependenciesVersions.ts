@@ -36,7 +36,7 @@ export async function validateDependenciesVersionsAsync(
   packagesToCheck?: string[]
 ): Promise<boolean | null> {
   if (APISettings.isOffline) {
-    debug('Skipping dependency validation in offline mode');
+    Log.warn('Skipping dependency validation in offline mode');
     return null;
   }
 
