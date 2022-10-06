@@ -20,7 +20,7 @@ An [example to do list app](https://github.com/expo/examples/tree/master/with-sq
 
 To open a new SQLite database using an existing `.db` file you already have, you need to do three things:
 
-- Install `expo-file-system` and `expo-asset` packages:
+- Install `expo-file-system` and `expo-asset` modules:
 
   <Terminal cmd={['$ expo install expo-file-system expo-asset']} />
 
@@ -55,7 +55,7 @@ To open a new SQLite database using an existing `.db` file you already have, you
 
 ### Executing statements outside of a transaction
 
-> **info** You should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions. For example, `PRAGMA foreign_keys = ON;`.
+> **info** You should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions. Example: `PRAGMA foreign_keys = ON;`.
 
 ```js
 const db = SQLite.openDatabase('dbName', version);
