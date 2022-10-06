@@ -160,9 +160,15 @@ class AppContext(
   private val appDirectories: AppDirectoriesModuleInterface?
     get() = legacyModule()
 
+  /**
+   * A directory for storing user documents and other permanent files.
+   */
   val persistentFilesDirectory: File
     get() = appDirectories?.persistentFilesDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
 
+  /**
+   * A directory for storing temporary files that can be removed at any time by the device's operating system.
+   */
   val cacheDirectory: File
     get() = appDirectories?.cacheDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
 
