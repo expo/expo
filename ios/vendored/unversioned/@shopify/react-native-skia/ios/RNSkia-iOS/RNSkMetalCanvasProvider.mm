@@ -1,4 +1,5 @@
-#import <RNSkDrawViewImpl.h>
+#import <RNSkMetalCanvasProvider.h>
+#import <RNSkLog.h>
 
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
@@ -7,23 +8,30 @@
 #import <SkSurface.h>
 #import <SkCanvas.h>
 
-#pragma clang diagnostic pop
+#import <include/gpu/GrDirectContext.h>
 
-#import <SkiaDrawView.h>
-#import <RNSkLog.h>
+#pragma clang diagnostic pop
 
 // These static class members are used by all Skia Views
-id<MTLDevice> RNSkDrawViewImpl::_device = MTLCreateSystemDefaultDevice();
-id<MTLCommandQueue> RNSkDrawViewImpl::_commandQueue = id<MTLCommandQueue>(CFRetain((GrMTLHandle)[_device newCommandQueue]));
+id<MTLDevice> RNSkMetalCanvasProvider::_device = nullptr;
+id<MTLCommandQueue> RNSkMetalCanvasProvider::_commandQueue = nullptr;
+sk_sp<GrDirectContext> RNSkMetalCanvasProvider::_skContext = nullptr;
 
-sk_sp<GrDirectContext> RNSkDrawViewImpl::_skContext = nullptr;
+RNSkMetalCanvasProvider::RNSkMetalCanvasProvider(std::function<void()> requestRedraw,
+                        std::shared_ptr<RNSkia::RNSkPlatformContext> context):
+RNSkCanvasProvider(requestRedraw),
+  _context(context) {
+  if (!_device) {
+    _device = MTLCreateSystemDefaultDevice();
+  }
+  if (!_commandQueue) {
+    _commandQueue = id<MTLCommandQueue>(CFRetain((GrMTLHandle)[_device newCommandQueue]));
+  }
 
-RNSkDrawViewImpl::RNSkDrawViewImpl(std::shared_ptr<RNSkia::RNSkPlatformContext> context):
-  _context(context), RNSkia::RNSkDrawView(context) {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability-new"
+  #pragma clang diagnostic push
+  #pragma clang diagnostic ignored "-Wunguarded-availability-new"
   _layer = [CAMetalLayer layer];
-#pragma clang diagnostic pop
+  #pragma clang diagnostic pop
     
   _layer.framebufferOnly = NO;
   _layer.device = _device;
@@ -32,7 +40,7 @@ RNSkDrawViewImpl::RNSkDrawViewImpl(std::shared_ptr<RNSkia::RNSkPlatformContext> 
   _layer.pixelFormat = MTLPixelFormatBGRA8Unorm;
 }
 
-RNSkDrawViewImpl::~RNSkDrawViewImpl() {
+RNSkMetalCanvasProvider::~RNSkMetalCanvasProvider() {
   if([[NSThread currentThread] isMainThread]) {
     _layer = NULL;
   } else {
@@ -50,17 +58,20 @@ RNSkDrawViewImpl::~RNSkDrawViewImpl() {
   }
 }
 
-void RNSkDrawViewImpl::setSize(int width, int height) {
-  _width = width;
-  _height = height;
-  _layer.frame = CGRectMake(0, 0, width, height);
-  _layer.drawableSize = CGSizeMake(width * _context->getPixelDensity(),
-                                   height* _context->getPixelDensity());
-  
-  requestRedraw();
-}
+/**
+ Returns the scaled width of the view
+ */
+float RNSkMetalCanvasProvider::getScaledWidth() { return _width * _context->getPixelDensity(); };
 
-void RNSkDrawViewImpl::drawPicture(const sk_sp<SkPicture> picture) {
+/**
+ Returns the scaled height of the view
+ */
+float RNSkMetalCanvasProvider::getScaledHeight() { return _height * _context->getPixelDensity(); };
+
+/**
+ Render to a canvas
+ */
+void RNSkMetalCanvasProvider::renderToCanvas(const std::function<void(SkCanvas*)>& cb) {
   if(_width == -1 && _height == -1) {
     return;
   }
@@ -103,10 +114,22 @@ void RNSkDrawViewImpl::drawPicture(const sk_sp<SkPicture> picture) {
     }
     
     skSurface->getCanvas()->clear(SK_AlphaTRANSPARENT);
-    skSurface->getCanvas()->drawPicture(picture);
+    cb(skSurface->getCanvas());
     
     id<MTLCommandBuffer> commandBuffer([_commandQueue commandBuffer]);
     [commandBuffer presentDrawable:currentDrawable];
     [commandBuffer commit];
   }
+};
+
+void RNSkMetalCanvasProvider::setSize(int width, int height) {
+  _width = width;
+  _height = height;
+  _layer.frame = CGRectMake(0, 0, width, height);
+  _layer.drawableSize = CGSizeMake(width * _context->getPixelDensity(),
+                                   height* _context->getPixelDensity());
+  
+  _requestRedraw();
 }
+
+CALayer* RNSkMetalCanvasProvider::getLayer() { return _layer; }

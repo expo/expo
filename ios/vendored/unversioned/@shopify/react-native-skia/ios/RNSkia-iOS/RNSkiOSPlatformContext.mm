@@ -1,4 +1,4 @@
-#include "PlatformContext.h"
+#include "RNSkiOSPlatformContext.h"
 
 #import <React/RCTUtils.h>
 #include <thread>
@@ -8,7 +8,7 @@
 
 namespace RNSkia {
 
-  void PlatformContext::performStreamOperation(const std::string &sourceUri,
+  void RNSkiOSPlatformContext::performStreamOperation(const std::string &sourceUri,
                                               const std::function<void(std::unique_ptr<SkStreamAsset>)> &op) {
   
     RNSkMeasureTime("PlatformContext::performStreamOperation");
@@ -28,11 +28,11 @@ namespace RNSkia {
     std::thread(loader).detach();
   }
 
-void PlatformContext::raiseError(const std::exception &err) {
+void RNSkiOSPlatformContext::raiseError(const std::exception &err) {
     RCTFatal(RCTErrorWithMessage([NSString stringWithUTF8String:err.what()]));
 }
 
-void PlatformContext::startDrawLoop() {
+void RNSkiOSPlatformContext::startDrawLoop() {
   if(_displayLink == nullptr) {
     _displayLink = [[DisplayLink alloc] init];
     [_displayLink start:^(double time) {
@@ -41,7 +41,7 @@ void PlatformContext::startDrawLoop() {
   }
 }
 
-void PlatformContext::stopDrawLoop() {
+void RNSkiOSPlatformContext::stopDrawLoop() {
   if(_displayLink != nullptr) {
     [_displayLink stop];
     _displayLink = nullptr;

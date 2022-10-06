@@ -33,20 +33,30 @@ public:
        !arguments[0].asObject(runtime).isFunction(runtime)) {
       throw jsi::JSError(runtime, "Expected callback function as first parameter");
     }
-        
+
     if(!arguments[1].isObject() ||
        !arguments[1].asObject(runtime).isArray(runtime)) {
       throw jsi::JSError(runtime, "Expected array of dependencies as second parameter");
     }
-        
+
     // Get callback for calculating result
     _callback = std::make_shared<jsi::Function>(arguments[0].asObject(runtime).asFunction(runtime));
   }
-  
+
+  void invalidate() override {
+    RNSkReadonlyValue::invalidate();
+
+    // Unregister listeners
+    for(const auto &unsubscribe: _unsubscribers) {
+      unsubscribe();
+    }
+    _unsubscribers.clear();
+  }
+
   void initializeDependencies(jsi::Runtime &runtime, const jsi::Value *arguments, size_t count) {
     // Save dependencies
     std::vector<std::shared_ptr<RNSkReadonlyValue>> dependencies;
-        
+
     // Ensure that all dependencies are Values
     auto deps = arguments[1].asObject(runtime).asArray(runtime);
     const std::size_t size = deps.size(runtime);
@@ -63,7 +73,7 @@ public:
       }
       dependencies.push_back(value);
     }
-    
+
     // register change handler on dependencies
     _unsubscribers.reserve(_unsubscribers.size() + size);
     for(const auto &dep: dependencies) {
@@ -75,18 +85,11 @@ public:
         }
       }));
     }
-        
+
     // Set initial value
     dependencyUpdated(runtime);
   }
-  
-  virtual ~RNSkComputedValue() {
-    // Unregister listeners
-    for(const auto &unsubscribe: _unsubscribers) {
-      unsubscribe();
-    }
-  }
-  
+
 private:
   void dependencyUpdated(jsi::Runtime &runtime) {
     // Calculate new value

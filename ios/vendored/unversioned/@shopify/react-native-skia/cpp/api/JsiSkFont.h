@@ -38,24 +38,6 @@ namespace RNSkia
             return jsi::String::createFromUtf8(runtime, "Font");
         }
 
-        JSI_HOST_FUNCTION(measureText)
-        {
-            RNSkLogger::warnToJavascriptConsole(runtime, "measureText() is deprecated.  Clients should use 'Font.getGlyphWidths' instead (the latter does no shaping)");
-            auto textVal = arguments[0].asString(runtime).utf8(runtime);
-            auto text = textVal.c_str();
-            SkRect rect;
-            std::shared_ptr<SkPaint> paint = nullptr;
-            // Check if a paint argument was provided
-            if (count == 2)
-            {
-                paint = JsiSkPaint::fromValue(runtime, arguments[1]);
-            }
-            getObject()->measureText(text, strlen(text), SkTextEncoding::kUTF8, &rect,
-                                     paint.get());
-            rect.setXYWH(0, 0, rect.width(), rect.height());
-            return JsiSkRect::toValue(runtime, getContext(), std::move(rect));
-        }
-
         JSI_HOST_FUNCTION(getGlyphWidths)
         {
             auto jsiGlyphs = arguments[0].asObject(runtime).asArray(runtime);
@@ -89,7 +71,7 @@ namespace RNSkia
 
         JSI_HOST_FUNCTION(getTextWidth) {
             auto str = arguments[0].asString(runtime).utf8(runtime);
-            auto numGlyphIDs = str.length();
+            auto numGlyphIDs = getObject()->countText(str.c_str(), str.length(), SkTextEncoding::kUTF8);
             std::vector<SkGlyphID> glyphs;
             glyphs.resize(numGlyphIDs);
             int glyphsSize = static_cast<int>(numGlyphIDs);
@@ -129,9 +111,9 @@ namespace RNSkia
         JSI_HOST_FUNCTION(getGlyphIDs)
         {
             auto str = arguments[0].asString(runtime).utf8(runtime);
-            auto numGlyphIDs = count > 1 && !arguments[1].isNull() && !arguments[1].isUndefined()
-                                   ? arguments[1].asNumber()
-                                   : str.length();
+            int numGlyphIDs = count > 1 && !arguments[1].isNull() && !arguments[1].isUndefined()
+                                   ? static_cast<int>(arguments[1].asNumber())
+                                   : getObject()->countText(str.c_str(), str.length(), SkTextEncoding::kUTF8);
             std::vector<SkGlyphID> glyphIDs;
             glyphIDs.resize(numGlyphIDs);
             getObject()->textToGlyphs(str.c_str(), str.length(), SkTextEncoding::kUTF8,
@@ -279,7 +261,6 @@ namespace RNSkia
 
         JSI_EXPORT_FUNCTIONS(
             JSI_EXPORT_FUNC(JsiSkFont, getSize),
-            JSI_EXPORT_FUNC(JsiSkFont, measureText),
             JSI_EXPORT_FUNC(JsiSkFont, getMetrics),
             JSI_EXPORT_FUNC(JsiSkFont, getGlyphIDs),
             JSI_EXPORT_FUNC(JsiSkFont, getGlyphIntercepts),

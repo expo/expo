@@ -21,7 +21,13 @@ public:
 
   JsiSkPicture(std::shared_ptr<RNSkPlatformContext> context, const sk_sp<SkPicture> picture)
       : JsiSkWrappingSkPtrHostObject<SkPicture>(context, picture) {};
-  
+
+  JSI_PROPERTY_GET(__typename__) {
+    return jsi::String::createFromUtf8(runtime, "Picture");
+  }
+
+  JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(JsiSkPicture, __typename__))
+
   JSI_HOST_FUNCTION(makeShader) {
     auto tmx = (SkTileMode)arguments[0].asNumber();
     auto tmy = (SkTileMode)arguments[1].asNumber();

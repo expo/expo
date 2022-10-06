@@ -1,26 +1,25 @@
 --- android/CMakeLists.txt
 +++ android/CMakeLists.txt
-@@ -34,14 +34,14 @@ add_library(
-         "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkDrawViewImpl.cpp"
+@@ -40,13 +40,13 @@
+         "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkOpenGLCanvasProvider.cpp"
          "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/SkiaOpenGLRenderer.cpp"
-         
+ 
 -        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiHostObject.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiHostObject.cpp"
  
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkManager.cpp"
--        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkDrawView.cpp"
+-        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkJsView.cpp"
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkDispatchQueue.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkManager.cpp"
-+        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkDrawView.cpp"
++        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkJsView.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkDispatchQueue.cpp"
- 
  
 -        "${PROJECT_SOURCE_DIR}/cpp/api/third_party/CSSColorParser.cpp"
 +        "${PROJECT_SOURCE_DIR}/../cpp/api/third_party/CSSColorParser.cpp"
          
  )
  
-@@ -56,28 +56,28 @@ target_include_directories(
+@@ -60,28 +60,28 @@
          "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core"
          "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
  
@@ -68,7 +67,7 @@
  
 --- android/build.gradle
 +++ android/build.gradle
-@@ -43,13 +43,17 @@ static def findNodeModules(baseDir) {
+@@ -43,13 +43,17 @@
    throw new GradleException("React-Native-Skia: Failed to find node_modules/ path!")
  }
  
@@ -87,7 +86,7 @@
  
  def buildType = "debug"
  tasks.all({ task ->
-@@ -77,7 +81,7 @@ if (!defaultDir.exists()) {
+@@ -77,7 +81,7 @@
  }
  
  def prebuiltDir = sourceBuild
@@ -96,7 +95,7 @@
      : "$buildDir/react-native-0*/jni"
  
  
-@@ -119,7 +123,7 @@ android {
+@@ -119,7 +123,7 @@
          externalNativeBuild {
              cmake {
                  cppFlags "-fexceptions", "-frtti", "-std=c++1y", "-DONANDROID"
@@ -105,7 +104,7 @@
                  arguments '-DANDROID_STL=c++_shared',
                            "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
                            "-DNODE_MODULES_DIR=${nodeModules}",
-@@ -189,8 +193,10 @@ dependencies {
+@@ -190,8 +194,10 @@
      } else {
          // React Native >= 0.69
          def rnAarMatcher = "**/react-native/**/*${buildType}.aar"
@@ -118,7 +117,7 @@
      }
  }
  
-@@ -255,4 +261,16 @@ def nativeBuildDependsOn(dependsOnTask, variant) {
+@@ -256,4 +262,16 @@
  afterEvaluate {
    nativeBuildDependsOn(extractAARHeaders, null)
    nativeBuildDependsOn(extractJNIFiles, null)  

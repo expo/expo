@@ -11,11 +11,11 @@
 namespace RNSkia {
     using namespace facebook;
 
-    class RNSkPlatformContextImpl: public RNSkPlatformContext {
+    class RNSkAndroidPlatformContext: public RNSkPlatformContext {
     public:
-        RNSkPlatformContextImpl(JniPlatformContext* jniPlatformContext,
-                                jsi::Runtime *runtime,
-                                std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker) :
+        RNSkAndroidPlatformContext(JniPlatformContext* jniPlatformContext,
+                                   jsi::Runtime *runtime,
+                                   std::shared_ptr<facebook::react::CallInvoker> jsCallInvoker) :
             RNSkPlatformContext(runtime,
                                 jsCallInvoker,
                                 jniPlatformContext->getPixelDensity()),
