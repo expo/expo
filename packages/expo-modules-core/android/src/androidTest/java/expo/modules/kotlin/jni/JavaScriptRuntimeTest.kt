@@ -1,9 +1,7 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
-import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import io.mockk.mockk
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 

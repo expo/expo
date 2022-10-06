@@ -4,7 +4,6 @@ package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.ExperimentalCoroutinesApi
