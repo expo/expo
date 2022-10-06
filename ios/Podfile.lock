@@ -1294,9 +1294,9 @@ PODS:
     - ExpoModulesCore
   - EXAppleAuthentication (4.3.0):
     - ExpoModulesCore
-  - EXApplication (4.2.2):
+  - EXApplication (5.0.0):
     - ExpoModulesCore
-  - EXAV (12.0.2):
+  - EXAV (13.0.0-beta.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (10.3.0):
@@ -1318,9 +1318,9 @@ PODS:
     - ExpoModulesCore
   - EXCalendar (10.3.0):
     - ExpoModulesCore
-  - EXCamera (12.3.0):
+  - EXCamera (13.0.0-beta.1):
     - ExpoModulesCore
-  - EXConstants (13.2.4):
+  - EXConstants (14.0.0):
     - ExpoModulesCore
   - EXContacts (10.3.0):
     - ExpoModulesCore
@@ -1328,7 +1328,7 @@ PODS:
     - ExpoModulesCore
   - EXDocumentPicker (10.3.0):
     - ExpoModulesCore
-  - EXErrorRecovery (3.2.0):
+  - EXErrorRecovery (4.0.0):
     - ExpoModulesCore
   - EXFaceDetector (11.3.0):
     - ExpoModulesCore
@@ -1336,7 +1336,7 @@ PODS:
     - MLKitCommon (= 5.0.0)
     - MLKitFaceDetection (= 1.5.0)
     - MLKitVision (= 3.0.0)
-  - EXFileSystem (14.1.0):
+  - EXFileSystem (15.0.0):
     - ExpoModulesCore
   - EXFirebaseAnalytics (7.2.0):
     - EXFirebaseCore
@@ -1345,7 +1345,7 @@ PODS:
   - EXFirebaseCore (5.2.0):
     - ExpoModulesCore
     - Firebase/Core (= 9.5.0)
-  - EXFont (10.2.1):
+  - EXFont (11.0.0):
     - ExpoModulesCore
   - EXGL (11.4.0):
     - ExpoModulesCore
@@ -1372,7 +1372,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (46.0.15):
+  - Expo (47.0.0-alpha.1):
     - ExpoModulesCore
   - ExpoCellular (4.3.0):
     - ExpoModulesCore
@@ -1390,18 +1390,18 @@ PODS:
     - ExpoModulesCore
   - ExpoImagePicker (13.3.1):
     - ExpoModulesCore
-  - ExpoKeepAwake (10.2.1):
+  - ExpoKeepAwake (11.0.0):
     - ExpoModulesCore
-  - ExpoLinearGradient (11.4.0):
+  - ExpoLinearGradient (12.0.0-beta.1):
     - ExpoModulesCore
   - ExpoLocalization (13.1.0):
     - ExpoModulesCore
   - ExpoMailComposer (11.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.11.7):
+  - ExpoModulesCore (0.12.0):
     - React-Core
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (0.11.7):
+  - ExpoModulesCore/Tests (0.12.0):
     - ExpoModulesTestCore
     - React-Core
     - ReactCommon/turbomodule/core
@@ -3369,8 +3369,8 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 660c8631487c8035a79d4d909f3766661dc777fd
   EXAppleAuthentication: ca859b12b5ef2323eac019c8a2472ae6b726edcf
-  EXApplication: 38f8f934e5790c732e802298ec12f160c40a741d
-  EXAV: 59b82f29ea94dd8d8d4efcef7335c6c014795578
+  EXApplication: 58a725bdc1b3732e8d586b16d0180d14cef0e240
+  EXAV: 4b27d494e638f832913267b2794c607b8fff73f2
   EXBackgroundFetch: b1c8aa3cebf34ab4a26fd90462d9e0df0ad0c9db
   EXBarCodeScanner: e2461b1c4c7ce302a710f901902e02d2ec120a86
   EXBattery: 591d642c2a274cc4cd38a74a5cb8a446406d9d43
@@ -3378,17 +3378,17 @@ SPEC CHECKSUMS:
   EXBranch: becf66363c59666add10fabfa9cdda2fab3930f7
   EXBrightness: a8e5703abacbcba1430979a2a0815a4787c48223
   EXCalendar: 39c3421053f1b9f006e74f1a3350674a736364f5
-  EXCamera: e690e3dda9016fc0b4c18daa5c85a633f4536970
-  EXConstants: 28c2e09242a6db010b4b8c8fb00b70d3629c5e32
+  EXCamera: 85d5fd5e52da77d9f87643dbd720bec4de0b668c
+  EXConstants: 7d6f479d499650e349328e8dc48ee8041e560c6a
   EXContacts: 5b1b3eb7a1626768d5879aabfefe3814efdefe1f
   EXDevice: e83b7c8080e9643216d54bf4f144af0fd31a7bd3
   EXDocumentPicker: 062cdfdbd30450e9ab6c91b62933bb1dbf00a92d
-  EXErrorRecovery: 68d5f8102234058762687d320580d9b4402cc278
+  EXErrorRecovery: c8f85b803a983b0fd7e7740be1dd342d8ddb8867
   EXFaceDetector: a5578b7abadcf7a17f446486a3e47b269544bd17
-  EXFileSystem: b2b6629924e5b4b6f870c05af23c2c7a4551acc0
+  EXFileSystem: 2f3ffc5a06a97db7353c9719ad5c26c47d68b5e4
   EXFirebaseAnalytics: 8cd886bb057c858c1836dbf094bb5b39157a1149
   EXFirebaseCore: 4e86a77accaa3363b07e483f46eea34417c2bbdb
-  EXFont: babbdb16d2a629f56e5b1cc3958f200960b70b31
+  EXFont: 49dd9f8454d035d00edec02b2fefab415872d86b
   EXGL: eaf094308ed1a3ea8259b0ceeef41363edf20eb2
   EXImageLoader: cb886583dae1f3320c72146480c97a3ec71f1e60
   EXJSONUtils: bb893657b9db536765814e5b1667e4b511933e62
@@ -3399,18 +3399,18 @@ SPEC CHECKSUMS:
   EXNetwork: 4b3404524b6a91e695dd4be55cf122f1485f8bab
   EXNotifications: ea68b24a6b66fafcfcf913b2ce1367f605f6dcc1
   EXPermissions: 5cc17993ce2bf8377b40ebae47d54a88c41c4480
-  Expo: 56741526fd10a85102d22639c8343647e4d9b75b
+  Expo: 012d47437c6d887e0100c498d16019c5eb16f20f
   ExpoCellular: 5cd085987f010055ab92c81d60e948ce0c4b5a89
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
   ExpoCrypto: e2678609304ec063a0e36b826a3c2d0f0d7202c0
   ExpoHaptics: 7a9709f4310b577d1dd68d8839b95df1e2419cde
   ExpoImageManipulator: 7154a74e021bdc08810e54d87adaac947ee3dff8
   ExpoImagePicker: 5935667c6a0b5e6f5ca7c0a09f2f7a40f5ee8be2
-  ExpoKeepAwake: a97c88014e55d903a72f049ca2c01aeb7ed387f1
-  ExpoLinearGradient: 91c81d92f85b422607306ad0f0aa48de755bb601
+  ExpoKeepAwake: 49bcb2ce587a75f876ff0777b80fd6803e6cbb46
+  ExpoLinearGradient: 4ef9f27fd206fa60a7dc5437f22ee48a9fb294a8
   ExpoLocalization: a9080f87ad52cab6ef367fefc6437e6ac54d1350
   ExpoMailComposer: 8fa786ef23b9f07b47b18fe00da0906a576ffaed
-  ExpoModulesCore: fd114feb7930113ef794dd78bf9abede4bc5248a
+  ExpoModulesCore: d67f3ef518c54f9d365e49e25775e339d3856271
   ExpoModulesTestCore: 8a409e6ce8a9940174344cad307d3d614363578d
   ExpoRandom: fe4c4522cc975c76e98fc33af96daa352a17d311
   ExpoSystemUI: 30577707799df9497f510f329cc1d6798abbb7cb
