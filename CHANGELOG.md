@@ -15,6 +15,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-picker/picker` from `2.4.2` to `2.4.6`. ([#19390](https://github.com/expo/expo/pull/19390) by [@aleqsio](https://github.com/aleqsio))
 - Updated `react-native-screens` from `3.15.0` to `3.18.0`. ([#19383](https://github.com/expo/expo/pull/19383) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@shopify/react-native-skia` from `0.1.136` to `0.1.153`. ([#19360](https://github.com/expo/expo/pull/19360) by [@kudo](https://github.com/kudo))
+- Updated `lottie-react-native` from `5.1.3` to `5.1.4`. ([#19433](https://github.com/expo/expo/pull/19433) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
