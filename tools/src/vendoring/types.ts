@@ -10,6 +10,9 @@ export type VendoringModuleConfig = {
   semverPrefix?: string;
   packageJsonPath?: string;
 
+  // Specify root directory for copying files. This is useful for workspace that the module is in a subfolder.
+  rootDir?: string;
+
   sourceType?: 'git' | 'npm';
 
   ios?: VendoringModulePlatformConfig<{
