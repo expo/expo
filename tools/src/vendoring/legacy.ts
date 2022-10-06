@@ -723,21 +723,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  '@react-native-community/slider': {
-    repoUrl: 'https://github.com/react-native-community/react-native-slider',
-    installableInManagedApps: true,
-    packageJsonPath: 'src',
-    steps: [
-      {
-        sourceIosPath: 'src/ios',
-        targetIosPath: 'Api/Components/Slider',
-        sourceAndroidPath: 'src/android/src/main/java/com/reactnativecommunity/slider',
-        targetAndroidPath: 'modules/api/components/slider',
-        sourceAndroidPackage: 'com.reactnativecommunity.slider',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.slider',
-      },
-    ],
-  },
   '@stripe/stripe-react-native': {
     repoUrl: 'https://github.com/stripe/stripe-react-native',
     installableInManagedApps: true,
