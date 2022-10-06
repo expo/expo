@@ -1,4 +1,10 @@
+project(RNSkia)
 cmake_minimum_required(VERSION 3.4.1)
+
+if(${BUILD_TYPE} STREQUAL "debug")
+    set (CMAKE_BUILD_TYPE Debug)
+    message("-- Building with Debug Symbols")
+endif()
 
 set (CMAKE_VERBOSE_MAKEFILE ON)
 set (CMAKE_CXX_STANDARD 17)
@@ -29,22 +35,20 @@ add_library(
         SHARED
         "${PROJECT_SOURCE_DIR}/cpp/jni/JniLoad.cpp"
         "${PROJECT_SOURCE_DIR}/cpp/jni/JniSkiaManager.cpp"
-        "${PROJECT_SOURCE_DIR}/cpp/jni/JniSkiaDrawView.cpp"
+
         "${PROJECT_SOURCE_DIR}/cpp/jni/JniPlatformContext.cpp"
-        "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkDrawViewImpl.cpp"
+        "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkOpenGLCanvasProvider.cpp"
         "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/SkiaOpenGLRenderer.cpp"
-        
+
         "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiHostObject.cpp"
 
         "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkManager.cpp"
-        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkDrawView.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkJsView.cpp"
         "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkDispatchQueue.cpp"
-
 
         "${PROJECT_SOURCE_DIR}/../cpp/api/third_party/CSSColorParser.cpp"
         
 )
-
 
 target_include_directories(
         ${PACKAGE_NAME}

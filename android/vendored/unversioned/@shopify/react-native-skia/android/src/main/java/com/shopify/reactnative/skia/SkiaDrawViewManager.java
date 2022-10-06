@@ -1,6 +1,5 @@
 package com.shopify.reactnative.skia;
 
-import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.uimanager.BaseViewManager;
 import com.facebook.react.uimanager.LayoutShadowNode;
 import com.facebook.react.uimanager.ThemedReactContext;
@@ -9,16 +8,12 @@ import com.facebook.react.uimanager.annotations.ReactProp;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.HashMap;
-
-public class RNSkiaViewManager extends BaseViewManager<SkiaDrawView, LayoutShadowNode> {
-
-    final private HashMap<SkiaDrawView, Integer> mViewMapping = new HashMap();
+public class SkiaDrawViewManager extends BaseViewManager<SkiaDrawView, LayoutShadowNode> {
 
     @NonNull
     @Override
     public String getName() {
-        return "ReactNativeSkiaView";
+        return "SkiaDrawView";
     }
 
     @Override
@@ -39,9 +34,7 @@ public class RNSkiaViewManager extends BaseViewManager<SkiaDrawView, LayoutShado
     public void setNativeId(@NonNull SkiaDrawView view, @Nullable String nativeId) {
         super.setNativeId(view, nativeId);
         int nativeIdResolved = Integer.parseInt(nativeId);
-        RNSkiaModule skiaModule = ((ReactContext)view.getContext()).getNativeModule(RNSkiaModule.class);
-        skiaModule.getSkiaManager().register(nativeIdResolved, view);
-        mViewMapping.put(view, nativeIdResolved);
+        view.registerView(nativeIdResolved);
     }
 
     @ReactProp(name = "mode")
@@ -57,11 +50,7 @@ public class RNSkiaViewManager extends BaseViewManager<SkiaDrawView, LayoutShado
     @Override
     public void onDropViewInstance(@NonNull SkiaDrawView view) {
         super.onDropViewInstance(view);
-        RNSkiaModule skiaModule = ((ReactContext)view.getContext()).getNativeModule(RNSkiaModule.class);
-        Integer nativeId = mViewMapping.get(view);
-        skiaModule.getSkiaManager().unregister(nativeId);
-        mViewMapping.remove(view);
-        view.onViewRemoved();
+        view.unregisterView();
     }
 
     @NonNull

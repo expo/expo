@@ -127,7 +127,9 @@ android {
                 arguments '-DANDROID_STL=c++_shared',
                           "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
                           "-DNODE_MODULES_DIR=${nodeModules}",
-                          "-DPREBUILT_DIR=${prebuiltDir}"
+                          "-DPREBUILT_DIR=${prebuiltDir}",
+                          "-DBUILD_TYPE=${buildType}"
+
             }
         }
     }
@@ -137,8 +139,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            path file('CMakeLists.txt')
-            version '3.10.2'
+            path file('CMakeLists.txt')            
         }
     }
 
@@ -260,7 +261,7 @@ def nativeBuildDependsOn(dependsOnTask, variant) {
 
 afterEvaluate {
   nativeBuildDependsOn(extractAARHeaders, null)
-  nativeBuildDependsOn(extractJNIFiles, null)
+  nativeBuildDependsOn(extractJNIFiles, null)  
 }
 
 tasks.whenTaskAdded { task ->

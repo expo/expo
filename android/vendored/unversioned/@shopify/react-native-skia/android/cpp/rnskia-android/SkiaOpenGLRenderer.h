@@ -3,6 +3,8 @@
 #include <RNSkLog.h>
 
 #include "android/native_window.h"
+#include <fbjni/fbjni.h>
+#include <jni.h>
 #include "EGL/egl.h"
 #include "GLES2/gl2.h"
 
@@ -45,18 +47,19 @@ namespace RNSkia
     class SkiaOpenGLRenderer
     {
     public:
-        SkiaOpenGLRenderer(ANativeWindow *surface, size_t renderId);
+        SkiaOpenGLRenderer(jobject surface);
+        ~SkiaOpenGLRenderer();
 
         /**
          * Initializes, renders and tears down the render pipeline depending on the state of the
          * renderer. All OpenGL/Skia context operations are done on a separate thread which must
          * be the same for all calls to the render method.
          *
-         * @param picture Picture to render, can be nullptr, then no rendering will be performed
+         * @param callback Render callback
          * @param width Width of surface to render if there is a picture
          * @param height Height of surface to render if there is a picture
          */
-        void run(const sk_sp<SkPicture> picture, int width, int height);
+        void run(const std::function<void(SkCanvas*)> &cb, int width, int height);
 
         /**
          * Sets the state to finishing. Next time the renderer will be called it
@@ -116,14 +119,12 @@ namespace RNSkia
 
         EGLSurface _glSurface = EGL_NO_SURFACE;
 
-        ANativeWindow *_surfaceTexture = nullptr;
+        ANativeWindow *_nativeWindow = nullptr;
         GrBackendRenderTarget _skRenderTarget;
         sk_sp<SkSurface> _skSurface;
 
         int _prevWidth = 0;
         int _prevHeight = 0;
-
-        size_t _renderId;
 
         std::atomic<RenderState> _renderState = { RenderState::Initializing };
     };

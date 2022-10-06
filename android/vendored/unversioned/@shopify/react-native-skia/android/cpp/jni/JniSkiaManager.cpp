@@ -16,13 +16,8 @@ using namespace facebook;
 void JniSkiaManager::registerNatives() {
     registerHybrid({
         makeNativeMethod("initHybrid", JniSkiaManager::initHybrid),
-        makeNativeMethod(
-            "initializeRuntime", JniSkiaManager::initializeRuntime),
-        makeNativeMethod("registerSkiaView", JniSkiaManager::registerSkiaView),
-        makeNativeMethod(
-            "unregisterSkiaView", JniSkiaManager::unregisterSkiaView),
-        makeNativeMethod(
-            "invalidate", JniSkiaManager::invalidate),
+        makeNativeMethod("initializeRuntime", JniSkiaManager::initializeRuntime),
+        makeNativeMethod("invalidate", JniSkiaManager::invalidate),
     });
 }
 
@@ -44,14 +39,6 @@ jni::local_ref<jni::HybridClass<JniSkiaManager>::jhybriddata> JniSkiaManager::in
 void JniSkiaManager::initializeRuntime() {
     // Create the cross platform skia manager
     _skManager = std::make_shared<RNSkManager>(_jsRuntime, _jsCallInvoker, _context);
-}
-
-void JniSkiaManager::registerSkiaView(int viewTag, JniSkiaDrawView *skiaView) {
-    _skManager->registerSkiaDrawView(viewTag, skiaView->getDrawViewImpl());
-}
-
-void JniSkiaManager::unregisterSkiaView(int viewTag) {
-    _skManager->unregisterSkiaDrawView(viewTag);
 }
 
 } // namespace RNSkia

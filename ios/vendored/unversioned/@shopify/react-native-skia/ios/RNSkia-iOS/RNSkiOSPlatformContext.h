@@ -30,9 +30,9 @@ using namespace facebook;
 
 static void handleNotification(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo);
 
-class PlatformContext : public RNSkPlatformContext {
+class RNSkiOSPlatformContext : public RNSkPlatformContext {
 public:
-  PlatformContext(jsi::Runtime *runtime,
+  RNSkiOSPlatformContext(jsi::Runtime *runtime,
                   std::shared_ptr<react::CallInvoker> callInvoker)
       : RNSkPlatformContext(runtime, callInvoker, [[UIScreen mainScreen] scale]) {
         // We need to make sure we invalidate when modules are freed
@@ -46,7 +46,7 @@ public:
           );
       }
 
-  ~PlatformContext() {
+  ~RNSkiOSPlatformContext() {
     CFNotificationCenterRemoveEveryObserver(CFNotificationCenterGetLocalCenter(), this);
   }
 
@@ -70,7 +70,7 @@ private:
 
 static void handleNotification(CFNotificationCenterRef center, void *observer, CFStringRef name,
                                const void *object, CFDictionaryRef userInfo) {
-  (static_cast<PlatformContext*>(observer))->willInvalidateModules();
+  (static_cast<RNSkiOSPlatformContext*>(observer))->willInvalidateModules();
 }
 
 } // namespace RNSkia

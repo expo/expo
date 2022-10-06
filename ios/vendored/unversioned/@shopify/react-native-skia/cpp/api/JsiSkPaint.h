@@ -39,6 +39,11 @@ public:
         runtime, std::make_shared<JsiSkPaint>(getContext(), SkPaint(*paint)));
   }
 
+  JSI_HOST_FUNCTION(reset) {
+    getObject()->reset();
+    return jsi::Value::undefined();
+  }
+
   JSI_HOST_FUNCTION(getColor) {
     return JsiSkColor::toValue(runtime, getObject()->getColor());
   }
@@ -144,6 +149,7 @@ public:
   }
 
   JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkPaint, copy),
+                       JSI_EXPORT_FUNC(JsiSkPaint, reset),
                        JSI_EXPORT_FUNC(JsiSkPaint, getColor),
                        JSI_EXPORT_FUNC(JsiSkPaint, getStrokeCap),
                        JSI_EXPORT_FUNC(JsiSkPaint, getStrokeJoin),

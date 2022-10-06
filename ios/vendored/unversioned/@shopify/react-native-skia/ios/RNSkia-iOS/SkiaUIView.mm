@@ -1,24 +1,26 @@
 #import <React/RCTBridge.h>
 
-#import <SkiaDrawView.h>
+#import <SkiaUIView.h>
 
 #include <utility>
 #include <vector>
 
-#import <RNSkDrawViewImpl.h>
 #import <RNSkManager.h>
 
-@implementation SkiaDrawView {
-  std::shared_ptr<RNSkDrawViewImpl> _impl;
+@implementation SkiaUIView {
+  std::shared_ptr<RNSkBaseiOSView> _impl;
   RNSkia::RNSkManager* _manager;
   RNSkia::RNSkDrawingMode _drawingMode;
+  std::function<std::shared_ptr<RNSkBaseiOSView>(std::shared_ptr<RNSkia::RNSkPlatformContext>)> _factory;
   bool _debugMode;
   size_t _nativeId;
 }
 
 #pragma mark Initialization and destruction
 
-- (instancetype) initWithManager: (RNSkia::RNSkManager*)manager;
+- (instancetype) initWithManager: (RNSkia::RNSkManager*)manager
+                         factory: (std::function<std::shared_ptr<RNSkBaseiOSView>(
+                                     std::shared_ptr<RNSkia::RNSkPlatformContext>)>)factory
 {
   self = [super init];
   if (self) {
@@ -26,6 +28,7 @@
     _nativeId = 0;
     _debugMode = false;
     _drawingMode = RNSkia::RNSkDrawingMode::Default;
+    _factory = factory;
     
     // Listen to notifications about module invalidation
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -50,7 +53,7 @@
       [_impl->getLayer() removeFromSuperlayer];
       
       if(_nativeId != 0 && _manager != nullptr) {
-        _manager->setSkiaDrawView(_nativeId, nullptr);
+        _manager->setSkiaView(_nativeId, nullptr);
       }
       
       _impl = nullptr;
@@ -58,21 +61,28 @@
   } else {
     // Create implementation view when the parent view is set
     if(_impl == nullptr && _manager != nullptr) {
-      _impl = std::make_shared<RNSkDrawViewImpl>(_manager->getPlatformContext());
+      _impl = _factory(_manager->getPlatformContext());
+      if(_impl == nullptr) {
+        throw std::runtime_error("Expected Skia view implementation, got nullptr.");
+      }
       [self.layer addSublayer: _impl->getLayer()];
       if(_nativeId != 0) {
-        _manager->setSkiaDrawView(_nativeId, _impl);
+        _manager->setSkiaView(_nativeId, _impl->getDrawView());
       }
-      _impl->setDrawingMode(_drawingMode);
-      _impl->setShowDebugOverlays(_debugMode);
+      _impl->getDrawView()->setDrawingMode(_drawingMode);
+      _impl->getDrawView()->setShowDebugOverlays(_debugMode);
     }
   }
 }
 
 - (void) dealloc {
   if(_manager != nullptr && _nativeId != 0) {
-    _manager->unregisterSkiaDrawView(_nativeId);
+    _manager->unregisterSkiaView(_nativeId);
   }
+  
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
+    
+  assert(_impl == nullptr);
 }
 
 #pragma mark Layout
@@ -90,14 +100,14 @@
   _drawingMode = mode.compare("continuous") == 0 ? RNSkia::RNSkDrawingMode::Continuous : RNSkia::RNSkDrawingMode::Default;
   
   if(_impl != nullptr) {
-    _impl->setDrawingMode(_drawingMode);
+    _impl->getDrawView()->setDrawingMode(_drawingMode);
   }
 }
 
 -(void) setDebugMode:(bool) debugMode {
   _debugMode = debugMode;
   if(_impl != nullptr) {
-    _impl->setShowDebugOverlays(debugMode);
+    _impl->getDrawView()->setShowDebugOverlays(debugMode);
   }
 }
 
@@ -105,13 +115,13 @@
   _nativeId = nativeId;
   
   if(_impl != nullptr) {
-    _manager->registerSkiaDrawView(nativeId, _impl);
+    _manager->registerSkiaView(nativeId, _impl->getDrawView());
   }
 }
 
 #pragma mark External API
 
-- (std::shared_ptr<RNSkDrawViewImpl>) impl {
+- (std::shared_ptr<RNSkBaseiOSView>) impl {
   return _impl;
 }
 
@@ -131,10 +141,10 @@
 
 - (void) handleTouches:(NSSet<UITouch*>*) touches withEvent:(UIEvent*) event {
   if (event.type == UIEventTypeTouches) {
-    std::vector<RNSkia::RNSkTouchPoint> nextTouches;
+    std::vector<RNSkia::RNSkTouchInfo> nextTouches;
     for (UITouch *touch in touches) {
       auto position = [touch preciseLocationInView:self];
-      RNSkia::RNSkTouchPoint nextTouch;
+      RNSkia::RNSkTouchInfo nextTouch;
       nextTouch.x = position.x;
       nextTouch.y = position.y;
       nextTouch.force = [touch force];    
@@ -142,26 +152,26 @@
       auto phase = [touch phase];
       switch(phase) {
         case UITouchPhaseBegan:
-          nextTouch.type = RNSkia::RNSkTouchType::Start;
+          nextTouch.type = RNSkia::RNSkTouchInfo::TouchType::Start;
           break;
         case UITouchPhaseMoved:
-          nextTouch.type = RNSkia::RNSkTouchType::Active;
+          nextTouch.type = RNSkia::RNSkTouchInfo::TouchType::Active;
           break;
         case UITouchPhaseEnded:
-          nextTouch.type = RNSkia::RNSkTouchType::End;
+          nextTouch.type = RNSkia::RNSkTouchInfo::TouchType::End;
           break;
         case UITouchPhaseCancelled:
-          nextTouch.type = RNSkia::RNSkTouchType::Cancelled;
+          nextTouch.type = RNSkia::RNSkTouchInfo::TouchType::Cancelled;
           break;
         default:
-          nextTouch.type = RNSkia::RNSkTouchType::Active;
+          nextTouch.type = RNSkia::RNSkTouchInfo::TouchType::Active;
           break;
       }
       
       nextTouches.push_back(nextTouch);
     }
     if(_impl != nullptr) {
-      _impl->updateTouchState(std::move(nextTouches));
+      _impl->getDrawView()->updateTouchState(nextTouches);
     }
   }
 }
