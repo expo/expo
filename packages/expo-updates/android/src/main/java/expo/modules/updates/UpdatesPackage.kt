@@ -25,7 +25,7 @@ class UpdatesPackage : Package {
   }
 
   override fun createReactNativeHostHandlers(context: Context): List<ReactNativeHostHandler> {
-    val useNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG;
+    val useNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG
     Log.w("expo-updates-package", "EX_UPDATES_NATIVE_DEBUG = $useNativeDebug")
     val handler: ReactNativeHostHandler = object : ReactNativeHostHandler {
       private var mShouldAutoSetup: Boolean? = null
