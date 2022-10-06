@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package versioned.host.exp.exponent.modules.api.components.slider;
+package com.reactnativecommunity.slider;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
@@ -13,15 +13,15 @@ import com.facebook.react.uimanager.events.Event;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
- * Event emitted when the user starts dragging the slider.
+ * Event emitted when the user finishes dragging the slider.
  */
+public class ReactSlidingCompleteEvent extends Event<ReactSlidingCompleteEvent> {
 
-public class ReactSlidingStartEvent extends Event<ReactSlidingStartEvent> {
-    public static final String EVENT_NAME = "topSlidingStart";
+    public static final String EVENT_NAME = "topSlidingComplete";
 
     private final double mValue;
 
-    public ReactSlidingStartEvent(int viewId, double value) {
+    public ReactSlidingCompleteEvent(int viewId, double value) {
         super(viewId);
         mValue = value;
     }

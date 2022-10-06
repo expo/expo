@@ -7,6 +7,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
+import com.reactnativecommunity.slider.ReactSliderPackage
 import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 import com.shopify.reactnative.skia.RNSkiaPackage
 import com.swmansion.rnscreens.RNScreensPackage
@@ -36,7 +37,6 @@ import versioned.host.exp.exponent.modules.api.components.picker.RNCPickerPackag
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkPackage
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage
-import versioned.host.exp.exponent.modules.api.components.slider.ReactSliderPackage
 import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage
 import versioned.host.exp.exponent.modules.api.components.pagerview.PagerViewPackage
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule
