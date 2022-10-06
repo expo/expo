@@ -382,8 +382,19 @@ export default class Camera extends React.Component<CameraProps> {
     const nativeProps = ensureNativeProps(this.props);
 
     const onBarCodeScanned = this.props.onBarCodeScanned
-      ? this._onObjectDetected(this.props.onBarCodeScanned)
+      ? this._onObjectDetected((data) => {
+          if (data?.cornerPoints?.length === 0) {
+            delete data.cornerPoints;
+          }
+
+          //for some reason typescript doesn't understand
+          //that I already checked if it's defined
+          if (this.props.onBarCodeScanned) {
+            this.props.onBarCodeScanned(data);
+          }
+        })
       : undefined;
+
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (

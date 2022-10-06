@@ -261,6 +261,10 @@ class ExpoCameraView(
           target = id,
           data = barCode.value,
           type = barCode.type,
+          //If the scanner doesn't return corner points, the value here will be an empty array
+          //I don't know how to send undefined from kotlin
+          //(I can send null but that would be different from other platform)
+          //so [] to undefined is handled on the javascript side
           cornerPoints = getCornerPoints(barCode.getCornerPoints())
         )
       )
