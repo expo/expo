@@ -17,7 +17,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
