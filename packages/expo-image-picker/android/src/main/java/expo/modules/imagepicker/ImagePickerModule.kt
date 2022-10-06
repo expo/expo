@@ -111,7 +111,6 @@ class ImagePickerModule : Module() {
   private val cacheDirectory: File
     get() = appContext.cacheDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
 
-
   /**
    * Stores result for an operation that has been interrupted by the activity destruction.
    * The results are stored only for successful, non-cancelled-by-user scenario.

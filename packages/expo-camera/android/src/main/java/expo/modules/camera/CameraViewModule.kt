@@ -1,7 +1,6 @@
 package expo.modules.camera
 
 import android.Manifest
-import android.content.Context
 import com.google.android.cameraview.AspectRatio
 import com.google.android.cameraview.Size
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
