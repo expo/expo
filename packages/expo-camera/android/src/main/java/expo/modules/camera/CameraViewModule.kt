@@ -5,17 +5,16 @@ import android.content.Context
 import com.google.android.cameraview.AspectRatio
 import com.google.android.cameraview.Size
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
-import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
-import expo.modules.interfaces.filesystem.Directories
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import java.io.File
 
 class CameraViewModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -70,7 +69,6 @@ class CameraViewModule : Module() {
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("takePicture") { options: PictureOptions, viewTag: Int, promise: Promise ->
-      val cacheDirectory = directories.cacheDir
       val view = findView(viewTag)
 
       if (!EmulatorUtilities.isRunningOnEmulator()) {
@@ -90,7 +88,6 @@ class CameraViewModule : Module() {
         throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
       }
 
-      val cacheDirectory = directories.cacheDir
       val view = findView(viewTag)
 
       if (!view.cameraView.isCameraOpened) {
@@ -253,11 +250,8 @@ class CameraViewModule : Module() {
     }
   }
 
-  private val reactContext: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
-  private val directories: Directories
-    get() = appContext.directories?.directories ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.Directories")
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()

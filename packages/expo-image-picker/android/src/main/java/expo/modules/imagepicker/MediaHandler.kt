@@ -5,12 +5,11 @@ import android.media.MediaMetadataRetriever
 import android.net.Uri
 import android.util.Base64
 import androidx.core.net.toUri
-import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.RawImageExporter
-import expo.modules.interfaces.filesystem.Directories
 import expo.modules.kotlin.providers.AppContextProvider
+import java.io.File
 
 internal class MediaHandler(
   private val appContextProvider: AppContextProvider,
@@ -36,8 +35,8 @@ internal class MediaHandler(
     }
   }
 
-  private val directories: Directories
-    get() = appContextProvider.appContext.directories?.directories ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.Directories")
+  private val cacheDirectory: File
+    get() = appContextProvider.appContext.cacheDirectory
 
   private suspend fun handleImage(
     sourceUri: Uri,
@@ -48,7 +47,7 @@ internal class MediaHandler(
     } else {
       CompressionImageExporter(appContextProvider, options.quality)
     }
-    val outputFile = createOutputFile(directories.cacheDir, getType(context.contentResolver, sourceUri).toImageFileExtension())
+    val outputFile = createOutputFile(cacheDirectory, getType(context.contentResolver, sourceUri).toImageFileExtension())
 
     val exportedImage = exporter.exportAsync(sourceUri, outputFile, context.contentResolver)
     val base64 = options.base64.takeIf { it }
@@ -70,7 +69,7 @@ internal class MediaHandler(
   private suspend fun handleVideo(
     sourceUri: Uri,
   ): ImagePickerResponse.Single.Video {
-    val outputFile = createOutputFile(directories.cacheDir, ".mp4")
+    val outputFile = createOutputFile(cacheDirectory, ".mp4")
     copyFile(sourceUri, outputFile, context.contentResolver)
     val outputUri = outputFile.toUri()
 

@@ -13,7 +13,6 @@ import expo.modules.imagepicker.contracts.CropImageContractOptions
 import expo.modules.imagepicker.contracts.ImageLibraryContract
 import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.imagepicker.contracts.ImagePickerContractResult
-import expo.modules.interfaces.filesystem.Directories
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.permissions.PermissionsStatus
 import expo.modules.kotlin.Promise
@@ -24,6 +23,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -58,10 +58,7 @@ class ImagePickerModule : Module() {
       ensureTargetActivityIsAvailable(options)
       ensureCameraPermissionsAreGranted()
 
-      val directoriesModule = appContext.directories ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.Directories")
-      val directories: Directories = directoriesModule.directories
-
-      val mediaFile = createOutputFile(directories.cacheDir, options.mediaTypes.toFileExtension())
+      val mediaFile = createOutputFile(cacheDirectory, options.mediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
       val contractOptions = options.toCameraContractOptions(uri)
 
@@ -110,6 +107,10 @@ class ImagePickerModule : Module() {
   private lateinit var cameraLauncher: AppContextActivityResultLauncher<CameraContractOptions, ImagePickerContractResult>
   private lateinit var imageLibraryLauncher: AppContextActivityResultLauncher<ImageLibraryContractOptions, ImagePickerContractResult>
   private lateinit var cropImageLauncher: AppContextActivityResultLauncher<CropImageContractOptions, ImagePickerContractResult>
+
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+
 
   /**
    * Stores result for an operation that has been interrupted by the activity destruction.

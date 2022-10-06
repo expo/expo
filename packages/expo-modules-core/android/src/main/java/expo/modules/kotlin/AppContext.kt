@@ -14,13 +14,14 @@ import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
+import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.JavaScriptContextProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
+import expo.modules.interfaces.filesystem.AppDirectoriesModuleInterface
 import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
-import expo.modules.interfaces.filesystem.DirectoriesModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
 import expo.modules.interfaces.permissions.Permissions
@@ -47,6 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
+import java.io.File
 import java.io.Serializable
 import java.lang.ref.WeakReference
 
@@ -155,8 +157,14 @@ class AppContext(
   /**
    * Provides access to the scoped directories from the legacy module registry.
    */
-  val directories: DirectoriesModuleInterface?
+  private val appDirectories: AppDirectoriesModuleInterface?
     get() = legacyModule()
+
+  val persistentFilesDirectory: File
+    get() = appDirectories?.persistentFilesDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+
+  val cacheDirectory: File
+    get() = appDirectories?.cacheDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
 
   /**
    * Provides access to the permissions manager from the legacy module registry
