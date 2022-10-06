@@ -14,6 +14,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/netinfo` from `9.3.0` to `9.3.3`. ([#19421](https://github.com/expo/expo/pull/19421) by [@douglowder](https://github.com/douglowder))
 - Updated `@react-native-picker/picker` from `2.4.2` to `2.4.6`. ([#19390](https://github.com/expo/expo/pull/19390) by [@aleqsio](https://github.com/aleqsio))
 - Updated `react-native-screens` from `3.15.0` to `3.18.0`. ([#19383](https://github.com/expo/expo/pull/19383) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-community/slider` from `4.2.3` to `4.2.4`. ([#19424](https://github.com/expo/expo/pull/19424)) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
