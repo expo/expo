@@ -4,7 +4,7 @@
  * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
  * directory of this source tree.
  */
-package versioned.host.exp.exponent.modules.api.components.slider;
+package com.reactnativecommunity.slider;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -66,8 +66,8 @@ public class ReactSlider extends AppCompatSeekBar {
 
   private List<String> mAccessibilityIncrements;
 
-  public ReactSlider(Context context, @Nullable AttributeSet attrs, int style) {
-    super(context, attrs, style);
+  public ReactSlider(Context context, @Nullable AttributeSet attrs) {
+    super(context, attrs);
     I18nUtil sharedI18nUtilInstance = I18nUtil.getInstance();
     super.setLayoutDirection(sharedI18nUtilInstance.isRTL(context) ? LAYOUT_DIRECTION_RTL : LAYOUT_DIRECTION_LTR);
     disableStateListAnimatorIfNeeded();

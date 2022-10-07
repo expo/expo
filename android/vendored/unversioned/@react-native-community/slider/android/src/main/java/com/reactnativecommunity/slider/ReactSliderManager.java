@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package versioned.host.exp.exponent.modules.api.components.slider;
+package com.reactnativecommunity.slider;
 
 import android.graphics.PorterDuffColorFilter;
 import android.os.Build;
@@ -38,8 +38,6 @@ import javax.annotation.Nullable;
  */
 public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
-  private static final int STYLE = android.R.attr.seekBarStyle;
-
   public static final String REACT_CLASS = "RNCSlider";
 
   static class ReactSliderShadowNode extends LayoutShadowNode implements
@@ -65,7 +63,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
         float height,
         YogaMeasureMode heightMode) {
       if (!mMeasured) {
-        SeekBar reactSlider = new ReactSlider(getThemedContext(), null, STYLE);
+        SeekBar reactSlider = new ReactSlider(getThemedContext(), null);
         final int spec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
         reactSlider.measure(spec, spec);
         mWidth = reactSlider.getMeasuredWidth();
@@ -131,7 +129,7 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
 
   @Override
   protected ReactSlider createViewInstance(ThemedReactContext context) {
-    ReactSlider slider = new ReactSlider(context, null, STYLE);
+    ReactSlider slider = new ReactSlider(context, null);
 
     if (Build.VERSION.SDK_INT >= 21) {
       /**

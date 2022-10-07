@@ -20,6 +20,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-community/datetimepicker` from `6.2.0` to `6.5.0`. ([#19419](https://github.com/expo/expo/pull/19419) by [@byCedric](https://github.com/byCedric))
 - Updated `react-native-maps` from `0.31.1` to `1.3.2`. ([#19414](https://github.com/expo/expo/pull/19414) by [@aleqsio](https://github.com/aleqsio))
 - Updated `lottie-react-native` from `5.1.3` to `5.1.4`. ([#19433](https://github.com/expo/expo/pull/19433) by [@kudo](https://github.com/kudo))
+- Updated `@react-native-community/slider` from `4.2.3` to `4.2.4`. ([#19424](https://github.com/expo/expo/pull/19424)) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 

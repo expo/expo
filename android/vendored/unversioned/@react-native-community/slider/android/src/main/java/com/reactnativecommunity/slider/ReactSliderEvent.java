@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package versioned.host.exp.exponent.modules.api.components.slider;
+package com.reactnativecommunity.slider;
 
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
