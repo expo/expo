@@ -1,6 +1,7 @@
 import { asMock } from '../../../__tests__/asMock';
 import { getVersionsAsync, SDKVersion, Versions } from '../../../api/getVersions';
 import { downloadExpoGoAsync } from '../../../utils/downloadExpoGoAsync';
+import { CommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 
@@ -234,5 +235,43 @@ describe('ensureAsync', () => {
     // No expensive actions.
     expect(downloadExpoGoAsync).not.toBeCalled();
     expect(deviceManager.installAppAsync).not.toBeCalled();
+  });
+
+  it(`returns false when installed and running in offline mode`, async () => {
+    jest.resetModules();
+    jest.mock('../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+
+    // Reload the Expo Go installer to use the mocked settings
+    const { ExpoGoInstaller } = require('../ExpoGoInstaller');
+
+    const deviceManager = createDeviceManager(true);
+    const installer = new ExpoGoInstaller('android', 'host.fake.expo', '44.0.0');
+
+    // Return false and allow the test to validate this is not called
+    installer.uninstallExpoGoIfOutdatedAsync = jest.fn(async () => false);
+
+    await expect(installer.ensureAsync(deviceManager)).resolves.toBe(false);
+
+    // Ensure it avoids making any API requests
+    expect(installer.uninstallExpoGoIfOutdatedAsync).not.toBeCalled();
+    expect(downloadExpoGoAsync).not.toBeCalled();
+  });
+
+  it(`throws when not installed and running in offline mode`, async () => {
+    jest.resetModules();
+    jest.mock('../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+
+    // Reload the Expo Go installer to use the mocked settings
+    const { ExpoGoInstaller } = require('../ExpoGoInstaller');
+
+    const deviceManager = createDeviceManager(false);
+    const installer = new ExpoGoInstaller('android', 'host.fake.expo', '44.0.0');
+
+    // Return false and allow the test to validate this is not called
+    installer.uninstallExpoGoIfOutdatedAsync = jest.fn(async () => false);
+
+    await expect(installer.ensureAsync(deviceManager)).rejects.toThrowError(
+      'Expo Go is not installed'
+    );
   });
 });
