@@ -9,23 +9,13 @@
 #include <jsi/jsi.h>
 
 #include <JsiHostObject.h>
+#include <RNSkView.h>
 
 namespace RNSkia {
 
 using namespace facebook;
 using namespace RNJsi;
 using namespace std::chrono;
-
-enum RNSkTouchType { Start, Active, End, Cancelled };
-
-using RNSkTouchPoint = struct {
-  double x;
-  double y;
-  double force;
-  RNSkTouchType type;
-  size_t id;
-  long timestamp;
-};
 
 class RNSkInfoObject : public JsiHostObject {
 public:
@@ -77,7 +67,7 @@ public:
 
   void endDrawOperation() { _touchesCache.clear(); }
 
-  void updateTouches(std::vector<RNSkTouchPoint>&& touches) {
+  void updateTouches(std::vector<RNSkTouchInfo>& touches) {
     std::lock_guard<std::mutex> lock(_mutex);
     // Add timestamp
     auto ms = std::chrono::duration_cast<milliseconds>(
@@ -95,8 +85,8 @@ private:
   int _width;
   int _height;
   double _timestamp;
-  std::vector<std::vector<RNSkTouchPoint>> _currentTouches;
-  std::vector<std::vector<RNSkTouchPoint>> _touchesCache;
+  std::vector<std::vector<RNSkTouchInfo>> _currentTouches;
+  std::vector<std::vector<RNSkTouchInfo>> _touchesCache;
   std::mutex _mutex;
 };
 } // namespace RNSkia

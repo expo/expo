@@ -33,7 +33,6 @@
 #include "JsiSkVertices.h"
 #include "JsiSkTypefaceFactory.h"
 #include "JsiSkDataFactory.h"
-#include "JsiSkFontMgrFactory.h"
 #include "JsiSkSurfaceFactory.h"
 #include "JsiSkTextBlobFactory.h"
 #include "JsiSkContourMeasureIter.h"
@@ -72,9 +71,6 @@ namespace RNSkia
       installFunction("PictureRecorder", JsiSkPictureRecorder::createCtor(context));
       installFunction("Color", JsiSkColor::createCtor());
 
-      // Static members
-      installReadonlyProperty("FontMgr",
-                              std::make_shared<JsiSkFontMgrFactory>(context));
       installReadonlyProperty("SVG",
                               std::make_shared<JsiSkSVGFactory>(context));
       installReadonlyProperty("Image",
