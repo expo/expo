@@ -6,7 +6,7 @@
 #include <functional>
 #include <memory>
 #include <string>
-#include "./Logger.h"
+#include "./DevMenuLogger.h"
 
 namespace devmenureanimated {
 

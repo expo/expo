@@ -1,7 +1,7 @@
 #pragma once
 
 #include <memory>
-#include "./LoggerInterface.h"
+#include "./DevMenuLoggerInterface.h"
 
 namespace devmenureanimated {
 
