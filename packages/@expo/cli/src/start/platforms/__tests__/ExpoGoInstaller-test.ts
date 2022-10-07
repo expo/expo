@@ -1,7 +1,6 @@
 import { asMock } from '../../../__tests__/asMock';
 import { getVersionsAsync, SDKVersion, Versions } from '../../../api/getVersions';
 import { downloadExpoGoAsync } from '../../../utils/downloadExpoGoAsync';
-import { CommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 
