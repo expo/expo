@@ -40,10 +40,7 @@ import java.util.concurrent.ConcurrentLinkedQueue
 import expo.modules.camera.utils.mapX
 import expo.modules.camera.utils.mapY
 import kotlin.math.roundToInt
-import kotlin.math.max
-import kotlin.math.min
 import android.view.WindowManager
-import android.util.Log
 
 class ExpoCameraView(
   context: Context,
@@ -200,11 +197,10 @@ class ExpoCameraView(
   private fun getDeviceOrientation() =
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
 
-
   private fun transformBarCodeScannerResultToViewCoordinates(barCode: BarCodeScannerResult) {
     val cornerPoints = barCode.cornerPoints
-    
-    //For some reason they're swapped, I don't know anymore...
+
+    // For some reason they're swapped, I don't know anymore...
     val cameraWidth = barCode.referenceImageHeight
     val cameraHeight = barCode.referenceImageWidth
 
@@ -245,10 +241,12 @@ class ExpoCameraView(
     for (i in cornerPoints.indices step 2) {
       val y = cornerPoints[i].toFloat() / density
       val x = cornerPoints[i + 1].toFloat() / density
-      convertedCornerPoints.add(Bundle().apply {
-        putFloat("x", x)
-        putFloat("y", y)
-      })
+      convertedCornerPoints.add(
+        Bundle().apply {
+          putFloat("x", x)
+          putFloat("y", y)
+        }
+      )
     }
     return convertedCornerPoints
   }
@@ -261,10 +259,10 @@ class ExpoCameraView(
           target = id,
           data = barCode.value,
           type = barCode.type,
-          //If the scanner doesn't return corner points, the value here will be an empty array
-          //I don't know how to send undefined from kotlin
-          //(I can send null but that would be different from other platform)
-          //so [] to undefined is handled on the javascript side
+          // If the scanner doesn't return corner points, the value here will be an empty array
+          // I don't know how to send undefined from kotlin
+          // (I can send null but that would be different from other platform)
+          // so [] to undefined is handled on the javascript side
           cornerPoints = getCornerPoints(barCode.getCornerPoints())
         )
       )
