@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import React, { useEffect, useState, PropsWithChildren } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
@@ -60,7 +59,3 @@ export const DiffBlock = ({ source, raw }: Props) => {
 
   return <>{diff.map(renderFile)}</>;
 };
-
-const diffContainerStyles = css`
-
-`;
