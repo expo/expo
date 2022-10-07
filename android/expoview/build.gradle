@@ -357,9 +357,9 @@ dependencies {
 
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
-  api 'com.google.android.gms:play-services-maps:18.0.0'
+  api 'com.google.android.gms:play-services-maps:18.0.1'
   api 'com.google.android.gms:play-services-auth:17.0.0'
-  api 'com.google.android.gms:play-services-location:17.0.0'
+  api 'com.google.android.gms:play-services-location:20.0.0'
   api 'com.google.android.gms:play-services-fitness:17.0.0'
   api 'com.google.android.gms:play-services-wallet:17.0.0' //may need 10.+
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'

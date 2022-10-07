@@ -7,14 +7,18 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-safe-area-context` from `4.3.1` to `4.4.1`. ([#19055](https://github.com/expo/expo/pull/19401) by [@brentvatne](https://github.com/brentvatne))
 - Updated `@stripe/stripe-react-native` from `0.13.1` to `0.18.1` on iOS. ([#19055](https://github.com/expo/expo/pull/19055) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@shopify/flash-list` from `1.1.0` to `1.3.0`. ([#19317](https://github.com/expo/expo/pull/19317) by [@kudo](https://github.com/kudo))
+- Updated `react-native-view-shot` from `3.3.0` to `3.4.0`. ([#19405](https://github.com/expo/expo/pull/19405) by [@douglowder](https://github.com/douglowder))
 - Updated `react-native-webview` from `11.23.0` to `11.23.1`. ([#19375](https://github.com/expo/expo/pull/19375) by [@aleqsio](https://github.com/aleqsio))
 - Updated `react-native-gesture-handler` from `2.5.0` to `2.7.0`. ([#19362](https://github.com/expo/expo/pull/19362) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@react-native-community/netinfo` from `9.3.0` to `9.3.3`. ([#19421](https://github.com/expo/expo/pull/19421) by [@douglowder](https://github.com/douglowder))
 - Updated `@react-native-picker/picker` from `2.4.2` to `2.4.6`. ([#19390](https://github.com/expo/expo/pull/19390) by [@aleqsio](https://github.com/aleqsio))
 - Updated `react-native-screens` from `3.15.0` to `3.18.0`. ([#19383](https://github.com/expo/expo/pull/19383) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@shopify/react-native-skia` from `0.1.136` to `0.1.153`. ([#19360](https://github.com/expo/expo/pull/19360) by [@kudo](https://github.com/kudo))
+- Updated `@react-native-community/datetimepicker` from `6.2.0` to `6.5.0`. ([#19419](https://github.com/expo/expo/pull/19419) by [@byCedric](https://github.com/byCedric))
+- Updated `react-native-maps` from `0.31.1` to `1.3.2`. ([#19414](https://github.com/expo/expo/pull/19414) by [@aleqsio](https://github.com/aleqsio))
 - Updated `lottie-react-native` from `5.1.3` to `5.1.4`. ([#19433](https://github.com/expo/expo/pull/19433) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
