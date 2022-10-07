@@ -48,7 +48,6 @@ const NSInteger AIRMapMaxZoomLevel = 20;
 @implementation AIRMap
 {
     UIView *_legalLabel;
-    CLLocationManager *_locationManager;
     BOOL _initialRegionSet;
     BOOL _initialCameraSet;
 
@@ -90,11 +89,6 @@ const NSInteger AIRMapMaxZoomLevel = 20;
         self.compassOffset = CGPointMake(0, 0);
     }
     return self;
-}
-
-- (void)dealloc
-{
-    [_regionChangeObserveTimer invalidate];
 }
 
 -(void)addSubview:(UIView *)view {
@@ -350,12 +344,6 @@ const NSInteger AIRMapMaxZoomLevel = 20;
 - (void)setShowsUserLocation:(BOOL)showsUserLocation
 {
     if (self.showsUserLocation != showsUserLocation) {
-        if (showsUserLocation && !_locationManager) {
-            _locationManager = [CLLocationManager new];
-            if ([_locationManager respondsToSelector:@selector(requestWhenInUseAuthorization)]) {
-                [_locationManager requestWhenInUseAuthorization];
-            }
-        }
         super.showsUserLocation = showsUserLocation;
     }
 }

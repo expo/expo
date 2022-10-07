@@ -13,7 +13,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import MapView, { Circle, MapEvent } from 'react-native-maps';
+import MapView, { Circle, MapPressEvent } from 'react-native-maps';
 
 import NavigationEvents from '../components/NavigationEvents';
 import Button from '../components/PrimaryButton';
@@ -150,7 +150,7 @@ export default class GeofencingScreen extends React.Component<Props, State> {
     }
   };
 
-  onMapPress = ({ nativeEvent: { coordinate } }: MapEvent) => {
+  onMapPress = ({ nativeEvent: { coordinate } }: MapPressEvent) => {
     this.setState(
       (state) => ({
         geofencingRegions: [
