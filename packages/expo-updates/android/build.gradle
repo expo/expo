@@ -9,6 +9,15 @@ version = '0.14.3'
 def ex_updates_native_debug_env = System.getenv("EX_UPDATES_NATIVE_DEBUG") ?: "0"
 def ex_updates_native_debug = ex_updates_native_debug_env == "1" ? "true" : "false"
 
+// For native updates debugging, override these properties
+if (findProject(":app")) {
+  def appProjectExt = project(":app").ext
+  if (appProjectExt.has("react") && ex_updates_native_debug) {
+    appProjectExt.react.bundleInDebug = true
+    appProjectExt.react.devDisabledInDebug = true
+  }
+}
+
 apply from: "../scripts/create-manifest-android.gradle"
 
 buildscript {
