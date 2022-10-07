@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `LottieAnimationViewManager isn't supported in Expo Go` error when running with `lottie-react-native`. ([#19439](https://github.com/expo/expo/pull/19439) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 47.0.0-alpha.1 — 2022-10-06
