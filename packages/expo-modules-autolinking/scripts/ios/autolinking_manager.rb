@@ -174,6 +174,8 @@ module Expo
     private def use_modular_headers_for_dependencies(dependencies)
       dependencies.each { |dependency|
         unless @target_definition.build_pod_as_module?(dependency.name)
+          UI.info "[Expo] ".blue << "Enabling modular headers for pod #{dependency.name.green}"
+
           # This is an equivalent to setting `:modular_headers => true` for the specific dependency.
           @target_definition.set_use_modular_headers_for_pod(dependency.name, true)
         end
