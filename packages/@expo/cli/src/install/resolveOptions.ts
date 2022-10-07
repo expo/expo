@@ -1,7 +1,7 @@
 import * as PackageManager from '@expo/package-manager';
 
 import { CommandError } from '../utils/errors';
-import { assertUnexpectedObjectKeys, parseVariadicArguments } from '../utils/variadic';
+import { assertUnexpectedVariadicFlags, parseVariadicArguments } from '../utils/variadic';
 
 export type Options = Pick<PackageManager.CreateForProjectOptions, 'npm' | 'pnpm' | 'yarn'> & {
   /** Check which packages need to be updated, does not install any provided packages. */
@@ -29,7 +29,11 @@ export async function resolveArgsAsync(
 ): Promise<{ variadic: string[]; options: Options; extras: string[] }> {
   const { variadic, extras, flags } = parseVariadicArguments(argv);
 
-  assertUnexpectedObjectKeys(['--check', '--fix', '--npm', '--pnpm', '--yarn'], flags);
+  assertUnexpectedVariadicFlags(
+    ['--check', '--fix', '--npm', '--pnpm', '--yarn'],
+    { variadic, extras, flags },
+    'npx expo install'
+  );
 
   return {
     // Variadic arguments like `npx expo install react react-dom` -> ['react', 'react-dom']
