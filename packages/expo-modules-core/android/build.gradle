@@ -246,6 +246,7 @@ android {
       excludes.add("META-INF/MANIFEST.MF")
       excludes.add("META-INF/com.android.tools/proguard/coroutines.pro")
       excludes.add("META-INF/proguard/coroutines.pro")
+      excludes.add("**/libc++_shared.so")
     }
   }
 
