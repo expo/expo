@@ -71,7 +71,7 @@ export abstract class BasePackageManager implements PackageManager {
     return await this.runAsync(['--version']).then(({ stdout }) => stdout.trim());
   }
 
-  async configAsync(key: string) {
+  async getConfigAsync(key: string) {
     return await this.runAsync(['config', 'get', key]).then(({ stdout }) => stdout.trim());
   }
 

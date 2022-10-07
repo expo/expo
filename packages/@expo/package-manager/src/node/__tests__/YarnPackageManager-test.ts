@@ -97,7 +97,7 @@ describe('YarnPackageManager', () => {
 
       const yarn = new YarnPackageManager({ cwd: projectRoot });
 
-      expect(await yarn.configAsync('registry')).toBe('https://custom.registry.org/');
+      expect(await yarn.getConfigAsync('registry')).toBe('https://custom.registry.org/');
       expect(spawnAsync).toBeCalledWith(
         'yarnpkg',
         ['config', 'get', 'registry'],

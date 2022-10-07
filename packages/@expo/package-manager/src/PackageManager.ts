@@ -28,7 +28,7 @@ export interface PackageManager {
   /** Get the version of the used package manager */
   versionAsync(): Promise<string>;
   /** Get a single configuration property from the package manager */
-  configAsync(key: string): Promise<string>;
+  getConfigAsync(key: string): Promise<string>;
   /** Remove the lock file within the project, if any */
   removeLockfileAsync(): Promise<void>;
   /** Get the workspace root package manager, if this project is within a workspace/monorepo */
