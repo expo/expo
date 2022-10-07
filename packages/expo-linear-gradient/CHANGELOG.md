@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix default start and end points on Android. ([#19460](https://github.com/expo/expo/pull/19460) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 12.0.0-beta.1 — 2022-10-06
