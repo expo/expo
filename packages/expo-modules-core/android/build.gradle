@@ -39,12 +39,6 @@ buildscript {
   }
 }
 
-def isAndroidTest = {
-  Gradle gradle = getGradle()
-  String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
-  return tskReqStr.contains("AndroidTest")
-}.call()
-
 def isExpoModulesCoreTests = {
   Gradle gradle = getGradle()
   String tskReqStr = gradle.getStartParameter().getTaskRequests().toString()
@@ -212,7 +206,6 @@ android {
     // Gradle will add cmake target dependencies into packaging.
     // Theses files are intermediated linking files to build modules-core and should not be in final package.
     def sharedLibraries = [
-      "**/libc++_shared.so",
       "**/libfabricjni.so",
       "**/libfbjni.so",
       "**/libfolly_json.so",
@@ -237,16 +230,11 @@ android {
     // In android (instrumental) tests, we want to package all so files to enable our JSI functionality.
     // Otherwise, those files should be excluded, because will be loaded by the application.
     if (isExpoModulesCoreTests) {
-      excludes = []
-      pickFirsts = sharedLibraries
+      pickFirsts += sharedLibraries
     } else {
-      excludes = sharedLibraries
+      excludes += sharedLibraries
     }
-    if (isExpoModulesCoreTests || isAndroidTest) {
-      excludes.add("META-INF/MANIFEST.MF")
-      excludes.add("META-INF/com.android.tools/proguard/coroutines.pro")
-      excludes.add("META-INF/proguard/coroutines.pro")
-    }
+    excludes.add("**/libc++_shared.so")
   }
 
   configurations {
