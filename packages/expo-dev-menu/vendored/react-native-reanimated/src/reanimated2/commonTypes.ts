@@ -145,3 +145,18 @@ export type ValueRotation = {
 };
 
 export type SensorValueRotation = SharedValue<ValueRotation>;
+
+export type ShadowNodeWrapper = object;
+
+export enum KeyboardState {
+  UNKNOWN = 0,
+  OPENING = 1,
+  OPEN = 2,
+  CLOSING = 3,
+  CLOSED = 4,
+}
+
+export type AnimatedKeyboardInfo = {
+  height: SharedValue<number>;
+  state: SharedValue<KeyboardState>;
+};

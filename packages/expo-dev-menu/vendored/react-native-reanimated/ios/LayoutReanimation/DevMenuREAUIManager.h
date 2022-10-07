@@ -11,7 +11,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setUp:(DevMenuREAAnimationsManager *)animationsManager;
 - (void)unregisterView:(id<RCTComponent>)view;
 @property (nonatomic, copy) void (^flushUiOperations)();
-
 @end
 
 NS_ASSUME_NONNULL_END

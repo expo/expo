@@ -23,7 +23,7 @@ interface HSV {
 }
 
 // var INTEGER = '[-+]?\\d+';
-const NUMBER = '[-+]?\\d*\\.?\\d+';
+const NUMBER = '[-+]?(?:\\d+(?:\\.\\d*)?|\\.\\d+)';
 const PERCENTAGE = NUMBER + '%';
 
 function call(...args: unknown[]): string {

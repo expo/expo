@@ -87,7 +87,14 @@ function decorateAnimation<T extends AnimationObject | StyleLayoutAnimation>(
     animation.startValue = strippedValue;
     animation.toValue = strippedToValue;
     if (previousAnimation && previousAnimation !== animation) {
-      previousAnimation.current = previousAnimation.strippedCurrent;
+      const {
+        prefix: paPrefix,
+        suffix: paSuffix,
+        strippedValue: paStrippedValue,
+      } = recognizePrefixSuffix(previousAnimation.current as string | number);
+      previousAnimation.current = paStrippedValue;
+      previousAnimation.__prefix = paPrefix;
+      previousAnimation.__suffix = paSuffix;
     }
 
     baseOnStart(animation, strippedValue, timestamp, previousAnimation);

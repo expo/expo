@@ -7,7 +7,7 @@ import { processColor } from '../Colors';
 runOnUI(() => {
   'worklet';
 
-  const configs: Record<string, any> = {};
+  const configs: Record<string, any> = Object.create(null);
   const enteringAnimationForTag: Record<string, any> = {};
 
   global.LayoutAnimationRepository = {

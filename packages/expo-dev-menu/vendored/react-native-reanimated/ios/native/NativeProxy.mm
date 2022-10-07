@@ -4,6 +4,7 @@
 #import "DevMenuREAAnimationsManager.h"
 #import "DevMenuREAIOSErrorHandler.h"
 #import "DevMenuREAIOSScheduler.h"
+#import "DevMenuREAKeyboardEventObserver.h"
 #import "DevMenuREAModule.h"
 #import "DevMenuREANodesManager.h"
 #import "DevMenuREAUIManager.h"
@@ -297,6 +298,21 @@ std::shared_ptr<NativeReanimatedModule> createDevMenuReanimatedModule(
   auto unregisterSensorFunction = [=](int sensorId) { [reanimatedSensorContainer unregisterSensor:sensorId]; };
   // end sensors
 
+  // keyboard events
+
+  static DevMenuREAKeyboardEventObserver *keyboardObserver = [[DevMenuREAKeyboardEventObserver alloc] init];
+  auto subscribeForKeyboardEventsFunction =
+      [](std::function<void(int keyboardState, int height)> keyboardEventDataUpdater) {
+        return [keyboardObserver subscribeForKeyboardEvents:^(int keyboardState, int height) {
+          keyboardEventDataUpdater(keyboardState, height);
+        }];
+      };
+
+  auto unsubscribeFromKeyboardEventsFunction = [](int listenerId) {
+    [keyboardObserver unsubscribeFromKeyboardEvents:listenerId];
+  };
+  // end keyboard events
+
   PlatformDepMethodsHolder platformDepMethodsHolder = {
       requestRender,
       propUpdater,
@@ -306,7 +322,10 @@ std::shared_ptr<NativeReanimatedModule> createDevMenuReanimatedModule(
       registerSensorFunction,
       unregisterSensorFunction,
       setGestureStateFunction,
-      configurePropsFunction};
+      configurePropsFunction,
+      subscribeForKeyboardEventsFunction,
+      unsubscribeFromKeyboardEventsFunction,
+  };
 
   module = std::make_shared<NativeReanimatedModule>(
       jsInvoker,

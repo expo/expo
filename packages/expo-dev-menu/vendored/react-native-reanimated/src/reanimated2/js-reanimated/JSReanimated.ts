@@ -2,7 +2,11 @@ import MapperRegistry from './MapperRegistry';
 import Mapper from './Mapper';
 import MutableValue from './MutableValue';
 import { NativeReanimated } from '../NativeReanimated/NativeReanimated';
-import { Timestamp, NestedObjectValues } from '../commonTypes';
+import {
+  Timestamp,
+  NestedObjectValues,
+  AnimatedKeyboardInfo,
+} from '../commonTypes';
 import { isJest } from '../PlatformChecker';
 
 export default class JSReanimated extends NativeReanimated {
@@ -125,5 +129,16 @@ export default class JSReanimated extends NativeReanimated {
     } else {
       throw Error('This method can be only use in Jest testing.');
     }
+  }
+
+  subscribeForKeyboardEvents(_: AnimatedKeyboardInfo): number {
+    console.warn(
+      '[Reanimated] useAnimatedKeyboard is not available on web yet.'
+    );
+    return -1;
+  }
+
+  unsubscribeFromKeyboardEvents(_: number): void {
+    // noop
   }
 }

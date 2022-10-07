@@ -45,6 +45,11 @@ export function measure(
   if (result.x === -1234567) {
     throw new Error(`The view with tag ${viewTag} could not be measured`);
   }
+  if (isNaN(result.x)) {
+    console.warn(
+      'Trying to measure a component which gets view-flattened on Android. To disable view-flattening, set `collapsable={false}` on this component.'
+    );
+  }
   return result;
 }
 

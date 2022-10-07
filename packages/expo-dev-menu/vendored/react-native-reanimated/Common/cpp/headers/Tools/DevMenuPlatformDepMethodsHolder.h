@@ -30,6 +30,9 @@ using ConfigurePropsFunction = std::function<void(
     jsi::Runtime &rt,
     const jsi::Value &uiProps,
     const jsi::Value &nativeProps)>;
+using KeyboardEventSubscribeFunction =
+    std::function<int(std::function<void(int, int)>)>;
+using KeyboardEventUnsubscribeFunction = std::function<void(int)>;
 
 struct PlatformDepMethodsHolder {
   RequestRender requestRender;
@@ -41,6 +44,8 @@ struct PlatformDepMethodsHolder {
   UnregisterSensorFunction unregisterSensor;
   SetGestureStateFunction setGestureStateFunction;
   ConfigurePropsFunction configurePropsFunction;
+  KeyboardEventSubscribeFunction subscribeForKeyboardEvents;
+  KeyboardEventUnsubscribeFunction unsubscribeFromKeyboardEvents;
 };
 
 } // namespace devmenureanimated
