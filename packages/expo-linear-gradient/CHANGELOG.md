@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix default start and end points on Android.
+
 ### 💡 Others
 
 ## 12.0.0-beta.1 — 2022-10-06
