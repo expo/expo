@@ -1,3 +1,3 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { NativeModulesProxy } from 'expo-modules-core';
 
-export default requireNativeModule('ExpoLocalization');
+export default NativeModulesProxy.ExpoLocalization;
