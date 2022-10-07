@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix default start and end points on Android.
+- Fix default start and end points on Android. ([#19460](https://github.com/expo/expo/pull/19460) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
