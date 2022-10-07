@@ -2,7 +2,6 @@ import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import {
   NavigationContainer,
   useTheme,
-  NavigationContainerRef,
   RouteProp,
   useNavigationContainerRef,
 } from '@react-navigation/native';

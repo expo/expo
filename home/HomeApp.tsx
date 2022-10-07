@@ -8,8 +8,7 @@ import { ThemePreference, ThemeProvider } from 'expo-dev-client-components';
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
-import { Linking, Platform, StyleSheet, View, useColorScheme, Text } from 'react-native';
-import { enableScreens } from 'react-native-screens';
+import { Linking, Platform, StyleSheet, View, useColorScheme } from 'react-native';
 import url from 'url';
 
 import ApolloClient from './api/ApolloClient';
