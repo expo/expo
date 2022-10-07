@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import { spacing, theme, typography } from '@expo/styleguide';
 import React, { useEffect, useState, PropsWithChildren } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
