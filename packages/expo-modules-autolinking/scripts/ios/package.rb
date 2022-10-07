@@ -45,6 +45,10 @@ module Expo
       @debugOnly = json['debugOnly']
     end
 
+    def has_swift_modules_to_link?
+      return !@modules.empty?
+    end
+
   end # class Package
 
 end # module Expo
