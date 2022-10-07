@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.components.slider;
+package com.reactnativecommunity.slider;
 
 import java.util.Arrays;
 import java.util.Collections;

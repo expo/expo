@@ -21,6 +21,7 @@
 
 - (void)setValue:(float)value
 {
+    value = [self discreteValue:value];
   _unclippedValue = value;
   super.value = value;
   [self setupAccessibility:value];
@@ -28,6 +29,7 @@
 
 - (void)setValue:(float)value animated:(BOOL)animated
 {
+    value = [self discreteValue:value];
   _unclippedValue = value;
   [super setValue:value animated:animated];
   [self setupAccessibility:value];
@@ -128,6 +130,31 @@
   } else {
     self.transform = CGAffineTransformMakeScale(1, 1);
   }
+}
+
+- (float)discreteValue:(float)value
+{
+    if (self.step > 0 && value >= self.maximumValue) {
+        return self.maximumValue;
+    }
+
+    if (self.step > 0 && self.step <= (self.maximumValue - self.minimumValue)) {
+        double (^_round)(double) = ^(double x) {
+            if (!UIAccessibilityIsVoiceOverRunning()) {
+                return round(x);
+            } else if (self.lastValue > value) {
+                return floor(x);
+            } else {
+                return ceil(x);
+            }
+        };
+
+        return MAX(self.minimumValue,
+            MIN(self.maximumValue, self.minimumValue + _round((value - self.minimumValue) / self.step) * self.step)
+        );
+    }
+
+    return value;
 }
 
 @end
