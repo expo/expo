@@ -1,5 +1,8 @@
-import React from 'react';
-
+import Foundation from '@expo/vector-icons/build/Foundation';
+import Ionicons from '@expo/vector-icons/build/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
+import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
+import Octicons from '@expo/vector-icons/build/Octicons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
   AutoFocus,
@@ -13,15 +16,10 @@ import {
 } from 'expo-camera';
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
+import React from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
 import * as Svg from 'react-native-svg';
-
-import Foundation from '@expo/vector-icons/build/Foundation';
-import Ionicons from '@expo/vector-icons/build/Ionicons';
-import MaterialCommunityIcons from '@expo/vector-icons/build/MaterialCommunityIcons';
-import MaterialIcons from '@expo/vector-icons/build/MaterialIcons';
-import Octicons from '@expo/vector-icons/build/Octicons';
 
 import { face, landmarks } from '../../components/Face';
 import GalleryScreen from './GalleryScreen';
