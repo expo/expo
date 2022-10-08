@@ -73,7 +73,6 @@ public class BatteryModule: Module {
       NotificationCenter.default.removeObserver(self, name: UIDevice.batteryStateDidChangeNotification, object: nil)
       NotificationCenter.default.removeObserver(self, name: Notification.Name.NSProcessInfoPowerStateDidChange, object: nil)
     }
-
   }
 
   @objc
