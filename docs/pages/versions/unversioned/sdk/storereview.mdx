@@ -9,7 +9,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-store-review`** provides access to the `SKStoreReviewController` API in iOS 10.3+ devices, and `ReviewManager` API in Android 5.0+ allowing you to ask the user to rate your app without ever having to leave the app itself.
+**`expo-store-review`** provides access to the `SKStoreReviewController` API on iOS, and `ReviewManager` API in Android 5.0+ allowing you to ask the user to rate your app without ever having to leave the app itself.
 
 <ImageSpotlight
   src="/static/images/store-review.png"
@@ -74,10 +74,6 @@ import * as StoreReview from 'expo-store-review';
 <APISection packageName="expo-store-review" apiName="StoreReview" />
 
 ## Error Codes
-
-### `E_STORE_REVIEW_UNSUPPORTED`
-
-Requesting an App Store review is not supported on this device. The device must be iOS 10.3 or greater. Android and web are not supported. Be sure to check for support with `isAvailableAsync()` to avoid this error.
 
 ### `ERR_STORE_REVIEW_FAILED`
 

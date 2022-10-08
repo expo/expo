@@ -350,15 +350,15 @@ _Convertibles_ are native types that can be initialized from certain specific ki
 
 Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
-| Native Type | TypeScript                                                                                                         |
-| ----------- | ------------------------------------------------------------------------------------------------------------------ |
-| `URL`       | `string` with a URL. When scheme is not provided, it's assumed to be a file URL.                                   |
-| `CGFloat`   | `number`                                                                                                           |
-| `CGPoint`   | `{ x: number, y: number }` or `number[]` with _x_ and _y_ coords                                                   |
-| `CGSize`    | `{ width: number, height: number }` or `number[]` with _width_ and _height_                                        |
-| `CGVector`  | `{ dx: number, dy: number }` or `number[]` with _dx_ and _dy_ vector differentials                                 |
-| `CGRect`    | `{ x: number, y: number, width: number, height: number }` or `number[]` with _x_, _y_, _width_ and _height_ values |
-| `CGColor`<br/>`UIColor`   | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
+| Native Type             | TypeScript                                                                                                                                                                        |
+| ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `URL`                   | `string` with a URL. When scheme is not provided, it's assumed to be a file URL.                                                                                                  |
+| `CGFloat`               | `number`                                                                                                                                                                          |
+| `CGPoint`               | `{ x: number, y: number }` or `number[]` with _x_ and _y_ coords                                                                                                                  |
+| `CGSize`                | `{ width: number, height: number }` or `number[]` with _width_ and _height_                                                                                                       |
+| `CGVector`              | `{ dx: number, dy: number }` or `number[]` with _dx_ and _dy_ vector differentials                                                                                                |
+| `CGRect`                | `{ x: number, y: number, width: number, height: number }` or `number[]` with _x_, _y_, _width_ and _height_ values                                                                |
+| `CGColor`<br/>`UIColor` | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
 
 </APIBox>
 <APIBox header="Records">
@@ -523,5 +523,6 @@ For more examples from real modules, you can refer to Expo modules that already 
 - `expo-image-picker` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker))
 - `expo-linear-gradient` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-linear-gradient/android/src/main/java/expo/modules/lineargradient))
 - `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization))
+- `expo-store-review` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-store-review/ios))
 - `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI))
 - `expo-web-browser` ([Swift](https://github.com/expo/expo/blob/main/packages/expo-web-browser/ios), [Kotlin](https://github.com/expo/expo/blob/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser))
