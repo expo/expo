@@ -9,18 +9,16 @@ public class StoreReviewModule: Module {
       return true
     }
 
-    AsyncFunction("requestReview") { (promise: Promise) -> Void in
+    AsyncFunction("requestReview") {
       if #available(iOS 15, *) {
         guard let currentScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else {
-          return promise.reject(MissingCurrentWindowSceneException())
+          throw MissingCurrentWindowSceneException()
         }
 
         SKStoreReviewController.requestReview(in: currentScene)
-        promise.resolve(nil)
       } else {
-          SKStoreReviewController.requestReview()
-          promise.resolve(nil)
-        }
+        SKStoreReviewController.requestReview()
+      }
     }.runOnQueue(DispatchQueue.main)
   }
 }
