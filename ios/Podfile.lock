@@ -1411,6 +1411,8 @@ PODS:
     - Quick (~> 5.0.0)
   - ExpoRandom (12.3.0):
     - ExpoModulesCore
+  - ExpoStoreReview (5.3.0):
+    - ExpoModulesCore
   - ExpoSystemUI (1.3.0):
     - ExpoModulesCore
   - ExpoTrackingTransparency (2.3.1):
@@ -1438,8 +1440,6 @@ PODS:
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.3.0):
-    - ExpoModulesCore
-  - EXStoreReview (5.3.0):
     - ExpoModulesCore
   - EXStructuredHeaders (2.2.1)
   - EXStructuredHeaders/Tests (2.2.1)
@@ -2358,6 +2358,7 @@ DEPENDENCIES:
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../packages/expo-modules-test-core/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
+  - ExpoStoreReview (from `../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
@@ -2371,7 +2372,6 @@ DEPENDENCIES:
   - EXSpeech (from `../packages/expo-speech/ios`)
   - EXSplashScreen (from `../packages/expo-splash-screen/ios`)
   - EXSQLite (from `../packages/expo-sqlite/ios`)
-  - EXStoreReview (from `../packages/expo-store-review/ios`)
   - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
@@ -3015,6 +3015,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-modules-test-core/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
+  ExpoStoreReview:
+    :path: "../packages/expo-store-review/ios"
   ExpoSystemUI:
     :path: "../packages/expo-system-ui/ios"
   ExpoTrackingTransparency:
@@ -3041,8 +3043,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-splash-screen/ios"
   EXSQLite:
     :path: "../packages/expo-sqlite/ios"
-  EXStoreReview:
-    :path: "../packages/expo-store-review/ios"
   EXStructuredHeaders:
     :path: "../packages/expo-structured-headers/ios"
   EXTaskManager:
@@ -3421,6 +3421,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: d67f3ef518c54f9d365e49e25775e339d3856271
   ExpoModulesTestCore: 8a409e6ce8a9940174344cad307d3d614363578d
   ExpoRandom: fe4c4522cc975c76e98fc33af96daa352a17d311
+  ExpoStoreReview: f85a4623e0bbce5b1a3427d033f46ab8ad38b464
   ExpoSystemUI: 30577707799df9497f510f329cc1d6798abbb7cb
   ExpoTrackingTransparency: 6792377b47c0819c7ac1bff2f68dc91304bf7116
   ExpoWebBrowser: d682f920a7f34b1e09c0087bf70be64f9755c8e3
@@ -3434,7 +3435,6 @@ SPEC CHECKSUMS:
   EXSpeech: 23b2e251e93f47a8ba3101b64c93c95b6990ec99
   EXSplashScreen: 509588c153f440cab2ce5a493ace313d867fb7e7
   EXSQLite: b08238de097fbc3c1f890660ab8f72c344b92ec6
-  EXStoreReview: edf03db473ae4ae0a4d78c12e66909645c96fc2e
   EXStructuredHeaders: 673e4ea51d061e1a90aad0395f926011b2345857
   EXTaskManager: 83b22ad160f6b230f35d3762cb245665cd83289c
   EXUpdates: 9be5a80a06c02b4567d2a4d53bd464f36bed31cf
