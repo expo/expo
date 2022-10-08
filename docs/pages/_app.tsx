@@ -10,7 +10,6 @@ import { useNProgress } from '~/common/use-nprogress';
 import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 import { AnalyticsProvider } from '~/providers/Analytics';
 
-import 'react-diff-view/style/index.css';
 import '@expo/styleguide/dist/expo-theme.css';
 import 'tippy.js/dist/tippy.css';
 
