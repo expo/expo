@@ -1,11 +1,12 @@
 ---
 title: Build server infrastructure
 sidebar_title: Server infrastructure
+maxHeadingDepth: 4
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-This document describes the current build infrastructure as of June 27, 2022. It is likely to change over time, and this document will be updated.
+> This document describes the current build infrastructure as of **June 27, 2022**. It is likely to change over time, and this document will be updated.
 
 ## Worker IP addresses
 
@@ -13,7 +14,8 @@ Here is the [up-to-date list of worker IP addresses](https://expo.dev/eas-build-
 
 ## Configuring build environment
 
-Images for each platform have one specific version of Node.js, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](../build/eas-json). If there is no dedicated configuration option you're looking for, you can use [npm hooks](npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Please take into account that those customizations are applied during the build and will increase your build times.
+Images for each platform have one specific version of Node.js, yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json).
+If there is no dedicated configuration option you're looking for, you can use [npm hooks](npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Please take into account that those customizations are applied during the build and will increase your build times.
 
 When selecting an image for the build you can use the full name provided below or one of the aliases: `default`, `latest`.
 
@@ -21,42 +23,42 @@ When selecting an image for the build you can use the full name provided below o
 - `default` alias will be assigned to the environment that most closely resembles the configuration used for Expo SDK development.
 - `latest` alias will be assigned to the image with the most up to date versions of the software.
 
-> **Note:**
->
-> If you do not provide `image` in **eas.json**, your build will use `default` image. However, in some cases, we select a more appropriate image based on the Expo SDK version or React Native version. You can check what image is used for a build in the "Spin up build environment" build logs section.
+> **info** **Note:** If you do not provide `image` in **eas.json**, your build will use `default` image. However, in some cases, we select a more appropriate image based on the Expo SDK version or React Native version.
+> You can check what image is used for a build in the "Spin up build environment" build logs section.
 
 ## Android build server configurations
 
-- Android workers run on Kubernetes in an isolated environment
-  - Every build gets its own container running on a dedicated Kubernetes node
-  - Build resources: 4 CPU, 12 GB RAM
+Android workers run on Kubernetes in an isolated environment. Every build gets its own container running on a dedicated Kubernetes node:
+- Build resources: 4 CPU, 12 GB RAM
 - [npm cache deployed with Kubernetes](caching/#javascript-dependencies)
 - [Maven cache deployed with Kubernetes](caching/#android-dependencies)
-- Global Gradle configuration in `~/.gradle/gradle.properties`:
+- Global Gradle configuration in **~/.gradle/gradle.properties**:
 
-  ```ini
+  ```ini ~/.gradle/gradle.properties
   org.gradle.jvmargs=-Xmx14g -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8
   org.gradle.parallel=true
   org.gradle.configureondemand=true
   org.gradle.daemon=false
   ```
 
-- `~/.npmrc`
+- Global npm configuration in **~/.npmrc**:
 
-  ```ini
+  ```ini ~/.npmrc
   registry=http://npm-cache-service.worker-infra-production.svc.cluster.local:4873
   ```
 
-- `~/.yarnrc.yml`
+- Global Yarn configuration in **~/.yarnrc.yml**:
 
-  ```yml
+  ```yml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
   npmRegistryServer: 'http://npm-cache-service.worker-infra-production.svc.cluster.local:4873'
   enableImmutableInstalls: false
   ```
 
-#### Image `ubuntu-22.04-jdk-11-ndk-r21e` (alias `latest`)
+### Android server images
+
+#### `ubuntu-22.04-jdk-11-ndk-r21e` (alias `latest`)
 
 <Collapsible summary="Details">
 
@@ -70,7 +72,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `ubuntu-22.04-jdk-8-ndk-r21e`
+#### `ubuntu-22.04-jdk-8-ndk-r21e`
 
 <Collapsible summary="Details">
 
@@ -84,7 +86,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `ubuntu-20.04-jdk-11-ndk-r21e` (alias `default`)
+#### `ubuntu-20.04-jdk-11-ndk-r21e` (alias `default`)
 
 <Collapsible summary="Details">
 
@@ -98,7 +100,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `ubuntu-20.04-jdk-8-ndk-r21e`
+#### `ubuntu-20.04-jdk-8-ndk-r21e`
 
 <Collapsible summary="Details">
 
@@ -112,7 +114,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `ubuntu-18.04-jdk-11-ndk-r19c`
+#### `ubuntu-18.04-jdk-11-ndk-r19c`
 
 <Collapsible summary="Details">
 
@@ -126,7 +128,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `ubuntu-18.04-jdk-8-ndk-r19c`
+#### `ubuntu-18.04-jdk-8-ndk-r19c`
 
 <Collapsible summary="Details">
 
@@ -142,30 +144,30 @@ When selecting an image for the build you can use the full name provided below o
 
 ## iOS build server configurations
 
-- iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment
-  - Every build gets its own fresh macOS VM
-  - Hardware: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
-  - Build resource limits: 3 cores, 12 GB RAM
+iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build gets its own fresh macOS VM:
+- Hardware: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
+- Build resource limits: 3 cores, 12 GB RAM
 - [npm cache](caching/#javascript-dependencies)
 - [CocoaPods cache](caching/#ios-dependencies)
-- `~/.npmrc`
+- [`cocoapods-nexus-plugin`](https://github.com/expo/eas-build/tree/main/packages/cocoapods-nexus-plugin)
+- Global npm configuration in **~/.npmrc**:
 
-  ```ini
+  ```ini ~/.npmrc
   registry=http://10.254.24.9:4873
   ```
 
-- `~/.yarnrc.yml`
+- Global Yarn configuration in **~/.yarnrc.yml**:
 
-  ```yml
+  ```yml ~/.yarnrc.yml
   unsafeHttpWhitelist:
     - '*'
   npmRegistryServer: 'registry=http://10.254.24.9:4873'
   enableImmutableInstalls: false
   ```
 
-- [cocoapods-nexus-plugin](https://github.com/expo/eas-build/tree/main/packages/cocoapods-nexus-plugin)
+### iOS server images
 
-#### Image `macos-monterey-12.6-xcode-14.0` (alias `latest`)
+#### `macos-monterey-12.6-xcode-14.0` (alias `latest`)
 
 <Collapsible summary="Details">
 
@@ -181,7 +183,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `macos-monterey-12.4-xcode-13.4` (alias `default`)
+#### `macos-monterey-12.4-xcode-13.4` (alias `default`)
 
 <Collapsible summary="Details">
 
@@ -197,7 +199,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `macos-monterey-12.3-xcode-13.3`
+#### `macos-monterey-12.3-xcode-13.3`
 
 <Collapsible summary="Details">
 
@@ -213,7 +215,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `macos-monterey-12.1-xcode-13.2`
+#### `macos-monterey-12.1-xcode-13.2`
 
 <Collapsible summary="Details">
 
@@ -229,7 +231,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `macos-big-sur-11.4-xcode-13.0`
+#### `macos-big-sur-11.4-xcode-13.0`
 
 <Collapsible summary="Details">
 
@@ -245,7 +247,7 @@ When selecting an image for the build you can use the full name provided below o
 
 </Collapsible>
 
-#### Image `macos-big-sur-11.4-xcode-12.5`
+#### `macos-big-sur-11.4-xcode-12.5`
 
 <Collapsible summary="Details">
 
