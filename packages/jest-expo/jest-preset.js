@@ -4,6 +4,7 @@ const cloneDeep = require('lodash/cloneDeep');
 const isEqual = require('lodash/isEqual');
 // Derive the Expo Jest preset from the React Native one
 const jestPreset = cloneDeep(require('react-native/jest-preset'));
+const { assetNamePattern } = require('./config/commonPattern');
 
 // transform
 if (!jestPreset.transform) {
@@ -19,8 +20,6 @@ if (!jestPreset.transform[defaultAssetNamePattern]) {
   delete jestPreset.transform[defaultAssetNamePattern];
 }
 
-const assetNamePattern =
-  '^.+\\.(bmp|gif|jpg|jpeg|mp4|png|psd|svg|webp|ttf|otf|m4v|mov|mp4|mpeg|mpg|webm|aac|aiff|caf|m4a|mp3|wav|html|pdf|obj)$';
 jestPreset.transform[assetNamePattern] = require.resolve(
   'jest-expo/src/preset/assetFileTransformer.js'
 );

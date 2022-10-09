@@ -2,6 +2,7 @@
 const { getManagedExtensions } = require('@expo/config/paths');
 
 const expoPreset = require('../jest-preset');
+const { assetNamePattern } = require('./commonPattern');
 const { withWatchPlugins } = require('./withWatchPlugins');
 
 function getPlatformPreset(displayOptions, extensions) {
@@ -45,6 +46,10 @@ function getBaseWebPreset() {
       // Add react-native-web alias
       // This makes the tests take ~2x longer
       '^react-native$': 'react-native-web',
+    },
+    transform: {
+      ...expoPreset.transform,
+      [assetNamePattern]: require.resolve('jest-expo/src/preset/assetFileTransformerWeb.js'),
     },
   };
 }
