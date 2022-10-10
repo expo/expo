@@ -23,7 +23,7 @@ export declare abstract class BasePackageManager implements PackageManager {
     protected ensureCwdDefined(method?: string): string;
     runAsync(command: string[]): SpawnPromise<SpawnResult>;
     versionAsync(): Promise<string>;
-    configAsync(key: string): Promise<string>;
+    getConfigAsync(key: string): Promise<string>;
     removeLockfileAsync(): Promise<void>;
     installAsync(flags?: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
     uninstallAsync(): Promise<void>;

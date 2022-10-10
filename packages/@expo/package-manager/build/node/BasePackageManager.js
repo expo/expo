@@ -34,7 +34,7 @@ class BasePackageManager {
     async versionAsync() {
         return await this.runAsync(['--version']).then(({ stdout }) => stdout.trim());
     }
-    async configAsync(key) {
+    async getConfigAsync(key) {
         return await this.runAsync(['config', 'get', key]).then(({ stdout }) => stdout.trim());
     }
     async removeLockfileAsync() {
