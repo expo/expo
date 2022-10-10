@@ -209,7 +209,7 @@ The following command creates [eas.json](/build/eas-json.mdx) in the project's r
 
 #### Configure EAS Build
 
-There are few more steps to configure EAS Build for running E2E tests as part of the build:
+There are a few more steps to configure EAS Build for running E2E tests as part of the build:
 
 - Android tests:
   - Tests are run in the Android Emulator. You will define a build profile that builds your app for the emulator (produces an `apk` file).
@@ -237,7 +237,7 @@ Edit **eas.json** and add the `test` build profile:
 }
 ```
 
-Create **eas-hooks/eas-build-pre-install.sh** that installs necessary tools and dependencies for the given platform:
+Create **eas-hooks/eas-build-pre-install.sh** that installs the necessary tools and dependencies for the given platform:
 
 ```sh eas-hooks/eas-build-pre-install.sh
 #!/usr/bin/env bash
@@ -281,7 +281,7 @@ fi
 
 ```
 
-Next, create **eas-hooks/eas-build-on-success.sh** with the following contents. The script runs different commands for Android and iOS. For iOS, the only command is `detox test`. For Android, it's a bit more complicated. You'll have to start the emulator prior to running the tests as `detox` sometimes seems to be having problems with starting the emulator on its own and it can stuck at running the first test from your test suite. After the `detox test` run, there is a command that kills the previously started emulator.
+Next, create **eas-hooks/eas-build-on-success.sh** with the following contents. The script runs different commands for Android and iOS. For iOS, the only command is `detox test`. For Android, it's a bit more complicated. You'll have to start the emulator prior to running the tests as `detox` sometimes seems to be having problems with starting the emulator on its own and it can get stuck on running the first test from your test suite. After the `detox test` run, there is a command that kills the previously started emulator.
 
 ```sh eas-hooks/eas-build-on-success.sh
 #!/usr/bin/env bash
@@ -327,6 +327,16 @@ Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) t
 ```
 
 > Don't forget to add executable permissions to **eas-build-pre-install.sh** and **eas-build-on-success.sh**. Run `chmod +x eas-hooks/*.sh`.
+
+### 5.1. Patch **app/build.gradle**
+
+> This step will be redundant in the future.
+
+The Android build command that you use to produce the test build is `./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release`. Notice that it consists of two Gradle tasks. Unfortunately, when building the `*AndroidTest` task, some versions of the `expo-modules-code` module change what native libraries are included in the app binary. Those settings don't work with settings for `assembleRelease`.
+
+To fix the problem, add the `pickFirsts` list under `android.packagingOptions` in your **android/app/build.gradle**. The `pickFirsts` property overrides the setting for your project.
+
+<DiffBlock source="/static/diffs/e2e-tests-pickfirsts.diff" />
 
 ### 6. Run tests on EAS Build
 
@@ -428,22 +438,7 @@ To test the new configuration, let's break a test and see that EAS Build uploads
 
 Edit **e2e/homeScreen.e2e.js** and make the following change:
 
-<DiffBlock
-  raw={`
-diff --git a/e2e/homeScreen.e2e.js b/e2e/homeScreen.e2e.js
-index e28acfa..c65e90c 100644
---- a/e2e/homeScreen.e2e.js
-+++ b/e2e/homeScreen.e2e.js
-@@ -8,7 +8,7 @@ describe('Home screen', () => {
-   });
-
-   it('"Click me" button should be visible', async () => {
--    await expect(element(by.id('click-me-button'))).toBeVisible();
-+    await expect(element(by.id('click-me-button'))).not.toBeVisible();
-   });
-
-   it('shows "Hi!" after tapping "Click me"', async () => {
-`} />
+<DiffBlock source="/static/diffs/e2e-tests-homescreen.diff" />
 
 Run an iOS build with the following command and wait for it to finish:
 
@@ -474,14 +469,16 @@ An example of such a Detox test is shown below. Full example code is available o
 <Collapsible summary="e2e/homeScreen.e2e.js">
 
 ```js
+/* @info New line */
 const { openAppForDebugBuild } = require('./utils/openAppForDebugBuild');
+/* @end */
 
 describe('Home screen', () => {
   beforeEach(async () => {
     await device.launchApp({
       newInstance: true,
     });
-    await openAppForDebugBuild();
+    /* @info New line */ await openAppForDebugBuild(); /* @end */
   });
 
   it('"Click me" button should be visible', async () => {
