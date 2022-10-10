@@ -10,6 +10,8 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.getIntOrNull
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.getValOr
 import com.stripe.android.databinding.BecsDebitWidgetBinding
 import com.stripe.android.model.PaymentMethodCreateParams
 import com.stripe.android.view.BecsDebitWidget
