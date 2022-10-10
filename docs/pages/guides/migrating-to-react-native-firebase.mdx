@@ -74,7 +74,8 @@ Firebase Analytics requests in React Native Firebase are almost the same- mostly
 If you have previously used Expo Go for development and testing, at this point, you will need to migrate to a [development build](https://docs.expo.dev/development/introduction/#from-expo-go-to-development-builds), as Expo Go does not include the native code used in React Native Firebase. A development build supports the same workflows as Expo Go, allowing you to develop from your local machine or test updates via a QR code, except it is compatible with all of the native code you include in your standalone app.
 
 [Follow these instructions for creating a development build](https://docs.expo.dev/development/getting-started/). Once you are finished, you should have an **eas.json** file that includes a build profile that looks like this:
-```
+
+```json eas.json
 {
   "build": {
     "development": {
@@ -83,7 +84,6 @@ If you have previously used Expo Go for development and testing, at this point, 
     }
   }
 }
-```
 If you wish to run a [Development Build on an iOS simulator](/build-reference/simulators/) instead of a device, your profile may also include:
 
 ```json eas.json
