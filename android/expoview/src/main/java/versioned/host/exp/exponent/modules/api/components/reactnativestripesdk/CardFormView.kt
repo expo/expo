@@ -4,6 +4,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
+import android.text.InputFilter
 import android.view.View
 import android.view.View.OnFocusChangeListener
 import android.widget.FrameLayout
@@ -14,6 +15,8 @@ import com.facebook.react.uimanager.events.EventDispatcher
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.*
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.mapCardBrand
 import com.stripe.android.core.model.CountryCode
 import com.stripe.android.databinding.CardMultilineWidgetBinding
 import com.stripe.android.databinding.StripeCardFormViewBinding
@@ -51,10 +54,15 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
   }
 
   fun setDefaultValues(defaults: ReadableMap) {
-    defaults.getString("countryCode")?.let {
-      cardFormViewBinding.countryLayout.setSelectedCountryCode(CountryCode(it))
-      cardFormViewBinding.countryLayout.updateUiForCountryEntered(CountryCode(it))
+    setCountry(defaults.getString("countryCode"))
+  }
+
+  private fun setCountry(countryString: String?) {
+    if (countryString != null) {
+      cardFormViewBinding.countryLayout.setSelectedCountryCode(CountryCode(countryString))
+      cardFormViewBinding.countryLayout.updateUiForCountryEntered(CountryCode(countryString))
     }
+    setPostalCodeFilter()
   }
 
   fun setPlaceHolders(value: ReadableMap) {
@@ -252,6 +260,29 @@ class CardFormView(context: ThemedReactContext) : FrameLayout(context) {
     postalCodeEditText.onFocusChangeListener = OnFocusChangeListener { _, hasFocus ->
       currentFocusedField = if (hasFocus) CardInputListener.FocusField.PostalCode.toString() else  null
       onChangeFocus()
+    }
+  }
+
+  private fun setPostalCodeFilter() {
+    cardFormViewBinding.postalCode.filters = arrayOf(
+      *cardFormViewBinding.postalCode.filters,
+      createPostalCodeInputFilter()
+    )
+  }
+
+  private fun createPostalCodeInputFilter(): InputFilter {
+    return InputFilter { charSequence, start, end, _, _, _ ->
+      if (cardFormViewBinding.countryLayout.getSelectedCountryCode() == CountryCode.US) {
+        // Rely on CardFormView's built-in US postal code filter
+        return@InputFilter null
+      }
+
+      for (i in start until end) {
+        if (!PostalCodeUtilities.isValidGlobalPostalCodeCharacter(charSequence[i])) {
+          return@InputFilter ""
+        }
+      }
+      return@InputFilter null
     }
   }
 

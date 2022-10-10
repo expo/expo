@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
+package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils
 
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.bridge.WritableNativeMap
@@ -110,4 +110,8 @@ internal fun createError(code: String, error: Throwable): WritableMap {
     null,
     null,
     null)
+}
+
+internal fun createMissingInitError(): WritableMap {
+  return createError(ErrorType.Failed.toString(), "Stripe has not been initialized. Initialize Stripe in your app with the StripeProvider component or the initStripe method.")
 }

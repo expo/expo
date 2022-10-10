@@ -5,17 +5,23 @@ import android.content.Intent
 import android.os.Parcelable
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 import com.facebook.react.bridge.*
 import com.facebook.react.module.annotations.ReactModule
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.pushprovisioning.PushProvisioningProxy
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.*
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.createError
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.createMissingActivityError
 import com.stripe.android.*
-import com.stripe.android.core.AppInfo
 import com.stripe.android.core.ApiVersion
+import com.stripe.android.core.AppInfo
 import com.stripe.android.model.*
 import com.stripe.android.payments.bankaccount.CollectBankAccountConfiguration
 import com.stripe.android.view.AddPaymentMethodActivityStarter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+
 
 @ReactModule(name = StripeSdkModule.NAME)
 class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
@@ -31,21 +37,27 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
   private var stripeAccountId: String? = null
   private var urlScheme: String? = null
 
+  private var confirmPromise: Promise? = null
+  private var confirmPaymentClientSecret: String? = null
+
   private var paymentSheetFragment: PaymentSheetFragment? = null
   private var googlePayFragment: GooglePayFragment? = null
   private var paymentLauncherFragment: PaymentLauncherFragment? = null
-
-  private var confirmPromise: Promise? = null
-  private var confirmPaymentClientSecret: String? = null
+  private var collectBankAccountLauncherFragment: CollectBankAccountLauncherFragment? = null
+  private var financialConnectionsSheetFragment: FinancialConnectionsSheetFragment? = null
+  private val allFragments: List<Fragment?>
+    get() = listOf(
+      paymentSheetFragment,
+      googlePayFragment,
+      paymentLauncherFragment,
+      collectBankAccountLauncherFragment,
+      financialConnectionsSheetFragment
+    )
 
   private val mActivityEventListener = object : BaseActivityEventListener() {
     override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
       if (::stripe.isInitialized) {
-        // BEGIN - Necessary on older versions of React Native (~0.64 and below)
-        paymentSheetFragment?.activity?.activityResultRegistry?.dispatchResult(requestCode, resultCode, data)
-        googlePayFragment?.activity?.activityResultRegistry?.dispatchResult(requestCode, resultCode, data)
-        paymentLauncherFragment?.activity?.activityResultRegistry?.dispatchResult(requestCode, resultCode, data)
-        // END
+        dispatchActivityResultsToFragments(requestCode, resultCode, data)
         try {
           val result = AddPaymentMethodActivityStarter.Result.fromIntent(data)
           if (data?.getParcelableExtra<Parcelable>("extra_activity_result") != null) {
@@ -60,6 +72,13 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
 
   init {
     reactContext.addActivityEventListener(mActivityEventListener)
+  }
+
+  // Necessary on older versions of React Native (~0.65 and below)
+  private fun dispatchActivityResultsToFragments(requestCode: Int, resultCode: Int, data: Intent?) {
+    for (fragment in allFragments) {
+      fragment?.activity?.activityResultRegistry?.dispatchResult(requestCode, resultCode, data)
+    }
   }
 
   private fun configure3dSecure(params: ReadableMap) {
@@ -82,6 +101,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
     hashMapOf(
       "API_VERSIONS" to hashMapOf(
         "CORE" to ApiVersion.API_VERSION_CODE,
+        "ISSUING" to PushProvisioningProxy.getApiVersion(),
       )
     )
 
@@ -115,13 +135,14 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
   @ReactMethod
   fun initPaymentSheet(params: ReadableMap, promise: Promise) {
     getCurrentActivityOrResolveWithError(promise)?.let { activity ->
+      paymentSheetFragment?.removeFragment(reactApplicationContext)
       paymentSheetFragment = PaymentSheetFragment(reactApplicationContext, promise).also {
         val bundle = toBundleObject(params)
         it.arguments = bundle
       }
       try {
         activity.supportFragmentManager.beginTransaction()
-          .add(paymentSheetFragment!!, "payment_sheet_launch_fragment")
+          .add(paymentSheetFragment!!, PaymentSheetFragment.TAG)
           .commit()
       } catch (error: IllegalStateException) {
         promise.resolve(createError(ErrorType.Failed.toString(), error.message))
@@ -167,7 +188,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
           )
         } else {
           Log.e("StripeReactNative", "FPX payment failed. Promise and/or client secret is not set.")
-          confirmPromise?.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), "FPX payment failed."))
+          confirmPromise?.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), "FPX payment failed. Client secret is not set."))
         }
       }
       is AddPaymentMethodActivityStarter.Result.Failure -> {
@@ -183,27 +204,30 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
 
   @ReactMethod
   fun createPaymentMethod(data: ReadableMap, options: ReadableMap, promise: Promise) {
-    val cardParams = (cardFieldView?.cardParams ?: cardFormView?.cardParams) ?: run {
-      promise.resolve(createError("Failed", "Card details not complete"))
+    val paymentMethodType = getValOr(data, "paymentMethodType")?.let { mapToPaymentMethodType(it) } ?: run {
+      promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), "You must provide paymentMethodType"))
       return
     }
-    val cardAddress = cardFieldView?.cardAddress ?: cardFormView?.cardAddress
     val paymentMethodData = getMapOrNull(data, "paymentMethodData")
-    val billingDetailsParams = mapToBillingDetails(getMapOrNull(paymentMethodData, "billingDetails"), cardAddress)
+    val factory = PaymentMethodCreateParamsFactory(paymentMethodData, options, cardFieldView, cardFormView)
+    try {
+      val paymentMethodCreateParams = factory.createPaymentMethodParams(paymentMethodType)
+      stripe.createPaymentMethod(
+        paymentMethodCreateParams,
+        callback = object : ApiResultCallback<PaymentMethod> {
+          override fun onError(e: Exception) {
+            promise.resolve(createError("Failed", e))
+          }
 
-    val paymentMethodCreateParams = PaymentMethodCreateParams.create(cardParams, billingDetailsParams)
-    stripe.createPaymentMethod(
-      paymentMethodCreateParams,
-      callback = object : ApiResultCallback<PaymentMethod> {
-        override fun onError(e: Exception) {
-          promise.resolve(createError("Failed", e))
+          override fun onSuccess(result: PaymentMethod) {
+            val paymentMethodMap: WritableMap = mapFromPaymentMethod(result)
+            promise.resolve(createResult("paymentMethod", paymentMethodMap))
+          }
         }
-
-        override fun onSuccess(result: PaymentMethod) {
-          val paymentMethodMap: WritableMap = mapFromPaymentMethod(result)
-          promise.resolve(createResult("paymentMethod", paymentMethodMap))
-        }
-      })
+      )
+    } catch (error: PaymentMethodCreateParamsException) {
+      promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), error))
+    }
   }
 
   @ReactMethod
@@ -355,12 +379,15 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
 //  }
 
   @ReactMethod
-  fun confirmPayment(paymentIntentClientSecret: String, params: ReadableMap, options: ReadableMap, promise: Promise) {
+  fun confirmPayment(paymentIntentClientSecret: String, params: ReadableMap?, options: ReadableMap, promise: Promise) {
     val paymentMethodData = getMapOrNull(params, "paymentMethodData")
-    val paymentMethodType = getValOr(params, "paymentMethodType")?.let { mapToPaymentMethodType(it) } ?: run {
-      promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), "You must provide paymentMethodType"))
-      return
-    }
+    val paymentMethodType = if (params != null)
+      mapToPaymentMethodType(params.getString("paymentMethodType")) ?: run {
+        promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), "You must provide paymentMethodType"))
+        return
+      }
+    else
+      null // Expect that payment method was attached on the server
 
     val testOfflineBank = getBooleanOrFalse(params, "testOfflineBank")
 
@@ -381,10 +408,10 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
 //      return
 //    }
 
-    val factory = PaymentMethodCreateParamsFactory(paymentIntentClientSecret, paymentMethodData, options, cardFieldView, cardFormView)
+    val factory = PaymentMethodCreateParamsFactory(paymentMethodData, options, cardFieldView, cardFormView)
 
     try {
-      val confirmParams = factory.createConfirmParams(paymentMethodType)
+      val confirmParams = factory.createParams(paymentIntentClientSecret, paymentMethodType, isPaymentIntent = true) as ConfirmPaymentIntentParams
       urlScheme?.let {
         confirmParams.returnUrl = mapToReturnURL(urlScheme)
       }
@@ -434,10 +461,10 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
       return
     }
 
-    val factory = PaymentMethodCreateParamsFactory(setupIntentClientSecret, getMapOrNull(params, "paymentMethodData"), options, cardFieldView, cardFormView)
+    val factory = PaymentMethodCreateParamsFactory(getMapOrNull(params, "paymentMethodData"), options, cardFieldView, cardFormView)
 
     try {
-      val confirmParams = factory.createSetupParams(paymentMethodType)
+      val confirmParams = factory.createParams(setupIntentClientSecret, paymentMethodType, isPaymentIntent = false) as ConfirmSetupIntentParams
       urlScheme?.let {
         confirmParams.returnUrl = mapToReturnURL(urlScheme)
       }
@@ -467,7 +494,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
     getCurrentActivityOrResolveWithError(promise)?.let {
       try {
         it.supportFragmentManager.beginTransaction()
-          .add(fragment, "google_pay_support_fragment")
+          .add(fragment, GooglePayPaymentMethodLauncherFragment.TAG)
           .commit()
       } catch (error: IllegalStateException) {
         promise.resolve(createError(ErrorType.Failed.toString(), error.message))
@@ -485,7 +512,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
     getCurrentActivityOrResolveWithError(promise)?.let {
       try {
         it.supportFragmentManager.beginTransaction()
-          .add(googlePayFragment!!, "google_pay_launch_fragment")
+          .add(googlePayFragment!!, GooglePayFragment.TAG)
           .commit()
       } catch (error: IllegalStateException) {
         promise.resolve(createError(ErrorType.Failed.toString(), error.message))
@@ -525,14 +552,46 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
   }
 
   @ReactMethod
+  fun canAddCardToWallet(params: ReadableMap, promise: Promise) {
+    val last4 = getValOr(params, "cardLastFour", null) ?: run {
+      promise.resolve(createError("Failed", "You must provide cardLastFour"))
+      return
+    }
+
+    if (!PushProvisioningProxy.isNFCEnabled(reactApplicationContext)) {
+      promise.resolve(createCanAddCardResult(false, "UNSUPPORTED_DEVICE"))
+      return
+    }
+
+    getCurrentActivityOrResolveWithError(promise)?.let {
+      PushProvisioningProxy.isCardInWallet(it, last4) { isCardInWallet, token, error ->
+        val result = error?.let {
+          createCanAddCardResult(false, "MISSING_CONFIGURATION", null)
+        } ?: run {
+          val status = if (isCardInWallet) "CARD_ALREADY_EXISTS" else null
+          createCanAddCardResult(!isCardInWallet, status, token)
+        }
+        promise.resolve(result)
+      }
+    }
+  }
+
+  @ReactMethod
   fun isCardInWallet(params: ReadableMap, promise: Promise) {
     val last4 = getValOr(params, "cardLastFour", null) ?: run {
       promise.resolve(createError("Failed", "You must provide cardLastFour"))
       return
     }
     getCurrentActivityOrResolveWithError(promise)?.let {
-      promise.resolve(false)
-      return
+      PushProvisioningProxy.isCardInWallet(it, last4) { isCardInWallet, token, error ->
+        val result: WritableMap = error ?: run {
+          val map = WritableNativeMap()
+          map.putBoolean("isInWallet", isCardInWallet)
+          map.putMap("token", token)
+          map
+        }
+        promise.resolve(result)
+      }
     }
   }
 
@@ -558,9 +617,10 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
       billingDetails.getString("email")
     )
 
-    val fragment = CollectBankAccountLauncherFragment(
+    collectBankAccountLauncherFragment = CollectBankAccountLauncherFragment(
       reactApplicationContext,
       publishableKey,
+      stripeAccountId,
       clientSecret,
       isPaymentIntent,
       collectParams,
@@ -569,7 +629,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
     getCurrentActivityOrResolveWithError(promise)?.let {
       try {
         it.supportFragmentManager.beginTransaction()
-          .add(fragment, "collect_bank_account_launcher_fragment")
+          .add(collectBankAccountLauncherFragment!!, "collect_bank_account_launcher_fragment")
           .commit()
       } catch (error: IllegalStateException) {
         promise.resolve(createError(ErrorType.Failed.toString(), error.message))
@@ -596,6 +656,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
         promise.resolve(createResult("paymentIntent", mapFromPaymentIntentResult(result)))
       }
     }
+
     val setupCallback = object : ApiResultCallback<SetupIntent> {
       override fun onError(e: Exception) {
         promise.resolve(createError(ErrorType.Failed.toString(), e))
@@ -641,6 +702,28 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
           setupCallback
         )
       }
+    }
+  }
+
+  @ReactMethod
+  fun collectBankAccountToken(clientSecret: String, promise: Promise) {
+    if (!::stripe.isInitialized) {
+      promise.resolve(createMissingInitError())
+      return
+    }
+    financialConnectionsSheetFragment = FinancialConnectionsSheetFragment().also {
+      it.presentFinancialConnectionsSheet(clientSecret, FinancialConnectionsSheetFragment.Mode.ForToken, publishableKey, stripeAccountId, promise, reactApplicationContext)
+    }
+  }
+
+  @ReactMethod
+  fun collectFinancialConnectionsAccounts(clientSecret: String, promise: Promise) {
+    if (!::stripe.isInitialized) {
+      promise.resolve(createMissingInitError())
+      return
+    }
+    financialConnectionsSheetFragment = FinancialConnectionsSheetFragment().also {
+      it.presentFinancialConnectionsSheet(clientSecret, FinancialConnectionsSheetFragment.Mode.ForSession, publishableKey, stripeAccountId, promise, reactApplicationContext)
     }
   }
 

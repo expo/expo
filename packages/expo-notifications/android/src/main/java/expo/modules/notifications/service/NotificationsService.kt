@@ -502,7 +502,7 @@ open class NotificationsService : BroadcastReceiver() {
       val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY) ?: throw IllegalArgumentException("$NOTIFICATION_KEY not found in the intent extras.")
       val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY) ?: throw IllegalArgumentException("$NOTIFICATION_ACTION_KEY not found in the intent extras.")
       val response = if (action is TextInputNotificationAction) {
-        val userText = action.placeholder ?: RemoteInput.getResultsFromIntent(intent).getString(USER_TEXT_RESPONSE_KEY)
+        val userText = action.placeholder ?: RemoteInput.getResultsFromIntent(intent)?.getString(USER_TEXT_RESPONSE_KEY) ?: ""
         TextInputNotificationResponse(action, notification, userText)
       } else {
         NotificationResponse(action, notification)
