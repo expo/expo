@@ -1,6 +1,6 @@
 require 'json'
 
-package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 # Following the example of react-native-firebase
 # https://github.com/invertase/react-native-firebase/blob/bf5271ef46b534d3363206f816d114f9ac5c59ee/packages/app/RNFBApp.podspec#L5-L10
@@ -20,7 +20,7 @@ if using_custom_sd_web_image_webp_coder_version
 end
 
 Pod::Spec.new do |s|
-  s.name           = 'EXImage'
+  s.name           = 'ExpoImage'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -28,16 +28,22 @@ Pod::Spec.new do |s|
   s.author         = package['author']
   s.homepage       = package['homepage']
   s.platform       = :ios, '13.0'
+  s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
 
-  s.source_files = "ios/**/*.{h,m}"
-  s.requires_arc = true
-
+  s.dependency 'ExpoModulesCore'
   s.dependency 'React-Core'
 
   s.dependency 'SDWebImage', sd_web_image_version
-  s.dependency 'SDWebImageWebPCoder', sd_web_image_webp_coder
+  # s.dependency 'SDWebImageWebPCoder', sd_web_image_webp_coder
   s.dependency 'SDWebImageSVGKitPlugin', '~> 1.3'
   s.dependency 'SVGKit', '~> 2.1'
+
+  # Swift/Objective-C compatibility
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+  }
+
+  s.source_files = "**/*.{h,m,swift}"
 end

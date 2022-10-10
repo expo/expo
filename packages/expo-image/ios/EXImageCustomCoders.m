@@ -1,8 +1,9 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import "EXImageCustomCoders.h"
+#import <SDWebImage/SDImageCoder.h>
 #import <SDWebImage/SDImageCodersManager.h>
-#import <SDWebImageWebPCoder/SDWebImageWebPCoder.h>
+//#import <SDWebImageWebPCoder/SDWebImageWebPCoder.h>
 #if __has_include(<SDWebImageSVGCoder/SDImageSVGCoder.h>)
 #import <SDWebImageSVGCoder/SDImageSVGCoder.h>
 #endif
@@ -15,11 +16,11 @@
   SDImageCodersManager *manager = [SDImageCodersManager sharedManager];
   
   id<SDImageCoder> svgCoder = [EXImageCustomCoders SVGCoder];
-  SDImageWebPCoder *webPCoder = [EXImageCustomCoders WebPCoder];
+//  SDImageWebPCoder *webPCoder = [EXImageCustomCoders WebPCoder];
   
-  if (![manager.coders containsObject:webPCoder]) {
-    [manager addCoder:webPCoder];
-  }
+//  if (![manager.coders containsObject:webPCoder]) {
+//    [manager addCoder:webPCoder];
+//  }
   if (![manager.coders containsObject:svgCoder]) {
     [manager addCoder:svgCoder];
   }
@@ -48,10 +49,10 @@
   return svgCoder;
 }
 
-+ (SDImageWebPCoder *)WebPCoder
-{
-  return [SDImageWebPCoder sharedCoder];
-}
+//+ (SDImageWebPCoder *)WebPCoder
+//{
+//  return [SDImageWebPCoder sharedCoder];
+//}
 
 
 @end

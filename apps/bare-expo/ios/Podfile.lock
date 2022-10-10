@@ -58,12 +58,6 @@ PODS:
   - EXGL (11.4.0):
     - ExpoModulesCore
     - React-jsi
-  - EXImage (0.2.3):
-    - React-Core
-    - SDWebImage (~> 5.0)
-    - SDWebImageSVGKitPlugin (~> 1.3)
-    - SDWebImageWebPCoder (~> 0.8.4)
-    - SVGKit (~> 2.1)
   - EXImageLoader (3.2.0):
     - ExpoModulesCore
     - React-Core
@@ -174,6 +168,12 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (11.3.0):
     - ExpoModulesCore
+  - ExpoImage (0.2.3):
+    - ExpoModulesCore
+    - React-Core
+    - SDWebImage (~> 5.0)
+    - SDWebImageSVGKitPlugin (~> 1.3)
+    - SVGKit (~> 2.1)
   - ExpoImageManipulator (10.4.0):
     - EXImageLoader
     - ExpoModulesCore
@@ -358,15 +358,6 @@ PODS:
   - GTMSessionFetcher/Core (1.7.2)
   - hermes-engine (0.70.2)
   - libevent (2.1.12)
-  - libwebp (1.2.3):
-    - libwebp/demux (= 1.2.3)
-    - libwebp/mux (= 1.2.3)
-    - libwebp/webp (= 1.2.3)
-  - libwebp/demux (1.2.3):
-    - libwebp/webp
-  - libwebp/mux (1.2.3):
-    - libwebp/demux
-  - libwebp/webp (1.2.3)
   - MLImage (1.0.0-beta2)
   - MLKitCommon (5.0.0):
     - GoogleDataTransport (~> 9.0)
@@ -756,9 +747,6 @@ PODS:
   - SDWebImageSVGKitPlugin (1.3.0):
     - SDWebImage/Core (~> 5.10)
     - SVGKit (>= 2.1)
-  - SDWebImageWebPCoder (0.8.5):
-    - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.10)
   - SVGKit (2.1.1):
     - CocoaLumberjack (~> 3.0)
   - UMAppLoader (3.1.0)
@@ -793,7 +781,6 @@ DEPENDENCIES:
   - EXFirebaseCore (from `../../../packages/expo-firebase-core/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXGL (from `../../../packages/expo-gl`)
-  - EXImage (from `../../../node_modules/expo-image`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
@@ -815,6 +802,7 @@ DEPENDENCIES:
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
+  - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
@@ -914,7 +902,6 @@ SPEC REPOS:
     - GoogleUtilitiesComponents
     - GTMSessionFetcher
     - libevent
-    - libwebp
     - MLImage
     - MLKitCommon
     - MLKitFaceDetection
@@ -925,7 +912,6 @@ SPEC REPOS:
     - Quick
     - SDWebImage
     - SDWebImageSVGKitPlugin
-    - SDWebImageWebPCoder
     - SVGKit
     - ZXingObjC
 
@@ -997,8 +983,6 @@ EXTERNAL SOURCES:
   EXGL:
     inhibit_warnings: false
     :path: "../../../packages/expo-gl"
-  EXImage:
-    :path: "../../../node_modules/expo-image"
   EXImageLoader:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-loader/ios"
@@ -1055,6 +1039,9 @@ EXTERNAL SOURCES:
   ExpoHaptics:
     inhibit_warnings: false
     :path: "../../../packages/expo-haptics/ios"
+  ExpoImage:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-image/ios"
   ExpoImageManipulator:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-manipulator/ios"
@@ -1260,7 +1247,6 @@ SPEC CHECKSUMS:
   EXFirebaseCore: 4e86a77accaa3363b07e483f46eea34417c2bbdb
   EXFont: 49dd9f8454d035d00edec02b2fefab415872d86b
   EXGL: eaf094308ed1a3ea8259b0ceeef41363edf20eb2
-  EXImage: dc8a7ec5389a7184dbffcf02e28b8648ccc0734d
   EXImageLoader: cb886583dae1f3320c72146480c97a3ec71f1e60
   EXInAppPurchases: 86d61b99da4658b29c0c0a9e975b1ca227a2f772
   EXJSONUtils: bb893657b9db536765814e5b1667e4b511933e62
@@ -1280,6 +1266,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
   ExpoCrypto: e2678609304ec063a0e36b826a3c2d0f0d7202c0
   ExpoHaptics: 7a9709f4310b577d1dd68d8839b95df1e2419cde
+  ExpoImage: 219eb2d8b6952861c7d351c5dd86d45b0584be08
   ExpoImageManipulator: 7154a74e021bdc08810e54d87adaac947ee3dff8
   ExpoImagePicker: 5935667c6a0b5e6f5ca7c0a09f2f7a40f5ee8be2
   ExpoKeepAwake: 49bcb2ce587a75f876ff0777b80fd6803e6cbb46
@@ -1325,7 +1312,6 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   hermes-engine: f9312a2ea8036d03b63568ebf392314f4fa8b474
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
   MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
   MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
   MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
@@ -1380,7 +1366,6 @@ SPEC CHECKSUMS:
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   SDWebImage: e5cc87bf736e60f49592f307bdf9e157189298a3
   SDWebImageSVGKitPlugin: 8797e1c9b9baf80bd50d28e673e16a12359af1c9
-  SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SVGKit: 652cdf7bef8bec8564d04a8511d3ab50c7595fac
   UMAppLoader: 90a8e7f4b09b576588e7c2939321860fba47343e
   Yoga: 043f8eb97345d0171f27fead4d1849cacf0472a5
