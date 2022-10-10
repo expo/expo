@@ -28,9 +28,11 @@ If you are using [Expo Prebuild](/guides/adopting-prebuild) (also known as Manag
 
 <Terminal cmd={["$ npx expo install expo-build-properties"]} />
 
-#### Example app.json with config plugin
+### Add Config plugin to Expo config file
 
-```json
+In the Expo config file, add add `expo-community-flipper` to the `plugins` array with the following configuration:
+
+```json app.json
 {
   "expo": {
     "plugins": [
@@ -45,7 +47,6 @@ If you are using [Expo Prebuild](/guides/adopting-prebuild) (also known as Manag
     ]
   }
 }
-```
 
 If you are using the Bare Workflow, follow [React Native Firebase's installation instructions](https://rnfirebase.io/#bare-workflow).
 
