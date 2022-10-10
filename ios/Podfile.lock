@@ -290,7 +290,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
   - ABI45_0_0lottie-react-native (5.0.1):
     - ABI45_0_0React-Core
-    - lottie-ios (~> 3.2.3)
+    - lottie-ios (~> 3.4.0)
   - ABI45_0_0RCTRequired (0.68.1)
   - ABI45_0_0RCTTypeSafety (0.68.1):
     - ABI45_0_0FBLazyVector (= 0.68.1)
@@ -894,7 +894,7 @@ PODS:
     - RCT-Folly (= 2021.07.22.00)
   - ABI46_0_0lottie-react-native (5.1.3):
     - ABI46_0_0React-Core
-    - lottie-ios (~> 3.2.3)
+    - lottie-ios (~> 3.4.0)
   - ABI46_0_0RCTRequired (0.69.1)
   - ABI46_0_0RCTTypeSafety (0.69.1):
     - ABI46_0_0FBLazyVector (= 0.69.1)
@@ -1294,9 +1294,9 @@ PODS:
     - ExpoModulesCore
   - EXAppleAuthentication (4.3.0):
     - ExpoModulesCore
-  - EXApplication (4.2.2):
+  - EXApplication (5.0.0):
     - ExpoModulesCore
-  - EXAV (12.0.2):
+  - EXAV (13.0.0-beta.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (10.3.0):
@@ -1318,9 +1318,9 @@ PODS:
     - ExpoModulesCore
   - EXCalendar (10.3.0):
     - ExpoModulesCore
-  - EXCamera (12.3.0):
+  - EXCamera (13.0.0-beta.1):
     - ExpoModulesCore
-  - EXConstants (13.2.3):
+  - EXConstants (14.0.0):
     - ExpoModulesCore
   - EXContacts (10.3.0):
     - ExpoModulesCore
@@ -1328,7 +1328,7 @@ PODS:
     - ExpoModulesCore
   - EXDocumentPicker (10.3.0):
     - ExpoModulesCore
-  - EXErrorRecovery (3.2.0):
+  - EXErrorRecovery (4.0.0):
     - ExpoModulesCore
   - EXFaceDetector (11.3.0):
     - ExpoModulesCore
@@ -1336,7 +1336,7 @@ PODS:
     - MLKitCommon (= 5.0.0)
     - MLKitFaceDetection (= 1.5.0)
     - MLKitVision (= 3.0.0)
-  - EXFileSystem (14.1.0):
+  - EXFileSystem (15.0.0):
     - ExpoModulesCore
   - EXFirebaseAnalytics (7.2.0):
     - EXFirebaseCore
@@ -1345,7 +1345,7 @@ PODS:
   - EXFirebaseCore (5.2.0):
     - ExpoModulesCore
     - Firebase/Core (= 9.5.0)
-  - EXFont (10.2.0):
+  - EXFont (11.0.0):
     - ExpoModulesCore
   - EXGL (11.4.0):
     - ExpoModulesCore
@@ -1372,7 +1372,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (46.0.1):
+  - Expo (47.0.0-alpha.1):
     - ExpoModulesCore
   - ExpoCellular (4.3.0):
     - ExpoModulesCore
@@ -1390,18 +1390,18 @@ PODS:
     - ExpoModulesCore
   - ExpoImagePicker (13.3.1):
     - ExpoModulesCore
-  - ExpoKeepAwake (10.2.1):
+  - ExpoKeepAwake (11.0.0):
     - ExpoModulesCore
-  - ExpoLinearGradient (11.4.0):
+  - ExpoLinearGradient (12.0.0-beta.1):
     - ExpoModulesCore
   - ExpoLocalization (13.1.0):
     - ExpoModulesCore
   - ExpoMailComposer (11.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.11.3):
+  - ExpoModulesCore (0.12.0):
     - React-Core
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (0.11.3):
+  - ExpoModulesCore/Tests (0.12.0):
     - ExpoModulesTestCore
     - React-Core
     - ReactCommon/turbomodule/core
@@ -1410,6 +1410,8 @@ PODS:
     - Nimble (~> 9.2.0)
     - Quick (~> 5.0.0)
   - ExpoRandom (12.3.0):
+    - ExpoModulesCore
+  - ExpoStoreReview (5.3.0):
     - ExpoModulesCore
   - ExpoSystemUI (1.3.0):
     - ExpoModulesCore
@@ -1439,14 +1441,12 @@ PODS:
     - React-Core
   - EXSQLite (10.3.0):
     - ExpoModulesCore
-  - EXStoreReview (5.3.0):
-    - ExpoModulesCore
   - EXStructuredHeaders (2.2.1)
   - EXStructuredHeaders/Tests (2.2.1)
   - EXTaskManager (10.3.0):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.14.3):
+  - EXUpdates (0.14.6):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -1454,7 +1454,7 @@ PODS:
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.14.3):
+  - EXUpdates/Tests (0.14.6):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -1528,21 +1528,24 @@ PODS:
     - PromisesObjC (~> 2.1)
   - fmt (6.2.1)
   - glog (0.3.5)
-  - Google-Maps-iOS-Utils (2.1.0):
-    - Google-Maps-iOS-Utils/Clustering (= 2.1.0)
-    - Google-Maps-iOS-Utils/Geometry (= 2.1.0)
-    - Google-Maps-iOS-Utils/Heatmap (= 2.1.0)
-    - Google-Maps-iOS-Utils/QuadTree (= 2.1.0)
+  - Google-Maps-iOS-Utils (4.1.0):
+    - Google-Maps-iOS-Utils/Clustering (= 4.1.0)
+    - Google-Maps-iOS-Utils/Geometry (= 4.1.0)
+    - Google-Maps-iOS-Utils/GeometryUtils (= 4.1.0)
+    - Google-Maps-iOS-Utils/Heatmap (= 4.1.0)
+    - Google-Maps-iOS-Utils/QuadTree (= 4.1.0)
     - GoogleMaps
-  - Google-Maps-iOS-Utils/Clustering (2.1.0):
+  - Google-Maps-iOS-Utils/Clustering (4.1.0):
     - Google-Maps-iOS-Utils/QuadTree
     - GoogleMaps
-  - Google-Maps-iOS-Utils/Geometry (2.1.0):
+  - Google-Maps-iOS-Utils/Geometry (4.1.0):
     - GoogleMaps
-  - Google-Maps-iOS-Utils/Heatmap (2.1.0):
+  - Google-Maps-iOS-Utils/GeometryUtils (4.1.0):
+    - GoogleMaps
+  - Google-Maps-iOS-Utils/Heatmap (4.1.0):
     - Google-Maps-iOS-Utils/QuadTree
     - GoogleMaps
-  - Google-Maps-iOS-Utils/QuadTree (2.1.0):
+  - Google-Maps-iOS-Utils/QuadTree (4.1.0):
     - GoogleMaps
   - Google-Mobile-Ads-SDK (9.5.0):
     - GoogleAppMeasurement (< 10.0, >= 7.0)
@@ -1571,10 +1574,10 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleMaps (3.10.0):
-    - GoogleMaps/Maps (= 3.10.0)
-  - GoogleMaps/Base (3.10.0)
-  - GoogleMaps/Maps (3.10.0):
+  - GoogleMaps (7.1.0):
+    - GoogleMaps/Maps (= 7.1.0)
+  - GoogleMaps/Base (7.1.0)
+  - GoogleMaps/Maps (7.1.0):
     - GoogleMaps/Base
   - GoogleMLKit/FaceDetection (2.6.0):
     - GoogleMLKit/MLKitCore
@@ -1640,9 +1643,9 @@ PODS:
   - hermes-engine (0.70.2)
   - JKBigInteger (0.0.6)
   - libevent (2.1.12)
-  - lottie-ios (3.2.3)
-  - lottie-react-native (5.1.3):
-    - lottie-ios (~> 3.2.3)
+  - lottie-ios (3.4.3)
+  - lottie-react-native (5.1.4):
+    - lottie-ios (~> 3.4.0)
     - React-Core
   - MBProgressHUD (1.2.0)
   - MLImage (1.0.0-beta2)
@@ -1907,11 +1910,11 @@ PODS:
     - React-Core
   - react-native-pager-view (5.4.24):
     - React-Core
-  - react-native-safe-area-context (4.3.1):
+  - react-native-safe-area-context (4.4.1):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
-    - React
+    - React-Core
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.0):
     - React-Core
@@ -1943,6 +1946,8 @@ PODS:
   - react-native-skia/Utils (0.1.153):
     - React
     - React-callinvoker
+    - React-Core
+  - react-native-slider (4.2.4):
     - React-Core
   - react-native-webview (11.23.1):
     - React-Core
@@ -2353,6 +2358,7 @@ DEPENDENCIES:
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../packages/expo-modules-test-core/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
+  - ExpoStoreReview (from `../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
@@ -2366,7 +2372,6 @@ DEPENDENCIES:
   - EXSpeech (from `../packages/expo-speech/ios`)
   - EXSplashScreen (from `../packages/expo-splash-screen/ios`)
   - EXSQLite (from `../packages/expo-sqlite/ios`)
-  - EXStoreReview (from `../packages/expo-store-review/ios`)
   - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
@@ -2378,8 +2383,8 @@ DEPENDENCIES:
   - FBReactNativeSpec (from `../react-native-lab/react-native/React/FBReactNativeSpec`)
   - FirebaseCore
   - glog (from `../react-native-lab/react-native/third-party-podspecs/glog.podspec`)
-  - Google-Maps-iOS-Utils (~> 2.1.0)
-  - GoogleMaps (~> 3.6)
+  - Google-Maps-iOS-Utils (~> 4.1.0)
+  - GoogleMaps (~> 7.1)
   - GoogleUtilities
   - hermes-engine (from `../react-native-lab/react-native/sdks/hermes/hermes-engine.podspec`)
   - JKBigInteger (from `vendored/common/JKBigInteger.podspec.json`)
@@ -2408,6 +2413,7 @@ DEPENDENCIES:
   - react-native-safe-area-context (from `./vendored/unversioned/react-native-safe-area-context`)
   - "react-native-segmented-control (from `./vendored/unversioned/@react-native-segmented-control/segmented-control`)"
   - "react-native-skia (from `./vendored/unversioned/@shopify/react-native-skia`)"
+  - "react-native-slider (from `./vendored/unversioned/@react-native-community/slider`)"
   - react-native-webview (from `./vendored/unversioned/react-native-webview`)
   - React-perflogger (from `../react-native-lab/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../react-native-lab/react-native/Libraries/ActionSheetIOS`)
@@ -3009,6 +3015,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-modules-test-core/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
+  ExpoStoreReview:
+    :path: "../packages/expo-store-review/ios"
   ExpoSystemUI:
     :path: "../packages/expo-system-ui/ios"
   ExpoTrackingTransparency:
@@ -3035,8 +3043,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-splash-screen/ios"
   EXSQLite:
     :path: "../packages/expo-sqlite/ios"
-  EXStoreReview:
-    :path: "../packages/expo-store-review/ios"
   EXStructuredHeaders:
     :path: "../packages/expo-structured-headers/ios"
   EXTaskManager:
@@ -3101,6 +3107,8 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/@react-native-segmented-control/segmented-control"
   react-native-skia:
     :path: "./vendored/unversioned/@shopify/react-native-skia"
+  react-native-slider:
+    :path: "./vendored/unversioned/@react-native-community/slider"
   react-native-webview:
     :path: "./vendored/unversioned/react-native-webview"
   React-perflogger:
@@ -3217,7 +3225,7 @@ SPEC CHECKSUMS:
   ABI45_0_0EXVideoThumbnails: 1aacddc814fe2bbe75a9d79f17176adf19af3b2f
   ABI45_0_0FBLazyVector: 216e3860069291021cac6ac3931431176991b556
   ABI45_0_0FBReactNativeSpec: 3813ddb47ab86a9b05a4af616baa9d31b798c556
-  ABI45_0_0lottie-react-native: aeaf279254fcbf601575da224ec564e37922f7ab
+  ABI45_0_0lottie-react-native: 4d4ab29ef025ed06f808dbcfa4952ab1de8bc501
   ABI45_0_0RCTRequired: aab546376db07604bb5db7e812b29ac3f05e83b3
   ABI45_0_0RCTTypeSafety: 8cbd8930c10a4269ecea6c1a8662744e13f9fe8e
   ABI45_0_0React: 82d1d34ab3ad12d26887e236e02896bece8e89e7
@@ -3320,7 +3328,7 @@ SPEC CHECKSUMS:
   ABI46_0_0EXVideoThumbnails: 4fc2a132668c006c73112fa955f9da702f476328
   ABI46_0_0FBLazyVector: 0ce5b1a14996f1a7ba2b18761d61bac0550a1a70
   ABI46_0_0FBReactNativeSpec: f7f147e37e2d8d2c9c1f6353f90b3dfd267601c3
-  ABI46_0_0lottie-react-native: 10361ebb7ccb3debc74cf826ab330764b01c9fc2
+  ABI46_0_0lottie-react-native: adca905870cb918b5e50095dedc403d9e60fde0f
   ABI46_0_0RCTRequired: 736812a646562cd807a16ff2abdab8395f146f06
   ABI46_0_0RCTTypeSafety: bb3ebe870703849d2dcd7631b91186056279fd40
   ABI46_0_0React: 73f06af71b9d85e79e538ee432dcca44a6254735
@@ -3369,8 +3377,8 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 660c8631487c8035a79d4d909f3766661dc777fd
   EXAppleAuthentication: ca859b12b5ef2323eac019c8a2472ae6b726edcf
-  EXApplication: 38f8f934e5790c732e802298ec12f160c40a741d
-  EXAV: 59b82f29ea94dd8d8d4efcef7335c6c014795578
+  EXApplication: 58a725bdc1b3732e8d586b16d0180d14cef0e240
+  EXAV: 4b27d494e638f832913267b2794c607b8fff73f2
   EXBackgroundFetch: b1c8aa3cebf34ab4a26fd90462d9e0df0ad0c9db
   EXBarCodeScanner: e2461b1c4c7ce302a710f901902e02d2ec120a86
   EXBattery: 591d642c2a274cc4cd38a74a5cb8a446406d9d43
@@ -3378,17 +3386,17 @@ SPEC CHECKSUMS:
   EXBranch: becf66363c59666add10fabfa9cdda2fab3930f7
   EXBrightness: a8e5703abacbcba1430979a2a0815a4787c48223
   EXCalendar: 39c3421053f1b9f006e74f1a3350674a736364f5
-  EXCamera: e690e3dda9016fc0b4c18daa5c85a633f4536970
-  EXConstants: 4fdacf5b5ba37eaaeec439c487eb47d12418bf24
+  EXCamera: 85d5fd5e52da77d9f87643dbd720bec4de0b668c
+  EXConstants: 7d6f479d499650e349328e8dc48ee8041e560c6a
   EXContacts: 5b1b3eb7a1626768d5879aabfefe3814efdefe1f
   EXDevice: e83b7c8080e9643216d54bf4f144af0fd31a7bd3
   EXDocumentPicker: 062cdfdbd30450e9ab6c91b62933bb1dbf00a92d
-  EXErrorRecovery: 68d5f8102234058762687d320580d9b4402cc278
+  EXErrorRecovery: c8f85b803a983b0fd7e7740be1dd342d8ddb8867
   EXFaceDetector: a5578b7abadcf7a17f446486a3e47b269544bd17
-  EXFileSystem: b2b6629924e5b4b6f870c05af23c2c7a4551acc0
+  EXFileSystem: 2f3ffc5a06a97db7353c9719ad5c26c47d68b5e4
   EXFirebaseAnalytics: 8cd886bb057c858c1836dbf094bb5b39157a1149
   EXFirebaseCore: 4e86a77accaa3363b07e483f46eea34417c2bbdb
-  EXFont: a83065d483208782d16aa8b72fa094a410d968cd
+  EXFont: 49dd9f8454d035d00edec02b2fefab415872d86b
   EXGL: eaf094308ed1a3ea8259b0ceeef41363edf20eb2
   EXImageLoader: cb886583dae1f3320c72146480c97a3ec71f1e60
   EXJSONUtils: bb893657b9db536765814e5b1667e4b511933e62
@@ -3399,20 +3407,21 @@ SPEC CHECKSUMS:
   EXNetwork: 4b3404524b6a91e695dd4be55cf122f1485f8bab
   EXNotifications: ea68b24a6b66fafcfcf913b2ce1367f605f6dcc1
   EXPermissions: 5cc17993ce2bf8377b40ebae47d54a88c41c4480
-  Expo: f35ce9004f13fe930476bd8e667eeb170166ca4e
+  Expo: 012d47437c6d887e0100c498d16019c5eb16f20f
   ExpoCellular: 5cd085987f010055ab92c81d60e948ce0c4b5a89
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
   ExpoCrypto: e2678609304ec063a0e36b826a3c2d0f0d7202c0
   ExpoHaptics: 7a9709f4310b577d1dd68d8839b95df1e2419cde
   ExpoImageManipulator: 7154a74e021bdc08810e54d87adaac947ee3dff8
   ExpoImagePicker: 5935667c6a0b5e6f5ca7c0a09f2f7a40f5ee8be2
-  ExpoKeepAwake: a97c88014e55d903a72f049ca2c01aeb7ed387f1
-  ExpoLinearGradient: 91c81d92f85b422607306ad0f0aa48de755bb601
+  ExpoKeepAwake: 49bcb2ce587a75f876ff0777b80fd6803e6cbb46
+  ExpoLinearGradient: 4ef9f27fd206fa60a7dc5437f22ee48a9fb294a8
   ExpoLocalization: a9080f87ad52cab6ef367fefc6437e6ac54d1350
   ExpoMailComposer: 8fa786ef23b9f07b47b18fe00da0906a576ffaed
-  ExpoModulesCore: c447192d27db79ef240d86696c127bd73ba03a0b
+  ExpoModulesCore: d67f3ef518c54f9d365e49e25775e339d3856271
   ExpoModulesTestCore: 8a409e6ce8a9940174344cad307d3d614363578d
   ExpoRandom: fe4c4522cc975c76e98fc33af96daa352a17d311
+  ExpoStoreReview: f85a4623e0bbce5b1a3427d033f46ab8ad38b464
   ExpoSystemUI: 30577707799df9497f510f329cc1d6798abbb7cb
   ExpoTrackingTransparency: 6792377b47c0819c7ac1bff2f68dc91304bf7116
   ExpoWebBrowser: d682f920a7f34b1e09c0087bf70be64f9755c8e3
@@ -3426,10 +3435,9 @@ SPEC CHECKSUMS:
   EXSpeech: 23b2e251e93f47a8ba3101b64c93c95b6990ec99
   EXSplashScreen: 509588c153f440cab2ce5a493ace313d867fb7e7
   EXSQLite: b08238de097fbc3c1f890660ab8f72c344b92ec6
-  EXStoreReview: edf03db473ae4ae0a4d78c12e66909645c96fc2e
   EXStructuredHeaders: 673e4ea51d061e1a90aad0395f926011b2345857
   EXTaskManager: 83b22ad160f6b230f35d3762cb245665cd83289c
-  EXUpdates: 9f9eb66f89565dda7be10a30a7b9e96c40df5e3c
+  EXUpdates: 9be5a80a06c02b4567d2a4d53bd464f36bed31cf
   EXUpdatesInterface: 61d6a5c6e54fc446f3da7d9be8961cd9448ae3ef
   EXVideoThumbnails: cbdaf4120d09b3bdf4bb011031897e14038803aa
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
@@ -3445,11 +3453,11 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 0a115432c4e223c5ab20b0dbbe4cbefa793a0e8e
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
-  Google-Maps-iOS-Utils: c32891ff472eaaa1fca032beedafa1a013af7875
+  Google-Maps-iOS-Utils: 3343332b18dfd5be8f1f44edd7d481ace3da4d9a
   Google-Mobile-Ads-SDK: caf686ba55108412e02a3eedb136e12e488dbfaa
   GoogleAppMeasurement: 6ee231473fbd75c11221dfce489894334024eead
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
-  GoogleMaps: 8c080862ff2748ece9929471b30feb56a6c5079d
+  GoogleMaps: bc56ffb0324e345a2d91bac1a64a920f9c8f1b20
   GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95
   GoogleSignIn: 7137d297ddc022a7e0aa4619c86d72c909fa7213
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
@@ -3461,8 +3469,8 @@ SPEC CHECKSUMS:
   hermes-engine: f9312a2ea8036d03b63568ebf392314f4fa8b474
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  lottie-ios: c058aeafa76daa4cf64d773554bccc8385d0150e
-  lottie-react-native: a501112fa980529ccb80b9f3ee117a7f98c6af3a
+  lottie-ios: 9ae750cdc7820fecbd3c2f0cfc493038208fcdc4
+  lottie-react-native: b702fab740cdb952a8e2354713d3beda63ff97b0
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
   MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
@@ -3492,9 +3500,10 @@ SPEC CHECKSUMS:
   React-logger: 1bfd109a0ffa4c0989bbfac0c2d8c4abe4637faa
   react-native-netinfo: b514dd6d9cd512b90e178c5b7158df1a1c568d47
   react-native-pager-view: 95d0418c3c74279840abec6926653d32447bafb6
-  react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
+  react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-skia: 78330615997e720dd07db28f4b8dfff22e9dd031
+  react-native-slider: cecabb58ecffad671d2ad3ccc58c7f4d2d029e95
   react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: 6009895616a455781293950bbd63d53cfc7ffbc5
   React-RCTActionSheet: 5e90aa5712af18bfc86c2c6d97d4dbe0e5451c1d
@@ -3522,6 +3531,6 @@ SPEC CHECKSUMS:
   Yoga: 043f8eb97345d0171f27fead4d1849cacf0472a5
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 28c4f8c13981ced803a02a1c9a3fad0365f4da31
+PODFILE CHECKSUM: 5f47c0b762f9a23da9c2281332f32495ddcf59be
 
 COCOAPODS: 1.11.2

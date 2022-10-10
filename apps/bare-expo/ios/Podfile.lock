@@ -6,9 +6,9 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (0.3.0):
     - ExpoModulesCore
-  - EXApplication (4.2.2):
+  - EXApplication (5.0.0):
     - ExpoModulesCore
-  - EXAV (12.0.2):
+  - EXAV (13.0.0-beta.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (10.3.0):
@@ -26,9 +26,9 @@ PODS:
     - ExpoModulesCore
   - EXCalendar (10.3.0):
     - ExpoModulesCore
-  - EXCamera (12.3.0):
+  - EXCamera (13.0.0-beta.1):
     - ExpoModulesCore
-  - EXConstants (13.2.3):
+  - EXConstants (14.0.0):
     - ExpoModulesCore
   - EXContacts (10.3.0):
     - ExpoModulesCore
@@ -36,7 +36,7 @@ PODS:
     - ExpoModulesCore
   - EXDocumentPicker (10.3.0):
     - ExpoModulesCore
-  - EXErrorRecovery (3.2.0):
+  - EXErrorRecovery (4.0.0):
     - ExpoModulesCore
   - EXFaceDetector (11.3.0):
     - ExpoModulesCore
@@ -44,7 +44,7 @@ PODS:
     - MLKitCommon (= 5.0.0)
     - MLKitFaceDetection (= 1.5.0)
     - MLKitVision (= 3.0.0)
-  - EXFileSystem (14.1.0):
+  - EXFileSystem (15.0.0):
     - ExpoModulesCore
   - EXFirebaseAnalytics (7.2.0):
     - EXFirebaseCore
@@ -53,17 +53,11 @@ PODS:
   - EXFirebaseCore (5.2.0):
     - ExpoModulesCore
     - Firebase/Core (= 9.5.0)
-  - EXFont (10.2.0):
+  - EXFont (11.0.0):
     - ExpoModulesCore
   - EXGL (11.4.0):
     - ExpoModulesCore
     - React-jsi
-  - EXImage (0.2.3):
-    - React-Core
-    - SDWebImage (~> 5.0)
-    - SDWebImageSVGKitPlugin (~> 1.3)
-    - SDWebImageWebPCoder (~> 0.8.4)
-    - SVGKit (~> 2.1)
   - EXImageLoader (3.2.0):
     - ExpoModulesCore
     - React-Core
@@ -85,7 +79,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (13.2.0):
     - ExpoModulesCore
-  - Expo (46.0.1):
+  - Expo (47.0.0-alpha.1):
     - ExpoModulesCore
   - expo-dev-client (1.3.0):
     - EXManifests
@@ -174,23 +168,31 @@ PODS:
     - ExpoModulesCore
   - ExpoHaptics (11.3.0):
     - ExpoModulesCore
+  - ExpoImage (0.2.3):
+    - ExpoModulesCore
+    - React-Core
+    - SDWebImage (~> 5.0)
+    - SDWebImageSVGKitPlugin (~> 1.3)
+    - SVGKit (~> 2.1)
   - ExpoImageManipulator (10.4.0):
     - EXImageLoader
     - ExpoModulesCore
   - ExpoImagePicker (13.3.1):
     - ExpoModulesCore
-  - ExpoKeepAwake (10.2.1):
+  - ExpoKeepAwake (11.0.0):
     - ExpoModulesCore
-  - ExpoLinearGradient (11.4.0):
+  - ExpoLinearGradient (12.0.0-beta.1):
     - ExpoModulesCore
   - ExpoLocalization (13.1.0):
     - ExpoModulesCore
   - ExpoMailComposer (11.3.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.11.3):
+  - ExpoModulesCore (0.12.0):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoRandom (12.3.0):
+    - ExpoModulesCore
+  - ExpoStoreReview (5.3.0):
     - ExpoModulesCore
   - ExpoSystemUI (1.3.0):
     - ExpoModulesCore
@@ -219,8 +221,6 @@ PODS:
     - ExpoModulesCore
     - React-Core
   - EXSQLite (10.3.0):
-    - ExpoModulesCore
-  - EXStoreReview (5.3.0):
     - ExpoModulesCore
   - EXStructuredHeaders (2.2.1)
   - EXTaskManager (10.3.0):
@@ -358,15 +358,6 @@ PODS:
   - GTMSessionFetcher/Core (1.7.2)
   - hermes-engine (0.70.2)
   - libevent (2.1.12)
-  - libwebp (1.2.3):
-    - libwebp/demux (= 1.2.3)
-    - libwebp/mux (= 1.2.3)
-    - libwebp/webp (= 1.2.3)
-  - libwebp/demux (1.2.3):
-    - libwebp/webp
-  - libwebp/mux (1.2.3):
-    - libwebp/demux
-  - libwebp/webp (1.2.3)
   - MLImage (1.0.0-beta2)
   - MLKitCommon (5.0.0):
     - GoogleDataTransport (~> 9.0)
@@ -624,17 +615,17 @@ PODS:
     - glog
   - react-native-netinfo (9.3.3):
     - React-Core
-  - react-native-safe-area-context (4.3.1):
+  - react-native-safe-area-context (4.4.1):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
-    - React
+    - React-Core
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.0):
     - React-Core
-  - react-native-slider (4.2.3):
+  - react-native-slider (4.2.4):
     - React-Core
-  - react-native-view-shot (3.3.0):
+  - react-native-view-shot (3.4.0):
     - React-Core
   - react-native-viewpager (5.0.11):
     - React-Core
@@ -712,7 +703,7 @@ PODS:
     - React-Core
   - RNCPicker (2.4.6):
     - React-Core
-  - RNDateTimePicker (6.2.0):
+  - RNDateTimePicker (6.5.0):
     - React-Core
   - RNGestureHandler (2.7.0):
     - React-Core
@@ -756,9 +747,6 @@ PODS:
   - SDWebImageSVGKitPlugin (1.3.0):
     - SDWebImage/Core (~> 5.10)
     - SVGKit (>= 2.1)
-  - SDWebImageWebPCoder (0.8.5):
-    - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.10)
   - SVGKit (2.1.1):
     - CocoaLumberjack (~> 3.0)
   - UMAppLoader (3.1.0)
@@ -793,7 +781,6 @@ DEPENDENCIES:
   - EXFirebaseCore (from `../../../packages/expo-firebase-core/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXGL (from `../../../packages/expo-gl`)
-  - EXImage (from `../../../node_modules/expo-image`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
@@ -815,6 +802,7 @@ DEPENDENCIES:
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
+  - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
@@ -823,6 +811,7 @@ DEPENDENCIES:
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoRandom (from `../../../packages/expo-random/ios`)
+  - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
@@ -836,7 +825,6 @@ DEPENDENCIES:
   - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
-  - EXStoreReview (from `../../../packages/expo-store-review/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
@@ -914,7 +902,6 @@ SPEC REPOS:
     - GoogleUtilitiesComponents
     - GTMSessionFetcher
     - libevent
-    - libwebp
     - MLImage
     - MLKitCommon
     - MLKitFaceDetection
@@ -925,7 +912,6 @@ SPEC REPOS:
     - Quick
     - SDWebImage
     - SDWebImageSVGKitPlugin
-    - SDWebImageWebPCoder
     - SVGKit
     - ZXingObjC
 
@@ -997,8 +983,6 @@ EXTERNAL SOURCES:
   EXGL:
     inhibit_warnings: false
     :path: "../../../packages/expo-gl"
-  EXImage:
-    :path: "../../../node_modules/expo-image"
   EXImageLoader:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-loader/ios"
@@ -1055,6 +1039,9 @@ EXTERNAL SOURCES:
   ExpoHaptics:
     inhibit_warnings: false
     :path: "../../../packages/expo-haptics/ios"
+  ExpoImage:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-image/ios"
   ExpoImageManipulator:
     inhibit_warnings: false
     :path: "../../../packages/expo-image-manipulator/ios"
@@ -1079,6 +1066,9 @@ EXTERNAL SOURCES:
   ExpoRandom:
     inhibit_warnings: false
     :path: "../../../packages/expo-random/ios"
+  ExpoStoreReview:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-store-review/ios"
   ExpoSystemUI:
     inhibit_warnings: false
     :path: "../../../packages/expo-system-ui/ios"
@@ -1118,9 +1108,6 @@ EXTERNAL SOURCES:
   EXSQLite:
     inhibit_warnings: false
     :path: "../../../packages/expo-sqlite/ios"
-  EXStoreReview:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-store-review/ios"
   EXStructuredHeaders:
     inhibit_warnings: false
     :path: "../../../packages/expo-structured-headers/ios"
@@ -1240,27 +1227,26 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 660c8631487c8035a79d4d909f3766661dc777fd
-  EXApplication: 38f8f934e5790c732e802298ec12f160c40a741d
-  EXAV: 59b82f29ea94dd8d8d4efcef7335c6c014795578
+  EXApplication: 58a725bdc1b3732e8d586b16d0180d14cef0e240
+  EXAV: 4b27d494e638f832913267b2794c607b8fff73f2
   EXBackgroundFetch: b1c8aa3cebf34ab4a26fd90462d9e0df0ad0c9db
   EXBarCodeScanner: e2461b1c4c7ce302a710f901902e02d2ec120a86
   EXBattery: 591d642c2a274cc4cd38a74a5cb8a446406d9d43
   EXBlur: 8290c5a7f29edc13121a39b9b3f60cc23f7cb985
   EXBrightness: a8e5703abacbcba1430979a2a0815a4787c48223
   EXCalendar: 39c3421053f1b9f006e74f1a3350674a736364f5
-  EXCamera: e690e3dda9016fc0b4c18daa5c85a633f4536970
-  EXConstants: 4fdacf5b5ba37eaaeec439c487eb47d12418bf24
+  EXCamera: 85d5fd5e52da77d9f87643dbd720bec4de0b668c
+  EXConstants: 7d6f479d499650e349328e8dc48ee8041e560c6a
   EXContacts: 5b1b3eb7a1626768d5879aabfefe3814efdefe1f
   EXDevice: e83b7c8080e9643216d54bf4f144af0fd31a7bd3
   EXDocumentPicker: 062cdfdbd30450e9ab6c91b62933bb1dbf00a92d
-  EXErrorRecovery: 68d5f8102234058762687d320580d9b4402cc278
+  EXErrorRecovery: c8f85b803a983b0fd7e7740be1dd342d8ddb8867
   EXFaceDetector: a5578b7abadcf7a17f446486a3e47b269544bd17
-  EXFileSystem: b2b6629924e5b4b6f870c05af23c2c7a4551acc0
+  EXFileSystem: 2f3ffc5a06a97db7353c9719ad5c26c47d68b5e4
   EXFirebaseAnalytics: 8cd886bb057c858c1836dbf094bb5b39157a1149
   EXFirebaseCore: 4e86a77accaa3363b07e483f46eea34417c2bbdb
-  EXFont: a83065d483208782d16aa8b72fa094a410d968cd
+  EXFont: 49dd9f8454d035d00edec02b2fefab415872d86b
   EXGL: eaf094308ed1a3ea8259b0ceeef41363edf20eb2
-  EXImage: dc8a7ec5389a7184dbffcf02e28b8648ccc0734d
   EXImageLoader: cb886583dae1f3320c72146480c97a3ec71f1e60
   EXInAppPurchases: 86d61b99da4658b29c0c0a9e975b1ca227a2f772
   EXJSONUtils: bb893657b9db536765814e5b1667e4b511933e62
@@ -1271,7 +1257,7 @@ SPEC CHECKSUMS:
   EXNetwork: 4b3404524b6a91e695dd4be55cf122f1485f8bab
   EXNotifications: ea68b24a6b66fafcfcf913b2ce1367f605f6dcc1
   EXPermissions: 5cc17993ce2bf8377b40ebae47d54a88c41c4480
-  Expo: f35ce9004f13fe930476bd8e667eeb170166ca4e
+  Expo: 012d47437c6d887e0100c498d16019c5eb16f20f
   expo-dev-client: 4aea43e3e4495cd676c7954c33bd3bd604cfab3a
   expo-dev-launcher: 54354885ddd62fd30d2a47b642368ed6609e5dfe
   expo-dev-menu: 595d84922710a16839da9d9b5d681e885a5233c8
@@ -1280,14 +1266,16 @@ SPEC CHECKSUMS:
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
   ExpoCrypto: e2678609304ec063a0e36b826a3c2d0f0d7202c0
   ExpoHaptics: 7a9709f4310b577d1dd68d8839b95df1e2419cde
+  ExpoImage: 219eb2d8b6952861c7d351c5dd86d45b0584be08
   ExpoImageManipulator: 7154a74e021bdc08810e54d87adaac947ee3dff8
   ExpoImagePicker: 5935667c6a0b5e6f5ca7c0a09f2f7a40f5ee8be2
-  ExpoKeepAwake: a97c88014e55d903a72f049ca2c01aeb7ed387f1
-  ExpoLinearGradient: 91c81d92f85b422607306ad0f0aa48de755bb601
+  ExpoKeepAwake: 49bcb2ce587a75f876ff0777b80fd6803e6cbb46
+  ExpoLinearGradient: 4ef9f27fd206fa60a7dc5437f22ee48a9fb294a8
   ExpoLocalization: a9080f87ad52cab6ef367fefc6437e6ac54d1350
   ExpoMailComposer: 8fa786ef23b9f07b47b18fe00da0906a576ffaed
-  ExpoModulesCore: c447192d27db79ef240d86696c127bd73ba03a0b
+  ExpoModulesCore: d67f3ef518c54f9d365e49e25775e339d3856271
   ExpoRandom: fe4c4522cc975c76e98fc33af96daa352a17d311
+  ExpoStoreReview: f85a4623e0bbce5b1a3427d033f46ab8ad38b464
   ExpoSystemUI: 30577707799df9497f510f329cc1d6798abbb7cb
   ExpoTrackingTransparency: 6792377b47c0819c7ac1bff2f68dc91304bf7116
   ExpoWebBrowser: d682f920a7f34b1e09c0087bf70be64f9755c8e3
@@ -1301,7 +1289,6 @@ SPEC CHECKSUMS:
   EXSpeech: 23b2e251e93f47a8ba3101b64c93c95b6990ec99
   EXSplashScreen: 509588c153f440cab2ce5a493ace313d867fb7e7
   EXSQLite: b08238de097fbc3c1f890660ab8f72c344b92ec6
-  EXStoreReview: edf03db473ae4ae0a4d78c12e66909645c96fc2e
   EXStructuredHeaders: 673e4ea51d061e1a90aad0395f926011b2345857
   EXTaskManager: 83b22ad160f6b230f35d3762cb245665cd83289c
   EXUpdatesInterface: 61d6a5c6e54fc446f3da7d9be8961cd9448ae3ef
@@ -1325,7 +1312,6 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   hermes-engine: f9312a2ea8036d03b63568ebf392314f4fa8b474
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
   MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
   MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
   MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
@@ -1351,10 +1337,10 @@ SPEC CHECKSUMS:
   React-jsinspector: 26c42646ab0bb69e29e837e23754fe7121eeaf94
   React-logger: 1bfd109a0ffa4c0989bbfac0c2d8c4abe4637faa
   react-native-netinfo: b514dd6d9cd512b90e178c5b7158df1a1c568d47
-  react-native-safe-area-context: 6c12e3859b6f27b25de4fee8201cfb858432d8de
+  react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
-  react-native-slider: 98b724cd3e44c3454a6d0724e796d4e9c52189ce
-  react-native-view-shot: da768466e1cd371de50a3a5c722d1e95456b5b2c
+  react-native-slider: cecabb58ecffad671d2ad3ccc58c7f4d2d029e95
+  react-native-view-shot: a60a98a18c72bcaaaf2138f9aab960ae9b0d96c7
   react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78
   react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: 6009895616a455781293950bbd63d53cfc7ffbc5
@@ -1372,7 +1358,7 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 466b9df1a14bccda91da86e0b7d9a345d78e1673
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
   RNCPicker: 2f71e09c52ab6327e2c393213368ea0e5bfbcb65
-  RNDateTimePicker: 30e6733efc179d1e49d6008ea5fce42cdc9aeeca
+  RNDateTimePicker: 154f8246e9c32fd663995647a7f9f667a8c6b258
   RNGestureHandler: 7673697e7c0e9391adefae4faa087442bc04af33
   RNReanimated: 60e291d42c77752a0f6d6f358387bdf225a87c6e
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
@@ -1380,7 +1366,6 @@ SPEC CHECKSUMS:
   RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
   SDWebImage: e5cc87bf736e60f49592f307bdf9e157189298a3
   SDWebImageSVGKitPlugin: 8797e1c9b9baf80bd50d28e673e16a12359af1c9
-  SDWebImageWebPCoder: 908b83b6adda48effe7667cd2b7f78c897e5111d
   SVGKit: 652cdf7bef8bec8564d04a8511d3ab50c7595fac
   UMAppLoader: 90a8e7f4b09b576588e7c2939321860fba47343e
   Yoga: 043f8eb97345d0171f27fead4d1849cacf0472a5

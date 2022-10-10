@@ -26,7 +26,7 @@ const STYLES_SELECT = css({
   color: theme.text.default,
   margin: 0,
   marginTop: spacing[1],
-  padding: `0 ${spacing[3]}px`,
+  padding: `${spacing[2]}px ${spacing[3]}px`,
   minHeight: 40,
   borderRadius: borderRadius.medium,
   marginBottom: spacing[4],
