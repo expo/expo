@@ -150,4 +150,19 @@ describe(validateDependenciesVersionsAsync, () => {
       true
     );
   });
+
+  it('skips validating dependencies when running in offline mode', async () => {
+    jest.resetModules();
+    jest.mock('../../../../api/settings', () => ({ APISettings: { isOffline: true } }));
+
+    const { validateDependenciesVersionsAsync } = require('../validateDependenciesVersions');
+    const exp = { sdkVersion: '46.0.0' };
+    const pkg = {
+      dependencies: { expo: '^46.0.0' },
+    };
+
+    await expect(
+      validateDependenciesVersionsAsync(projectRoot, exp as any, pkg)
+    ).resolves.toBeNull();
+  });
 });
