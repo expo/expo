@@ -111,7 +111,8 @@ Now that you have your own development build, you can use any of the many React 
 
 ### Analytics for Expo for web
 
-React Native Firebase only supports iOS and Android. If you previously used `expo-firebase-analytics` to send events from an Expo for web client, you will need to use the Firebase JavaScript SDK. In, the Firebase Console, go to Project Settings, and then your web app, and copy the code under "SDK setup and configuration." Then you can switch between React Native Firebase and Firebase JS requests using the `Platform` component:
+React Native Firebase only supports iOS and Android. If you previously used `expo-firebase-analytics` to send events from an Expo for web client, you will need to use the Firebase JavaScript (JS) SDK. In the Firebase Console, go to Project Settings, and then your web app, and copy the code under "SDK setup and configuration." You can switch between React Native Firebase and Firebase JS requests using the `Platform` component:
+
 ```js
 import { Platform } from 'react-native';
 // for native
