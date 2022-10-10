@@ -2,8 +2,8 @@ import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import {
   NavigationContainer,
   useTheme,
-  NavigationContainerRef,
   RouteProp,
+  useNavigationContainerRef,
 } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as React from 'react';
@@ -31,12 +31,21 @@ import {
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
-import { DiagnosticsStackRoutes, HomeStackRoutes, SettingsStackRoutes } from './Navigation.types';
+import {
+  DiagnosticsStackRoutes,
+  HomeStackRoutes,
+  SettingsStackRoutes,
+  ModalStackRoutes,
+} from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const HomeStack = createStackNavigator<HomeStackRoutes>();
 const SettingsStack = createStackNavigator<SettingsStackRoutes>();
+
+// We have to disable this option on Android to not use `react-native-screen`,
+// which aren't correcly installed in the Home app.
+const shouldDetachInactiveScreens = Platform.OS !== 'android';
 
 function useThemeName() {
   const theme = useTheme();
@@ -49,6 +58,7 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator
       initialRouteName="Home"
+      detachInactiveScreens={shouldDetachInactiveScreens}
       screenOptions={defaultNavigationOptions(themeName)}>
       <HomeStack.Screen
         name="Home"
@@ -102,6 +112,7 @@ function SettingsStackScreen() {
   return (
     <SettingsStack.Navigator
       initialRouteName="Settings"
+      detachInactiveScreens={shouldDetachInactiveScreens}
       screenOptions={defaultNavigationOptions(themeName)}>
       <SettingsStack.Screen name="Settings" component={SettingsScreen} />
       <SettingsStack.Screen
@@ -122,6 +133,7 @@ function DiagnosticsStackScreen() {
   return (
     <DiagnosticsStack.Navigator
       initialRouteName="Diagnostics"
+      detachInactiveScreens={shouldDetachInactiveScreens}
       screenOptions={defaultNavigationOptions(theme)}>
       <DiagnosticsStack.Screen
         name="Diagnostics"
@@ -153,7 +165,13 @@ const RootStack = createStackNavigator();
 
 function TabNavigator(props: { theme: string }) {
   return (
-    <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName="HomeStack">
+    <BottomTab.Navigator
+      {...getNavigatorProps(props)}
+      initialRouteName="HomeStack"
+      detachInactiveScreens={shouldDetachInactiveScreens}
+      screenOptions={{
+        headerShown: false,
+      }}>
       <BottomTab.Screen
         name="HomeStack"
         component={HomeStackScreen}
@@ -186,10 +204,10 @@ function TabNavigator(props: { theme: string }) {
   );
 }
 
-const ModalStack = createStackNavigator();
+const ModalStack = createStackNavigator<ModalStackRoutes>();
 
 export default (props: { theme: ColorTheme }) => {
-  const navigationRef = React.useRef<NavigationContainerRef>(null);
+  const navigationRef = useNavigationContainerRef<ModalStackRoutes>();
   const isNavigationReadyRef = React.useRef(false);
   const initialURLWasConsumed = React.useRef(false);
 
@@ -235,19 +253,22 @@ export default (props: { theme: ColorTheme }) => {
       }}>
       <ModalStack.Navigator
         initialRouteName="RootStack"
+        detachInactiveScreens={shouldDetachInactiveScreens}
         screenOptions={({ route, navigation }) => ({
           headerShown: false,
           gestureEnabled: true,
           cardOverlayEnabled: true,
           cardStyle: { backgroundColor: 'transparent' },
-          headerStatusBarHeight:
-            navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
+          presentation: 'modal',
+          headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
           ...TransitionPresets.ModalPresentationIOS,
-        })}
-        mode="modal">
+        })}>
         <ModalStack.Screen name="RootStack">
           {() => (
-            <RootStack.Navigator initialRouteName="Tabs" mode="modal">
+            <RootStack.Navigator
+              initialRouteName="Tabs"
+              detachInactiveScreens={shouldDetachInactiveScreens}
+              screenOptions={{ presentation: 'modal' }}>
               <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
                 {() => <TabNavigator theme={props.theme} />}
               </RootStack.Screen>
@@ -262,7 +283,7 @@ export default (props: { theme: ColorTheme }) => {
                     cardOverlayEnabled: true,
                     headerStatusBarHeight:
                       navigation
-                        .dangerouslyGetState()
+                        .getState()
                         .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
                         ? 0
                         : undefined,
