@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Disable API interaction when running in offline mode. ([#19418](https://github.com/expo/expo/pull/19418) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Hide server rate limiting warning during `npx expo start`. ([#19038](https://github.com/expo/expo/pull/19038) by [@EvanBacon](https://github.com/EvanBacon))
