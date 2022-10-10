@@ -22,18 +22,18 @@ public class BatteryModule: Module {
       return ProcessInfo.processInfo.isLowPowerModeEnabled
     }
 
-    AsyncFunction("getBatteryStateAsync") { () -> BatteryState in
+    AsyncFunction("getBatteryStateAsync") { () -> Int in
       switch UIDevice.current.batteryState {
       case UIDevice.BatteryState.unknown:
-        return BatteryState.unknown
+        return BatteryState.unknown.rawValue
       case UIDevice.BatteryState.unplugged:
-        return BatteryState.unplugged
+        return BatteryState.unplugged.rawValue
       case UIDevice.BatteryState.charging:
-        return BatteryState.charging
+        return BatteryState.charging.rawValue
       case UIDevice.BatteryState.full:
-        return BatteryState.full
+        return BatteryState.full.rawValue
       default:
-        return BatteryState.unknown
+        return BatteryState.unknown.rawValue
       }
     }
 
@@ -85,7 +85,7 @@ public class BatteryModule: Module {
   @objc
   func batteryStateListener() {
     sendEvent(batteryStateDidChange, [
-      "batteryState": UIDevice.current.batteryState
+      "batteryState": UIDevice.current.batteryState.rawValue
     ])
   }
 
