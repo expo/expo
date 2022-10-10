@@ -1,0 +1,7 @@
+{
+  "name": "expo-device",
+  "platforms": ["ios", "android", "web"],
+  "ios": {
+    "modules": ["DeviceModule"]
+  }
+}

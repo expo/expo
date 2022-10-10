@@ -30,8 +30,6 @@ PODS:
     - ExpoModulesCore
   - EXContacts (10.3.0):
     - ExpoModulesCore
-  - EXDevice (4.3.0):
-    - ExpoModulesCore
   - EXDocumentPicker (10.3.0):
     - ExpoModulesCore
   - EXErrorRecovery (4.0.0):
@@ -165,6 +163,8 @@ PODS:
   - ExpoClipboard (3.1.0):
     - ExpoModulesCore
   - ExpoCrypto (11.0.0):
+    - ExpoModulesCore
+  - ExpoDevice (4.3.0):
     - ExpoModulesCore
   - ExpoHaptics (11.3.0):
     - ExpoModulesCore
@@ -771,7 +771,6 @@ DEPENDENCIES:
   - EXCamera (from `../../../packages/expo-camera/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
-  - EXDevice (from `../../../packages/expo-device/ios`)
   - EXDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../../../packages/expo-error-recovery/ios`)
   - EXFaceDetector (from `../../../packages/expo-face-detector/ios`)
@@ -801,6 +800,7 @@ DEPENDENCIES:
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
+  - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
@@ -953,9 +953,6 @@ EXTERNAL SOURCES:
   EXContacts:
     inhibit_warnings: false
     :path: "../../../packages/expo-contacts/ios"
-  EXDevice:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-device/ios"
   EXDocumentPicker:
     inhibit_warnings: false
     :path: "../../../packages/expo-document-picker/ios"
@@ -1036,6 +1033,9 @@ EXTERNAL SOURCES:
   ExpoCrypto:
     inhibit_warnings: false
     :path: "../../../packages/expo-crypto/ios"
+  ExpoDevice:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-device/ios"
   ExpoHaptics:
     inhibit_warnings: false
     :path: "../../../packages/expo-haptics/ios"
@@ -1237,7 +1237,6 @@ SPEC CHECKSUMS:
   EXCamera: 85d5fd5e52da77d9f87643dbd720bec4de0b668c
   EXConstants: 7d6f479d499650e349328e8dc48ee8041e560c6a
   EXContacts: 5b1b3eb7a1626768d5879aabfefe3814efdefe1f
-  EXDevice: e83b7c8080e9643216d54bf4f144af0fd31a7bd3
   EXDocumentPicker: 062cdfdbd30450e9ab6c91b62933bb1dbf00a92d
   EXErrorRecovery: c8f85b803a983b0fd7e7740be1dd342d8ddb8867
   EXFaceDetector: a5578b7abadcf7a17f446486a3e47b269544bd17
@@ -1265,6 +1264,7 @@ SPEC CHECKSUMS:
   ExpoCellular: 5cd085987f010055ab92c81d60e948ce0c4b5a89
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
   ExpoCrypto: e2678609304ec063a0e36b826a3c2d0f0d7202c0
+  ExpoDevice: 52535fb1e6350265cd4bead2fad5d8f9e091ce4a
   ExpoHaptics: 7a9709f4310b577d1dd68d8839b95df1e2419cde
   ExpoImage: 219eb2d8b6952861c7d351c5dd86d45b0584be08
   ExpoImageManipulator: 7154a74e021bdc08810e54d87adaac947ee3dff8
