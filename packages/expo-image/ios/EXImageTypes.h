@@ -1,6 +1,6 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <SDWebImage/SDWebImage.h>
+#import <SDWebImage/SDImageCacheDefine.h>
 #import <React/RCTResizeMode.h>
 
 typedef NS_ENUM(NSInteger, EXImageCacheTypeEnum) {
