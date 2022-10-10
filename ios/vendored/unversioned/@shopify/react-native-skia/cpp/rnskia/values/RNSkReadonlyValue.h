@@ -29,27 +29,29 @@ public:
       : JsiSkHostObject(platformContext),
       _valueHolder(std::make_unique<JsiSimpleValueWrapper>(*platformContext->getJsRuntime()))
       { }
-  
-  virtual ~RNSkReadonlyValue() { }
+
+  virtual ~RNSkReadonlyValue() {
+    invalidate();
+  }
 
   JSI_PROPERTY_GET(__typename__) {
     return jsi::String::createFromUtf8(runtime, "RNSkValue");
   }
-  
+
   JSI_PROPERTY_GET(current) {
     return getCurrent(runtime);
   }
-  
+
   JSI_EXPORT_PROPERTY_GETTERS(JSI_EXPORT_PROP_GET(RNSkReadonlyValue, __typename__),
                               JSI_EXPORT_PROP_GET(RNSkReadonlyValue, current))
-      
+
   JSI_HOST_FUNCTION(addListener) {
     if(!arguments[0].isObject() || !arguments[0].asObject(runtime).isFunction(runtime)) {
       throw jsi::JSError(runtime, "Expected function as first parameter.");
       return jsi::Value::undefined();
     }
     auto callback = std::make_shared<jsi::Function>(arguments[0].asObject(runtime).asFunction(runtime));
-    
+
     auto unsubscribe = addListener([weakSelf = weak_from_this(),
                                     callback = std::move(callback)](jsi::Runtime& runtime){
       auto self = weakSelf.lock();
@@ -58,7 +60,7 @@ public:
         callback->call(runtime, selfReadonlyValue->get_current(runtime));
       }
     });
-    
+
     return jsi::Function::createFromHostFunction(runtime,
                                                  jsi::PropNameID::forUtf8(runtime, "unsubscribe"),
                                                  0,
@@ -67,9 +69,17 @@ public:
       return jsi::Value::undefined();
     });
   }
-  
-  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(RNSkReadonlyValue, addListener))
-    
+
+
+
+  JSI_HOST_FUNCTION(__invalidate) {
+    invalidate();
+    return jsi::Value::undefined();
+  }
+
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(RNSkReadonlyValue, addListener),
+                       JSI_EXPORT_FUNC(RNSkReadonlyValue, __invalidate))
+
   /**
   * Adds a callback that will be called whenever the value changes
   * @param cb Callback
@@ -86,7 +96,7 @@ public:
       }
     };
   }
-  
+
   /**
     Updates the underlying value and notifies all listeners about the change.
     Listeners are only notified if the value was actually changed for numeric, boolean and string
@@ -101,13 +111,22 @@ public:
       notifyListeners(runtime);
     }
   }
-  
+
+  /**
+   Override to implement invalidation logic for the value. In the base class this function
+   clears all subscribers.
+   */
+  virtual void invalidate() {
+    std::lock_guard<std::mutex> lock(_mutex);
+    _listeners.clear();
+  }
+
   jsi::Value getCurrent(jsi::Runtime &runtime) {
     return _valueHolder->getCurrent(runtime);
   }
-  
+
 protected:
-  
+
   /**
     Notifies listeners about changes
    @param runtime Current JS Runtime
@@ -122,7 +141,7 @@ protected:
       listener.second(runtime);
     }
   }
-  
+
   /**
    Removes a subscription listeners
    @param listenerId identifier of listener to remove
@@ -134,7 +153,7 @@ protected:
 
 private:
   std::unique_ptr<JsiSimpleValueWrapper> _valueHolder;
-  
+
   long _listenerId = 0;
   std::unordered_map<long, std::function<void(jsi::Runtime&)>> _listeners;
   std::mutex _mutex;

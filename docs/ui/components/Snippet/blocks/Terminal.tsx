@@ -108,6 +108,7 @@ const unselectableStyle = css`
 `;
 
 const codeStyle = css`
+  white-space: pre;
   display: inline-block;
   line-height: 140%;
   background-color: transparent;

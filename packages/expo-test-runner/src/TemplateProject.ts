@@ -39,13 +39,14 @@ export default class TemplateProject {
     });
     fs.renameSync(path.join(parentFolder, appName), projectPath);
 
-    await spawnAsync('yarn', ['expo', 'install', 'detox', 'jest'], {
+    const repoRoot = path.resolve(this.configFilePath, '..', '..', '..');
+    const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
+    await spawnAsync(localCliBin, ['install', 'detox', 'jest'], {
       stdio: 'inherit',
       cwd: projectPath,
     });
 
     // add local dependencies
-    const repoRoot = path.resolve(this.configFilePath, '..', '..', '..');
     let packageJson = JSON.parse(fs.readFileSync(path.join(projectPath, 'package.json'), 'utf-8'));
     packageJson = {
       ...packageJson,
@@ -92,10 +93,22 @@ export default class TemplateProject {
     };
     fs.writeFileSync(path.join(projectPath, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
 
-    await spawnAsync('yarn', ['expo', 'prebuild'], {
+    // pack local template and prebuild
+    const localTemplatePath = path.join(repoRoot, 'templates', 'expo-template-bare-minimum');
+    await spawnAsync('npm', ['pack', '--pack-destination', projectPath], {
+      cwd: localTemplatePath,
       stdio: 'inherit',
-      cwd: projectPath,
     });
+    const templateVersion = require(path.join(localTemplatePath, 'package.json')).version;
+
+    await spawnAsync(
+      localCliBin,
+      ['prebuild', '--template', `expo-template-bare-minimum-${templateVersion}.tgz`],
+      {
+        stdio: 'inherit',
+        cwd: projectPath,
+      }
+    );
 
     const templateFiles = this.getTemplateFiles();
     await this.copyFilesAsync(projectPath, templateFiles);

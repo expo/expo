@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.4.1)
 project(expo-modules-core)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_ANDROID_STL_TYPE c++_shared)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)

@@ -92,8 +92,12 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    subs.forEach {
-      $0.application?(application, handleEventsForBackgroundURLSession: identifier, completionHandler: handler)
+    if subs.isEmpty {
+      completionHandler()
+    } else {
+      subs.forEach {
+        $0.application?(application, handleEventsForBackgroundURLSession: identifier, completionHandler: handler)
+      }
     }
   }
 
@@ -141,8 +145,12 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    subs.forEach { subscriber in
-      subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: handler)
+    if subs.isEmpty {
+      completionHandler(.noData)
+    } else {
+      subs.forEach { subscriber in
+        subscriber.application?(application, didReceiveRemoteNotification: userInfo, fetchCompletionHandler: handler)
+      }
     }
   }
 
@@ -212,8 +220,12 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    subs.forEach { subscriber in
-      subscriber.application?(application, performActionFor: shortcutItem, completionHandler: handler)
+    if subs.isEmpty {
+      completionHandler(result)
+    } else {
+      subs.forEach { subscriber in
+        subscriber.application?(application, performActionFor: shortcutItem, completionHandler: handler)
+      }
     }
   }
 
@@ -249,8 +261,12 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
       }
     }
 
-    subs.forEach { subscriber in
-      subscriber.application?(application, performFetchWithCompletionHandler: handler)
+    if subs.isEmpty {
+      completionHandler(.noData)
+    } else {
+      subs.forEach { subscriber in
+        subscriber.application?(application, performFetchWithCompletionHandler: handler)
+      }
     }
   }
 
