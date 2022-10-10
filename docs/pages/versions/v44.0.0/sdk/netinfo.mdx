@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/react-native-community/react-native-netinfo'
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`@react-native-community/netinfo`** allows you to get information about connection type and connection quality.
+`@react-native-community/netinfo` allows you to get information about connection type and connection quality.
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -56,7 +56,7 @@ In order to access the `ssid` property (available under `state.details.ssid`), t
 
 #### iOS only
 
-- Add the `com.apple.developer.networking.wifi-info` entitlement to your app.json file under `ios.entitlements`:
+- Add the `com.apple.developer.networking.wifi-info` entitlement to your **app.json** under `ios.entitlements`:
 
 ```json
   "ios": {
@@ -67,7 +67,6 @@ In order to access the `ssid` property (available under `state.details.ssid`), t
 ```
 
 - Check the **Access Wi-Fi Information** box in your app's App Identifier, [which can be found here](https://developer.apple.com/account/resources/identifiers/list)
+- Rebuild your app with [`eas build --platform ios`](/build/setup/#4-run-a-build) or [`npx expo run:ios`](/workflow/expo-cli/#compiling)
 
-- Rebuild your app with `expo build:ios`
-
-Read the [react-native-netinfo docs](https://github.com/react-native-community/react-native-netinfo#react-native-communitynetinfo) for more information on the API and usage.
+For more information on API and usage, see [react-native-netinfo documentation](https://github.com/react-native-community/react-native-netinfo#react-native-communitynetinfo).
