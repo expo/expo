@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import React from 'react';
@@ -59,7 +59,7 @@ if (NativeComponentList) {
 const Tab = createBottomTabNavigator();
 const Switch = createStackNavigator();
 
-const linking = {
+const linking: LinkingOptions<object> = {
   prefixes: [
     Platform.select({
       web: Linking.createURL('/', { scheme: 'bareexpo' }),
@@ -89,12 +89,12 @@ const linking = {
 function TabNavigator() {
   return (
     <Tab.Navigator
-      tabBarOptions={{
-        activeTintColor: Colors.activeTintColor,
-        inactiveTintColor: Colors.inactiveTintColor,
-        safeAreaInsets: {
-          top: 5,
-        },
+      screenOptions={{
+        tabBarActiveTintColor: Colors.activeTintColor,
+        tabBarInactiveTintColor: Colors.inactiveTintColor,
+      }}
+      safeAreaInsets={{
+        top: 5,
       }}
       initialRouteName="test-suite">
       {Object.keys(routes).map((name) => (
@@ -111,7 +111,7 @@ function TabNavigator() {
 
 export default () => (
   <NavigationContainer linking={linking}>
-    <Switch.Navigator headerMode="none" initialRouteName="main">
+    <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
       {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
       {Search && <Switch.Screen name="search" component={Search} />}
       <Switch.Screen name="main" component={TabNavigator} />

@@ -1,4 +1,4 @@
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
+import { BottomTabNavigationOptions, BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { DrawerNavigationOptions } from '@react-navigation/drawer';
 import { PathConfig } from '@react-navigation/native';
 import { StackNavigationOptions } from '@react-navigation/stack';
@@ -12,9 +12,11 @@ import ExpoComponentsStackNavigator, {
 // so make sure they still work there once you change something here.
 
 type ScreenConfig = {
-  linking: PathConfig;
+  linking: PathConfig<{ ExpoApis?: string; ExpoComponents?: string }>;
   navigator: ((props: { navigation: BottomTabNavigationProp<any> }) => JSX.Element) & {
-    navigationOptions: StackNavigationOptions & DrawerNavigationOptions;
+    navigationOptions: StackNavigationOptions &
+      DrawerNavigationOptions &
+      BottomTabNavigationOptions;
   };
 };
 
