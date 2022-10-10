@@ -74,6 +74,13 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
     targetCompatibility JavaVersion.VERSION_11
