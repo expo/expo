@@ -64,6 +64,15 @@ public final class ModuleDefinition: ObjectDefinition {
     }
     return self
   }
+
+  public override func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
+    let object = super.build(inRuntime: runtime)
+
+    // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
+    object.defineProperty("__expo_module_name__", value: name, options: [])
+
+    return object
+  }
 }
 
 /**
