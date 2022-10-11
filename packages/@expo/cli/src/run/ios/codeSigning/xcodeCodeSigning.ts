@@ -1,9 +1,11 @@
 import { IOSConfig, XcodeProject } from '@expo/config-plugins';
+import { unquote } from '@expo/config-plugins/build/ios/utils/Xcodeproj';
 import fs from 'fs';
 
 export type CodeSigningInfo = Record<
   string,
   {
+    bundleIdentifiers: string[];
     developmentTeams: string[];
     provisioningProfiles: string[];
   }
@@ -18,6 +20,7 @@ export function getCodeSigningInfoForPbxproj(projectRoot: string): CodeSigningIn
   for (const [nativeTargetId, nativeTarget] of targets) {
     const developmentTeams: string[] = [];
     const provisioningProfiles: string[] = [];
+    const bundleIdentifiers: string[] = [];
 
     IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
       project,
@@ -28,7 +31,8 @@ export function getCodeSigningInfoForPbxproj(projectRoot: string): CodeSigningIn
           item.buildSettings.PRODUCT_NAME
       )
       .forEach(([, item]: IOSConfig.XcodeUtils.ConfigurationSectionEntry) => {
-        const { DEVELOPMENT_TEAM, PROVISIONING_PROFILE } = item.buildSettings;
+        const { DEVELOPMENT_TEAM, PRODUCT_BUNDLE_IDENTIFIER, PROVISIONING_PROFILE } =
+          item.buildSettings;
         if (
           typeof DEVELOPMENT_TEAM === 'string' &&
           // If the user selects "Team: none" in Xcode, it'll be an empty string.
@@ -41,8 +45,16 @@ export function getCodeSigningInfoForPbxproj(projectRoot: string): CodeSigningIn
         if (typeof PROVISIONING_PROFILE === 'string' && !!PROVISIONING_PROFILE) {
           provisioningProfiles.push(PROVISIONING_PROFILE);
         }
+        if (
+          typeof PRODUCT_BUNDLE_IDENTIFIER === 'string' &&
+          !!PRODUCT_BUNDLE_IDENTIFIER &&
+          PRODUCT_BUNDLE_IDENTIFIER !== '""'
+        ) {
+          bundleIdentifiers.push(unquote(PRODUCT_BUNDLE_IDENTIFIER));
+        }
       });
     signingInfo[nativeTargetId] = {
+      bundleIdentifiers,
       developmentTeams,
       provisioningProfiles,
     };
