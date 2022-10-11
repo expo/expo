@@ -1,17 +1,35 @@
 diff --git a/packages/expo-modules-core/android/CMakeLists.txt b/packages/expo-modules-core/android/CMakeLists.txt
-index 7e69193064..64cd01f802 100644
+index f235a94598..abdba64933 100644
 --- a/packages/expo-modules-core/android/CMakeLists.txt
 +++ b/packages/expo-modules-core/android/CMakeLists.txt
-@@ -5,7 +5,7 @@ project(expo-modules-core)
+@@ -4,7 +4,7 @@ project(expo-modules-core)
+ 
  set(CMAKE_VERBOSE_MAKEFILE ON)
- set(CMAKE_ANDROID_STL_TYPE c++_shared)
  set(CMAKE_CXX_STANDARD 17)
 -set(PACKAGE_NAME "expo-modules-core")
 +set(PACKAGE_NAME "expo-modules-core_{VERSIONED_ABI_NAME}")
  set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
- set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR}")
+ set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR}")
  
-@@ -92,14 +92,14 @@ find_library(LOG_LIB log)
+@@ -81,7 +81,7 @@ if(${UNIT_TEST})
+     file(GLOB HERMES_SO_DIR "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}")
+     find_library(
+         JSEXECUTOR_LIB
+-        hermes
++        hermes_{VERSIONED_ABI_NAME}
+         PATHS ${HERMES_SO_DIR}
+         NO_CMAKE_FIND_ROOT_PATH
+     )
+@@ -89,7 +89,7 @@ if(${UNIT_TEST})
+   else()
+     find_library(
+         JSEXECUTOR_LIB
+-        jscexecutor
++        jscexecutor_{VERSIONED_ABI_NAME}
+         PATHS ${LIBRN_DIR}
+         NO_CMAKE_FIND_ROOT_PATH
+     )
+@@ -132,14 +132,14 @@ find_library(LOG_LIB log)
  if(${REACT_NATIVE_TARGET_VERSION} LESS 69)
      find_library(
          FOLLY_LIB
@@ -28,7 +46,7 @@ index 7e69193064..64cd01f802 100644
          PATHS ${LIBRN_DIR}
          NO_CMAKE_FIND_ROOT_PATH
      )
-@@ -114,35 +114,35 @@ find_library(
+@@ -154,21 +154,21 @@ find_library(
  
  find_library(
          JSI_LIB
@@ -53,27 +71,11 @@ index 7e69193064..64cd01f802 100644
          PATHS ${LIBRN_DIR}
          NO_CMAKE_FIND_ROOT_PATH
  )
- 
- find_library(
-         HERMES_LIB
--        hermes
-+        hermes_{VERSIONED_ABI_NAME}
-         PATHS ${HERMES_SO_DIR}
-         NO_CMAKE_FIND_ROOT_PATH
- )
- 
- find_library(
-         JSEXECUTOR_LIB
--        jscexecutor
-+        jscexecutor_{VERSIONED_ABI_NAME}
-         PATHS ${LIBRN_DIR}
-         NO_CMAKE_FIND_ROOT_PATH
- )
 diff --git a/packages/expo-modules-core/android/build.gradle b/packages/expo-modules-core/android/build.gradle
-index 194f8ac980..8ceda7036e 100644
+index 5680407e0d..96130cef75 100644
 --- a/packages/expo-modules-core/android/build.gradle
 +++ b/packages/expo-modules-core/android/build.gradle
-@@ -59,6 +59,10 @@ def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+@@ -60,6 +60,10 @@ def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
  def REACT_NATIVE_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
    ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
    : "${buildDir}/react-native-0*/jni"
@@ -84,7 +86,7 @@ index 194f8ac980..8ceda7036e 100644
  
  def reactProperties = new Properties()
  file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-@@ -326,7 +330,7 @@ task createNativeDepsDirectories() {
+@@ -334,7 +338,7 @@ task createNativeDepsDirectories() {
  // JNI
  def extractReactNativeAAR = { buildType ->
    def suffix = buildType == 'Debug' ? '-debug' : '-release'
@@ -138,22 +140,18 @@ index 607ed5c2b9..97684053ea 100644
    static jni::local_ref<UnexpectedException> create(
      const std::string &message
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
-index 53629da616..2ea542bb2d 100644
+index 938528444e..19a83b6e37 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
 +++ b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
-@@ -14,10 +14,10 @@ JNIFunctionBody::invoke(jobjectArray args) {
+@@ -14,7 +14,7 @@ JNIFunctionBody::invoke(jobjectArray args) {
    // Because of that, it can't be cached - we will try to invoke the nonexistent method
    // if we receive an object of a different class than the one used to obtain the method id.
    // The only cacheable method id can be obtain from the base class.
 -  static const auto method = jni::findClassLocal("expo/modules/kotlin/jni/JNIFunctionBody")
 +  static const auto method = jni::findClassLocal("{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JNIFunctionBody")
-     ->getMethod<jni::local_ref<react::ReadableNativeArray::javaobject>(jobjectArray)>(
+     ->getMethod<jni::local_ref<jni::JObject>(jobjectArray)>(
        "invoke",
--      "([Ljava/lang/Object;)Lcom/facebook/react/bridge/ReadableNativeArray;"
-+      "([Ljava/lang/Object;)L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/ReadableNativeArray;"
-     );
- 
-   return method(this->self(), args);
+       "([Ljava/lang/Object;)Ljava/lang/Object;"
 @@ -32,7 +32,7 @@ void JNIAsyncFunctionBody::invoke(
    // Because of that, it can't be cached - we will try to invoke the nonexistent method
    // if we receive an object of a different class than the one used to obtain the method id.
@@ -164,7 +162,7 @@ index 53629da616..2ea542bb2d 100644
        void(jobjectArray , jobject)
      >(
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h
-index 9125e980ee..a5a7b37fbb 100644
+index ca59f177c8..474df8bca9 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h
 +++ b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h
 @@ -15,7 +15,7 @@ namespace expo {
@@ -198,11 +196,24 @@ index ebd5c60547..c469341691 100644
    static auto constexpr TAG = "JSIInteropModuleRegistry";
  
    static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
+diff --git a/packages/expo-modules-core/android/src/main/cpp/JavaCallback.h b/packages/expo-modules-core/android/src/main/cpp/JavaCallback.h
+index 22453f4a08..febc000b0c 100644
+--- a/packages/expo-modules-core/android/src/main/cpp/JavaCallback.h
++++ b/packages/expo-modules-core/android/src/main/cpp/JavaCallback.h
+@@ -15,7 +15,7 @@ namespace expo {
+ class JavaCallback : public jni::HybridClass<JavaCallback> {
+ public:
+   static auto constexpr
+-    kJavaDescriptor = "Lexpo/modules/kotlin/jni/JavaCallback;";
++    kJavaDescriptor = "L{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaCallback;";
+   static auto constexpr TAG = "JavaCallback";
+ 
+   static void registerNatives();
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JavaReferencesCache.cpp b/packages/expo-modules-core/android/src/main/cpp/JavaReferencesCache.cpp
-index 21ea310271..43db4e425c 100644
+index 9da6fb05e5..8fa882c562 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JavaReferencesCache.cpp
 +++ b/packages/expo-modules-core/android/src/main/cpp/JavaReferencesCache.cpp
-@@ -25,8 +25,8 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
+@@ -25,23 +25,23 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
      {"<init>", "(F)V"}
    });
  
@@ -212,7 +223,31 @@ index 21ea310271..43db4e425c 100644
 +    {"<init>", "(L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;)V"}
    });
  
+-  loadJClass(env, "expo/modules/kotlin/jni/PromiseImpl", {
+-    {"<init>", "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"}
++  loadJClass(env, "{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/PromiseImpl", {
++    {"<init>", "(L{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaCallback;L{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaCallback;)V"}
+   });
+ 
    loadJClass(env, "java/lang/Object", {});
+   loadJClass(env, "java/lang/String", {});
+-  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptObject", {});
+-  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptValue", {});
+-  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptTypedArray", {});
+-  loadJClass(env, "com/facebook/react/bridge/ReadableNativeArray", {});
+-  loadJClass(env, "com/facebook/react/bridge/ReadableNativeMap", {});
+-  loadJClass(env, "com/facebook/react/bridge/WritableNativeArray", {});
+-  loadJClass(env, "com/facebook/react/bridge/WritableNativeMap", {});
++  loadJClass(env, "{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaScriptObject", {});
++  loadJClass(env, "{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaScriptValue", {});
++  loadJClass(env, "{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaScriptTypedArray", {});
++  loadJClass(env, "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/ReadableNativeArray", {});
++  loadJClass(env, "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/ReadableNativeMap", {});
++  loadJClass(env, "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/WritableNativeArray", {});
++  loadJClass(env, "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/WritableNativeMap", {});
+ }
+ 
+ void JavaReferencesCache::loadJClass(
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h b/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h
 index 4b1a65ecab..49d5a841db 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JavaScriptModuleObject.h
@@ -227,7 +262,7 @@ index 4b1a65ecab..49d5a841db 100644
  
    static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.h b/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.h
-index cebef459cb..2a92503c3b 100644
+index a6068ce183..1704b44b51 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.h
 +++ b/packages/expo-modules-core/android/src/main/cpp/JavaScriptObject.h
 @@ -24,7 +24,7 @@ class JavaScriptValue;
@@ -266,36 +301,83 @@ index 506176ccba..fe9a0df850 100644
  
    static void registerNatives();
 diff --git a/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp b/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp
-index 3478452a60..2fa4354727 100644
+index f002aba6b5..ccc3c22000 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp
 +++ b/packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp
-@@ -323,10 +323,10 @@ jsi::Function MethodMetadata::createPromiseBody(
+@@ -252,7 +252,7 @@ jsi::Value MethodMetadata::callSync(
+   }
+   if (env->IsInstanceOf(
+     unpackedResult,
+-    cache->getJClass("com/facebook/react/bridge/WritableNativeArray").clazz
++    cache->getJClass("{VERSIONED_ABI_NAME}/com/facebook/react/bridge/WritableNativeArray").clazz
+   )) {
+     auto dynamic = jni::static_ref_cast<react::WritableNativeArray::javaobject>(result)
+       ->cthis()
+@@ -261,7 +261,7 @@ jsi::Value MethodMetadata::callSync(
+   }
+   if (env->IsInstanceOf(
+     unpackedResult,
+-    cache->getJClass("com/facebook/react/bridge/WritableNativeMap").clazz
++    cache->getJClass("{VERSIONED_ABI_NAME}/com/facebook/react/bridge/WritableNativeMap").clazz
+   )) {
+     auto dynamic = jni::static_ref_cast<react::WritableNativeMap::javaobject>(result)
+       ->cthis()
+@@ -354,10 +354,10 @@ jsi::Function MethodMetadata::createPromiseBody(
        JNIEnv *env = jni::Environment::current();
  
        auto &jPromise = JavaReferencesCache::instance()->getJClass(
--        "com/facebook/react/bridge/PromiseImpl");
-+        "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/PromiseImpl");
+-        "expo/modules/kotlin/jni/PromiseImpl");
++        "{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/PromiseImpl");
        jmethodID jPromiseConstructor = jPromise.getMethod(
          "<init>",
--        "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"
-+        "(L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;L{VERSIONED_ABI_NAME}/com/facebook/react/bridge/Callback;)V"
+-        "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"
++        "(L{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaCallback;L{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaCallback;)V"
        );
  
        // Creates a promise object
+diff --git a/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.cpp b/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.cpp
+index 02f549d491..8213cb94f0 100644
+--- a/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.cpp
++++ b/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.cpp
+@@ -59,19 +59,19 @@ std::string ExpectedType::getJClassString(bool allowsPrimitives) {
+     return "java/lang/String";
+   }
+   if (type == CppType::JS_OBJECT) {
+-    return "expo/modules/kotlin/jni/JavaScriptObject";
++    return "{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaScriptObject";
+   }
+   if (type == CppType::JS_VALUE) {
+-    return "expo/modules/kotlin/jni/JavaScriptValue";
++    return "{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaScriptValue";
+   }
+   if (type == CppType::READABLE_ARRAY) {
+-    return "com/facebook/react/bridge/ReadableNativeArray";
++    return "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/ReadableNativeArray";
+   }
+   if (type == CppType::READABLE_MAP) {
+-    return "com/facebook/react/bridge/ReadableNativeMap";
++    return "{VERSIONED_ABI_NAME}/com/facebook/react/bridge/ReadableNativeMap";
+   }
+   if (type == CppType::TYPED_ARRAY) {
+-    return "expo/modules/kotlin/jni/JavaScriptTypedArray";
++    return "{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/JavaScriptTypedArray";
+   }
+   if (type == CppType::PRIMITIVE_ARRAY) {
+     auto innerType = this->getFirstType()->getFirstParameterType()->getJClassString(true);
 diff --git a/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.h b/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.h
-index 9a722a051e..93c60369fc 100644
+index 149e854c6c..5dcce78d7c 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.h
 +++ b/packages/expo-modules-core/android/src/main/cpp/types/ExpectedType.h
-@@ -14,7 +14,7 @@ namespace expo {
-  */
+@@ -17,7 +17,7 @@ class ExpectedType;
  class SingleType : public jni::JavaClass<SingleType> {
+ public:
    static auto constexpr
 -    kJavaDescriptor = "Lexpo/modules/kotlin/jni/SingleType;";
 +    kJavaDescriptor = "L{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/SingleType;";
- };
  
- /**
-@@ -23,7 +23,7 @@ class SingleType : public jni::JavaClass<SingleType> {
+   CppType getCppType();
+ 
+@@ -32,7 +32,7 @@ public:
  class ExpectedType : public jni::JavaClass<ExpectedType> {
  public:
    static auto constexpr
@@ -303,4 +385,4 @@ index 9a722a051e..93c60369fc 100644
 +    kJavaDescriptor = "L{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/ExpectedType;";
  
    CppType getCombinedTypes();
- };
+ 
