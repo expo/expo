@@ -483,11 +483,7 @@ async function exportReactNdksIfNeeded() {
 
 export async function addVersionAsync(version: string) {
   console.log(' 🛠   1/10: Updating android/versioned-react-native...');
-  await updateVersionedReactNativeAsync(
-    Directories.getReactNativeSubmoduleDir(),
-    ANDROID_DIR,
-    version
-  );
+  await updateVersionedReactNativeAsync(ANDROID_DIR, version);
   console.log(' ✅  1/10: Finished\n\n');
 
   console.log(' 🛠  2/10: Building versioned ReactAndroid AAR...');

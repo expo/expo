@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { runReactNativeCodegenAsync } from '../../Codegen';
+import { REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
 import { copyFileWithTransformsAsync, transformFileAsync } from '../../Transforms';
 import { searchFilesAsync } from '../../Utils';
 import {
@@ -12,7 +13,6 @@ import {
 } from './reactNativeTransforms';
 
 export async function updateVersionedReactNativeAsync(
-  reactNativeSubmoduleRoot: string,
   androidDir: string,
   sdkVersion: string
 ): Promise<void> {
@@ -27,7 +27,7 @@ export async function updateVersionedReactNativeAsync(
 
   await fs.mkdirp(path.join(versionedReactNativeDir, 'sdks'));
   await fs.copy(
-    path.join(androidDir, 'sdks/.hermesversion'),
+    path.join(REACT_NATIVE_SUBMODULE_DIR, 'sdks/.hermesversion'),
     path.join(versionedReactNativeDir, 'sdks/.hermesversion')
   );
 
@@ -51,7 +51,7 @@ export async function updateVersionedReactNativeAsync(
   }
 
   // Copy and version ReactAndroid and ReactCommon
-  await versionReactNativeAsync(androidDir, versionedReactNativeDir, abiVersion);
+  await versionReactNativeAsync(versionedReactNativeDir, abiVersion);
 
   await versionHermesAsync(versionedReactNativeDir, abiVersion);
 }
@@ -68,12 +68,11 @@ async function versionHermesAsync(versionedReactNativeDir: string, abiVersion: s
   );
 }
 
-async function versionReactNativeAsync(
-  androidDir: string,
-  versionedReactNativeDir: string,
-  abiVersion: string
-) {
-  const files = await searchFilesAsync(androidDir, ['./ReactAndroid/**', './ReactCommon/**']);
+async function versionReactNativeAsync(versionedReactNativeDir: string, abiVersion: string) {
+  const files = await searchFilesAsync(REACT_NATIVE_SUBMODULE_DIR, [
+    './ReactAndroid/**',
+    './ReactCommon/**',
+  ]);
   for (const file of files) {
     if ((file.match(/\/build\//) && !file.match(/src.*\/build\//)) || file.match(/\/\.cxx\//)) {
       files.delete(file);
@@ -85,7 +84,7 @@ async function versionReactNativeAsync(
     await copyFileWithTransformsAsync({
       sourceFile,
       targetDirectory: versionedReactNativeDir,
-      sourceDirectory: androidDir,
+      sourceDirectory: REACT_NATIVE_SUBMODULE_DIR,
       transforms,
     });
   }
