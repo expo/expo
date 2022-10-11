@@ -137,6 +137,18 @@ void JavaScriptModuleObject::registerProperty(
 JavaScriptModuleObject::HostObject::HostObject(
   JavaScriptModuleObject *jsModule) : jsModule(jsModule) {}
 
+/**
+ * Clears all the JSI references held by the `JavaScriptModuleObject`.
+ */
+JavaScriptModuleObject::HostObject::~HostObject() {
+  if (jsModule->jsiObject != nullptr) {
+    jsModule->jsiObject.reset();
+  }
+  jsModule->methodsMetadata.clear();
+  jsModule->constants.clear();
+  jsModule->properties.clear();
+}
+
 jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
                                                    const jsi::PropNameID &name) {
   auto cName = name.utf8(runtime);

@@ -12,6 +12,13 @@ namespace expo {
 ExpoModulesHostObject::ExpoModulesHostObject(JSIInteropModuleRegistry *installer)
   : installer(installer) {}
 
+/**
+ * Clears jsi references held by JSRegistry and JavaScriptRuntime.
+ */
+ExpoModulesHostObject::~ExpoModulesHostObject() {
+  installer->runtimeHolder.reset();
+}
+
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {
   auto cName = name.utf8(runtime);
   auto module = installer->getModule(cName);

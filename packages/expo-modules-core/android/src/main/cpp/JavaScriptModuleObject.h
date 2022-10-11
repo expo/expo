@@ -103,6 +103,8 @@ public:
   public:
     HostObject(JavaScriptModuleObject *);
 
+    ~HostObject() override;
+
     jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
 
     void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) override;

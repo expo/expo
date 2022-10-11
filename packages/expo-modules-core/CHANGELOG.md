@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed `Updates.reloadAsync` from `expo-updates` occasionally crashes the app. ([#19539](https://github.com/expo/expo/pull/19539) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+- Fixed `JSCRuntime destroyed with a dangling API object` on Android. ([#19487](https://github.com/expo/expo/pull/19487) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
