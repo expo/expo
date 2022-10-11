@@ -2,6 +2,7 @@ import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import path from 'path';
 
+import { runReactNativeCodegenAsync } from '../../Codegen';
 import { copyFileWithTransformsAsync, transformFileAsync } from '../../Transforms';
 import { searchFilesAsync } from '../../Utils';
 import {
@@ -34,7 +35,16 @@ export async function updateVersionedReactNativeAsync(
   const codegenOutputRoot = path.join(versionedReactNativeDir, 'codegen');
   const tmpCodegenOutputRoot = path.join(versionedReactNativeDir, 'codegen-tmp');
   try {
-    await runReactNativeCodegenAndroidAsync(reactNativeSubmoduleRoot, tmpCodegenOutputRoot);
+    await runReactNativeCodegenAsync({
+      reactNativeRoot: REACT_NATIVE_SUBMODULE_DIR,
+      codegenPkgRoot: path.join(REACT_NATIVE_SUBMODULE_DIR, 'packages', 'react-native-codegen'),
+      outputDir: tmpCodegenOutputRoot,
+      name: 'rncore',
+      platform: 'android',
+      type: 'all',
+      jsSrcsDir: path.join(REACT_NATIVE_SUBMODULE_DIR, 'Libraries'),
+      javaPackageName: 'com.facebook.fbreact.specs',
+    });
     await versionCodegenDirectoryAsync(tmpCodegenOutputRoot, codegenOutputRoot, abiVersion);
   } finally {
     await fs.remove(tmpCodegenOutputRoot);
@@ -96,43 +106,4 @@ async function versionCodegenDirectoryAsync(
       transforms,
     });
   }
-}
-
-async function runReactNativeCodegenAndroidAsync(
-  reactNativeSubmoduleRoot: string,
-  tmpCodegenOutputRoot: string
-) {
-  await fs.remove(tmpCodegenOutputRoot);
-  await fs.ensureDir(tmpCodegenOutputRoot);
-
-  // generate schema.json from js & flow types
-  const genSchemaScript = path.join(
-    reactNativeSubmoduleRoot,
-    'packages',
-    'react-native-codegen',
-    'lib',
-    'cli',
-    'combine',
-    'combine-js-to-schema-cli.js'
-  );
-  const schemaOutputPath = path.join(tmpCodegenOutputRoot, 'schema.json');
-  const jsSourceRoot = path.join(reactNativeSubmoduleRoot, 'Libraries');
-  await spawnAsync('yarn', ['node', genSchemaScript, schemaOutputPath, jsSourceRoot]);
-
-  // generate code from schema.json
-  const genCodeScript = path.join(reactNativeSubmoduleRoot, 'scripts', 'generate-specs-cli.js');
-  await spawnAsync('yarn', [
-    'node',
-    genCodeScript,
-    '--platform',
-    'android',
-    '--schemaPath',
-    schemaOutputPath,
-    '--outputDir',
-    tmpCodegenOutputRoot,
-    '--libraryName',
-    'rncore',
-    '--javaPackageName',
-    'com.facebook.fbreact.specs',
-  ]);
 }
