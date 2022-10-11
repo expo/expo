@@ -110,4 +110,4 @@ enum BatteryState: Int {
    case unplugged = 1
    case charging = 2
    case full = 3
- }
+}
