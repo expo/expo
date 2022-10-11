@@ -20,7 +20,7 @@ class ExpoModulesHostObject : public jsi::HostObject {
 public:
   ExpoModulesHostObject(JSIInteropModuleRegistry *installer);
 
-  virtual ~ExpoModulesHostObject();
+  ~ExpoModulesHostObject() override;
 
   jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
 
