@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed development servers not showing up in the `expo-dev-launcher` on the first boot. ([#19286](https://github.com/expo/expo/pull/19286) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ### ⚠️ Notices
