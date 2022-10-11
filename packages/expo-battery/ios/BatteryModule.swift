@@ -23,18 +23,10 @@ public class BatteryModule: Module {
     }
 
     AsyncFunction("getBatteryStateAsync") { () -> Int in
-      switch UIDevice.current.batteryState {
-      case UIDevice.BatteryState.unknown:
-        return BatteryState.unknown.rawValue
-      case UIDevice.BatteryState.unplugged:
-        return BatteryState.unplugged.rawValue
-      case UIDevice.BatteryState.charging:
-        return BatteryState.charging.rawValue
-      case UIDevice.BatteryState.full:
-        return BatteryState.full.rawValue
-      default:
-        return BatteryState.unknown.rawValue
-      }
+      // Apple's enum values directly correspond to Expo's
+      // enum values for battery state and are in sync, so
+      // we can return the rawValue from Apple's enum directly
+      return UIDevice.current.batteryState.rawValue
     }
 
     OnCreate {
@@ -103,11 +95,4 @@ func isSupported() -> Bool {
   #else
     return true
   #endif
-}
-
-enum BatteryState: Int {
-   case unknown = 0
-   case unplugged = 1
-   case charging = 2
-   case full = 3
 }
