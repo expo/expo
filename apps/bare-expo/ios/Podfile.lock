@@ -81,7 +81,7 @@ PODS:
     - ExpoModulesCore
   - Expo (47.0.0-alpha.1):
     - ExpoModulesCore
-  - expo-dev-client (1.3.0):
+  - expo-dev-client (1.3.1):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
@@ -739,7 +739,7 @@ PODS:
     - React-RCTImage
   - RNSharedElement (0.8.4):
     - React-Core
-  - RNSVG (12.3.0):
+  - RNSVG (13.4.0):
     - React-Core
   - SDWebImage (5.13.4):
     - SDWebImage/Core (= 5.13.4)
@@ -1258,7 +1258,7 @@ SPEC CHECKSUMS:
   EXNotifications: ea68b24a6b66fafcfcf913b2ce1367f605f6dcc1
   EXPermissions: 5cc17993ce2bf8377b40ebae47d54a88c41c4480
   Expo: 012d47437c6d887e0100c498d16019c5eb16f20f
-  expo-dev-client: 4aea43e3e4495cd676c7954c33bd3bd604cfab3a
+  expo-dev-client: 381f39773b9fd83008fd58bf493d3a7be748752d
   expo-dev-launcher: 094b0015a61550f89e9a3465f09a3edb2d7423d2
   expo-dev-menu: 57efa0dd019e00eb4e38f1a75618af70bc286c28
   expo-dev-menu-interface: 3629393147ac495c03ef22bdcef66e6fa42b78c3
@@ -1363,7 +1363,7 @@ SPEC CHECKSUMS:
   RNReanimated: 60e291d42c77752a0f6d6f358387bdf225a87c6e
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
-  RNSVG: 302bfc9905bd8122f08966dc2ce2d07b7b52b9f8
+  RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
   SDWebImage: e5cc87bf736e60f49592f307bdf9e157189298a3
   SDWebImageSVGKitPlugin: 8797e1c9b9baf80bd50d28e673e16a12359af1c9
   SVGKit: 652cdf7bef8bec8564d04a8511d3ab50c7595fac
