@@ -3,12 +3,12 @@ import React from 'react';
 import { StyleSheet, Switch, View } from 'react-native';
 import { BorderlessButton } from 'react-native-gesture-handler';
 
-import AudioPlayer from '../components/AudioPlayer';
-import { StyledText } from '../components/Text';
-import { StyledScrollView } from '../components/Views';
-import Colors from '../constants/Colors';
-import Environment from '../utils/Environment';
-import { useAudio, useAudioMode } from '../utils/useAudio';
+import AudioPlayer from '../../components/AudioPlayer';
+import { StyledText } from '../../components/Text';
+import { StyledScrollView } from '../../components/Views';
+import Colors from '../../constants/Colors';
+import Environment from '../../utils/Environment';
+import { useAudio, useAudioMode } from '../../utils/useAudio';
 
 const initialAudioMode = {
   interruptionModeIOS: InterruptionModeIOS.MixWithOthers,

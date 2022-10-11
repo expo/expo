@@ -8,19 +8,16 @@ import {
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
+import { DiagnosticsStackScreen } from 'screens/DiagnosticsScreen';
 
 import DiagnosticsIcon from '../components/Icons';
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
 import { AccountModal } from '../screens/AccountModal';
-import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import { BranchListScreen } from '../screens/BranchListScreen';
 import { DeleteAccountScreen } from '../screens/DeleteAccountScreen';
-import { DiagnosticsScreen } from '../screens/DiagnosticsScreen';
-import GeofencingScreen from '../screens/GeofencingScreen';
 import { HomeScreen } from '../screens/HomeScreen';
-import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import { ProjectScreen } from '../screens/ProjectScreen';
 import { ProjectsListScreen } from '../screens/ProjectsListScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
@@ -31,12 +28,7 @@ import {
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
-import {
-  DiagnosticsStackRoutes,
-  HomeStackRoutes,
-  SettingsStackRoutes,
-  ModalStackRoutes,
-} from './Navigation.types';
+import { HomeStackRoutes, SettingsStackRoutes, ModalStackRoutes } from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
@@ -123,41 +115,6 @@ function SettingsStackScreen() {
         }}
       />
     </SettingsStack.Navigator>
-  );
-}
-
-const DiagnosticsStack = createStackNavigator<DiagnosticsStackRoutes>();
-
-function DiagnosticsStackScreen() {
-  const theme = useThemeName();
-  return (
-    <DiagnosticsStack.Navigator
-      initialRouteName="Diagnostics"
-      detachInactiveScreens={shouldDetachInactiveScreens}
-      screenOptions={defaultNavigationOptions(theme)}>
-      <DiagnosticsStack.Screen
-        name="Diagnostics"
-        component={DiagnosticsScreen}
-        options={{
-          title: 'Diagnostics',
-        }}
-      />
-      <DiagnosticsStack.Screen
-        name="Audio"
-        component={AudioDiagnosticsScreen}
-        options={{ title: 'Audio Diagnostics' }}
-      />
-      <DiagnosticsStack.Screen
-        name="Location"
-        component={LocationDiagnosticsScreen}
-        options={{ title: 'Location Diagnostics' }}
-      />
-      <DiagnosticsStack.Screen
-        name="Geofencing"
-        component={GeofencingScreen}
-        options={{ title: 'Geofencing' }}
-      />
-    </DiagnosticsStack.Navigator>
   );
 }
 
