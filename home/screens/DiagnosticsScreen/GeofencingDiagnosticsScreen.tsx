@@ -15,8 +15,8 @@ import {
 } from 'react-native';
 import MapView, { Circle, MapPressEvent } from 'react-native-maps';
 
-import NavigationEvents from '../components/NavigationEvents';
-import Button from '../components/PrimaryButton';
+import NavigationEvents from '../../components/NavigationEvents';
+import Button from '../../components/PrimaryButton';
 
 const GEOFENCING_TASK = 'geofencing';
 const REGION_RADIUSES = [30, 50, 75, 100, 150, 200];
