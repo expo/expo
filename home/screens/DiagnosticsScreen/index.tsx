@@ -1,14 +1,63 @@
 import { spacing } from '@expo/styleguide-native';
-import { StackNavigationProp, StackScreenProps } from '@react-navigation/stack';
+import { useTheme } from '@react-navigation/native';
+import {
+  createStackNavigator,
+  StackNavigationProp,
+  StackScreenProps,
+} from '@react-navigation/stack';
+import { ColorTheme } from 'constants/Colors';
 import { Spacer } from 'expo-dev-client-components';
+import defaultNavigationOptions from 'navigation/defaultNavigationOptions';
 import * as React from 'react';
 
 import ScrollView from '../../components/NavigationScrollView';
 import { DiagnosticsStackRoutes } from '../../navigation/Navigation.types';
 import Environment from '../../utils/Environment';
+import AudioDiagnosticsScreen from './AudioDiagnosticsScreen';
 import { DiagnosticButton } from './DiagnosticsButton';
+import GeofencingScreen from './GeofencingDiagnosticsScreen';
+import LocationDiagnosticsScreen from './LocationDiagnosticsScreen';
 
-export function DiagnosticsScreen({
+function useThemeName() {
+  const theme = useTheme();
+  return theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
+}
+
+const DiagnosticsStack = createStackNavigator<DiagnosticsStackRoutes>();
+
+export function DiagnosticsStackScreen() {
+  const theme = useThemeName();
+  return (
+    <DiagnosticsStack.Navigator
+      initialRouteName="Diagnostics"
+      screenOptions={defaultNavigationOptions(theme)}>
+      <DiagnosticsStack.Screen
+        name="Diagnostics"
+        component={DiagnosticsScreen}
+        options={{
+          title: 'Diagnostics',
+        }}
+      />
+      <DiagnosticsStack.Screen
+        name="Audio"
+        component={AudioDiagnosticsScreen}
+        options={{ title: 'Audio Diagnostics' }}
+      />
+      <DiagnosticsStack.Screen
+        name="Location"
+        component={LocationDiagnosticsScreen}
+        options={{ title: 'Location Diagnostics' }}
+      />
+      <DiagnosticsStack.Screen
+        name="Geofencing"
+        component={GeofencingScreen}
+        options={{ title: 'Geofencing' }}
+      />
+    </DiagnosticsStack.Navigator>
+  );
+}
+
+function DiagnosticsScreen({
   navigation,
 }: StackScreenProps<DiagnosticsStackRoutes, 'Diagnostics'>) {
   return (
