@@ -10,8 +10,6 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 > **Warning** EAS Build support for E2E testing is in a _very early_ state. The intention of this guide is to explain how you can run E2E tests on the service today,
 > without all of the affordances that we plan to build in the future. This guide will evolve over time as support for testing workflows in EAS Build improves.
 
-> **info** **Android not yet supported**: EAS Build does not yet support running tests on an Android Emulator — this will be coming soon.
-
 With EAS Build, you can build a workflow for running E2E tests for your application. In this guide, you will learn how to use one of the most popular libraries ([Detox](https://wix.github.io/Detox)) to do that.
 
 This guide explains how to run E2E tests with Detox in a bare workflow project. You can use [`@config-plugins/detox`](https://github.com/expo/config-plugins/tree/main/packages/detox) for a managed project, but you may need to adjust some of the instructions in this guide in order to do so.
@@ -20,7 +18,7 @@ This guide explains how to run E2E tests with Detox in a bare workflow project. 
 
 ### 1. Initialize a new Bare Workflow project
 
-Let's start by initializing a new Expo project and running `npx expo prebuild` to generate the native projects.
+Let's start by initializing a new Expo project, installing `@config-plugins/detox` (required for running tests on Android), and running `npx expo prebuild` to generate the native projects.
 
 <Terminal
   cmd={[
@@ -28,8 +26,10 @@ Let's start by initializing a new Expo project and running `npx expo prebuild` t
     '$ npx create-expo-app eas-tests-example',
     '# cd into the project directory',
     '$ cd eas-tests-example',
+    '# Install @config-plugins/detox',
+    '$ npm install --save-dev @config-plugins/detox',
     '# Generate native code',
-    '$ npx expo prebuild --platform ios',
+    '$ npx expo prebuild',
   ]}
 />
 
@@ -117,19 +117,49 @@ Let's add two development dependencies to the project - `jest` and `detox`. `jes
 
 #### Configure Detox
 
-Detox requires you to specify both the build command and path to the binary produced by it. Technically, the build command is not necessary when running tests on EAS Build, but allows you to run tests locally (using `npx detox build --configuration ios`).
+Detox requires you to specify both the build command and path to the binary produced by it. Technically, the build command is not necessary when running tests on EAS Build, but allows you to run tests locally (for example, using `npx detox build --configuration ios.release`).
 
-Edit **.detoxrc.json** and replace the `ios` configuration with:
+Edit **.detoxrc.json** and replace the configuration with:
 
 ```json .detoxrc.json
 {
+  "testRunner": "jest",
+  "runnerConfig": "e2e/config.json",
+  "skipLegacyWorkersInjection": true,
   "apps": {
-    "ios": {
+    "android.release": {
+      "type": "android.apk",
+      "build": "cd android && ./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release && cd ..",
+      "binaryPath": "android/app/build/outputs/apk/release/app-release.apk"
+    },
+    "ios.release": {
       "type": "ios.app",
-      // note: replace "eastestsexample" with your project's name
       "build": "xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
-      // note: replace "eastestsexample" with your project's name
       "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/eastestsexample.app"
+    }
+  },
+  "devices": {
+    "emulator": {
+      "type": "android.emulator",
+      "device": {
+        "avdName": "pixel_4"
+      }
+    },
+    "simulator": {
+      "type": "ios.simulator",
+      "device": {
+        "type": "iPhone 11"
+      }
+    }
+  },
+  "configurations": {
+    "android.release": {
+      "device": "emulator",
+      "app": "android.release"
+    },
+    "ios.release": {
+      "device": "simulator",
+      "app": "ios.release"
     }
   }
 }
@@ -139,7 +169,7 @@ Edit **.detoxrc.json** and replace the `ios` configuration with:
 
 Next, we'll add our first E2E tests. Delete the auto-generated **e2e/firstTest.e2e.js** and create our own **e2e/homeScreen.e2e.js** with the following contents:
 
-```js homeScreen.e2e.js
+```js e2e/homeScreen.e2e.js
 describe('Home screen', () => {
   beforeAll(async () => {
     await device.launchApp();
@@ -165,7 +195,7 @@ There are two tests in the suite:
 - One that checks whether the "Click me" button is visible on the home screen.
 - Another that verifies that tapping the button triggers displaying "Hi!".
 
-Both tests assume the button has the `testID` set to `click-me-button`. See [the source code](#1-make-home-screen-interactive) for details.
+Both tests assume the button has the `testID` set to `click-me-button`. See [the source code](#2-make-home-screen-interactive) for details.
 
 ### 5. Configure EAS Build
 
@@ -179,10 +209,14 @@ The following command creates [eas.json](/build/eas-json.mdx) in the project's r
 
 #### Configure EAS Build
 
-There are three more steps to configure EAS Build for running E2E tests as part of the build:
+There are a few more steps to configure EAS Build for running E2E tests as part of the build:
 
-- Detox tests are run in the iOS simulator. We will define a build profile that builds your app for simulator.
-- Install the [`applesimutils`](https://github.com/wix/AppleSimulatorUtils) command line util required by Detox.
+- Android tests:
+  - Tests are run in the Android Emulator. You will define a build profile that builds your app for the emulator (produces an `apk` file).
+  - Install the emulator and all its system dependencies.
+- iOS test:
+  - Tests are run in the iOS simulator. You will define a build profile that builds your app for the simulator.
+  - Install the [`applesimutils`](https://github.com/wix/AppleSimulatorUtils) command line util.
 - Configure EAS Build to run Detox tests after successfully building the app.
 
 Edit **eas.json** and add the `test` build profile:
@@ -191,6 +225,10 @@ Edit **eas.json** and add the `test` build profile:
 {
   "build": {
     "test": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "withoutCredentials": true
+      },
       "ios": {
         "simulator": true
       }
@@ -199,28 +237,81 @@ Edit **eas.json** and add the `test` build profile:
 }
 ```
 
-Create **eas-hooks/eas-build-pre-install.sh** that will be used to install `applesimutils` with `brew`:
+Create **eas-hooks/eas-build-pre-install.sh** that installs the necessary tools and dependencies for the given platform:
 
 ```sh eas-hooks/eas-build-pre-install.sh
 #!/usr/bin/env bash
 
 set -eox pipefail
 
-if [[ "$EAS_BUILD_PLATFORM" == "ios" && "$EAS_BUILD_PROFILE" == "test" ]]; then
-  brew tap wix/brew
-  brew install applesimutils
+if [[ "$EAS_BUILD_RUNNER" == "eas-build" && "$EAS_BUILD_PROFILE" == "test"* ]]; then
+  if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+    sudo apt-get --quiet update --yes
+
+    # Install emulator & video bridge dependencies
+    # Source: https://github.com/react-native-community/docker-android/blob/master/Dockerfile
+    sudo apt-get --quiet install --yes \
+      libc6 \
+      libdbus-1-3 \
+      libfontconfig1 \
+      libgcc1 \
+      libpulse0 \
+      libtinfo5 \
+      libx11-6 \
+      libxcb1 \
+      libxdamage1 \
+      libnss3 \
+      libxcomposite1 \
+      libxcursor1 \
+      libxi6 \
+      libxext6 \
+      libxfixes3 \
+      zlib1g \
+      libgl1 \
+      pulseaudio \
+      socat
+
+    sdkmanager --install "system-images;android-32;google_apis;x86_64"
+    avdmanager --verbose create avd --force --name "pixel_4" --device "pixel_4" --package "system-images;android-32;google_apis;x86_64"
+  else
+    brew tap wix/brew
+    brew install applesimutils
+  fi
 fi
+
 ```
 
-Next, create **eas-hooks/eas-build-on-success.sh** with the following contents. The script runs Detox tests in headless mode:
+Next, create **eas-hooks/eas-build-on-success.sh** with the following contents. The script runs different commands for Android and iOS. For iOS, the only command is `detox test`. For Android, it's a bit more complicated. You'll have to start the emulator prior to running the tests as `detox` sometimes seems to be having problems with starting the emulator on its own and it can get stuck on running the first test from your test suite. After the `detox test` run, there is a command that kills the previously started emulator.
 
 ```sh eas-hooks/eas-build-on-success.sh
 #!/usr/bin/env bash
 
 set -eox pipefail
 
-if [[ "$EAS_BUILD_PLATFORM" == "ios" && "$EAS_BUILD_PROFILE" == "test" ]]; then
-  detox test --configuration ios --headless
+ANDROID_EMULATOR=pixel_4
+
+if [[ "$EAS_BUILD_PROFILE" == "test" ]]; then
+  if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+    # Start emulator
+    $ANDROID_SDK_ROOT/emulator/emulator @$ANDROID_EMULATOR -no-audio -no-boot-anim -no-window -use-system-libs 2>&1 >/dev/null &
+
+    # Wait for emulator
+    max_retry=10
+    counter=0
+    until adb shell getprop sys.boot_completed; do
+      sleep 10
+      [[ counter -eq $max_retry ]] && echo "Failed to start the emulator!" && exit 1
+      counter=$((counter + 1))
+    done
+
+    # Run tests
+    detox test --configuration android.release --headless
+
+    # Kill emulator
+    adb emu kill
+  else
+    detox test --configuration ios.release --headless
+  fi
 fi
 ```
 
@@ -237,11 +328,21 @@ Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) t
 
 > Don't forget to add executable permissions to **eas-build-pre-install.sh** and **eas-build-on-success.sh**. Run `chmod +x eas-hooks/*.sh`.
 
+### 5.1. Patch **app/build.gradle**
+
+> This step will be redundant in the future.
+
+The Android build command that you use to produce the test build is `./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release`. Notice that it consists of two Gradle tasks. Unfortunately, when building the `*AndroidTest` task, some versions of the `expo-modules-core` module change what native libraries are included in the app binary. Those settings don't work with settings for `assembleRelease`.
+
+To fix the problem, add the `pickFirsts` list under `android.packagingOptions` in your **android/app/build.gradle**. The `pickFirsts` property overrides the setting for your project.
+
+<DiffBlock source="/static/diffs/e2e-tests-pickfirsts.diff" />
+
 ### 6. Run tests on EAS Build
 
 Running the tests on EAS Build is like running a regular build:
 
-<Terminal cmd={['$ eas build -p ios --profile test']} />
+<Terminal cmd={['$ eas build -p all -e test']} />
 
 If you have set up everything correctly you should see the successful test result in the build logs:
 
@@ -310,10 +411,14 @@ Edit **eas.json** and add `buildArtifactPaths` to the `test` build profile:
 {
   "build": {
     "test": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "withoutCredentials": true
+      },
       "ios": {
-        "simulator": true,
-        "buildArtifactPaths": ["artifacts/**/*.png"]
-      }
+        "simulator": true
+      },
+      "buildArtifactPaths": ["artifacts/**/*.png"]
     }
   }
 }
@@ -333,26 +438,11 @@ To test the new configuration, let's break a test and see that EAS Build uploads
 
 Edit **e2e/homeScreen.e2e.js** and make the following change:
 
-<DiffBlock
-  raw={`
-diff --git a/e2e/homeScreen.e2e.js b/e2e/homeScreen.e2e.js
-index e28acfa..c65e90c 100644
---- a/e2e/homeScreen.e2e.js
-+++ b/e2e/homeScreen.e2e.js
-@@ -8,7 +8,7 @@ describe('Home screen', () => {
-   });
+<DiffBlock source="/static/diffs/e2e-tests-homescreen.diff" />
 
-   it('"Click me" button should be visible', async () => {
--    await expect(element(by.id('click-me-button'))).toBeVisible();
-+    await expect(element(by.id('click-me-button'))).not.toBeVisible();
-   });
+Run an iOS build with the following command and wait for it to finish:
 
-   it('shows "Hi!" after tapping "Click me"', async () => {
-`} />
-
-Run a build with the following command and wait for it to finish:
-
-<Terminal cmd={['eas build -p ios --profile test']} />
+<Terminal cmd={['$ eas build -p ios -e test']} />
 
 After going to the build details page you should see that the build failed. Use the **"Download artifacts"** button to download and examine the screenshot:
 
@@ -366,39 +456,29 @@ The full example from this guide is available at https://github.com/expo/eas-tes
 
 ### Using development builds to speed up test run time
 
+> **Warning** This might not work properly on Android.
+
 The above guide explains how to run E2E tests against a release build of your project, which requires executing a full native build before each test run. Re-building the native app each time you run E2E tests may not be desirable if only the project JavaScript or assets have changed. However, this is necessary for release builds because the app JavaScript bundle is embedded into the binary.
 
 Instead, we can use [development builds](/development/introduction/) to load from a local development server or from [published updates](/eas-update/introduction/) to save time and CI resources. This can be done by having your E2E test runner invoke the app with a URL that points to a specific update bundle URL, as described in the [development builds deep linking URLs guide](/development/development-workflows/#deep-linking-urls).
 
 Development builds typically display an onboarding welcome screen when an app is launched for the first time, which intends to provide context about the `expo-dev-client` UI for developers. However, it can interfere with your E2E tests (which expect to interact with your app and not an onboarding screen). To skip the onboarding screen in a test environment, the query parameter `disableOnboarding=1` can be appended to the project URL (an EAS Update URL or a local development server URL).
 
-An example of such a Detox test is shown below. Full example code is available on the [eas-tests-example repository](https://github.com/expo/eas-tests-example).
+An example of such a Detox test is shown below. Full example code is available on the [eas-tests-example](https://github.com/expo/eas-tests-example) repository.
 
-<Collapsible summary="homeScreen.e2e.js">
+<Collapsible summary="e2e/homeScreen.e2e.js">
 
 ```js
-const {
-  sleepAsync,
-  getConfigurationName,
-  // getDevLauncherPackagerUrl,
-  getLatestUpdateUrl,
-  getDeepLinkUrl,
-} = require('./utils');
+/* @info New line */
+const { openAppForDebugBuild } = require('./utils/openAppForDebugBuild');
+/* @end */
 
 describe('Home screen', () => {
   beforeEach(async () => {
     await device.launchApp({
       newInstance: true,
     });
-    if (getConfigurationName().indexOf('debug') !== -1) {
-      await device.openURL({
-        // Local testing with packager
-        //url: getDeepLinkUrl(getDevLauncherPackagerUrl(platform)),
-        // Testing latest published EAS update for the test_debug channel
-        url: getDeepLinkUrl(getLatestUpdateUrl()),
-      });
-    }
-    await sleepAsync(3000);
+    /* @info New line */ await openAppForDebugBuild(); /* @end */
   });
 
   it('"Click me" button should be visible', async () => {
@@ -414,64 +494,40 @@ describe('Home screen', () => {
 
 </Collapsible>
 
-<Collapsible summary="utils.js">
+<Collapsible summary="e2e/utils/openAppForDebugBuild.js">
 
 ```js
-const { exec } = require('child_process');
-const argparse = require('detox/src/utils/argparse');
-const appConfig = require('../app.json');
+const appConfig = require('../../../app.json');
 
-/**
- * General util methods
- */
+module.exports.openAppForDebugBuild = async function openAppForDebugBuild() {
+  const [platform, target] = process.env.DETOX_CONFIGURATION.split('.');
+  if (target !== 'debug') {
+    return;
+  }
 
-/**
- * Async wait for n milliseconds
- */
-const sleepAsync = t => new Promise(res => setTimeout(res, t));
-
-/**
- * Get Detox configuration being used
- */
-const getConfigurationName = () => argparse.getArgValue('configuration');
-
-/**
- * Get EAS app ID
- */
-const getAppId = () => appConfig?.expo?.extra?.eas?.projectId || '';
-
-/**
- * Methods to construct test URLs
- */
-
-/**
- * For local dev testing, returns the packager URL with the disable onboarding query param
- */
-const getDevLauncherPackagerUrl = platform => {
-  return `http://localhost:8081/index.bundle?platform=${platform}&dev=true&minify=false&disableOnboarding=1`;
+  await sleep(1000);
+  await device.openURL({
+    url: process.env.EXPO_USE_UPDATES
+      ? // Testing latest published EAS update for the test_debug channel
+        getDeepLinkUrl(getLatestUpdateUrl())
+      : // Local testing with packager
+        getDeepLinkUrl(getDevLauncherPackagerUrl(platform)),
+  });
+  await sleep(3000);
 };
 
-/**
- * Returns the URL for the most recent update for the 'test_debug' EAS update channel
- */
-const getLatestUpdateUrl = () =>
-  `https://u.expo.dev/${getAppId()}?channel-name=test_debug&disableOnboarding=1`;
-
-/**
- * Wraps a React Native bundle URL in the deep link form required by expo-dev-launcher for this app
- */
 const getDeepLinkUrl = url =>
   `eastestsexample://expo-development-client/?url=${encodeURIComponent(url)}`;
 
-module.exports = {
-  sleepAsync,
-  getConfigurationName,
-  getAppId,
-  getDevLauncherPackagerUrl,
-  getLatestUpdateUrl,
-  getDeepLinkUrl,
-  invokeDevLauncherUrl,
-};
+const getDevLauncherPackagerUrl = platform =>
+  `http://localhost:8081/index.bundle?platform=${platform}&dev=true&minify=false&disableOnboarding=1`;
+
+const getLatestUpdateUrl = () =>
+  `https://u.expo.dev/${getAppId()}?channel-name=test_debug&disableOnboarding=1`;
+
+const getAppId = () => appConfig?.expo?.extra?.eas?.projectId ?? '';
+
+const sleep = t => new Promise(res => setTimeout(res, t));
 ```
 
 </Collapsible>
