@@ -263,6 +263,74 @@ It may be helpful to see which assets are included in our update bundle. We can 
 
 <Terminal cmd={['$ npx expo export']} />
 
+### Debugging of native code in an app enabled for updates
+
+Normally, if we have a project with `expo-updates` installed, we need to make a release build for `expo-updates` to be enabled (debug builds behave like normal RN project debug builds).
+
+To make it easier to test and debug native code, we can follow these steps to create a debug build of the app with expo-updates enabled.
+
+#### iOS local builds
+
+- Set the environment variable
+```sh
+export EX_UPDATES_NATIVE_DEBUG=1
+```
+- Reinstall pods with `pod install` or `npx pod-install`. The `expo-updates` podspec now detects this environment variable, and makes changes so that the debug code that would normally load from the Metro packager is bypassed, and the app is built with the EXUpdates bundle and other dependencies needed to load updates from EAS.
+- Execute a debug build of the app with Xcode or from the command line.
+
+#### Android local builds
+
+- As above in the iOS build, set the environment variable
+```sh
+export EX_UPDATES_NATIVE_DEBUG=1
+```
+- Modify your app's `AndroidManifest.xml` to select a channel for which this app will receive updates, as in the example below. (In an EAS build, this value is set automatically to the channel for the EAS profile being built.)
+```diff
+diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
+index 143fa2d..36d5af2 100644
+--- a/android/app/src/main/AndroidManifest.xml
++++ b/android/app/src/main/AndroidManifest.xml
+@@ -17,6 +17,7 @@
+     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
+     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
+     <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="1.0.0"/>
++    <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;previewdebug&quot;}" />
+     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
+       <intent-filter>
+         <action android:name="android.intent.action.MAIN"/>
+```
+- Execute a debug build of the app with Android Studio or from the command line.
+
+#### EAS builds
+
+Alternatively, we can use EAS to create a debug build where `expo-updates` is enabled. The environment variable is set in `eas.json`, as in the example below:
+```json
+{
+  "cli": {
+    "version": ">= 2.1.0"
+  },
+  "build": {
+    "previewdebug": {
+      "env": {
+        "EX_UPDATES_NATIVE_DEBUG": "1"
+      },
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk",
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "channel": "previewdebug"
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}
+```
+
+
+
 ## Mitigation steps
 
 Once we've found the root cause of the issue, there are various mitigation steps we might want to take. One of the most common problems is pushing an update that has a bug inside it. When this happens, we can re-publish a previous update to resolve the issue.
