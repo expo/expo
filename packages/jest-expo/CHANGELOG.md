@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Update `transform` in `jest-preset` to support transforming other file extensions such as .jsx, .tsx, etc. ([#18476](https://github.com/expo/expo/pull/18476) by [@@amandeepmittal](https://github.com/@amandeepmittal))
+- Add asset file transform for web. ([#19474](https://github.com/expo/expo/pull/19474) by [@tran2](https://github.com/tran2))
 
 ### 💡 Others
 
