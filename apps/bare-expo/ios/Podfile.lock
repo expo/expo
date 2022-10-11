@@ -96,15 +96,15 @@ PODS:
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (1.3.0):
+  - expo-dev-launcher (1.3.1):
     - EXManifests
-    - expo-dev-launcher/Main (= 1.3.0)
+    - expo-dev-launcher/Main (= 1.3.1)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (1.3.0):
+  - expo-dev-launcher/Main (1.3.1):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -112,24 +112,24 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Unsafe (1.3.0):
+  - expo-dev-launcher/Unsafe (1.3.1):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (1.3.0):
-    - expo-dev-menu/Main (= 1.3.0)
+  - expo-dev-menu (1.3.1):
+    - expo-dev-menu/Main (= 1.3.1)
   - expo-dev-menu-interface (0.7.2)
-  - expo-dev-menu/GestureHandler (1.3.0)
-  - expo-dev-menu/Main (1.3.0):
+  - expo-dev-menu/GestureHandler (1.3.1)
+  - expo-dev-menu/Main (1.3.1):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (1.3.0):
+  - expo-dev-menu/Reanimated (1.3.1):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -157,15 +157,15 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (1.3.0)
-  - expo-dev-menu/Tests (1.3.0):
+  - expo-dev-menu/SafeAreaView (1.3.1)
+  - expo-dev-menu/Tests (1.3.1):
     - Nimble
     - Quick
     - React-CoreModules
-  - expo-dev-menu/UITests (1.3.0):
+  - expo-dev-menu/UITests (1.3.1):
     - React
     - React-CoreModules
-  - expo-dev-menu/Vendored (1.3.0):
+  - expo-dev-menu/Vendored (1.3.1):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
@@ -1312,8 +1312,8 @@ SPEC CHECKSUMS:
   EXPermissions: 3dbb869e7f96a5711314f73d48ddc2f28009a7f6
   Expo: 7e821e708a35d2720ef6baa658e224dd91c4821e
   expo-dev-client: 4aea43e3e4495cd676c7954c33bd3bd604cfab3a
-  expo-dev-launcher: d3e29c82257818901ac3a10cd088539936316409
-  expo-dev-menu: e27fdf8e988e8c9086caaaec7398298d5654c138
+  expo-dev-launcher: 5a2a86276911631997b8821d278a964252bfbbf7
+  expo-dev-menu: 5c8f08081eedb470fc8384195c044feba5055cec
   expo-dev-menu-interface: 27047461614aee1dc082cacc0e0f5b4c7b8edd1b
   ExpoCellular: 23bb55684199be008505ac08b79140b6a81a9e81
   ExpoClipboard: 7a5a26a3119bd1d0337ee065db3bf5d8a40e23a1
@@ -1354,7 +1354,7 @@ SPEC CHECKSUMS:
   FirebaseCoreInternal: 50a8e39cae8abf72d5145d07ea34c3244f70862b
   FirebaseInstallations: 41f811b530c41dd90973d0174381cdb3fcb5e839
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
-  glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  glog: 3d02b25ca00c2d456734d0bcff864cbc62f6ae1a
   GoogleAppMeasurement: 6ee231473fbd75c11221dfce489894334024eead
   GoogleDataTransport: 5fffe35792f8b96ec8d6775f5eccd83c998d5a3b
   GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95
