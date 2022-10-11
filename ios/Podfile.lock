@@ -2051,6 +2051,8 @@ PODS:
   - RNScreens (3.18.0):
     - React-Core
     - React-RCTImage
+  - RNSVG (13.4.0):
+    - React-Core
   - Stripe (22.8.3):
     - Stripe/Stripe3DS2 (= 22.8.3)
     - StripeApplePay (= 22.8.3)
@@ -2431,6 +2433,7 @@ DEPENDENCIES:
   - RNGestureHandler (from `./vendored/unversioned/react-native-gesture-handler`)
   - RNReanimated (from `./vendored/unversioned/react-native-reanimated`)
   - RNScreens (from `./vendored/unversioned/react-native-screens`)
+  - RNSVG (from `./vendored/unversioned/react-native-svg`)
   - "stripe-react-native (from `./vendored/unversioned/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../packages/unimodules-app-loader/ios`)
   - Yoga (from `../react-native-lab/react-native/ReactCommon/yoga`)
@@ -3143,6 +3146,8 @@ EXTERNAL SOURCES:
     :path: "./vendored/unversioned/react-native-reanimated"
   RNScreens:
     :path: "./vendored/unversioned/react-native-screens"
+  RNSVG:
+    :path: "./vendored/unversioned/react-native-svg"
   stripe-react-native:
     :path: "./vendored/unversioned/@stripe/stripe-react-native"
   UMAppLoader:
@@ -3521,6 +3526,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 7673697e7c0e9391adefae4faa087442bc04af33
   RNReanimated: 5c8c17e26787fd8984cd5accdc70fef2ca70aafd
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
+  RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
   Stripe: 90c12b350ae9e8a262efa87d230c00110c741f88
   stripe-react-native: 001c3d794839be02fd3857f1284adfc0c7dea5c7
   StripeApplePay: ce1edb7b3cb8b1abe29734f0fb887ee839a08043
