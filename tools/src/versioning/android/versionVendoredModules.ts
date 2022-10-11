@@ -165,7 +165,7 @@ async function getGradleDependencyVersionFromExpoViewAsync(
   const expoviewGradleFile = path.join(ANDROID_DIR, 'expoview', 'build.gradle');
   const content = await fs.readFile(expoviewGradleFile, 'utf-8');
   const searchPattern = new RegExp(
-    `\\b(api|implementation)[\\s(]['"]${group}:${name}:(.+?)['"]`,
+    `\\b(api|implementation)[\\s(]['"]${group}:${name}:(.+)['"]`,
     'g'
   );
   const result = searchPattern.exec(content);
@@ -221,12 +221,12 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
         paths: 'build.gradle',
         find: /\b(compileOnly|implementation)\s+['"]com.facebook.react:react-native:.+['"]/gm,
         replaceWith:
-          `implementation 'host.exp:reactandroid-${prefix}:1.0.0'` +
+          `implementation "host.exp:reactandroid-${prefix}:1.0.0"` +
           '\n' +
           // Adding some compile time common dependencies where the versioned react-native AAR doesn't expose
-          `    compileOnly 'com.facebook.fbjni:fbjni:${fbjniVersion}'\n` +
-          `    compileOnly 'com.facebook.yoga:proguard-annotations:${proguardAnnotationVersion}'\n` +
-          `    compileOnly 'androidx.annotation:annotation:+'\n`,
+          `    compileOnly "com.facebook.fbjni:fbjni:${fbjniVersion}"\n` +
+          `    compileOnly "com.facebook.yoga:proguard-annotations:${proguardAnnotationVersion}"\n` +
+          `    compileOnly "androidx.annotation:annotation:+"\n`,
       },
       {
         paths: 'build.gradle',
