@@ -24,11 +24,6 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           find: '$nodeModules/versioned-react-native/ReactAndroid/gradle.properties',
           replaceWith: '$defaultDir/gradle.properties',
         },
-        {
-          paths: 'ExponentPackage.kt',
-          find: 'import com.shopify',
-          replaceWith: `import ${prefix}.com.shopify`,
-        },
       ],
     },
   };
@@ -45,6 +40,24 @@ export function exponentPackageTransforms(prefix: string): Record<string, String
     '@shopify/flash-list': [
       {
         find: /\bimport (com.shopify.reactnative.flash_list.ReactNativeFlashListPackage)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    '@react-native-community/slider': [
+      {
+        find: /\bimport (com\.reactnativecommunity\.slider)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    'react-native-gesture-handler': [
+      {
+        find: /\bimport (com.swmansion.gesturehandler)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    'react-native-screens': [
+      {
+        find: /\bimport (com.swmansion.rnscreens)/g,
         replaceWith: `import ${prefix}.$1`,
       },
     ],

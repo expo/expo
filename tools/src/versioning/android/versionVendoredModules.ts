@@ -150,7 +150,8 @@ async function getVendoredModuleNamesAsync(directory: string): Promise<string[]>
 /**
  * Removes the directory with vendored modules for given SDK number.
  */
-export async function removeVersionedVendoredModulesAsync(sdkNumber: number): Promise<void> {
+export async function removeVersionedVendoredModulesAsync(version: string): Promise<void> {
+  const sdkNumber = Number(version.split('.')[0]);
   const versionedDir = vendoredDirectoryForSDK(sdkNumber);
   await fs.remove(versionedDir);
 }
@@ -175,8 +176,16 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: '*.{java,kt}',
-        find: /(\bcom\.facebook\.(catalyst|csslayout|fbreact|hermes|perftest|quicklog|react|systrace|yoga|debug)\b)/g,
+        find: new RegExp(
+          `\\b(?<!${prefix}\\.)(com\\.facebook\\.(catalyst|csslayout|fbreact|hermes|perftest|quicklog|react|systrace|yoga|debug)\\b)`,
+          'g'
+        ),
         replaceWith: `${prefix}.$1`,
+      },
+      {
+        paths: '*.{java,kt}',
+        find: /\bimport (com\.swmansion\.)/g,
+        replaceWith: `import ${prefix}.$1`,
       },
       {
         paths: '*.{java,kt}',
@@ -190,14 +199,17 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: 'build.gradle',
-        find: /\b(compileOnly|implementation)\s+['"]com.facebook.react:react-native:.+['"]/gm,
+        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-native:.+['"]/gm,
         replaceWith:
           `implementation 'host.exp:reactandroid-${prefix}:1.0.0'` +
           '\n' +
           // Adding some compile time common dependencies where the versioned react-native AAR doesn't expose
           `    compileOnly 'com.facebook.fbjni:fbjni:+'\n` +
           `    compileOnly 'com.facebook.yoga:proguard-annotations:+'\n` +
-          `    compileOnly 'androidx.annotation:annotation:+'\n`,
+          `    compileOnly 'com.facebook.soloader:soloader:+'\n` +
+          `    compileOnly 'androidx.annotation:annotation:+'\n` +
+          `    compileOnly 'com.google.code.findbugs:jsr305:+'\n` +
+          `    compileOnly 'androidx.appcompat:appcompat:+'\n`,
       },
       {
         paths: 'build.gradle',

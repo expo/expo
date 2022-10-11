@@ -91,6 +91,11 @@ export function expoviewTransforms(abiVersion: string): FileTransforms {
         find: /versioned\/host\/exp\/exponent\/modules\/api\/reanimated/g,
         replaceWith: `${abiVersion}/host/exp/exponent/modules/api/reanimated`,
       },
+      {
+        paths: './**/reanimated/NativeProxy.java',
+        find: /\bimport (com\.swmansion\.)/g,
+        replaceWith: `import ${abiVersion}.$1`,
+      },
       ...reanimatedCmakeTransforms(abiVersion),
     ],
   };

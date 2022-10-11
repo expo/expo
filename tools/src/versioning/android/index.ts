@@ -160,7 +160,10 @@ async function findAndPrintVersionReferencesInSourceFilesAsync(version: string):
   );
   let matchesCount = 0;
 
-  const files = await glob('**/{src/**/*.@(java|kt|xml),build.gradle}', { cwd: ANDROID_DIR });
+  const files = await glob('**/{src/**/*.@(java|kt|xml),build.gradle}', {
+    cwd: ANDROID_DIR,
+    ignore: 'vendored/**/*',
+  });
 
   for (const file of files) {
     const filePath = path.join(ANDROID_DIR, file);
@@ -221,7 +224,7 @@ export async function removeVersionAsync(version: string) {
   await removeFromManifestAsync(sdkMajorVersion, templateManifestPath);
 
   // Remove vendored modules
-  await removeVersionedVendoredModulesAsync(Number(version));
+  await removeVersionedVendoredModulesAsync(version);
 
   // Remove SDK version from the list of supported SDKs
   await removeFromSdkVersionsAsync(version, sdkVersionsPath);
