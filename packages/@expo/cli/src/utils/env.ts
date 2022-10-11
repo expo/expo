@@ -108,6 +108,25 @@ class Env {
   get EXPO_NO_DEFAULT_PORT(): boolean {
     return boolish('EXPO_NO_DEFAULT_PORT', false);
   }
+
+  /**
+   * **Experimental** - Disable using `exp.direct` as the hostname for
+   * `--tunnel` connections. This enables **https://** forwarding which
+   * can be used to test universal links on iOS.
+   *
+   * This may cause issues with `expo-linking` and Expo Go.
+   *
+   * Select the exact subdomain by passing a string value that is not one of: `true`, `false`, `1`, `0`.
+   */
+  get EXPO_TUNNEL_SUBDOMAIN(): string | boolean {
+    const subdomain = string('EXPO_TUNNEL_SUBDOMAIN', '');
+    if (['0', 'false', ''].includes(subdomain)) {
+      return false;
+    } else if (['1', 'true'].includes(subdomain)) {
+      return true;
+    }
+    return subdomain;
+  }
 }
 
 export const env = new Env();
