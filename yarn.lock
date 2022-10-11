@@ -17299,10 +17299,10 @@ react-native-shared-element@0.8.4:
   resolved "https://registry.yarnpkg.com/react-native-shared-element/-/react-native-shared-element-0.8.4.tgz#dd97b992e53633a57ea728327f7c02bad3c5af14"
   integrity sha512-agRuD5AB4daw4QLo7KCTBqCtmIjbQkqpwsT/aYrxDu/McvTCdDuXVttaVMrqeyAgdDkU1egp41FdiExS1L/hJw==
 
-react-native-svg@13.3.0:
-  version "13.3.0"
-  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-13.3.0.tgz#07403ef0f74ba15a428c6b4da28275e8d96d0f61"
-  integrity sha512-Xr6+sTt8ioCRypCbIDMgfmc4l2s/7H8l7FfPoMZ8qMf0dVx8ZVCHRsQlrdmwgVKLJwKSAiwj7Tqqz8NPSEpwDw==
+react-native-svg@13.4.0:
+  version "13.4.0"
+  resolved "https://registry.yarnpkg.com/react-native-svg/-/react-native-svg-13.4.0.tgz#82399ba0956c454144618aa581e2d748dd3f010a"
+  integrity sha512-B3TwK+H0+JuRhYPzF21AgqMt4fjhCwDZ9QUtwNstT5XcslJBXC0FoTkdZo8IEb1Sv4suSqhZwlAY6lwOv3tHag==
   dependencies:
     css-select "^5.1.0"
     css-tree "^1.1.3"
