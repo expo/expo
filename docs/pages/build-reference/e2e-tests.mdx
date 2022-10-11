@@ -18,7 +18,9 @@ This guide explains how to run E2E tests with Detox in a bare workflow project. 
 
 ### 1. Initialize a new Bare Workflow project
 
-Let's start by initializing a new Expo project, installing `@config-plugins/detox` (required for running tests on Android), and running `npx expo prebuild` to generate the native projects.
+Let's start by initializing a new Expo project, installing and configuring `@config-plugins/detox`, and running `npx expo prebuild` to generate the native projects.
+
+Start with the following commands:
 
 <Terminal
   cmd={[
@@ -28,10 +30,23 @@ Let's start by initializing a new Expo project, installing `@config-plugins/deto
     '$ cd eas-tests-example',
     '# Install @config-plugins/detox',
     '$ npm install --save-dev @config-plugins/detox',
-    '# Generate native code',
-    '$ npx expo prebuild',
   ]}
 />
+
+Now, open **app.json** and add the `@config-plugins/detox` plugin to your `plugins` list (this must be done before prebuilding). This will automatically configure the Android native code to support Detox.
+
+```json app.json
+{
+  "expo": {
+    // ...
+    "plugins": ["@config-plugins/detox"]
+  }
+}
+```
+
+Run prebuild to generate the native projects:
+
+<Terminal cmd={['$ npx expo prebuild']} />
 
 ### 2. Make home screen interactive
 
@@ -134,8 +149,10 @@ Edit **.detoxrc.json** and replace the configuration with:
     },
     "ios.release": {
       "type": "ios.app",
+      /* @info This is project-specific, replace eastestsexample with correct value */
       "build": "xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
       "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/eastestsexample.app"
+      /* @end */
     }
   },
   "devices": {
@@ -328,7 +345,7 @@ Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) t
 
 > Don't forget to add executable permissions to **eas-build-pre-install.sh** and **eas-build-on-success.sh**. Run `chmod +x eas-hooks/*.sh`.
 
-### 5.1. Patch **app/build.gradle**
+### 5.1. Patch **build.gradle**
 
 > This step will be redundant in the future.
 
@@ -382,9 +399,9 @@ class CustomDetoxEnvironment extends DetoxCircusEnvironment {
 }
 ```
 
-After modifying the environment class, define an `afterEach` hook that calls `device.takeScreenshot()` for failed tests. Create the **e2e/setup.ts** file with the following snippet:
+After modifying the environment class, define an `afterEach` hook that calls `device.takeScreenshot()` for failed tests. Create the **e2e/setup.js** file with the following snippet:
 
-```ts e2e/setup.ts
+```ts e2e/setup.js
 afterEach(async () => {
   if (testFailed) {
     await device.takeScreenshot('screenshot');
@@ -392,7 +409,7 @@ afterEach(async () => {
 });
 ```
 
-The last step is to configure `jest` to load `e2e/setup.ts` before running tests. This way, you don't need to include the `afterEach` hook in every test suite:
+The last step is to configure `jest` to load `e2e/setup.js` before running tests. This way, you don't need to include the `afterEach` hook in every test suite:
 
 ```json e2e/config.json
 {
@@ -418,7 +435,9 @@ Edit **eas.json** and add `buildArtifactPaths` to the `test` build profile:
       "ios": {
         "simulator": true
       },
+      /* @info */
       "buildArtifactPaths": ["artifacts/**/*.png"]
+      /* @end */
     }
   }
 }
@@ -517,7 +536,9 @@ module.exports.openAppForDebugBuild = async function openAppForDebugBuild() {
 };
 
 const getDeepLinkUrl = url =>
+  /* @info This is project-specific, replace eastestsexample with correct value */
   `eastestsexample://expo-development-client/?url=${encodeURIComponent(url)}`;
+/* @end */
 
 const getDevLauncherPackagerUrl = platform =>
   `http://localhost:8081/index.bundle?platform=${platform}&dev=true&minify=false&disableOnboarding=1`;
