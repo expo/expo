@@ -332,7 +332,7 @@ Edit **package.json** to use [EAS Build hooks](/build-reference/npm-hooks.mdx) t
 
 > This step will be redundant in the future.
 
-The Android build command that you use to produce the test build is `./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release`. Notice that it consists of two Gradle tasks. Unfortunately, when building the `*AndroidTest` task, some versions of the `expo-modules-code` module change what native libraries are included in the app binary. Those settings don't work with settings for `assembleRelease`.
+The Android build command that you use to produce the test build is `./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release`. Notice that it consists of two Gradle tasks. Unfortunately, when building the `*AndroidTest` task, some versions of the `expo-modules-core` module change what native libraries are included in the app binary. Those settings don't work with settings for `assembleRelease`.
 
 To fix the problem, add the `pickFirsts` list under `android.packagingOptions` in your **android/app/build.gradle**. The `pickFirsts` property overrides the setting for your project.
 
