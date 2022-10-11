@@ -7,7 +7,7 @@
   "scripts": {
     "setup:docs": "./scripts/download-dependencies.sh",
     "setup:native": "./scripts/download-dependencies.sh && ./scripts/setup-react-android.sh",
-    "postinstall": "yarn-deduplicate && expo-yarn-workspaces check-workspace-dependencies && ([ ! -f node_modules/react-native-svg/src/index.d.ts.orig ] && patch -d node_modules -p2 -f --backup < patches/react-native-svg+12.3.0.patch || true) && yarn workspace @expo/cli prepare",
+    "postinstall": "yarn-deduplicate && expo-yarn-workspaces check-workspace-dependencies && ([ ! -f node_modules/react-native-svg/src/index.d.ts.orig ] && patch -d node_modules -p2 -f --backup < patches/react-native-svg+13.3.0.patch || true) && yarn workspace @expo/cli prepare",
     "lint": "eslint .",
     "tsc": "echo 'You are trying to run \"tsc\" in the workspace root. Run it from an individual package instead.' && exit 1"
   },

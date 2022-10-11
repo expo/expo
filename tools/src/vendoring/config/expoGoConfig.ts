@@ -125,6 +125,16 @@ const config: VendoringTargetConfig = {
     },
     'react-native-svg': {
       source: 'https://github.com/react-native-svg/react-native-svg',
+      ios: {},
+      android: {
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+          'android/src/fabric/**',
+          'android/src/main/jni/**',
+        ],
+      },
     },
     'react-native-maps': {
       source: 'https://github.com/react-native-maps/react-native-maps',
