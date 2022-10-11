@@ -51,6 +51,7 @@
 - Update gradle excludes to fix detox tests. ([#19254](https://github.com/expo/expo/pull/19254) by [@esamelson](https://github.com/esamelson))
 - Fixed event listeners do not work when running with remote debugging mode on iOS. ([#19211](https://github.com/expo/expo/pull/19211) by [@kudo](https://github.com/kudo))
 - Use shared C++ runtime to reduce library size on Android. ([#19372](https://github.com/expo/expo/pull/19372) by [@kudo](https://github.com/kudo))
+- Fixed `JSCRuntime destroyed with a dangling API object` on Android. ([#19487](https://github.com/expo/expo/pull/19487) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
