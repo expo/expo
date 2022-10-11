@@ -11,13 +11,16 @@
 
 ### 🐛 Bug fixes
 
-- Fixed development servers not showing up in the `expo-dev-launcher` on the first boot. ([#19286](https://github.com/expo/expo/pull/19286) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
 
 ### ⚠️ Notices
 
 - Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
+## 1.3.1 — 2022-10-11
+
+### 🐛 Bug fixes
+
+- Fixed development servers not showing up in the `expo-dev-launcher` on the first boot. ([#19286](https://github.com/expo/expo/pull/19286) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.3.0 — 2022-09-16
 
