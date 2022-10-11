@@ -1261,7 +1261,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 094b0015a61550f89e9a3465f09a3edb2d7423d2
   expo-dev-menu: 57efa0dd019e00eb4e38f1a75618af70bc286c28
   expo-dev-menu-interface: 3629393147ac495c03ef22bdcef66e6fa42b78c3
-  ExpoBattery: 83698c227beb9b39942861ea5d2eb6eb29269c3b
+  ExpoBattery: d7b8901eb7cc6aafcf2385d5f5796e89ff5b2fd9
   ExpoCellular: 5cd085987f010055ab92c81d60e948ce0c4b5a89
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
   ExpoCrypto: e2678609304ec063a0e36b826a3c2d0f0d7202c0
