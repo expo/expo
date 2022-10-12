@@ -25,6 +25,7 @@
 ### 🐛 Bug fixes
 
 - Fix error when calling `takePictureAsync()` on Android emulator. ([#18704](https://github.com/expo/expo/pull/18704)) by [@keith-kurak](https://github.com/keith-kurak))
+- Add `cornerPoints` to `onBarCodeScanned` on Android. ([#19357](https://github.com/expo/expo/pull/19357) by [@igoro00](https://github.com/igoro00))
 
 ### 💡 Others
 
