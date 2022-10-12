@@ -18,8 +18,6 @@ PODS:
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBattery (6.3.0):
-    - ExpoModulesCore
   - EXBlur (11.2.0):
     - ExpoModulesCore
   - EXBrightness (10.3.0):
@@ -160,6 +158,8 @@ PODS:
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
+  - ExpoBattery (6.3.0):
+    - ExpoModulesCore
   - ExpoCellular (4.3.0):
     - ExpoModulesCore
   - ExpoClipboard (3.1.0):
@@ -765,7 +765,6 @@ DEPENDENCIES:
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
-  - EXBattery (from `../../../packages/expo-battery/ios`)
   - EXBlur (from `../../../packages/expo-blur/ios`)
   - EXBrightness (from `../../../packages/expo-brightness/ios`)
   - EXCalendar (from `../../../packages/expo-calendar/ios`)
@@ -798,6 +797,7 @@ DEPENDENCIES:
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
+  - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
@@ -935,9 +935,6 @@ EXTERNAL SOURCES:
   EXBarCodeScanner:
     inhibit_warnings: false
     :path: "../../../packages/expo-barcode-scanner/ios"
-  EXBattery:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-battery/ios"
   EXBlur:
     inhibit_warnings: false
     :path: "../../../packages/expo-blur/ios"
@@ -1027,6 +1024,9 @@ EXTERNAL SOURCES:
   expo-dev-menu-interface:
     inhibit_warnings: false
     :path: "../../../packages/expo-dev-menu-interface/ios"
+  ExpoBattery:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-battery/ios"
   ExpoCellular:
     inhibit_warnings: false
     :path: "../../../packages/expo-cellular/ios"
@@ -1231,7 +1231,6 @@ SPEC CHECKSUMS:
   EXAV: 4b27d494e638f832913267b2794c607b8fff73f2
   EXBackgroundFetch: b1c8aa3cebf34ab4a26fd90462d9e0df0ad0c9db
   EXBarCodeScanner: e2461b1c4c7ce302a710f901902e02d2ec120a86
-  EXBattery: 591d642c2a274cc4cd38a74a5cb8a446406d9d43
   EXBlur: 8290c5a7f29edc13121a39b9b3f60cc23f7cb985
   EXBrightness: a8e5703abacbcba1430979a2a0815a4787c48223
   EXCalendar: 39c3421053f1b9f006e74f1a3350674a736364f5
@@ -1262,6 +1261,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 094b0015a61550f89e9a3465f09a3edb2d7423d2
   expo-dev-menu: 57efa0dd019e00eb4e38f1a75618af70bc286c28
   expo-dev-menu-interface: 3629393147ac495c03ef22bdcef66e6fa42b78c3
+  ExpoBattery: d7b8901eb7cc6aafcf2385d5f5796e89ff5b2fd9
   ExpoCellular: 5cd085987f010055ab92c81d60e948ce0c4b5a89
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
   ExpoCrypto: e2678609304ec063a0e36b826a3c2d0f0d7202c0
