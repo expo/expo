@@ -174,6 +174,10 @@ class UpdatesController private constructor(
   val isUsingEmbeddedAssets: Boolean
     get() = launcher?.isUsingEmbeddedAssets ?: false
 
+  /**
+   * Any process that calls this *must* manually release the lock by calling `releaseDatabase()` in
+   * every possible case (success, error) as soon as it is finished.
+   */
   fun getDatabase(): UpdatesDatabase = databaseHolder.database
 
   fun releaseDatabase() {

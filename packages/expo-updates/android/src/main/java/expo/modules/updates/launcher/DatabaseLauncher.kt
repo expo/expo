@@ -31,6 +31,10 @@ import java.util.*
  * from disk (since it isn't necessarily safe to just revert to an older update in this case).
  * Distinct from the [Loader] classes, though, this class does *not* make any major modifications to
  * the database; its role is mostly to read the database and ensure integrity with the file system.
+ *
+ * It's important that the update to launch is selected *before* any other checks, e.g. the above
+ * check for assets on disk. This is to preserve the invariant that no older update should ever be
+ * launched after a newer one has been launched.
  */
 class DatabaseLauncher(
   private val configuration: UpdatesConfiguration,
