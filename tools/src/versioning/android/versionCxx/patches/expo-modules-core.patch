@@ -140,7 +140,7 @@ index 607ed5c2b9..97684053ea 100644
    static jni::local_ref<UnexpectedException> create(
      const std::string &message
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
-index 938528444e..19a83b6e37 100644
+index 938528444e..4b00d36be5 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
 +++ b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.cpp
 @@ -14,7 +14,7 @@ JNIFunctionBody::invoke(jobjectArray args) {
@@ -152,7 +152,7 @@ index 938528444e..19a83b6e37 100644
      ->getMethod<jni::local_ref<jni::JObject>(jobjectArray)>(
        "invoke",
        "([Ljava/lang/Object;)Ljava/lang/Object;"
-@@ -32,7 +32,7 @@ void JNIAsyncFunctionBody::invoke(
+@@ -32,12 +32,12 @@ void JNIAsyncFunctionBody::invoke(
    // Because of that, it can't be cached - we will try to invoke the nonexistent method
    // if we receive an object of a different class than the one used to obtain the method id.
    // The only cacheable method id can be obtain from the base class.
@@ -161,6 +161,12 @@ index 938528444e..19a83b6e37 100644
      ->getMethod<
        void(jobjectArray , jobject)
      >(
+       "invoke",
+-      "([Ljava/lang/Object;Lexpo/modules/kotlin/jni/PromiseImpl;)V"
++      "([Ljava/lang/Object;L{VERSIONED_ABI_NAME}/expo/modules/kotlin/jni/PromiseImpl;)V"
+     );
+ 
+   method(this->self(), args, promise);
 diff --git a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h b/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h
 index ca59f177c8..474df8bca9 100644
 --- a/packages/expo-modules-core/android/src/main/cpp/JNIFunctionBody.h
