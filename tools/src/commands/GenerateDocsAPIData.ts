@@ -31,6 +31,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-asset': [['Asset.ts', 'AssetHooks.ts']],
   'expo-background-fetch': ['BackgroundFetch.ts'],
   'expo-battery': ['Battery.ts'],
+  'expo-barometer': [['Barometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-barcode-scanner': ['BarCodeScanner.tsx'],
   'expo-blur': ['index.ts'],
   'expo-brightness': ['Brightness.ts'],
