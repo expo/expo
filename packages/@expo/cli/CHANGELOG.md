@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Added ability to change the tunnel (ngrok) subdomain with `EXPO_TUNNEL_SUBDOMAIN`.
+- Added ability to change the tunnel (ngrok) subdomain with `EXPO_TUNNEL_SUBDOMAIN`. ([#19507](https://github.com/expo/expo/pull/19507) by [@EvanBacon](https://github.com/EvanBacon))
 - Added middleware for creating files. ([#19231](https://github.com/expo/expo/pull/19231) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable `require.context` by default. ([#19257](https://github.com/expo/expo/pull/19257) by [@EvanBacon](https://github.com/EvanBacon))
 - Handle all development session errors. ([#18499](https://github.com/expo/expo/pull/18499) by [@EvanBacon](https://github.com/EvanBacon))
