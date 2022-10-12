@@ -6,6 +6,7 @@ import Octicons from '@expo/vector-icons/build/Octicons';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import {
   AutoFocus,
+  BarCodePoint,
   BarCodeScanningResult,
   Camera,
   CameraType,
@@ -16,8 +17,9 @@ import {
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import React from 'react';
-import { Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { isIphoneX } from 'react-native-iphone-x-helper';
+import * as Svg from 'react-native-svg';
 
 import { face, landmarks } from '../../components/Face';
 import GalleryScreen from './GalleryScreen';
@@ -80,6 +82,8 @@ interface State {
   barcodeScanning: boolean;
   faceDetecting: boolean;
   faces: any[];
+  cornerPoints?: BarCodePoint[];
+  barcodeData: string;
   newPhotos: boolean;
   permissionsGranted: boolean;
   permission?: PermissionStatus;
@@ -105,6 +109,8 @@ export default class CameraScreen extends React.Component<{}, State> {
     barcodeScanning: false,
     faceDetecting: false,
     faces: [],
+    cornerPoints: undefined,
+    barcodeData: '',
     newPhotos: false,
     permissionsGranted: false,
     pictureSizes: [],
@@ -188,10 +194,10 @@ export default class CameraScreen extends React.Component<{}, State> {
 
   onBarCodeScanned = (code: BarCodeScanningResult) => {
     console.log('Found: ', code);
-    this.setState(
-      (state) => ({ barcodeScanning: !state.barcodeScanning }),
-      () => Alert.alert(`Barcode found: ${code.data}`)
-    );
+    this.setState((state) => ({
+      barcodeData: code.data,
+      cornerPoints: code.cornerPoints,
+    }));
   };
 
   onFacesDetected = ({ faces }: { faces: any }) => this.setState({ faces });
@@ -339,7 +345,26 @@ export default class CameraScreen extends React.Component<{}, State> {
       </View>
     </View>
   );
+  renderBarCode = () => {
+    const origin: BarCodePoint | undefined = this.state.cornerPoints
+      ? this.state.cornerPoints[0]
+      : undefined;
+    return (
+      <Svg.Svg style={styles.barcode} pointerEvents="none">
+        {origin && (
+          <Svg.Text fill="#CF4048" stroke="#CF4048" fontSize="14" x={origin.x} y={origin.y - 8}>
+            {this.state.barcodeData}
+          </Svg.Text>
+        )}
 
+        <Svg.Polygon
+          points={this.state.cornerPoints?.map((coord) => `${coord.x},${coord.y}`).join(' ')}
+          stroke="green"
+          strokeWidth={10}
+        />
+      </Svg.Svg>
+    );
+  };
   renderCamera = () => (
     <View style={{ flex: 1 }}>
       <Camera
@@ -366,10 +391,12 @@ export default class CameraScreen extends React.Component<{}, State> {
         }}
         onBarCodeScanned={this.state.barcodeScanning ? this.onBarCodeScanned : undefined}>
         {this.renderTopBar()}
+
         {this.renderBottomBar()}
       </Camera>
       {this.state.faceDetecting && this.renderFaces()}
       {this.state.faceDetecting && this.renderLandmarks()}
+      {this.state.barcodeScanning && this.renderBarCode()}
       {this.state.showMoreOptions && this.renderMoreOptions()}
     </View>
   );
@@ -491,5 +518,10 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+  },
+  barcode: {
+    position: 'absolute',
+    borderWidth: 2,
+    borderColor: 'red',
   },
 });
