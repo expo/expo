@@ -1,43 +1,9 @@
-import { getEntitlementsPath } from '@expo/config-plugins/build/ios/Entitlements';
-import plist from '@expo/plist';
 import chalk from 'chalk';
-import fs from 'fs';
 
 import * as Log from '../../../log';
-import { resolveCertificateSigningIdentityAsync } from './resolveCertificateSigningIdentity';
 import * as Security from './Security';
+import { resolveCertificateSigningIdentityAsync } from './resolveCertificateSigningIdentity';
 import { getCodeSigningInfoForPbxproj, setAutoCodeSigningInfoForPbxproj } from './xcodeCodeSigning';
-
-// These are entitlements that work on a simulator
-// but still require the project to have development code signing setup.
-// There may be more, but this is fine for now.
-const ENTITLEMENTS_THAT_REQUIRE_CODE_SIGNING = [
-  'com.apple.developer.associated-domains',
-  'com.apple.developer.applesignin',
-  'com.apple.developer.icloud-container-identifiers',
-  'com.apple.developer.icloud-services',
-  'com.apple.developer.ubiquity-kvstore-identifier',
-  'com.apple.developer.ubiquity-container-identifiers',
-];
-
-function getEntitlements(projectRoot: string) {
-  const entitlementsPath = getEntitlementsPath(projectRoot);
-  if (!entitlementsPath || !fs.existsSync(entitlementsPath)) {
-    return null;
-  }
-
-  const entitlementsContents = fs.readFileSync(entitlementsPath, 'utf8');
-  const entitlements = plist.parse(entitlementsContents);
-  return entitlements;
-}
-
-export function simulatorBuildRequiresCodeSigning(projectRoot: string): boolean {
-  const entitlements = getEntitlements(projectRoot);
-  if (!entitlements) {
-    return false;
-  }
-  return ENTITLEMENTS_THAT_REQUIRE_CODE_SIGNING.some((entitlement) => entitlement in entitlements);
-}
 
 export async function ensureDeviceIsCodeSignedForDeploymentAsync(
   projectRoot: string

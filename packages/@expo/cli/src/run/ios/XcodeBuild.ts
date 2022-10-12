@@ -11,11 +11,8 @@ import { env } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
 import { getUserTerminal } from '../../utils/terminal';
 import { BuildProps, ProjectInfo } from './XcodeBuild.types';
-import {
-  ensureDeviceIsCodeSignedForDeploymentAsync,
-  simulatorBuildRequiresCodeSigning,
-} from './codeSigning/configureCodeSigning';
-
+import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
+import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
 }
