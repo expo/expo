@@ -14,20 +14,18 @@ import React, { useState, useEffect } from 'react';
 import { Keyboard, Text, TextInput, StyleSheet, View } from 'react-native';
 
 const Example = () => {
+  const [keyboardStatus, setKeyboardStatus] = useState(undefined);
+  
   useEffect(() => {
-    Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
-    Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
+    Keyboard.addListener('keyboardDidShow', () => setKeyboardStatus('Keyboard Shown'));
+    Keyboard.addListener('keyboardDidHide', () => setKeyboardStatus('Keyboard Hidden'));
 
     // cleanup function
     return () => {
-      Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
-      Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
+      Keyboard.removeAllListeners('keyboardDidShow');
+      Keyboard.removeAllListeners('keyboardDidHide');
     };
   }, []);
-
-  const [keyboardStatus, setKeyboardStatus] = useState(undefined);
-  const _keyboardDidShow = () => setKeyboardStatus('Keyboard Shown');
-  const _keyboardDidHide = () => setKeyboardStatus('Keyboard Hidden');
 
   return (
     <View style={style.container}>
