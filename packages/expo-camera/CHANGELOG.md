@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added `bounds` property to the `BarCodeScanningResult`.
+
 ### 💡 Others
 
 ## 13.0.0-beta.1 — 2022-10-06
