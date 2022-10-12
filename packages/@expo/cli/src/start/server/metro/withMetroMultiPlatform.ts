@@ -10,8 +10,10 @@ import { ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
 import { importMetroResolverFromProject } from './resolveFromProject';
+import { getAppRouterRelativeEntryPath } from './router';
 
 function withWebPolyfills(config: ConfigT): ConfigT {
   const originalGetPolyfills = config.serializer.getPolyfills
@@ -140,16 +142,30 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
 }
 
 /** Add support for `react-native-web` and the Web platform. */
-export function withMetroMultiPlatform(
+export async function withMetroMultiPlatformAsync(
   projectRoot: string,
   config: ConfigT,
   platformBundlers: PlatformBundlers
 ) {
-  // Bail out early for performance enhancements if web is not enabled.
-  if (platformBundlers.web !== 'metro') {
+  // Auto pick App entry: this is injected with Babel.
+  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
+  process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
+
+  if (platformBundlers.web === 'metro') {
+    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
+  } else {
+    // Bail out early for performance enhancements if web is not enabled.
     return config;
   }
 
+  return withMetroMultiPlatform(projectRoot, config, platformBundlers);
+}
+
+function withMetroMultiPlatform(
+  projectRoot: string,
+  config: ConfigT,
+  platformBundlers: PlatformBundlers
+) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(([, bundler]) => bundler === 'metro')
     .map(([platform]) => platform);
