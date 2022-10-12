@@ -1,5 +1,3 @@
-// Credit: https://stackoverflow.com/a/26962452
-
 // swiftlint:disable:all line_length
 // swiftlint:disable:all number_separator
 // swiftlint:disable:all implicit_getter
@@ -12,6 +10,7 @@ struct DeviceMapping {
 }
 
 public extension UIDevice {
+    // Credit: https://stackoverflow.com/a/26962452
     static let modelIdentifier: String = {
         var systemInfo = utsname()
         uname(&systemInfo)
@@ -131,7 +130,6 @@ public extension UIDevice {
 }
 
 // Credit: https://github.com/developerinsider/isJailBroken/blob/master/IsJailBroken/Extension/UIDevice%2BJailBroken.swift
-
 private struct JailBreakHelper {
     static func hasCydiaInstalled() -> Bool {
         return UIApplication.shared.canOpenURL(URL(string: "cydia://")!)

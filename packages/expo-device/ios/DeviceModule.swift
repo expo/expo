@@ -1,3 +1,5 @@
+// swiftlint:disable:all number_separator
+
 import ExpoModulesCore
 import UIKit
 
