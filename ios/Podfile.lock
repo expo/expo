@@ -1306,8 +1306,6 @@ PODS:
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBattery (6.3.0):
-    - ExpoModulesCore
   - EXBlur (11.2.0):
     - ExpoModulesCore
   - EXBranch (5.3.0):
@@ -1373,6 +1371,8 @@ PODS:
   - EXPermissions (13.2.0):
     - ExpoModulesCore
   - Expo (47.0.0-alpha.1):
+    - ExpoModulesCore
+  - ExpoBattery (6.3.0):
     - ExpoModulesCore
   - ExpoCellular (4.3.0):
     - ExpoModulesCore
@@ -2316,7 +2316,6 @@ DEPENDENCIES:
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
-  - EXBattery (from `../packages/expo-battery/ios`)
   - EXBlur (from `../packages/expo-blur/ios`)
   - EXBranch (from `../packages/expo-branch/ios`)
   - EXBrightness (from `../packages/expo-brightness/ios`)
@@ -2345,6 +2344,7 @@ DEPENDENCIES:
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo`)
+  - ExpoBattery (from `../packages/expo-battery/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../packages/expo-clipboard/ios`)
@@ -2938,8 +2938,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-background-fetch/ios"
   EXBarCodeScanner:
     :path: "../packages/expo-barcode-scanner/ios"
-  EXBattery:
-    :path: "../packages/expo-battery/ios"
   EXBlur:
     :path: "../packages/expo-blur/ios"
   EXBranch:
@@ -2992,6 +2990,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-permissions/ios"
   Expo:
     :path: "../packages/expo"
+  ExpoBattery:
+    :path: "../packages/expo-battery/ios"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
   ExpoClipboard:
@@ -3386,7 +3386,6 @@ SPEC CHECKSUMS:
   EXAV: 4b27d494e638f832913267b2794c607b8fff73f2
   EXBackgroundFetch: b1c8aa3cebf34ab4a26fd90462d9e0df0ad0c9db
   EXBarCodeScanner: e2461b1c4c7ce302a710f901902e02d2ec120a86
-  EXBattery: 591d642c2a274cc4cd38a74a5cb8a446406d9d43
   EXBlur: 8290c5a7f29edc13121a39b9b3f60cc23f7cb985
   EXBranch: becf66363c59666add10fabfa9cdda2fab3930f7
   EXBrightness: a8e5703abacbcba1430979a2a0815a4787c48223
@@ -3413,6 +3412,7 @@ SPEC CHECKSUMS:
   EXNotifications: ea68b24a6b66fafcfcf913b2ce1367f605f6dcc1
   EXPermissions: 5cc17993ce2bf8377b40ebae47d54a88c41c4480
   Expo: 012d47437c6d887e0100c498d16019c5eb16f20f
+  ExpoBattery: d7b8901eb7cc6aafcf2385d5f5796e89ff5b2fd9
   ExpoCellular: 5cd085987f010055ab92c81d60e948ce0c4b5a89
   ExpoClipboard: 596aa4a0f894fbdddc985dc3d2e0e7efeb8ca973
   ExpoCrypto: e2678609304ec063a0e36b826a3c2d0f0d7202c0
