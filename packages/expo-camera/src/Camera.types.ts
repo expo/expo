@@ -250,7 +250,33 @@ export type Point = {
   y: number;
 };
 
+export type BarCodeSize = {
+  /**
+   * The height value.
+   */
+  height: number;
+  /**
+   * The width value.
+   */
+  width: number;
+};
+
+/**
+ * Those coordinates are represented in the coordinate space of the camera source (e.g. when you
+ * are using the camera view, these values are adjusted to the dimensions of the view).
+ */
 export type BarCodePoint = Point;
+
+export type BarCodeBounds = {
+  /**
+   * The origin point of the bounding box.
+   */
+  origin: BarCodePoint;
+  /**
+   * The size of the bounding box.
+   */
+  size: BarCodeSize;
+};
 
 // @needsAudit
 export type BarCodeScanningResult = {
@@ -265,7 +291,11 @@ export type BarCodeScanningResult = {
   /**
    * Corner points of the bounding box.
    */
-  cornerPoints?: BarCodePoint[];
+  cornerPoints: BarCodePoint[];
+  /**
+   * The [BarCodeBounds](#barcodebounds) object.
+   */
+  bounds: BarCodeBounds;
 };
 
 export type Face = {
