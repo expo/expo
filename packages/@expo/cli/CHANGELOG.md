@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Added middleware generating Apple App Site Association file in-memory when it doesn't exist in the public directory.
+- Added middleware generating Apple App Site Association file in-memory when it doesn't exist in the public directory. ([#19506](https://github.com/expo/expo/pull/19506) by [@EvanBacon](https://github.com/EvanBacon))
 - Added middleware for creating files. ([#19231](https://github.com/expo/expo/pull/19231) by [@EvanBacon](https://github.com/EvanBacon))
 - Enable `require.context` by default. ([#19257](https://github.com/expo/expo/pull/19257) by [@EvanBacon](https://github.com/EvanBacon))
 - Handle all development session errors. ([#18499](https://github.com/expo/expo/pull/18499) by [@EvanBacon](https://github.com/EvanBacon))
