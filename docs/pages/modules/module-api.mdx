@@ -490,12 +490,9 @@ The implementation for three Either types is currently provided out of the box, 
 
 <APIBox header="Sending events">
 
-While the JavaScript -> Native communication is mostly covered by native functions, you might also want to let the JavaScript code know about some certain system events,
-for example when the clipboard content changes.
+While JavaScript to Native communication is mostly covered by native functions, you might also want to let the JavaScript code know about certain system events, for example, when the clipboard content changes.
 
-To do this, in the module definition you need to provide the event names that the module can send, using the [Events](#events) definition component.
-After that you can use `sendEvent(eventName, payload)` function on the module instance to send the actual event with some payload.
-A minimal clipboard implementation that sends native events may look like this:
+To do this, in the module definition, you need to provide the event names that the module can send using the [Events](#events) definition component. After that, you can use the `sendEvent(eventName, payload)` function on the module instance to send the actual event with some payload. For example, a minimal clipboard implementation that sends native events may look like this:
 
 <CodeBlocksTable>
 
@@ -567,7 +564,7 @@ class ClipboardModule : Module() {
 
 </CodeBlocksTable>
 
-To subscribe to these events in JavaScript, you need to wrap the native module with `EventEmitter` class, like this:
+To subscribe to these events in JavaScript, you need to wrap the native module with `EventEmitter` class as shown:
 
 ```ts TypeScript
 import { requireNativeModule, EventEmitter, Subscription } from 'expo-modules-core';
