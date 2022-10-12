@@ -8,16 +8,17 @@ The default file format used when building Android apps with EAS Build is an [An
 
 ### Managed projects
 
-By default, EAS Build produces Android App Bundle, you can change it by modifying the [eas.json](/build/eas-json.mdx) file:
+By default, EAS Build produces Android App Bundle, you can change it by modifying the [eas.json](/build/eas-json.mdx) file by either:
 
-- setting `buildType` to `apk`
-- setting `developmentClient` to true
+- setting `buildType` to `apk` or
+- setting `developmentClient` to `true` or
 - setting `gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces APK
 
+For example:
 ```json
 {
   "build": {
-    "preview": {
+    "preview1": {
       "android": {
         "buildType": "apk"
       }
@@ -35,7 +36,7 @@ By default, EAS Build produces Android App Bundle, you can change it by modifyin
 }
 ```
 
-Now, to run your build run `eas build -p android --profile preview`. Remember that you can name the profile whatever you like; we named the profile "preview", but you could call it "local" or "simulator", whatever makes most sense for you.
+Now, to run your build run `eas build -p android --profile preview1`. Remember that you can name the profile whatever you like; we named the profile `preview1`, but you could call it `local`, `simulator` or whatever makes most sense for you.
 
 ## Installing your build
 
