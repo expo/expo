@@ -38,7 +38,6 @@
         _scrollEnabled = YES;
         _pageMargin = 0;
         _lastReportedIndex = -1;
-        _transitionStyle = UIPageViewControllerTransitionStyleScroll;
         _orientation = UIPageViewControllerNavigationOrientationHorizontal;
         _currentIndex = 0;
         _dismissKeyboard = UIScrollViewKeyboardDismissModeNone;
@@ -47,7 +46,6 @@
         _cachedControllers = [NSHashTable hashTableWithOptions:NSHashTableStrongMemory];
         _overdrag = NO;
         _layoutDirection = @"ltr";
-        _previousBounds = CGRectMake(0, 0, 0, 0);
     }
     return self;
 }
@@ -56,13 +54,6 @@
     [super layoutSubviews];
     if (self.reactPageViewController) {
         [self shouldScroll:self.scrollEnabled];
-
-        if (!CGRectEqualToRect(self.previousBounds, CGRectMake(0, 0, 0, 0)) && !CGRectEqualToRect(self.bounds, self.previousBounds)) {
-            // Below line fix bug, where the view does not update after orientation changed.
-            [self updateDataSource];
-        }
-
-        self.previousBounds = CGRectMake(self.bounds.origin.x, self.bounds.origin.y, self.bounds.size.width, self.bounds.size.height);
     }
 }
 
@@ -97,7 +88,7 @@
 
 - (void)embed {
     NSDictionary *options = @{ UIPageViewControllerOptionInterPageSpacingKey: @(self.pageMargin) };
-    UIPageViewController *pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:self.transitionStyle
+    UIPageViewController *pageViewController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
                                                                                navigationOrientation:self.orientation
                                                                                              options:options];
     pageViewController.delegate = self;
@@ -185,13 +176,6 @@
 
     NSArray *currentVCs = self.reactPageViewController.viewControllers;
     if (currentVCs.count == 1 && [currentVCs.firstObject isEqual:controller]) {
-        // see: 
-        // 1) https://github.com/callstack/react-native-pager-view/pull/462
-        // 2) https://github.com/callstack/react-native-pager-view/issues/566
-        [self.reactPageViewController setViewControllers:@[controller]
-                                               direction:direction
-                                                animated:YES
-                                              completion:nil];
         return;
     }
 
@@ -263,14 +247,20 @@
         return;
     }
     
-    BOOL isForward = (index > self.currentIndex && [self isLtrLayout]) || (index < self.currentIndex && ![self isLtrLayout]);
+    BOOL isRTL = ![self isLtrLayout];
+    
+    BOOL isForward = (index > self.currentIndex && !isRTL) || (index < self.currentIndex && isRTL);
+
+    
     UIPageViewControllerNavigationDirection direction = isForward ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
     
     self.reactPageIndicatorView.numberOfPages = numberOfPages;
     self.reactPageIndicatorView.currentPage = index;
     long diff = labs(index - _currentIndex);
     
-    if (isForward && diff > 0) {
+    BOOL shouldGoForward = isRTL ? !isForward : isForward;
+    
+    if (shouldGoForward && diff > 0) {
         for (NSInteger i=_currentIndex; i<=index; i++) {
             if (i == _currentIndex) {
                 continue;
@@ -279,7 +269,7 @@
         }
     }
     
-    if (!isForward && diff > 0) {
+    if (!shouldGoForward && diff > 0) {
         for (NSInteger i=_currentIndex; i>=index; i--) {
             // Prevent removal of one or many pages at a time
             if (i == _currentIndex || i >= numberOfPages) {
