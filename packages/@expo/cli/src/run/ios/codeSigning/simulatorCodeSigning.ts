@@ -2,7 +2,7 @@ import { IOSConfig } from '@expo/config-plugins';
 import plist from '@expo/plist';
 import fs from 'fs';
 
-const debug = require('debug')('expo:customize:templates');
+const debug = require('debug')('expo:run:ios:codeSigning:simulator');
 
 // NOTE(EvanBacon): These are entitlements that work in a simulator
 // but still require the project to have development code signing setup.
