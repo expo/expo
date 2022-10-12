@@ -27,6 +27,7 @@ class PagerViewViewManager : ViewGroupManager<NestedScrollableHost>() {
 
   override fun createViewInstance(reactContext: ThemedReactContext): NestedScrollableHost {
     val host = NestedScrollableHost(reactContext)
+    host.id = View.generateViewId()
     host.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     host.isSaveEnabled = false
     val vp = ViewPager2(reactContext)
