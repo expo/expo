@@ -51,7 +51,8 @@ Usage with Next.js is a little different because we need to apply the React Nati
 
 - Use the Babel plugin in your **babel.config.js** file:
 
-<DiffBlock raw={`
+<DiffBlock
+  raw={`
 diff --git a/babel.config.js b/babel.config.js
 --- a/babel.config.js
 +++ b/babel.config.js
@@ -60,7 +61,8 @@ diff --git a/babel.config.js b/babel.config.js
     presets: ['@expo/next-adapter/babel'],
 +   plugins: [['styled-components', { ssr: true }]]
   };
-`} />
+`}
+/>
 
 - Now you can use `styled-components/native` just like you would in a regular Expo project!
 
@@ -74,7 +76,8 @@ Styled Components imports all of `react-native-web` which [breaks React Native w
 
 Technically you can use `styled-components` directly like this:
 
-<DiffBlock raw={`
+<DiffBlock
+  raw={`
 diff --git a/Container.jsx b/Container.jsx
 --- a/Container.jsx
 +++ b/Container.jsx
@@ -86,6 +89,7 @@ diff --git a/Container.jsx b/Container.jsx
 + const Container = styled(View)\`
     background-color: #fff;
   \`
-`} />
+`}
+/>
 
 But doing this in the browser will throw the error: `Warning: Using the "className" prop on <View> is deprecated.`.

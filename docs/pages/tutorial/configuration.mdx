@@ -2,9 +2,9 @@
 title: Configuring a splash screen and app icon
 ---
 
-import { theme } from '@expo/styleguide'
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
-import Video from '~/components/plugins/Video'
+import { theme } from '@expo/styleguide';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import Video from '~/components/plugins/Video';
 import { Collapsible } from '~/ui/components/Collapsible';
 
 Before we can consider our app truly complete we need to add a splash screen and app icon. A splash screen is what users see when the app is launched, before it has loaded. The icon will be visible on the users' home screen when the app is installed, or inside of the Expo Go app when in development.
@@ -13,7 +13,11 @@ Before we can consider our app truly complete we need to add a splash screen and
 
 After telling our designers that we need a 1242px width by 2436px height splash screen image (more about this in [the splash screen guide](/guides/splash-screens)), they gave us the following file:
 
-<ImageSpotlight src="/static/images/tutorial/splash.png" style={{ maxWidth: 150 }} containerStyle={{ marginBottom: 0 }} />
+<ImageSpotlight
+  src="/static/images/tutorial/splash.png"
+  style={{ maxWidth: 150 }}
+  containerStyle={{ marginBottom: 0 }}
+/>
 
 <br />
 
@@ -21,7 +25,7 @@ After telling our designers that we need a 1242px width by 2436px height splash 
 
 Save this image to the **assets** directory inside of your project and call it **splash.png** &mdash; replace the existing file. Reload your app and you should see something like this:
 
-<Video file={"tutorial/splash-bad-color.mp4"} />
+<Video file={'tutorial/splash-bad-color.mp4'} />
 
 <Collapsible summary="Is the app loading too quickly for you to get a good look at the splash screen?">
 
@@ -63,7 +67,7 @@ Open up **app.json** from your project directory in your code editor and make th
 
 This solves our problem!
 
-<Video file={"tutorial/splash-good-color.mp4"} />
+<Video file={'tutorial/splash-good-color.mp4'} />
 
 ## App icon
 

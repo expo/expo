@@ -1,5 +1,6 @@
 import { NativeEventEmitter } from 'react-native';
 declare type NativeModule = {
+    __expo_module_name__?: string;
     startObserving?: () => void;
     stopObserving?: () => void;
     addListener: (eventName: string) => void;

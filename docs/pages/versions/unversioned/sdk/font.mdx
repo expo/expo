@@ -5,9 +5,9 @@ packageName: 'expo-font'
 ---
 
 import APISection from '~/components/plugins/APISection';
-import {APIInstallSection} from '~/components/plugins/InstallSection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import SnackInline from '~/components/plugins/SnackInline';
+import { SnackInline} from '~/ui/components/Snippet';
 
 `expo-font` allows loading fonts from the web and using them in React Native components. See more detailed usage information in the [Fonts](/guides/using-custom-fonts) guide.
 
@@ -26,8 +26,8 @@ import SnackInline from '~/components/plugins/SnackInline';
 ```jsx
 import { useEffect, useCallback } from 'react';
 import { Text, View, StyleSheet } from 'react-native';
-/* @info Import useFonts hook from 'expo-font'. */import { useFonts } from 'expo-font';/* @end */
-/* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */import * as SplashScreen from 'expo-splash-screen';/* @end */
+/* @info Import useFonts hook from 'expo-font'. */ import { useFonts } from 'expo-font'; /* @end */
+/* @info Also, import SplashScreen so that when the fonts are not loaded, we can continue to show SplashScreen. */ import * as SplashScreen from 'expo-splash-screen'; /* @end */
 
 export default function App() {
   const [fontsLoaded] = useFonts({

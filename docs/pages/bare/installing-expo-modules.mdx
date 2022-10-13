@@ -18,7 +18,14 @@ Depending on how you [initialized the project](/bare/hello-world/), there are tw
 
 To install and use Expo modules, the easiest way to get up and running is with the `install-expo-modules` command.
 
-<InstallSection packageName="expo" cmd={["# Install and configure the expo package automatically", "npx install-expo-modules@latest"]} hideBareInstructions />
+<InstallSection
+  packageName="expo"
+  cmd={[
+    '# Install and configure the expo package automatically',
+    'npx install-expo-modules@latest',
+  ]}
+  hideBareInstructions
+/>
 
 - <YesIcon small />{' '}
 
@@ -32,7 +39,7 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 The following instructions apply to installing the latest version of Expo modules in React Native 0.68.
 
-<InstallSection packageName="expo" cmd={["npm install expo"]} hideBareInstructions />
+<InstallSection packageName="expo" cmd={['npm install expo']} hideBareInstructions />
 
 Once installation is complete, apply the changes from the following diffs to configure Expo modules in your project. This is expected to take about five minutes, and you may need to adapt it slightly depending on how customized your project is.
 
@@ -44,15 +51,25 @@ Optionally, you can also add additional delegate methods to your **AppDelegate.m
 
 Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 12.0`. The last step is to install the project's CocoaPods again in order to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
 
-<InstallSection packageName="expo" cmd={["# Install pods", "npx pod-install", "", "# Alternatively, the run command will install them for you", "expo run:ios"]} hideBareInstructions />
+<InstallSection
+  packageName="expo"
+  cmd={[
+    '# Install pods',
+    'npx pod-install',
+    '',
+    '# Alternatively, the run command will install them for you',
+    'expo run:ios',
+  ]}
+  hideBareInstructions
+/>
 
-<div style={{marginTop: 50}} />
+<div style={{ marginTop: 50 }} />
 
 ### Configuration for Android
 
 <DiffBlock source="/static/diffs/expo-android.diff" />
 
-<div style={{marginTop: -10}} />
+<div style={{ marginTop: -10 }} />
 
 ## Usage
 

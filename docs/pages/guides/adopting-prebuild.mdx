@@ -12,7 +12,7 @@ There are [many advantages](/workflow/prebuild#pitch) of using [Expo Prebuild][p
 
 {/* NOTE: Update the version when we bump support */}
 
-<Terminal cmd={["$ npx react-native init --version 0.69.4"]} />
+<Terminal cmd={['$ npx react-native init --version 0.69.4']} />
 
 This will create a new React Native project.
 
@@ -22,7 +22,7 @@ This will create a new React Native project.
 
 The `expo` package contains the [`npx expo prebuild`](/workflow/expo-cli#prebuild) command and indicates which [prebuild template](/workflow/prebuild#templates) to use:
 
-<Terminal cmd={["$ yarn add expo"]} />
+<Terminal cmd={['$ yarn add expo']} />
 
 Ensure you install the version of `expo` that works for your currently installed version of `react-native`: [supported versions](version-support).
 
@@ -51,19 +51,19 @@ If you're migrating an existing project, then you may want to refer to [**migrat
 
 Run the following command to regenerate the `/ios` and `/android` directories based on the Expo config (**app.json**) configuration:
 
-<Terminal cmd={[
-'$ npx expo prebuild --clean',
-]} cmdCopy="npx expo prebuild --clean" />
+<Terminal cmd={['$ npx expo prebuild --clean']} cmdCopy="npx expo prebuild --clean" />
 
 You can test that everything worked by building the projects locally:
 
-<Terminal cmd={[
-'# Build your native Android project',
-'$ npx expo run:android',
-'',
-'# Build your native iOS project',
-'$ npx expo run:ios'
-]} />
+<Terminal
+  cmd={[
+    '# Build your native Android project',
+    '$ npx expo run:android',
+    '',
+    '# Build your native iOS project',
+    '$ npx expo run:ios',
+  ]}
+/>
 
 > Learn more about [compiling native apps](/workflow/expo-cli#compiling).
 

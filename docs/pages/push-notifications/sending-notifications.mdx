@@ -3,7 +3,7 @@ title: Sending Notifications with Expo's Push API
 sidebar_title: Sending Notifications with Expo's Push API
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { InlineCode } from '~/components/base/code';
 
 > If you're just getting started and want to focus on the front-end for now, you can skip this step and just use [Expo's push notification tool](https://expo.dev/notifications) to send notifications with the click of a button.
@@ -12,7 +12,11 @@ Along with the [`expo-notifications`](../versions/latest/sdk/notifications.mdx) 
 
 > If you'd rather build a server that communicates with APNs and FCM directly, check out [this guide](sending-notifications-custom.mdx) (this is more complicated than using Expo's push notification service).
 
-<ImageSpotlight alt="Diagram explaining sending a push from your server to device" src="/static/images/sending-notification.png" containerStyle={{ backgroundColor: "#fff" }} />
+<ImageSpotlight
+  alt="Diagram explaining sending a push from your server to device"
+  src="/static/images/sending-notification.png"
+  containerStyle={{ backgroundColor: '#fff' }}
+/>
 
 When you're ready to send a push notification, take the Expo push token from your user record and send it to the Expo API using a plain old HTTPS POST request. You'll probably do this from your server (you could write a command line tool to send them if you wanted, or send them straight from your app, it's all the same), and the Expo team and community have taken care of wrapping that for you in a few languages:
 
@@ -221,6 +225,8 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 
 If there's an error with the entire request for either push tickets or push receipts, the `errors` object may be one of the following values, and you should handle these errors like so:
 
+- `TOO_MANY_REQUESTS`: you are exceeding the request limit of 600 notifications per second per project. We recommend implementing rate-limiting in your server to prevent sending more than 600 notifications per second (note that if you use [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node), this is already implemented along with exponential backoffs for retries).
+
 - `PUSH_TOO_MANY_EXPERIENCE_IDS`: you are trying to send push notifications to different Expo experiences, for example `@username/projectAAA` and `@username/projectBBB`. Check the `details` field for a mapping of experience names to their associated push tokens from the request, and remove any from another experience.
 
 - `PUSH_TOO_MANY_NOTIFICATIONS`: you are trying to send more than 100 push notifications in one request. Make sure you are only sending 100 (or less) notifications in each request.
@@ -256,7 +262,7 @@ Each message must be a JSON object with the given fields (only the `to` field is
 | `sound`          | iOS Only      | <InlineCode>'default' \| null</InlineCode>               | Play a sound when the recipient receives this notification. Specify `"default"` to play the device's default notification sound, or omit this field to play no sound. Custom sounds are not supported.                                                                                                                                                            |
 | `badge`          | iOS Only      | `number`                                                 | Number to display in the badge on the app icon. Specify zero to clear the badge.                                                                                                                                                                                                                                                                                  |
 | `channelId`      | Android Only  | `string`                                                 | ID of the Notification Channel through which to display this notification. If an ID is specified but the corresponding channel does not exist on the device (i.e. has not yet been created by your app), the notification will not be displayed to the user.                                                                                                      |
-| `categoryId`     | iOS & Android | `string`                                                 | ID of the notification category that this notification is associated with. [Find out more about notification categories here](/versions/latest/sdk/notifications.mdx#managing-notification-categories-interactive-notifications). Must be on at least SDK 41 or bare workflow.                                                                                     |
+| `categoryId`     | iOS & Android | `string`                                                 | ID of the notification category that this notification is associated with. [Find out more about notification categories here](/versions/latest/sdk/notifications.mdx#managing-notification-categories-interactive-notifications). Must be on at least SDK 41 or bare workflow.                                                                                    |
 | `mutableContent` | iOS Only      | `boolean`                                                | Specifies whether this notification can be [intercepted by the client app](https://developer.apple.com/documentation/usernotifications/modifying_content_in_newly_delivered_notifications?language=objc). In Expo Go, this defaults to `true`, and if you change that to false, you may experience issues. In standalone and bare apps, this defaults to `false`. |
 
 **Note on `ttl`**: On Android, we make a best effort to deliver messages with zero TTL immediately and do not throttle them. However, setting TTL to a low value (e.g. zero) can prevent normal-priority notifications from ever reaching Android devices that are in doze mode. In order to guarantee that a notification will be delivered, TTL must be long enough for the device to wake from doze mode. This field takes precedence over `expiration` when both are specified.

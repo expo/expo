@@ -86,10 +86,7 @@ Other available options are:
 
 You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
 
-<Terminal cmd={[
-'export EXPO_PACKAGER_PROXY_URL=http://expo.dev',
-'$ npx expo start'
-]} />
+<Terminal cmd={['export EXPO_PACKAGER_PROXY_URL=http://expo.dev', '$ npx expo start']} />
 
 Will open apps to: `exp://expo.dev:80` (the `:80` is a temporary workaround for Android websockets).
 
@@ -133,12 +130,9 @@ A React Native app consists of two parts: a native runtime ([compiling](#compili
 
 You can compile your app locally with the `run` commands:
 
-<Terminal cmd={[
-'# Build for iOS',
-'$ npx expo run:ios',
-'# Build for Android',
-'$ npx expo run:android'
-]} />
+<Terminal
+  cmd={['# Build for iOS', '$ npx expo run:ios', '# Build for Android', '$ npx expo run:android']}
+/>
 
 **Highlights**
 
@@ -207,15 +201,13 @@ This build is not automatically code signed for submission to the Google Play St
 
 You can debug the native Android project using native debugging tools by opening the `android/` folder in Android Studio:
 
-<Terminal cmd={['$ open -a /Applications/Android\ Studio.app android']} />
+<Terminal cmd={['$ open -a /Applications/Android Studio.app android']} />
 
 ### Exporting
 
 You can export the JavaScript and assets for your app using Metro bundler by running:
 
-<Terminal cmd={[
-'$ npx expo export',
-]} />
+<Terminal cmd={['$ npx expo export']} />
 
 This is done automatically when using `eas update` or when compiling the native runtime. The `export` command works similar to most web frameworks:
 
@@ -237,9 +229,7 @@ The following options are provided:
 
 You can export the JavaScript and assets for your web app using Webpack by running the following:
 
-<Terminal cmd={[
-'$ npx expo export:web',
-]} />
+<Terminal cmd={['$ npx expo export:web']} />
 
 - `--dev`: Bundle in 'development' mode without minifying code or stripping the `__DEV__` boolean.
 - `-c, --clear`: Clear the bundler cache before exporting.
@@ -248,9 +238,7 @@ This command will be disabled if your project is configured to use `metro` for b
 
 ## Prebuild
 
-<Terminal cmd={[
-'$ npx expo prebuild',
-]} cmdCopy="npx expo prebuild" />
+<Terminal cmd={['$ npx expo prebuild']} cmdCopy="npx expo prebuild" />
 
 Native source code must be generated before a native app can compile. Expo CLI provides a unique and powerful system called _prebuild_, that generates the native code for your project. To learn more, read the [Expo Prebuild docs](/workflow/prebuild.mdx).
 
@@ -258,9 +246,7 @@ Native source code must be generated before a native app can compile. Expo CLI p
 
 Evaluate the Expo config (**app.json**, or **app.config.js**) by running:
 
-<Terminal cmd={[
-'$ npx expo config',
-]} cmdCopy="npx expo config" />
+<Terminal cmd={['$ npx expo config']} cmdCopy="npx expo config" />
 
 - `--full`: Include all project config data.
 - `--json`: Output in JSON format, useful for converting an `app.config.js` to an `app.config.json`.
@@ -278,22 +264,21 @@ There are three different config types that are generated from the Expo config:
 
 Unlike the web, React Native is not backwards compatible. This means that npm packages often need to be the exact right version for the currently installed copy of `react-native` in your project. Expo CLI provides a best-effort tool for doing this using a list of popular packages and the known working version combinations. Simply use the `install` command as a drop-in replacement for `npm install`:
 
-<Terminal cmd={[
-'$ npx expo install expo-camera',
-]} cmdCopy="npx expo install expo-camera" />
+<Terminal cmd={['$ npx expo install expo-camera']} cmdCopy="npx expo install expo-camera" />
 
 Running a single instance of this command, you can also install multiple packages:
 
-<Terminal cmd={[
-'$ npx expo install typescript expo-sms',
-]} cmdCopy="npx expo install typescript expo-sms" />
+<Terminal
+  cmd={['$ npx expo install typescript expo-sms']}
+  cmdCopy="npx expo install typescript expo-sms"
+/>
 
 You can directly pass arguments to the underlying package manager by using the `--` operator:
 
-<Terminal cmd={[
-'$ yarn expo install typescript -- -D',
-'# yarn add typescript -D',
-]} cmdCopy="yarn expo install typescript -- -D" />
+<Terminal
+  cmd={['$ yarn expo install typescript -- -D', '# yarn add typescript -D']}
+  cmdCopy="yarn expo install typescript -- -D"
+/>
 
 ### Version validation
 
@@ -304,25 +289,29 @@ You can perform validation and correction with the `--check` and `--fix` flags:
 
 Example:
 
-<Terminal cmd={[
-'# Check all packages for incorrect versions, prompt to fix locally',
-'$ npx expo install --check',
-]} cmdCopy="npx expo install --check" />
+<Terminal
+  cmd={[
+    '# Check all packages for incorrect versions, prompt to fix locally',
+    '$ npx expo install --check',
+  ]}
+  cmdCopy="npx expo install --check"
+/>
 
 `npx expo install --check` prompts you about packages that are installed incorrectly. It also prompts about installing the these packages to their compatible versions locally. It exits with non-zero in Continuous Integration (CI). This means you can use this to do continuous immutable validation. In contrast, `npx expo install --fix` will always fix packages if needed, regardless of the environment.
 
 You can validate specific packages by passing them:
 
-<Terminal cmd={[
-'# Check only react-native and expo-sms',
-'$ npx expo install react-native expo-sms --check',
-]} cmdCopy="npx expo install react-native expo-sms --check"/>
+<Terminal
+  cmd={[
+    '# Check only react-native and expo-sms',
+    '$ npx expo install react-native expo-sms --check',
+  ]}
+  cmdCopy="npx expo install react-native expo-sms --check"
+/>
 
 The command `npx expo install expo-camera` and `npx expo install expo-camera --fix` serve the same purpose, the `--fix` command is useful for upgrading all packages in your project like:
 
-<Terminal cmd={[
-'$ npx expo install --fix',
-]} cmdCopy="npx expo install --fix"/>
+<Terminal cmd={['$ npx expo install --fix']} cmdCopy="npx expo install --fix" />
 
 ### Install package managers
 

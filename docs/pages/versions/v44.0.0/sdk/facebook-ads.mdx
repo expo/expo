@@ -3,7 +3,12 @@ title: FacebookAds
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-44/packages/expo-ads-facebook'
 ---
 
-import { ConfigClassic, ConfigReactNative, ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import {
+  ConfigClassic,
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
@@ -70,9 +75,17 @@ Learn how to configure the native projects in the [installation instructions in 
 
 </ConfigPluginExample>
 
-<ConfigPluginProperties properties={[
-{ name: 'userTrackingPermission', platform: 'ios', description: 'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.', default: '"This identifier will be used to deliver personalized ads to you."' },
-]} />
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'userTrackingPermission',
+      platform: 'ios',
+      description:
+        'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.',
+      default: '"This identifier will be used to deliver personalized ads to you."',
+    },
+  ]}
+/>
 
 ### Development vs Production
 
@@ -432,7 +445,7 @@ _No permissions required_.
 
 The following usage description keys are used by this library:
 
-<IOSPermissions permissions={[ 'NSUserTrackingUsageDescription' ]} />
+<IOSPermissions permissions={['NSUserTrackingUsageDescription']} />
 
 ## Troubleshooting
 

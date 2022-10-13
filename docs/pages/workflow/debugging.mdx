@@ -2,7 +2,7 @@
 title: Debugging
 ---
 
-import Video from '~/components/plugins/Video'
+import Video from '~/components/plugins/Video';
 import { Terminal } from '~/ui/components/Snippet';
 
 Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors out into two categories:
@@ -16,7 +16,7 @@ Let's go through some of our recommended practices when it comes to each of thes
 
 These are way more common, and we won't delve too much into how to approach these. Usually, debugging when running your app locally with [Expo CLI](/workflow/expo-cli/) is pretty easy, thanks to [all the tools available in the Expo Go app](#developer-menu).
 
-Sometimes you'll be able to tell exactly what's wrong just by the stack trace](../get-started/errors.mdx#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
+Sometimes you'll be able to tell exactly what's wrong just by the [stack trace](../get-started/errors.mdx#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
 
 - Search for the error message in Google and [Stack Overflow](https://stackoverflow.com/questions), it's likely you're not the first person to ever run into this
 - **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
@@ -163,8 +163,13 @@ You're now good to go! If you are experiencing any issues or want to learn more 
 React DevTools is a great way to get a look at each of your components' props and state. First, you'll need to run
 
 <Terminal
-cmdCopy="npm install -g react-devtools"
-cmd={['# Install React DevTools with npm', '$ npm install -g react-devtools', '', '# If you are using Expo SDK <= 37: npm install -g react-devtools@^3']}
+  cmdCopy="npm install -g react-devtools"
+  cmd={[
+    '# Install React DevTools with npm',
+    '$ npm install -g react-devtools',
+    '',
+    '# If you are using Expo SDK <= 37: npm install -g react-devtools@^3',
+  ]}
 />
 
 (if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).

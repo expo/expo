@@ -63,7 +63,10 @@ If you set a background color other than white for your splash image, you may se
 }
 ```
 
-<ImageSpotlight alt="Splash screen with background color" src="/static/images/backgroundColor-noodles.png" />
+<ImageSpotlight
+  alt="Splash screen with background color"
+  src="/static/images/backgroundColor-noodles.png"
+/>
 
 ### `splash.resizeMode`
 
@@ -84,7 +87,10 @@ Applying this to our noodles example, let's remove the `backgroundColor` and try
 }
 ```
 
-<ImageSpotlight alt="Splash screen resize mode with logo" src="/static/images/resizeMode-noodles.png" />
+<ImageSpotlight
+  alt="Splash screen resize mode with logo"
+  src="/static/images/resizeMode-noodles.png"
+/>
 
 Notice that in the last example, we stretched the image to fill the entire width, while maintaining the aspect ratio, and so the noodles emoji ended up being larger than it was when `resizeMode` was set to `contain`. If you are still unclear about the difference between contain and cover, [this blog post describes precisely what they mean](http://blog.vjeux.com/2013/image/css-container-and-cover.html).
 
@@ -103,7 +109,10 @@ We recommend displaying a `SplashScreen` when [pre-loading and caching assets](/
 
 Your app can be opened from the [Expo Go][expo-go] app or in a standalone app, and it can be either published or in development. There are slight differences in the splash screen behavior between these environments.
 
-<ImageSpotlight alt="iOS splash screen bechaviour" src="https://media.giphy.com/media/l378l98EI0VQdwRzy/giphy.gif" />
+<ImageSpotlight
+  alt="iOS splash screen bechaviour"
+  src="https://media.giphy.com/media/l378l98EI0VQdwRzy/giphy.gif"
+/>
 
 - **On the left**, we are in the [Expo Go][expo-go] app and loading an app that is currently in development. Notice that on the bottom of the splash screen you see an information bar that shows information relevant to preparing the JavaScript and downloading it to the device. We see an orange screen before the splash image appears, because the background color is set immediately but the image needs to be downloaded.
 - **In the middle**, we are in the [Expo Go][expo-go] app and we are loading a published app. Notice that again the splash image does not appear immediately.

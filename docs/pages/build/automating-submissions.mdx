@@ -38,11 +38,11 @@ export default () => {
   return {
     name: process.env.APP_ENV === 'production' ? 'My App' : 'My App (DEV)',
     ios: {
-      bundleIdentifier: process.env.APP_ENV === 'production' ? 'com.my.app' : 'com.my.app-dev'
-    }
+      bundleIdentifier: process.env.APP_ENV === 'production' ? 'com.my.app' : 'com.my.app-dev',
+    },
     // ... other config here
-  }
-}
+  };
+};
 ```
 
 The `APP_ENV` variable from the `production` profile will be used when evaluating **app.config.js** for the submission, and therefore the name will be 'My App' and the bundle identifier will be 'com.my.app'.

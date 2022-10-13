@@ -16,11 +16,11 @@ EAS Update requires the following versions or greater:
 - Expo SDK >= 45.0.0
 - expo-updates >= 0.13.0
 
-## Install Expo CLI and EAS CLI
+## Install EAS CLI
 
-1. Install EAS and Expo CLIs with:
+1. Install EAS CLI:
 
-   <Terminal cmd={['$ npm install --global eas-cli expo-cli']} />
+   <Terminal cmd={['$ npm install --global eas-cli']} />
 
 2. Then, log in with your expo account:
 
@@ -30,23 +30,15 @@ EAS Update requires the following versions or greater:
 
 You'll need to make the following changes to your project:
 
-1. Install the latest `expo-updates` library with:
-
-   <Terminal cmd={['$ yarn add expo-updates']} />
-
-2. Initialize your project with EAS Update:
+1. Initialize your project with EAS Update:
 
    <Terminal cmd={['$ eas update:configure']} />
 
-   After this command, you should have two a new fields in your app config (**app.json**/**app.config.js**) at `expo.updates.url` and `expo.runtimeVersion`.
+   After this command, you should have two a new fields in your app config at `expo.updates.url` and `expo.runtimeVersion`.
 
-3. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config (**app.json**/**app.config.js**). Remove the `expo.sdkVersion` property from your app config.
+2. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config. Remove the `expo.sdkVersion` property from your app config.
 
-4. Next, set your project up with EAS Build by running:
-
-   <Terminal cmd={['$ eas build:configure']} />
-
-5. To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include `channel` properties. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
+3. To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include `channel` properties. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
 
    ```json
    {
@@ -66,25 +58,15 @@ You'll need to make the following changes to your project:
    }
    ```
 
-6. Optional: If your project is a bare React Native project, [read the doc](/bare/updating-your-app) on extra configuration you may need.
+4. Optional: If your project is a bare React Native project, [read the doc](/bare/updating-your-app) on extra configuration you may need.
 
 ## Create new builds
 
-The changes above affect the native code layer inside builds, which means we'll need to make new builds. Once your builds are complete, we'll be ready to develop an update and publish it.
-
-## Developing locally
-
-EAS Update uses a [modern manifest format](/technical-specs/expo-updates-0). When you have a EAS Update url in your app config at `updates.url`, Expo CLI will automatically serve the correct manifest format for your project. This will ensure that the code you develop locally will work as an update when published later. You can start a locally development session just like before, with:
-
-<Terminal cmd={[
-'$ yarn start',
-'# or',
-'$ npx expo start',
-]} />
+The changes above affect the native code layer inside builds, which means you'll need to make new builds. Once your builds are complete, you'll be ready to develop an update and publish it.
 
 ## Publishing an update
 
-To publish an update, run:
+After making a change to your poject locally, you're ready to publish an update, run:
 
 ```bash
 eas update --branch [branch-name] --message [message]
@@ -93,22 +75,17 @@ eas update --branch [branch-name] --message [message]
 eas update --branch production --message "Fixes typo"
 ```
 
-EAS Update adds a new type of object called a "branch". A branch is a list of updates, and it is linked to a channel. In the diagram below, builds with a channel of "production" are linked to a branch named "production". By default, channels and branches of the same name are linked until changed.
+EAS Update adds a new idea called a "branch". A branch is a list of updates, and it is mapped to a channel. In the diagram below, builds with a channel of "production" are linked to a branch named "production". By default, channels and branches of the same name are linked until changed. By default, this behaves like the Classic Updates service.
 
-<ImageSpotlight alt={`Channel "production" linked to branch "production"`} src="/static/images/eas-update/channel-branch.png" />
+<ImageSpotlight
+  alt={`Channel "production" linked to branch "production"`}
+  src="/static/images/eas-update/channel-branch.png"
+/>
 
 ## Additional possible migration steps
 
-- If you have any scripts that run `expo publish`, you can replace those with `eas update`. You can view all the options for publishing with `eas update --help`
+- Replace instances of `expo publish` with `eas update`. You can view all the options for publishing with `eas update --help`.
 - If you have any code that references `Updates.releaseChannel` from the `expo-updates` library, replace them with `Updates.channel`.
-- Remove any code that references `Constants.manifest`. That will now always return `null`. If you're using SDK 46 or above, you can access most properties you'll need with `Constants.expoConfig`.
+- Remove any code that references `Constants.manifest`. That will now always return `null`. If you're using SDK 46 or above, you can access most properties you'll need with `Constants.expoConfig` from the `expo-constants` library.
 
-## Known issues
-
-EAS Update is currently in "preview", meaning that we may make major changes to developer-facing workflows. There are also a variety of [known issues](/eas-update/known-issues), which you should consider before using EAS Update with your project.
-
-## Next steps
-
-EAS Update is built to be faster and more powerful than ever before. We can't wait to hear what you think. Try setting up EAS Update to publish on pushing to GitHub with a [GitHub Action](/eas-update/github-actions). Also check out the new sets of [deployment patterns](/eas-update/deployment-patterns) enabled by EAS Update.
-
-If you run into issues or have feedback, join us on [Discord](https://chat.expo.dev/) in the #eas channel.
+If you run into issues or have feedback, join us on [Discord](https://chat.expo.dev/) in the #update channel.

@@ -2,15 +2,21 @@
 title: Using EAS Update with EAS CLI
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 EAS Update works by linking _branches_ to _channels_. Channels are specified at build time and exist inside a build's native code. Branches are an ordered list of updates, similar to a Git branch, which is an ordered list of commits. With EAS Update, we can link any channel to any branch, allowing us to make different updates available to different builds.
 
-<ImageSpotlight alt={`Channel "production" linked to branch "version-1.0"`} src="/static/images/eas-update/channel-branch-link.png" />
+<ImageSpotlight
+  alt={`Channel "production" linked to branch "version-1.0"`}
+  src="/static/images/eas-update/channel-branch-link.png"
+/>
 
 The diagram above visualizes this link. Here, we have the builds with the "production" channel linked to the branch named "version-1.0". When we're ready, we can adjust the channel–branch pointer. Imagine we have more fixes tested and ready on a branch named "version-2.0". We could update this link to make the "version-2.0" branch available to all builds with the "production" channel.
 
-<ImageSpotlight alt={`Channel "production" linked to branch "version-2.0"`} src="/static/images/eas-update/channel-branch-link-2.png" />
+<ImageSpotlight
+  alt={`Channel "production" linked to branch "version-2.0"`}
+  src="/static/images/eas-update/channel-branch-link-2.png"
+/>
 
 ## Inspecting the state of your project's updates
 

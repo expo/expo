@@ -6,7 +6,7 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-44/packages/expo-calendar'
 import APISection from '~/components/plugins/APISection';
 import InstallSection from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import SnackInline from '~/components/plugins/SnackInline';
+import { SnackInline} from '~/ui/components/Snippet';
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
@@ -19,6 +19,7 @@ Provides an API for interacting with the device's system calendars, events, remi
 ## Configuration
 
 You must add the following permissions to your **app.json**.
+
 - Android requires `READ_CALENDAR` & `WRITE_CALENDAR` inside the `expo.android.permissions` array.
 - iOS requires the `NSRemindersUsageDescription` key be added to `expo.ios.infoPlist` with a string value describing the reason for the permission request.
 

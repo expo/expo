@@ -18,17 +18,75 @@ EAS Build runs an npm cache server that can speed up downloading JavaScript depe
 
 It is not yet possible to save and restore `node_modules` between builds.
 
+To disable using our npm cache server for your builds set `EAS_BUILD_DISABLE_NPM_CACHE` env variable value to `"1"` in `eas.json`.
+
+```json
+{
+  "build": {
+    "production": {
+        "env": {
+            "EAS_BUILD_DISABLE_NPM_CACHE": "1",
+            // ...
+        }
+        // ...
+    }
+    // ...
+  }
+  // ...
+}
+```
+
 ## Android dependencies
 
 EAS Build runs a Maven cache server that can speed up downloading Android dependencies for your build jobs.
 
 Currently we are caching:
+
 - `maven-central` - [https://repo1.maven.org/maven2/](https://repo1.maven.org/maven2/)
 - `google` - [https://maven.google.com/](https://maven.google.com/)
 - `jcenter` - [https://jcenter.bintray.com/](https://jcenter.bintray.com/)
 - `plugins` - [https://plugins.gradle.org/m2/](https://plugins.gradle.org/m2/)
 
+To disable using our Maven cache server for your builds set `EAS_BUILD_DISABLE_MAVEN_CACHE` env variable value to `"1"` in `eas.json`.
+
+```json
+{
+  "build": {
+    "production": {
+        "env": {
+            "EAS_BUILD_DISABLE_MAVEN_CACHE": "1",
+            // ...
+        }
+        // ...
+    }
+    // ...
+  }
+  // ...
+}
+```
 
 ## iOS dependencies
 
-There is no caching done for CocoaPods dependencies yet, only the `Podfile.lock` file is cached (in order to provide consistent results across managed app builds).
+EAS Build runs a CocoaPods cache server that can speed up downloading iOS dependencies for your build jobs. It also makes the service more resilient to CocoaPods CDN outages.
+
+Currently, EAS Build is configured to cache almost all the pods served from official CocoaPods CDN, minus few exceptions which can't be handled by our cache server. These exceptions can be found on the [blacklist](https://github.com/expo/eas-build/blob/main/packages/cocoapods-nexus-plugin/lib/cocoapods_plugin.rb#L4) of our custom CocoaPods plugin and are fetched directly from CDN instead of being fetched through our cache server.
+
+We also cache `Podfile.lock` to provide consistent results across managed app builds.
+
+To disable using our CocoaPods cache server for your builds set `EAS_BUILD_DISABLE_COCOAPODS_CACHE` env variable value to `"1"` in `eas.json`.
+
+```json
+{
+  "build": {
+    "production": {
+        "env": {
+            "EAS_BUILD_DISABLE_COCOAPODS_CACHE": "1",
+            // ...
+        }
+        // ...
+    }
+    // ...
+  }
+  // ...
+}
+```

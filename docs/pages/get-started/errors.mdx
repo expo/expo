@@ -18,7 +18,11 @@ When you encounter an error during development, you'll see the error message and
 
 This stack trace is **extremely valuable** since it gives you the location of the error's occurrence. For example, in the following image, the error comes from the file **HomeScreen.js** and is caused on line 7 in that file.
 
-<ImageSpotlight alt="An example of a stack trace in a React Native app." src="/static/images/stack-trace.jpg" style={{maxWidth: 720}} />
+<ImageSpotlight
+  alt="An example of a stack trace in a React Native app."
+  src="/static/images/stack-trace.jpg"
+  style={{ maxWidth: 720 }}
+/>
 
 When you look at that file, on line 7, you will see that a variable called `renderDescription` is referenced. The error message describes that the variable is not found because the variable is not declared in **HomeScreen.js**. This is a typical example of how helpful error messages and stack traces can be if you take the time to decipher them.
 

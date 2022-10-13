@@ -35,7 +35,7 @@ namespace RNSkia
       : public JsiSkWrappingSkPtrHostObject<SkRuntimeEffect>
   {
   public:
-      
+
     static sk_sp<SkRuntimeEffect> fromValue(jsi::Runtime &runtime, const jsi::Value &obj) {
         const auto& object = obj.asObject(runtime);
         return object.asHostObject<JsiSkRuntimeEffect>(runtime)->getObject();
@@ -44,7 +44,7 @@ namespace RNSkia
     JSI_HOST_FUNCTION(makeShader)
     {
       auto uniforms = castUniforms(runtime, arguments[0]);
-      
+
       auto matrix = count >= 2 && !arguments[1].isUndefined()  && !arguments[1].isNull()  ? JsiSkMatrix::fromValue(runtime, arguments[1]).get() : nullptr;
 
       // Create and return shader as host object
@@ -57,7 +57,7 @@ namespace RNSkia
     JSI_HOST_FUNCTION(makeShaderWithChildren)
     {
       auto uniforms = castUniforms(runtime, arguments[0]);
-      
+
       // Children
       std::vector<sk_sp<SkShader>> children;
       auto jsiChildren = arguments[1].asObject(runtime).asArray(runtime);

@@ -2,7 +2,7 @@
 title: Using private npm packages
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight'
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 EAS Build comes with full support for using private npm packages in your project. These can either be published to npm (if you have [the Pro/Teams plan](https://www.npmjs.com/products)) or to a private registry (for example, using self-hosted [verdaccio](https://verdaccio.org/)).
 
@@ -30,7 +30,10 @@ If your project is using private packages published to npm, you need to provide 
 
 The recommended way is to add the `NPM_TOKEN` secret to your account or project's secrets. See the [secret environment variables](/build-reference/variables/#using-secrets-in-environment-variables) docs to learn how to do this.
 
-<ImageSpotlight alt="Secret creation UI filled" src="/static/images/eas-build/environment-secrets/secrets-create-filled.png" />
+<ImageSpotlight
+  alt="Secret creation UI filled"
+  src="/static/images/eas-build/environment-secrets/secrets-create-filled.png"
+/>
 
 When EAS detects that the `NPM_TOKEN` environment variable is available during a build, it automatically creates the following `.npmrc`:
 
