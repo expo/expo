@@ -27,7 +27,7 @@
   "dependencies": {
     "eslint": "^8.20.0",
     "expo-yarn-workspaces": "*",
-    "jsc-android": "^245459.0.0",
+    "jsc-android": "^250230.2.1",
     "prettier": "^2.7.1",
     "yarn-deduplicate": "^3.1.0"
   }
