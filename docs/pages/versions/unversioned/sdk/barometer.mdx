@@ -7,7 +7,7 @@ packageName: 'expo-sensors'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 import { NoIcon } from '~/ui/components/DocIcons';
 
 `Barometer` from **`expo-sensors`** provides access to the device barometer sensor to respond to changes in air pressure, which is measured in hectopascals (`hPa`).
@@ -23,28 +23,26 @@ import { NoIcon } from '~/ui/components/DocIcons';
 <SnackInline label='Basic Barometer usage' dependencies={['expo-sensors']} platforms={['android', 'ios']}>
 
 ```jsx
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import { Barometer } from 'expo-sensors';
 
 export default function App() {
-  const [data, setData] = useState({});
+  const [{ pressure, relativeAltitude }, setData] = useState({ pressure: 0, relativeAltitude: 0 });
   const [subscription, setSubscription] = useState(null);
 
-  const _toggle = () => {
-    subscription ? _unsubscribe() : _subscribe();
+  const toggleListener = () => {
+    subscription ? unsubscribe() : subscribe();
   };
 
-  const _subscribe = () => {
-    setSubscription(Barometer.addListener(barometerData => setData(barometerData)));
+  const subscribe = () => {
+    setSubscription(Barometer.addListener(setData));
   };
 
-  const _unsubscribe = () => {
+  const unsubscribe = () => {
     subscription && subscription.remove();
     setSubscription(null);
   };
-
-  const { pressure = 0, relativeAltitude = 0 } = data;
 
   return (
     <View style={styles.wrapper}>
@@ -54,7 +52,7 @@ export default function App() {
         Relative Altitude:{' '}
         {Platform.OS === 'ios' ? `${relativeAltitude} m` : `Only available on iOS`}
       </Text>
-      <TouchableOpacity onPress={_toggle} style={styles.button}>
+      <TouchableOpacity onPress={toggleListener} style={styles.button}>
         <Text>Toggle listener</Text>
       </TouchableOpacity>
     </View>
@@ -93,7 +91,7 @@ import { Barometer } from 'expo-sensors';
 ## Units and Providers
 
 | OS      | Units      | Provider                                                                                                | Description                                                                                                                         |
-|---------|------------|---------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|
+| ------- | ---------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
 | iOS     | _`hPa`_    | [`CMAltimeter`](https://developer.apple.com/documentation/coremotion/cmaltimeter)                       | Altitude events reflect the change in the current altitude, not the absolute altitude.                                              |
 | Android | _`hPa`_    | [`Sensor.TYPE_PRESSURE`](https://developer.android.com/reference/android/hardware/Sensor#TYPE_PRESSURE) | Monitoring air pressure changes.                                                                                                    |
 | Web     | <NoIcon /> | <NoIcon />                                                                                              | This sensor is not available on the web and cannot be accessed. An `UnavailabilityError` will be thrown if you attempt to get data. |
