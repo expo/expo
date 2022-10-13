@@ -55,7 +55,7 @@ export function assertRuntimePlatform(platform: string): asserts platform is Run
   if (!['android', 'ios', 'none'].includes(stringifiedPlatform)) {
     throw new CommandError(
       'PLATFORM_HEADER',
-      `platform must be "android" or "ios". Received: "${platform}"`
+      `platform must be "android", "ios", or "none". Received: "${platform}"`
     );
   }
 }
