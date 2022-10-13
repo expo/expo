@@ -4,6 +4,7 @@ title: Using Firebase
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
 
 [Firebase](https://firebase.google.com/) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as realtime database, cloud storage, authentication, crash reporting, analytics, and so on. It is built on Google's infrastructure and scales automatically.
 
@@ -154,6 +155,12 @@ You can consider using React Native Firebase when:
 - Want to use native SDKs in your app.
 - You have a bare React Native app with React Native Firebase already configured but are migrating to use Expo SDK.
 - Want to use [Firebase Analytics](https://rnfirebase.io/analytics/usage) in your app.
+
+<Collapsible summary="Migrating from Firebase JS SDK?">
+
+To migrate from Firebase JS SDK to React Native Firebase, follow the steps in [Using React Native Firebase](#install-and-initialize-react-native-firebase) and adapt your code as per the modules available in the React Native Firebase library.
+
+</Collapsible>
 
 #### Caveats
 
