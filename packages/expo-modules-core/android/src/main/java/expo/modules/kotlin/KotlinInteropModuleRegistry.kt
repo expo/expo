@@ -25,9 +25,6 @@ class KotlinInteropModuleRegistry(
   private val registry: ModuleRegistry
     get() = appContext.registry
 
-  var wasDestroyed = false
-    private set
-
   fun hasModule(name: String): Boolean = registry.hasModule(name)
 
   fun callMethod(moduleName: String, method: String, arguments: ReadableArray, promise: Promise) {
@@ -111,7 +108,6 @@ class KotlinInteropModuleRegistry(
 
   fun onDestroy() {
     appContext.onDestroy()
-    wasDestroyed = true
   }
 
   fun installJSIInterop() {

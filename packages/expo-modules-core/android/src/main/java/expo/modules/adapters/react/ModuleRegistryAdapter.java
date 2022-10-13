@@ -111,8 +111,9 @@ public class ModuleRegistryAdapter implements ReactPackage {
     ReactApplicationContext reactContext,
     @Nullable ModuleRegistry moduleRegistry
   ) {
-    if (mModulesProxy != null && mModulesProxy.getKotlinInteropModuleRegistry().getWasDestroyed()) {
+    if (mModulesProxy != null && mModulesProxy.getReactContext() != reactContext) {
       mModulesProxy = null;
+      mWrapperDelegateHolders = null;
     }
     if (mModulesProxy == null) {
       ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
