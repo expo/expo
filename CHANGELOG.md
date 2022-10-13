@@ -22,7 +22,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-maps` from `0.31.1` to `1.3.2`. ([#19414](https://github.com/expo/expo/pull/19414) by [@aleqsio](https://github.com/aleqsio))
 - Updated `lottie-react-native` from `5.1.3` to `5.1.4`. ([#19433](https://github.com/expo/expo/pull/19433) by [@kudo](https://github.com/kudo))
 - Updated `@react-native-community/slider` from `4.2.3` to `4.2.4`. ([#19424](https://github.com/expo/expo/pull/19424)) by [@kudo](https://github.com/kudo))
-- Updated `react-native-svg` from `12.3.0` to `13.3.0`.
+- Updated `react-native-svg` from `12.3.0` to `13.4.0`. ([#19434](https://github.com/expo/expo/pull/19434) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🛠 Breaking changes
 
