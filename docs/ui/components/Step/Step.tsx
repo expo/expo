@@ -52,8 +52,12 @@ const stepConnectionStyle = css({
 const stepContentStyle = css({
   paddingTop: spacing[1],
 
-  'h2:first-child, h3:first-child, h4:first-child': {
+  'h2:first-child': {
     marginTop: -spacing[1],
+  },
+
+  'h3:first-child, h4:first-child': {
+    marginTop: -spacing[0.5],
   },
 
   'ul, ol': {
