@@ -74,6 +74,13 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
     targetCompatibility JavaVersion.VERSION_11
@@ -92,7 +99,9 @@ android {
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
-        arguments "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}", "-DRN_SO_DIR=${RN_SO_DIR}"
+        arguments "-DANDROID_STL=c++_shared",
+          "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+          "-DRN_SO_DIR=${RN_SO_DIR}"
       }
     }
   }

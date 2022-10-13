@@ -7,7 +7,7 @@
 #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
 
 #import <React/RCTConversions.h>
-#import "RCTFabricComponentsPlugins.h"
+#import <React/RCTFabricComponentsPlugins.h>
 #endif
 
 @implementation RNSScreenStackHeaderSubview

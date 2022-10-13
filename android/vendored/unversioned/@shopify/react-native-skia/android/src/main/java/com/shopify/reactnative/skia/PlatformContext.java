@@ -26,8 +26,8 @@ import java.util.concurrent.Executors;
 public class PlatformContext {
     @DoNotStrip
     private final HybridData mHybridData;
+
     private final ReactContext mContext;
-    private ExecutorService mDrawCallbackThread = Executors.newSingleThreadExecutor();
 
     private boolean _drawLoopActive = false;
     private boolean _isPaused = false;
@@ -37,7 +37,6 @@ public class PlatformContext {
     public PlatformContext(ReactContext reactContext) {
         mContext = reactContext;
         mHybridData = initHybrid(reactContext.getResources().getDisplayMetrics().density);
-
     }
 
     private byte[] getStreamAsBytes(InputStream is) throws IOException {
@@ -66,6 +65,7 @@ public class PlatformContext {
         Choreographer.getInstance().postFrameCallback(frameCallback);
     }
 
+    @DoNotStrip
     public void raise(final String message) {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
@@ -75,6 +75,7 @@ public class PlatformContext {
         });
     }
 
+    @DoNotStrip
     public void beginDrawLoop() {
         if (_drawLoopActive) {
             return;
@@ -88,21 +89,14 @@ public class PlatformContext {
         });
     }
 
+    @DoNotStrip
     public void endDrawLoop() {
         if (_drawLoopActive) {
             _drawLoopActive = false;
         }
     }
 
-    public void triggerOnRenderThread() {
-        mDrawCallbackThread.execute(new Runnable() {
-            @Override
-            public void run() {
-                notifyTaskReady();
-            }
-        });
-    }
-
+    @DoNotStrip
     public byte[] getJniStreamFromSource(String sourceUri) throws IOException {
         // First try loading the input as a resource directly
         int resourceId = mContext.getResources().getIdentifier(sourceUri, "drawable", mContext.getPackageName());

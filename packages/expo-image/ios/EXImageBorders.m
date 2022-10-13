@@ -1,6 +1,6 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <EXImage/EXImageBorders.h>
+#import <ExpoImage/EXImageBorders.h>
 #import <React/RCTUtils.h>
 #import <React/RCTI18nUtil.h>
 

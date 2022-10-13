@@ -253,11 +253,9 @@ class AppContext(
   }
 
   internal fun onHostDestroy() {
-    activityResultsManager.onHostDestroy(
-      requireNotNull(currentActivity) {
-        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
-      }
-    )
+    currentActivity?.let {
+      activityResultsManager.onHostDestroy(it)
+    }
     registry.post(EventName.ACTIVITY_DESTROYS)
   }
 

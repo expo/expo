@@ -1,31 +1,37 @@
 import { css } from '@emotion/react';
 import { borderRadius, theme, spacing } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { forwardRef, PropsWithChildren } from 'react';
 
-type SnippetContentProps = PropsWithChildren<{
+export type SnippetContentProps = PropsWithChildren<{
   alwaysDark?: boolean;
   hideOverflow?: boolean;
   skipPadding?: boolean;
   className?: string;
 }>;
 
-export const SnippetContent = ({
-  children,
-  className,
-  alwaysDark = false,
-  hideOverflow = false,
-  skipPadding = false,
-}: SnippetContentProps) => (
-  <div
-    css={[
-      contentStyle,
-      alwaysDark && contentDarkStyle,
-      hideOverflow && contentHideOverflow,
-      skipPadding && skipPaddingStyle,
-    ]}
-    className={className}>
-    {children}
-  </div>
+export const SnippetContent = forwardRef<HTMLDivElement, SnippetContentProps>(
+  (
+    {
+      children,
+      className,
+      alwaysDark = false,
+      hideOverflow = false,
+      skipPadding = false,
+    }: SnippetContentProps,
+    ref
+  ) => (
+    <div
+      ref={ref}
+      css={[
+        contentStyle,
+        alwaysDark && contentDarkStyle,
+        hideOverflow && contentHideOverflow,
+        skipPadding && skipPaddingStyle,
+      ]}
+      className={className}>
+      {children}
+    </div>
+  )
 );
 
 const contentStyle = css`

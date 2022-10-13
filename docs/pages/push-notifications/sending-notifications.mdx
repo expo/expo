@@ -225,6 +225,8 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 
 If there's an error with the entire request for either push tickets or push receipts, the `errors` object may be one of the following values, and you should handle these errors like so:
 
+- `TOO_MANY_REQUESTS`: you are exceeding the request limit of 600 notifications per second per project. We recommend implementing rate-limiting in your server to prevent sending more than 600 notifications per second (note that if you use [expo-server-sdk-node](https://github.com/expo/expo-server-sdk-node), this is already implemented along with exponential backoffs for retries).
+
 - `PUSH_TOO_MANY_EXPERIENCE_IDS`: you are trying to send push notifications to different Expo experiences, for example `@username/projectAAA` and `@username/projectBBB`. Check the `details` field for a mapping of experience names to their associated push tokens from the request, and remove any from another experience.
 
 - `PUSH_TOO_MANY_NOTIFICATIONS`: you are trying to send more than 100 push notifications in one request. Make sure you are only sending 100 (or less) notifications in each request.

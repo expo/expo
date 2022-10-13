@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.modifyAndroidManifest = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-media-library/package.json');
 const READ_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to access your photos';
 const WRITE_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to save photos';
