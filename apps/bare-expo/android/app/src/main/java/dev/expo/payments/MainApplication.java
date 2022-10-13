@@ -61,7 +61,9 @@ public class MainApplication extends Application implements ReactApplication {
     // If you opted-in for the New Architecture, we enable the TurboModule system
     ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
     SoLoader.init(this, /* native exopackage */ false);
-    ReactNativeFlipper.initializeFlipper(this);
+    if (BuildConfig.DEBUG) {
+      ReactNativeFlipper.initializeFlipper(this);
+    }
     if (!USE_DEV_CLIENT) {
       DevLauncherPackageDelegate.enableAutoSetup = false;
       DevMenuPackageDelegate.enableAutoSetup = false;
