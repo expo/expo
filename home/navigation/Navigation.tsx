@@ -125,10 +125,7 @@ function TabNavigator(props: { theme: string }) {
     <BottomTab.Navigator
       {...getNavigatorProps(props)}
       initialRouteName="HomeStack"
-      detachInactiveScreens={shouldDetachInactiveScreens}
-      screenOptions={{
-        headerShown: false,
-      }}>
+      detachInactiveScreens={shouldDetachInactiveScreens}>
       <BottomTab.Screen
         name="HomeStack"
         component={HomeStackScreen}

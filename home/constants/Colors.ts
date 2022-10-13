@@ -26,10 +26,6 @@ export default {
     cardTitle: '#242c39',
     error,
     highlightColor: '#5944ed',
-
-    tabIconDefault: '#bdbfc3',
-    tabIconSelected: Platform.OS === 'android' ? '#000' : tintColor,
-    tabBar: '#fff',
     noticeText: '#fff',
     greyBackground: '#f8f8f9',
     greyText: '#a7aab0',
@@ -37,6 +33,14 @@ export default {
     blackText: '#242c39',
     separator: '#f4f4f5',
     refreshControl: undefined,
+
+    /**
+     * Note: These colors are not actually used by the tab bar currently!
+     * See: BottomTabNavigator.ts
+     */
+    tabIconDefault: '#bdbfc3',
+    tabIconSelected: Platform.OS === 'android' ? '#000' : tintColor,
+    tabBar: '#fff',
   },
   [ColorTheme.DARK]: {
     absolute: '#000',
@@ -54,15 +58,19 @@ export default {
     separator: '#1b1b1b',
     error,
     highlightColor: '#5944ed',
-
-    tabBar: '#000',
-    tabIconDefault: '#bdbfc3',
-    tabIconSelected: Platform.OS === 'android' ? '#fff' : tintColor,
     noticeText: '#fff',
     greyBackground: '#f8f8f9',
     greyText: '#a7aab0',
     greyUnderlayColor: '#f7f7f7',
     blackText: '#242c39',
     refreshControl: '#ffffff',
+
+    /**
+     * Note: These colors are not actually used by the tab bar currently!
+     * See: BottomTabNavigator.ts
+     */
+    tabBar: '#000',
+    tabIconDefault: '#bdbfc3',
+    tabIconSelected: Platform.OS === 'android' ? '#fff' : tintColor,
   },
 };
