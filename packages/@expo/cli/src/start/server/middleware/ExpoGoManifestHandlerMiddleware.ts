@@ -37,9 +37,9 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 
     if (!platform) {
       debug(
-        `No "expo-platform" header or "platform" query parameter specified. Falling back to "ios".`
+        `No "expo-platform" header or "platform" query parameter specified. Falling back to "none".`
       );
-      platform = 'ios';
+      platform = 'none';
     }
 
     assertRuntimePlatform(platform);
