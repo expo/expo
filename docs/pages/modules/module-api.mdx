@@ -153,6 +153,44 @@ async function getMessageAsync() {
 ```
 
 </APIBox>
+<APIBox header="SuspendFunction" platforms={["android"]}>
+
+Defines a JavaScript function that always returns a `Promise` and whose native code is by default dispatched on the different thread than the JavaScript runtime runs on.
+It's a subtype of the `AsyncFunction` component.
+
+#### Arguments
+
+- **name**: `String` — Name of the function that you'll call from JavaScript.
+- **body**: `suspend (args...) -> ReturnType` — The closure to run when the function is called. Note that body is passed in the infix notation after the `Coroutine` block.
+
+`SuspendFunction`, in contrast to `AsyncFunction`, can't receive `Promise` as a argument. It uses a suspension mechanism to execute asynchronouse calls.
+The function is immediately resolved with the returned value of the provided suspendable block or rejected if it throws an exception. The function can receive up to 8 arguments.
+
+By default, suspend functions are dispatched on the modules coroutine scope. Moreover, every other suspendable functions called from body block are run on the same scope.
+The lifecycle of this scope is bind to the lifecycle of the module - all unfinished suspend functions will be caneled when the module is deallocated.
+
+See the [Argument Types](#argument-types) section for more details on what types can be used in the function body.
+
+```kotlin Kotlin
+AsyncFunction("suspendFunction") Coroutine { message: String ->
+  launch {
+    return@Coroutine promise.resolve(message)
+  }
+}
+```
+
+```js JavaScript
+import { requireNativeModule } from 'expo-modules-core';
+
+// Assume that we have named the module "MyModule"
+const MyModule = requireNativeModule('MyModule');
+
+async function getMessageAsync() {
+  return await MyModule.suspendFunction('bar');
+}
+```
+
+</APIBox>
 <APIBox header="Events">
 
 Defines event names that the module can send to JavaScript.
