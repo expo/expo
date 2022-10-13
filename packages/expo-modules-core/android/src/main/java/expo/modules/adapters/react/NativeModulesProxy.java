@@ -267,4 +267,8 @@ public class NativeModulesProxy extends ReactContextBaseJavaModule {
   ModuleRegistry getModuleRegistry() {
     return mModuleRegistry;
   }
+
+  /* package */ ReactApplicationContext getReactContext() {
+    return getReactApplicationContext();
+  }
 }

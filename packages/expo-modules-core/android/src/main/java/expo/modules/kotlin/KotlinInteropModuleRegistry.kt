@@ -27,8 +27,6 @@ class KotlinInteropModuleRegistry(
   private val registry: ModuleRegistry
     get() = appContext.registry
 
-  private var wasDestroyed = false
-
   fun hasModule(name: String): Boolean = registry.hasModule(name)
 
   fun callMethod(moduleName: String, method: String, arguments: ReadableArray, promise: Promise) {
@@ -114,7 +112,6 @@ class KotlinInteropModuleRegistry(
 
   fun onDestroy() {
     appContext.onDestroy()
-    wasDestroyed = true
     logger.info("✅ KotlinInteropModuleRegistry was destroyed")
   }
 
@@ -124,9 +121,5 @@ class KotlinInteropModuleRegistry(
 
   fun setLegacyModulesProxy(proxyModule: NativeModulesProxy) {
     appContext.legacyModulesProxyHolder = WeakReference(proxyModule)
-  }
-
-  fun shouldBeRecreated(applicationContext: ReactApplicationContext): Boolean {
-    return wasDestroyed || appContext.reactContext != applicationContext
   }
 }
