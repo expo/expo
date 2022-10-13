@@ -25,6 +25,7 @@ const stepWrapperStyle = css({
   gap: spacing[4],
   margin: `${spacing[2]}px 0`,
   float: 'left',
+  width: '100%',
 });
 
 const stepLabelStyle = css({
