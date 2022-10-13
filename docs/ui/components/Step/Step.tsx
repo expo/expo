@@ -1,18 +1,18 @@
 import { css } from '@emotion/react';
-import { spacing, theme, typography } from '@expo/styleguide';
+import { spacing, theme } from '@expo/styleguide';
 import { PropsWithChildren } from 'react';
+
+import { HEADLINE } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<{
   label: string;
-  connected?: boolean;
 }>;
 
-export const Step = ({ children, label, connected }: Props) => {
+export const Step = ({ children, label }: Props) => {
   return (
     <div css={stepWrapperStyle}>
       <div>
-        <div css={stepLabelStyle}>{label}</div>
-        {connected && <div css={stepConnectionStyle} />}
+        <HEADLINE css={stepLabelStyle}>{label}</HEADLINE>
       </div>
       <div css={stepContentStyle}>{children}</div>
     </div>
@@ -36,16 +36,8 @@ const stepLabelStyle = css({
   margin: `0 auto`,
   width: spacing[9],
   height: spacing[9],
-  fontFamily: typography.fontStacks.semiBold,
-  color: theme.text.secondary,
   background: theme.background.tertiary,
   borderRadius: '100%',
-});
-
-const stepConnectionStyle = css({
-  width: '50%',
-  height: `calc(100% - ${spacing[5]}px)`,
-  borderRight: `1px solid ${theme.border.default}`,
 });
 
 const stepContentStyle = css({
