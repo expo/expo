@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `Updates.reloadAsync` from `expo-updates` occasionally crashes the app. ([#19539](https://github.com/expo/expo/pull/19539) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.11.7 — 2022-10-06
