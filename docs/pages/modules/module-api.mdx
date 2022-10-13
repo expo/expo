@@ -168,6 +168,9 @@ Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
 ```
 
 </CodeBlocksTable>
+
+See [Sending events](#sending-events) to learn how to send events from the native code to JavaScript/TypeScript.
+
 </APIBox>
 <APIBox header="ViewManager">
 
@@ -480,6 +483,99 @@ The implementation for three Either types is currently provided out of the box, 
 
 > **info**
 > Either types are available as of SDK 47.
+
+</APIBox>
+
+## Guides
+
+<APIBox header="Sending events">
+
+While JavaScript/TypeScript to Native communication is mostly covered by native functions, you might also want to let the JavaScript/TypeScript code know about certain system events, for example, when the clipboard content changes.
+
+To do this, in the module definition, you need to provide the event names that the module can send using the [Events](#events) definition component. After that, you can use the `sendEvent(eventName, payload)` function on the module instance to send the actual event with some payload. For example, a minimal clipboard implementation that sends native events may look like this:
+
+<CodeBlocksTable>
+
+```swift
+let CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
+
+public class ClipboardModule: Module {
+  public func definition() -> ModuleDefinition {
+    Events(CLIPBOARD_CHANGED_EVENT_NAME)
+
+    OnStartObserving {
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(self.clipboardChangedListener),
+        name: UIPasteboard.changedNotification,
+        object: nil
+      )
+    }
+
+    OnStopObserving {
+      NotificationCenter.default.removeObserver(
+        self,
+        name: UIPasteboard.changedNotification,
+        object: nil
+      )
+    }
+  }
+
+  @objc
+  private func clipboardChangedListener() {
+    sendEvent(CLIPBOARD_CHANGED_EVENT_NAME, [
+      "contentTypes": availableContentTypes()
+    ])
+  }
+}
+```
+
+```kotlin
+const val CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
+
+class ClipboardModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Events(CLIPBOARD_CHANGED_EVENT_NAME)
+
+    OnStartObserving {
+      clipboardManager?.addPrimaryClipChangedListener(listener)
+    }
+
+    OnStopObserving {
+      clipboardManager?.removePrimaryClipChangedListener(listener)
+    }
+  }
+
+  private val clipboardManager: ClipboardManager?
+    get() = appContext.reactContext?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+
+  private val listener = ClipboardManager.OnPrimaryClipChangedListener {
+    clipboardManager?.primaryClipDescription?.let { clip ->
+      this@ClipboardModule.sendEvent(
+        CLIPBOARD_CHANGED_EVENT_NAME,
+        bundleOf(
+          "contentTypes" to availableContentTypes(clip)
+        )
+      )
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+To subscribe to these events in JavaScript/TypeScript, you need to wrap the native module with `EventEmitter` class as shown:
+
+```ts TypeScript
+import { requireNativeModule, EventEmitter, Subscription } from 'expo-modules-core';
+
+const ClipboardModule = requireNativeModule('Clipboard');
+const emitter = new EventEmitter(ClipboardModule);
+
+export function addClipboardListener(listener: (event) => void): Subscription {
+  return emitter.addListener('onClipboardChanged', listener);
+}
+```
 
 </APIBox>
 
