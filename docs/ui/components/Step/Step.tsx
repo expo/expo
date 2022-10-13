@@ -38,9 +38,8 @@ const stepLabelStyle = css({
   height: spacing[9],
   fontFamily: typography.fontStacks.semiBold,
   color: theme.text.secondary,
-  background: theme.background.secondary,
+  background: theme.background.tertiary,
   borderRadius: '100%',
-  border: `1px solid ${theme.border.default}`,
 });
 
 const stepConnectionStyle = css({
