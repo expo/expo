@@ -41,6 +41,7 @@ import expo.modules.camera.utils.mapX
 import expo.modules.camera.utils.mapY
 import kotlin.math.roundToInt
 import android.view.WindowManager
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
 
 class ExpoCameraView(
   context: Context,
@@ -235,7 +236,7 @@ class ExpoCameraView(
     barCode.cornerPoints = cornerPoints
   }
 
-  private fun getCornerPoints(cornerPoints: List<Int>): ArrayList<Bundle> {
+  private fun getCornerPointsAndBoundingBox(cornerPoints: List<Int>, boundingBox: BoundingBox): Pair<ArrayList<Bundle>, Bundle> {
     val density = cameraView.resources.displayMetrics.density
     val convertedCornerPoints = ArrayList<Bundle>()
     for (i in cornerPoints.indices step 2) {
@@ -248,22 +249,36 @@ class ExpoCameraView(
         }
       )
     }
-    return convertedCornerPoints
+    val boundingBoxBundle = Bundle().apply {
+      putParcelable(
+        "origin",
+        Bundle().apply {
+          putFloat("x", boundingBox.x.toFloat() / density)
+          putFloat("y", boundingBox.y.toFloat() / density)
+        }
+      )
+      putParcelable(
+        "size",
+        Bundle().apply {
+          putFloat("width", boundingBox.width.toFloat() / density)
+          putFloat("height", boundingBox.height.toFloat() / density)
+        }
+      )
+    }
+    return convertedCornerPoints to boundingBoxBundle
   }
 
   override fun onBarCodeScanned(barCode: BarCodeScannerResult) {
     if (mShouldScanBarCodes) {
       transformBarCodeScannerResultToViewCoordinates(barCode)
+      val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barCode.cornerPoints, barCode.boundingBox)
       onBarCodeScanned(
         BarCodeScannedEvent(
           target = id,
           data = barCode.value,
           type = barCode.type,
-          // If the scanner doesn't return corner points, the value here will be an empty array
-          // I don't know how to send undefined from kotlin
-          // (I can send null but that would be different from other platform)
-          // so [] to undefined is handled on the javascript side
-          cornerPoints = getCornerPoints(barCode.getCornerPoints())
+          cornerPoints = cornerPoints,
+          boundingBox = boundingBox
         )
       )
     }
