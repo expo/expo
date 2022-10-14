@@ -5,16 +5,16 @@ title: Using Flipper
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-[Flipper](https://fbflipper.com/) is a platform for debugging React Native projects running on an emulator/simulator or a physical device. It supports projects running on Android and iOS platforms, and is available as a desktop application on macOS, Windows, and Linux.
+[Flipper](https://fbflipper.com/) is a platform for debugging React Native projects running on an emulator/simulator or a physical device. It supports projects running on Android and iOS and is available as a desktop application on macOS, Windows, and Linux.
 
 It offers various features such as a device log viewer, interactive native layout inspector, network inspector, local database inspector, crash reporter and more. You can add more plugins available in the Flipper desktop app.
 
 Debugging your Expo projects with Flipper requires the following:
 
-- An Expo project created with [Development Build](/development/introduction/)
-- [`expo-community-flipper` Config Plugin](https://github.com/jakobo/expo-community-flipper)
+- Building your project into a [development build](/development/introduction/)
+- Installing the [`expo-community-flipper`](https://github.com/jakobo/expo-community-flipper) config plugin
 
-> **info** The `expo-community-flipper` is based on [Expo's Config plugin](/guides/config-plugins/), which is a system that allows changing Expo config to use native code in your Expo project automatically.
+> **info** The `expo-community-flipper` library is a [config plugin](/guides/config-plugins/) that adds native code to your project.
 
 ## Prerequisites
 
@@ -23,9 +23,9 @@ Before you get started, make sure you have the following installed on your compu
 - [Flipper desktop app](https://fbflipper.com/)
 - [EAS CLI installed](/build/setup/#1-install-the-latest-eas-cli) and [logged in](/build/setup/#2-log-in-to-your-expo-account) to your Expo account
 
-## Step 1: Run Setup Doctor in Flipper app
+## Step 1: Run setup doctor
 
-Open the Flipper desktop app and click the **Setup Doctor** button from the bottom left menu. This is necessary to ensure that all required dependencies are installed correctly on your computer.
+Open the Flipper desktop app and click the **Setup Doctor** button from the bottom left menu.
 
 <ImageSpotlight
   alt="Setup Doctor modal in Flipper."
@@ -33,11 +33,11 @@ Open the Flipper desktop app and click the **Setup Doctor** button from the bott
   style={{ maxWidth: 720 }}
 />
 
-If any required dependency is missing, follow the instructions provided by Flipper in the desktop app to install it.
+If any dependencies are missing, follow the instructions provided by Flipper to install them.
 
 ## Step 2: Install expo-dev-client
 
-Since Flipper integration depends on native code, you'll need to create a Development Build. To set it up, you'll need to install the `expo-dev-client` library in your project:
+Since Flipper requires native code, you'll need to create a development build. To set it up, install the `expo-dev-client` library:
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 
@@ -47,7 +47,7 @@ The `expo-community-flipper` plugin depends on the `react-native-flipper` librar
 
 <Terminal cmd={['$ npx expo install expo-community-flipper react-native-flipper']} />
 
-## Step 4: Add the Config Plugin
+## Step 4: Add the config plugin
 
 In the **app.json**, add `expo-community-flipper` to the `plugins` array:
 
@@ -57,17 +57,16 @@ In the **app.json**, add `expo-community-flipper` to the `plugins` array:
 }
 ```
 
-## Step 5: Configure the Development Build
+## Step 5: Configure a development build
 
-> **info** If you have already configured EAS and a build profile, you can skip this step. Make sure to run the build command to apply changes from `expo-community-flipper` plugin to your Development Build.
 
-To configure a Development Build for your project, you'll need to set up EAS with a Debug build. To set up EAS, run the following command:
+To configure a development build for your project, run the following command:
 
 <Terminal cmd={['$ eas build:configure']} />
 
-It generates **eas.json** in your project and allows setting up a build profile.
+This command will generate the **eas.json** file in your project, which will contain various build profiles.
 
-The `"development"` build profile in **eas.json** is already created. Add the `android.buildType` property to generate a **.apk** for an Android device or emulator. To test your project on the iOS simulator, add the `ios.simulator` property to the build profile.
+Inside the `"development"` build profile in **eas.json**, add the `android.buildType` property to generate a **.apk** for an Android device or emulator. To test your project on the iOS simulator, add the `ios.simulator` property to the build profile.
 
 An example of a build profile with the configuration mentioned above is shown below:
 
@@ -88,17 +87,16 @@ An example of a build profile with the configuration mentioned above is shown be
 }
 ```
 
-You can also create a custom build profile to use Flipper integration. For more information, see [Build Profiles](/build/eas-json/#build-profiles).
 
 After you have configured the build profile, run the following command to build the project:
 
 <Terminal cmd={['$ eas build --profile development --platform all']} />
 
-Once the build is complete, you can download it from the build page in the [Expo Dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) of your account and install it on your device or emulator/simulator.
+Once the builds are complete, you can download them from [Expo's website](https://expo.dev/accounts/[account]/projects/[project]/builds). From there, you can install them on your devices or your emulator/simulator.
 
 ## Step 6: Run the development server
 
-Run the following command to trigger the development server:
+Run the following command to start a development server:
 
 <Terminal cmd={['$ npx expo --dev-client']} />
 
