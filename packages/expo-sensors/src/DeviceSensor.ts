@@ -4,9 +4,13 @@ import {
   EventEmitter,
   Subscription,
   Platform,
+  PermissionExpiration,
 } from 'expo-modules-core';
 
-type Listener<E> = (event: E) => void;
+/**
+ * @hidden
+ */
+export type Listener<E> = (event: E) => void;
 
 type NativeSensorModule = any;
 
@@ -22,7 +26,6 @@ export default class DeviceSensor<M> {
 
   constructor(nativeSensorModule: NativeSensorModule, nativeEventName: string) {
     this._nativeModule = nativeSensorModule;
-
     this._nativeEmitter = new EventEmitter(nativeSensorModule);
     this._nativeEventName = nativeEventName;
     this._listenerCount = 0;
@@ -35,24 +38,41 @@ export default class DeviceSensor<M> {
     return subscription;
   };
 
+  /**
+   * Returns boolean which signifies if sensor has any listeners registered.
+   */
   hasListeners = (): boolean => {
     return this._listenerCount > 0;
   };
 
+  /**
+   * Returns the registered listeners count.
+   */
   getListenerCount = (): number => {
     return this._listenerCount;
   };
 
+  /**
+   * Removes all registered listeners.
+   */
   removeAllListeners = (): void => {
     this._listenerCount = 0;
     this._nativeEmitter.removeAllListeners(this._nativeEventName);
   };
 
+  /**
+   * Removes the given subscription.
+   * @param subscription A subscription to remove.
+   */
   removeSubscription = (subscription: Subscription): void => {
     this._listenerCount--;
     this._nativeEmitter.removeSubscription(subscription);
   };
 
+  /**
+   * Set the sensor update interval.
+   * @param intervalMs Desired interval value in milliseconds.
+   */
   setUpdateInterval = (intervalMs: number): void => {
     if (!this._nativeModule.setUpdateInterval) {
       console.warn(`expo-sensors: setUpdateInterval() is not supported on ${Platform.OS}`);
@@ -61,6 +81,10 @@ export default class DeviceSensor<M> {
     }
   };
 
+  /**
+   * > **info** You should always check the sensor availability before attempting to use it.
+   * @return A promise that resolves to a `boolean` denoting the availability of the sensor.
+   */
   isAvailableAsync = async (): Promise<boolean> => {
     if (!this._nativeModule.isAvailableAsync) {
       return false;
@@ -69,6 +93,9 @@ export default class DeviceSensor<M> {
     }
   };
 
+  /**
+   * Checks user's permissions for accessing sensor.
+   */
   getPermissionsAsync = async (): Promise<PermissionResponse> => {
     if (!this._nativeModule.getPermissionsAsync) {
       return defaultPermissionsResponse;
@@ -77,6 +104,9 @@ export default class DeviceSensor<M> {
     }
   };
 
+  /**
+   * Asks the user to grant permissions for accessing sensor.
+   */
   requestPermissionsAsync = async (): Promise<PermissionResponse> => {
     if (!this._nativeModule.requestPermissionsAsync) {
       return defaultPermissionsResponse;
@@ -92,3 +122,5 @@ const defaultPermissionsResponse: PermissionResponse = {
   canAskAgain: true,
   status: PermissionStatus.GRANTED,
 };
+
+export { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription };
