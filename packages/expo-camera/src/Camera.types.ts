@@ -262,7 +262,7 @@ export type BarCodeSize = {
 };
 
 /**
- * Those coordinates are represented in the coordinate space of the camera source (e.g. when you
+ * These coordinates are represented in the coordinate space of the camera source (e.g. when you
  * are using the camera view, these values are adjusted to the dimensions of the view).
  */
 export type BarCodePoint = Point;
@@ -290,10 +290,15 @@ export type BarCodeScanningResult = {
   data: string;
   /**
    * Corner points of the bounding box.
+   * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
+   * you don't get this value.
    */
   cornerPoints: BarCodePoint[];
   /**
    * The [BarCodeBounds](#barcodebounds) object.
+   * `bounds` in some case will be representing an empty rectangle.
+   * Moreover, `bounds` doesn't have to bound the whole barcode.
+   * For some types, they will represent the area used by the scanner.
    */
   bounds: BarCodeBounds;
 };

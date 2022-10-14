@@ -254,11 +254,10 @@ class ExpoCameraView(
         putFloat("x", boundingBox.x.toFloat() / density)
         putFloat("y", boundingBox.y.toFloat() / density)
       })
-      putParcelable("size",
-        Bundle().apply {
-          putFloat("width", boundingBox.width.toFloat() / density)
-          putFloat("height", boundingBox.height.toFloat() / density)
-        })
+      putParcelable("size", Bundle().apply {
+        putFloat("width", boundingBox.width.toFloat() / density)
+        putFloat("height", boundingBox.height.toFloat() / density)
+      })
     }
     return convertedCornerPoints to boundingBoxBundle
   }

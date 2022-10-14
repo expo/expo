@@ -77,12 +77,12 @@
     result[@"cornerPoints"] = cornerPointsResult;
     result[@"bounds"] = @{
       @"origin": @{
-          @"x": @(barCodeScannerResult.bounds.origin.x),
-          @"y": @(barCodeScannerResult.bounds.origin.y),
+        @"x": @(barCodeScannerResult.bounds.origin.x),
+        @"y": @(barCodeScannerResult.bounds.origin.y),
       },
       @"size": @{
-          @"width": @(barCodeScannerResult.bounds.size.width),
-          @"height": @(barCodeScannerResult.bounds.size.height),
+        @"width": @(barCodeScannerResult.bounds.size.width),
+        @"height": @(barCodeScannerResult.bounds.size.height),
       }
     };
   } else {
@@ -109,12 +109,12 @@
     result[@"cornerPoints"] = cornerPointsResult;
     result[@"bounds"] = @{
       @"origin": @{
-          @"x": @(barCodeScannerResult.bounds.origin.x),
-          @"y": @(barCodeScannerResult.bounds.origin.y),
+        @"x": @(barCodeScannerResult.bounds.origin.x),
+        @"y": @(barCodeScannerResult.bounds.origin.y),
       },
       @"size": @{
-          @"width": @(barCodeScannerResult.bounds.size.width),
-          @"height": @(barCodeScannerResult.bounds.size.height),
+        @"width": @(barCodeScannerResult.bounds.size.width),
+        @"height": @(barCodeScannerResult.bounds.size.height),
       }
     };
   } else {
@@ -164,12 +164,12 @@
   result[@"cornerPoints"] = @[];
   result[@"bounds"] = @{
     @"origin": @{
-        @"x": @(0),
-        @"y": @(0),
+      @"x": @(0),
+      @"y": @(0),
     },
     @"size": @{
-        @"width": @(0),
-        @"height": @(0),
+      @"width": @(0),
+      @"height": @(0),
     }
   };
 }

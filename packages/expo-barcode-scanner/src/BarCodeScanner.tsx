@@ -56,12 +56,6 @@ export type BarCodeBounds = {
 };
 
 // @needsAudit
-/**
- * > __Note:__ `cornerPoints` are not always available and may be empty. On iOS, for `code39` and `pdf417`
- * > you don't get this value. Also, `bounds` in that case will be representing an empty rectangle.
- * > Moreover, `bounds` on iOS don't have to bounds the whole barcode.
- * > For some types, they will represent the area used by the scanner.
- */
 export type BarCodeScannerResult = {
   /**
    * The barcode type.
@@ -73,10 +67,15 @@ export type BarCodeScannerResult = {
   data: string;
   /**
    * The [BarCodeBounds](#barcodebounds) object.
+   * `bounds` in some case will be representing an empty rectangle.
+   * Moreover, `bounds` doesn't have to bound the whole barcode.
+   * For some types, they will represent the area used by the scanner.
    */
   bounds: BarCodeBounds;
   /**
    * Corner points of the bounding box.
+   * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
+   * you don't get this value.
    */
   cornerPoints: BarCodePoint[];
 };
