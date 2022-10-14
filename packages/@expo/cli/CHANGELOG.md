@@ -28,6 +28,7 @@
 - Catch error thrown when trying to launch redirect page without an application ID defined in `app.json`. ([#19312](https://github.com/expo/expo/pull/19312) by [@esamelson](https://github.com/esamelson))
 - Present intended variadic argument when asserting flags in `npx expo install`. ([#19396](https://github.com/expo/expo/pull/19396) by [@bycedric](https://github.com/bycedric))
 - Disable API interaction when running in offline mode. ([#19418](https://github.com/expo/expo/pull/19418) by [@byCedric](https://github.com/byCedric))
+- Add "none" platform when running `--dev-client`. ([#19319](https://github.com/expo/expo/pull/19319) by [@jonsamp](https://github.com/jonsamp))
 
 ### 💡 Others
 
