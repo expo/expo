@@ -37,6 +37,11 @@ import java.io.IOException
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
+import expo.modules.camera.utils.mapX
+import expo.modules.camera.utils.mapY
+import kotlin.math.roundToInt
+import android.view.WindowManager
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
 
 class ExpoCameraView(
   context: Context,
@@ -189,13 +194,91 @@ class ExpoCameraView(
     barCodeScanner?.setSettings(settings)
   }
 
+  // Even = portrait, odd = landscape
+  private fun getDeviceOrientation() =
+    (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
+
+  private fun transformBarCodeScannerResultToViewCoordinates(barCode: BarCodeScannerResult) {
+    val cornerPoints = barCode.cornerPoints
+
+    // For some reason they're swapped, I don't know anymore...
+    val cameraWidth = barCode.referenceImageHeight
+    val cameraHeight = barCode.referenceImageWidth
+
+    val facingBack = cameraView.facing == CameraView.FACING_BACK
+    val facingFront = cameraView.facing == CameraView.FACING_FRONT
+    val portrait = getDeviceOrientation() % 2 == 0
+    val landscape = getDeviceOrientation() % 2 == 1
+
+    if (facingBack && portrait) {
+      cornerPoints.mapX { cameraWidth - cornerPoints[it] }
+    }
+    if (facingBack && landscape) {
+      cornerPoints.mapY { cameraHeight - cornerPoints[it] }
+    }
+    if (facingFront) {
+      cornerPoints.mapX { cameraWidth - cornerPoints[it] }
+      cornerPoints.mapY { cameraHeight - cornerPoints[it] }
+    }
+
+    val scaleX = width / cameraWidth.toDouble()
+    val scaleY = height / cameraHeight.toDouble()
+
+    cornerPoints.mapX {
+      (cornerPoints[it] * scaleX)
+        .roundToInt()
+    }
+    cornerPoints.mapY {
+      (cornerPoints[it] * scaleY)
+        .roundToInt()
+    }
+
+    barCode.cornerPoints = cornerPoints
+  }
+
+  private fun getCornerPointsAndBoundingBox(cornerPoints: List<Int>, boundingBox: BoundingBox): Pair<ArrayList<Bundle>, Bundle> {
+    val density = cameraView.resources.displayMetrics.density
+    val convertedCornerPoints = ArrayList<Bundle>()
+    for (i in cornerPoints.indices step 2) {
+      val y = cornerPoints[i].toFloat() / density
+      val x = cornerPoints[i + 1].toFloat() / density
+      convertedCornerPoints.add(
+        Bundle().apply {
+          putFloat("x", x)
+          putFloat("y", y)
+        }
+      )
+    }
+    val boundingBoxBundle = Bundle().apply {
+      putParcelable(
+        "origin",
+        Bundle().apply {
+          putFloat("x", boundingBox.x.toFloat() / density)
+          putFloat("y", boundingBox.y.toFloat() / density)
+        }
+      )
+      putParcelable(
+        "size",
+        Bundle().apply {
+          putFloat("width", boundingBox.width.toFloat() / density)
+          putFloat("height", boundingBox.height.toFloat() / density)
+        }
+      )
+    }
+    return convertedCornerPoints to boundingBoxBundle
+  }
+
   override fun onBarCodeScanned(barCode: BarCodeScannerResult) {
     if (mShouldScanBarCodes) {
+      transformBarCodeScannerResultToViewCoordinates(barCode)
+      val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barCode.cornerPoints, barCode.boundingBox)
       onBarCodeScanned(
         BarCodeScannedEvent(
           target = id,
           data = barCode.value,
-          type = barCode.type
+          type = barCode.type,
+          cornerPoints = cornerPoints,
+          boundingBox = boundingBox
         )
       )
     }

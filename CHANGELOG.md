@@ -7,6 +7,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-pager-view` from `5.4.245` to `6.0.1`. ([#19528](https://github.com/expo/expo/pull/19528) by [@brentvatne](https://github.com/brentvatne))
 - Updated `react-native-safe-area-context` from `4.3.1` to `4.4.1`. ([#19055](https://github.com/expo/expo/pull/19401) by [@brentvatne](https://github.com/brentvatne))
 - Updated `@stripe/stripe-react-native` from `0.13.1` to `0.19.0`. ([#19055](https://github.com/expo/expo/pull/19055) by [@tsapeta](https://github.com/tsapeta), [#19432](https://github.com/expo/expo/pull/19432) by [@kudo](https://github.com/kudo))
 - Updated `@shopify/flash-list` from `1.1.0` to `1.3.0`. ([#19317](https://github.com/expo/expo/pull/19317) by [@kudo](https://github.com/kudo))
@@ -21,7 +22,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-maps` from `0.31.1` to `1.3.2`. ([#19414](https://github.com/expo/expo/pull/19414) by [@aleqsio](https://github.com/aleqsio))
 - Updated `lottie-react-native` from `5.1.3` to `5.1.4`. ([#19433](https://github.com/expo/expo/pull/19433) by [@kudo](https://github.com/kudo))
 - Updated `@react-native-community/slider` from `4.2.3` to `4.2.4`. ([#19424](https://github.com/expo/expo/pull/19424)) by [@kudo](https://github.com/kudo))
-- Updated `react-native-svg` from `12.3.0` to `13.3.0`.
+- Updated `react-native-svg` from `12.3.0` to `13.4.0`. ([#19434](https://github.com/expo/expo/pull/19434) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🛠 Breaking changes
 

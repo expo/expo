@@ -12,7 +12,7 @@ import { AbortCommandError, CommandError } from '../../utils/errors';
 import { getUserTerminal } from '../../utils/terminal';
 import { BuildProps, ProjectInfo } from './XcodeBuild.types';
 import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
-
+import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 export function logPrettyItem(message: string) {
   Log.log(chalk`{whiteBright \u203A} ${message}`);
 }
@@ -140,7 +140,7 @@ export async function getXcodeBuildArgsAsync(
     `id=${props.device.udid}`,
   ];
 
-  if (!props.isSimulator) {
+  if (!props.isSimulator || simulatorBuildRequiresCodeSigning(props.projectRoot)) {
     const developmentTeamId = await ensureDeviceIsCodeSignedForDeploymentAsync(props.projectRoot);
     if (developmentTeamId) {
       args.push(
