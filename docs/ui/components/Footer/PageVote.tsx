@@ -50,13 +50,11 @@ export const PageVote = () => {
 
 const wrapperStyle = css({
   minWidth: 250,
-  textAlign: 'center',
 });
 
 const voteButtonsWrapperStyle = css({
   display: 'flex',
   flexDirection: 'row',
-  justifyContent: 'center',
 });
 
 const voteButtonStyle = css({

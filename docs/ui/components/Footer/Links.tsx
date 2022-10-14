@@ -27,10 +27,7 @@ export const IssuesLink = ({ title }: { title: string }) => (
 export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: string }) =>
   isAPIPage ? (
     <LI>
-      <A
-        css={linkStyle}
-        openInNewTab
-        href={`https://forums.expo.dev/tag/${title}`}>
+      <A css={linkStyle} openInNewTab href={`https://forums.expo.dev/tag/${title}`}>
         <span css={iconStyle}>
           <MessageIcon size={iconSize.small} />
         </span>
