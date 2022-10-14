@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Added `bounds` property to the `BarCodeScanningResult`.
+- Added `bounds` property to the `BarCodeScanningResult`. ([#19519](https://github.com/expo/expo/pull/19519) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
