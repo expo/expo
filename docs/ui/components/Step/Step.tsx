@@ -18,7 +18,7 @@ export const Step = ({ children, label }: Props) => {
 };
 
 const stepWrapperStyle = css({
-  display: 'grid',
+  display: 'inline-grid',
   gridTemplateColumns: `${spacing[7]}px minmax(0, 1fr)`,
   gap: spacing[4],
   margin: `${spacing[2]}px 0`,
