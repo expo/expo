@@ -146,6 +146,6 @@ describe(assertRuntimePlatform, () => {
     }).not.toThrow();
     expect(() => {
       assertRuntimePlatform('not-supported');
-    }).toThrowError('platform must be "android" or "ios". Received: "not-supported"');
+    }).toThrowError('platform must be "android", "ios", or "none". Received: "not-supported"');
   });
 });
