@@ -8,8 +8,7 @@ import { createDevServerMiddleware } from '../middleware/createDevServerMiddlewa
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
-import { getAppRouterRelativeEntryPath } from './router';
-import { withMetroMultiPlatform } from './withMetroMultiPlatform';
+import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -50,11 +49,7 @@ export async function instantiateMetroAsync(
     skipPlugins: true,
   });
   const platformBundlers = getPlatformBundlers(exp);
-  metroConfig = withMetroMultiPlatform(projectRoot, metroConfig, platformBundlers);
-
-  // Auto pick App entry: this is injected with Babel.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
-  process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
+  metroConfig = await withMetroMultiPlatformAsync(projectRoot, metroConfig, platformBundlers);
 
   const {
     middleware,

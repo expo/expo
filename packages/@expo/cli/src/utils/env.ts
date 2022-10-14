@@ -104,9 +104,18 @@ class Env {
    * Disable the enforced `:80` port when using custom dev server URLs.
    * This can break the incomplete Android WebSocket implementation but allows
    * `EXPO_PACKAGER_PROXY_URL` to work as expected.
-   * */
+   */
   get EXPO_NO_DEFAULT_PORT(): boolean {
     return boolish('EXPO_NO_DEFAULT_PORT', false);
+  }
+
+  /**
+   * Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project `metro.config.js` for all platforms.
+   *
+   * By default, Expo CLI will use `['browser', 'module', 'main']` (default for Webpack) for web and the user-defined main fields for other platforms.
+   */
+  get EXPO_METRO_NO_MAIN_FIELD_OVERRIDE(): boolean {
+    return boolish('EXPO_METRO_NO_MAIN_FIELD_OVERRIDE', false);
   }
 }
 
