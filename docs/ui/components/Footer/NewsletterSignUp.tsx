@@ -3,7 +3,7 @@ import { borderRadius, shadows, spacing, theme, typography } from '@expo/stylegu
 import { useState } from 'react';
 
 import { Button } from '../Button';
-import { A, DEMI, P } from '../Text';
+import { A, CALLOUT, FOOTNOTE } from '../Text';
 
 export const NewsletterSignUp = () => {
   const [email, setEmail] = useState('');
@@ -35,13 +35,13 @@ export const NewsletterSignUp = () => {
           {userSignedUp ? 'Done!' : 'Sign Up'}
         </Button>
       </div>
-      <P theme="secondary" css={noteStyle}>
+      <FOOTNOTE theme="secondary">
         Unsubscribe at any time. Read our{' '}
-        <A href="https://expo.dev/privacy" target="_blank">
+        <A href="https://expo.dev/privacy" openInNewTab>
           privacy policy
         </A>
         .
-      </P>
+      </FOOTNOTE>
     </div>
   );
 };
@@ -51,17 +51,11 @@ const wrapperStyle = css({
   maxWidth: 400,
 });
 
-const textStyle = css({
-  ...typography.fontSizes[14],
-});
-
-const noteStyle = css({
-  ...typography.fontSizes[13],
-});
-
 const inputWrapperStyle = css({
   position: 'relative',
 });
+
+const buttonMinWidth = spacing[16] + spacing[1];
 
 const inputStyle = css({
   fontFamily: typography.fontFaces.regular,
@@ -75,7 +69,7 @@ const inputStyle = css({
   height: 48,
   width: '100%',
   margin: `${spacing[2.5]}px 0`,
-  padding: `0 ${spacing[20] + spacing[1]}px 0 ${spacing[4]}px`,
+  padding: `0 ${buttonMinWidth + spacing[4]}px 0 ${spacing[4]}px`,
   outline: 'none',
 
   '::placeholder': {
@@ -88,5 +82,5 @@ const sendButtonStyle = css({
   outline: 'none',
   right: 10,
   top: 10,
-  minWidth: 68,
+  minWidth: buttonMinWidth,
 });

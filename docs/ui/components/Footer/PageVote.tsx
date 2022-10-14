@@ -1,9 +1,9 @@
 import { css } from '@emotion/react';
-import { iconSize, spacing, ThumbsDownIcon, ThumbsUpIcon, typography } from '@expo/styleguide';
+import { iconSize, spacing, ThumbsDownIcon, ThumbsUpIcon } from '@expo/styleguide';
 import { useState } from 'react';
 
 import { Button } from '../Button';
-import { DEMI, P } from '../Text';
+import { CALLOUT } from '../Text';
 
 import { reportPageVote } from '~/providers/Analytics';
 
@@ -51,10 +51,6 @@ export const PageVote = () => {
 const wrapperStyle = css({
   minWidth: 250,
   textAlign: 'center',
-});
-
-const textStyle = css({
-  ...typography.fontSizes[14],
 });
 
 const voteButtonsWrapperStyle = css({
