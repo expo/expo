@@ -15,7 +15,7 @@ import { githubUrl } from './utils';
 
 export const IssuesLink = ({ title }: { title: string }) => (
   <LI>
-    <A css={linkStyle} target="_blank" href={`https://github.com/expo/expo/labels/${title}`}>
+    <A css={linkStyle} openInNewTab href={`https://github.com/expo/expo/labels/${title}`}>
       <span css={iconStyle}>
         <GithubIcon size={iconSize.small} />
       </span>
@@ -29,8 +29,7 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     <LI>
       <A
         css={linkStyle}
-        target="_blank"
-        rel="noopener"
+        openInNewTab
         href={`https://forums.expo.dev/tag/${title}`}>
         <span css={iconStyle}>
           <MessageIcon size={iconSize.small} />
@@ -40,7 +39,7 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     </LI>
   ) : (
     <LI>
-      <A css={linkStyle} target="_blank" rel="noopener" href="https://forums.expo.dev/">
+      <A css={linkStyle} openInNewTab href="https://forums.expo.dev/">
         <span css={iconStyle}>
           <MessageIcon size={iconSize.small} />
         </span>
@@ -57,7 +56,7 @@ export const SourceCodeLink = ({
   sourceCodeUrl: string;
 }) => (
   <LI>
-    <A css={linkStyle} target="_blank" href={sourceCodeUrl}>
+    <A css={linkStyle} openInNewTab href={sourceCodeUrl}>
       <span css={iconStyle}>
         <CodeIcon size={iconSize.small} />
       </span>
@@ -68,7 +67,7 @@ export const SourceCodeLink = ({
 
 export const GitHubLink = ({ pathname }: { pathname: string }) => (
   <LI>
-    <A css={linkStyle} target="_blank" rel="noopener" href={githubUrl(pathname)}>
+    <A css={linkStyle} openInNewTab href={githubUrl(pathname)}>
       <span css={iconStyle}>
         <EditIcon size={iconSize.small} />
       </span>

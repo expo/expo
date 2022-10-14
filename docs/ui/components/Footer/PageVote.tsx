@@ -11,13 +11,13 @@ export const PageVote = () => {
   const [userVoted, setUserVoted] = useState(false);
   return (
     <div css={wrapperStyle}>
-      <DEMI theme="secondary" css={textStyle}>
+      <CALLOUT theme="secondary" weight="medium">
         Was this doc helpful?
-      </DEMI>
+      </CALLOUT>
       {userVoted ? (
-        <P theme="secondary" css={[textStyle, ratedTextStyle]}>
+        <CALLOUT theme="secondary" css={ratedTextStyle}>
           Thank you for your vote! 💜
-        </P>
+        </CALLOUT>
       ) : (
         <div css={voteButtonsWrapperStyle}>
           <Button

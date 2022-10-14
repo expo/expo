@@ -11,9 +11,9 @@ export const NewsletterSignUp = () => {
 
   return (
     <div css={wrapperStyle}>
-      <DEMI theme="secondary" css={textStyle}>
+      <CALLOUT theme="secondary" weight="medium">
         Sign up for developer updates
-      </DEMI>
+      </CALLOUT>
       <div css={inputWrapperStyle}>
         <input
           onChange={event => setEmail(event.target.value)}
