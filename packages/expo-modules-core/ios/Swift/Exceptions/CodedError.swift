@@ -17,14 +17,7 @@ public extension CodedError {
    To obtain the code, the class name is cut off from generics and `Error` suffix, then it's converted to snake case and uppercased.
    */
   var code: String {
-    let className = String(describing: type(of: self))
-      .replacingOccurrences(of: #"(Error|Exception)?(<.*>)?$"#, with: "", options: .regularExpression)
-    let regex = try! NSRegularExpression(pattern: "(.)([A-Z])", options: [])
-    let range = NSRange(location: 0, length: className.count)
-
-    return "ERR_" + regex
-      .stringByReplacingMatches(in: className, options: [], range: range, withTemplate: "$1_$2")
-      .uppercased()
+    return errorCodeFromString(String(describing: type(of: self)))
   }
 
   /**
@@ -47,4 +40,16 @@ public struct SimpleCodedError: CodedError {
     self.code = code
     self.description = description
   }
+}
+
+func errorCodeFromString(_ str: String) -> String {
+  let name = str.replacingOccurrences(of: #"(Error|Exception)?(<.*>)?$"#, with: "", options: .regularExpression)
+  // The pattern is valid, so it'll never throw
+  // swiftlint:disable:next force_try
+  let regex = try! NSRegularExpression(pattern: "(.)([A-Z])", options: [])
+  let range = NSRange(location: 0, length: name.count)
+
+  return "ERR_" + regex
+    .stringByReplacingMatches(in: name, options: [], range: range, withTemplate: "$1_$2")
+    .uppercased()
 }

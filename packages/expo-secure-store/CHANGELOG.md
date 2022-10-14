@@ -1,9 +1,5 @@
 # Changelog
 
-### 🎉 New features
-
-- Added `requireAuthentication` and `authenticationPrompt` parameters to `SecureStoreOptions` options object used in `SecureStore.{deleteItemAsync, getItemAsync, setItemAsync}` methods to enable user authentication while accessing Secure Store. ([#14512](https://github.com/expo/expo/pull/14512) by [@j-piasecki](https://github.com/j-piasecki))
-
 ## Unpublished
 
 ### 🛠 Breaking changes
@@ -13,6 +9,8 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fixed missing `code` and `message` in promise errors. ([#19555](https://github.com/expo/expo/pull/19555) by [@tsapeta](https://github.com/tsapeta))
 
 ### ⚠️ Notices
 
