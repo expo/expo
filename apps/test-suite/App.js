@@ -6,9 +6,9 @@ import AppNavigator from './AppNavigator';
 
 const linking = {
   prefixes: [Linking.makeUrl('/')],
-  config: {
+  screens: {
     select: '',
-    run: '/run',
+    run: 'run',
   },
 };
 export default () => (
