@@ -90,6 +90,7 @@ function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={{
+        headerShown: false,
         tabBarActiveTintColor: Colors.activeTintColor,
         tabBarInactiveTintColor: Colors.inactiveTintColor,
       }}

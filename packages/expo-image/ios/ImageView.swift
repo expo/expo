@@ -26,17 +26,13 @@ public final class ImageView: ExpoView {
 
   // MARK: - Events
 
-  @Event
-  var onLoadStart: Callback<Any>
+  let onLoadStart = EventDispatcher()
 
-  @Event
-  var onProgress: Callback<Any>
+  let onProgress = EventDispatcher()
 
-  @Event
-  var onError: Callback<Any>
+  let onError = EventDispatcher()
 
-  @Event
-  var onLoad: Callback<Any>
+  let onLoad = EventDispatcher()
 
   // MARK: - ExpoView
 

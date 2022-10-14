@@ -35,6 +35,8 @@
 
 - (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value;
 
+- (void)viewDidUpdateProps;
+
 - (void)prepareForRecycle;
 
 #pragma mark - Methods injected to the class in runtime

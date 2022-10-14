@@ -6,9 +6,13 @@
 
 ### 🎉 New features
 
+- Implemented a mechanism for hooking into to the view lifecycle events (introduces new `OnViewDidUpdateProps` definition component). ([#19549](https://github.com/expo/expo/pull/19549) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Simplified dispatching view events. ([#19537](https://github.com/expo/expo/pull/19537) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.12.0 — 2022-10-06
 

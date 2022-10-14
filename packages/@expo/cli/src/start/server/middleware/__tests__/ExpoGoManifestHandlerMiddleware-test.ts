@@ -104,16 +104,21 @@ beforeEach(() => {
 describe('getParsedHeaders', () => {
   const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
 
-  // The classic manifest middleware did not assert.
-  it('asserts platform is missing', () => {
-    expect(() =>
+  it('defaults to "none" with no platform header', () => {
+    expect(
       middleware.getParsedHeaders(
         asReq({
           url: 'http://localhost:3000',
           headers: {},
         })
       )
-    ).toThrowError(/Must specify "expo-platform" header or "platform" query parameter/);
+    ).toEqual({
+      acceptSignature: false,
+      expectSignature: null,
+      explicitlyPrefersMultipartMixed: false,
+      hostname: null,
+      platform: 'none',
+    });
   });
 
   it('returns default values from headers', () => {
