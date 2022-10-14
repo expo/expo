@@ -7,6 +7,7 @@ import { ConfigReactNative, ConfigClassic } from '~/components/plugins/ConfigSec
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
@@ -31,13 +32,16 @@ It notifies you of exceptions or errors that your users run into while using you
 
 Before getting real-time updates on errors and making your app generally incredible, you'll need to make sure you've created a Sentry project. Here's how to do that:
 
-1. [Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your Dashboard. Take note of your **organization name**, **project name**, and **`DSN`**; you'll need them later.
+<Step label="1">
+[Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your Dashboard. Take note of your **organization name**, **project name**, and **`DSN`**; you'll need them later.
+- **organization name** is available in your `Organization settings` tab
+- **project name** is available in your project's `Settings` > `Projects` tab (find it in the list)
+- **`DSN`** is available in your project's `Settings` > `Projects` > **Project name** > `Client Keys (DSN)` tab
+</Step>
 
-   - **organization name** is available in your `Organization settings` tab
-   - **project name** is available in your project's `Settings` > `Projects` tab (find it in the list)
-   - **`DSN`** is avalable in your project's `Settings` > `Projects` > **Project name** > `Client Keys (DSN)` tab
-
-2. Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token**. The token requires the scopes: `org:read`, `project:releases`, and `project:write`. Save this, too.
+<Step label="2">
+Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an **auth token**. The token requires the scopes: `org:read`, `project:releases`, and `project:write`. Save this, too.
+</Step>
 
 Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
 
@@ -119,14 +123,14 @@ to your root project file (usually **App.js**), so make sure you remove it (but 
 
 </ConfigReactNative>
 
-#### 4.1: Configure a `postPublish` hook
+#### Configure a `postPublish` hook
 
 Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 
-```json
+```json app.json
 {
   "expo": {
-    // ... your existing configuration
+    /* @hide ... your existing configuration */ /* @end */
     "hooks": {
       "postPublish": [
         {
@@ -175,14 +179,14 @@ In addition to the required config fields above, you can also provide these **op
 
 </Collapsible>
 
-#### 4.2: Add the Config Plugin
+#### Add the Config Plugin
 
 Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
 
-```json
+```json app.json
 {
   "expo": {
-    // ... your existing configuration
+    /* @hide ... your existing configuration */ /* @end */
     "plugins": ["sentry-expo"]
   }
 }
@@ -207,7 +211,7 @@ With `expo-updates`, release builds of both iOS and Android apps will create and
 - The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). Manual configuration is only required for bare projects, the [sentry-expo config plugin handles it otherwise](#add-the-config-plugin).
 - Configuration for `expo publish` and `npx expo export` for projects is done via `app.json`, whether using bare workflow or not.
 
-Skipping or misconfiguring either of these can lead to invalid sourcemaps, and you won't see human readable stacktraces in your errors.
+Skipping or misconfiguring either of these can lead to invalid sourcemaps, and you won't see human-readable stacktraces in your errors.
 
 ### Self-hosting updates
 
