@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Simplified dispatching view events. ([#19537](https://github.com/expo/expo/pull/19537) by [@tsapeta](https://github.com/tsapeta))
+
 ## 0.12.0 — 2022-10-06
 
 ### 🛠 Breaking changes
