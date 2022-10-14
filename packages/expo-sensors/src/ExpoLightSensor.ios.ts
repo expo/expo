@@ -8,4 +8,6 @@ export default {
   },
   startObserving() {},
   stopObserving() {},
+  addListener() {},
+  removeListeners() {},
 };
