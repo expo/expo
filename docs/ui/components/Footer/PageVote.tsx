@@ -49,7 +49,7 @@ export const PageVote = () => {
 };
 
 const wrapperStyle = css({
-  minWidth: 250,
+  minWidth: 200,
 });
 
 const voteButtonsWrapperStyle = css({
