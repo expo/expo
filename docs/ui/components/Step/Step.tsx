@@ -11,9 +11,7 @@ type Props = PropsWithChildren<{
 export const Step = ({ children, label }: Props) => {
   return (
     <div css={stepWrapperStyle}>
-      <div>
-        <HEADLINE css={stepLabelStyle}>{label}</HEADLINE>
-      </div>
+      <HEADLINE css={stepLabelStyle}>{label}</HEADLINE>
       <div css={stepContentStyle}>{children}</div>
     </div>
   );
@@ -21,10 +19,9 @@ export const Step = ({ children, label }: Props) => {
 
 const stepWrapperStyle = css({
   display: 'grid',
-  gridTemplateColumns: `${spacing[9]}px minmax(0, 1fr)`,
+  gridTemplateColumns: `${spacing[7]}px minmax(0, 1fr)`,
   gap: spacing[4],
   margin: `${spacing[2]}px 0`,
-  float: 'left',
   width: '100%',
 });
 
@@ -32,10 +29,9 @@ const stepLabelStyle = css({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  alignSelf: 'center',
-  margin: `0 auto`,
-  width: spacing[9],
-  height: spacing[9],
+  margin: `${spacing[1]}px auto`,
+  width: spacing[7],
+  height: spacing[7],
   background: theme.background.tertiary,
   borderRadius: '100%',
 });
