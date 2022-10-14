@@ -30,6 +30,13 @@ removeSync(latest);
 copySync(vLatest, latest);
 logInfo(`Copied latest Expo SDK version from v${version}`);
 
+const removeConsole =
+  process.env.NODE_ENV !== 'development'
+    ? {
+        exclude: ['error'],
+      }
+    : false;
+
 /** @type {import('next').NextConfig}  */
 export default {
   trailingSlash: true,
@@ -40,9 +47,7 @@ export default {
   compiler: {
     emotion: true,
     reactRemoveProperties: true,
-    removeConsole: {
-      exclude: ['error'],
-    },
+    removeConsole,
   },
   swcMinify: true,
   poweredByHeader: false,

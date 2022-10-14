@@ -93,6 +93,7 @@ const nonLinkableTypes = [
   'ComponentClass',
   'E',
   'EventSubscription',
+  'Listener',
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
@@ -131,6 +132,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
+  DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   ExpoConfig:
