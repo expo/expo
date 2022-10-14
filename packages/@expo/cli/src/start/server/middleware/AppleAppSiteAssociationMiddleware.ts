@@ -1,12 +1,21 @@
+import {
+  getConfig,
+  getProjectConfigDescription,
+  getProjectConfigDescriptionWithPaths,
+} from '@expo/config';
 import { getEntitlementsPath } from '@expo/config-plugins/build/ios/Entitlements';
 import { unquote } from '@expo/config-plugins/build/ios/utils/Xcodeproj';
 import plist from '@expo/plist';
+import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { parse } from 'url';
+import { Log } from '../../../log';
 
 import { getCodeSigningInfoForPbxproj } from '../../../run/ios/codeSigning/xcodeCodeSigning';
 import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
+import { memoize } from '../../../utils/fn';
 import { AppSiteAssociation, Detail } from './aasa.types';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
@@ -67,50 +76,98 @@ export class AppleAppSiteAssociationMiddleware extends ExpoMiddleware {
       }
     }
 
-    // We currently get the bundle identifier and Apple Team ID from the pbxproj file.
-    if (!fs.existsSync(path.join(this.projectRoot, 'ios'))) {
-      debug('No iOS project found, skipping Apple App Site Association file');
+    const aasa = generateAasaForProject(this.projectRoot);
+    if (!aasa) {
       return next();
     }
 
-    try {
-      // Check if the project has a valid iOS bundle identifier
-      const info = getCodeSigningInfoForPbxproj(this.projectRoot);
-      debug('Checking info', info);
-      const firstValid = Object.values(info).find(
-        (i) => i.bundleIdentifiers.length && i.developmentTeams.length
-      );
+    const parsedResults = getOptimallyFormattedString(aasa);
 
-      if (!firstValid) {
-        debug(
-          'No valid iOS bundle identifier or Apple Team ID found for a single target in the Xcode project, skipping Apple App Site Association file.'
-        );
-        return next();
-      }
+    debug('Generated valid Apple App Site Association file:\n', parsedResults);
+    // Respond with the generated Apple App Site Association file as json
+    res.setHeader('Content-Type', 'application/json');
+    res.end(parsedResults);
+  }
+}
 
-      const aasa = generateAasaJson(this.projectRoot, {
-        // TODO: Drop unquote if/when we migrate to xcparse.
-        bundleIdentifier: unquote(firstValid.bundleIdentifiers[0]),
-        appleTeamId: unquote(firstValid.developmentTeams[0]),
-      });
+export function getUserDefinedAasaFile(projectRoot: string): string | null {
+  const publicPath = path.join(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
-      if (!aasa) {
-        debug('No valid Apple App Site Association file could be generated, skipping.');
-        return next();
-      }
-
-      const parsedResults = JSON.stringify(aasa, null, 2);
-
-      debug('Generated valid Apple App Site Association file:\n', parsedResults);
-      // Respond with the generated Apple App Site Association file as json
-      res.setHeader('Content-Type', 'application/json');
-      res.end(parsedResults);
-    } catch (e) {
-      debug('No valid iOS bundle identifier found');
-      // TODO: Maybe reject so it's easier to tell what happened?
-      return next();
+  for (const possiblePath of [
+    './apple-app-site-association',
+    './.well-known/apple-app-site-association',
+  ]) {
+    const fullPath = path.join(publicPath, possiblePath);
+    if (fs.existsSync(fullPath)) {
+      return fullPath;
     }
   }
+
+  return null;
+}
+
+export function generateAasaForProject(projectRoot: string): AppSiteAssociation | null {
+  // We currently get the bundle identifier and Apple Team ID from the pbxproj file.
+  if (!fs.existsSync(path.join(projectRoot, 'ios'))) {
+    debug('No iOS project found, skipping Apple App Site Association file');
+    maybeWarnAasaCouldNotBeGenerated(projectRoot);
+    return null;
+  }
+  // Check if the project has a valid iOS bundle identifier
+  const info = getCodeSigningInfoForPbxproj(projectRoot);
+  debug('Checking info', info);
+  const firstValid = Object.values(info).find(
+    (i) => i.bundleIdentifiers.length && i.developmentTeams.length
+  );
+
+  if (!firstValid) {
+    debug(
+      'No valid iOS bundle identifier or Apple Team ID found for a single target in the Xcode project, skipping Apple App Site Association file.'
+    );
+    maybeWarnAasaCouldNotBeGenerated(projectRoot);
+    return null;
+  }
+
+  const aasa = generateAasaJson(projectRoot, {
+    // TODO: Drop unquote if/when we migrate to xcparse.
+    bundleIdentifier: unquote(firstValid.bundleIdentifiers[0]),
+    appleTeamId: unquote(firstValid.developmentTeams[0]),
+  });
+
+  if (!aasa) {
+    debug('No valid Apple App Site Association file could be generated, skipping.');
+    return null;
+  }
+
+  const parsedResults = JSON.stringify(aasa, null, 2);
+
+  debug('Generated valid Apple App Site Association file:\n', parsedResults);
+
+  return aasa;
+}
+
+/** Will format nicely if possible, minified if too large, and assert if the file is simply too big. */
+export function getOptimallyFormattedString(json: any): string {
+  let results = JSON.stringify(json, null, 2);
+
+  if (isStringTooLarge(results)) {
+    // If the string is too large, then we should try to remove the whitespace.
+    results = JSON.stringify(json);
+
+    if (isStringTooLarge(results)) {
+      throw new CommandError(
+        'APPLE_APP_SITE_ASSOCIATION_TOO_LARGE',
+        'The apple app site association file is over 128kb which is too large.'
+      );
+    }
+  }
+
+  return results;
+}
+
+function isStringTooLarge(str: string): boolean {
+  // If the string is over 128kb, then Apple won't parse it.
+  return Buffer.byteLength(str, 'utf8') > 128 * 1024;
 }
 
 function getAppLinkDetails(id: string): Detail {
@@ -138,6 +195,20 @@ function getEntitlements(projectRoot: string) {
   return entitlements;
 }
 
+const maybeWarnAasaCouldNotBeGenerated = memoize((projectRoot: string) => {
+  const config = getConfig(projectRoot);
+  if (config.exp?.ios?.associatedDomains?.length) {
+    const configName = getProjectConfigDescriptionWithPaths(projectRoot, config);
+    Log.warn(
+      chalk`Skipping auto Apple App Site Association (web): Local {bold ios} directory is either not present, is missing the Apple Team ID, or has no {bold com.apple.developer.associated-domains} entitlements. Alternatively, you can create a ${chalk.bold(
+        path.join(env.EXPO_PUBLIC_FOLDER, '.well-known/apple-app-site-association')
+      )} file manually, or remove the {bold ios.associatedDomains} from the project ${chalk.bold(
+        configName
+      )} file to disable universal link support on iOS.`
+    );
+  }
+});
+
 function generateAasaJson(
   projectRoot: string,
   { bundleIdentifier, appleTeamId }: { bundleIdentifier: string; appleTeamId: string }
@@ -148,6 +219,8 @@ function generateAasaJson(
   const associatedDomains = entitlements?.['com.apple.developer.associated-domains'];
   // Only generate the web verification file if the native verification is setup.
   if (!associatedDomains) {
+    debug('No associated domains found in entitlements, skipping Apple App Site Association file');
+    maybeWarnAasaCouldNotBeGenerated(projectRoot);
     return null;
   }
   const supportedFields = ['activitycontinuation', 'applinks', 'webcredentials'].filter((field) => {
@@ -158,6 +231,7 @@ function generateAasaJson(
 
   if (!supportedFields.length) {
     debug('No supported fields found in entitlements associated domains');
+    maybeWarnAasaCouldNotBeGenerated(projectRoot);
     return null;
   }
 
@@ -186,4 +260,25 @@ function generateAasaJson(
   }
 
   return aasa;
+}
+
+export function ensureAasaWritten(projectRoot: string, distRoot: string): boolean {
+  if (getUserDefinedAasaFile(projectRoot)) {
+    debug('User defined Apple App Site Association file found, skipping.');
+    return false;
+  }
+
+  const aasa = generateAasaForProject(projectRoot);
+  if (!aasa) {
+    return false;
+  }
+
+  const parsedResults = getOptimallyFormattedString(aasa);
+
+  const aasaPath = path.join(distRoot, './.well-known/apple-app-site-association');
+  fs.mkdirSync(path.dirname(aasaPath), { recursive: true });
+  fs.writeFileSync(aasaPath, parsedResults);
+  Log.log('Set up Apple universal links');
+  debug('Wrote Apple App Site Association file to', aasaPath);
+  return true;
 }
