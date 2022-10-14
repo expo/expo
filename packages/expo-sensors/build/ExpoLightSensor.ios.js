@@ -8,5 +8,7 @@ export default {
     },
     startObserving() { },
     stopObserving() { },
+    addListener() { },
+    removeListeners() { },
 };
 //# sourceMappingURL=ExpoLightSensor.ios.js.map
