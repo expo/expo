@@ -4,9 +4,13 @@
 
 ### 🛠 Breaking changes
 
+- Convertible enums must inherit from `expo.modules.kotlin.types.EnumArgument` on Android.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fixed records aren't correctly converted to js objects in the release builds on Android.
 
 ### 💡 Others
 

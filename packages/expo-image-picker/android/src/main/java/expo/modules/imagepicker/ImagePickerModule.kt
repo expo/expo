@@ -4,8 +4,8 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import expo.modules.core.errors.ModuleNotFoundException
 import android.os.OperationCanceledException
+import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.imagepicker.contracts.CameraContract
 import expo.modules.imagepicker.contracts.CameraContractOptions
 import expo.modules.imagepicker.contracts.CropImageContract
@@ -21,7 +21,6 @@ import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.resume
