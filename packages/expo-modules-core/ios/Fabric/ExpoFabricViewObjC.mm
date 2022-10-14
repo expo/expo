@@ -150,6 +150,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   }
 
   [super updateProps:props oldProps:oldProps];
+  [self viewDidUpdateProps];
 }
 
 - (void)updateEventEmitter:(const react::EventEmitter::Shared &)eventEmitter
@@ -170,6 +171,11 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 #pragma mark - Methods to override in Swift
 
 - (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value
+{
+  // Implemented in `ExpoFabricView.swift`
+}
+
+- (void)viewDidUpdateProps
 {
   // Implemented in `ExpoFabricView.swift`
 }

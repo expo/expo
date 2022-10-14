@@ -45,12 +45,20 @@ public final class ViewDefinition<ViewType: UIView>: ViewManagerDefinition {
     public static func buildExpression<PropType: AnyArgument>(_ element: ConcreteViewProp<ViewType, PropType>) -> AnyViewDefinitionElement {
       return element
     }
+
+    /**
+     Accepts lifecycle methods (such as `OnViewDidUpdateProps`) as a definition element.
+     */
+    public static func buildExpression(_ element: ViewLifecycleMethod<ViewType>) -> AnyViewDefinitionElement {
+      return element
+    }
   }
 }
 
 public protocol AnyViewDefinitionElement: AnyDefinition {}
 extension ConcreteViewProp: AnyViewDefinitionElement {}
 extension EventsDefinition: AnyViewDefinitionElement {}
+extension ViewLifecycleMethod: AnyViewDefinitionElement {}
 
 /**
  Creates a view definition describing the native view exported to React.

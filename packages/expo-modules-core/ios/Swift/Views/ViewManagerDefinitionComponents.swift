@@ -24,3 +24,14 @@ public func Prop<ViewType: UIView, PropType: AnyArgument>(
     setter: setter
   )
 }
+
+// MARK: - View lifecycle
+
+/**
+ Defines the view lifecycle method that is called when the view finished updating all props.
+ */
+public func OnViewDidUpdateProps<ViewType: UIView>(
+  @_implicitSelfCapture _ closure: @escaping (_ view: ViewType) -> Void
+) -> ViewLifecycleMethod<ViewType> {
+  return ViewLifecycleMethod(type: .didUpdateProps, closure: closure)
+}

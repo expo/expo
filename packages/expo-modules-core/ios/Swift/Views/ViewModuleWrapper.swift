@@ -104,10 +104,11 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func set_proxiedProperties(_ json: Any, forView view: UIView, withDefaultView defaultView: UIView) {
-    guard let json = json as? [String: Any],
-          let props = wrappedModuleHolder.definition.viewManager?.propsDict() else {
+    guard let json = json as? [String: Any], let viewManager = wrappedModuleHolder.definition.viewManager else {
       return
     }
+    let props = viewManager.propsDict()
+
     for (key, value) in json {
       if let prop = props[key] {
         let value = Conversions.fromNSObject(value)
@@ -118,6 +119,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
         try? prop.set(value: value, onView: view)
       }
     }
+    viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
   }
 
   public static let viewManagerAdapterPrefix = "ViewManagerAdapter_"
