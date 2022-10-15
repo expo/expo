@@ -1,6 +1,5 @@
-import type { Subscription } from 'expo-modules-core';
-
-import DeviceSensor, { Listener } from './DeviceSensor';
+import type { Listener, Subscription } from './DeviceSensor';
+import DeviceSensor from './DeviceSensor';
 import ExpoBarometer from './ExpoBarometer';
 
 /**
@@ -34,6 +33,7 @@ export class BarometerSensor extends DeviceSensor<BarometerMeasurement> {
   isAvailableAsync = async (): Promise<boolean> => {
     return super.isAvailableAsync();
   };
+
   /**
    * Subscribe for updates to the barometer.
    * @param listener A callback that is invoked when a barometer update is available. When invoked, the listener is provided with a single argument that is `BarometerMeasurement`.

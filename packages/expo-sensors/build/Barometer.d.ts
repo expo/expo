@@ -1,5 +1,5 @@
-import type { Subscription } from 'expo-modules-core';
-import DeviceSensor, { Listener } from './DeviceSensor';
+import type { Listener, Subscription } from './DeviceSensor';
+import DeviceSensor from './DeviceSensor';
 /**
  * The altitude data returned from the native sensors.
  * @platform android

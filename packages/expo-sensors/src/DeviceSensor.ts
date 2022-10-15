@@ -71,7 +71,10 @@ export default class DeviceSensor<M> {
 
   /**
    * Set the sensor update interval.
-   * @param intervalMs Desired interval value in milliseconds.
+   *
+   * @param intervalMs Desired interval in milliseconds between sensor updates.
+   * > Starting from Android 12 (API level 31), the system has a 200ms limit for each sensor updates. If you need an update interval less than 200ms,
+   * you should add `<uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>` to **AndroidManifest.xml**.
    */
   setUpdateInterval = (intervalMs: number): void => {
     if (!this._nativeModule.setUpdateInterval) {
