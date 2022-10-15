@@ -1,39 +1,42 @@
 import { render } from '@testing-library/react';
-import Router, { NextRouter } from 'next/router';
+import { RouterContext } from 'next/dist/shared/lib/router-context';
+import { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import { Footer } from './Footer';
 import { githubUrl } from './utils';
 
-const mockRouter = (router: Partial<NextRouter>): NextRouter => ({ ...Router, ...router });
+const withTestRouter = (tree: React.ReactElement, router: Partial<NextRouter> = {}) => (
+  <RouterContext.Provider value={router as NextRouter}>{tree}</RouterContext.Provider>
+);
 
 describe('DocumentationFooter', () => {
   test('displays default links', () => {
-    const router = mockRouter({ asPath: '/', pathname: '/example/' });
-    const { container } = render(<Footer mockedRouter={router} title="test-title" />);
+    const router = { asPath: '/', pathname: '/example/' };
+    const { container } = render(withTestRouter(<Footer title="test-title" />, router));
 
     expect(container).toHaveTextContent('Ask a question on the forums');
     expect(container).toHaveTextContent('Edit this page');
   });
 
   test('displays forums link with tag', () => {
-    const router = mockRouter({ asPath: '/sdk/', pathname: '' });
-    const { container } = render(<Footer mockedRouter={router} title="test-title" />);
+    const router = { asPath: '/sdk/', pathname: '' };
+    const { container } = render(withTestRouter(<Footer title="test-title" />, router));
 
     expect(container).toHaveTextContent('Ask a question on the forums about test-title');
   });
 
   test('displays issues link', () => {
-    const router = mockRouter({ asPath: '/sdk/', pathname: '' });
-    const { container } = render(<Footer mockedRouter={router} title="test-title" />);
+    const router = { asPath: '/sdk/', pathname: '' };
+    const { container } = render(withTestRouter(<Footer title="test-title" />, router));
 
     expect(container).toHaveTextContent('View open bug reports for test-title');
   });
 
   test('displays source code link', () => {
-    const router = mockRouter({ asPath: '/sdk/', pathname: '' });
+    const router = { asPath: '/sdk/', pathname: '' };
     const { container } = render(
-      <Footer mockedRouter={router} title="test-title" sourceCodeUrl="/" />
+      withTestRouter(<Footer title="test-title" sourceCodeUrl="/" />, router)
     );
 
     expect(container).toHaveTextContent('View source code for test-title');

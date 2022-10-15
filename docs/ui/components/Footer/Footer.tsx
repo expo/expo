@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { breakpoints, spacing, theme } from '@expo/styleguide';
-import { NextRouter, useRouter } from 'next/router';
+import { useRouter } from 'next/router';
 
 import { ForumsLink, GitHubLink, IssuesLink, SourceCodeLink } from './Links';
 
@@ -13,11 +13,10 @@ const NEWSLETTER_DISABLED = true as const;
 type Props = {
   title: string;
   sourceCodeUrl?: string;
-  mockedRouter?: NextRouter;
 };
 
-export const Footer = ({ title, sourceCodeUrl, mockedRouter }: Props) => {
-  const router = useRouter() || mockedRouter;
+export const Footer = ({ title, sourceCodeUrl }: Props) => {
+  const router = useRouter();
 
   const isAPIPage = router.asPath.includes('/sdk/');
 
