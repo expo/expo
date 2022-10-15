@@ -8,19 +8,21 @@ import { DiffBlock } from '.';
 
 const dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const DIFF_PATH = '/static/diffs/expo-updates-js.diff';
+const DIFF_PATH = '/static/diffs/expo-ios.diff';
 const DIFF_CONTENT = fs.readFileSync(path.join(dirname, '../../../public', DIFF_PATH)).toString();
 
 const validateDiffContent = (screen: Screen) => {
-  expect(screen.getByText('app.json')).toBeInTheDocument();
-  expect(screen.getByText('index.js')).toBeInTheDocument();
-  expect(screen.getByText('metro.config.js')).toBeInTheDocument();
+  expect(screen.getByText('ios/MyApp/AppDelegate.h')).toBeInTheDocument();
+  expect(screen.getByText('ios/MyApp/AppDelegate.mm')).toBeInTheDocument();
+  expect(screen.getByText('ios/Podfile')).toBeInTheDocument();
 
-  expect(screen.getByText('"slug": "my-app",')).toBeInTheDocument();
-  expect(screen.getByText("import 'expo-asset';")).toBeInTheDocument();
+  expect(screen.getByText('#import <UIKit/UIKit.h>')).toBeInTheDocument();
   expect(
-    screen.getByText("assetPlugins: ['expo-asset/tools/hashAssetFiles'],")
+    screen.getByText(
+      '@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>'
+    )
   ).toBeInTheDocument();
+  expect(screen.getByText('#import <Expo/Expo.h>')).toBeInTheDocument();
 };
 
 describe(DiffBlock, () => {
@@ -33,7 +35,7 @@ describe(DiffBlock, () => {
 
     render(<DiffBlock source={DIFF_PATH} />);
 
-    await screen.findByText('app.json');
+    await screen.findByText('ios/MyApp/AppDelegate.h');
 
     validateDiffContent(screen);
   });
