@@ -92,6 +92,11 @@ export async function androidNativeUnitTests({
 
   if (type === 'instrumented') {
     const testCommand = 'connectedAndroidTest';
+    const uninstallTestCommand = 'uninstallDebugAndroidTest';
+
+    // TODO: remove this once avd cache saved to storage
+    await runGradlew(androidPackagesTestedUsingExpoProject, uninstallTestCommand, ANDROID_DIR);
+    await runGradlew(androidPackagesTestedUsingBareProject, uninstallTestCommand, BARE_EXPO_DIR);
 
     // We should build and test expo-modules-core first
     // that to make the `isExpoModulesCoreTests` in _expo-modules-core/android/build.gradle_ working.
@@ -113,7 +118,6 @@ export async function androidNativeUnitTests({
     );
 
     // Cleanup installed test app
-    const uninstallTestCommand = 'uninstallDebugAndroidTest';
     await runGradlew(androidPackagesTestedUsingExpoProject, uninstallTestCommand, ANDROID_DIR);
     await runGradlew(androidPackagesTestedUsingBareProject, uninstallTestCommand, BARE_EXPO_DIR);
   } else {
