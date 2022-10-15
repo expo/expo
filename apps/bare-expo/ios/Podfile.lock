@@ -198,6 +198,8 @@ PODS:
     - ExpoModulesCore
   - ExpoTrackingTransparency (2.3.1):
     - ExpoModulesCore
+  - ExpoVideoThumbnails (6.4.0):
+    - ExpoModulesCore
   - ExpoWebBrowser (11.0.0):
     - ExpoModulesCore
   - EXPrint (11.3.0):
@@ -227,8 +229,6 @@ PODS:
     - ExpoModulesCore
     - UMAppLoader
   - EXUpdatesInterface (0.7.0)
-  - EXVideoThumbnails (6.4.0):
-    - ExpoModulesCore
   - FBLazyVector (0.70.3)
   - FBReactNativeSpec (0.70.3):
     - RCT-Folly (= 2021.07.22.00)
@@ -814,6 +814,7 @@ DEPENDENCIES:
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
+  - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
@@ -828,7 +829,6 @@ DEPENDENCIES:
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
-  - EXVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../node_modules/react-native/React/FBReactNativeSpec`)
   - FirebaseCore
@@ -1075,6 +1075,9 @@ EXTERNAL SOURCES:
   ExpoTrackingTransparency:
     inhibit_warnings: false
     :path: "../../../packages/expo-tracking-transparency/ios"
+  ExpoVideoThumbnails:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-video-thumbnails/ios"
   ExpoWebBrowser:
     inhibit_warnings: false
     :path: "../../../packages/expo-web-browser/ios"
@@ -1117,9 +1120,6 @@ EXTERNAL SOURCES:
   EXUpdatesInterface:
     inhibit_warnings: false
     :path: "../../../packages/expo-updates-interface/ios"
-  EXVideoThumbnails:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-video-thumbnails/ios"
   FBLazyVector:
     :path: "../node_modules/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -1278,6 +1278,7 @@ SPEC CHECKSUMS:
   ExpoStoreReview: f85a4623e0bbce5b1a3427d033f46ab8ad38b464
   ExpoSystemUI: 30577707799df9497f510f329cc1d6798abbb7cb
   ExpoTrackingTransparency: 6792377b47c0819c7ac1bff2f68dc91304bf7116
+  ExpoVideoThumbnails: 0c2ac8ac243c1dd5a1c332e54927a72a8c6817d4
   ExpoWebBrowser: d682f920a7f34b1e09c0087bf70be64f9755c8e3
   EXPrint: 199aeeaa0b4aadb03f1c6e0d63ec39683027d1a3
   EXScreenCapture: 23e2378cdecb5a308f93fb33724c35f67a888618
@@ -1292,7 +1293,6 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: 673e4ea51d061e1a90aad0395f926011b2345857
   EXTaskManager: 83b22ad160f6b230f35d3762cb245665cd83289c
   EXUpdatesInterface: 61d6a5c6e54fc446f3da7d9be8961cd9448ae3ef
-  EXVideoThumbnails: cbdaf4120d09b3bdf4bb011031897e14038803aa
   FBLazyVector: 3b313c3fb52b597f7a9b430798e6367d2b9f07e5
   FBReactNativeSpec: 811756a0dcc5f33d1ccec38810355e2c40afd2c8
   Firebase: 800f16f07af493d98d017446a315c27af0552f41
