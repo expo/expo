@@ -19,6 +19,10 @@ public final class ImageView: ExpoView {
 
   var transition: ImageTransition?
 
+  var blurRadius: CGFloat = 0.0
+
+  var imageTintColor: UIColor = .clear
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -62,6 +66,8 @@ public final class ImageView: ExpoView {
     if let headers = source.headers {
       context[SDWebImageContextOption.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headers)
     }
+
+    context[SDWebImageContextOption.imageTransformer] = createTransformPipeline()
 
     onLoadStart([:])
 
@@ -111,6 +117,14 @@ public final class ImageView: ExpoView {
   }
 
   // MARK: - Processing
+
+  private func createTransformPipeline() -> SDImagePipelineTransformer {
+    let transformers: [SDImageTransformer] = [
+      SDImageBlurTransformer(radius: blurRadius),
+      SDImageTintTransformer(color: imageTintColor)
+    ]
+    return SDImagePipelineTransformer(transformers: transformers)
+  }
 
   private func processImage(_ image: UIImage?) -> UIImage? {
     guard let image = image else {
