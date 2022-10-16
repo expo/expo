@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed records aren't correctly converted to js objects in the release builds on Android.
+- Fixed records aren't correctly converted to JS objects in the release builds on Android. ([#19551](https://github.com/expo/expo/pull/19551) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
