@@ -3,7 +3,6 @@
 package expo.modules.kotlin.viewevent
 
 import android.view.View
-import expo.modules.kotlin.callbacks.Callback
 import java.lang.ref.WeakReference
 import kotlin.reflect.KProperty
 import kotlin.reflect.KType
@@ -19,7 +18,7 @@ class ViewEventDelegate<T>(
   private val viewHolder = WeakReference(view)
   internal var isValidated = false
 
-  operator fun getValue(thisRef: View, property: KProperty<*>): Callback<T> {
+  operator fun getValue(thisRef: View, property: KProperty<*>): ViewEventCallback<T> {
     if (!isValidated) {
       throw IllegalStateException("You have to export this property as a callback in the `ViewManager`.")
     }
@@ -35,11 +34,13 @@ class ViewEventDelegate<T>(
  * @param coalescingKey a key generator used to determine which other events of this type this event can be coalesced with.
  * For example, touch move events should only be coalesced within a single gesture so a coalescing key there would be the unique gesture id.
  */
-inline fun <reified T> View.Event(noinline coalescingKey: CoalescingKey<T>? = null): ViewEventDelegate<T> {
+@Suppress("FunctionName")
+inline fun <reified T> View.EventDispatcher(noinline coalescingKey: CoalescingKey<T>? = null): ViewEventDelegate<T> {
   return ViewEventDelegate(typeOf<T>(), this, coalescingKey)
 }
 
-@JvmName("MapEvent")
-fun View.Event(coalescingKey: CoalescingKey<Map<String, Any>>? = null): ViewEventDelegate<Map<String, Any>> {
+@JvmName("MapEventDispatcher")
+@Suppress("FunctionName")
+fun View.EventDispatcher(coalescingKey: CoalescingKey<Map<String, Any>>? = null): ViewEventDelegate<Map<String, Any>> {
   return ViewEventDelegate(typeOf<Map<String, Any>>(), this, coalescingKey)
 }

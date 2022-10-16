@@ -5,7 +5,7 @@ import android.content.Context
 import android.os.Bundle
 import android.widget.FrameLayout
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.viewevent.Event
+import expo.modules.kotlin.viewevent.EventDispatcher
 
 /**
  * We need the wrapper to be able to remove the view from the React-managed tree
@@ -42,12 +42,12 @@ class VideoViewWrapper(context: Context, appContext: AppContext) : FrameLayout(c
 
   //region view callbacks
 
-  val onStatusUpdate by Event<Bundle>()
-  val onLoadStart by Event<Unit>()
-  val onLoad by Event<Bundle>()
-  val onError by Event<Bundle>()
-  val onReadyForDisplay by Event<Bundle>()
-  val onFullscreenUpdate by Event<Bundle>()
+  val onStatusUpdate by EventDispatcher<Bundle>()
+  val onLoadStart by EventDispatcher<Unit>()
+  val onLoad by EventDispatcher<Bundle>()
+  val onError by EventDispatcher<Bundle>()
+  val onReadyForDisplay by EventDispatcher<Bundle>()
+  val onFullscreenUpdate by EventDispatcher<Bundle>()
 
   //endregion
 }

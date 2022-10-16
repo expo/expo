@@ -41,7 +41,7 @@ import expo.modules.camera.utils.mapY
 import kotlin.math.roundToInt
 import android.view.WindowManager
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
-import expo.modules.kotlin.viewevent.Event
+import expo.modules.kotlin.viewevent.EventDispatcher
 
 class ExpoCameraView(
   context: Context,
@@ -61,9 +61,9 @@ class ExpoCameraView(
   private var isPaused = false
   private var isNew = true
 
-  private val onCameraReady by Event<Unit>()
-  private val onMountError by Event<CameraMountErrorEvent>()
-  private val onBarCodeScanned by Event<BarCodeScannedEvent>(
+  private val onCameraReady by EventDispatcher<Unit>()
+  private val onMountError by EventDispatcher<CameraMountErrorEvent>()
+  private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
     /**
      * We want every distinct barcode to be reported to the JS listener.
      * If we return some static value as a coalescing key there may be two barcode events
@@ -73,15 +73,15 @@ class ExpoCameraView(
      */
     coalescingKey = { event -> (event.data.hashCode() % Short.MAX_VALUE).toShort() }
   )
-  private val onFacesDetected by Event<FacesDetectedEvent>(
+  private val onFacesDetected by EventDispatcher<FacesDetectedEvent>(
     /**
      * Should events about detected faces coalesce, the best strategy will be
      * to ensure that events with different faces count are always being transmitted.
      */
     coalescingKey = { event -> (event.faces.size % Short.MAX_VALUE).toShort() }
   )
-  private val onFaceDetectionError by Event<FaceDetectionErrorEvent>()
-  private val onPictureSaved by Event<PictureSavedEvent>(
+  private val onFaceDetectionError by EventDispatcher<FaceDetectionErrorEvent>()
+  private val onPictureSaved by EventDispatcher<PictureSavedEvent>(
     coalescingKey = { event ->
       val uriHash = event.data.getString("uri")?.hashCode() ?: -1
       (uriHash % Short.MAX_VALUE).toShort()
