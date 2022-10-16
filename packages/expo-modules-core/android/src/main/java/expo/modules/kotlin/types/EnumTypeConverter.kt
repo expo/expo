@@ -28,8 +28,8 @@ class EnumTypeConverter(
   }
 
   init {
-    if (!enumClass.isSubclassOf(EnumArgument::class)) {
-      logger.warn("Enum '${enumClass}' should inherit from ${EnumArgument::class}.")
+    if (!enumClass.isSubclassOf(Enumerable::class)) {
+      logger.warn("Enum '$enumClass' should inherit from ${Enumerable::class}.")
     }
   }
 

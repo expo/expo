@@ -3,7 +3,7 @@ package expo.modules.imagepicker
 import android.os.Bundle
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.EnumArgument
+import expo.modules.kotlin.types.Enumerable
 
 internal class ImagePickerCancelledResponse : Record {
   @Field
@@ -48,7 +48,7 @@ internal sealed class ImagePickerResponse : Record {
   ) : ImagePickerResponse()
 }
 
-enum class MediaType(val value: String) : EnumArgument {
+enum class MediaType(val value: String) : Enumerable {
   VIDEO("video"),
   IMAGE("image"),
 }

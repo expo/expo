@@ -1,8 +1,8 @@
 package expo.modules.crypto
 
-import expo.modules.kotlin.types.EnumArgument
+import expo.modules.kotlin.types.Enumerable
 
-enum class DigestAlgorithm(val value: String) : EnumArgument {
+enum class DigestAlgorithm(val value: String) : Enumerable {
   MD5("MD5"),
   SHA1("SHA-1"),
   SHA256("SHA-256"),

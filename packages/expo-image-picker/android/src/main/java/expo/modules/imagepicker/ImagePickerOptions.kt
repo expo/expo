@@ -9,7 +9,7 @@ import expo.modules.imagepicker.contracts.CameraContractOptions
 import expo.modules.imagepicker.contracts.ImageLibraryContractOptions
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.EnumArgument
+import expo.modules.kotlin.types.Enumerable
 
 internal class ImagePickerOptions : Record, Serializable {
   @Field
@@ -42,7 +42,7 @@ internal class ImagePickerOptions : Record, Serializable {
   fun toImageLibraryContractOptions() = ImageLibraryContractOptions(this)
 }
 
-internal enum class MediaTypes(val value: String) : EnumArgument {
+internal enum class MediaTypes(val value: String) : Enumerable {
   IMAGES("Images"),
   VIDEOS("Videos"),
   ALL("All");

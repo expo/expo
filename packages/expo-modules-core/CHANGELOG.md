@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Convertible enums must inherit from `expo.modules.kotlin.types.EnumArgument` on Android.
+- Convertible enums must inherit from `expo.modules.kotlin.types.Enumerable` on Android.
 
 ### 🎉 New features
 
