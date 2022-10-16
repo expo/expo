@@ -240,11 +240,12 @@ class AppContext(
   }
 
   internal fun onHostResume() {
-    activityResultsManager.onHostResume(
-      requireNotNull(currentActivity) {
-        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
-      }
-    )
+    val activity = currentActivity
+    check(activity is AppCompatActivity) {
+      "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
+    }
+
+    activityResultsManager.onHostResume(activity)
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
@@ -254,6 +255,10 @@ class AppContext(
 
   internal fun onHostDestroy() {
     currentActivity?.let {
+      check(it is AppCompatActivity) {
+        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
+      }
+
       activityResultsManager.onHostDestroy(it)
     }
     registry.post(EventName.ACTIVITY_DESTROYS)
@@ -288,15 +293,9 @@ class AppContext(
 
 // region CurrentActivityProvider
 
-  override val currentActivity: AppCompatActivity?
+  override val currentActivity: Activity?
     get() {
-      val currentActivity = this.activityProvider?.currentActivity ?: return null
-
-      check(currentActivity is AppCompatActivity) {
-        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity.localClassName}"
-      }
-
-      return currentActivity
+      return activityProvider?.currentActivity
     }
 
 // endregion
