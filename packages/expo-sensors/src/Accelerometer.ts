@@ -28,9 +28,9 @@ export class AccelerometerSensor extends DeviceSensor<AccelerometerMeasurement> 
    *
    * @return A promise that resolves to a `boolean` denoting the availability of the accelerometer.
    */
-  isAvailableAsync = async (): Promise<boolean> => {
+  async isAvailableAsync(): Promise<boolean> {
     return super.isAvailableAsync();
-  };
+  }
 
   /**
    * Subscribe for updates to the accelerometer.
@@ -40,9 +40,9 @@ export class AccelerometerSensor extends DeviceSensor<AccelerometerMeasurement> 
    *
    * @return A subscription that you can call `remove()` on when you would like to unsubscribe the listener.
    */
-  addListener = (listener: Listener<AccelerometerMeasurement>): Subscription => {
+  addListener(listener: Listener<AccelerometerMeasurement>): Subscription {
     return super.addListener(listener);
-  };
+  }
 }
 
 export default new AccelerometerSensor(ExponentAccelerometer, 'accelerometerDidUpdate');

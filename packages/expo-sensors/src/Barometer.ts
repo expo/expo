@@ -30,9 +30,9 @@ export class BarometerSensor extends DeviceSensor<BarometerMeasurement> {
    * Check the availability of the device barometer. Requires at least Android 2.3 (API Level 9) and iOS 8.
    * @return A promise that resolves to a `boolean` denoting the availability of the sensor.
    */
-  isAvailableAsync = async (): Promise<boolean> => {
+  async isAvailableAsync(): Promise<boolean> {
     return super.isAvailableAsync();
-  };
+  }
 
   /**
    * Subscribe for updates to the barometer.
@@ -46,9 +46,9 @@ export class BarometerSensor extends DeviceSensor<BarometerMeasurement> {
    * ```
    * @return A subscription that you can call `remove()` on when you would like to unsubscribe the listener.
    */
-  addListener = (listener: Listener<BarometerMeasurement>): Subscription => {
+  addListener(listener: Listener<BarometerMeasurement>): Subscription {
     return super.addListener(listener);
-  };
+  }
 }
 
 export default new BarometerSensor(ExpoBarometer, 'barometerDidUpdate');

@@ -14,12 +14,13 @@ export default class DeviceSensor {
         this._nativeEventName = nativeEventName;
         this._listenerCount = 0;
     }
-    addListener = (listener) => {
+    addListener(listener) {
         const subscription = this._nativeEmitter.addListener(this._nativeEventName, listener);
         subscription.remove = () => this.removeSubscription(subscription);
         this._listenerCount++;
         return subscription;
-    };
+    }
+    ;
     /**
      * Returns boolean which signifies if sensor has any listeners registered.
      */
@@ -66,14 +67,15 @@ export default class DeviceSensor {
      * > **info** You should always check the sensor availability before attempting to use it.
      * @return A promise that resolves to a `boolean` denoting the availability of the sensor.
      */
-    isAvailableAsync = async () => {
+    async isAvailableAsync() {
         if (!this._nativeModule.isAvailableAsync) {
             return false;
         }
         else {
             return await this._nativeModule.isAvailableAsync();
         }
-    };
+    }
+    ;
     /**
      * Checks user's permissions for accessing sensor.
      */

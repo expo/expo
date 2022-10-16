@@ -14,7 +14,7 @@ export default class DeviceSensor<M> {
     _nativeEventName: string;
     _listenerCount: number;
     constructor(nativeSensorModule: NativeSensorModule, nativeEventName: string);
-    addListener: (listener: Listener<M>) => Subscription;
+    addListener(listener: Listener<M>): Subscription;
     /**
      * Returns boolean which signifies if sensor has any listeners registered.
      */
@@ -44,7 +44,7 @@ export default class DeviceSensor<M> {
      * > **info** You should always check the sensor availability before attempting to use it.
      * @return A promise that resolves to a `boolean` denoting the availability of the sensor.
      */
-    isAvailableAsync: () => Promise<boolean>;
+    isAvailableAsync(): Promise<boolean>;
     /**
      * Checks user's permissions for accessing sensor.
      */

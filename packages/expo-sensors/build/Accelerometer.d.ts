@@ -25,7 +25,7 @@ export declare class AccelerometerSensor extends DeviceSensor<AccelerometerMeasu
      *
      * @return A promise that resolves to a `boolean` denoting the availability of the accelerometer.
      */
-    isAvailableAsync: () => Promise<boolean>;
+    isAvailableAsync(): Promise<boolean>;
     /**
      * Subscribe for updates to the accelerometer.
      *
@@ -34,7 +34,7 @@ export declare class AccelerometerSensor extends DeviceSensor<AccelerometerMeasu
      *
      * @return A subscription that you can call `remove()` on when you would like to unsubscribe the listener.
      */
-    addListener: (listener: Listener<AccelerometerMeasurement>) => Subscription;
+    addListener(listener: Listener<AccelerometerMeasurement>): Subscription;
 }
 declare const _default: AccelerometerSensor;
 export default _default;
