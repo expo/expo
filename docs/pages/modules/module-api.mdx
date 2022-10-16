@@ -430,7 +430,7 @@ struct FileReadOptions: Record {
 
 ```kotlin
 // Note: the constructor must have an argument called value.
-enum class FileEncoding(val value: String) {
+enum class FileEncoding(val value: String) : EnumArgument {
   utf8("utf8"),
   base64("base64")
 }
