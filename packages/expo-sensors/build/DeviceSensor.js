@@ -20,7 +20,6 @@ export default class DeviceSensor {
         this._listenerCount++;
         return subscription;
     }
-    ;
     /**
      * Returns boolean which signifies if sensor has any listeners registered.
      */
@@ -75,7 +74,6 @@ export default class DeviceSensor {
             return await this._nativeModule.isAvailableAsync();
         }
     }
-    ;
     /**
      * Checks user's permissions for accessing sensor.
      */
