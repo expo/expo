@@ -74,12 +74,12 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
-  // This ndkVersion should align to react-native and fbjni building ndkVersion.
-  // Because the unwind library is different before NDK r23 and after,
-  // if we build this library with newer NDK, C++ exceptions are incompatible between these libraries.
-  // For example, C++ exceptions throwing from fbjni are not catchable from this library.
-  // Ref: https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#unwinding
-  ndkVersion = "21.4.7075529"
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11

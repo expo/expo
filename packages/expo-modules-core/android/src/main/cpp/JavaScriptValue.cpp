@@ -78,7 +78,7 @@ std::string JavaScriptValue::kind() {
     return "object";
   }
 
-  jni::throwNewJavaException(
+  throwNewJavaException(
     UnexpectedException::create("Unknown type").get()
   );
 }
