@@ -30,3 +30,4 @@ Here are some overarching principles and design goals that influenced the design
 
 - expo-updates uses the manifest `id` (`releaseId` for classic updates) as a unique identifier across all updates. If a server hosts two manifests with the same `id` but differences elsewhere, expo-updates will not compare the manifests and notice the difference.
   - In other words - from the server's point of view, updates are essentially immutable in the expo-updates client.
+- expo-updates writes assets to disk with a filename derived from the `key` attribute in the manifest, and it assumes that any two files with the same `key` are the same asset and can be substituted for one another. This holds as long as the updates service ensures `key`s are unique across all assets (as both EAS Update and the classic Expo updates service currently do).
