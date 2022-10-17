@@ -50,7 +50,6 @@ in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - eg. `export ANDROID_HOME=
 [ -d "$HOME/Library/Android/sdk" ] && ANDROID_HOME=$HOME/Library/Android/sdk || ANDROID_HOME=$HOME/Android/Sdk
 echo "export ANDROID_HOME=$ANDROID_HOME" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
-
 </Step>
 
 <Step label="6">
@@ -60,7 +59,6 @@ Copy and paste this line to do this automatically for Bash and Zsh:
 ```bash
 echo "export PATH=$ANDROID_HOME/platform-tools:\$PATH" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
-
 </Step>
 
 <Step label="7">
@@ -69,10 +67,13 @@ Reload the path environment variables by running:
 ```bash
 source ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
-
 </Step>
 
-<Step label="8">Finally, make sure that you can run `adb` from your terminal.</Step>
+<Step label="8">
+
+Finally, make sure that you can run `adb` from your terminal.
+
+</Step>
 
 ## Set up a virtual device
 
