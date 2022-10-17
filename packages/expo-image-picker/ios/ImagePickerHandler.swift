@@ -46,7 +46,7 @@ internal class ImagePickerHandler: NSObject,
     onMediaPickingResultHandler.didPickMultipleMedia(selection: selection)
   }
 
-  private func handlePickingCancellation() {
+  private func handlePickingCancelation() {
     statusBarVisibilityController.maybeRestoreStatusBarVisibility()
     onMediaPickingResultHandler.didCancelPicking()
   }
@@ -64,7 +64,7 @@ internal class ImagePickerHandler: NSObject,
   func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
     DispatchQueue.main.async {
       picker.dismiss(animated: true) { [weak self] in
-        self?.handlePickingCancellation()
+        self?.handlePickingCancelation()
       }
     }
   }
@@ -75,9 +75,9 @@ internal class ImagePickerHandler: NSObject,
   func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
     DispatchQueue.main.async {
       picker.dismiss(animated: true) { [weak self] in
-        // The PHPickerViewController returns empty collection when cancelled
+        // The PHPickerViewController returns empty collection when canceled
         if results.isEmpty {
-          self?.handlePickingCancellation()
+          self?.handlePickingCancelation()
         } else {
           self?.handlePickedMedia(selection: results)
         }
@@ -88,7 +88,7 @@ internal class ImagePickerHandler: NSObject,
   // MARK: - UIAdaptivePresentationControllerDelegate
 
   func presentationControllerDidDismiss(_ presentationController: UIPresentationController) {
-    handlePickingCancellation()
+    handlePickingCancelation()
   }
 
   // MARK: - UINavigationControllerDelegate

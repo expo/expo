@@ -23,7 +23,7 @@ internal struct MediaHandler {
 
   @available(iOS 14, *)
   internal func handleMultipleMedia(_ selection: [PHPickerResult], completion: @escaping (ImagePickerResult) -> Void) {
-    var results = Array<SelectedMediaInfo?>(repeating: nil, count: selection.count)
+    var results = [AssetInfo?](repeating: nil, count: selection.count)
 
     let dispatchGroup = DispatchGroup()
     let dispatchQueue = DispatchQueue(label: "expo.imagepicker.multipleMediaHandler")
@@ -54,7 +54,9 @@ internal struct MediaHandler {
     }
 
     dispatchGroup.notify(queue: .main) {
-      completion(.success(ImagePickerMultipleResponse(results: results.compactMap { $0 } )))
+      completion(.success(
+        ImagePickerResponse(assets: results.compactMap({ $0 }), canceled: false)
+      ))
     }
   }
 
@@ -92,15 +94,16 @@ internal struct MediaHandler {
                                                            shouldReadBase64: self.options.base64)
 
       ImageUtils.optionallyReadExifFrom(mediaInfo: mediaInfo, shouldReadExif: self.options.exif) { exif in
-        let result: ImagePickerSingleResponse = .image(ImageInfo(assetId: asset?.localIdentifier,
-                                                                 uri: targetUrl.absoluteString,
-                                                                 width: image.size.width,
-                                                                 height: image.size.height,
-                                                                 fileName: fileName,
-                                                                 fileSize: fileSize,
-                                                                 base64: base64,
-                                                                 exif: exif))
-        completion(.success(result))
+        let imageInfo = AssetInfo(assetId: asset?.localIdentifier,
+                                  uri: targetUrl.absoluteString,
+                                  width: image.size.width,
+                                  height: image.size.height,
+                                  fileName: fileName,
+                                  fileSize: fileSize,
+                                  base64: base64,
+                                  exif: exif)
+        let response = ImagePickerResponse(assets: [imageInfo], canceled: false)
+        completion(.success(response))
       }
     } catch let exception as Exception {
       return completion(.failure(exception))
@@ -139,15 +142,15 @@ internal struct MediaHandler {
                                                              tryReadingFile: false,
                                                              shouldReadBase64: self.options.base64)
 
-        let result = ImageInfo(assetId: selectedImage.assetIdentifier,
-                               uri: targetUrl.absoluteString,
-                               width: image.size.width,
-                               height: image.size.height,
-                               fileName: fileName,
-                               fileSize: fileSize,
-                               base64: base64,
-                               exif: exif)
-        completion(index, .success(result))
+        let imageInfo = AssetInfo(assetId: selectedImage.assetIdentifier,
+                                  uri: targetUrl.absoluteString,
+                                  width: image.size.width,
+                                  height: image.size.height,
+                                  fileName: fileName,
+                                  fileSize: fileSize,
+                                  base64: base64,
+                                  exif: exif)
+        completion(index, .success(imageInfo))
       } catch let exception as Exception {
         return completion(index, .failure(exception))
       } catch {
@@ -182,15 +185,15 @@ internal struct MediaHandler {
       let asset = mediaInfo[.phAsset] as? PHAsset
       let fileName = asset?.value(forKey: "filename") as? String
       let fileSize = getFileSize(from: targetUrl)
+      let videoInfo = AssetInfo(assetId: asset?.localIdentifier,
+                                uri: targetUrl.absoluteString,
+                                width: dimensions.width,
+                                height: dimensions.height,
+                                fileName: fileName,
+                                fileSize: fileSize,
+                                duration: duration)
 
-      let result: ImagePickerSingleResponse = .video(VideoInfo(assetId: asset?.localIdentifier,
-                                                               uri: targetUrl.absoluteString,
-                                                               width: dimensions.width,
-                                                               height: dimensions.height,
-                                                               fileName: fileName,
-                                                               fileSize: fileSize,
-                                                               duration: duration))
-      completion(.success(result))
+      completion(.success(ImagePickerResponse(assets: [videoInfo], canceled: false)))
     } catch let exception as Exception {
       return completion(.failure(exception))
     } catch {
@@ -265,7 +268,7 @@ internal struct MediaHandler {
     let duration = VideoUtils.readDurationFrom(url: videoUrl)
     let fileSize = getFileSize(from: videoUrl)
 
-    let result = VideoInfo(assetId: assetId,
+    let result = AssetInfo(assetId: assetId,
                            uri: videoUrl.absoluteString,
                            width: size.width,
                            height: size.height,

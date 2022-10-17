@@ -140,7 +140,7 @@ class ImagePickerModule : Module() {
       }
       mediaHandler.readExtras(result.data, options)
     } catch (cause: OperationCanceledException) {
-      ImagePickerCancelledResponse()
+      return ImagePickerResponse(canceled = true)
     }
   }
 

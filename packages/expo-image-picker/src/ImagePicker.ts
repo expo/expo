@@ -13,14 +13,11 @@ import {
   CameraPermissionResponse,
   MediaLibraryPermissionResponse,
   ImagePickerResult,
+  ImagePickerAsset,
   ImagePickerErrorResult,
   MediaTypeOptions,
   ImagePickerOptions,
   VideoExportPreset,
-  ExpandImagePickerResult,
-  ImageInfo,
-  ImagePickerMultipleResult,
-  ImagePickerCancelledResult,
   OpenFileBrowserOptions,
   UIImagePickerControllerQualityType,
   UIImagePickerPresentationStyle,
@@ -179,7 +176,13 @@ export async function launchCameraAsync(
   if (!ExponentImagePicker.launchCameraAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
   }
-  return await ExponentImagePicker.launchCameraAsync(validateOptions(options));
+  const result = await ExponentImagePicker.launchCameraAsync(validateOptions(options));
+
+  return {
+    ...result,
+    ...(result.assets?.[0] ?? {}),
+    cancelled: result.canceled,
+  };
 }
 
 // @needsAudit
@@ -202,9 +205,9 @@ export async function launchCameraAsync(
  * this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`;
  * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
  */
-export async function launchImageLibraryAsync<T extends ImagePickerOptions>(
-  options?: T
-): Promise<ExpandImagePickerResult<T>> {
+export async function launchImageLibraryAsync(
+  options?: ImagePickerOptions
+): Promise<ImagePickerResult> {
   if (!ExponentImagePicker.launchImageLibraryAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
   }
@@ -215,7 +218,13 @@ export async function launchImageLibraryAsync<T extends ImagePickerOptions>(
         'to fix this warning.'
     );
   }
-  return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
+  const result = await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
+
+  return {
+    ...result,
+    ...(result.assets?.[0] ?? {}),
+    cancelled: result.canceled,
+  };
 }
 
 export {
@@ -223,6 +232,7 @@ export {
   ImagePickerOptions,
   ImagePickerResult,
   ImagePickerErrorResult,
+  ImagePickerAsset,
   VideoExportPreset,
   CameraPermissionResponse,
   MediaLibraryPermissionResponse,
@@ -230,11 +240,7 @@ export {
   PermissionExpiration,
   PermissionHookOptions,
   PermissionResponse,
-  ImageInfo,
-  ImagePickerMultipleResult,
-  ImagePickerCancelledResult,
   OpenFileBrowserOptions,
-  ExpandImagePickerResult,
   UIImagePickerControllerQualityType,
   UIImagePickerPresentationStyle,
 };

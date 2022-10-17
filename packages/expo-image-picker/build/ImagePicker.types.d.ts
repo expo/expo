@@ -194,7 +194,11 @@ export declare enum UIImagePickerPresentationStyle {
      */
     Automatic = "automatic"
 }
-export declare type ImageInfo = {
+/**
+ * @deprecated Use `AssetInfo` instead
+ */
+export declare type ImageInfo = ImagePickerAsset;
+export declare type ImagePickerAsset = {
     /**
      * URI to the local image or video file (usable as the source of an `Image` element, in the case of
      * an image) and `width` and `height` specify the dimensions of the media.
@@ -241,28 +245,23 @@ export declare type ImageInfo = {
      * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
      * respective EXIF values for those tags.
      */
-    exif?: Record<string, any>;
+    exif?: Record<string, any> | null;
     /**
-     * Included if the `base64` option is truthy, and is a Base64-encoded string of the selected
-     * image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI,
+     * When the `base64` option is truthy, it is a Base64-encoded string of the selected image's JPEG data, otherwise `null`.
+     * If you prepend this with `'data:image/jpeg;base64,'` to create a data URI,
      * you can use it as the source of an `Image` element; for example:
      * ```ts
      * <Image
-     *   source={{ uri: 'data:image/jpeg;base64,' + launchCameraResult.base64 }}
+     *   source={{ uri: 'data:image/jpeg;base64,' + asset.base64 }}
      *   style={{ width: 200, height: 200 }}
      * />
      * ```
      */
-    base64?: string;
+    base64?: string | null;
     /**
-     * Length of the video in milliseconds.
+     * Length of the video in milliseconds or `null` if the asset is not a video.
      */
-    duration?: number;
-    /**
-     * Boolean flag which shows if request was cancelled. If asset data have been returned this should
-     * always be `false`.
-     */
-    cancelled: boolean;
+    duration?: number | null;
 };
 export declare type ImagePickerErrorResult = {
     /**
@@ -278,16 +277,79 @@ export declare type ImagePickerErrorResult = {
      */
     exception?: string;
 };
-/**
- * An object returned when the pick action has been cancelled by the user.
- */
-export declare type ImagePickerCancelledResult = {
-    cancelled: true;
+export declare type ImagePickerResult = {
+    /**
+     * An array of picked assets or `null` when the request was canceled.
+     */
+    assets: ImagePickerAsset[] | null;
+    /**
+     * Boolean flag which shows if request was canceled. If asset data have been returned this should
+     * always be `false`.
+     */
+    canceled: boolean;
+    /**
+     * @hidden
+     * @deprecated Use an American English spelling: `canceled`
+     */
+    cancelled?: boolean;
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    uri?: string;
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    assetId?: string | null;
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    width?: number;
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    height?: number;
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    type?: 'image' | 'video';
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    fileName?: string | null;
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    fileSize?: number;
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    exif?: Record<string, any>;
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    base64?: string;
+    /**
+     * @hidden
+     * @deprecated Details about picked assets have been moved to `assets` array.
+     */
+    duration?: number;
+} & (ImagePickerResultSucceeded | ImagePickerResultCanceled);
+declare type ImagePickerResultSucceeded = {
+    canceled: false;
+    assets: ImagePickerAsset[];
 };
-export declare type ImagePickerResult = ImagePickerCancelledResult | ImageInfo;
-export declare type ImagePickerMultipleResult = ImagePickerCancelledResult | {
-    cancelled: false;
-    selected: ImageInfo[];
+declare type ImagePickerResultCanceled = {
+    canceled: true;
+    assets: null;
 };
 export declare type ImagePickerOptions = {
     /**
@@ -414,7 +476,5 @@ export declare type OpenFileBrowserOptions = {
      */
     base64: boolean;
 };
-export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
-    allowsMultipleSelection: true;
-} ? ImagePickerMultipleResult : ImagePickerResult;
+export {};
 //# sourceMappingURL=ImagePicker.types.d.ts.map

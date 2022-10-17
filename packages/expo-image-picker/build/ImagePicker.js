@@ -121,7 +121,12 @@ export async function launchCameraAsync(options = {}) {
     if (!ExponentImagePicker.launchCameraAsync) {
         throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
     }
-    return await ExponentImagePicker.launchCameraAsync(validateOptions(options));
+    const result = await ExponentImagePicker.launchCameraAsync(validateOptions(options));
+    return {
+        ...result,
+        ...(result.assets?.[0] ?? {}),
+        cancelled: result.canceled,
+    };
 }
 // @needsAudit
 /**
@@ -152,7 +157,12 @@ export async function launchImageLibraryAsync(options) {
             "Disable either 'allowsEditing' or 'allowsMultipleSelection' in 'launchImageLibraryAsync' " +
             'to fix this warning.');
     }
-    return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
+    const result = await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
+    return {
+        ...result,
+        ...(result.assets?.[0] ?? {}),
+        cancelled: result.canceled,
+    };
 }
 export { MediaTypeOptions, VideoExportPreset, PermissionStatus, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
 //# sourceMappingURL=ImagePicker.js.map
