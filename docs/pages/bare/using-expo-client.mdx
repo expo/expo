@@ -6,7 +6,7 @@ sidebar_title: Using Expo Go
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { InlineCode } from '~/components/base/code';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 
 The [Expo Go][expo-go] app is capable of running most React Native apps regardless of how they are bootstrapped. Developing any React Native app in Expo Go is useful because you can distribute your project instantly to the members of your [organization](/accounts/account-types/#organizations), and no native build or provisioning is required.
 
@@ -39,7 +39,7 @@ Inside any React Native app, start a [development server with Expo CLI](/workflo
 
 Then, launch your app in Expo Go by pressing <kbd>i</kbd> or <kbd>a</kbd> in the Terminal UI. Some features may cause your app to throw errors because certain native code is missing, continue reading to learn how you can conditionally skip unsupported APIs.
 
-> Unlike `npx react-native start` the command `npx expo start` hosts an app manifest that dev clients like Expo Go can use to load arbitrary projects. Think of an app manifest like the `<head />` element of an `index.html` but for React Native apps. To view this manifest, visit the dev server URL in your web browser.
+> **info** Unlike `npx react-native start` the command `npx expo start` hosts an app manifest that dev clients like Expo Go can use to load arbitrary projects. Think of an app manifest like the `<head />` element of an `index.html` but for React Native apps. To view this manifest, visit the dev server URL in your web browser.
 
 ## Installing libraries
 

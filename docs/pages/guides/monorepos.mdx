@@ -60,7 +60,7 @@ Now that we have the basic monorepo structure set up, let's add our first app. B
   cmdCopy="yarn create expo-app apps/cool-app"
 />
 
-> If you have an existing app, you can copy all those files inside a subfolder.
+> **info** If you have an existing app, you can copy all those files inside a subfolder.
 
 After copying or creating the first app, run `yarn` to check for common warnings.
 
@@ -74,7 +74,7 @@ Metro doesn't come with monorepo support by default (yet). That's why we need to
 
 We can configure that by creating a **metro.config.js** with the following content.
 
-> Learn more about customizing Metro in [our guide](/guides/customizing-metro).
+> **info** Learn more about [customizing Metro](/guides/customizing-metro).
 
 ```js
 // Learn more https://docs.expo.dev/guides/monorepos
@@ -259,7 +259,7 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
 }
 ```
 
-> After adding the package as a dependency, run `yarn install` to install or link the dependency to your app.
+> **info** After adding the package as a dependency, run `yarn install` to install or link the dependency to your app.
 
 Now you should be able to use the package inside your app! To test this, let's edit the `App.js` in our app and render the `greeting` text from our **cool-package**.
 

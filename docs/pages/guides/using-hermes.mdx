@@ -6,7 +6,7 @@ sidebar_title: Using Hermes
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-> Hermes is supported for apps built with [EAS Build](/build/introduction). There are no plans to backport support to `expo build`. [Jump to "Limitations"](#limitations).
+> **info** Hermes is supported for apps built with [EAS Build](/build/introduction). There are no plans to backport support to `expo build`. [Jump to "Limitations"](#limitations).
 
 [Hermes](https://hermesengine.dev/) is a JavaScript engine optimized for React Native. By compiling JavaScript into bytecode ahead of time, Hermes can improve your app start-up time. The binary size of Hermes is also smaller than other JavaScript engines, such as JavaScriptCore (JSC). It also uses less memory at runtime, which is particularly valuable on lower-end Android devices.
 
@@ -14,7 +14,7 @@ A limitation with JavaScriptCore is that the debugger does not work with modules
 
 ## Android setup
 
-> Hermes for Android is supported from SDK 42 and above in Expo Go, [development builds](/development/introduction.mdx) using `expo-dev-client` and standalone apps built with EAS Build. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
+> **info** Hermes for Android is supported from SDK 42 and above in Expo Go, [development builds](/development/introduction.mdx) using `expo-dev-client` and standalone apps built with EAS Build. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
 
 To get started, open your **app.json** and add `jsEngine` field:
 
@@ -33,7 +33,7 @@ Now you can build an APK or AAB through `eas build` and your app will run with H
 
 ## iOS setup
 
-> Hermes for iOS is supported from SDK 43 and above in [development builds](/development/introduction.mdx) using `expo-dev-client` and standalone apps built with EAS Build. Hermes is not supported in Expo Go for iOS. For bare apps created before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
+> **info** Hermes for iOS is supported from SDK 43 and above in [development builds](/development/introduction.mdx) using `expo-dev-client` and standalone apps built with EAS Build. Hermes is not supported in Expo Go for iOS. For bare apps created before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
 
 To get started, open your **app.json** and add `jsEngine` field:
 
@@ -54,7 +54,7 @@ Now you can build your app through `eas build` and your app will run with Hermes
 
 When using Hermes for iOS, you may encounter the following error when building for the simulator:
 
-> `ld: building for iOS Simulator, but linking in dylib built for iOS, file '/path/to/projectName/ios/Pods/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework/hermes' for architecture arm64`
+> **info** `ld: building for iOS Simulator, but linking in dylib built for iOS, file '/path/to/projectName/ios/Pods/hermes-engine/destroot/Library/Frameworks/iphoneos/hermes.framework/hermes' for architecture arm64`
 
 This is [a known issue for React Native 0.64](https://github.com/facebook/hermes/issues/468); to workaround it, you can add the following patch to your `ios/Podfile`:
 
@@ -132,7 +132,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 - [Open Google Chrome DevTools manually](https://reactnative.dev/docs/hermes#debugging-js-on-hermes-using-google-chromes-devtools)
 - [Flipper](https://fbflipper.com/)
 
-> [Development builds](/development/introduction.mdx) built with `expo-dev-client` simplify this process by integrating directly with the JavaScript inspector in Hermes.
+> **info** [Development builds](/development/introduction.mdx) built with `expo-dev-client` simplify this process by integrating directly with the JavaScript inspector in Hermes.
 
 ## Limitations
 

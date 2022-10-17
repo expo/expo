@@ -8,7 +8,7 @@ When developing a native app that requires access to potentially sensitive infor
 
 Permissions in standalone and [development builds](/development/introduction.mdx) require native build-time configuration before they can be requested using runtime JavaScript code. This is not required when developing projects in the [Expo Go][expo-go] app.
 
-> If you don't configure or explain the native permissions properly **it may result in your app getting rejected or pulled from the stores**.
+> **info** If you don't configure or explain the native permissions properly **it may result in your app getting rejected or pulled from the stores**.
 
 ## iOS
 
@@ -88,7 +88,7 @@ Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:n
 </manifest>
 ```
 
-> **Note:** you have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
+> **info** You have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
 
 </ConfigReactNative>
 

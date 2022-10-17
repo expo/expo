@@ -27,7 +27,7 @@ If you have used Expo before, [config plugins](/guides/config-plugins.mdx) allow
   cmdCopy="npx create-expo-app my-app && cd my-app && expo install expo-dev-client"
 />
 
-> You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. For more information, see [add better error handlers](installation.mdx#add-better-error-handlers).
+> **info** You can also improve error messages to be helpful during the development process. To do so, add `import 'expo-dev-client';` to the top of your `App.{js|tsx}` file. For more information, see [add better error handlers](installation.mdx#add-better-error-handlers).
 
 ## Creating and installing your first development build
 
@@ -39,7 +39,7 @@ After you configure your project as covered by the [Building with EAS guide](eas
 
 <Tab>
 
-> Apple Developer membership required
+> **warning** Apple Developer membership required
 
 Register any devices you would like to develop on to your ad hoc provisioning profile:
 
@@ -61,7 +61,7 @@ Once you have registered all of the iOS devices you would like to develop on, yo
 
 After creating the first build, [install it on your device](/build/internal-distribution.mdx).
 
-> **Note**: If you add a library that contains native APIs to your project, for example, [`expo-secure-store`](/versions/latest/sdk/securestore/), you will have to rebuild the development client. This is because the native code of the library is not included in the development client automatically when installing the library as a dependency to your project.
+> **info** If you add a library that contains native APIs to your project, for example, [`expo-secure-store`](/versions/latest/sdk/securestore/), you will have to rebuild the development client. This is because the native code of the library is not included in the development client automatically when installing the library as a dependency to your project.
 
 ## Developing your app
 

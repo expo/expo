@@ -5,7 +5,7 @@ title: Config Plugins
 import { Terminal } from '~/ui/components/Snippet';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-> This guide applies to SDK 41+ projects. The Expo Go app doesn't support custom native modules.
+> **info** This guide applies to SDK 41+ projects. The Expo Go app doesn't support custom native modules.
 
 When adding a native module to your project, most of the setup can be done automatically by installing the module in your project, but some modules require a more complex setup. For instance, say you installed `expo-camera` in your bare project, you now need to configure the native app to enable camera permissions — this is where config plugins come in. Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
 
@@ -66,13 +66,13 @@ For instance, if you add a plugin that adds permission messages to your app, the
 
 And that's it! Now you're using Config plugins. No more having to interact with the native projects!
 
-> Check out all the different ways you can import `plugins`: [plugin module resolution](#plugin-module-resolution)
+> **info** Check out all the different ways you can import `plugins`: [plugin module resolution](#plugin-module-resolution).
 
 ## What are plugins
 
 Plugins are **synchronous** functions that accept an [`ExpoConfig`][config-docs] and return a modified [`ExpoConfig`][config-docs].
 
-- Plugins should be named using the following convention: `with<Plugin Functionality>` i.e. `withFacebook`.
+- Plugins should be named using the following convention: `with<Plugin Functionality>`, that is, `withFacebook`.
 - Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added.
 - Optionally, a second argument can be passed to the plugin to configure it.
 - `plugins` are always invoked when the config is read by `@expo/config`s `getConfig` method. However, the `mods` are only invoked during the "syncing" phase of `expo prebuild`.
@@ -291,7 +291,7 @@ Instead you should use the helper mods provided by `@expo/config-plugins`:
   - `withAppBuildGradle` (Dangerous)
   - `withSettingsGradle` (Dangerous)
 
-> Dangerous modifications rely on regular expressions (regex) to modify application code, which may cause the build to break. Regex mods are also difficult to version, and therefore should be used sparingly. Always opt towards using application code to modify application code, i.e. [Expo Modules][emc] native API.
+> **info** Dangerous modifications rely on regular expressions (regex) to modify application code, which may cause the build to break. Regex mods are also difficult to version, and therefore should be used sparingly. Always opt towards using application code to modify application code, that is, [Expo Modules][emc] native API.
 
 A mod plugin gets passed a `config` object with additional properties `modResults` and `modRequest` added to it.
 
@@ -357,7 +357,7 @@ Currently, dangerous mods run first before all other modifiers, this is because 
 
 The strings passed to the `plugins` array can be resolved in a few different ways.
 
-> Any resolution pattern that isn't specified below is unexpected behavior, and subject to breaking changes.
+> **info** Any resolution pattern that isn't specified below is unexpected behavior, and subject to breaking changes.
 
 ### Project file
 
@@ -475,7 +475,7 @@ Because of this reasoning, the root of a Node module is searched instead of righ
 
 ## Developing a Plugin
 
-> Use [modifier previews](https://github.com/expo/vscode-expo#expo-preview-modifier) to debug the results of your plugin live.
+> **info** Use [modifier previews](https://github.com/expo/vscode-expo#expo-preview-modifier) to debug the results of your plugin live.
 
 To make plugin development easier, we've added plugin support to [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts). Refer to the [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) for more info on using TypeScript, and Jest to build plugins.
 
@@ -516,7 +516,7 @@ const { .. } = require('@expo/config-plugins');
 
 #### SDK 47 and higher
 
-> Note: SDK 47 is scheduled to be released in Q3 2022
+> **info** SDK 47 is scheduled to be released in Q3 2022
 
 The `@expo/config-plugins` and `@expo/config` packages are re-exported from the `expo` package starting in SDK 47.
 
@@ -882,7 +882,7 @@ As you can see from the example, we rely heavily on application code (expo-modul
 ## Debugging
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors.
-By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (i.e. legacy package doesn't have a config plugin yet).
+By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (that is, legacy package doesn't have a config plugin yet).
 
 Running `expo prebuild --clean` with remove the generated native folders before compiling.
 
@@ -909,7 +909,7 @@ Introspection only supports a subset of modifiers:
 - `android.colorsNight`
 - `android.styles`
 
-> Introspection only works on safe modifiers (static files like JSON, XML, plist, properties), with the exception of `ios.xcodeproj` which often requires file system changes, making it non idempotent.
+> **info** Introspection only works on safe modifiers (static files like JSON, XML, plist, properties), with the exception of `ios.xcodeproj` which often requires file system changes, making it non idempotent.
 
 Introspection works by creating custom base mods that work like the default base mods, except they don't write the `modResults` to disk at the end. Instead of persisting, they save the results to the Expo config under `_internal.modResults`, followed by the name of the mod i.e. the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
@@ -1034,7 +1034,7 @@ The Expo CLI `expo prebuild` command uses [`@expo/prebuild-config`][prebuild-con
 
 For example, say you wanted to add support for managing the `ios/*/AppDelegate.h` file, you could do this by adding a `ios.appDelegateHeader` modifier.
 
-> This example uses `ts-node` for simple local TypeScript support, this isn't strictly necessary. [Learn more](/guides/typescript/#appconfigjs).
+> **info** This example uses `ts-node` for simple local TypeScript support, this isn't strictly necessary. [Learn more](/guides/typescript/#appconfigjs).
 
 **withAppDelegateHeaderBaseMod.ts**
 
