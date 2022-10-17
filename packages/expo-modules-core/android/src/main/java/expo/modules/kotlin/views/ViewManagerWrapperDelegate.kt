@@ -32,6 +32,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
 
   fun setProxiedProperties(view: View, proxiedProperties: ReadableMap) {
     definition.setProps(proxiedProperties, view)
+    definition.onViewDidUpdateProps?.invoke(view)
   }
 
   fun onDestroy(view: View) =
