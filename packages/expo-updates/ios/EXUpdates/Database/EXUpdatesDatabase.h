@@ -22,7 +22,9 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
  *
  * Occasionally it's necessary to add migrations when the data structures for updates or assets must
  * change. Extra care must be taken here, since these migrations will happen on users' devices for
- * apps we do not control. See the guide (TODO: add link) for step by step instructions.
+ * apps we do not control. See
+ * https://github.com/expo/expo/blob/main/packages/expo-updates/guides/migrations.md for step by
+ * step instructions.
  *
  * EXUpdatesDatabase provides a serial queue on which all database operations must be run (methods
  * in this class will assert). This is primarily for control over what high-level operations

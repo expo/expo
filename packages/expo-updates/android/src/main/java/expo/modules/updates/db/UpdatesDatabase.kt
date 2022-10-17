@@ -32,7 +32,9 @@ import java.util.*
  *
  * Occasionally it's necessary to add migrations when the data structures for updates or assets must
  * change. Extra care must be taken here, since these migrations will happen on users' devices for
- * apps we do not control. See the guide (TODO: add link) for step by step instructions.
+ * apps we do not control. See
+ * https://github.com/expo/expo/blob/main/packages/expo-updates/guides/migrations.md for step by
+ * step instructions.
  *
  * [DatabaseHolder] provides a rudimentary locking mechanism, and most other classes access the
  * database through this class. This allows control over what high-level operations involving the
