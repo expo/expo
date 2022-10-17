@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 static NSString * const EXUpdatesEventName = @"Expo.nativeUpdatesEvent";
 static NSString * const EXUpdatesUtilsErrorDomain = @"EXUpdatesUtils";
 
+/**
+ * Miscellaneous helper functions that are used by multiple classes in the library.
+ */
 @implementation EXUpdatesUtils
 
 + (void)runBlockOnMainThread:(void (^)(void))block

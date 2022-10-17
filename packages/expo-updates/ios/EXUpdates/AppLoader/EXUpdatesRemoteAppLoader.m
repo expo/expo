@@ -19,6 +19,9 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteAppLoader";
 
+/**
+ * Subclass of EXUpdatesAppLoader which handles downloading updates from a remote server.
+ */
 @implementation EXUpdatesRemoteAppLoader
 
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config

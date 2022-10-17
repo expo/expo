@@ -9,6 +9,8 @@ import org.json.JSONObject
  * update in addition to the one currently running, preferring updates that match the same filters
  * if available.
  *
+ * Uses `commitTime` to determine ordering of updates.
+ *
  * Chooses only to delete updates whose scope matches that of `launchedUpdate`.
  */
 class ReaperSelectionPolicyFilterAware : ReaperSelectionPolicy {

@@ -7,6 +7,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Factory class to ease the construction of [SelectionPolicy] objects whose three methods all use
+ * the same ordering policy.
+ */
 @implementation EXUpdatesSelectionPolicyFactory
 
 + (EXUpdatesSelectionPolicy *)filterAwarePolicyWithRuntimeVersion:(NSString *)runtimeVersion

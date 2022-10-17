@@ -29,6 +29,10 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.*
 import java.security.cert.CertificateException
 
+/**
+ * Utility class that holds all the logic for downloading data and files, such as update manifests
+ * and assets, using an instance of [OkHttpClient].
+ */
 open class FileDownloader(context: Context, private val client: OkHttpClient) {
   constructor(context: Context) : this(context, OkHttpClient.Builder().cache(getCache(context)).build())
   private val logger = UpdatesLogger(context)

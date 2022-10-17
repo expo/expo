@@ -53,6 +53,24 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 @end
 
+
+/**
+ * Main entry point to expo-updates in normal release builds (development clients, including Expo
+ * Go, use a different entry point). Singleton that keeps track of updates state, holds references
+ * to instances of other updates classes, and is the central hub for all updates-related tasks.
+ *
+ * The `start` method in this class should be invoked early in the application lifecycle, via
+ * ExpoUpdatesReactDelegateHandler. It delegates to an instance of EXUpdatesAppLoaderTask to start
+ * the process of loading and launching an update, then responds appropriately depending on the
+ * callbacks that are invoked.
+ *
+ * This class also provides getter methods to access information about the updates state, which are
+ * used by the exported EXUpdatesModule through EXUpdatesService. Such information includes
+ * references to: the database, the EXUpdatesConfig object, the path on disk to the updates
+ * directory, any currently active EXUpdatesAppLoaderTask, the current EXUpdatesSelectionPolicy, the
+ * error recovery handler, and the current launched update. This class is intended to be the source
+ * of truth for these objects, so other classes shouldn't retain any of them indefinitely.
+ */
 @implementation EXUpdatesAppController
 
 + (instancetype)sharedInstance

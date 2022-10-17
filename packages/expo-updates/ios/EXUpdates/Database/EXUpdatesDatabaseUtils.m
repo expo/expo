@@ -6,6 +6,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesDatabaseUtilsErrorDomain = @"EXUpdatesDatabase";
 
+/**
+ * Utility class with methods for common database functions used across multiple classes.
+ */
 @implementation EXUpdatesDatabaseUtils
 
 + (nullable NSArray<NSDictionary *> *)executeSql:(NSString *)sql

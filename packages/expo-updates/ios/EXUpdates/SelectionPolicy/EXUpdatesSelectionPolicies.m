@@ -4,6 +4,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Utility methods used by multiple [SelectionPolicy] subclasses.
+ */
 @implementation EXUpdatesSelectionPolicies
 
 + (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters

@@ -14,6 +14,19 @@ import expo.modules.updates.logging.UpdatesLogger
 import java.lang.ref.WeakReference
 import kotlin.Exception
 
+/**
+ * Entry point for the error recovery flow. Responsible for initializing the error recovery handler
+ * and handler thread, and for registering (and unregistering) listeners to lifecycle events so that
+ * the appropriate error recovery flows will be triggered.
+ *
+ * The error recovery flow is intended to be lightweight and is *not* a full safety net whose
+ * purpose is to avoid crashes at all costs. Rather, its primary purpose is to prevent bad updates
+ * from "bricking" an app by causing crashes before there is ever a chance to download a fix.
+ *
+ * Notably, the error listener will be unregistered 10 seconds after content has appeared; we assume
+ * that by this point, expo-updates has had enough time to download a new update if there is one,
+ * and so there is no more need to trigger the error recovery pipeline.
+ */
 class ErrorRecovery(
   private val context: Context
 ) {

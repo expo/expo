@@ -15,6 +15,16 @@ NSString * const EXUpdatesBareEmbeddedBundleFileType = @"jsbundle";
 
 static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbeddedAppLoader";
 
+/**
+ * Subclass of EXUpdatesAppLoader which handles copying the embedded update's assets into the
+ * expo-updates cache location.
+ *
+ * Rather than launching the embedded update directly from its location in the app bundle/apk, we
+ * first try to read it into the expo-updates cache and database and launch it like any other
+ * update. The benefits of this include (a) a single code path for launching most updates and (b)
+ * assets included in embedded updates and copied into the cache in this way do not need to be
+ * redownloaded if included in future updates.
+ */
 @implementation EXUpdatesEmbeddedAppLoader
 
 + (nullable EXUpdatesUpdate *)embeddedManifestWithConfig:(EXUpdatesConfig *)config

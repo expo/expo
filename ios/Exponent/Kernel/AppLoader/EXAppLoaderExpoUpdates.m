@@ -71,6 +71,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+/**
+ * Entry point to expo-updates in Expo Go and legacy standalone builds. Fulfills many of the
+ * purposes of EXUpdatesAppController along with serving as an interface to the rest of the ExpoKit
+ * kernel.
+ *
+ * Dynamically generates a configuration object with the correct scope key, and then, like
+ * EXUpdatesAppController, delegates to an instance of EXUpdatesAppLoaderTask to start the process
+ * of loading and launching an update, and responds appropriately depending on the callbacks that
+ * are invoked.
+ *
+ * Multiple instances of EXAppLoaderExpoUpdates can exist at a time; instances are retained by
+ * EXKernelAppRegistry (through EXKernelAppRecord).
+ */
 @implementation EXAppLoaderExpoUpdates
 
 @synthesize manifestUrl = _manifestUrl;

@@ -23,6 +23,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
+/**
+ * Responsible for loading an update's manifest, enumerating the assets required for it to launch,
+ * and loading them all onto disk and into SQLite.
+ *
+ * There are two sources from which an update can be loaded - a remote server given a URL, and the
+ * application package. These correspond to the two loader subclasses.
+ */
 @implementation EXUpdatesAppLoader
 
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config

@@ -17,17 +17,25 @@ import expo.modules.updatesinterface.UpdatesInterface.UpdateCallback
 import org.json.JSONObject
 import java.util.*
 
-// this unused import must stay because of versioning
-/* ktlint-disable no-unused-imports */
-
-/* ktlint-enable no-unused-imports */
-
+/**
+ * Main entry point to expo-updates in development builds with expo-dev-client. Singleton that still
+ * makes use of [UpdatesController] for keeping track of updates state, but provides capabilities
+ * that are not usually exposed but that expo-dev-client needs (launching and downloading a specific
+ * update by URL, allowing dynamic configuration, introspecting the database).
+ *
+ * Implements the external UpdatesInterface from the expo-updates-interface package. This allows
+ * expo-dev-client to compile without needing expo-updates to be installed.
+ */
 class UpdatesDevLauncherController : UpdatesInterface {
   private var mTempConfiguration: UpdatesConfiguration? = null
   override fun reset() {
     UpdatesController.instance.setLauncher(null)
   }
 
+  /**
+   * Fetch an update using a dynamically generated configuration object (including a potentially
+   * different update URL than the one embedded in the build).
+   */
   override fun fetchUpdateWithConfiguration(
     configuration: HashMap<String, Any>,
     context: Context,
@@ -99,6 +107,10 @@ class UpdatesDevLauncherController : UpdatesInterface {
 
     // ensure that we launch the update we want, even if it isn't the latest one
     val currentSelectionPolicy = controller.selectionPolicy
+    // Calling `setNextSelectionPolicy` allows the Updates module's `reloadAsync` method to reload
+    // with a different (newer) update if one is downloaded, e.g. using `fetchUpdateAsync`. If we
+    // set the default selection policy here instead, the update we are launching here would keep
+    // being launched by `reloadAsync` even if a newer one is downloaded.
     controller.setNextSelectionPolicy(
       SelectionPolicy(
         LauncherSelectionPolicySingleUpdate(update.id),

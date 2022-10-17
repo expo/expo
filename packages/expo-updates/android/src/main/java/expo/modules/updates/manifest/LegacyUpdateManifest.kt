@@ -16,6 +16,14 @@ import java.net.URI
 import java.text.ParseException
 import java.util.*
 
+/**
+ * Class for manifests that use the classic format (i.e. come from Expo's classic updates service or
+ * a self-hosted service following the classic updates format, such as one making use of `expo-cli
+ * export`).
+ *
+ * Asset URLs are relative in this format, and we assume that if no base URL is explicitly provided,
+ * the base URL is Expo's classic asset CDN.
+ */
 class LegacyUpdateManifest private constructor(
   override val manifest: LegacyManifest,
   private val mManifestUrl: Uri,

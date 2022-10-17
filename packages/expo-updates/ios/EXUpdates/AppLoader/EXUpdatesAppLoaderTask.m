@@ -42,6 +42,25 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
 @end
 
+/**
+ * Controlling class that handles the complex logic that needs to happen each time the app is cold
+ * booted. From a high level, this class does the following:
+ *
+ * - Immediately starts an instance of EXUpdatesEmbeddedAppLoader to load the embedded update into
+ *   SQLite. This does nothing if SQLite already has the embedded update or a newer one, but we have
+ *   to do this on each cold boot, as we have no way of knowing if a new build was just installed
+ *   (which could have a new embedded update).
+ * - If the app is configured for automatic update downloads (most apps), starts a timer based on
+ *   the `launchWaitMs` value in EXUpdatesConfig.
+ * - Again if the app is configured for automatic update downloads, starts an instance of
+ *   EXUpdatesRemoteAppLoader to check for and download a new update if there is one.
+ * - Once the download succeeds, fails, or the timer runs out (whichever happens first), creates an
+ *   instance of EXUpdatesAppLauncherWithDatabase and signals that the app is ready to be launched
+ *   with the newest update available locally at that time (which may not be the newest update if
+ *   the download is still in progress).
+ * - If the download succeeds or fails after this point, fires a callback which causes an event to
+ *   be sent to JS.
+ */
 @implementation EXUpdatesAppLoaderTask
 
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config

@@ -20,6 +20,15 @@
 
 @end
 
+/**
+ * Exported module which provides to the JS runtime information about the currently running update
+ * and updates state, along with methods to check for and download new updates, reload with the
+ * newest downloaded update applied, and read/clear native log entries.
+ *
+ * Communicates with the updates hub (EXUpdatesAppController in most apps, EXAppLoaderExpoUpdates in
+ * Expo Go and legacy standalone apps) via EXUpdatesService, an internal module which is overridden
+ * by EXUpdatesBinding, a scoped module, in Expo Go.
+ */
 @implementation EXUpdatesModule
 
 EX_EXPORT_MODULE(ExpoUpdates);

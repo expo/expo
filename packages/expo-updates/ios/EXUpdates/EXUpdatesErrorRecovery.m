@@ -44,6 +44,40 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
 
 @end
 
+/**
+ * Entry point and main handler for the error recovery flow. Responsible for initializing the error
+ * recovery handler and handler thread, and for registering (and unregistering) listeners to
+ * lifecycle events so that the appropriate error recovery flows will be triggered.
+ *
+ * Also keeps track of and executes tasks in the error recovery pipeline, which allows us to
+ * predictably and serially respond to unpredictably ordered events.
+ *
+ * This error recovery flow is intended to be lightweight and is *not* a full safety net whose
+ * purpose is to avoid crashes at all costs. Rather, its primary purpose is to prevent bad updates
+ * from "bricking" an app by causing crashes before there is ever a chance to download a fix.
+ *
+ * When an error is caught, the pipeline is started and executes the following tasks serially:
+ * (a) check for a new update and start downloading if there is one
+ * (b) if there is a new update, reload and launch the new update
+ * (c) if not, or if another error occurs, fall back to an older working update (if one exists)
+ * (d) crash.
+ *
+ * Importantly, (b) and (c) will be taken out of the pipeline as soon as the first root view render
+ * occurs. If any update modifies persistent state in a non-backwards-compatible way, it isn't
+ * safe to automatically roll back; we use the first root view render as a rough proxy for this
+ * (assuming it's unlikely an app will make significant modifications to persisted state before its
+ * initial render).
+ *
+ * Also, the error listener will be unregistered 10 seconds after content has appeared; we assume
+ * that by this point, expo-updates has had enough time to download a new update if there is one,
+ * and so there is no more need to trigger the error recovery pipeline.
+ *
+ * This pipeline will not be triggered at all for errors caught more than 10 seconds after content
+ * has appeared; it is assumed that by this point, expo-updates will have had enough time to
+ * download a new update if there is one, and so there is no more need to intervene.
+ *
+ * This behavior is documented in more detail at https://docs.expo.dev/bare/error-recovery/.
+ */
 @implementation EXUpdatesErrorRecovery
 
 - (instancetype)init
