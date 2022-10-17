@@ -30,7 +30,6 @@ import expo.modules.interfaces.facedetector.FaceDetectorInterface
 import expo.modules.interfaces.facedetector.FaceDetectorProviderInterface
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.callbacks.callback
 import expo.modules.kotlin.views.ExpoView
 import java.io.File
 import java.io.IOException
@@ -41,6 +40,8 @@ import expo.modules.camera.utils.mapX
 import expo.modules.camera.utils.mapY
 import kotlin.math.roundToInt
 import android.view.WindowManager
+import expo.modules.interfaces.barcodescanner.BarCodeScannerResult.BoundingBox
+import expo.modules.kotlin.viewevent.EventDispatcher
 
 class ExpoCameraView(
   context: Context,
@@ -60,9 +61,9 @@ class ExpoCameraView(
   private var isPaused = false
   private var isNew = true
 
-  private val onCameraReady by callback<Unit>()
-  private val onMountError by callback<CameraMountErrorEvent>()
-  private val onBarCodeScanned by callback<BarCodeScannedEvent>(
+  private val onCameraReady by EventDispatcher<Unit>()
+  private val onMountError by EventDispatcher<CameraMountErrorEvent>()
+  private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
     /**
      * We want every distinct barcode to be reported to the JS listener.
      * If we return some static value as a coalescing key there may be two barcode events
@@ -72,15 +73,15 @@ class ExpoCameraView(
      */
     coalescingKey = { event -> (event.data.hashCode() % Short.MAX_VALUE).toShort() }
   )
-  private val onFacesDetected by callback<FacesDetectedEvent>(
+  private val onFacesDetected by EventDispatcher<FacesDetectedEvent>(
     /**
      * Should events about detected faces coalesce, the best strategy will be
      * to ensure that events with different faces count are always being transmitted.
      */
     coalescingKey = { event -> (event.faces.size % Short.MAX_VALUE).toShort() }
   )
-  private val onFaceDetectionError by callback<FaceDetectionErrorEvent>()
-  private val onPictureSaved by callback<PictureSavedEvent>(
+  private val onFaceDetectionError by EventDispatcher<FaceDetectionErrorEvent>()
+  private val onPictureSaved by EventDispatcher<PictureSavedEvent>(
     coalescingKey = { event ->
       val uriHash = event.data.getString("uri")?.hashCode() ?: -1
       (uriHash % Short.MAX_VALUE).toShort()
@@ -235,7 +236,7 @@ class ExpoCameraView(
     barCode.cornerPoints = cornerPoints
   }
 
-  private fun getCornerPoints(cornerPoints: List<Int>): ArrayList<Bundle> {
+  private fun getCornerPointsAndBoundingBox(cornerPoints: List<Int>, boundingBox: BoundingBox): Pair<ArrayList<Bundle>, Bundle> {
     val density = cameraView.resources.displayMetrics.density
     val convertedCornerPoints = ArrayList<Bundle>()
     for (i in cornerPoints.indices step 2) {
@@ -248,22 +249,36 @@ class ExpoCameraView(
         }
       )
     }
-    return convertedCornerPoints
+    val boundingBoxBundle = Bundle().apply {
+      putParcelable(
+        "origin",
+        Bundle().apply {
+          putFloat("x", boundingBox.x.toFloat() / density)
+          putFloat("y", boundingBox.y.toFloat() / density)
+        }
+      )
+      putParcelable(
+        "size",
+        Bundle().apply {
+          putFloat("width", boundingBox.width.toFloat() / density)
+          putFloat("height", boundingBox.height.toFloat() / density)
+        }
+      )
+    }
+    return convertedCornerPoints to boundingBoxBundle
   }
 
   override fun onBarCodeScanned(barCode: BarCodeScannerResult) {
     if (mShouldScanBarCodes) {
       transformBarCodeScannerResultToViewCoordinates(barCode)
+      val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barCode.cornerPoints, barCode.boundingBox)
       onBarCodeScanned(
         BarCodeScannedEvent(
           target = id,
           data = barCode.value,
           type = barCode.type,
-          // If the scanner doesn't return corner points, the value here will be an empty array
-          // I don't know how to send undefined from kotlin
-          // (I can send null but that would be different from other platform)
-          // so [] to undefined is handled on the javascript side
-          cornerPoints = getCornerPoints(barCode.getCornerPoints())
+          cornerPoints = cornerPoints,
+          boundingBox = boundingBox
         )
       )
     }

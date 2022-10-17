@@ -16,28 +16,41 @@ open class Exception: CodedError, ChainableException, CustomStringConvertible, C
   open var origin: ExceptionOrigin
 
   /**
+   A custom code of the exception. When unset, the `code` is calculated from the exception name or class name.
+   */
+  let customCode: String?
+
+  /**
    The default initializer that captures the place in the code where the exception was created.
    - Warning: Call it only without arguments!
    */
   public init(file: String = #fileID, line: UInt = #line, function: String = #function) {
     self.origin = ExceptionOrigin(file: file, line: line, function: function)
+    self.customCode = nil
   }
 
-  public init(name: String, description: String, file: String = #fileID, line: UInt = #line, function: String = #function) {
+  public init(name: String, description: String, code: String? = nil, file: String = #fileID, line: UInt = #line, function: String = #function) {
     self.origin = ExceptionOrigin(file: file, line: line, function: function)
+    self.customCode = code
     self.name = name
     self.description = description
   }
 
-  // MARK: ChainableException
+  // MARK: - CodedError
+
+  open var code: String {
+    customCode ?? errorCodeFromString(name)
+  }
+
+  // MARK: - ChainableException
 
   open var cause: Error?
 
-  // MARK: CustomStringConvertible
+  // MARK: - CustomStringConvertible
 
   open lazy var description: String = concatDescription(reason, withCause: cause, debug: false)
 
-  // MARK: CustomDebugStringConvertible
+  // MARK: - CustomDebugStringConvertible
 
   open var debugDescription: String {
     let debugDescription = "\(name): \(reason) (at \(origin.file):\(origin.line))"

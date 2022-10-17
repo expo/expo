@@ -122,6 +122,7 @@ const general = [
     makePage('guides/using-styled-components.mdx'),
     makePage('guides/using-nextjs.mdx'),
     makePage('guides/typescript.mdx'),
+    makePage('guides/using-flipper.mdx'),
   ]),
   makeSection('Assorted guides', [
     makePage('guides/routing-and-navigation.mdx'),

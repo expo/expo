@@ -45,6 +45,18 @@ private const val UPDATE_AVAILABLE_EVENT = "updateAvailable"
 private const val UPDATE_NO_UPDATE_AVAILABLE_EVENT = "noUpdateAvailable"
 private const val UPDATE_ERROR_EVENT = "error"
 
+/**
+ * Entry point to expo-updates in Expo Go and legacy standalone builds. Fulfills many of the
+ * purposes of [UpdatesController] along with serving as an interface to the rest of the ExpoKit
+ * kernel.
+ *
+ * Dynamically generates a configuration object with the correct scope key, and then, like
+ * [UpdatesController], delegates to an instance of [LoaderTask] to start the process of loading and
+ * launching an update, and responds appropriately depending on the callbacks that are invoked.
+ *
+ * Multiple instances of ExpoUpdatesAppLoader can exist at a time; instances are retained by
+ * [Kernel].
+ */
 class ExpoUpdatesAppLoader @JvmOverloads constructor(
   private val manifestUrl: String,
   private val callback: AppLoaderCallback,

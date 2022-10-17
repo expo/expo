@@ -12,6 +12,14 @@ import expo.modules.updates.manifest.EmbeddedManifest
 import org.apache.commons.io.FileUtils
 import java.io.File
 
+/**
+ * Implementation of [Launcher] which always uses the update embedded in the application package,
+ * avoiding SQLite and the expo-updates file store entirely.
+ *
+ * This is only used in rare cases when the database/file system is corrupt or otherwise
+ * inaccessible, but we still want to avoid crashing. The exported property `isEmergencyLaunch`
+ * on [UpdatesModule] should be `true` whenever this class is used.
+ */
 class NoDatabaseLauncher @JvmOverloads constructor(
   context: Context,
   configuration: UpdatesConfiguration,

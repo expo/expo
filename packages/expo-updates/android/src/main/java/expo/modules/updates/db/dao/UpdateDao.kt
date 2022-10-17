@@ -6,6 +6,9 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import java.util.*
 
+/**
+ * Utility class for accessing and modifying data in SQLite relating to updates.
+ */
 @Dao
 abstract class UpdateDao {
   /**

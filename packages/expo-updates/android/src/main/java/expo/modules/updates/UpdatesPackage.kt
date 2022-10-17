@@ -15,6 +15,10 @@ import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.updates.UpdatesController
 /* ktlint-enable no-unused-imports */
 
+/**
+ * Defines the internal and exported modules for expo-updates, as well as the auto-setup behavior in
+ * applicable environments.
+ */
 class UpdatesPackage : Package {
   override fun createInternalModules(context: Context): List<InternalModule> {
     return listOf(UpdatesService(context) as InternalModule)

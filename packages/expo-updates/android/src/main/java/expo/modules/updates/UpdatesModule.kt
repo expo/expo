@@ -28,6 +28,15 @@ import java.util.Date
 import expo.modules.updates.UpdatesConfiguration
 /* ktlint-enable no-unused-imports */
 
+/**
+ * Exported module which provides to the JS runtime information about the currently running update
+ * and updates state, along with methods to check for and download new updates, reload with the
+ * newest downloaded update applied, and read/clear native log entries.
+ *
+ * Communicates with the updates hub ([UpdatesController] in most apps, [ExpoUpdatesAppLoader] in
+ * Expo Go and legacy standalone apps) via [UpdatesService], an internal module which is overridden
+ * by [UpdatesBinding], a scoped module, in Expo Go.
+ */
 class UpdatesModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()

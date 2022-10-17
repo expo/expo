@@ -7,6 +7,9 @@ import expo.modules.manifests.core.NewManifest
 import org.json.JSONException
 import org.json.JSONObject
 
+/**
+ * Utility methods for parsing a JSON manifest using the correct [UpdateManifest] implementation.
+ */
 object ManifestFactory {
   private val TAG = ManifestFactory::class.java.simpleName
 

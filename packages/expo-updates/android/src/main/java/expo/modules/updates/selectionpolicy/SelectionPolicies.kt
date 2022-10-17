@@ -6,6 +6,9 @@ import expo.modules.updates.db.entity.UpdateEntity
 import org.json.JSONObject
 import java.lang.Exception
 
+/**
+ * Utility methods used by multiple [SelectionPolicy] subclasses.
+ */
 object SelectionPolicies {
   val TAG = SelectionPolicies::class.java.simpleName
 
