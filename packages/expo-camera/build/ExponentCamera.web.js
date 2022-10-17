@@ -7,7 +7,7 @@ import CameraManager from './ExponentCameraManager.web';
 import { capture } from './WebCameraUtils';
 import { PictureSizes } from './WebConstants';
 import { useWebCameraStream } from './useWebCameraStream';
-import { useWebQRScanner } from './useWebQRScanner';
+import { useWebZXingBarcodeScanner } from './useWebZXingBarcodeScanner';
 const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }, ref) => {
     const video = React.useRef(null);
     const native = useWebCameraStream(video, type, props, {
@@ -18,12 +18,13 @@ const ExponentCamera = React.forwardRef(({ type, pictureSize, poster, ...props }
         },
         onMountError: props.onMountError,
     });
-    const isQRScannerEnabled = React.useMemo(() => {
-        return !!(props.barCodeScannerSettings?.barCodeTypes?.includes('qr') && !!props.onBarCodeScanned);
-    }, [props.barCodeScannerSettings?.barCodeTypes, props.onBarCodeScanned]);
-    useWebQRScanner(video, {
+    const isScannerEnabled = React.useMemo(() => {
+        return !!props.onBarCodeScanned;
+    }, [props.onBarCodeScanned]);
+    useWebZXingBarcodeScanner(video, {
+        barCodeTypes: props.barCodeScannerSettings?.barCodeTypes || [],
         interval: props.barCodeScannerSettings?.interval,
-        isEnabled: isQRScannerEnabled,
+        isEnabled: isScannerEnabled,
         captureOptions: { scale: 1, isImageMirror: native.type === CameraType.front },
         onScanned(event) {
             if (props.onBarCodeScanned) {
