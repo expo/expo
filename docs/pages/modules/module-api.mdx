@@ -353,7 +353,7 @@ _Convertibles_ are native types that can be initialized from certain specific ki
 
 Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
-| Native Type             | TypeScript                                                                                                                                                                        |
+| Native iOS Type         | TypeScript                                                                                                                                                                        |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `URL`                   | `string` with a URL. When scheme is not provided, it's assumed to be a file URL.                                                                                                  |
 | `CGFloat`               | `number`                                                                                                                                                                          |
@@ -362,6 +362,16 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 | `CGVector`              | `{ dx: number, dy: number }` or `number[]` with _dx_ and _dy_ vector differentials                                                                                                |
 | `CGRect`                | `{ x: number, y: number, width: number, height: number }` or `number[]` with _x_, _y_, _width_ and _height_ values                                                                |
 | `CGColor`<br/>`UIColor` | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
+
+Similarly, some common Android types from packages like `java.io`, `java.net`, or `android.graphics` are also made convertible.
+
+| Native Android Type                     | TypeScript                                                                                                                                                                         |
+| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `java.net.URL`                          | `string` with a URL. Note that the scheme has to be provided                                                                                                                      |
+| `android.net.Uri`<br/>`java.net.URI`    | `string` with a URI. Note that the scheme has to be provided                                                                                                                      |
+| `java.io.File`<br/>`java.nio.file.Path` | `string` with a path to the file                                                                                                                                                  |
+| `android.graphics.Color`                | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
+| `kotlin.Pair<A, B>`                     | Array with two values, where the first one is of type _A_ and the second is of type _B_                                                                                           |
 
 </APIBox>
 <APIBox header="Records">
