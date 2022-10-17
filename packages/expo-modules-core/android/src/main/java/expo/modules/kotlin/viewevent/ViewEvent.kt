@@ -1,4 +1,4 @@
-package expo.modules.kotlin.callbacks
+package expo.modules.kotlin.viewevent
 
 import android.view.View
 import com.facebook.react.bridge.ReactContext
@@ -9,12 +9,16 @@ import expo.modules.kotlin.types.JSTypeConverter
 import expo.modules.kotlin.types.putGeneric
 import kotlin.reflect.KType
 
-class ViewCallback<T>(
+fun interface ViewEventCallback<T> {
+  operator fun invoke(arg: T)
+}
+
+class ViewEvent<T>(
   private val name: String,
   private val type: KType,
   private val view: View,
   private val coalescingKey: CoalescingKey<T>?
-) : Callback<T> {
+) : ViewEventCallback<T> {
   internal lateinit var module: Module
 
   override operator fun invoke(arg: T) {
