@@ -51,6 +51,7 @@
 - Add the `RegisterActivityContracts` component to register all of activity result contracts on Android. ([#19180](https://github.com/expo/expo/pull/19180) by [@lukmccall](https://github.com/lukmccall))
 - Improves JSI/JNI type conversion to support complex function arguments on Android. ([#19120](https://github.com/expo/expo/pull/19120) & [#19094](https://github.com/expo/expo/pull/19094) by [@lukmccall](https://github.com/lukmccall))
 - Using JSI instead of the bridge to call native methods also on legacy modules on iOS. ([#19209](https://github.com/expo/expo/pull/19209) by [@lukmccall](https://github.com/lukmccall))
+- Added a `DirectoriesModule` to android as a temporary solution to fix cache directories being incorrect in new Sweet API modules. 
 
 ### 🐛 Bug fixes
 
