@@ -33,7 +33,6 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 💡 Others
 
 - Refactored inline Android emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator()`. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
-- Added auth documentation to connect to Amazon Cognito. ([#19547](https://github.com/expo/expo/pull/19547) by [@tbehunin](https://github.com/tbehunin))
 
 ## 46.0.0 — 2022-07-19
 
