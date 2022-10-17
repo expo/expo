@@ -1,7 +1,7 @@
 import assert from 'assert';
 import chalk from 'chalk';
-import fetch from 'node-fetch';
 
+import { fetchAsync } from '../api/rest/client';
 import { learnMore } from './link';
 import { isUrlAvailableAsync } from './url';
 
@@ -57,7 +57,7 @@ export async function getBundleIdWarningAsync(bundleId: string): Promise<string 
   const url = `http://itunes.apple.com/lookup?bundleId=${bundleId}`;
   try {
     debug(`Checking iOS bundle ID '${bundleId}' at: ${url}`);
-    const response = await fetch(url);
+    const response = await fetchAsync(url);
     const json = await response.json();
     if (json.resultCount > 0) {
       const firstApp = json.results[0];
@@ -90,7 +90,7 @@ export async function getPackageNameWarningAsync(packageName: string): Promise<s
   const url = `https://play.google.com/store/apps/details?id=${packageName}`;
   try {
     debug(`Checking Android package name '${packageName}' at: ${url}`);
-    const response = await fetch(url);
+    const response = await fetchAsync(url);
     // If the page exists, then warn the user.
     if (response.status === 200) {
       // There is no JSON API for the Play Store so we can't concisely

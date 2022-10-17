@@ -1,11 +1,10 @@
 import fs from 'fs';
-import fetch from 'node-fetch';
 import path from 'path';
 import { Stream } from 'stream';
 import temporary from 'tempy';
 import { promisify } from 'util';
 
-import { createCachedFetch } from '../api/rest/client';
+import { createCachedFetch, fetchAsync } from '../api/rest/client';
 import { FetchLike, ProgressCallback } from '../api/rest/client.types';
 import { wrapFetchWithProgress } from '../api/rest/wrapFetchWithProgress';
 import { ensureDirectoryAsync } from './dir';
@@ -29,7 +28,7 @@ async function downloadAsync({
   cacheDirectory?: string;
   onProgress?: ProgressCallback;
 }) {
-  let fetchInstance: FetchLike = fetch;
+  let fetchInstance: FetchLike = fetchAsync;
   if (cacheDirectory) {
     // Reconstruct the cached fetch since caching could be disabled.
     fetchInstance = createCachedFetch({
