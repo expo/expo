@@ -4,7 +4,6 @@ package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -198,15 +197,15 @@ class JSIAsyncFunctionsTest {
     Truth.assertThat(exception.message).contains("java.lang.IllegalStateException")
   }
 
-  @Test(expected = JavaScriptEvaluateException::class)
-  fun should_throw_if_js_value_cannot_be_passed() = withJSIInterop(
-    inlineModule {
-      Name("TestModule")
-      AsyncFunction("f") { _: Int -> }
-    }
-  ) { methodQueue ->
-    waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f(Symbol())")
-  }
+//  @Test(expected = JavaScriptEvaluateException::class)
+//  fun should_throw_if_js_value_cannot_be_passed() = withJSIInterop(
+//    inlineModule {
+//      Name("TestModule")
+//      AsyncFunction("f") { _: Int -> }
+//    }
+//  ) { methodQueue ->
+//    waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f(Symbol())")
+//  }
 
   @Test
   fun int_array_should_be_convertible() = withJSIInterop(
