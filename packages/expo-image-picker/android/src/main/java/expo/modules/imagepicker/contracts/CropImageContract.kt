@@ -27,7 +27,8 @@ internal class CropImageContract(
   override fun createIntent(context: Context, input: CropImageContractOptions) = Intent(context, CropImageActivity::class.java).apply {
     val mediaType = expo.modules.imagepicker.getType(context.contentResolver, input.sourceUri)
     val compressFormat = mediaType.toBitmapCompressFormat()
-    val outputUri = createOutputFile(context.cacheDir, compressFormat.toImageFileExtension()).toUri()
+    val cacheDirectory = appContextProvider.appContext.cacheDirectory
+    val outputUri = createOutputFile(cacheDirectory, compressFormat.toImageFileExtension()).toUri()
 
     putExtra(
       CropImage.CROP_IMAGE_EXTRA_BUNDLE,

@@ -9,6 +9,7 @@ import expo.modules.imagepicker.exporters.CompressionImageExporter
 import expo.modules.imagepicker.exporters.ImageExporter
 import expo.modules.imagepicker.exporters.RawImageExporter
 import expo.modules.kotlin.providers.AppContextProvider
+import java.io.File
 
 internal class MediaHandler(
   private val appContextProvider: AppContextProvider,
@@ -34,6 +35,9 @@ internal class MediaHandler(
     }
   }
 
+  private val cacheDirectory: File
+    get() = appContextProvider.appContext.cacheDirectory
+
   private suspend fun handleImage(
     sourceUri: Uri,
     options: ImagePickerOptions,
@@ -43,8 +47,7 @@ internal class MediaHandler(
     } else {
       CompressionImageExporter(appContextProvider, options.quality)
     }
-
-    val outputFile = createOutputFile(context.cacheDir, getType(context.contentResolver, sourceUri).toImageFileExtension())
+    val outputFile = createOutputFile(cacheDirectory, getType(context.contentResolver, sourceUri).toImageFileExtension())
 
     val exportedImage = exporter.exportAsync(sourceUri, outputFile, context.contentResolver)
     val base64 = options.base64.takeIf { it }
@@ -66,7 +69,7 @@ internal class MediaHandler(
   private suspend fun handleVideo(
     sourceUri: Uri,
   ): ImagePickerResponse.Single.Video {
-    val outputFile = createOutputFile(context.cacheDir, ".mp4")
+    val outputFile = createOutputFile(cacheDirectory, ".mp4")
     copyFile(sourceUri, outputFile, context.contentResolver)
     val outputUri = outputFile.toUri()
 

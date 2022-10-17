@@ -23,6 +23,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -57,7 +58,7 @@ class ImagePickerModule : Module() {
       ensureTargetActivityIsAvailable(options)
       ensureCameraPermissionsAreGranted()
 
-      val mediaFile = createOutputFile(context.cacheDir, options.mediaTypes.toFileExtension())
+      val mediaFile = createOutputFile(cacheDirectory, options.mediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
       val contractOptions = options.toCameraContractOptions(uri)
 
@@ -106,6 +107,9 @@ class ImagePickerModule : Module() {
   private lateinit var cameraLauncher: AppContextActivityResultLauncher<CameraContractOptions, ImagePickerContractResult>
   private lateinit var imageLibraryLauncher: AppContextActivityResultLauncher<ImageLibraryContractOptions, ImagePickerContractResult>
   private lateinit var cropImageLauncher: AppContextActivityResultLauncher<CropImageContractOptions, ImagePickerContractResult>
+
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
 
   /**
    * Stores result for an operation that has been interrupted by the activity destruction.
