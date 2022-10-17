@@ -6,9 +6,9 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.ModuleHolder
-import expo.modules.kotlin.callbacks.ViewCallbackDelegate
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.logger
+import expo.modules.kotlin.viewevent.ViewEventDelegate
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 
@@ -71,7 +71,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
         return@forEach
       }
 
-      val viewDelegate = (delegate as? ViewCallbackDelegate<*>).ifNull {
+      val viewDelegate = (delegate as? ViewEventDelegate<*>).ifNull {
         logger.warn("⚠️ Property delegate for `$it` cannot be cased to `ViewCallbackDelegate`")
         return@forEach
       }
