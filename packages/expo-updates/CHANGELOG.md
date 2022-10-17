@@ -29,6 +29,7 @@
 - Log various errors with the new Updates logger; add E2E tests for the logger. ([#18810](https://github.com/expo/expo/pull/18810) by [@douglowder](https://github.com/douglowder))
 - [iOS] Flag to enable native debugging of updates. ([#19292](https://github.com/expo/expo/pull/19292) by [@douglowder](https://github.com/douglowder))
 - [Android] Flag to enable native debugging of updates. ([#19441](https://github.com/expo/expo/pull/19441) by [@douglowder](https://github.com/douglowder))
+- Proactively delete duplicate asset rows from SQLite as soon as their corresponding updates are deleted, rather than keeping them all around until no updates are using the asset. ([#19590](https://github.com/expo/expo/pull/19590) by [@esamelson](https://github.com/esamelson))
 
 ### ⚠️ Notices
 

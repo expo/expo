@@ -38,12 +38,12 @@ abstract class AssetDao {
   abstract fun _unmarkUsedAssetsFromDeletion()
 
   @Query(
-    "UPDATE assets SET marked_for_deletion = 0 WHERE relative_path IN (" +
+    "DELETE FROM assets WHERE marked_for_deletion = 1 AND relative_path IN (" +
       " SELECT relative_path" +
       " FROM assets" +
       " WHERE marked_for_deletion = 0);"
   )
-  abstract fun _unmarkDuplicateUsedAssetsFromDeletion()
+  abstract fun _removeUnusedDuplicateRowsForUsedAssets()
 
   @Query("SELECT * FROM assets WHERE marked_for_deletion = 1;")
   abstract fun _loadAssetsMarkedForDeletion(): List<AssetEntity>
@@ -143,8 +143,12 @@ abstract class AssetDao {
     // this is safe since this is a transaction and will be rolled back upon failure
     _markAllAssetsForDeletion()
     _unmarkUsedAssetsFromDeletion()
-    // check for duplicate rows representing a single file on disk
-    _unmarkDuplicateUsedAssetsFromDeletion()
+
+    // find any duplicate rows representing a single file on disk where `marked_for_deletion` is 1
+    // in some cases but 0 in others, and delete the rows with 1 without returning them (so the file
+    // itself is not deleted)
+    _removeUnusedDuplicateRowsForUsedAssets()
+
     val deletedAssets = _loadAssetsMarkedForDeletion()
     _deleteAssetsMarkedForDeletion()
     return deletedAssets
