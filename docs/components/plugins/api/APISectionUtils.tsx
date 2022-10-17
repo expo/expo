@@ -363,7 +363,6 @@ export const renderParamRow = ({
       <Cell>
         <CommentTextBlock
           comment={comment}
-          components={mdInlineComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />
