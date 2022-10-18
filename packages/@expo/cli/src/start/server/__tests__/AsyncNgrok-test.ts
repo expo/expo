@@ -2,7 +2,7 @@ import { vol } from 'memfs';
 
 import { asMock } from '../../../__tests__/asMock';
 import { NgrokInstance } from '../../doctor/ngrok/NgrokResolver';
-import { startAdbReverseAsync } from '../../platforms/android/adbReverse';
+import { hasAdbReverseAsync, startAdbReverseAsync } from '../../platforms/android/adbReverse';
 import { AsyncNgrok } from '../AsyncNgrok';
 
 jest.mock('../../../log');
@@ -58,6 +58,13 @@ describe('getActiveUrl', () => {
 });
 
 describe('startAsync', () => {
+  it(`skips adb reverse if Android cannot be found`, async () => {
+    const { ngrok } = createNgrokInstance();
+    asMock(hasAdbReverseAsync).mockReturnValueOnce(false);
+
+    await ngrok.startAsync();
+    expect(startAdbReverseAsync).not.toBeCalled();
+  });
   it(`fails if adb reverse doesn't work`, async () => {
     const { ngrok } = createNgrokInstance();
     asMock(startAdbReverseAsync).mockResolvedValueOnce(false);
