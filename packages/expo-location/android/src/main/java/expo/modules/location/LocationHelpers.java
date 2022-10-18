@@ -1,5 +1,12 @@
 package expo.modules.location;
 
+import static expo.modules.location.LocationModule.ACCURACY_BALANCED;
+import static expo.modules.location.LocationModule.ACCURACY_BEST_FOR_NAVIGATION;
+import static expo.modules.location.LocationModule.ACCURACY_HIGH;
+import static expo.modules.location.LocationModule.ACCURACY_HIGHEST;
+import static expo.modules.location.LocationModule.ACCURACY_LOW;
+import static expo.modules.location.LocationModule.ACCURACY_LOWEST;
+
 import android.content.Context;
 import android.location.Address;
 import android.location.Location;
@@ -11,6 +18,7 @@ import android.os.PersistableBundle;
 import android.util.Log;
 
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.Priority;
 
 import java.util.Map;
 
@@ -18,8 +26,6 @@ import expo.modules.core.Promise;
 import expo.modules.core.errors.CodedException;
 import io.nlopez.smartlocation.location.config.LocationAccuracy;
 import io.nlopez.smartlocation.location.config.LocationParams;
-
-import static expo.modules.location.LocationModule.*;
 
 public class LocationHelpers {
   private static final String TAG = LocationHelpers.class.getSimpleName();
@@ -123,12 +129,19 @@ public class LocationHelpers {
     LocationParams locationParams = LocationHelpers.mapOptionsToLocationParams(options);
     int accuracy = LocationHelpers.getAccuracyFromOptions(options);
 
-    return new LocationRequest()
-        .setFastestInterval(locationParams.getInterval())
-        .setInterval(locationParams.getInterval())
-        .setMaxWaitTime(locationParams.getInterval())
-        .setSmallestDisplacement(locationParams.getDistance())
-        .setPriority(mapAccuracyToPriority(accuracy));
+    int priority = mapAccuracyToPriority(accuracy);
+    long interval = locationParams.getInterval();
+    float distance = locationParams.getDistance();
+
+    boolean waitForAccurateLocation = priority == Priority.PRIORITY_HIGH_ACCURACY;
+
+    return new LocationRequest.Builder(priority, interval)
+            .setMaxUpdateDelayMillis(interval)
+            .setMaxUpdateAgeMillis(LocationRequest.Builder.IMPLICIT_MAX_UPDATE_AGE)
+            .setMinUpdateDistanceMeters(distance)
+            .setMinUpdateIntervalMillis(LocationRequest.Builder.IMPLICIT_MIN_UPDATE_INTERVAL)
+            .setWaitForAccurateLocation(waitForAccurateLocation)
+            .build();
   }
 
   public static LocationParams mapOptionsToLocationParams(Map<String, Object> options) {
@@ -253,13 +266,13 @@ public class LocationHelpers {
       case LocationModule.ACCURACY_BEST_FOR_NAVIGATION:
       case LocationModule.ACCURACY_HIGHEST:
       case LocationModule.ACCURACY_HIGH:
-        return LocationRequest.PRIORITY_HIGH_ACCURACY;
+        return Priority.PRIORITY_HIGH_ACCURACY;
       case LocationModule.ACCURACY_BALANCED:
       case LocationModule.ACCURACY_LOW:
       default:
-        return LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY;
+        return Priority.PRIORITY_BALANCED_POWER_ACCURACY;
       case LocationModule.ACCURACY_LOWEST:
-        return LocationRequest.PRIORITY_LOW_POWER;
+        return Priority.PRIORITY_LOW_POWER;
     }
   }
 
