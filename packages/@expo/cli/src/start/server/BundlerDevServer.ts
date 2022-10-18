@@ -373,7 +373,9 @@ export abstract class BundlerDevServer {
     resolver: BaseResolveDeviceProps<any> = {}
   ) {
     if (launchTarget === 'desktop') {
-      const url = this.getDevServerUrl({ hostType: 'localhost' });
+      const serverUrl = this.getDevServerUrl({ hostType: 'localhost' });
+      // Allow opening the tunnel URL when using Metro web.
+      const url = this.name === 'metro' ? this.getTunnelUrl() ?? serverUrl : serverUrl;
       await openBrowserAsync(url!);
       return { url };
     }

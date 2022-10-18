@@ -14,9 +14,8 @@ import chalk from 'chalk';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
-import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
-import { withMetroMultiPlatform } from '../start/server/metro/withMetroMultiPlatform';
+import { withMetroMultiPlatformAsync } from '../start/server/metro/withMetroMultiPlatform';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 
 export type MetroDevServerOptions = LoadOptions & {
@@ -110,11 +109,7 @@ export async function bundleAsync(
 
   const bundlerPlatforms = getPlatformBundlers(exp);
 
-  if (bundlerPlatforms.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  }
-
-  config = withMetroMultiPlatform(projectRoot, config, bundlerPlatforms);
+  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
 
   const metroServer = await metro.runMetro(config, {
     watch: false,

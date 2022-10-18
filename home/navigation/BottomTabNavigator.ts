@@ -9,6 +9,7 @@ export const getNavigatorProps = (props: {
   theme: string;
 }): Partial<ComponentProps<typeof BottomTabNavigator.Navigator>> => ({
   screenOptions: {
+    headerShown: false,
     tabBarLabelStyle: { fontFamily: 'Inter-SemiBold' },
     tabBarHideOnKeyboard: false,
     tabBarStyle: {

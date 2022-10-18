@@ -1009,7 +1009,7 @@ in here.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -1059,7 +1059,10 @@ in here.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 The unique identifier for the user whose credential state you'd like to check.
 This should come from the user field of an 
                 <a
@@ -1073,7 +1076,7 @@ This should come from the user field of an
                   </code>
                 </a>
                  object.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -1499,7 +1502,7 @@ value depending on the state of the credential.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -1554,7 +1557,10 @@ value depending on the state of the credential.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 An 
                 <a
                   class="css-153g748-InternalLink"
@@ -1567,7 +1573,7 @@ value depending on the state of the credential.
                   </code>
                 </a>
                  object
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -1772,7 +1778,7 @@ refresh operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -1833,7 +1839,10 @@ refresh operation.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 An optional 
                 <a
                   class="css-153g748-InternalLink"
@@ -1846,7 +1855,7 @@ refresh operation.
                   </code>
                 </a>
                  object
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -2089,7 +2098,7 @@ sign-in operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2144,7 +2153,10 @@ sign-in operation.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 An 
                 <a
                   class="css-153g748-InternalLink"
@@ -2157,7 +2169,7 @@ sign-in operation.
                   </code>
                 </a>
                  object
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -2443,7 +2455,7 @@ sign-out operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2796,7 +2808,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3204,7 +3216,7 @@ may be
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3559,7 +3571,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3852,7 +3864,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -4162,7 +4174,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -4327,7 +4339,7 @@ OAuth 2.0 protocol
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -7303,7 +7315,7 @@ Same as
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8103,7 +8115,7 @@ This can be used to quickly create specific permission hooks in every module.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8153,9 +8165,12 @@ This can be used to quickly create specific permission hooks in every module.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 URL to get the image from.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -8188,10 +8203,13 @@ This can be used to quickly create specific permission hooks in every module.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 An array of bar code types. Defaults to all supported bar code types on
 the platform.
-              </span>
+              </p>
               
 
               <blockquote
@@ -8224,14 +8242,17 @@ the platform.
                 >
                   
 
-                  <span>
+                  <p
+                    class="css-6jxvia-P"
+                    data-text="true"
+                  >
                     <strong
                       class="css-1qx481h-B"
                     >
                       Note:
                     </strong>
                      Only QR codes are supported on iOS.
-                  </span>
+                  </p>
                   
 
                 </div>
@@ -8543,7 +8564,7 @@ code.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8814,7 +8835,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8991,7 +9012,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9116,7 +9137,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9247,7 +9268,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9411,7 +9432,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="css-rufzkc-Table"
       >
         <table
-          class="css-1rqdk7t-Table"
+          class="css-1goywt6-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
@@ -9607,7 +9628,7 @@ For some types, they will represent the area used by the scanner.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9845,7 +9866,7 @@ For some types, they will represent the area used by the scanner.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -10640,7 +10661,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -10696,9 +10717,12 @@ exports[`APISection expo-pedometer 1`] = `
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 A date indicating the start of the range over which to measure steps.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -10731,9 +10755,12 @@ exports[`APISection expo-pedometer 1`] = `
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 A date indicating the end of the range over which to measure steps.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -11328,7 +11355,7 @@ available on this device.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11383,7 +11410,10 @@ available on this device.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 A callback that is invoked when new step count data is available. The callback is
 provided with a single argument that is 
                 <a
@@ -11397,7 +11427,7 @@ provided with a single argument that is
                   </code>
                 </a>
                 .
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -11697,7 +11727,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11958,7 +11988,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -12081,7 +12111,7 @@ provided with a single argument that is
         class="css-rufzkc-Table"
       >
         <table
-          class="css-1rqdk7t-Table"
+          class="css-1goywt6-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
@@ -12288,7 +12318,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1rqdk7t-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"

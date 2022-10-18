@@ -33,26 +33,30 @@ const isProp = (child: PropData) =>
   !child.name.startsWith('_') &&
   !child.implementationOf;
 
-const isMethod = (child: PropData) =>
+const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   child.kind === TypeDocKind.Method &&
-  !child.overwrites &&
+  (allowOverwrites || !child.overwrites) &&
   !child.name.startsWith('_') &&
   !child?.implementationOf;
 
 const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes } = clx;
-  const properties = children?.filter(isProp);
-  const methods = children
-    ?.filter(isMethod)
-    .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
-  const returnComment = getTagData('returns', comment);
   const Header = exposeInSidebar ? H2Nested : H4;
 
+  const isSensorClass = name.endsWith('Sensor');
+  const className = isSensorClass ? name.replace('Sensor', '') : name;
+
+  const properties = children?.filter(isProp);
+  const methods = children
+    ?.filter(child => isMethod(child, isSensorClass))
+    .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
+  const returnComment = getTagData('returns', comment);
+
   return (
-    <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
+    <div key={`class-definition-${className}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <InlineCode>{name}</InlineCode>
+        <InlineCode>{className}</InlineCode>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <P>
@@ -61,11 +65,16 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
           {extendedTypes?.length && (
             <>
               <span> extends </span>
-              {extendedTypes.map(extendedType => (
-                <InlineCode key={`extends-${extendedType.name}`}>
-                  {resolveTypeName(extendedType)}
-                </InlineCode>
-              ))}
+              {extendedTypes.map(extendedType => {
+                if (isSensorClass && extendedType.name === 'default') {
+                  extendedType.name = 'DeviceSensor';
+                }
+                return (
+                  <InlineCode key={`extends-${extendedType.name}`}>
+                    {resolveTypeName(extendedType)}
+                  </InlineCode>
+                );
+              })}
             </>
           )}
           {implementedTypes?.length && (
@@ -92,7 +101,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       {properties?.length ? (
         <>
           <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{name} Properties</Header>
+            <Header>{className} Properties</Header>
           </div>
           <div>
             {properties.map(property =>
@@ -104,7 +113,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       {methods?.length && (
         <>
           <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{name} Methods</Header>
+            <Header>{className} Methods</Header>
           </div>
           {methods.map(method => renderMethod(method, { exposeInSidebar }))}
         </>
