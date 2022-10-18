@@ -1,5 +1,10 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
+// swiftlint:disable redundant_optional_initialization
+// Unfortunately, property wrappers must be initialized in those records, otherwise the memberwise initializer
+// would require `Field<FieldType?>` as an argument instead of `FieldType?`.
+// TODO: (@tsapeta) Figure out if we can fix that
+
 import ExpoModulesCore
 
 internal typealias ImagePickerResult = Result<ImagePickerResponse, Exception>

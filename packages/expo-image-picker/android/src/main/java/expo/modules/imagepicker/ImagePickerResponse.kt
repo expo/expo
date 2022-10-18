@@ -20,7 +20,7 @@ internal class ImagePickerAsset(
 internal class ImagePickerResponse(
   @Field val canceled: Boolean = false,
   @Field val assets: List<ImagePickerAsset>? = null
-): Record
+) : Record
 
 enum class MediaType(val value: String) : Enumerable {
   VIDEO("video"),
