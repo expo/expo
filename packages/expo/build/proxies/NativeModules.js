@@ -21,6 +21,7 @@ const PROPS_TO_IGNORE = new Set([
     'RNGetRandomValues',
     'RNVectorIconsManager',
     'RNVectorIconsModule',
+    'LottieAnimationViewManager',
     /**
      * Other methods that can be called on the NativeModules object that we should ignore. The
      * underlying NativeModules object is sometimes a proxy itself so may not have these methods
@@ -61,7 +62,7 @@ export function createProxyForNativeModules(NativeModules) {
                 !additionalModulesToIgnore.has(prop) &&
                 !alreadyErroredModules.has(prop)) {
                 alreadyErroredModules.add(prop);
-                const isRunningInStoreClient = global.ExpoModules?.NativeModulesProxy?.modulesConstants.ExponentConstants
+                const isRunningInStoreClient = global.expo?.modules?.NativeModulesProxy?.modulesConstants.ExponentConstants
                     ?.executionEnvironment === ExecutionEnvironment.StoreClient ||
                     target.NativeUnimoduleProxy?.modulesConstants.ExponentConstants?.executionEnvironment ===
                         ExecutionEnvironment.StoreClient;

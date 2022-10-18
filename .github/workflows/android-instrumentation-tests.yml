@@ -35,7 +35,7 @@ concurrency:
 jobs:
   test:
     runs-on: macos-11
-    timeout-minutes: 60
+    timeout-minutes: 100
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
@@ -72,7 +72,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 📱 Run instrumented unit tests
-        timeout-minutes: 45
+        timeout-minutes: 60
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}

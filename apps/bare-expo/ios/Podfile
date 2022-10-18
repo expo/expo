@@ -34,19 +34,18 @@ abstract_target 'BareExpoMain' do
 
   config = use_native_modules!
 
-  use_react_native!(
-    :path => config[:reactNativePath],
-    :hermes_enabled => flags[:hermes_enabled] || podfile_properties['expo.jsEngine'] == 'hermes',
-    :fabric_enabled => flags[:fabric_enabled],
-    # An absolute path to your application root.
-    :app_path => "#{Dir.pwd}/.."
-  )
-
   # Fix Google Sign-in and Flipper
   post_install do |installer|
     # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
-    react_native_post_install(installer) if installer.pods_project
-    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
+    if installer.pods_project
+      react_native_post_install(
+        installer,
+        # Set `mac_catalyst_enabled` to `true` in order to apply patches
+        # necessary for Mac Catalyst builds
+        :mac_catalyst_enabled => false
+      )
+      __apply_Xcode_12_5_M1_post_install_workaround(installer)
+    end
 
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
@@ -72,16 +71,28 @@ abstract_target 'BareExpoMain' do
   end
 
   target 'BareExpo' do
-    # Enables Flipper.
-
-    # Uncomment to opt-in to using Flipper
-    #
-    # if !ENV['CI']
-    #   use_flipper!()
-    # end
+    use_react_native!(
+      :path => config[:reactNativePath],
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
+      :fabric_enabled => flags[:fabric_enabled],
+      # An absolute path to your application root.
+      :app_path => "#{Pod::Config.instance.installation_root}/..",
+      #
+      # Uncomment to opt-in to using Flipper
+      # Note that if you have use_frameworks! enabled, Flipper will not work
+      # :flipper_configuration => !ENV['CI'] ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
+    )
   end
 
   target 'BareExpoDetox' do
+    use_react_native!(
+      :path => config[:reactNativePath],
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
+      :fabric_enabled => flags[:fabric_enabled],
+      # An absolute path to your application root.
+      :app_path => "#{Pod::Config.instance.installation_root}/..",
+      :flipper_configuration => FlipperConfiguration.disabled,
+    )
   end
 
   target 'BareExpoTests' do

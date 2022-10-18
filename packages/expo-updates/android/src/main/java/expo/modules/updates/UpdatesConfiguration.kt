@@ -6,6 +6,17 @@ import android.net.Uri
 import android.util.Log
 import expo.modules.updates.codesigning.CodeSigningConfiguration
 
+/**
+ * Holds global, immutable configuration values for updates, as well as doing some rudimentary
+ * validation.
+ *
+ * In most apps, these configuration values are baked into the build, and this class functions as a
+ * utility for reading and memoizing the values.
+ *
+ * In development clients (including Expo Go) where this configuration is intended to be dynamic at
+ * runtime and updates from multiple scopes can potentially be opened, multiple instances of this
+ * class may be created over the lifetime of the app, but only one should be active at a time.
+ */
 class UpdatesConfiguration private constructor (
   val isEnabled: Boolean,
   val expectsSignedManifest: Boolean,

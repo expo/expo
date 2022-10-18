@@ -4,11 +4,24 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed `LottieAnimationViewManager isn't supported in Expo Go` error when running with `lottie-react-native`. ([#19439](https://github.com/expo/expo/pull/19439) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 47.0.0-alpha.1 — 2022-10-06
+
+### 🛠 Breaking changes
+
 - Drop `expo-error-recovery` and `exp.errorRecovery` root component props (unimplemented outside of classic build service). ([#19132](https://github.com/expo/expo/pull/19132) by [@EvanBacon](https://github.com/EvanBacon))
 - Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
+- Re-export `@expo/config-plugins` and `@expo/config` from this package to make it easier for plugins to align on a single version through a peer dependency. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Drop unused `console.warn` and `console.error` wrappers. ([#18983](https://github.com/expo/expo/pull/18983) by [@EvanBacon](https://github.com/EvanBacon))
 - Added capability to throw an error for missing native modules (and `disable-missing-native-module-errors` import to disable this). ([#18465](https://github.com/expo/expo/pull/18465) by [@esamelson](https://github.com/esamelson))
 - Added `getNativeModuleIfExists`. ([#18913](https://github.com/expo/expo/pull/18913) by [@esamelson](https://github.com/esamelson))
@@ -24,6 +37,10 @@
 - Remove `AppRegistry.setWrapperComponentProvider` in favor of `registerRootComponent`. ([#18984](https://github.com/expo/expo/pull/18984) by [@EvanBacon](https://github.com/EvanBacon))
 - Add `@expo/config-plugins` dependency for packages that have a peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 - Convert `DevAppContainer` to functional React component. ([#18597](https://github.com/expo/expo/pull/18597) by [@EvanBacon](https://github.com/EvanBacon))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
 
 ## 46.0.1 — 2022-07-25
 

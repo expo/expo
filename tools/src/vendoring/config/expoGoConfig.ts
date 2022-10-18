@@ -58,6 +58,7 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-gesture-handler.git',
       semverPrefix: '~',
       ios: {},
+      android: {},
     },
     'react-native-reanimated': {
       source: 'https://github.com/software-mansion/react-native-reanimated.git',
@@ -108,23 +109,13 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-screens.git',
       semverPrefix: '~',
       ios: {},
-      // TODO: Uncomment once the new vendoring scripts supports Android
-      // android: {
-      //   transforms: {
-      //     content: [
-      //       {
-      //         paths: 'ScreenStack.kt',
-      //         find: /(?=^class ScreenStack\()/m,
-      //         replaceWith: `import host.exp.expoview.R\n\n`,
-      //       },
-      //       {
-      //         paths: 'ScreenStackHeaderConfig.kt',
-      //         find: /(?=^class ScreenStackHeaderConfig\()/m,
-      //         replaceWith: `import host.exp.expoview.BuildConfig\nimport host.exp.expoview.R\n\n`,
-      //       },
-      //     ],
-      //   },
-      // },
+      android: {
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+        ],
+      },
     },
     'amazon-cognito-identity-js': {
       source: 'https://github.com/aws-amplify/amplify-js.git',
@@ -134,6 +125,16 @@ const config: VendoringTargetConfig = {
     },
     'react-native-svg': {
       source: 'https://github.com/react-native-svg/react-native-svg',
+      ios: {},
+      android: {
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+          'android/src/fabric/**',
+          'android/src/main/jni/**',
+        ],
+      },
     },
     'react-native-maps': {
       source: 'https://github.com/react-native-maps/react-native-maps',
@@ -281,7 +282,12 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
-      packageJsonPath: 'src/package.json',
+      rootDir: 'src',
+      ios: {},
+      android: {
+        includeFiles: 'android/**',
+        excludeFiles: ['android/gradle{/**,**}'],
+      },
     },
     '@shopify/react-native-skia': {
       source: '@shopify/react-native-skia',

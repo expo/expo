@@ -11,14 +11,33 @@
 #import <GoogleMaps/GoogleMaps.h>
 
 @implementation AIRGoogleMapPolygon
+{
+  BOOL _didMoveToWindow;
+}
 
 - (instancetype)init
 {
   if (self = [super init]) {
+    _didMoveToWindow = false;
     _polygon = [[AIRGMSPolygon alloc] init];
   }
 
   return self;
+}
+
+- (void)didMoveToWindow {
+  [super didMoveToWindow];
+  if(_didMoveToWindow) return;
+  _didMoveToWindow = true;
+  if(_fillColor) {
+    _polygon.fillColor = _fillColor;
+  }
+  if(_strokeColor) {
+    _polygon.strokeColor = _strokeColor;
+  }
+  if(_strokeWidth) {
+    _polygon.strokeWidth = _strokeWidth;
+  }
 }
 
 - (void)setCoordinates:(NSArray<AIRMapCoordinate *> *)coordinates
@@ -58,19 +77,25 @@
 -(void)setFillColor:(UIColor *)fillColor
 {
   _fillColor = fillColor;
-  _polygon.fillColor = fillColor;
+  if(_didMoveToWindow) {
+    _polygon.fillColor = fillColor;
+  }
 }
 
 -(void)setStrokeWidth:(double)strokeWidth
 {
   _strokeWidth = strokeWidth;
-  _polygon.strokeWidth = strokeWidth;
+  if(_didMoveToWindow) {
+    _polygon.strokeWidth = strokeWidth;
+  }
 }
 
 -(void)setStrokeColor:(UIColor *) strokeColor
 {
   _strokeColor = strokeColor;
-  _polygon.strokeColor = strokeColor;
+  if(_didMoveToWindow) {
+    _polygon.strokeColor = strokeColor;
+  }
 }
 
 -(void)setGeodesic:(BOOL)geodesic

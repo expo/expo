@@ -12,7 +12,7 @@ export enum SensorType {
 }
 
 export type SensorConfig = {
-  interval: number;
+  interval: number | 'auto';
 };
 
 export type AnimatedSensor = {
@@ -26,7 +26,7 @@ export function useAnimatedSensor(
   sensorType: SensorType,
   userConfig?: SensorConfig
 ): AnimatedSensor {
-  const ref = useRef({
+  const ref = useRef<AnimatedSensor>({
     sensor: null,
     unregister: () => {
       // NOOP
@@ -38,7 +38,7 @@ export function useAnimatedSensor(
   });
 
   if (ref.current.sensor === null) {
-    ref.current.config = { interval: 10, ...userConfig };
+    ref.current.config = { interval: 'auto', ...userConfig };
     let sensorData;
     if (sensorType === SensorType.ROTATION) {
       sensorData = {
@@ -61,10 +61,10 @@ export function useAnimatedSensor(
   }
 
   useEffect(() => {
-    ref.current.config = { interval: 10, ...userConfig };
+    ref.current.config = { interval: 'auto', ...userConfig };
     const id = NativeReanimated.registerSensor(
       sensorType,
-      ref.current.config.interval,
+      ref.current.config.interval === 'auto' ? -1 : ref.current.config.interval,
       ref.current.sensor as any
     );
 

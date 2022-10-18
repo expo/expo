@@ -17,7 +17,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -106,12 +106,6 @@ android {
   packagingOptions {
     // libfbjni.so is prebuilt library shared between all ABIs
     pickFirst "lib/**/libfbjni.so"
-  }
-}
-
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r245459'
   }
 }
 
@@ -216,7 +210,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
+  api 'org.webkit:android-jsc:r250230' // needs to be before react-native
   api 'com.facebook.react:react-native:+'
   END UNCOMMENT WHEN DISTRIBUTING */
 

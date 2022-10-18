@@ -85,11 +85,14 @@ async function action(options: ActionOptions) {
   }
 
   const moduleName = await resolveModuleNameAsync(options.module, targetConfig);
-  const sourceDirectory = path.join(os.tmpdir(), 'ExpoVendoredModules', moduleName);
+  const downloadSourceDir = path.join(os.tmpdir(), 'ExpoVendoredModules', moduleName);
   const moduleConfig = targetConfig.modules[moduleName];
 
   try {
-    await downloadSourceAsync(sourceDirectory, moduleName, moduleConfig, options);
+    await downloadSourceAsync(downloadSourceDir, moduleName, moduleConfig, options);
+    const sourceDirectory = moduleConfig.rootDir
+      ? path.join(downloadSourceDir, moduleConfig.rootDir)
+      : downloadSourceDir;
 
     const platforms = resolvePlatforms(options.platform);
 
@@ -141,7 +144,7 @@ async function action(options: ActionOptions) {
     }
   } finally {
     // Clean cloned repo
-    await fs.remove(sourceDirectory);
+    await fs.remove(downloadSourceDir);
   }
   logger.success('💪 Successfully updated %s\n', chalk.bold(moduleName));
 }

@@ -91,7 +91,10 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
     // rename file
     const dirname = path.dirname(filename);
     const basename = path.basename(filename);
-    const targetPath = path.join(dirname, `${versionPrefix}${basename}`);
+    const versionedBasename = !basename.startsWith(versionPrefix)
+      ? `${versionPrefix}${basename}`
+      : basename;
+    const targetPath = path.join(dirname, versionedBasename);
 
     // filter transformRules to patterns which apply to this dirname
     const filteredTransformRules =
@@ -104,7 +107,9 @@ async function namespaceReactNativeFilesAsync(filenames, versionPrefix, versione
     }
 
     // Rename file to be prefixed.
-    await fs.move(filename, targetPath);
+    if (filename !== targetPath) {
+      await fs.move(filename, targetPath);
+    }
 
     // perform transforms that sed can't express
     await _transformFileContentsAsync(targetPath, async (fileString) => {
@@ -239,8 +244,7 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
     reactNativeRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH),
     codegenPkgRoot: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'packages', 'react-native-codegen'),
     outputDir: path.join(versionedReactNativePath, 'codegen', 'ios'),
-    outputDirBaseName: `${versionName}FBReactNativeSpec`,
-    name: 'FBReactNativeSpec',
+    name: `${versionName}FBReactNativeSpec`,
     type: 'modules',
     platform: 'ios',
     jsSrcsDir: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'Libraries'),
@@ -379,8 +383,8 @@ async function generateReactNativePodScriptAsync(
     // hermes
     { find: /^\s+prepare_hermes[.\s\S]*abort unless prep_status == 0\n$/gm, replaceWith: '' },
     {
-      find: `pod '${versionName}hermes-engine', :podspec => "#{prefix}/sdks/hermes/hermes-engine.podspec"`,
-      replaceWith: `pod '${versionName}hermes-engine', :path => "#{prefix}/sdks/hermes-engine", :project_name => '${versionName}'`,
+      find: `pod '${versionName}hermes-engine', :podspec => "#{react_native_path}/sdks/hermes/hermes-engine.podspec"`,
+      replaceWith: `pod '${versionName}hermes-engine', :path => "#{react_native_path}/sdks/hermes-engine", :project_name => '${versionName}'`,
     },
     { find: new RegExp(`\\b${versionName}(libevent)\\b`, 'g'), replaceWith: '$1' },
   ];

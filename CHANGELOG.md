@@ -7,7 +7,22 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
-- Updated `@stripe/stripe-react-native` from `0.13.1` to `0.18.1` on iOS. ([#19055](https://github.com/expo/expo/pull/19055) by [@tsapeta](https://github.com/tsapeta))
+- Updated `react-native-pager-view` from `5.4.245` to `6.0.1`. ([#19528](https://github.com/expo/expo/pull/19528) by [@brentvatne](https://github.com/brentvatne))
+- Updated `react-native-safe-area-context` from `4.3.1` to `4.4.1`. ([#19055](https://github.com/expo/expo/pull/19401) by [@brentvatne](https://github.com/brentvatne))
+- Updated `@stripe/stripe-react-native` from `0.13.1` to `0.19.0`. ([#19055](https://github.com/expo/expo/pull/19055) by [@tsapeta](https://github.com/tsapeta), [#19432](https://github.com/expo/expo/pull/19432) by [@kudo](https://github.com/kudo))
+- Updated `@shopify/flash-list` from `1.1.0` to `1.3.0`. ([#19317](https://github.com/expo/expo/pull/19317) by [@kudo](https://github.com/kudo))
+- Updated `react-native-view-shot` from `3.3.0` to `3.4.0`. ([#19405](https://github.com/expo/expo/pull/19405) by [@douglowder](https://github.com/douglowder))
+- Updated `react-native-webview` from `11.23.0` to `11.23.1`. ([#19375](https://github.com/expo/expo/pull/19375) by [@aleqsio](https://github.com/aleqsio))
+- Updated `react-native-gesture-handler` from `2.5.0` to `2.7.0`. ([#19362](https://github.com/expo/expo/pull/19362) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@react-native-community/netinfo` from `9.3.0` to `9.3.3`. ([#19421](https://github.com/expo/expo/pull/19421) by [@douglowder](https://github.com/douglowder))
+- Updated `@react-native-picker/picker` from `2.4.2` to `2.4.6`. ([#19390](https://github.com/expo/expo/pull/19390) by [@aleqsio](https://github.com/aleqsio))
+- Updated `react-native-screens` from `3.15.0` to `3.18.0`. ([#19383](https://github.com/expo/expo/pull/19383) by [@tsapeta](https://github.com/tsapeta))
+- Updated `@shopify/react-native-skia` from `0.1.136` to `0.1.153`. ([#19360](https://github.com/expo/expo/pull/19360) by [@kudo](https://github.com/kudo))
+- Updated `@react-native-community/datetimepicker` from `6.2.0` to `6.5.0`. ([#19419](https://github.com/expo/expo/pull/19419) by [@byCedric](https://github.com/byCedric))
+- Updated `react-native-maps` from `0.31.1` to `1.3.2`. ([#19414](https://github.com/expo/expo/pull/19414) by [@aleqsio](https://github.com/aleqsio))
+- Updated `lottie-react-native` from `5.1.3` to `5.1.4`. ([#19433](https://github.com/expo/expo/pull/19433) by [@kudo](https://github.com/kudo))
+- Updated `@react-native-community/slider` from `4.2.3` to `4.2.4`. ([#19424](https://github.com/expo/expo/pull/19424)) by [@kudo](https://github.com/kudo))
+- Updated `react-native-svg` from `12.3.0` to `13.4.0`. ([#19434](https://github.com/expo/expo/pull/19434) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🛠 Breaking changes
 
@@ -274,7 +289,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Fix local asset localUri not being used in development ([#16544](https://github.com/expo/expo/pull/16544) by [@mnightingale](https://github.com/mnightingale))
   - On iOS fix `pauseAsync` causing framedrops and being delayed by not disabling `AVAudioSession` when there is no need for it ([#15873](https://github.com/expo/expo/pull/15873) by [@hirbod](https://github.com/hirbod) and [@mnightingale](https://github.com/mnightingale)) ([#15873](https://github.com/expo/expo/pull/15873) by [@hirbod](https://github.com/hirbod), [@mnightingale](https://github.com/mnightingale))
   - On Android fix crashes caused by accessing player from the wrong thread ([#16611](https://github.com/expo/expo/pull/16611) by [@mnightingale](https://github.com/mnightingale))
-  - On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and  the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
+  - On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
 - **`expo-background-fetch`**
   - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - **`expo-barcode-scanner`**
@@ -700,7 +715,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - **`expo-camera`**
   - Fix Gradle error when running Gradle from outside of the project directory. ([#15109](https://github.com/expo/expo/pull/15109) by [@kudo](https://github.com/kudo))
 - **`expo-asset`**
-  - Fix `fromModule` on restrictive (Snack) web environments.  ([#14435](https://github.com/expo/expo/pull/14435) by [@IjzerenHein](https://github.com/IjzerenHein))
+  - Fix `fromModule` on restrictive (Snack) web environments. ([#14435](https://github.com/expo/expo/pull/14435) by [@IjzerenHein](https://github.com/IjzerenHein))
 - **`expo-constants`**
   - Don't include fonts from family "System Font" (introduced by iOS 15) ([#14577](https://github.com/expo/expo/pull/14577) by [@brentvatne](https://github.com/brentvatne))
   - Fix `Constants.deviceId has been deprecated in favor of generating and storing your own ID.` warnings in classic react-native projects. ([#14837](https://github.com/expo/expo/pull/14837) by [@kudo](https://github.com/kudo))

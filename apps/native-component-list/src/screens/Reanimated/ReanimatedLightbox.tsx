@@ -1,4 +1,4 @@
-import { useHeaderHeight } from '@react-navigation/stack';
+import { useHeaderHeight } from '@react-navigation/elements';
 import React, { useState, useEffect, RefObject } from 'react';
 import { Dimensions, StyleSheet, View, Image, Platform, StatusBar } from 'react-native';
 import {

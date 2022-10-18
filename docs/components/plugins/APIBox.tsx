@@ -13,7 +13,7 @@ type APIBoxProps = React.PropsWithChildren<{
 export const APIBox = ({ header, platforms, children }: APIBoxProps) => {
   return (
     <div css={STYLES_APIBOX}>
-      {platforms && <PlatformTags prefix="Only for:" platforms={platforms} firstElement />}
+      {platforms && <PlatformTags prefix="Only for:" platforms={platforms} />}
       {header && <H3 tags={platforms}>{header}</H3>}
       {children}
     </div>

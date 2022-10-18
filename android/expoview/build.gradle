@@ -5,6 +5,11 @@ apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
+def hasHermesEngineDeps = false
+
+def reactProperties = new Properties()
+file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 //maven repository info
 group = 'host.exp.exponent'
@@ -47,14 +52,12 @@ import de.undercouch.gradle.tasks.download.Download
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.apache.tools.ant.filters.ReplaceTokens
 
-def reactProperties = new Properties()
 def reactNative = new File("$projectDir/../../versioned-react-native")
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
-reactNative = new File("$projectDir/..")
+reactNative = new File("$projectDir/../../react-native-lab/react-native")
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
-file("$reactNative/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
 def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
@@ -71,9 +74,9 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${project(':ReactAndroid').projectDir}/prebuiltHermes")
+def prebuiltHermesDir = findProperty("expo.prebuiltHermesDir") ?: file("${rootDir}/prebuiltHermes")
 def prebuiltHermesVersion = file("${prebuiltHermesDir}/.hermesversion").exists() ? file("${prebuiltHermesDir}/.hermesversion").text : null
-def currentHermesVersion = file("${rootDir}/sdks/.hermesversion").exists() ? file("${rootDir}/sdks/.hermesversion").text : null
+def currentHermesVersion = file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").exists() ? file("${project(':ReactAndroid').projectDir}/../sdks/.hermesversion").text : null
 def buildHermesSource = currentHermesVersion != prebuiltHermesVersion
 logger.info(":expoview - buildHermesSource[${buildHermesSource}]")
 
@@ -107,7 +110,7 @@ repositories {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   // Used to override the NDK path/version on internal CI or by allowing
   // users to customize the NDK path/version from their root project (e.g. for M1 support)
@@ -253,12 +256,6 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
 
 apply plugin: GenerateDynamicMacrosPlugin
 
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r245459'
-  }
-}
-
 // WHEN_VERSIONING_REMOVE_TO_HERE
 
 dependencies {
@@ -283,7 +280,7 @@ dependencies {
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
 
-  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
+  api 'org.webkit:android-jsc:r250230' // needs to be before react-native
 
   /* UNCOMMENT WHEN DISTRIBUTING
   api 'com.facebook.react:react-native:45.0.0'
@@ -302,6 +299,7 @@ dependencies {
       exclude(group:'com.facebook.fbjni', module: 'fbjni')
     }
   }
+  hasHermesEngineDeps = true
 
   // Expo modules
   api project(':expo')
@@ -323,35 +321,39 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
-  api 'androidx.appcompat:appcompat:1.2.0'
-  api 'androidx.autofill:autofill:1.1.0'
-  api 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-  api 'com.facebook.fbjni:fbjni-java-only:0.2.2'
-  api 'com.facebook.fresco:fresco:2.5.0'
-  api 'com.facebook.fresco:animated-gif:2.5.0'
-  api 'com.facebook.fresco:animated-webp:2.5.0'
-  api 'com.facebook.fresco:webpsupport:2.5.0'
-  api 'com.facebook.fresco:imagepipeline-okhttp3:2.5.0'
-  api 'com.facebook.fresco:ui-common:2.5.0'
-  api 'com.facebook.infer.annotation:infer-annotation:0.18.0'
-  api 'com.facebook.soloader:soloader:0.10.3'
-  api 'com.facebook.yoga:proguard-annotations:1.19.0'
-  api 'com.google.code.findbugs:jsr305:3.0.2'
-  api 'com.squareup.okhttp3:okhttp-urlconnection:4.9.2'
-  api 'com.squareup.okhttp3:okhttp:4.9.2'
-  api 'com.squareup.okio:okio:2.9.0'
-  api 'javax.inject:javax.inject:1'
+  api("androidx.appcompat:appcompat-resources:${reactProperties.getProperty('ANDROIDX_APPCOMPAT_VERSION')}")
+  api("androidx.appcompat:appcompat:${reactProperties.getProperty('ANDROIDX_APPCOMPAT_VERSION')}")
+  api("androidx.autofill:autofill:${reactProperties.getProperty('ANDROIDX_AUTOFILL_VERSION')}")
+  api("androidx.swiperefreshlayout:swiperefreshlayout:${reactProperties.getProperty('SWIPEREFRESH_LAYOUT_VERSION')}")
+
+  api("com.facebook.fbjni:fbjni-java-only:${reactProperties.getProperty('FBJNI_VERSION')}")
+  api("com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.infer.annotation:infer-annotation:${reactProperties.getProperty('INFER_ANNOTATIONS_VERSION')}")
+  api("com.facebook.soloader:soloader:${reactProperties.getProperty('SO_LOADER_VERSION')}")
+  api("com.facebook.yoga:proguard-annotations:${reactProperties.getProperty('PROGUARD_ANNOTATIONS_VERSION')}")
+
+  api("com.google.code.findbugs:jsr305:${reactProperties.getProperty('JSR305_VERSION')}")
+  api("com.squareup.okhttp3:okhttp-urlconnection:${reactProperties.getProperty('OKHTTP_VERSION')}")
+  api("com.squareup.okhttp3:okhttp:${reactProperties.getProperty('OKHTTP_VERSION')}")
+  api("com.squareup.okio:okio:${reactProperties.getProperty('OKIO_VERSION')}")
+  api("javax.inject:javax.inject:${reactProperties.getProperty('JAVAX_INJECT_VERSION')}")
 
   // Our dependencies
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
   api "androidx.room:room-runtime:2.1.0"
 
+  api("com.facebook.fresco:animated-gif:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.fresco:animated-webp:${reactProperties.getProperty('FRESCO_VERSION')}")
+  api("com.facebook.fresco:webpsupport:${reactProperties.getProperty('FRESCO_VERSION')}")
+
   api 'com.squareup.picasso:picasso:2.5.2'
   api 'com.google.android.gms:play-services-analytics:17.0.0'
-  api 'com.google.android.gms:play-services-maps:18.0.0'
+  api 'com.google.android.gms:play-services-maps:18.0.1'
   api 'com.google.android.gms:play-services-auth:17.0.0'
-  api 'com.google.android.gms:play-services-location:17.0.0'
+  api 'com.google.android.gms:play-services-location:20.0.0'
   api 'com.google.android.gms:play-services-fitness:17.0.0'
   api 'com.google.android.gms:play-services-wallet:17.0.0' //may need 10.+
   debugApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.4-beta1'
@@ -384,11 +386,6 @@ dependencies {
     }
   }
 
-  // react-native-screens
-  api 'androidx.fragment:fragment:1.2.2'
-  api 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'
-  api 'com.google.android.material:material:1.1.0'
-
   api 'com.google.firebase:firebase-core:17.2.3'
   api 'com.google.firebase:firebase-messaging:22.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
@@ -403,7 +400,7 @@ dependencies {
 
   // expo-av
   // See explanation in expo-av/build.gradle
-  api 'com.google.android.exoplayer:extension-okhttp:2.13.3'
+  api 'com.google.android.exoplayer:extension-okhttp:2.18.1'
 
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'
@@ -419,9 +416,10 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.5.+')
-  implementation('com.stripe:financial-connections:20.5.+')
-  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.0'
+  implementation('com.stripe:stripe-android:20.12.+')
+  implementation('com.stripe:financial-connections:20.12.+')
+  compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
+  implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
   implementation 'com.google.android.material:material:1.3.0'
 
@@ -794,7 +792,7 @@ tasks.whenTaskAdded { task ->
 }
 
 def hermesAAR = new File("${reactNative}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar")
-if (hermesAAR.exists()) {
+if (hermesAAR.exists() && !hasHermesEngineDeps) {
   dependencies {
     compileOnly(files(hermesAAR))
   }

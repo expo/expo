@@ -5,11 +5,14 @@
 #include "JavaScriptTypedArray.h"
 #include "JavaReferencesCache.h"
 #include "Exceptions.h"
+#include "JavaCallback.h"
 
 #include <utility>
 
-#include "react/jni/ReadableNativeMap.h"
-#include "react/jni/ReadableNativeArray.h"
+#include <react/jni/ReadableNativeMap.h>
+#include <react/jni/ReadableNativeArray.h>
+#include <react/jni/WritableNativeArray.h>
+#include <react/jni/WritableNativeMap.h>
 #include "JSReferencesCache.h"
 
 namespace jni = facebook::jni;
@@ -20,7 +23,7 @@ namespace expo {
 
 // Modified version of the RN implementation
 // https://github.com/facebook/react-native/blob/7dceb9b63c0bfd5b13bf6d26f9530729506e9097/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.cpp#L57
-jni::local_ref<react::JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
+jni::local_ref<JavaCallback::JavaPart> createJavaCallbackFromJSIFunction(
   jsi::Function &&function,
   jsi::Runtime &rt,
   std::shared_ptr<react::CallInvoker> jsInvoker
@@ -38,7 +41,11 @@ jni::local_ref<react::JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunct
     std::make_shared<react::RAIICallbackWrapperDestroyer>(weakWrapper);
 
   std::function<void(folly::dynamic)> fn =
-    [weakWrapper, callbackWrapperOwner, wrapperWasCalled = false](
+    [
+      weakWrapper,
+      callbackWrapperOwner = std::move(callbackWrapperOwner),
+      wrapperWasCalled = false
+    ](
       folly::dynamic responses) mutable {
       if (wrapperWasCalled) {
         throw std::runtime_error(
@@ -51,17 +58,17 @@ jni::local_ref<react::JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunct
       }
 
       strongWrapper->jsInvoker().invokeAsync(
-        [weakWrapper, callbackWrapperOwner, responses]() mutable {
+        [
+          weakWrapper,
+          callbackWrapperOwner = std::move(callbackWrapperOwner),
+          responses = std::move(responses)
+        ]() mutable {
           auto strongWrapper2 = weakWrapper.lock();
           if (!strongWrapper2) {
             return;
           }
 
-          jsi::Value args =
-            jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
-          auto argsArray = args.getObject(strongWrapper2->runtime())
-            .asArray(strongWrapper2->runtime());
-          jsi::Value arg = argsArray.getValueAtIndex(strongWrapper2->runtime(), 0);
+          jsi::Value arg = jsi::valueFromDynamic(strongWrapper2->runtime(), responses);
 
           strongWrapper2->callback().call(
             strongWrapper2->runtime(),
@@ -75,7 +82,7 @@ jni::local_ref<react::JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunct
       wrapperWasCalled = true;
     };
 
-  return react::JCxxCallbackImpl::newObjectCxxArgs(fn);
+  return JavaCallback::newObjectCxxArgs(std::move(fn));
 }
 
 jobjectArray MethodMetadata::convertJSIArgsToJNI(
@@ -223,11 +230,46 @@ jsi::Value MethodMetadata::callSync(
   if (result == nullptr) {
     return jsi::Value::undefined();
   }
+  auto unpackedResult = result.get();
+  auto cache = JavaReferencesCache::instance();
+  if (env->IsInstanceOf(unpackedResult, cache->getJClass("java/lang/Double").clazz)) {
+    return {jni::static_ref_cast<jni::JDouble>(result)->value()};
+  }
+  if (env->IsInstanceOf(unpackedResult, cache->getJClass("java/lang/Integer").clazz)) {
+    return {jni::static_ref_cast<jni::JInteger>(result)->value()};
+  }
+  if (env->IsInstanceOf(unpackedResult, cache->getJClass("java/lang/String").clazz)) {
+    return jsi::String::createFromUtf8(
+      rt,
+      jni::static_ref_cast<jni::JString>(result)->toStdString()
+    );
+  }
+  if (env->IsInstanceOf(unpackedResult, cache->getJClass("java/lang/Boolean").clazz)) {
+    return {(bool) jni::static_ref_cast<jni::JBoolean>(result)->value()};
+  }
+  if (env->IsInstanceOf(unpackedResult, cache->getJClass("java/lang/Float").clazz)) {
+    return {(double) jni::static_ref_cast<jni::JFloat>(result)->value()};
+  }
+  if (env->IsInstanceOf(
+    unpackedResult,
+    cache->getJClass("com/facebook/react/bridge/WritableNativeArray").clazz
+  )) {
+    auto dynamic = jni::static_ref_cast<react::WritableNativeArray::javaobject>(result)
+      ->cthis()
+      ->consume();
+    return jsi::valueFromDynamic(rt, dynamic);
+  }
+  if (env->IsInstanceOf(
+    unpackedResult,
+    cache->getJClass("com/facebook/react/bridge/WritableNativeMap").clazz
+  )) {
+    auto dynamic = jni::static_ref_cast<react::WritableNativeMap::javaobject>(result)
+      ->cthis()
+      ->consume();
+    return jsi::valueFromDynamic(rt, dynamic);
+  }
 
-  return jsi::valueFromDynamic(rt, result->cthis()->consume())
-    .asObject(rt)
-    .asArray(rt)
-    .getValueAtIndex(rt, 0);
+  return jsi::Value::undefined();
 }
 
 jsi::Function MethodMetadata::toAsyncFunction(
@@ -312,10 +354,10 @@ jsi::Function MethodMetadata::createPromiseBody(
       JNIEnv *env = jni::Environment::current();
 
       auto &jPromise = JavaReferencesCache::instance()->getJClass(
-        "com/facebook/react/bridge/PromiseImpl");
+        "expo/modules/kotlin/jni/PromiseImpl");
       jmethodID jPromiseConstructor = jPromise.getMethod(
         "<init>",
-        "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"
+        "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"
       );
 
       // Creates a promise object

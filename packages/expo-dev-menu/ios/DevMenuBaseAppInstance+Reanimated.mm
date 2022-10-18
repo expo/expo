@@ -37,10 +37,16 @@ typedef facebook::react::JSCExecutorFactory ExecutorFactory;
 
 #if RNVERSION >= 64
   // installs globals such as console, nativePerformanceNow, etc.
-  return std::make_unique<ExecutorFactory>(RCTJSIExecutorRuntimeInstaller(installer));
+  auto executorFactory = std::make_unique<ExecutorFactory>(RCTJSIExecutorRuntimeInstaller(installer));
 #else
-  return std::make_unique<ExecutorFactory>(installer);
+  auto executorFactory = std::make_unique<ExecutorFactory>(installer);
 #endif
+
+#if (RNVERSION > 70 || (RNVERSION >= 70 && RNPATCHVERSION >= 1)) && (__has_include(<reacthermes/HermesExecutorFactory.h>) || __has_include(<React/HermesExecutorFactory.h>))
+  executorFactory->setEnableDebugger(false);
+#endif
+  
+  return executorFactory;
 }
 
 @end

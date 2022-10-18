@@ -6,7 +6,6 @@ import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
-import DocumentationFooter from '~/components/DocumentationFooter';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
 import DocumentationSidebarRight, {
   SidebarRightComponentType,
@@ -16,6 +15,7 @@ import { H1 } from '~/components/base/headings';
 import { PageApiVersionContextType, usePageApiVersion } from '~/providers/page-api-version';
 import navigation from '~/public/static/constants/navigation.json';
 import { NavigationRoute } from '~/types/common';
+import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { Sidebar } from '~/ui/components/Sidebar';
 
@@ -193,11 +193,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         {this.props.title && <H1>{this.props.title}</H1>}
         {this.props.children}
         {this.props.title && (
-          <DocumentationFooter
-            router={this.props.router}
-            title={this.props.title}
-            sourceCodeUrl={this.props.sourceCodeUrl}
-          />
+          <Footer title={this.props.title} sourceCodeUrl={this.props.sourceCodeUrl} />
         )}
       </>
     );

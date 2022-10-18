@@ -6,6 +6,10 @@ import expo.modules.updates.db.UpdatesDatabase
 import org.json.JSONObject
 import java.util.*
 
+/**
+ * Utility methods for reading and writing JSON metadata from manifests (e.g. `serverDefinedHeaders`
+ * and `manifestFilters`, both used for rollouts) to and from SQLite.
+ */
 object ManifestMetadata {
   private val TAG = ManifestMetadata::class.java.simpleName
 

@@ -3,6 +3,8 @@ package expo.modules.kotlin
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.HandlerThread
 import android.view.View
 import androidx.annotation.MainThread
 import androidx.annotation.UiThread
@@ -12,11 +14,13 @@ import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
+import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.JavaScriptContextProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
+import expo.modules.interfaces.filesystem.AppDirectoriesModuleInterface
 import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
@@ -40,11 +44,11 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.newSingleThreadContext
+import java.io.File
 import java.io.Serializable
 import java.lang.ref.WeakReference
 
@@ -59,13 +63,16 @@ class AppContext(
   // We postpone creating the `JSIInteropModuleRegistry` to not load so files in unit tests.
   private lateinit var jsiInterop: JSIInteropModuleRegistry
 
+  private val modulesQueueDispatcher = HandlerThread("expo.modules.AsyncFunctionQueue")
+    .apply { start() }
+    .looper.let { Handler(it) }
+    .asCoroutineDispatcher()
+
   /**
    * A queue used to dispatch all async methods that are called via JSI.
    */
-  @OptIn(DelicateCoroutinesApi::class)
   val modulesQueue = CoroutineScope(
-    // TODO(@lukmccall): maybe it will be better to use a thread pool
-    newSingleThreadContext("expo.modules.AsyncFunctionQueue") +
+    modulesQueueDispatcher +
       SupervisorJob() +
       CoroutineName("expo.modules.AsyncFunctionQueue")
   )
@@ -146,6 +153,24 @@ class AppContext(
    */
   val filePermission: FilePermissionModuleInterface?
     get() = legacyModule()
+
+  /**
+   * Provides access to the scoped directories from the legacy module registry.
+   */
+  private val appDirectories: AppDirectoriesModuleInterface?
+    get() = legacyModule()
+
+  /**
+   * A directory for storing user documents and other permanent files.
+   */
+  val persistentFilesDirectory: File
+    get() = appDirectories?.persistentFilesDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+
+  /**
+   * A directory for storing temporary files that can be removed at any time by the device's operating system.
+   */
+  val cacheDirectory: File
+    get() = appDirectories?.cacheDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
 
   /**
    * Provides access to the permissions manager from the legacy module registry
@@ -236,11 +261,12 @@ class AppContext(
   }
 
   internal fun onHostResume() {
-    activityResultsManager.onHostResume(
-      requireNotNull(currentActivity) {
-        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
-      }
-    )
+    val activity = currentActivity
+    check(activity is AppCompatActivity) {
+      "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
+    }
+
+    activityResultsManager.onHostResume(activity)
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
@@ -249,11 +275,13 @@ class AppContext(
   }
 
   internal fun onHostDestroy() {
-    activityResultsManager.onHostDestroy(
-      requireNotNull(currentActivity) {
-        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
+    currentActivity?.let {
+      check(it is AppCompatActivity) {
+        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
       }
-    )
+
+      activityResultsManager.onHostDestroy(it)
+    }
     registry.post(EventName.ACTIVITY_DESTROYS)
   }
 
@@ -286,15 +314,9 @@ class AppContext(
 
 // region CurrentActivityProvider
 
-  override val currentActivity: AppCompatActivity?
+  override val currentActivity: Activity?
     get() {
-      val currentActivity = this.activityProvider?.currentActivity ?: return null
-
-      check(currentActivity is AppCompatActivity) {
-        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity.localClassName}"
-      }
-
-      return currentActivity
+      return activityProvider?.currentActivity
     }
 
 // endregion
