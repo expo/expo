@@ -75,6 +75,11 @@ export function expoModulesTransforms(module: string, abiVersion: string): FileT
               text
             ),
         },
+        {
+          paths: './src/main/{java,kotlin}/expo/modules/updates/UpdatesPackage.kt',
+          find: 'BuildConfig.EX_UPDATES_NATIVE_DEBUG',
+          replaceWith: 'false',
+        },
       ],
     },
   };
