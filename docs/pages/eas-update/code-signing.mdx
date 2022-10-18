@@ -28,9 +28,9 @@ The `expo-updates` library supports end-to-end code signing. Code signing allows
 
    - The generated private key must be kept private and secure.
    - The certificate validity duration is a setting that may vary based on the security needs of your app.
-      - A shorter validity duration will require [key rotation](#key-rotation) more frequently, but is considered better practice since a compromised private key will have a sooner expiration which limits exposure.
+      - A shorter validity duration will require [key rotation](#key-rotation) more frequently but is considered better practice since a compromised private key will have a sooner expiration which limits exposure.
       - Shorter validity durations add overhead to your app's release process as the key must be rotated more frequently. Binaries with expired certificates won't apply new updates.
-      - As an example, Expo sets this value to 20 years for the public Expo Go app, but only 1 year for internal apps with binaries that are distributed more frequently. We plan to rotate our keys every 10 years.
+      - For example, Expo sets this value to 20 years for the public Expo Go app, but only 1 year for internal apps with binaries that are distributed more frequently. We plan to rotate our keys every 10 years.
 
 2. Configure your app's builds to use code signing:
 
@@ -62,8 +62,8 @@ Key rotation is the process by which the key pair used for signing updates is ch
 
 In any of these cases, the procedure is similar:
 1. Backup the old key and certificate that were generated in step (1) above.
-2. Generated a new key by following the steps above. To assist in debugging, you may wish to change the `keyid` of the new key by modifying the `updates.codeSigningMetadata.keyid` field in your app config (app.json).
-3. The certificate is part of the app's runtime, so a new runtime version should be set for builds using this certificate to ensure that only updates signed with the new key are run in the new build.
+2. Generate a new key by following the steps above. To assist in debugging, you may wish to change the `keyid` of the new key by modifying the `updates.codeSigningMetadata.keyid` field in your app config (app.json).
+3. The certificate is part of the app's runtime, so a new runtime version should be set for builds using this certificate to ensure that only updates signed with the new key run in the new build.
 4. Publish signed updates using the new key by following step (3) above.
 
 ## Removing Code Signing
@@ -71,5 +71,5 @@ In any of these cases, the procedure is similar:
 The process of removing code signing from an app is similar to [key rotation](#key-rotation) and can be thought of as a key rotation to a null key.
 
 1. Backup the old key and certificate that were generated in step (1) above.
-2. Remove the `updates.codeSigningMetadata` field from your app config (app.json).
-3. The new certificate-less app is a new distinct runtime, so a new runtime version should be set for builds to ensure that only unsigned updates are run in the new build.
+2. Remove the `updates.codeSigningMetadata` field from your Expo config (**app.json**).
+3. The new certificate-less app is a new distinct runtime, so a new runtime version should be set for builds to ensure that only unsigned updates run in the new build.
