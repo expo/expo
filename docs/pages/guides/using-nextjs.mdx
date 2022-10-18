@@ -5,13 +5,13 @@ sidebar_title: Using Next.js
 
 import { Collapsible } from '~/ui/components/Collapsible';
 
-> **info** Please open any issues related to Next.js with Expo at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
+> Please open any issues related to Next.js with Expo at [expo-cli/issues](https://github.com/expo/expo-cli/issues).
 
 [Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with Expo for web we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration and integration of the tools.
 
 Using Expo with Next.js means you can share all of your existing components and APIs across your mobile and web. Next.js has its own Webpack config so **you'll need to start your web projects with the Next.js CLI and not with `npx expo start`.**
 
-> **info** Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
+> Next.js can only be used with Expo for web, this doesn't provide Server-Side Rendering (SSR) for native apps.
 
 ## TL;DR:
 
@@ -32,7 +32,7 @@ npx create-react-native-app -t with-nextjs
 
 ### Add Next.js to Expo projects
 
-> **info** This is for already existing Expo projects.
+> This is for already existing Expo projects.
 
 In this approach you would be using SSR for web in your universal project. This is the recommended path because it gives you full access to the features of Expo and Next.js.
 
@@ -52,7 +52,7 @@ In this approach you would be using SSR for web in your universal project. This 
 
 ### Add Expo to Next.js projects
 
-> **info** This is for already existing Next.js projects.
+> This is for already existing Next.js projects.
 
 This approach is useful if you only want to use Expo components in your web-only project.
 
@@ -144,7 +144,7 @@ This is Vercel's preferred method for deploying Next.js projects to production.
 
 ### Polyfill setImmediate
 
-> **info** Fixes `setImmediate is not defined` error.
+> Fixes `setImmediate is not defined` error.
 
 A lot of libraries in the React ecosystem use the `setImmediate()` API (like `react-native-reanimated`), which Next.js doesn't polyfill by default. To fix this you can polyfill it yourself.
 

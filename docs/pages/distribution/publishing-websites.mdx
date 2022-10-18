@@ -53,7 +53,7 @@ The [AWS Amplify Console](https://console.amplify.aws) provides a Git-based work
 
 [Vercel](https://vercel.com/) has a single-command zero-config deployment flow. You can use `vercel` to deploy your app for free!
 
-> **info** For more information on unlimited hosting, check out their [pricing](https://vercel.com/pricing).
+> For more information on unlimited hosting, check out their [pricing](https://vercel.com/pricing).
 
 1. [Install the Vercel CLI](https://vercel.com/download).
 
@@ -78,7 +78,7 @@ When asked about the project path, make sure to specify the `web-build` folder, 
 project path: /path/to/expo-project/web-build
 ```
 
-> **info** To support routers that use the HTML 5 `pushState` API, you'll need to rename the **web-build/index.html** to **web/200.html** before deploying.
+> To support routers that use the HTML 5 `pushState` API, you'll need to rename the **web-build/index.html** to **web/200.html** before deploying.
 
 ## Netlify
 
@@ -105,7 +105,7 @@ With this setup Netlify will build and deploy when you push to git or open a new
 
 Learn more about [GitHub Pages](https://pages.github.com/).
 
-> **info** We'll use `yarn` but you can use `npm` if you want.
+> We'll use `yarn` but you can use `npm` if you want.
 
 Before starting, be sure to [create a new repo on GitHub](https://github.com/new)
 
@@ -132,7 +132,7 @@ Add the following to your **package.json**:
 }
 ```
 
-> **info** In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
+> In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
 
 Finally deploy with:
 
@@ -187,7 +187,7 @@ Here are the formal instructions for deploying to GitHub Pages:
    }
    ```
 
-   > **info** In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`. `predeploy` is automatically run before `deploy`.
+   > In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`. `predeploy` is automatically run before `deploy`.
 
 5. **Generate a _production build_ of your app, and deploy it to GitHub Pages.** (2 minutes)
 
@@ -197,7 +197,7 @@ Here are the formal instructions for deploying to GitHub Pages:
 
    - Your web app is now available at the URL you set as `homepage` in your **package.json**.
 
-   > **info** When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
+   > When you publish code to `gh-pages`, it will create and push the code to a branch in your repo called `gh-pages`. This branch will have your built code but not your development source code.
 
 ## Firebase Hosting
 
@@ -227,7 +227,7 @@ In the existing `scripts` property, add a `predeploy` property and a `deploy` pr
 }
 ```
 
-> **info** In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
+> In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
 
 Run the `npm run deploy-hosting` command to deploy.
 

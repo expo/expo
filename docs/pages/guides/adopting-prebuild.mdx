@@ -6,7 +6,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 There are [many advantages](/workflow/prebuild#pitch) of using [Expo Prebuild][prebuild] to generate your native projects. This guide will show you how to adopt Expo Prebuild in a project that was bootstrapped with `npx react-native init`. The amount of time it will take to convert your project depends on the amount of custom native changes that you have made to your iOS and Android native projects — on a brand new project, this may take a minute or two, and on a large project it could be much longer.
 
-> **info** Adopting prebuild will automatically add support for developing modules with the [Expo native module API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from [Expo CLI][cli] in your project.
+> Adopting prebuild will automatically add support for developing modules with the [Expo native module API][expo-modules-core] by linking `expo-modules-core` natively. You can also use any command from [Expo CLI][cli] in your project.
 
 ## Bootstrap a new project
 
@@ -41,7 +41,7 @@ import App from './App';
 + registerRootComponent(App);
 ```
 
-> **info** Learn more about [`registerRootComponent`](/versions/latest/sdk/register-root-component#registerrootcomponentcomponent).
+> Learn more about [`registerRootComponent`](/versions/latest/sdk/register-root-component#registerrootcomponentcomponent).
 
 ## Prebuild
 
@@ -65,7 +65,7 @@ You can test that everything worked by building the projects locally:
   ]}
 />
 
-> **info** Learn more about [compiling native apps](/workflow/expo-cli#compiling).
+> Learn more about [compiling native apps](/workflow/expo-cli#compiling).
 
 ## Extra changes
 
