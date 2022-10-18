@@ -68,6 +68,7 @@
     "getenv": "^1.0.0",
     "graphql": "15.8.0",
     "graphql-tag": "^2.10.1",
+    "https-proxy-agent": "^5.0.1",
     "internal-ip": "4.3.0",
     "is-root": "^2.1.0",
     "js-yaml": "^3.13.1",
