@@ -8,8 +8,8 @@ The `expo-firebase-analytics` and `expo-firebase-recaptcha` packages allowed the
 
 In this guide, we will migrate from the Expo Firebase packages to React Native Firebase by:
 - Replacing the Expo Firebase packages with their React Native Firebase equivalents
-- Replacing the use of Expo Go for testing with [development build](/development/introduction/) customized to your project's needs
-- Testing the updated code on development build
+- Replacing the use of Expo Go for testing with a [development build](/development/introduction/) customized to your project's needs
+- Testing the updated code on your development build
 
 > **info** These instructions assume you have already been successfully using the Expo Firebase packages. If you're adding Firebase to your app for the first time, see [Using Firebase](/guides/using-firebase) guide.
 
@@ -47,6 +47,7 @@ In the Expo config file, add add `expo-community-flipper` to the `plugins` array
     ]
   }
 }
+```
 
 If you are using the Bare Workflow, see [React Native Firebase's installation instructions](https://rnfirebase.io/#bare-workflow).
 
@@ -96,6 +97,7 @@ If you wish to run the [development build on an iOS simulator](/build-reference/
       }
     },
 }
+```
 `expo-dev-client` should be present in your **package.json**. Once you run [`eas build`](/build/#running-a-build) with your development build [profile](/build/eas-json/#build-profiles) and platform of choice, you will have an app binary file that you can install on your device or simulator.
 
 If you are already using a development build, rebuild your app, as your native code dependencies have changed.
