@@ -1,5 +1,5 @@
 import { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
-import { CameraPermissionResponse, MediaLibraryPermissionResponse, ImagePickerResult, ImagePickerAsset, ImagePickerErrorResult, MediaTypeOptions, ImagePickerOptions, VideoExportPreset, OpenFileBrowserOptions, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle } from './ImagePicker.types';
+import { CameraPermissionResponse, MediaLibraryPermissionResponse, ImagePickerResult, ImagePickerAsset, ImagePickerErrorResult, MediaTypeOptions, ImagePickerOptions, VideoExportPreset, ExpandImagePickerResult, ImageInfo, ImagePickerMultipleResult, ImagePickerCancelledResult, OpenFileBrowserOptions, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle } from './ImagePicker.types';
 /**
  * Checks user's permissions for accessing camera.
  * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerapermissionresponse).
@@ -94,5 +94,9 @@ export declare function launchCameraAsync(options?: ImagePickerOptions): Promise
  * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
  */
 export declare function launchImageLibraryAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
-export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ImagePickerErrorResult, ImagePickerAsset, VideoExportPreset, CameraPermissionResponse, MediaLibraryPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse, OpenFileBrowserOptions, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
+export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ImagePickerErrorResult, ImagePickerAsset, VideoExportPreset, CameraPermissionResponse, MediaLibraryPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse, ImageInfo, // deprecated
+ImagePickerMultipleResult, // deprecated
+ImagePickerCancelledResult, // deprecated
+OpenFileBrowserOptions, ExpandImagePickerResult, // deprecated
+UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
 //# sourceMappingURL=ImagePicker.d.ts.map

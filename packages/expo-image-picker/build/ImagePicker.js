@@ -17,6 +17,37 @@ function validateOptions(options) {
     }
     return options;
 }
+const DEPRECATED_RESULT_KEYS = [
+    'uri',
+    'assetId',
+    'width',
+    'height',
+    'type',
+    'exif',
+    'base64',
+    'duration',
+    'fileName',
+    'fileSize',
+];
+function mergeDeprecatedResult(result) {
+    const firstAsset = result.assets?.[0];
+    const deprecatedResult = {
+        ...result,
+        get cancelled() {
+            console.warn('Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use an American English spelling: "canceled"');
+            return this.canceled;
+        },
+    };
+    for (const key of DEPRECATED_RESULT_KEYS) {
+        Object.defineProperty(deprecatedResult, key, {
+            get() {
+                console.warn(`Key "${key}" in the image picker result is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead`);
+                return firstAsset?.[key];
+            },
+        });
+    }
+    return deprecatedResult;
+}
 // @needsAudit
 /**
  * Checks user's permissions for accessing camera.
@@ -122,11 +153,7 @@ export async function launchCameraAsync(options = {}) {
         throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
     }
     const result = await ExponentImagePicker.launchCameraAsync(validateOptions(options));
-    return {
-        ...result,
-        ...(result.assets?.[0] ?? {}),
-        cancelled: result.canceled,
-    };
+    return mergeDeprecatedResult(result);
 }
 // @needsAudit
 /**
@@ -158,11 +185,8 @@ export async function launchImageLibraryAsync(options) {
             'to fix this warning.');
     }
     const result = await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
-    return {
-        ...result,
-        ...(result.assets?.[0] ?? {}),
-        cancelled: result.canceled,
-    };
+    return mergeDeprecatedResult(result);
 }
-export { MediaTypeOptions, VideoExportPreset, PermissionStatus, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
+export { MediaTypeOptions, VideoExportPreset, PermissionStatus, // deprecated
+UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
 //# sourceMappingURL=ImagePicker.js.map

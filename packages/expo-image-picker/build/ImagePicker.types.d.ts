@@ -195,9 +195,13 @@ export declare enum UIImagePickerPresentationStyle {
     Automatic = "automatic"
 }
 /**
- * @deprecated Use `AssetInfo` instead
+ * @hidden
+ * @deprecated Use `ImagePickerAsset` instead
  */
 export declare type ImageInfo = ImagePickerAsset;
+/**
+ * Represents an asset (image or video) returned by the image picker or camera.
+ */
 export declare type ImagePickerAsset = {
     /**
      * URI to the local image or video file (usable as the source of an `Image` element, in the case of
@@ -289,68 +293,89 @@ export declare type ImagePickerResult = {
     canceled: boolean;
     /**
      * @hidden
-     * @deprecated Use an American English spelling: `canceled`
+     * @deprecated Use an American English spelling: `canceled`.
      */
     cancelled?: boolean;
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+     */
+    selected?: ImagePickerAsset[];
+    /**
+     * @hidden
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
     uri?: string;
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
     assetId?: string | null;
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
     width?: number;
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
     height?: number;
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
     type?: 'image' | 'video';
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
     fileName?: string | null;
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
     fileSize?: number;
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
-    exif?: Record<string, any>;
+    exif?: Record<string, any> | null;
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
-    base64?: string;
+    base64?: string | null;
     /**
      * @hidden
-     * @deprecated Details about picked assets have been moved to `assets` array.
+     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
      */
-    duration?: number;
-} & (ImagePickerResultSucceeded | ImagePickerResultCanceled);
-declare type ImagePickerResultSucceeded = {
+    duration?: number | null;
+} & (ImagePickerSuccessResult | ImagePickerCanceledResult);
+/**
+ * @hidden
+ */
+export declare type ImagePickerSuccessResult = {
     canceled: false;
     assets: ImagePickerAsset[];
 };
-declare type ImagePickerResultCanceled = {
+/**
+ * @hidden
+ */
+export declare type ImagePickerCanceledResult = {
     canceled: true;
     assets: null;
 };
+/**
+ * @hidden
+ * @deprecated Use an American English spelling: `ImagePickerCanceledResult`.
+ */
+export declare type ImagePickerCancelledResult = ImagePickerCanceledResult;
+/**
+ * @hidden
+ * @deprecated `ImagePickerMultipleResult` has been deprecated in favor of `ImagePickerResult`.
+ */
+export declare type ImagePickerMultipleResult = ImagePickerResult;
 export declare type ImagePickerOptions = {
     /**
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
@@ -476,5 +501,7 @@ export declare type OpenFileBrowserOptions = {
      */
     base64: boolean;
 };
-export {};
+export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
+    allowsMultipleSelection: true;
+} ? ImagePickerResult : ImagePickerResult;
 //# sourceMappingURL=ImagePicker.types.d.ts.map
