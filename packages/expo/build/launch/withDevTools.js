@@ -4,7 +4,7 @@ import { Platform } from 'react-native';
 import DevLoadingView from '../environment/DevLoadingView';
 /**
  * Append the Expo Fast Refresh view and optionally
- * keep the screen awake if a `expo-keep-awake` is installed.
+ * keep the screen awake if `expo-keep-awake` is installed.
  */
 export function withDevTools(AppRootComponent) {
     // This hook can be optionally imported because __DEV__ never changes during runtime.
@@ -20,14 +20,14 @@ export function withDevTools(AppRootComponent) {
         }
         return () => { };
     })();
-    const useExpoFastRefreshView = Platform.select({
+    const shouldUseExpoFastRefreshView = Platform.select({
         web: true,
         ios: Constants.executionEnvironment !== ExecutionEnvironment.Bare,
         default: false,
     });
     function WithDevTools(props) {
         useOptionalKeepAwake();
-        if (useExpoFastRefreshView) {
+        if (shouldUseExpoFastRefreshView) {
             return (React.createElement(React.Fragment, null,
                 React.createElement(AppRootComponent, { ...props }),
                 React.createElement(DevLoadingView, null)));
