@@ -8,6 +8,12 @@ import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import java.io.File
 
+/**
+ * Safely clears old, unused assets and updates from the filesystem and database.
+ *
+ * Should be run in a background process when no other updates-related events are occurring (e.g.
+ * update download).
+ */
 object Reaper {
   private val TAG = Reaper::class.java.simpleName
 

@@ -50,6 +50,10 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
 
 @end
 
+/**
+ * Utility class that holds all the logic for downloading data and files, such as update manifests
+ * and assets, using NSURLSession.
+ */
 @implementation EXUpdatesFileDownloader
 
 - (instancetype)initWithUpdatesConfig:(EXUpdatesConfig *)updatesConfig

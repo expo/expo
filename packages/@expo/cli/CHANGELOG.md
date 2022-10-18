@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Added middleware generating Apple App Site Association file in-memory when it doesn't exist in the public directory. ([#19506](https://github.com/expo/expo/pull/19506) by [@EvanBacon](https://github.com/EvanBacon))
+- Add proxy support across all Expo CLI commands. ([#19592](https://github.com/expo/expo/pull/19592) by [@EvanBacon](https://github.com/EvanBacon))
 - Added ability to open tunnel URLs with Metro web. ([#19504](https://github.com/expo/expo/pull/19504) by [@EvanBacon](https://github.com/EvanBacon))
 - Added prompt for signing simulator builds that use entitlements that work on simulator builds like associated domains. ([#19505](https://github.com/expo/expo/pull/19505) by [@EvanBacon](https://github.com/EvanBacon))
 - Added middleware for creating files. ([#19231](https://github.com/expo/expo/pull/19231) by [@EvanBacon](https://github.com/EvanBacon))
@@ -32,6 +33,7 @@
 - Present intended variadic argument when asserting flags in `npx expo install`. ([#19396](https://github.com/expo/expo/pull/19396) by [@bycedric](https://github.com/bycedric))
 - Disable API interaction when running in offline mode. ([#19418](https://github.com/expo/expo/pull/19418) by [@byCedric](https://github.com/byCedric))
 - Add "none" platform when running `--dev-client`. ([#19319](https://github.com/expo/expo/pull/19319) by [@jonsamp](https://github.com/jonsamp))
+- Fix development code signing for dev client. ([#19557](https://github.com/expo/expo/pull/19557) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 

@@ -14,42 +14,48 @@ export default class DeviceSensor<M> {
     _nativeEventName: string;
     _listenerCount: number;
     constructor(nativeSensorModule: NativeSensorModule, nativeEventName: string);
-    addListener: (listener: Listener<M>) => Subscription;
+    addListener(listener: Listener<M>): Subscription;
     /**
      * Returns boolean which signifies if sensor has any listeners registered.
      */
-    hasListeners: () => boolean;
+    hasListeners(): boolean;
     /**
      * Returns the registered listeners count.
      */
-    getListenerCount: () => number;
+    getListenerCount(): number;
     /**
      * Removes all registered listeners.
      */
-    removeAllListeners: () => void;
+    removeAllListeners(): void;
     /**
      * Removes the given subscription.
      * @param subscription A subscription to remove.
      */
-    removeSubscription: (subscription: Subscription) => void;
+    removeSubscription(subscription: Subscription): void;
     /**
      * Set the sensor update interval.
-     * @param intervalMs Desired interval value in milliseconds.
+     *
+     * @param intervalMs Desired interval in milliseconds between sensor updates.
+     * > Starting from Android 12 (API level 31), the system has a 200ms limit for each sensor updates.
+     * >
+     * > If you need an update interval less than 200ms, you should:
+     * > * add `android.permission.HIGH_SAMPLING_RATE_SENSORS` to [**app.json** `permissions` field](/versions/latest/config/app/#permissions)
+     * > * or if you are using bare workflow, add `<uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>` to **AndroidManifest.xml**.
      */
-    setUpdateInterval: (intervalMs: number) => void;
+    setUpdateInterval(intervalMs: number): void;
     /**
      * > **info** You should always check the sensor availability before attempting to use it.
      * @return A promise that resolves to a `boolean` denoting the availability of the sensor.
      */
-    isAvailableAsync: () => Promise<boolean>;
+    isAvailableAsync(): Promise<boolean>;
     /**
      * Checks user's permissions for accessing sensor.
      */
-    getPermissionsAsync: () => Promise<PermissionResponse>;
+    getPermissionsAsync(): Promise<PermissionResponse>;
     /**
      * Asks the user to grant permissions for accessing sensor.
      */
-    requestPermissionsAsync: () => Promise<PermissionResponse>;
+    requestPermissionsAsync(): Promise<PermissionResponse>;
 }
 export { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription };
 //# sourceMappingURL=DeviceSensor.d.ts.map

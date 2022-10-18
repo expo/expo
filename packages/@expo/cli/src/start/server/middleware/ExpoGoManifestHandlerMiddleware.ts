@@ -150,7 +150,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       manifestPartHeaders = {
         'expo-signature': serializeDictionary(
           convertToDictionaryItemsRepresentation({
-            keyid: 'expo-go',
+            keyid: codeSigningInfo.keyId,
             sig: signature,
             alg: 'rsa-v1_5-sha256',
           })

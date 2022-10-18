@@ -6,8 +6,9 @@ import UserSettings from '../../api/user/UserSettings';
 import { getActorDisplayName, getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { delayAsync, resolveWithTimeout } from '../../utils/delay';
+import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
-import { NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
+import { isNgrokClientError, NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
 import { startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
 
@@ -36,7 +37,7 @@ export class AsyncNgrok {
   }
 
   /** Exposed for testing. */
-  async _getProjectHostnameAsync() {
+  async _getIdentifyingUrlSegmentsAsync(): Promise<string[]> {
     const user = await getUserAsync();
     if (user?.__typename === 'Robot') {
       throw new CommandError('NGROK_ROBOT', 'Cannot use ngrok with a robot user.');
@@ -48,9 +49,18 @@ export class AsyncNgrok {
       await this.getProjectRandomnessAsync(),
       slugify(username),
       // Use the port to distinguish between multiple tunnels (webpack, metro).
-      this.port,
-      NGROK_CONFIG.domain,
-    ].join('.');
+      String(this.port),
+    ];
+  }
+
+  /** Exposed for testing. */
+  async _getProjectHostnameAsync(): Promise<string> {
+    return [...(await this._getIdentifyingUrlSegmentsAsync()), NGROK_CONFIG.domain].join('.');
+  }
+
+  /** Exposed for testing. */
+  async _getProjectSubdomainAsync(): Promise<string> {
+    return (await this._getIdentifyingUrlSegmentsAsync()).join('-');
   }
 
   /** Start ngrok on the given port for the project. */
@@ -117,6 +127,22 @@ export class AsyncNgrok {
     return this._connectToNgrokAsync(options, attempts + 1);
   }
 
+  private async _getConnectionPropsAsync(): Promise<{ hostname?: string; subdomain?: string }> {
+    const userDefinedSubdomain = env.EXPO_TUNNEL_SUBDOMAIN;
+    if (userDefinedSubdomain) {
+      const subdomain =
+        typeof userDefinedSubdomain === 'string'
+          ? userDefinedSubdomain
+          : await this._getProjectSubdomainAsync();
+      debug('Subdomain:', subdomain);
+      return { subdomain };
+    } else {
+      const hostname = await this._getProjectHostnameAsync();
+      debug('Hostname:', hostname);
+      return { hostname };
+    }
+  }
+
   private async connectToNgrokInternalAsync(
     instance: NgrokInstance,
     attempts: number = 0
@@ -125,13 +151,12 @@ export class AsyncNgrok {
       // Global config path.
       const configPath = path.join(UserSettings.getDirectory(), 'ngrok.yml');
       debug('Global config path:', configPath);
-      const hostname = await this._getProjectHostnameAsync();
-      debug('Hostname:', hostname);
+      const urlProps = await this._getConnectionPropsAsync();
 
       const url = await instance.connect({
+        ...urlProps,
         authtoken: NGROK_CONFIG.authToken,
         proto: 'http',
-        hostname,
         configPath,
         onStatusChange(status) {
           if (status === 'closed') {
@@ -149,16 +174,33 @@ export class AsyncNgrok {
       });
       return url;
     } catch (error: any) {
+      const assertNgrok = () => {
+        if (isNgrokClientError(error)) {
+          throw new CommandError(
+            'NGROK_CONNECT',
+            [error.body.msg, error.body.details?.err].filter(Boolean).join('\n\n')
+          );
+        }
+        throw new CommandError('NGROK_CONNECT', error.toString());
+      };
+
       // Attempt to connect 3 times
       if (attempts >= 2) {
-        throw new CommandError('NGROK_CONNECT', error.toString());
+        assertNgrok();
       }
 
       // Attempt to fix the issue
-      if (error?.error_code === 103) {
+      if (isNgrokClientError(error) && error.body.error_code === 103) {
+        // Assert early if a custom subdomain is used since it cannot
+        // be changed and retried. If the tunnel subdomain is a boolean
+        // then we can reset the randomness and try again.
+        if (typeof env.EXPO_TUNNEL_SUBDOMAIN === 'string') {
+          assertNgrok();
+        }
         // Change randomness to avoid conflict if killing ngrok doesn't help
         await this._resetProjectRandomnessAsync();
       }
+
       return false;
     }
   }
