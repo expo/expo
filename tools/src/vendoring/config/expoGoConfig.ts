@@ -4,6 +4,7 @@ import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
 import { EXPO_DIR, EXPOTOOLS_DIR } from '../../Constants';
+import { getExpoRepositoryRootDir, getReactNativeSubmoduleDir } from '../../Directories';
 import logger from '../../Logger';
 import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
@@ -58,30 +59,47 @@ const config: VendoringTargetConfig = {
       source: 'https://github.com/software-mansion/react-native-gesture-handler.git',
       semverPrefix: '~',
       ios: {},
-      android: {},
+      android: {
+        async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
+          const buildGradlePath = path.join(targetDirectory, 'android', 'build.gradle');
+          let buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
+          buildGradle = buildGradle.replace(
+            'def shouldUseCommonInterfaceFromReanimated() {',
+            'def shouldUseCommonInterfaceFromReanimated() {\n    return true\n'
+          );
+          buildGradle = buildGradle.replace(
+            'react-native-reanimated',
+            'vendored_unversioned_react-native-reanimated'
+          );
+          await fs.writeFile(buildGradlePath, buildGradle);
+        },
+      },
     },
     'react-native-reanimated': {
       source: 'https://github.com/software-mansion/react-native-reanimated.git',
       semverPrefix: '~',
       ios: {
         async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
-          let content = await fs.readFile(podspecPath, 'utf-8');
-          content = content.replace("reactVersion = '0.66.0'", "reactVersion = '0.67.2'");
-          content = content.replace(/(puts "\[RNReanimated\].*$)/gm, '# $1');
-          await fs.writeFile(podspecPath, content);
+          const reaUtilsPath = path.join(podspecPath, '..', 'scripts', 'reanimated_utils.rb');
+          assert(fs.existsSync(reaUtilsPath), 'Cannot find `reanimated_utils`.');
+          const rnForkPath = path.join(getReactNativeSubmoduleDir(), '..');
+          let content = await fs.readFile(reaUtilsPath, 'utf-8');
+          content = content.replace(
+            'react_native_node_modules_dir = ',
+            `react_native_node_modules_dir = "${rnForkPath}" #`
+          );
+          await fs.writeFile(reaUtilsPath, content);
           return podspecPath;
         },
         async mutatePodspec(podspec: Podspec) {
-          // TODO: The podspec checks RN version from package.json.
-          // however we don't have RN's package.json in the place where it looks for and the fallback
-          // is set to `0.66.0`.
-          // currently we change the version in `preReadPodspecHookAsync`, once reanimated removed the `puts` in error message.
-          // we should use the json based transformation here. that's why we keep the referenced code and comment out.
-          // podspec.compiler_flags = podspec.compiler_flags.replace('RNVERSION=64', 'RNVERSION=63');
-          // podspec.xcconfig.OTHER_CFLAGS = podspec.xcconfig.OTHER_CFLAGS.replace(
-          //   'RNVERSION=64',
-          //   'RNVERSION=63'
-          // );
+          const rnForkPath = path.join(getReactNativeSubmoduleDir(), '..');
+          const relativeForkPath = path.relative(
+            path.join(getExpoRepositoryRootDir(), 'ios'),
+            rnForkPath
+          );
+          podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
+            'HEADER_SEARCH_PATHS'
+          ]?.replace(rnForkPath, '${PODS_ROOT}/../' + relativeForkPath);
         },
         transforms: {
           content: [
@@ -102,6 +120,24 @@ const config: VendoringTargetConfig = {
               replaceWith: '',
             },
           ],
+        },
+      },
+      android: {
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+        ],
+        async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
+          await fs.copy(path.join(sourceDirectory, 'Common'), path.join(targetDirectory, 'Common'));
+
+          const buildGradlePath = path.join(targetDirectory, 'android', 'build.gradle');
+          let buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
+          buildGradle = buildGradle.replace(
+            'def JS_RUNTIME = {',
+            'def JS_RUNTIME = {\n    return "hermes" // Expo Go always uses hermes\n'
+          );
+          await fs.writeFile(buildGradlePath, buildGradle);
         },
       },
     },

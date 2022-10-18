@@ -28,7 +28,6 @@ import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.expoview.Exponent
 import host.exp.expoview.Exponent.InstanceManagerBuilderProperties
 import org.json.JSONObject
-import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage
 import java.util.*
 
 object VersionedUtils {
@@ -194,22 +193,6 @@ object VersionedUtils {
     var builder = ReactInstanceManager.builder()
       .setApplication(instanceManagerBuilderProperties.application)
       .setJSIModulesPackage { reactApplicationContext: ReactApplicationContext, jsContext: JavaScriptContextHolder? ->
-        val devSupportManager = getDevSupportManager(reactApplicationContext)
-        if (devSupportManager == null) {
-          Log.e(
-            "Exponent",
-            "Couldn't get the `DevSupportManager`. JSI modules won't be initialized."
-          )
-          return@setJSIModulesPackage emptyList()
-        }
-        val devSettings = devSupportManager.callRecursive("getDevSettings")
-        val isRemoteJSDebugEnabled = devSettings != null && devSettings.call("isRemoteJSDebugEnabled") as Boolean
-        if (!isRemoteJSDebugEnabled) {
-          return@setJSIModulesPackage ReanimatedJSIModulePackage().getJSIModules(
-            reactApplicationContext,
-            jsContext
-          )
-        }
         emptyList()
       }
       .addPackage(MainReactPackage())

@@ -67,7 +67,6 @@ import org.json.JSONObject
 import versioned.host.exp.exponent.ExpoTurboPackage
 import versioned.host.exp.exponent.ExponentPackage
 import versioned.host.exp.exponent.ReactUnthemedRootView
-import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage
 import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -275,12 +274,6 @@ class Kernel : KernelInterface() {
                 exponentManifest.getKernelManifest(), initialURL
               )
             )
-            .setJSIModulesPackage { reactApplicationContext: ReactApplicationContext?, jsContext: JavaScriptContextHolder? ->
-              ReanimatedJSIModulePackage().getJSIModules(
-                reactApplicationContext,
-                jsContext
-              )
-            }
             .setInitialLifecycleState(LifecycleState.RESUMED)
           if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE && exponentManifest.getKernelManifest().isDevelopmentMode()) {
             Exponent.enableDeveloperSupport(
