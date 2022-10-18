@@ -7,6 +7,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
+import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import java.io.File
 
@@ -14,10 +15,16 @@ import java.io.File
 /* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesController
-import expo.modules.updates.manifest.EmbeddedManifest
-
 /* ktlint-enable no-unused-imports */
 
+/**
+ * Internal module whose purpose is to connect [UpdatesModule] with the central updates entry point.
+ * In most apps, this is [UpdatesController].
+ *
+ * In other cases, this module can be overridden at runtime to redirect [UpdatesModule] to a
+ * different entry point. This is the case in Expo Go, where this module is overridden by
+ * [UpdatesBinding] in order to get data from [ExpoUpdatesAppLoader].
+ */
 open class UpdatesService(protected var context: Context) : InternalModule, UpdatesInterface {
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf(UpdatesInterface::class.java as Class<*>)

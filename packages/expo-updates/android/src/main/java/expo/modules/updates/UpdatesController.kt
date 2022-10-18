@@ -39,6 +39,25 @@ import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import java.io.File
 import java.lang.ref.WeakReference
 
+/**
+ * Main entry point to expo-updates in normal release builds (development clients, including Expo
+ * Go, use a different entry point). Singleton that keeps track of updates state, holds references
+ * to instances of other updates classes, and is the central hub for all updates-related tasks.
+ *
+ * The `start` method in this class should be invoked early in the application lifecycle, via
+ * [UpdatesPackage]. It delegates to an instance of [LoaderTask] to start the process of loading and
+ * launching an update, then responds appropriately depending on the callbacks that are invoked.
+ *
+ * This class also provides getter methods to access information about the updates state, which are
+ * used by the exported [UpdatesModule] through [UpdatesService]. Such information includes
+ * references to: the database, the [UpdatesConfiguration] object, the path on disk to the updates
+ * directory, any currently active [LoaderTask], the current [SelectionPolicy], the error recovery
+ * handler, and the current launched update. This class is intended to be the source of truth for
+ * these objects, so other classes shouldn't retain any of them indefinitely.
+ *
+ * This class also optionally holds a reference to the app's [ReactNativeHost], which allows
+ * expo-updates to reload JS and send events through the bridge.
+ */
 class UpdatesController private constructor(
   context: Context,
   var updatesConfiguration: UpdatesConfiguration
@@ -155,6 +174,10 @@ class UpdatesController private constructor(
   val isUsingEmbeddedAssets: Boolean
     get() = launcher?.isUsingEmbeddedAssets ?: false
 
+  /**
+   * Any process that calls this *must* manually release the lock by calling `releaseDatabase()` in
+   * every possible case (success, error) as soon as it is finished.
+   */
   fun getDatabase(): UpdatesDatabase = databaseHolder.database
 
   fun releaseDatabase() {

@@ -11,19 +11,20 @@ import expo.modules.kotlin.typedarray.Float32Array
 import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
 import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
 class JSIFunctionsTest {
-  enum class SimpleEnumClass {
+  enum class SimpleEnumClass : Enumerable {
     V1, V2
   }
 
-  enum class StringEnumClass(val value: String) {
+  enum class StringEnumClass(val value: String) : Enumerable {
     K1("V1"), K2("V2")
   }
 
-  enum class IntEnumClass(val value: Int) {
+  enum class IntEnumClass(val value: Int) : Enumerable {
     K1(1), K2(2)
   }
 

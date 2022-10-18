@@ -1,12 +1,11 @@
 import Accelerometer from '../Accelerometer';
-import ExponentAccelerometer from '../ExponentAccelerometer';
 
 afterEach(() => {
   Accelerometer.removeAllListeners();
 });
 
 it(`adds an "accelerometerDidUpdate" listener`, () => {
-  const NativeAccelerometer = ExponentAccelerometer;
+  const NativeAccelerometer = Accelerometer._nativeModule;
 
   const mockListener = jest.fn();
   const subscription = Accelerometer.addListener(mockListener);
