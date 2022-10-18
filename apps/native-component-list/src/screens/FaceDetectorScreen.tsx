@@ -65,10 +65,6 @@ export default class FaceDetectorScreen extends React.Component<object, State> {
         mediaTypes,
         allowsEditing: true,
       });
-
-      console.log(result.uri, result.assetId);
-      result.base64.toString();
-
       if (result.canceled) {
         this.setState({ selection: undefined });
       } else {
