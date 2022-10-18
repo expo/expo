@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Added ability to change the tunnel (ngrok) subdomain with `EXPO_TUNNEL_SUBDOMAIN`. ([#19507](https://github.com/expo/expo/pull/19507) by [@EvanBacon](https://github.com/EvanBacon))
 - Added ability to open tunnel URLs with Metro web. ([#19504](https://github.com/expo/expo/pull/19504) by [@EvanBacon](https://github.com/EvanBacon))
 - Added prompt for signing simulator builds that use entitlements that work on simulator builds like associated domains. ([#19505](https://github.com/expo/expo/pull/19505) by [@EvanBacon](https://github.com/EvanBacon))
 - Added middleware for creating files. ([#19231](https://github.com/expo/expo/pull/19231) by [@EvanBacon](https://github.com/EvanBacon))
