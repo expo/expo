@@ -90,6 +90,10 @@ export declare class DeviceMotionSensor extends DeviceSensor<DeviceMotionMeasure
      */
     addListener(listener: Listener<DeviceMotionMeasurement>): Subscription;
 }
+/**
+ * Constant value representing standard gravitational acceleration for Earth (`9.80665` m/s^2).
+ */
+export declare const Gravity: number;
 declare const _default: DeviceMotionSensor;
 export default _default;
 //# sourceMappingURL=DeviceMotion.d.ts.map

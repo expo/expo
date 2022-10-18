@@ -101,4 +101,9 @@ export class DeviceMotionSensor extends DeviceSensor<DeviceMotionMeasurement> {
   }
 }
 
+/**
+ * Constant value representing standard gravitational acceleration for Earth (`9.80665` m/s^2).
+ */
+export const Gravity: number = ExponentDeviceMotion.Gravity;
+
 export default new DeviceMotionSensor(ExponentDeviceMotion, 'deviceMotionDidUpdate');

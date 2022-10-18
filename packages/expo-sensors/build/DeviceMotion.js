@@ -41,5 +41,9 @@ export class DeviceMotionSensor extends DeviceSensor {
         return super.addListener(listener);
     }
 }
+/**
+ * Constant value representing standard gravitational acceleration for Earth (`9.80665` m/s^2).
+ */
+export const Gravity = ExponentDeviceMotion.Gravity;
 export default new DeviceMotionSensor(ExponentDeviceMotion, 'deviceMotionDidUpdate');
 //# sourceMappingURL=DeviceMotion.js.map
