@@ -263,73 +263,50 @@ It may be helpful to see which assets are included in our update bundle. We can 
 
 <Terminal cmd={['$ npx expo export']} />
 
-### Debugging of native code in an app enabled for updates
+### Debugging of native code while loading the app through expo-updates
 
-Normally, if we have a project with `expo-updates` installed, we need to make a release build for `expo-updates` to be enabled (debug builds behave like normal React Native project debug builds).
+By default, we need to make a release build for `expo-updates` to be enabled and to load updates rather than reading from a development server. This is because debug builds behave like normal React Native project debug builds.
 
-To make it easier to test and debug native code, follow the steps below to create a debug build of the app with `expo-updates` enabled.
+To make it easier to test and debug native code in an environment that is closer to production, follow the steps below to create a debug build of the app with `expo-updates` enabled.
 
 #### iOS local builds
 
-- Set the environment variable:
-```sh
-export EX_UPDATES_NATIVE_DEBUG=1
-```
+- Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
 - Reinstall pods with `npx pod-install`. The `expo-updates` podspec now detects this environment variable, and makes changes so that the debug code that would normally load from the Metro packager is bypassed, and the app is built with the EXUpdates bundle and other dependencies needed to load updates from EAS.
+- [Ensure the desired channel is set in your **Expo.plist**](/bare/updating-your-app/#configuring-the-channel-manually)
 - Execute a [debug build](/workflow/debugging/#native-debugging) of the app with Xcode or from the command line.
 
 #### Android local builds
 
-- As similar to the iOS build, set the environment variable:
-```sh
-export EX_UPDATES_NATIVE_DEBUG=1
-```
-- Modify your app's **AndroidManifest.xml** to select a channel for which this app will receive updates, as in the example below. (In an EAS build, this value is set automatically to the channel for the EAS profile being built.)
-```diff
-diff --git a/android/app/src/main/AndroidManifest.xml b/android/app/src/main/AndroidManifest.xml
-index 143fa2d..36d5af2 100644
---- a/android/app/src/main/AndroidManifest.xml
-+++ b/android/app/src/main/AndroidManifest.xml
-@@ -17,6 +17,7 @@
-     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
-     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
-     <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="1.0.0"/>
-+    <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;previewdebug&quot;}" />
-     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
-       <intent-filter>
-         <action android:name="android.intent.action.MAIN"/>
-```
+- Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
+- [Ensure the desired channel is set in your **AndroidManifest.xml**](/bare/updating-your-app/#configuring-the-channel-manually)
 - Execute a [debug build](/workflow/debugging/#native-debugging) of the app with Android Studio or from the command line.
 
-#### EAS builds
+#### EAS Build
 
 Alternatively, we can use EAS to create a debug build where `expo-updates` is enabled. The environment variable is set in **eas.json**, as shown in the example below:
+
 ```json
 {
-  "cli": {
-    "version": ">= 2.1.0"
-  },
   "build": {
-    "previewdebug": {
+    "preview_debug": {
       "env": {
         "EX_UPDATES_NATIVE_DEBUG": "1"
       },
-      "distribution": "internal",
       "android": {
-        "buildType": "apk",
+        "distribution": "internal",
+        "withoutCredentials": true,
         "gradleCommand": ":app:assembleDebug"
       },
-      "channel": "previewdebug"
-    },
-    "production": {}
-  },
-  "submit": {
-    "production": {}
+      "ios": {
+        "simulator": true,
+        "buildConfiguration": "Debug"
+      },
+      "channel": "preview_debug"
+    }
   }
 }
 ```
-
-
 
 ## Mitigation steps
 
