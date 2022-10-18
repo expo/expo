@@ -1,6 +1,7 @@
 import dns from 'dns';
-import fetch from 'node-fetch';
 import { URL } from 'url';
+
+import { fetchAsync } from '../api/rest/client';
 
 /** Check if a server is available based on the URL. */
 export function isUrlAvailableAsync(url: string): Promise<boolean> {
@@ -14,7 +15,7 @@ export function isUrlAvailableAsync(url: string): Promise<boolean> {
 /** Check if a request to the given URL is `ok` (status 200). */
 export async function isUrlOk(url: string): Promise<boolean> {
   try {
-    const res = await fetch(url);
+    const res = await fetchAsync(url);
     return res.ok;
   } catch {
     return false;
