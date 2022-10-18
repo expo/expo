@@ -25,7 +25,7 @@ export function withDevTools<TComponent extends React.ComponentType<any>>(
     return () => {};
   })();
 
-  const useExpoFastRefreshView = Platform.select({
+  const shouldUseExpoFastRefreshView = Platform.select({
     web: true,
     ios: Constants.executionEnvironment !== ExecutionEnvironment.Bare,
     default: false,
@@ -34,7 +34,7 @@ export function withDevTools<TComponent extends React.ComponentType<any>>(
   function WithDevTools(props: React.ComponentProps<TComponent>) {
     useOptionalKeepAwake();
 
-    if (useExpoFastRefreshView) {
+    if (shouldUseExpoFastRefreshView) {
       return (
         <>
           <AppRootComponent {...props} />
