@@ -293,35 +293,40 @@ extraParams: {
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { useAuthRequest, exchangeCodeAsync, revokeAsync, ResponseType } from 'expo-auth-session';
-import {Button, Alert } from 'react-native';
+import { Button, Alert } from 'react-native';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const clientId = '<your-client-id-here>';
-const userPoolUrl = 'https://<your-user-pool-domain>.auth.us-east-1.amazoncognito.com';
+const userPoolUrl =
+  'https://<your-user-pool-domain>.auth.<your-region>.amazoncognito.com';
 const redirectUri = 'your-redirect-uri';
 
-export default function App () {
+export default function App() {
   const [authTokens, setAuthTokens] = React.useState(null);
-  const discoveryDocument = {
+  const discoveryDocument = React.useMemo(() => ({
     authorizationEndpoint: userPoolUrl + '/oauth2/authorize',
     tokenEndpoint: userPoolUrl + '/oauth2/token',
     revocationEndpoint: userPoolUrl + '/oauth2/revoke',
-  };
+  }), []);
 
-  const [request, response, promptAsync] = useAuthRequest({
+  const [request, response, promptAsync] = useAuthRequest(
+    {
       clientId,
       responseType: ResponseType.Code,
       redirectUri,
       usePKCE: true,
     },
-    discoveryDocument,
+    discoveryDocument
   );
 
   React.useEffect(() => {
     const exchangeFn = async (exchangeTokenReq) => {
       try {
-        const exchangeTokenResponse = await exchangeCodeAsync(exchangeTokenReq, discoveryDocument);
+        const exchangeTokenResponse = await exchangeCodeAsync(
+          exchangeTokenReq,
+          discoveryDocument
+        );
         setAuthTokens(exchangeTokenResponse);
       } catch (error) {
         console.error(error);
@@ -333,7 +338,7 @@ export default function App () {
         Alert.alert(
           'Authentication error',
           response.params.error_description || 'something went wrong'
-        )
+        );
         return;
       }
       if (response.type === 'success') {
@@ -347,35 +352,25 @@ export default function App () {
         });
       }
     }
-  }, [request, response]);
+  }, [discoveryDocument, request, response]);
+
   const logout = async () => {
-    const revokeResponse = await revokeAsync({
-      clientId: clientId,
-      token: authTokens.refreshToken,
-    }, discoveryDocument);
+    const revokeResponse = await revokeAsync(
+      {
+        clientId: clientId,
+        token: authTokens.refreshToken,
+      },
+      discoveryDocument
+    );
     if (revokeResponse) {
       setAuthTokens(null);
     }
   };
   console.log('authTokens: ' + JSON.stringify(authTokens));
-  return (
-    <>
-      { !authTokens ?
-        <Button
-        disabled={!request}
-        title="Login"
-        onPress={() => {
-            promptAsync();
-            }}
-        /> :
-        <Button
-        title="Logout"
-        onPress={() => {
-            logout();
-            }}
-        />
-      }
-    </>
+  return authTokens ? (
+    <Button title="Logout" onPress={() => logout()} />
+  ) : (
+    <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
   );
 }
 ```
