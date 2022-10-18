@@ -5,6 +5,7 @@ title: Deep linking
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 It is often desirable for regular HTTPS links (without a custom URL scheme) to directly open your app on mobile devices. This allows you to send notification emails with links that work as expected in a web browser on desktop, while opening the content in your app on mobile. iOS refers to this concept as "universal links" while Android calls it "deep links" (but in this section, we are specifically discussing deep links that do not use a custom URL scheme).
 
@@ -149,9 +150,22 @@ Implementing deep links on Android (without a custom URL scheme) is somewhat sim
 
 It may be desirable for links to your domain to always open your app (without presenting the user a dialog where they can choose the browser or a different handler). You can implement this with Android App Links, which use a similar verification process as Universal Links on iOS.
 
-First, you must publish a JSON file at `/.well-known/assetlinks.json` specifying your app ID and which links should be opened by your app. You need to format this file that includes `package_name` (app ID) and `sha256_cert_fingerprints`. You can get these values from your app's [Google Play Console](https://play.google.com/console/) account and then go to **Release** > **Setup** > **App integrity** > **App Signing**. Under **Digital Asset Links JSON**, you will see a list of fingerprints for your app. Copy and paste the JSON into the **assetlinks.json**. For more information, see [Android's documentation](https://developer.android.com/training/app-links/verify-site-associations#web-assoc).
+<Step label="1">
+  You must publish a JSON file at `/.well-known/assetlinks.json` specifying your app ID and which
+  links should be opened by your app. You need to format this file that includes `package_name` (app
+  ID) and `sha256_cert_fingerprints`. You can get these values from your app's [Google Play
+  Console](https://play.google.com/console/) account and then go to **Release** > **Setup** > **App
+  integrity** > **App Signing**. Under **Digital Asset Links JSON**, you will see a list of
+  fingerprints for your app. Copy and paste the JSON into the **assetlinks.json**. For more
+  information, see [Android's
+  documentation](https://developer.android.com/training/app-links/verify-site-associations#web-assoc).
+</Step>
 
-Second, add `"autoVerify": true` to the intent filter in your Expo config (**app.json**, **app.config.js**). This tells Android to check for your **assetlinks.json** on your server and register your app as the automatic handler for the specified paths:
+<Step label="2">
+  Second, add `"autoVerify": true` to the intent filter in your Expo config (**app.json**,
+  **app.config.js**). This tells Android to check for your **assetlinks.json** on your server and
+  register your app as the automatic handler for the specified paths:
+</Step>
 
 ```json
 {
