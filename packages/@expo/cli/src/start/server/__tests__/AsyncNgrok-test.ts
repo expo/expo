@@ -26,6 +26,7 @@ jest.mock('../../doctor/ngrok/NgrokResolver', () => {
   };
 });
 jest.mock('../../platforms/android/adbReverse', () => ({
+  hasAdbReverseAsync: jest.fn(async () => true),
   startAdbReverseAsync: jest.fn(async () => true),
 }));
 jest.mock('../../../utils/exit');
