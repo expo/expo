@@ -26,6 +26,23 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
         },
       ],
     },
+    'react-native-svg': {
+      content: [
+        {
+          paths: 'build.gradle',
+          find: /(implementation 'host.exp:reactandroid-abi\d+_0_0:1\.0\.0')/g,
+          replaceWith:
+            '$1\n' +
+            "    compileOnly 'com.facebook.fresco:fresco:+'\n" +
+            "    compileOnly 'com.facebook.fresco:imagepipeline-okhttp3:+'\n" +
+            "    compileOnly 'com.facebook.fresco:ui-common:+'",
+        },
+        {
+          find: /\b(import (static )?)(com.horcrux.)/g,
+          replaceWith: `$1${prefix}.$3`,
+        },
+      ],
+    },
   };
 }
 
@@ -58,6 +75,12 @@ export function exponentPackageTransforms(prefix: string): Record<string, String
     'react-native-screens': [
       {
         find: /\bimport (com.swmansion.rnscreens)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    'react-native-svg': [
+      {
+        find: /\bimport (com.horcrux.svg)/g,
         replaceWith: `import ${prefix}.$1`,
       },
     ],
