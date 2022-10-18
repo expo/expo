@@ -13,10 +13,9 @@ import android.app.Activity
 */
 interface CurrentActivityProvider {
   /**
-   * Returns the current [Activity] that should be an instance of [AppCompatActivity].
-   * This activity is most likely an instance of [ReactActivity], but it's been decided not to expose
-   * `react-native` symbols via `expo-module-core` public API.
+   * Returns the current [Activity] that should be an instance of  [ReactActivity],
+   * but it's been decided not to expose `react-native` symbols via `expo-module-core` public API.
    * @returns null if the [Activity] is not yet available (eg. Application has not yet fully started)
    */
-  val currentActivity: AppCompatActivity?
+  val currentActivity: Activity?
 }
