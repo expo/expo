@@ -275,7 +275,7 @@ export default function App() {
 [c-cognito]: https://us-east-1.console.aws.amazon.com/cognito/v2/idp/user-pools?region=us-east-1
 [c-cognito-api-docs]: https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-userpools-server-contract-reference.html
 
-- Leverages the Hosted UI in Cognito ([api documentation][c-cognito-api-docs])
+- Leverages the Hosted UI in Cognito ([API documentation][c-cognito-api-docs])
 - Requests code after successfully authenticating, followed by exchanging code for the auth tokens (PKCE)
 - The `/token` endpoint requires a `code_verifier` parameter which you can retrieve from the request before calling `exchangeCodeAsync()`:
 ```tsx
