@@ -33,8 +33,6 @@ When you're ready to send a push notification, take the Expo push token from you
 
 Check out the source if you would like to implement it in another language.
 
-> **Note:**
->
 > If you're **not** testing in the Expo Go app, make sure you've [generated the proper push credentials](push-notifications-setup.mdx#credentials) before proceeding! If you haven't, push notifications will not work.
 
 ## Implementing push notifications reliably
@@ -120,7 +118,7 @@ The Expo server also optionally accepts gzip-compressed request bodies. This can
 
 The requests above will respond with a JSON object with two optional fields, `data` and `errors`. `data` will contain an array of [**push tickets**](#push-ticket-format) in the same order in which the messages were sent (or one push ticket object, if you send a single message to a single recipient). Each ticket includes a `status` field that indicates whether Expo successfully received the notification and, if successful, an `id` field that can be used to later retrieve a push receipt.
 
-> **Note**: a status of `ok` along with a receipt ID means that the message was received by Expo's servers, **not** that it was received by the user (for that you will need to check the [push receipt](#push-receipts)).
+> A status of `ok` along with a receipt ID means that the message was received by Expo's servers, **not** that it was received by the user (for that you will need to check the [push receipt](#push-receipts)).
 
 Continuing the above example, this is what a successful response body looks like:
 
@@ -190,7 +188,7 @@ The [response body](#push-receipt-response-format) for push receipts is very sim
 
 **You must check each push receipt, since they may contain information about errors you need to resolve.** For example, if a device is no longer eligible to receive notifications, Apple's documentation asks that you stop sending notifications to that device. The push receipts will contain information about these errors.
 
-> **Note:** Even if a receipt's `status` says `ok`, this doesn't guarantee that the device has received the message; "ok" in a push receipt means that the Android or iOS push notification service successfully received the notification. If the recipient device is turned off, for example, the iOS or Android push notification service will try to deliver the message but the device won't necessarily receive it.
+> Even if a receipt's `status` says `ok`, this doesn't guarantee that the device has received the message; "ok" in a push receipt means that the Android or iOS push notification service successfully received the notification. If the recipient device is turned off, for example, the iOS or Android push notification service will try to deliver the message but the device won't necessarily receive it.
 
 If the entire request failed, the HTTP status code will be 4xx or 5xx and the `errors` field will be an array of error objects (usually just one). Otherwise, the HTTP status code will be 200 and your messages will be on their way to your users' devices!
 
@@ -219,7 +217,7 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 - `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key will **not** change your users' Expo Push Tokens.
   - Sometimes, these errors will contain further details claiming an `InvalidProviderToken` error. This is actually tied to both your APN key **and** your provisioning profile. To resolve this error, you should rebuild the app and regenerate a new push key and provisioning profile.
 
-> Note: For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](/app-signing/app-credentials.mdx#ios)
+> For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](/app-signing/app-credentials.mdx#ios)
 
 ### Request errors
 

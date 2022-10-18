@@ -66,13 +66,13 @@ For instance, if you add a plugin that adds permission messages to your app, the
 
 And that's it! Now you're using Config plugins. No more having to interact with the native projects!
 
-> Check out all the different ways you can import `plugins`: [plugin module resolution](#plugin-module-resolution)
+> Check out all the different ways you can import `plugins`: [plugin module resolution](#plugin-module-resolution).
 
 ## What are plugins
 
 Plugins are **synchronous** functions that accept an [`ExpoConfig`][config-docs] and return a modified [`ExpoConfig`][config-docs].
 
-- Plugins should be named using the following convention: `with<Plugin Functionality>` i.e. `withFacebook`.
+- Plugins should be named using the following convention: `with<Plugin Functionality>`, that is, `withFacebook`.
 - Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added.
 - Optionally, a second argument can be passed to the plugin to configure it.
 - `plugins` are always invoked when the config is read by `@expo/config`s `getConfig` method. However, the `mods` are only invoked during the "syncing" phase of `expo prebuild`.
@@ -291,7 +291,7 @@ Instead you should use the helper mods provided by `@expo/config-plugins`:
   - `withAppBuildGradle` (Dangerous)
   - `withSettingsGradle` (Dangerous)
 
-> Dangerous modifications rely on regular expressions (regex) to modify application code, which may cause the build to break. Regex mods are also difficult to version, and therefore should be used sparingly. Always opt towards using application code to modify application code, i.e. [Expo Modules][emc] native API.
+> Dangerous modifications rely on regular expressions (regex) to modify application code, which may cause the build to break. Regex mods are also difficult to version, and therefore should be used sparingly. Always opt towards using application code to modify application code, that is, [Expo Modules][emc] native API.
 
 A mod plugin gets passed a `config` object with additional properties `modResults` and `modRequest` added to it.
 
@@ -516,7 +516,7 @@ const { .. } = require('@expo/config-plugins');
 
 #### SDK 47 and higher
 
-> Note: SDK 47 is scheduled to be released in Q3 2022
+> SDK 47 is scheduled to be released in Q3 2022
 
 The `@expo/config-plugins` and `@expo/config` packages are re-exported from the `expo` package starting in SDK 47.
 
@@ -882,7 +882,7 @@ As you can see from the example, we rely heavily on application code (expo-modul
 ## Debugging
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed, these are useful for viewing which mods ran, and in what order they ran in. To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors.
-By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (i.e. legacy package doesn't have a config plugin yet).
+By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (that is, legacy package doesn't have a config plugin yet).
 
 Running `expo prebuild --clean` with remove the generated native folders before compiling.
 

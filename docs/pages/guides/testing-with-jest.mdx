@@ -39,7 +39,7 @@ Now let's add `react-test-renderer` to our project. Pick a version that is compa
 
 That's it! Now we can start writing Jest tests!
 
-> **Note**: [react-native-testing-library](https://github.com/callstack/react-native-testing-library) is a library built on top of react-test-renderer that could be helpful in your workflow, but we won't cover it in this guide.
+> [react-native-testing-library](https://github.com/callstack/react-native-testing-library) is built on top of `react-test-renderer` that could be helpful in your workflow, but we won't cover it in this guide.
 
 ## Jest Configuration
 
@@ -124,7 +124,7 @@ The above additions let Jest know to collect coverage of all **_.js & .jsx_** fi
 
 Now run the test again, you should see **/coverage** in your app directory! Find the **index.html** file within and double click to open it up in a browser. Not only do we have reporting in our CLI, we also have an HTML version of our code coverage, pretty cool stuff!
 
-> **Standards Note**: You can do what you want, but usually we wouldn't upload this html reporting to git; so add `coverage/\*\*/*` as a line in `.gitignore` to prevent this directory from being tracked.
+> You can do what you want, but usually we wouldn't upload this html reporting to git; so add `coverage/**/*` as a line in `.gitignore` to prevent this directory from being tracked.
 
 ## Structure your Tests
 

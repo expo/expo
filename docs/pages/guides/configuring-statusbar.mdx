@@ -21,7 +21,7 @@ This guide is intended to help you know what tools are at your disposal to confi
 
 ## Configuring the status bar while app is loading (Android only)
 
-> **info** This type of configuration is currently only available on Android. On iOS, it is not possible in the Expo Go app to customize the status bar before the app has loaded, while the splash screen is presented.
+> This type of configuration is currently only available on Android. On iOS, it is not possible in the Expo Go app to customize the status bar before the app has loaded, while the splash screen is presented.
 
 The configuration for configuring the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in **app.json**. The options available are similar to those provided by [`expo-status-bar`](../versions/latest/sdk/status-bar.mdx).
 
@@ -36,7 +36,7 @@ The valid values are:
 - `light-content` - The status bar content is light colored (usually white). This is equivalent to `expo-status-bar` `style="light"`.
 - `dark-content` - The status bar content is dark colored (usually dark grey). This is equivalent to `expo-status-bar` `style="dark"`. This is only available on Android 6.0 onwards. It will fallback to `light-content` in older versions. This is the default value.
 
-> Note: If you choose `light-content` and have either a very light image set as the `SplashScreen` or `backgroundColor` set to a light color, the status bar icons may blend in and not be visible.
+> If you choose `light-content` and have either a very light image set as the `SplashScreen` or `backgroundColor` set to a light color, the status bar icons may blend in and not be visible.
 > Same goes for `dark-content` when you have a very dark image set as the `SplashScreen` or `backgroundColor` set to a dark color.
 
 </APIBox>
@@ -57,7 +57,7 @@ When this is set to `true`, the status bar is visible on the screen, but it take
 When this is set to `false`, the status bar behaves as a block element and limits space available on your device's screen.
 Defaults to `true`.
 
-> Note: A translucent status bar makes sense when the `backgroundColor` is using a transparent color (`#RRGGBBAA`).
+> A translucent status bar makes sense when the `backgroundColor` is using a transparent color (`#RRGGBBAA`).
 > When you use a translucent status bar and a solid `backgroundColor` (`#RRGGBB`) then the upper part of your app will be partially covered by the non-transparent status bar and thus some of your app's content might not be visible to the user.
 
 </APIBox>
