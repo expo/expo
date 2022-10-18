@@ -6,7 +6,7 @@ import DevLoadingView from '../environment/DevLoadingView';
 
 /**
  * Append the Expo Fast Refresh view and optionally
- * keep the screen awake if a `expo-keep-awake` is installed.
+ * keep the screen awake if `expo-keep-awake` is installed.
  */
 export function withDevTools<TComponent extends React.ComponentType<any>>(
   AppRootComponent: TComponent
