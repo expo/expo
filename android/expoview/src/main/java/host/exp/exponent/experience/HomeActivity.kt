@@ -37,6 +37,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
 import host.exp.exponent.utils.ExperienceActivityUtils
+import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.expoview.BuildConfig
 import org.json.JSONException
 import javax.inject.Inject
@@ -67,6 +68,8 @@ open class HomeActivity : BaseExperienceActivity() {
 
     EventBus.getDefault().registerSticky(this)
     kernel.startJSKernel(this)
+
+    ExperienceRTLManager.setRTLPref(this, false)
 
     SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView::class.java, true)
 
