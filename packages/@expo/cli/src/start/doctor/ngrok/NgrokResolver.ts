@@ -1,5 +1,16 @@
 import { ExternalModule } from './ExternalModule';
 
+export interface NgrokClientError {
+  body: {
+    error_code: number;
+    status_code: number;
+    msg: string;
+    details: {
+      err: string;
+    };
+  };
+}
+
 export interface NgrokOptions {
   authtoken?: string;
   port?: string | number | null;
@@ -26,7 +37,7 @@ export interface NgrokInstance {
   getActiveProcess(): { pid: number };
   connect(
     props: {
-      hostname: string;
+      hostname?: string;
       configPath: string;
       onStatusChange: (status: string) => void;
     } & NgrokOptions
@@ -47,4 +58,8 @@ export class NgrokResolver extends ExternalModule<NgrokInstance> {
         `The package ${packageName} is required to use tunnels, would you like to install it globally?`
     );
   }
+}
+
+export function isNgrokClientError(error: any): error is NgrokClientError {
+  return error?.body?.msg;
 }
