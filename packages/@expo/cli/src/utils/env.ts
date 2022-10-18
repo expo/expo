@@ -122,7 +122,7 @@ class Env {
    * HTTP/HTTPS proxy to connect to for network requests. Configures [https-proxy-agent](https://www.npmjs.com/package/https-proxy-agent).
    */
   get HTTP_PROXY(): string {
-    return string('HTTP_PROXY', '');
+    return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
 }
 
