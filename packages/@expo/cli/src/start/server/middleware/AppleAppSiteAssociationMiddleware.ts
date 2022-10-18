@@ -1,8 +1,4 @@
-import {
-  getConfig,
-  getProjectConfigDescription,
-  getProjectConfigDescriptionWithPaths,
-} from '@expo/config';
+import { getConfig, getProjectConfigDescriptionWithPaths } from '@expo/config';
 import { getEntitlementsPath } from '@expo/config-plugins/build/ios/Entitlements';
 import { unquote } from '@expo/config-plugins/build/ios/utils/Xcodeproj';
 import plist from '@expo/plist';
@@ -10,16 +6,16 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import { parse } from 'url';
-import { Log } from '../../../log';
 
+import { Log } from '../../../log';
 import { getCodeSigningInfoForPbxproj } from '../../../run/ios/codeSigning/xcodeCodeSigning';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
-import { AppSiteAssociation, Detail } from './aasa.types';
 import { ExpoMiddleware } from './ExpoMiddleware';
-import { ServerNext, ServerRequest, ServerResponse } from './server.types';
 import { streamStaticFileResponse } from './ServeStaticMiddleware';
+import { AppSiteAssociation, Detail } from './aasa.types';
+import { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:aasa') as typeof console.log;
 

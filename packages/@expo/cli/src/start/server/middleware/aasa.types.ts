@@ -52,7 +52,7 @@ export interface Detail {
 
 export interface Component {
   /** Matcher */
-  "/": string;
+  '/': string;
   /** Comment */
   comment?: string;
   /** Exclude the matched route */
@@ -60,6 +60,6 @@ export interface Component {
   /** Should matches be case sensitive. Default `false` (I think) */
   caseSensitive?: boolean;
   /** Match query parameters */
-  "?"?: Record<string, string>;
-  "#"?: string;
+  '?'?: Record<string, string>;
+  '#'?: string;
 }
