@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 - Convertible enums must inherit from `expo.modules.kotlin.types.Enumerable` on Android.
-- `AppContext.currentActivity` is not longer returning `AppCompatActivity`, but an instance of `android.app.Activity` class.
+- `AppContext.currentActivity` is not longer returning `AppCompatActivity`, but an instance of `android.app.Activity` class. ([#19573](https://github.com/expo/expo/pull/19573) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🎉 New features
 
