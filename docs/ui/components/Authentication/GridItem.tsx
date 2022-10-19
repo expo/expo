@@ -21,13 +21,7 @@ export const GridItem = ({
 }: GridItemProps) => (
   <A href={href} css={itemStyle}>
     <Icon title={title} image={image} />
-    <RawH4
-      css={css({
-        marginTop: spacing[2],
-        textAlign: 'center',
-      })}>
-      {title}
-    </RawH4>
+    <RawH4 css={titleStyle}>{title}</RawH4>
     {(protocol || []).length && (
       <CALLOUT theme="secondary" css={protocolStyle}>
         {protocol.join(' | ')}
@@ -41,6 +35,11 @@ const protocolStyle = css({
   transform: `translateY(4px)`,
   transitionProperty: 'all',
   transitionDuration: '0.15s',
+  textAlign: 'center',
+});
+
+const titleStyle = css({
+  marginTop: spacing[2],
   textAlign: 'center',
 });
 
