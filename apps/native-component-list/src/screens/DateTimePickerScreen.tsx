@@ -83,6 +83,9 @@ const DateTimePickerScreen = () => {
   const scrollRef = useRef<ScrollView>(null);
 
   const onChange = (event: DateTimePickerEvent, selectedDate?: Date | undefined) => {
+    if (Platform.OS === 'android') {
+      setShow(false);
+    }
     const currentDate = selectedDate || date;
     if (event.type === 'neutralButtonPressed') {
       setDate(new Date(0));
