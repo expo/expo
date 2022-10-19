@@ -2,16 +2,9 @@
 title: Authentication
 ---
 
-import PlatformsSection from '~/components/plugins/PlatformsSection';
-import InstallSection from '~/components/plugins/InstallSection';
-
-import {
-  SocialGrid,
-  SocialGridItem,
-  CreateAppButton,
-} from '~/components/plugins/AuthSessionElements';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { ASSETS, Grid, GridItem, Box, CreateAppButton } from '~/ui/components/Authentication';
 import { Tab, Tabs } from '~/ui/components/Tabs';
-import { SnackInline } from '~/ui/components/Snippet';
 
 Expo can be used to login to many popular providers on iOS, Android, and web! Most of these guides utilize the pure JS [`AuthSession` API](/versions/latest/sdk/auth-session), refer to those docs for more information on the API.
 
@@ -28,130 +21,43 @@ Here are some **important rules** that apply to all authentication providers:
 **AuthSession** can be used for any OAuth or OpenID Connect provider, we've assembled guides for using the most requested services!
 If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit/main/docs/pages/guides/authentication.mdx) or [vote on canny](https://expo.canny.io/feature-requests).
 
-<SocialGrid>
-  <SocialGridItem
-    title="IdentityServer 4"
-    protocol={['OAuth 2', 'OpenID']}
-    href="#identityserver-4"
-    image="/static/images/sdk/auth-session/identity4.png"
-  />
-  <SocialGridItem
-    title="Azure"
-    protocol={['OAuth 2', 'OpenID']}
-    href="#azure"
-    image="/static/images/sdk/auth-session/azure.png"
-  />
-  <SocialGridItem
+<Grid>
+  <GridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} image={ASSETS.id4} />
+  <GridItem title="Azure" protocol={['OAuth 2', 'OpenID']} image={ASSETS.azure} />
+  <GridItem
     title="Apple"
     protocol={['iOS Only']}
     href="/versions/latest/sdk/apple-authentication"
-    image="/static/images/sdk/auth-session/apple.png"
+    image={ASSETS.apple}
   />
-  <SocialGridItem
-    title="Cognito"
-    protocol={['OAuth 2', 'OpenID']}
-    href="#cognito"
-    image="/static/images/sdk/auth-session/cognito.png"
-  />
-  <SocialGridItem
-    title="Coinbase"
-    protocol={['OAuth 2']}
-    href="#coinbase"
-    image="/static/images/sdk/auth-session/coinbase.png"
-  />
-  <SocialGridItem
-    title="Dropbox"
-    protocol={['OAuth 2']}
-    href="#dropbox"
-    image="/static/images/sdk/auth-session/dropbox.png"
-  />
-  <SocialGridItem
-    title="Facebook"
-    protocol={['OAuth 2']}
-    href="#facebook"
-    image="/static/images/sdk/auth-session/facebook.png"
-  />
-  <SocialGridItem
-    title="Fitbit"
-    protocol={['OAuth 2']}
-    href="#fitbit"
-    image="/static/images/sdk/auth-session/fitbit.png"
-  />
-  <SocialGridItem
+  <GridItem title="Cognito" protocol={['OAuth 2', 'OpenID']} image={ASSETS.cognito} />
+  <GridItem title="Coinbase" protocol={['OAuth 2']} image={ASSETS.coinbase} />
+  <GridItem title="Dropbox" protocol={['OAuth 2']} image={ASSETS.dropbox} />
+  <GridItem title="Facebook" protocol={['OAuth 2']} image={ASSETS.facebook} />
+  <GridItem title="Fitbit" protocol={['OAuth 2']} image={ASSETS.fitbit} />
+  <GridItem
     title="Firebase Phone"
     protocol={['Recaptcha']}
     href="/versions/latest/sdk/firebase-recaptcha"
-    image="/static/images/sdk/auth-session/firebase-phone.png"
+    image={ASSETS.firebase}
   />
-  <SocialGridItem
-    title="GitHub"
-    protocol={['OAuth 2']}
-    href="#github"
-    image="/static/images/sdk/auth-session/github.png"
-  />
-  <SocialGridItem
-    title="Google"
-    protocol={['OAuth 2', 'OpenID']}
-    href="#google"
-    image="/static/images/sdk/auth-session/google.png"
-  />
-  <SocialGridItem
-    title="Imgur"
-    protocol={['OAuth 2']}
-    href="#imgur"
-    image="/static/images/sdk/auth-session/imgur.png"
-  />
-  <SocialGridItem
-    title="Okta"
-    protocol={['OAuth 2', 'OpenID']}
-    href="#okta"
-    image="/static/images/sdk/auth-session/okta.png"
-  />
-  <SocialGridItem
-    title="Reddit"
-    protocol={['OAuth 2']}
-    href="#reddit"
-    image="/static/images/sdk/auth-session/reddit.png"
-  />
-  <SocialGridItem
-    title="Slack"
-    protocol={['OAuth 2']}
-    href="#slack"
-    image="/static/images/sdk/auth-session/slack.png"
-  />
-  <SocialGridItem
-    title="Spotify"
-    protocol={['OAuth 2']}
-    href="#spotify"
-    image="/static/images/sdk/auth-session/spotify.png"
-  />
-  <SocialGridItem
-    title="Strava"
-    protocol={['OAuth 2']}
-    href="#strava"
-    image="/static/images/sdk/auth-session/strava.png"
-  />
-  <SocialGridItem
-    title="Twitch"
-    protocol={['OAuth 2']}
-    href="#twitch"
-    image="/static/images/sdk/auth-session/twitch.png"
-  />
-  <SocialGridItem
-    title="Twitter"
-    protocol={['OAuth 2']}
-    href="#twitter"
-    image="/static/images/sdk/auth-session/twitter.png"
-  />
-  <SocialGridItem
-    title="Uber"
-    protocol={['OAuth 2']}
-    href="#uber"
-    image="/static/images/sdk/auth-session/uber.png"
-  />
-</SocialGrid>
+  <GridItem title="GitHub" protocol={['OAuth 2']} image={ASSETS.github} />
+  <GridItem title="Google" protocol={['OAuth 2', 'OpenID']} image={ASSETS.google} />
+  <GridItem title="Imgur" protocol={['OAuth 2']} image={ASSETS.imgur} />
+  <GridItem title="Okta" protocol={['OAuth 2', 'OpenID']} image={ASSETS.okta} />
+  <GridItem title="Reddit" protocol={['OAuth 2']} image={ASSETS.reddit} />
+  <GridItem title="Slack" protocol={['OAuth 2']} image={ASSETS.slack} />
+  <GridItem title="Spotify" protocol={['OAuth 2']} image={ASSETS.spotify} />
+  <GridItem title="Strava" protocol={['OAuth 2']} image={ASSETS.strava} />
+  <GridItem title="Twitch" protocol={['OAuth 2']} image={ASSETS.twitch} />
+  <GridItem title="Twitter" protocol={['OAuth 2']} image={ASSETS.twitter} />
+  <GridItem title="Uber" protocol={['OAuth 2']} image={ASSETS.uber} />
+</Grid>
 
-### IdentityServer 4
+<Box
+  name="IdentityServer 4"
+  image={ASSETS.id4}
+>
 
 | Website                  | Provider | PKCE     | Auto Discovery |
 | ------------------------ | -------- | -------- | -------------- |
@@ -162,7 +68,7 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
 - If `offline_access` isn't included then no refresh token will be returned.
 
 {/* prettier-ignore */}
-```tsx
+```tsx IdentityServer 4 Example
 import * as React from 'react';
 import { Button, Text, View } from 'react-native';
 import * as AuthSession from 'expo-auth-session';
@@ -203,14 +109,14 @@ export default function App() {
 }
 ```
 
+</Box>
 {/* End IdentityServer 4 */}
 
-### Azure
-
-<CreateAppButton
+<Box
   name="Azure"
-  href="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview"
-/>
+  createUrl="https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview"
+  image={ASSETS.azure}
+>
 
 | Website                     | Provider | PKCE      | Auto Discovery |
 | --------------------------- | -------- | --------- | -------------- |
@@ -219,7 +125,7 @@ export default function App() {
 [c-azure2]: https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-overview
 
 {/* prettier-ignore */}
-```tsx
+```tsx Azure Example
 import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
@@ -262,15 +168,18 @@ export default function App() {
 }
 ```
 
+</Box>
 {/* End Azure */}
 
-### Cognito
+<Box
+  name="Cognito"
+  createUrl="https://console.aws.amazon.com/cognito/v2/idp/user-pools"
+  image={ASSETS.cognito}
+>
 
-<CreateAppButton name="Cognito" href="https://console.aws.amazon.com/cognito/v2/idp/user-pools" />
-
-| Website                      | Provider  | PKCE          | Auto Discovery |
-| ---------------------------- | --------- | ------------- | -------------- |
-| [Get Your Config][c-cognito] | OpenID    | Supported     | Not Available  |
+| Website                      | Provider | PKCE      | Auto Discovery |
+| ---------------------------- | -------- | --------- | -------------- |
+| [Get Your Config][c-cognito] | OpenID   | Supported | Not Available  |
 
 [c-cognito]: https://console.aws.amazon.com/cognito/v2/idp/user-pools
 [c-cognito-api-docs]: https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-userpools-server-contract-reference.html
@@ -278,6 +187,7 @@ export default function App() {
 - Leverages the Hosted UI in Cognito ([API documentation][c-cognito-api-docs])
 - Requests code after successfully authenticating, followed by exchanging code for the auth tokens (PKCE)
 - The `/token` endpoint requires a `code_verifier` parameter which you can retrieve from the request before calling `exchangeCodeAsync()`:
+
 ```tsx
 extraParams: {
   code_verifier: request.codeVerifier,
@@ -332,7 +242,6 @@ export default function App() {
         console.error(error);
       }
     };
-
     if (response) {
       if (response.error) {
         Alert.alert(
@@ -379,11 +288,15 @@ export default function App() {
 
 </Tabs>
 
+</Box>
+
 {/* End Cognito */}
 
-### Coinbase
-
-<CreateAppButton name="Coinbase" href="https://www.coinbase.com/oauth/applications/new" />
+<Box
+  name="Coinbase"
+  createUrl="https://www.coinbase.com/oauth/applications/new"
+  image={ASSETS.coinbase}
+>
 
 | Website                       | Provider  | PKCE      | Auto Discovery |
 | ----------------------------- | --------- | --------- | -------------- |
@@ -406,7 +319,6 @@ export default function App() {
     - Set this to whatever your deployed website URL is.
 
 <Tabs tabs={["Auth Code", "Implicit Flow"]}>
-
 <Tab>
 
 {/* prettier-ignore */}
@@ -547,12 +459,14 @@ function useMounted() {
 
 </Tab>
 </Tabs>
-
+</Box>
 {/* End Coinbase */}
 
-### Dropbox
-
-<CreateAppButton name="Dropbox" href="https://www.dropbox.com/developers/apps/create" />
+<Box
+  name="Dropbox"
+  createUrl="https://www.dropbox.com/developers/apps/create"
+  image={ASSETS.dropbox}
+>
 
 | Website                      | Provider  | PKCE          | Auto Discovery |
 | ---------------------------- | --------- | ------------- | -------------- |
@@ -701,14 +615,15 @@ export default function App() {
 ```
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Dropbox */}
 
-### Facebook
-
-<CreateAppButton name="Facebook" href="https://developers.facebook.com/apps/" />
+<Box
+  name="Facebook"
+  createUrl="https://developers.facebook.com/apps/"
+  image={ASSETS.facebook}
+>
 
 | Website                 | Provider | PKCE      | Auto Discovery |
 | ----------------------- | -------- | --------- | -------------- |
@@ -724,7 +639,7 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 - Go to: (Sidebar) Products > Facebook Login > Settings > Client OAuth Settings. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/fb-login/settings/`
 
-<img
+<ImageSpotlight
   alt="Facebook Console for URIs"
   src="/static/images/sdk/auth-session/guide/facebook-proxy-guide.png"
 />
@@ -753,7 +668,7 @@ You'll have to rebuild after adding the `react-native-fbsdk-next` as a config pl
 - Go to: (Sidebar) Settings > Basic. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/settings/basic/`
 - Scroll all the way down and click **`+ Add Platform`**, then select **`iOS`**.
 
-<img
+<ImageSpotlight
   alt="Facebook Console for URIs"
   src="/static/images/sdk/auth-session/guide/facebook-ios-guide.png"
 />
@@ -768,7 +683,7 @@ You'll have to rebuild after adding the `react-native-fbsdk-next` as a config pl
 - Go to: (Sidebar) Settings > Basic. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/settings/basic/`
 - Scroll all the way down and click **`+ Add Platform`**, then select **`Android`**.
 
-<img
+<ImageSpotlight
   alt="Facebook Console for URIs"
   src="/static/images/sdk/auth-session/guide/facebook-android-guide.png"
 />
@@ -811,7 +726,7 @@ Then add `<data android:scheme="fb<YOUR ID>"/>` to the `.MainActivity` `intent-f
 
 - Go to: (Sidebar) Products > Facebook Login > Settings > Client OAuth Settings. The URL should be: `https://developers.facebook.com/apps/<YOUR ID>/fb-login/settings/`
 
-<img
+<ImageSpotlight
   alt="Facebook Console for URIs"
   src="/static/images/sdk/auth-session/guide/facebook-web-dev-guide.png"
 />
@@ -975,14 +890,15 @@ export default function App() {
 ```
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Facebook */}
 
-### FitBit
-
-<CreateAppButton name="FitBit" href="https://dev.fitbit.com/apps/new" />
+<Box
+  name="Fitbit"
+  createUrl="https://dev.fitbit.com/apps/new"
+  image={ASSETS.fitbit}
+>
 
 | Website                     | Provider  | PKCE      | Auto Discovery |
 | --------------------------- | --------- | --------- | -------------- |
@@ -1124,14 +1040,15 @@ export default function App() {
 ```
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End FitBit */}
 
-### GitHub
-
-<CreateAppButton name="GitHub" href="https://github.com/settings/developers" />
+<Box
+  name="GitHub"
+  createUrl="https://github.com/settings/developers"
+  image={ASSETS.github}
+>
 
 | Website                     | Provider  | PKCE      | Auto Discovery |
 | --------------------------- | --------- | --------- | -------------- |
@@ -1213,14 +1130,14 @@ export default function App() {
 - Implicit grant is [not supported for GitHub](https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/).
 
 </Tab>
-
 </Tabs>
+</Box>
 
-{/* End GitHub */}
-
-### Google
-
-<CreateAppButton name="Google" href="https://console.developers.google.com/apis/credentials" />
+<Box
+  name="Google"
+  createUrl="https://console.developers.google.com/apis/credentials"
+  image={ASSETS.google}
+>
 
 | Website                     | Provider | PKCE      | Auto Discovery |
 | --------------------------- | -------- | --------- | -------------- |
@@ -1432,14 +1349,15 @@ export default function App() {
 ```
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Google */}
 
-### Imgur
-
-<CreateAppButton name="Imgur" href="https://api.imgur.com/oauth2/addclient" />
+<Box
+  name="Imgur"
+  createUrl="https://api.imgur.com/oauth2/addclient"
+  image={ASSETS.imgur}
+>
 
 | Website                    | Provider  | PKCE      | Auto Discovery |
 | -------------------------- | --------- | --------- | -------------- |
@@ -1571,14 +1489,15 @@ export default function App() {
 ```
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Imgur */}
 
-### Okta
-
-<CreateAppButton name="Okta" href="https://developer.okta.com/signup" />
+<Box
+  name="Okta"
+  createUrl="https://developer.okta.com/signup"
+  image={ASSETS.okta}
+>
 
 | Website                          | Provider | PKCE      | Auto Discovery |
 | -------------------------------- | -------- | --------- | -------------- |
@@ -1654,14 +1573,15 @@ export default function App() {
 - This flow is not documented yet, learn more [from the Okta website](https://developer.okta.com/docs/guides/implement-implicit/use-flow/).
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Okta */}
 
-### Reddit
-
-<CreateAppButton name="Reddit" href="https://www.reddit.com/prefs/apps" />
+<Box
+  name="Reddit"
+  createUrl="https://www.reddit.com/prefs/apps"
+  image={ASSETS.reddit}
+>
 
 | Website                     | Provider  | PKCE      | Auto Discovery |
 | --------------------------- | --------- | --------- | -------------- |
@@ -1800,12 +1720,14 @@ export default function App() {
 
 </Tab>
 </Tabs>
-
+</Box>
 {/* End Reddit */}
 
-### Slack
-
-<CreateAppButton name="Slack" href="https://api.slack.com/apps" />
+<Box
+  name="Slack"
+  createUrl="https://api.slack.com/apps"
+  image={ASSETS.slack}
+>
 
 | Website                    | Provider  | PKCE      | Auto Discovery |
 | -------------------------- | --------- | --------- | -------------- |
@@ -1886,14 +1808,15 @@ export default function App() {
 - Slack does not support implicit grant.
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Slack */}
 
-### Spotify
-
-<CreateAppButton name="Spotify" href="https://developer.spotify.com/dashboard/applications" />
+<Box
+  name="Spotify"
+  createUrl="https://developer.spotify.com/dashboard/applications"
+  image={ASSETS.spotify}
+>
 
 | Website                      | Provider  | PKCE      | Auto Discovery |
 | ---------------------------- | --------- | --------- | -------------- |
@@ -2043,12 +1966,14 @@ export default function App() {
 
 </Tab>
 </Tabs>
-
+</Box>
 {/* End Spotify */}
 
-### Strava
-
-<CreateAppButton name="Strava" href="https://www.strava.com/settings/api" />
+<Box
+  name="Strava"
+  createUrl="https://www.strava.com/settings/api"
+  image={ASSETS.strava}
+>
 
 | Website                     | Provider  | PKCE      | Auto Discovery |
 | --------------------------- | --------- | --------- | -------------- |
@@ -2140,14 +2065,15 @@ const { accessToken } = await AuthSession.exchangeCodeAsync(
 ```
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Strava */}
 
-### Twitch
-
-<CreateAppButton name="Twitch" href="https://dev.twitch.tv/console/apps/create" />
+<Box
+  name="Twitch"
+  createUrl="https://dev.twitch.tv/console/apps/create"
+  image={ASSETS.twitch}
+>
 
 | Website                     | Provider | PKCE      | Auto Discovery | Scopes           |
 | --------------------------- | -------- | --------- | -------------- | ---------------- |
@@ -2282,14 +2208,15 @@ export default function App() {
 ```
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Twitch */}
 
-### Twitter
-
-<CreateAppButton name="Twitter" href="https://developer.twitter.com/en/portal/projects/new" />
+<Box
+  name="Twitter"
+  createUrl="https://developer.twitter.com/en/portal/projects/new"
+  image={ASSETS.twitter}
+>
 
 | Website                      | Provider | PKCE      | Auto Discovery | Scopes            |
 | ---------------------------- | -------- | --------- | -------------- | ----------------- |
@@ -2377,17 +2304,15 @@ export default function App() {
 ```
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Twitter */}
 
-### Uber
-
-<CreateAppButton
+<Box
   name="Uber"
-  href="https://developer.uber.com/docs/riders/guides/authentication/introduction"
-/>
+  createUrl="https://developer.uber.com/docs/riders/guides/authentication/introduction"
+  image={ASSETS.uber}
+>
 
 | Website                   | Provider  | PKCE      | Auto Discovery |
 | ------------------------- | --------- | --------- | -------------- |
@@ -2522,9 +2447,8 @@ export default function App() {
 ```
 
 </Tab>
-
 </Tabs>
-
+</Box>
 {/* End Uber */}
 
 {/* End Guides */}
@@ -2540,7 +2464,6 @@ https://auth.expo.io/@username/app-slug
 
 # Example
 https://auth.expo.io/@johnsample/my-app
-
 ```
 
 - **Environment:** Development or production projects in Expo Go, or in a standalone build.
