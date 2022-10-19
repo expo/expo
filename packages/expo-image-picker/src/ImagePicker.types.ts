@@ -310,7 +310,7 @@ export type ImagePickerResult = {
   canceled: boolean;
   /**
    * @hidden
-   * @deprecated Use an American English spelling: `canceled`.
+   * @deprecated Use `canceled`.
    */
   cancelled?: boolean;
   /**

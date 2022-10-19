@@ -76,7 +76,7 @@ function mergeDeprecatedResult(result: ImagePickerResult): ImagePickerResult {
     ...result,
     get cancelled() {
       console.warn(
-        'Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use an American English spelling: "canceled"'
+        'Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use "canceled" instead'
       );
       return this.canceled;
     },
