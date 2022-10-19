@@ -165,7 +165,7 @@ class DeviceMotionSensor extends SensorBlock<Sensors.DeviceMotionMeasurement> {
       {this.renderXYZBlock('Acceleration w/gravity', this.state.data.accelerationIncludingGravity)}
       {this.renderABGBlock('Rotation', this.state.data.rotation)}
       {this.renderABGBlock('Rotation rate', this.state.data.rotationRate)}
-      <Text>Orientation: {this.state.data.orientation}</Text>
+      <Text>Orientation: {Sensors.DeviceMotionOrientation[this.state.data.orientation]}</Text>
     </View>
   );
 }

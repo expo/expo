@@ -348,6 +348,7 @@ From here, you can choose to generate basic project files like:
 
 ## Environment Variables
 
+- `HTTP_PROXY` (**string**) HTTP/HTTPS proxy URL to connect for all network requests. Configures [https-proxy-agent](https://www.npmjs.com/package/https-proxy-agent).
 - `EXPO_NO_WEB_SETUP` (**boolean**) prevents the CLI from forcing web dependencies (`react-dom`, `react-native-web`, `@expo/webpack-config`) to be installed before using web functionality. This is useful for cases where you wish to perform non-standard web development.
 - `EXPO_NO_TYPESCRIPT_SETUP` (**boolean**) prevents the CLI from forcing TypeScript to be configured on `npx expo start`. For more information, see [TypeScript guide](/guides/typescript/).
 - `DEBUG=expo:*` (**string**) enables debug logs for the CLI, you can configure this using the [`debug` convention](https://github.com/debug-js/debug#conventions).

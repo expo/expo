@@ -2,7 +2,7 @@
 title: Developing With ExpoKit
 ---
 
-> ExpoKit is deprecated and is no longer supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.mdx) instead.
+> **warning** ExpoKit is deprecated and is no longer supported after SDK 38. If you need to make customizations to your Expo project, we recommend using the [bare workflow](../workflow/customizing.mdx) instead.
 
 ExpoKit is an Objective-C and Java library that allows you to use the Expo platform with a
 native iOS/Android project.
@@ -31,7 +31,7 @@ Run `expo start` from the project directory.
 
 This step ensures that the Metro bundler is running and serving your app's JS bundle for development. Leave this running and continue with the following steps.
 
-> Note: Before building for release, you **must** run the Classic Update's `expo publish` command to serve your app's JS bundle in TestFlight and production.
+> Before building for release, you **must** run the Classic Update's `expo publish` command to serve your app's JS bundle in TestFlight and production.
 
 ### 3. iOS: Configure, build and run
 
@@ -79,7 +79,7 @@ Many libraries in the React Native ecosystem include instructions to run `react-
 
 ExpoKit's release cycle follows the Expo SDK release cycle. When a new version of the Expo SDK comes out, the release notes include upgrade instructions for the normal, JS-only part of your project. Additionally, you'll need to update the native ExpoKit code.
 
-> **Note:** Please make sure you've already updated your JS dependencies before proceeding with the following instructions. Additionally, there may be version-specific breaking changes not covered here.
+> Please make sure you've already updated your JS dependencies before proceeding with the following instructions. Additionally, there may be version-specific breaking changes not covered here.
 
 ### iOS
 
@@ -102,9 +102,9 @@ pod 'React',
 with
 
 ```ruby
- # Install React Native and its dependencies
- require_relative '../node_modules/react-native/scripts/autolink-ios.rb'
- use_react_native!
+# Install React Native and its dependencies
+require_relative '../node_modules/react-native/scripts/autolink-ios.rb'
+use_react_native!
 ```
 
 If upgrading from SDK 32 or below:
@@ -203,9 +203,9 @@ If upgrading from SDK34:
 1. Remove or comment out the following three lines in android/app/build.gradle as they are no longer used:
 
 ```
- annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
- implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
- implementation "com.raizlabs.android:DBFlow:2.2.1"
+annotationProcessor 'com.raizlabs.android:DBFlow-Compiler:2.2.1'
+implementation "com.raizlabs.android:DBFlow-Core:2.2.1"
+implementation "com.raizlabs.android:DBFlow:2.2.1"
 ```
 
 If upgrading from SDK32 or below:

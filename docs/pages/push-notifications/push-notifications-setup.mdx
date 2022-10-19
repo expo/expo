@@ -12,7 +12,7 @@ To get the client-side ready for push notifications, the 2 main things we need a
 
 We can easily grab both of these using the `expo-notifications` library. For permissions, use [`requestPermissionsAsync`](../versions/latest/sdk/notifications.mdx#requestpermissionsasyncrequest-notificationpermissionsrequest-promisenotificationpermissionsstatus), and for the ExpoPushToken, use [`getExpoPushTokenAsync`](../versions/latest/sdk/notifications.mdx#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken).
 
-> Note: in the managed workflow, you don't need to pass any additional options to `getExpoPushTokenAsync`. In the bare workflow, you'll need to pass your `experienceId`. Make sure you read the documentation for more information.
+> In the managed workflow, you don't need to pass any additional options to `getExpoPushTokenAsync`. In the bare workflow, you'll need to pass your `experienceId`. Make sure you read the documentation for more information.
 
 The following method takes care of all this for you, so feel free to copy/paste it.
 
@@ -107,7 +107,7 @@ For Android, both managed and bare workflow users need to follow our [FCM setup 
 
 For iOS, EAS Build will take care of push notification credentials automatically when you run a build. If are you using bare workflow and not building with EAS Build, you will need to run `eas credentials` manually.
 
-> Note: A paid Apple Developer Account is **required** to generate credentials.
+> A paid Apple Developer Account is **required** to generate credentials.
 
 ## Next steps
 

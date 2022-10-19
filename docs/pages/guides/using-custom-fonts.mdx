@@ -6,7 +6,7 @@ sidebar_title: Using Custom Fonts
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 
 Both iOS and Android and most desktop operating systems come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well-picked font can go a long way.
 
@@ -139,7 +139,7 @@ To create a new project including this example, run in your terminal:
 
 <Terminal cmd={['$ npx create-react-native-app --template with-custom-font']} />
 
-> **Note**: The above example also uses [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. To learn why, read about it more in the [Waiting for fonts to load](#waiting-for-fonts-to-load) section.
+> The above example also uses [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) package. To learn why, read about it more in the [Waiting for fonts to load](#waiting-for-fonts-to-load) section.
 
 ## Platform built-in fonts
 
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
 
 Since your fonts won't be ready right away, it is generally a good practice to not render anything until the font is ready. Instead, you can continue to display the Splash Screen of your app until all fonts have loaded. It is done by using [expo-splash-screen](/versions/latest/sdk/splash-screen/) package. Refer back to the [minimal working example](#a-minimal-working-example) section on how to use it.
 
-> **Note:** Learn more about [pre-loading and caching assets](/guides/preloading-and-caching-assets/#pre-loading-and-caching-assets) in your React Native app.
+> Learn more about [pre-loading and caching assets](/guides/preloading-and-caching-assets/#pre-loading-and-caching-assets) in your React Native app.
 
 ### Loading fonts on web
 

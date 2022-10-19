@@ -136,6 +136,13 @@ class Env {
   get EXPO_METRO_NO_MAIN_FIELD_OVERRIDE(): boolean {
     return boolish('EXPO_METRO_NO_MAIN_FIELD_OVERRIDE', false);
   }
+
+  /**
+   * HTTP/HTTPS proxy to connect to for network requests. Configures [https-proxy-agent](https://www.npmjs.com/package/https-proxy-agent).
+   */
+  get HTTP_PROXY(): string {
+    return process.env.HTTP_PROXY || process.env.http_proxy || '';
+  }
 }
 
 export const env = new Env();
