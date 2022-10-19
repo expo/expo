@@ -20,11 +20,11 @@ import com.facebook.react.uimanager.ReanimatedUIManager
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.systrace.Systrace
+import com.swmansion.reanimated.ReanimatedModule
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.expoview.Exponent
-import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule
 import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule
 import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule

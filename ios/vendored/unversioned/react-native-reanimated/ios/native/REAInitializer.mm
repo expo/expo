@@ -24,7 +24,7 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
 
   [bridge moduleForClass:[RCTEventDispatcher class]];
   RCTEventDispatcher *eventDispatcher = [REAEventDispatcher new];
-#if RNVERSION >= 66
+#if REACT_NATIVE_MINOR_VERSION >= 66
   RCTCallableJSModules *callableJSModules = [RCTCallableJSModules new];
   [bridge setValue:callableJSModules forKey:@"_callableJSModules"];
   [callableJSModules setBridge:bridge];
@@ -39,26 +39,22 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
     if (!bridge) {
       return;
     }
-#if RNVERSION >= 63
+#if REACT_NATIVE_MINOR_VERSION >= 63
     auto reanimatedModule = reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker);
 #else
     auto callInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
     auto reanimatedModule = reanimated::createReanimatedModule(bridge, callInvoker);
 #endif
-    auto workletRuntimeValue = runtime
-        .global()
-        .getProperty(runtime, "ArrayBuffer")
-        .asObject(runtime)
-        .asFunction(runtime)
-        .callAsConstructor(runtime, {static_cast<double>(sizeof(void*))});
-    uintptr_t* workletRuntimeData = reinterpret_cast<uintptr_t*>(
-        workletRuntimeValue.getObject(runtime).getArrayBuffer(runtime).data(runtime));
+    auto workletRuntimeValue = runtime.global()
+                                   .getProperty(runtime, "ArrayBuffer")
+                                   .asObject(runtime)
+                                   .asFunction(runtime)
+                                   .callAsConstructor(runtime, {static_cast<double>(sizeof(void *))});
+    uintptr_t *workletRuntimeData =
+        reinterpret_cast<uintptr_t *>(workletRuntimeValue.getObject(runtime).getArrayBuffer(runtime).data(runtime));
     workletRuntimeData[0] = reinterpret_cast<uintptr_t>(reanimatedModule->runtime.get());
 
-    runtime.global().setProperty(
-        runtime,
-        "_WORKLET_RUNTIME",
-        workletRuntimeValue);
+    runtime.global().setProperty(runtime, "_WORKLET_RUNTIME", workletRuntimeValue);
 
     runtime.global().setProperty(
         runtime,

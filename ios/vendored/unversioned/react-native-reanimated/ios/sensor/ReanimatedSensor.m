@@ -7,7 +7,11 @@
 {
   self = [super init];
   _sensorType = sensorType;
-  _interval = interval / 1000; // in seconds
+  if (interval == -1) {
+    _interval = 1.0 / UIScreen.mainScreen.maximumFramesPerSecond;
+  } else {
+    _interval = interval / 1000.0; // in seconds
+  }
   _setter = setter;
   _motionManager = [[CMMotionManager alloc] init];
   return self;
@@ -59,18 +63,21 @@
   }
   [_motionManager setAccelerometerUpdateInterval:_interval];
   [_motionManager startAccelerometerUpdates];
-  [_motionManager
-      startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue]
-                           withHandler:^(CMAccelerometerData *sensorData, NSError *error) {
-                             double currentTime = [[NSProcessInfo processInfo] systemUptime];
-                             if (currentTime - self->_lastTimestamp < self->_interval) {
-                               return;
-                             }
-                             double data[] = {
-                                 sensorData.acceleration.x, sensorData.acceleration.y, sensorData.acceleration.z};
-                             self->_setter(data);
-                             self->_lastTimestamp = currentTime;
-                           }];
+  [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue]
+                                       withHandler:^(CMAccelerometerData *sensorData, NSError *error) {
+                                         double currentTime = [[NSProcessInfo processInfo] systemUptime];
+                                         if (currentTime - self->_lastTimestamp < self->_interval) {
+                                           return;
+                                         }
+                                         double G = 9.81;
+                                         // convert G to m/s^2
+                                         double data[] = {
+                                             sensorData.acceleration.x * G,
+                                             sensorData.acceleration.y * G,
+                                             sensorData.acceleration.z * G};
+                                         self->_setter(data);
+                                         self->_lastTimestamp = currentTime;
+                                       }];
 
   return true;
 }
@@ -89,7 +96,10 @@
                             if (currentTime - self->_lastTimestamp < self->_interval) {
                               return;
                             }
-                            double data[] = {sensorData.gravity.x, sensorData.gravity.y, sensorData.gravity.z};
+                            double G = 9.81;
+                            // convert G to m/s^2
+                            double data[] = {
+                                sensorData.gravity.x * G, sensorData.gravity.y * G, sensorData.gravity.z * G};
                             self->_setter(data);
                             self->_lastTimestamp = currentTime;
                           }];
@@ -128,7 +138,7 @@
   [_motionManager setDeviceMotionUpdateInterval:_interval];
 
   [_motionManager setShowsDeviceMovementDisplay:YES];
-  [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXTrueNorthZVertical
+  [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryZVertical
                                                       toQueue:[NSOperationQueue mainQueue]
                                                   withHandler:^(CMDeviceMotion *sensorData, NSError *error) {
                                                     double currentTime = [[NSProcessInfo processInfo] systemUptime];
@@ -143,8 +153,7 @@
                                                         attitude.quaternion.w,
                                                         attitude.yaw,
                                                         attitude.pitch,
-                                                        attitude.roll
-                                                    };
+                                                        attitude.roll};
                                                     self->_setter(data);
                                                     self->_lastTimestamp = currentTime;
                                                   }];
