@@ -316,7 +316,7 @@ export const resolveTypeName = (
       return queryType.name;
     } else if (type === 'literal' && typeof value === 'boolean') {
       return `${value}`;
-    } else if (type === 'literal' && value) {
+    } else if (type === 'literal' && (value || (typeof value === 'number' && value === 0))) {
       return `'${value}'`;
     } else if (type === 'intersection' && types) {
       return types
