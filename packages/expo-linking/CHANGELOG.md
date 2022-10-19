@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Recognize EAS Updates (u.expo.dev) URL's as Expo-hosted so `createURL` can make a valid default URL for expo-auth-session ([#19258](https://github.com/expo/expo/pull/19258) by [@confraria](https://github.com/confraria)) and [@keith-kurak](https://github.com/keith-kurak))
+
 ### 💡 Others
 
 - Update docs link. ([#18935](https://github.com/expo/expo/pull/18935) by [@EvanBacon](https://github.com/EvanBacon))
