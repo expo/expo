@@ -309,63 +309,51 @@ export type ImagePickerResult = {
    */
   canceled: boolean;
   /**
-   * @hidden
-   * @deprecated Use `canceled`.
+   * @deprecated Use `canceled` instead.
    */
   cancelled?: boolean;
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   selected?: ImagePickerAsset[];
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   uri?: string;
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   assetId?: string | null;
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   width?: number;
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   height?: number;
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   type?: 'image' | 'video';
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   fileName?: string | null;
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   fileSize?: number;
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   exif?: Record<string, any> | null;
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   base64?: string | null;
   /**
-   * @hidden
-   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead.
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
    */
   duration?: number | null;
 } & (ImagePickerSuccessResult | ImagePickerCanceledResult);
@@ -388,7 +376,7 @@ export type ImagePickerCanceledResult = {
 
 /**
  * @hidden
- * @deprecated Use an American English spelling: `ImagePickerCanceledResult`.
+ * @deprecated Use `ImagePickerResult` instead.
  */
 export type ImagePickerCancelledResult = ImagePickerCanceledResult;
 

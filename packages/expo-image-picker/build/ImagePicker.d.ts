@@ -68,10 +68,9 @@ export declare function getPendingResultAsync(): Promise<(ImagePickerResult | Im
  * intended. The `cancelled` event will not be returned in the browser due to platform restrictions
  * and inconsistencies across browsers.
  * @param options An `ImagePickerOptions` object.
- * @return If the user cancelled the action, the method returns `{ cancelled: true }`. Otherwise,
- * this method returns information about the selected media item. When the chosen item is an image,
- * this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`;
- * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+ * @return A promise that resolves to an object with `canceled` and `assets` fields.
+ * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
+ * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export declare function launchCameraAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
 /**
@@ -88,10 +87,9 @@ export declare function launchCameraAsync(options?: ImagePickerOptions): Promise
  * work as intended. The `cancelled` event will not be returned in the browser due to platform
  * restrictions and inconsistencies across browsers.
  * @param options An object extended by [`ImagePickerOptions`](#imagepickeroptions).
- * @return If the user cancelled the action, the method returns `{ cancelled: true }`. Otherwise,
- * this method returns information about the selected media item. When the chosen item is an image,
- * this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`;
- * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+ * @return A promise that resolves to an object with `canceled` and `assets` fields.
+ * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
+ * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export declare function launchImageLibraryAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
 export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ImagePickerErrorResult, ImagePickerAsset, VideoExportPreset, CameraPermissionResponse, MediaLibraryPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse, ImageInfo, // deprecated
