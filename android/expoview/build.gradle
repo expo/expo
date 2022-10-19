@@ -111,6 +111,10 @@ android {
     manifestPlaceholders = [
         'appAuthRedirectScheme': 'host.exp.exponent'
     ]
+
+    buildConfigField("boolean", "IS_INTERNAL_BUILD", "false")
+    buildConfigField("int", "EXOPACKAGE_FLAGS", "0")
+    buildConfigField("boolean", "IS_NEW_ARCHITECTURE_ENABLED", "false")
     // WHEN_VERSIONING_REMOVE_TO_HERE
   }
 

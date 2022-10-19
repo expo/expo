@@ -20,8 +20,6 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
-import com.facebook.react.bridge.JavaScriptContextHolder
-import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.LifecycleState
 import com.facebook.react.modules.network.ReactCookieJarContainer
