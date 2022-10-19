@@ -25,7 +25,7 @@ object ViewUtils {
       } else {
         promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.")
       }
-    } catch (e : IllegalViewOperationException) {
+    } catch (e: IllegalViewOperationException) {
       promise.reject("E_VIDEO_TAGINCORRECT", "Invalid view returned from registry.")
     }
   }
