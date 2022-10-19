@@ -39,7 +39,7 @@ function isExpoHosted(): boolean {
   const hostUri = getHostUri();
   return !!(
     hostUri &&
-    (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
+    (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test|expo\.dev)(:.*)?(\/.*)?$/.test(hostUri) ||
       Constants.manifest?.developer ||
       Constants.manifest2?.extra?.expoGo?.developer)
   );

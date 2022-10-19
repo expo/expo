@@ -16,19 +16,33 @@ exports[`createURL bare makes url {"undefinedParam": undefined} 1`] = `"http://l
 
 exports[`createURL bare uses triple slashes 1`] = `"http://localhost/some/path"`;
 
-exports[`createURL queries makes url "" 1`] = `"http://localhost"`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url "" 1`] = `"http://localhost"`;
 
-exports[`createURL queries makes url "path/into/app" 1`] = `"http://localhost/path/into/app"`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url "path/into/app" 1`] = `"http://localhost/path/into/app"`;
 
-exports[`createURL queries makes url {"emptyParam": ""} 1`] = `"http://localhost/some/path?emptyParam="`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"emptyParam": ""} 1`] = `"http://localhost/some/path?emptyParam="`;
 
-exports[`createURL queries makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"http://localhost/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"http://localhost/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
 
-exports[`createURL queries makes url {"lotsOfSlashes": "/////"} 1`] = `"http://localhost/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"lotsOfSlashes": "/////"} 1`] = `"http://localhost/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
 
-exports[`createURL queries makes url {"shouldEscape": "%2b%20"} 1`] = `"http://localhost/some/path?shouldEscape=%25252b%252520"`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"shouldEscape": "%2b%20"} 1`] = `"http://localhost/some/path?shouldEscape=%25252b%252520"`;
 
-exports[`createURL queries makes url {"undefinedParam": undefined} 1`] = `"http://localhost/some/path"`;
+exports[`createURL queries for hostUri "exp.host/@test/test" makes url {"undefinedParam": undefined} 1`] = `"http://localhost/some/path"`;
+
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url "" 1`] = `"http://localhost"`;
+
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url "path/into/app" 1`] = `"http://localhost/path/into/app"`;
+
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"emptyParam": ""} 1`] = `"http://localhost/some/path?emptyParam="`;
+
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"escapePluses": "email+with+plus@whatever.com"} 1`] = `"http://localhost/some/path?escapePluses=email%252Bwith%252Bplus%2540whatever.com"`;
+
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"lotsOfSlashes": "/////"} 1`] = `"http://localhost/some/path?lotsOfSlashes=%252F%252F%252F%252F%252F"`;
+
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"shouldEscape": "%2b%20"} 1`] = `"http://localhost/some/path?shouldEscape=%25252b%252520"`;
+
+exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"undefinedParam": undefined} 1`] = `"http://localhost/some/path"`;
 
 exports[`parse parses "custom://" 1`] = `
 Object {
