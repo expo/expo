@@ -32,6 +32,7 @@
 		25742BE72174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BE62174B8BE003E7453 /* EXExpoUserNotificationCenterProxy.m */; };
 		25742BF121774212003E7453 /* EXNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 25742BEF21774212003E7453 /* EXNotifications.m */; };
 		2596F06B22201A9500DEEFF9 /* EXScopedFileSystemModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */; };
+		28F885A428FEC26000CFD75C /* EXTextDirectionController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28F885A328FEC26000CFD75C /* EXTextDirectionController.swift */; };
 		2CFE1F25CD524A7ABFCAA366 /* RNSharedElementNodeManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598B49D2DB4720B1935D89 /* RNSharedElementNodeManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		2D27CAA71656C7458DE5E8BA /* libPods-ExponentIntegrationTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 36E1417121838E61F500BA69 /* libPods-ExponentIntegrationTests.a */; };
 		2E2E55ADAE3243799CC2CDFE /* RNCPicker.m in Sources */ = {isa = PBXBuildFile; fileRef = A60CC11587F645D0BF1C832F /* RNCPicker.m */; settings = {COMPILER_FLAGS = "-w"; }; };
@@ -558,6 +559,7 @@
 		25742BEF21774212003E7453 /* EXNotifications.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXNotifications.m; sourceTree = "<group>"; };
 		2596F06922201A9400DEEFF9 /* EXScopedFileSystemModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedFileSystemModule.h; sourceTree = "<group>"; };
 		2596F06A22201A9400DEEFF9 /* EXScopedFileSystemModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedFileSystemModule.m; sourceTree = "<group>"; };
+		28F885A328FEC26000CFD75C /* EXTextDirectionController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXTextDirectionController.swift; sourceTree = "<group>"; };
 		2A9DD7D91B97F78E98C01A4A /* Pods-Expo Go-Expo Go (versioned).debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go-Expo Go (versioned).debug.xcconfig"; path = "Target Support Files/Pods-Expo Go-Expo Go (versioned)/Pods-Expo Go-Expo Go (versioned).debug.xcconfig"; sourceTree = "<group>"; };
 		312D2ED1234DF2DC002F4049 /* EXScopedFacebook.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedFacebook.m; sourceTree = "<group>"; };
 		312D2ED3234DF2F6002F4049 /* EXScopedFacebook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedFacebook.h; sourceTree = "<group>"; };
@@ -1488,6 +1490,7 @@
 				B5A473D6204A66F60035C61C /* EXErrorView.m */,
 				84713BFA28584A0100E86B56 /* EXErrorView.xib */,
 				B5A473DD204A673E0035C61C /* Loading */,
+				28F885A328FEC26000CFD75C /* EXTextDirectionController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -2776,6 +2779,7 @@
 				8764788D270F1AF30076CA5F /* EXAppLoadingProgressWindowViewController.swift in Sources */,
 				B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */,
 				B2F7C02B246B09890060EE06 /* EXScopedNotificationsHandlerModule.m in Sources */,
+				28F885A428FEC26000CFD75C /* EXTextDirectionController.swift in Sources */,
 				F581B81CB601426CB5658AEE /* RNSharedElementCornerRadii.m in Sources */,
 				8353B820277A17FC00AFCBDA /* EXStandaloneViewController.m in Sources */,
 				827A699919CED163689E655D /* ExpoModulesProvider.swift in Sources */,

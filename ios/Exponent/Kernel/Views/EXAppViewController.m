@@ -41,6 +41,13 @@
 #import <ABI45_0_0React/ABI45_0_0RCTAppearance.h>
 #endif
 
+#if defined(EX_DETACHED)
+#import "ExpoKit-Swift.h"
+#else
+#import "Expo_Go-Swift.h"
+#endif // defined(EX_DETACHED)
+
+
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
 // when we encounter an error and auto-refresh, we may actually see a series of errors.
@@ -265,6 +272,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appStateDidBecomeActive
 {
+  if (self.isHomeApp) {
+    [ExTextDirectionController setRTLPref:false];
+  } else if(_appRecord.appLoader.manifest != nil) {
+    [ExTextDirectionController setRTLPref:_appRecord.appLoader.manifest.allowRTL];
+  }
   dispatch_async(dispatch_get_main_queue(), ^{
     // Reset the root view background color and window color if we switch between Expo home and project
     [self _setBackgroundColor];
@@ -466,6 +478,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
+  if (!self.isHomeApp) {
+    [ExTextDirectionController setRTLPref:_appRecord.appLoader.manifest.allowRTL];
+  }
   [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
