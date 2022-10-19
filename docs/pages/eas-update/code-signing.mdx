@@ -62,13 +62,13 @@ Key rotation is the process by which the key pair used for signing updates is ch
 
 In any of these cases, the procedure is similar:
 1. Backup the old key and certificate that were generated in step (1) above.
-2. Generate a new key by following the steps above. To assist in debugging, you may wish to change the `keyid` of the new key by modifying the `updates.codeSigningMetadata.keyid` field in your app config (app.json).
+2. Generate a new key by following the steps above. To assist in debugging, you may wish to change the `keyid` of the new key by modifying the `updates.codeSigningMetadata.keyid` field in your app config (**app.json**).
 3. The certificate is part of the app's runtime, so a new runtime version should be set for builds using this certificate to ensure that only updates signed with the new key run in the new build.
 4. Publish signed updates using the new key by following step (3) above.
 
 ## Removing Code Signing
 
-The process of removing code signing from an app is similar to [key rotation](#key-rotation) and can be thought of as a key rotation to a null key.
+The process of removing code signing from an app is similar to [key rotation](#key-rotation) and can be thought of as a key rotation to a `null` key.
 
 1. Backup the old key and certificate that were generated in step (1) above.
 2. Remove the `updates.codeSigningMetadata` field from your Expo config (**app.json**).
