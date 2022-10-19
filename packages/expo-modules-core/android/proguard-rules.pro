@@ -15,7 +15,6 @@
 -keep class * implements expo.modules.kotlin.records.Record {
   *;
 }
-
-keepclassmembers enum * implements expo.modules.kotlin.records.EnumArgument { 
+-keepclassmembers enum * implements expo.modules.kotlin.types.Enumerable {
   *; 
 }
