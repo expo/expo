@@ -528,8 +528,10 @@ export type OpenFileBrowserOptions = {
   base64: boolean;
 };
 
-// @needsAudit @docsMissing @hidden
-// @deprecated Use `ImagePickerResult` or `OpenFileBrowserOptions` instead.
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerResult` or `OpenFileBrowserOptions` instead.
+ */
 export type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> =
   T extends {
     allowsMultipleSelection: true;
