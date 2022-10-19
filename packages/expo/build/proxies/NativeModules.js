@@ -21,7 +21,9 @@ const PROPS_TO_IGNORE = new Set([
     'RNGetRandomValues',
     'RNVectorIconsManager',
     'RNVectorIconsModule',
+    // False alarm from lottie where it uses react-native-safe-module to detect corresponding native module, but it doesn't exist in lottie.
     'LottieAnimationViewManager',
+    'LottieAnimationView',
     /**
      * Other methods that can be called on the NativeModules object that we should ignore. The
      * underlying NativeModules object is sometimes a proxy itself so may not have these methods
