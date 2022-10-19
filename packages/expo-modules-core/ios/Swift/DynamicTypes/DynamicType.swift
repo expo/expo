@@ -15,10 +15,10 @@ internal func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let OptionalType = T.self as? AnyOptional.Type {
     return DynamicOptionalType(wrappedType: OptionalType.getWrappedDynamicType())
   }
-  if let ConvertibleType = T.self as? ConvertibleArgument.Type {
+  if let ConvertibleType = T.self as? Convertible.Type {
     return DynamicConvertibleType(innerType: ConvertibleType)
   }
-  if let EnumType = T.self as? EnumArgument.Type {
+  if let EnumType = T.self as? Enumerable.Type {
     return DynamicEnumType(innerType: EnumType)
   }
   if let SharedObjectType = T.self as? SharedObject.Type {

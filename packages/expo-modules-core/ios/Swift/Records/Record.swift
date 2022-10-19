@@ -1,7 +1,7 @@
 /**
  A protocol that allows initializing the object with a dictionary.
  */
-public protocol Record: ConvertibleArgument {
+public protocol Record: Convertible {
   /**
    The dictionary type that the record can be created from or converted back.
    */
