@@ -75,7 +75,7 @@ internal class ImagePickerHandler: NSObject,
   func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
     DispatchQueue.main.async {
       picker.dismiss(animated: true) { [weak self] in
-        // The PHPickerViewController returns empty collection when cancelled
+        // The PHPickerViewController returns empty collection when canceled
         if results.isEmpty {
           self?.handlePickingCancellation()
         } else {

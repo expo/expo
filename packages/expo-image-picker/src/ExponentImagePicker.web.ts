@@ -2,9 +2,7 @@ import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-cor
 import { v4 } from 'uuid';
 
 import {
-  ExpandImagePickerResult,
-  ImageInfo,
-  ImagePickerMultipleResult,
+  ImagePickerAsset,
   ImagePickerResult,
   MediaTypeOptions,
   OpenFileBrowserOptions,
@@ -25,10 +23,10 @@ export default {
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
     base64 = false,
-  }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+  }): Promise<ImagePickerResult> {
     // SSR guard
     if (!Platform.isDOMAvailable) {
-      return { cancelled: true };
+      return { canceled: true, assets: null };
     }
     return await openFileBrowserAsync({
       mediaTypes,
@@ -41,10 +39,10 @@ export default {
     mediaTypes = MediaTypeOptions.Images,
     allowsMultipleSelection = false,
     base64 = false,
-  }): Promise<ImagePickerResult | ImagePickerMultipleResult> {
+  }): Promise<ImagePickerResult> {
     // SSR guard
     if (!Platform.isDOMAvailable) {
-      return { cancelled: true };
+      return { canceled: true, assets: null };
     }
     return await openFileBrowserAsync({
       mediaTypes,
@@ -85,12 +83,12 @@ function permissionGrantedResponse(): PermissionResponse {
   };
 }
 
-function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
+function openFileBrowserAsync({
   mediaTypes,
   capture = false,
   allowsMultipleSelection = false,
   base64,
-}: T): Promise<ExpandImagePickerResult<T>> {
+}: OpenFileBrowserOptions): Promise<ImagePickerResult> {
   const mediaTypeFormat = MediaTypeInput[mediaTypes];
 
   const input = document.createElement('input');
@@ -106,23 +104,17 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
   }
   document.body.appendChild(input);
 
-  return new Promise((resolve, reject) => {
+  return new Promise((resolve) => {
     input.addEventListener('change', async () => {
       if (input.files) {
-        if (!allowsMultipleSelection) {
-          const img: ImageInfo = await readFile(input.files[0], { base64 });
-          resolve({
-            ...img,
-          } as ExpandImagePickerResult<T>);
-        } else {
-          const imgs: ImageInfo[] = await Promise.all(
-            Array.from(input.files).map((file) => readFile(file, { base64 }))
-          );
-          resolve({
-            cancelled: false,
-            selected: imgs,
-          } as ExpandImagePickerResult<T>);
-        }
+        const files = allowsMultipleSelection ? input.files : [input.files[0]];
+        const assets: ImagePickerAsset[] = await Promise.all(
+          Array.from(files).map((file) => readFile(file, { base64 }))
+        );
+
+        resolve({ canceled: false, assets });
+      } else {
+        resolve({ canceled: true, assets: null });
       }
       document.body.removeChild(input);
     });
@@ -132,7 +124,7 @@ function openFileBrowserAsync<T extends OpenFileBrowserOptions>({
   });
 }
 
-function readFile(targetFile: Blob, options: { base64: boolean }): Promise<ImageInfo> {
+function readFile(targetFile: Blob, options: { base64: boolean }): Promise<ImagePickerAsset> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = () => {
@@ -140,23 +132,16 @@ function readFile(targetFile: Blob, options: { base64: boolean }): Promise<Image
     };
     reader.onload = ({ target }) => {
       const uri = (target as any).result;
-      const returnRaw = () =>
-        resolve({
-          uri,
-          width: 0,
-          height: 0,
-          cancelled: false,
-        });
+      const returnRaw = () => resolve({ uri, width: 0, height: 0 });
 
       if (typeof uri === 'string') {
         const image = new Image();
         image.src = uri;
-        image.onload = () =>
+        image.onload = () => {
           resolve({
             uri,
             width: image.naturalWidth ?? image.width,
             height: image.naturalHeight ?? image.height,
-            cancelled: false,
             // The blob's result cannot be directly decoded as Base64 without
             // first removing the Data-URL declaration preceding the
             // Base64-encoded data. To retrieve only the Base64 encoded string,
@@ -164,6 +149,7 @@ function readFile(targetFile: Blob, options: { base64: boolean }): Promise<Image
             // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
             ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
           });
+        };
         image.onerror = () => returnRaw();
       } else {
         returnRaw();

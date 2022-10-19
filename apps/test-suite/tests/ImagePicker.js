@@ -35,6 +35,13 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
       }
     }
   }
+  function testResultShape(result, type) {
+    expect(result.canceled).toBe(false);
+
+    for (const asset of result.assets) {
+      testMediaObjectShape(asset, type);
+    }
+  }
 
   describe(name, () => {
     if (isDeviceFarm()) return;
@@ -56,15 +63,16 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
       if (Constants.isDevice) {
         it('launches the camera', async () => {
           await alertAndWaitForResponse('Please take a picture for this test to pass.');
-          const image = await ImagePicker.launchCameraAsync();
-          expect(image.cancelled).toBe(false);
-          testMediaObjectShape(image);
+          const result = await ImagePicker.launchCameraAsync();
+
+          testResultShape(result);
         });
 
         it('cancels the camera', async () => {
           await alertAndWaitForResponse('Please cancel the camera for this test to pass.');
-          const image = await ImagePicker.launchCameraAsync();
-          expect(image.cancelled).toBe(true);
+          const result = await ImagePicker.launchCameraAsync();
+          expect(result.canceled).toBe(true);
+          expect(result.assets).toBe(null);
         });
       } else {
         it('natively prevents the camera from launching on a simulator', async () => {
@@ -82,42 +90,40 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
     describe('launchImageLibraryAsync', async () => {
       it('mediaType: image', async () => {
         await alertAndWaitForResponse('Please choose an image.');
-        const image = await ImagePicker.launchImageLibraryAsync({
+        const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
         });
-
-        testMediaObjectShape(image, 'image');
+        testResultShape(result, 'image');
       });
 
       it('mediaType: video', async () => {
         await alertAndWaitForResponse('Please choose a video.');
-        const video = await ImagePicker.launchImageLibraryAsync({
+        const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Videos,
         });
-
-        testMediaObjectShape(video, 'video');
+        testResultShape(result, 'video');
       });
 
       it('allows editing', async () => {
         await alertAndWaitForResponse('Please choose an image to crop.');
-        const image = await ImagePicker.launchImageLibraryAsync({
+        const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
         });
-
-        testMediaObjectShape(image, 'image');
+        testResultShape(result, 'image');
       });
 
       it('allows editing and returns base64', async () => {
         await alertAndWaitForResponse('Please choose an image to crop.');
-        const image = await ImagePicker.launchImageLibraryAsync({
+        const result = await ImagePicker.launchImageLibraryAsync({
           mediaTypes: ImagePicker.MediaTypeOptions.Images,
           allowsEditing: true,
           base64: true,
         });
 
-        testMediaObjectShape(image, 'image');
-        if (!image.cancelled) {
+        testResultShape(result, 'image');
+
+        for (const image of result.assets) {
           expect(typeof image.base64).toBe('string');
           expect(image.base64).not.toBe('');
           expect(image.base64).not.toContain('\n');
@@ -127,14 +133,14 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
 
       if (Platform.OS === 'ios' && parseInt(Platform.Version, 10) > 10) {
         it('videoExportPreset should affect video dimensions', async () => {
-          const video = await ImagePicker.launchImageLibraryAsync({
+          const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.Videos,
             videoExportPreset: ImagePicker.VideoExportPreset.H264_640x480,
           });
 
-          testMediaObjectShape(video, 'video');
+          testResultShape(result, 'video');
 
-          if (!video.cancelled) {
+          for (const video of result.assets) {
             expect(video.width).toBeLessThanOrEqual(640);
             expect(video.height).toBeLessThanOrEqual(480);
           }

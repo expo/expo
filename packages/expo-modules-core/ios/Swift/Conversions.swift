@@ -155,6 +155,9 @@ internal final class Conversions {
     if let value = value as? Record {
       return value.toDictionary()
     }
+    if let value = value as? [Record] {
+      return value.map { $0.toDictionary() }
+    }
     return value
   }
 

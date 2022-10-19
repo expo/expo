@@ -264,8 +264,8 @@ function ContactDetailView({
       aspect: [4, 3],
     });
 
-    if (!result.cancelled) {
-      _setNewPhoto(result.uri);
+    if (!result.canceled) {
+      _setNewPhoto(result.assets[0].uri);
     }
   };
 

@@ -28,11 +28,10 @@ internal class MediaHandler(
       }
     }
 
-    return if (results.size == 1) {
-      results[0]
-    } else {
-      ImagePickerResponse.Multiple(results)
-    }
+    return ImagePickerResponse(
+      canceled = false,
+      assets = results
+    )
   }
 
   private val cacheDirectory: File
@@ -41,7 +40,7 @@ internal class MediaHandler(
   private suspend fun handleImage(
     sourceUri: Uri,
     options: ImagePickerOptions,
-  ): ImagePickerResponse.Single.Image {
+  ): ImagePickerAsset {
     val exporter: ImageExporter = if (options.quality == ImagePickerConstants.MAXIMUM_QUALITY) {
       RawImageExporter()
     } else {
@@ -56,19 +55,20 @@ internal class MediaHandler(
     val exif = options.exif.takeIf { it }
       ?.let { exportedImage.exif(context.contentResolver) }
 
-    return ImagePickerResponse.Single.Image(
+    return ImagePickerAsset(
+      type = MediaType.IMAGE,
       uri = Uri.fromFile(outputFile).toString(),
       width = exportedImage.width,
       height = exportedImage.height,
       base64 = base64,
       exif = exif,
-      assetId = sourceUri.getMediaStoreAssetId()
+      assetId = sourceUri.getMediaStoreAssetId(),
     )
   }
 
   private suspend fun handleVideo(
     sourceUri: Uri,
-  ): ImagePickerResponse.Single.Video {
+  ): ImagePickerAsset {
     val outputFile = createOutputFile(cacheDirectory, ".mp4")
     copyFile(sourceUri, outputFile, context.contentResolver)
     val outputUri = outputFile.toUri()
@@ -78,7 +78,8 @@ internal class MediaHandler(
         setDataSource(context, outputUri)
       }
 
-      ImagePickerResponse.Single.Video(
+      return ImagePickerAsset(
+        type = MediaType.VIDEO,
         uri = outputUri.toString(),
         width = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH),
         height = metadataRetriever.extractInt(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT),
