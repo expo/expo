@@ -204,11 +204,14 @@ import * as React from 'react';
 import * as WebBrowser from 'expo-web-browser';
 import { useAuthRequest, exchangeCodeAsync, revokeAsync, ResponseType } from 'expo-auth-session';
 import { Button, Alert } from 'react-native';
+
 WebBrowser.maybeCompleteAuthSession();
+
 const clientId = '<your-client-id-here>';
 const userPoolUrl =
   'https://<your-user-pool-domain>.auth.<your-region>.amazoncognito.com';
 const redirectUri = 'your-redirect-uri';
+
 export default function App() {
   const [authTokens, setAuthTokens] = React.useState(null);
   const discoveryDocument = React.useMemo(() => ({
@@ -216,6 +219,7 @@ export default function App() {
     tokenEndpoint: userPoolUrl + '/oauth2/token',
     revocationEndpoint: userPoolUrl + '/oauth2/revoke',
   }), []);
+
   const [request, response, promptAsync] = useAuthRequest(
     {
       clientId,
@@ -225,6 +229,7 @@ export default function App() {
     },
     discoveryDocument
   );
+
   React.useEffect(() => {
     const exchangeFn = async (exchangeTokenReq) => {
       try {
@@ -257,6 +262,7 @@ export default function App() {
       }
     }
   }, [discoveryDocument, request, response]);
+
   const logout = async () => {
     const revokeResponse = await revokeAsync(
       {
