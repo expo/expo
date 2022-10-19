@@ -3,13 +3,7 @@ title: Authentication
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import {
-  ASSETS,
-  Grid,
-  GridItem,
-  Box,
-  CreateAppButton,
-} from '~/ui/components/Authentication';
+import { ASSETS, Grid, GridItem, Box, CreateAppButton } from '~/ui/components/Authentication';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Expo can be used to login to many popular providers on iOS, Android, and web! Most of these guides utilize the pure JS [`AuthSession` API](/versions/latest/sdk/auth-session), refer to those docs for more information on the API.
@@ -28,103 +22,36 @@ Here are some **important rules** that apply to all authentication providers:
 If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit/main/docs/pages/guides/authentication.mdx) or [vote on canny](https://expo.canny.io/feature-requests).
 
 <Grid>
-  <GridItem
-    title="IdentityServer 4"
-    protocol={['OAuth 2', 'OpenID']}
-    image={ASSETS.id4}
-  />
-  <GridItem
-    title="Azure"
-    protocol={['OAuth 2', 'OpenID']}
-    image={ASSETS.azure}
-  />
+  <GridItem title="IdentityServer 4" protocol={['OAuth 2', 'OpenID']} image={ASSETS.id4} />
+  <GridItem title="Azure" protocol={['OAuth 2', 'OpenID']} image={ASSETS.azure} />
   <GridItem
     title="Apple"
     protocol={['iOS Only']}
     href="/versions/latest/sdk/apple-authentication"
     image={ASSETS.apple}
   />
-  <GridItem
-    title="Coinbase"
-    protocol={['OAuth 2']}
-    image={ASSETS.coinbase}
-  />
-  <GridItem
-    title="Dropbox"
-    protocol={['OAuth 2']}
-    image={ASSETS.dropbox}
-  />
-  <GridItem
-    title="Facebook"
-    protocol={['OAuth 2']}
-    image={ASSETS.facebook}
-  />
-  <GridItem
-    title="Fitbit"
-    protocol={['OAuth 2']}
-    image={ASSETS.fitbit}
-  />
+  <GridItem title="Cognito" protocol={['OAuth 2', 'OpenID']} image={ASSETS.cognito} />
+  <GridItem title="Coinbase" protocol={['OAuth 2']} image={ASSETS.coinbase} />
+  <GridItem title="Dropbox" protocol={['OAuth 2']} image={ASSETS.dropbox} />
+  <GridItem title="Facebook" protocol={['OAuth 2']} image={ASSETS.facebook} />
+  <GridItem title="Fitbit" protocol={['OAuth 2']} image={ASSETS.fitbit} />
   <GridItem
     title="Firebase Phone"
     protocol={['Recaptcha']}
     href="/versions/latest/sdk/firebase-recaptcha"
     image={ASSETS.firebase}
   />
-  <GridItem
-    title="GitHub"
-    protocol={['OAuth 2']}
-    image={ASSETS.github}
-  />
-  <GridItem
-    title="Google"
-    protocol={['OAuth 2', 'OpenID']}
-    image={ASSETS.google}
-  />
-  <GridItem
-    title="Imgur"
-    protocol={['OAuth 2']}
-    image={ASSETS.imgur}
-  />
-  <GridItem
-    title="Okta"
-    protocol={['OAuth 2', 'OpenID']}
-    image={ASSETS.okta}
-  />
-  <GridItem
-    title="Reddit"
-    protocol={['OAuth 2']}
-    image={ASSETS.reddit}
-  />
-  <GridItem
-    title="Slack"
-    protocol={['OAuth 2']}
-    image={ASSETS.slack}
-  />
-  <GridItem
-    title="Spotify"
-    protocol={['OAuth 2']}
-    image={ASSETS.spotify}
-  />
-  <GridItem
-    title="Strava"
-    protocol={['OAuth 2']}
-    image={ASSETS.strava}
-  />
-  <GridItem
-    title="Twitch"
-    protocol={['OAuth 2']}
-    image={ASSETS.twitch}
-  />
-  <GridItem
-    title="Twitter"
-    protocol={['OAuth 2']}
-    image={ASSETS.twitter}
-  />
-  <GridItem
-    title="Uber"
-    protocol={['OAuth 2']}
-    image={ASSETS.uber}
-  />
+  <GridItem title="GitHub" protocol={['OAuth 2']} image={ASSETS.github} />
+  <GridItem title="Google" protocol={['OAuth 2', 'OpenID']} image={ASSETS.google} />
+  <GridItem title="Imgur" protocol={['OAuth 2']} image={ASSETS.imgur} />
+  <GridItem title="Okta" protocol={['OAuth 2', 'OpenID']} image={ASSETS.okta} />
+  <GridItem title="Reddit" protocol={['OAuth 2']} image={ASSETS.reddit} />
+  <GridItem title="Slack" protocol={['OAuth 2']} image={ASSETS.slack} />
+  <GridItem title="Spotify" protocol={['OAuth 2']} image={ASSETS.spotify} />
+  <GridItem title="Strava" protocol={['OAuth 2']} image={ASSETS.strava} />
+  <GridItem title="Twitch" protocol={['OAuth 2']} image={ASSETS.twitch} />
+  <GridItem title="Twitter" protocol={['OAuth 2']} image={ASSETS.twitter} />
+  <GridItem title="Uber" protocol={['OAuth 2']} image={ASSETS.uber} />
 </Grid>
 
 <Box
@@ -181,6 +108,7 @@ export default function App() {
   );
 }
 ```
+
 </Box>
 {/* End IdentityServer 4 */}
 
@@ -239,8 +167,124 @@ export default function App() {
   );
 }
 ```
+
 </Box>
 {/* End Azure */}
+
+<Box
+  name="Cognito"
+  createUrl="https://console.aws.amazon.com/cognito/v2/idp/user-pools"
+  image={ASSETS.cognito}
+>
+
+| Website                      | Provider | PKCE      | Auto Discovery |
+| ---------------------------- | -------- | --------- | -------------- |
+| [Get Your Config][c-cognito] | OpenID   | Supported | Not Available  |
+
+[c-cognito]: https://console.aws.amazon.com/cognito/v2/idp/user-pools
+[c-cognito-api-docs]: https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-userpools-server-contract-reference.html
+
+- Leverages the Hosted UI in Cognito ([API documentation][c-cognito-api-docs])
+- Requests code after successfully authenticating, followed by exchanging code for the auth tokens (PKCE)
+- The `/token` endpoint requires a `code_verifier` parameter which you can retrieve from the request before calling `exchangeCodeAsync()`:
+
+```tsx
+extraParams: {
+  code_verifier: request.codeVerifier,
+}
+```
+
+<Tabs tabs={["Auth Code"]}>
+
+<Tab>
+
+{/* prettier-ignore */}
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { useAuthRequest, exchangeCodeAsync, revokeAsync, ResponseType } from 'expo-auth-session';
+import { Button, Alert } from 'react-native';
+WebBrowser.maybeCompleteAuthSession();
+const clientId = '<your-client-id-here>';
+const userPoolUrl =
+  'https://<your-user-pool-domain>.auth.<your-region>.amazoncognito.com';
+const redirectUri = 'your-redirect-uri';
+export default function App() {
+  const [authTokens, setAuthTokens] = React.useState(null);
+  const discoveryDocument = React.useMemo(() => ({
+    authorizationEndpoint: userPoolUrl + '/oauth2/authorize',
+    tokenEndpoint: userPoolUrl + '/oauth2/token',
+    revocationEndpoint: userPoolUrl + '/oauth2/revoke',
+  }), []);
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId,
+      responseType: ResponseType.Code,
+      redirectUri,
+      usePKCE: true,
+    },
+    discoveryDocument
+  );
+  React.useEffect(() => {
+    const exchangeFn = async (exchangeTokenReq) => {
+      try {
+        const exchangeTokenResponse = await exchangeCodeAsync(
+          exchangeTokenReq,
+          discoveryDocument
+        );
+        setAuthTokens(exchangeTokenResponse);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    if (response) {
+      if (response.error) {
+        Alert.alert(
+          'Authentication error',
+          response.params.error_description || 'something went wrong'
+        );
+        return;
+      }
+      if (response.type === 'success') {
+        exchangeFn({
+          clientId,
+          code: response.params.code,
+          redirectUri,
+          extraParams: {
+            code_verifier: request.codeVerifier,
+          },
+        });
+      }
+    }
+  }, [discoveryDocument, request, response]);
+  const logout = async () => {
+    const revokeResponse = await revokeAsync(
+      {
+        clientId: clientId,
+        token: authTokens.refreshToken,
+      },
+      discoveryDocument
+    );
+    if (revokeResponse) {
+      setAuthTokens(null);
+    }
+  };
+  console.log('authTokens: ' + JSON.stringify(authTokens));
+  return authTokens ? (
+    <Button title="Logout" onPress={() => logout()} />
+  ) : (
+    <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
+  );
+}
+```
+
+</Tab>
+
+</Tabs>
+
+</Box>
+
+{/* End Cognito */}
 
 <Box
   name="Coinbase"
