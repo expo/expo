@@ -52,7 +52,7 @@ public extension Record {
 
   func toDictionary() -> Dict {
     return fieldsOf(self).reduce(into: Dict()) { result, field in
-      result[field.key!] = field.get()
+      result[field.key!] = Conversions.convertFunctionResult(field.get())
     }
   }
 }
