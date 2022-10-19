@@ -23,7 +23,7 @@ const PROPS_TO_IGNORE: Set<string> = new Set([
   'RNGetRandomValues',
   'RNVectorIconsManager',
   'RNVectorIconsModule',
-   // False alarm from lottie where it uses react-native-safe-module to detect corresponding native module, but it doesn't exist in lottie.
+  // False alarm from lottie where it uses react-native-safe-module to detect corresponding native module, but it doesn't exist in lottie.
   'LottieAnimationViewManager',
   'LottieAnimationView',
   /**
