@@ -3,8 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
-import { EXPO_DIR, EXPOTOOLS_DIR } from '../../Constants';
-import { getExpoRepositoryRootDir, getReactNativeSubmoduleDir } from '../../Directories';
+import { EXPO_DIR, EXPOTOOLS_DIR, REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
@@ -82,7 +81,7 @@ const config: VendoringTargetConfig = {
         async preReadPodspecHookAsync(podspecPath: string): Promise<string> {
           const reaUtilsPath = path.join(podspecPath, '..', 'scripts', 'reanimated_utils.rb');
           assert(fs.existsSync(reaUtilsPath), 'Cannot find `reanimated_utils`.');
-          const rnForkPath = path.join(getReactNativeSubmoduleDir(), '..');
+          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
           let content = await fs.readFile(reaUtilsPath, 'utf-8');
           content = content.replace(
             'react_native_node_modules_dir = ',
@@ -92,11 +91,8 @@ const config: VendoringTargetConfig = {
           return podspecPath;
         },
         async mutatePodspec(podspec: Podspec) {
-          const rnForkPath = path.join(getReactNativeSubmoduleDir(), '..');
-          const relativeForkPath = path.relative(
-            path.join(getExpoRepositoryRootDir(), 'ios'),
-            rnForkPath
-          );
+          const rnForkPath = path.join(REACT_NATIVE_SUBMODULE_DIR, '..');
+          const relativeForkPath = path.relative(path.join(EXPO_DIR, 'ios'), rnForkPath);
           podspec.xcconfig['HEADER_SEARCH_PATHS'] = podspec.xcconfig[
             'HEADER_SEARCH_PATHS'
           ]?.replace(rnForkPath, '${PODS_ROOT}/../' + relativeForkPath);
@@ -127,6 +123,8 @@ const config: VendoringTargetConfig = {
           'android/gradle{/**,**}',
           'android/settings.gradle',
           'android/spotless.gradle',
+          'android/README.md',
+          'android/rnVersionPatch/**',
         ],
         async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
           await fs.copy(path.join(sourceDirectory, 'Common'), path.join(targetDirectory, 'Common'));
