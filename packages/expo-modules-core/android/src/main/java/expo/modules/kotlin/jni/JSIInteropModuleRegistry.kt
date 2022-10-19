@@ -2,6 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
 import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
+import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
@@ -83,7 +84,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
 
   companion object {
     init {
-      System.loadLibrary("expo-modules-core")
+      SoLoader.loadLibrary("expo-modules-core")
     }
   }
 }

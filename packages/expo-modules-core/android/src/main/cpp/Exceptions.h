@@ -68,4 +68,16 @@ public:
   JSIInteropModuleRegistry *registry,
   jni::JniException &jniException
 );
+
+/**
+ * fbjni@0.2.2 is built by ndk r21, its exceptions are not catchable by expo-modules-core built by ndk r23+.
+ * To catch these excetptions, we copy the `facebook::jni::throwPendingJniExceptionAsCppException` here and throw exceptions on our own.
+ */
+void throwPendingJniExceptionAsCppException();
+
+/**
+ * Same as `facebook::jni::throwNewJavaException` but throwing exceptions on our own.
+ */
+[[noreturn]] void throwNewJavaException(jthrowable throwable);
+
 } // namespace expo

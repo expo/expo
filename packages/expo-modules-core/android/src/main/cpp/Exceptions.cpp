@@ -78,4 +78,24 @@ void rethrowAsCodedError(
   // Rethrow error if we can't wrap it.
   throw;
 }
+
+void throwPendingJniExceptionAsCppException() {
+  JNIEnv* env = jni::Environment::current();
+  if (env->ExceptionCheck() == JNI_FALSE) {
+    return;
+  }
+
+  auto throwable = env->ExceptionOccurred();
+  if (!throwable) {
+    throw std::runtime_error("Unable to get pending JNI exception.");
+  }
+  env->ExceptionClear();
+
+  throw jni::JniException(jni::adopt_local(throwable));
+}
+
+void throwNewJavaException(jthrowable throwable) {
+  throw jni::JniException(jni::wrap_alias(throwable));
+}
+
 } // namespace expo

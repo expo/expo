@@ -114,7 +114,7 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
         env->DeleteLocalRef(converterValue);
       } else {
         auto stringRepresentation = arg.toString(rt).utf8(rt);
-        jni::throwNewJavaException(
+        throwNewJavaException(
           UnexpectedException::create(
             "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
         );

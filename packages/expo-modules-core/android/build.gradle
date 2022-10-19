@@ -154,11 +154,22 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
-  if (rootProject.hasProperty("ndkPath")) {
-    ndkPath rootProject.ext.ndkPath
-  }
-  if (rootProject.hasProperty("ndkVersion")) {
-    ndkVersion rootProject.ext.ndkVersion
+  if (REACT_NATIVE_BUILD_FROM_SOURCE) {
+    if (rootProject.hasProperty("ndkPath")) {
+      ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+      ndkVersion rootProject.ext.ndkVersion
+    }
+  } else {
+    // This ndkVersion should align to prebuilt react-native building ndkVersion.
+    // Because the unwind library is different before NDK r23 and after,
+    // if we build this library with newer NDK, C++ exceptions are incompatible between these libraries.
+    // For example, C++ exceptions throwing from hermes are not catchable from this library.
+    // Ref: https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#unwinding
+    //
+    // TODO: Revisit this version when upgrade react-native 0.71 (Expo SDK 48)
+    ndkVersion = "21.4.7075529"
   }
 
   compileOptions {
@@ -183,7 +194,7 @@ android {
     externalNativeBuild {
       cmake {
         abiFilters (*reactNativeArchitectures())
-        arguments "-DANDROID_STL=${isExpoModulesCoreTests ? 'c++_static' : 'c++_shared'}",
+        arguments "-DANDROID_STL=c++_shared",
           "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
           "-DREACT_NATIVE_SO_DIR=${REACT_NATIVE_SO_DIR}",
           "-DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}",

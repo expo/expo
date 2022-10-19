@@ -1,12 +1,14 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JNIFunctionBody.h"
+#include "Exceptions.h"
 #include "JavaReferencesCache.h"
 
 namespace jni = facebook::jni;
 namespace react = facebook::react;
 
 namespace expo {
+
 jni::local_ref<jni::JObject>
 JNIFunctionBody::invoke(jobjectArray args) {
   // Do NOT use getClass here!
@@ -20,7 +22,9 @@ JNIFunctionBody::invoke(jobjectArray args) {
       "([Ljava/lang/Object;)Ljava/lang/Object;"
     );
 
-  return method(this->self(), args);
+  auto result = jni::Environment::current()->CallObjectMethod(this->self(), method.getId(), args);
+  throwPendingJniExceptionAsCppException();
+  return jni::adopt_local(static_cast<jni::JniType<jni::JObject>>(result));
 }
 
 void JNIAsyncFunctionBody::invoke(
@@ -40,6 +44,8 @@ void JNIAsyncFunctionBody::invoke(
       "([Ljava/lang/Object;Lexpo/modules/kotlin/jni/PromiseImpl;)V"
     );
 
-  method(this->self(), args, promise);
+  jni::Environment::current()->CallVoidMethod(this->self(), method.getId(), args, promise);
+  throwPendingJniExceptionAsCppException();
 }
+
 } // namespace expo
