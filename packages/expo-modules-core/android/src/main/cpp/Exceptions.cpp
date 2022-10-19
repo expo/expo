@@ -46,9 +46,27 @@ jni::local_ref<UnexpectedException> UnexpectedException::create(const std::strin
   );
 }
 
+jsi::Value makeCodedError(
+  jsi::Runtime &rt,
+  jsi::String code,
+  jsi::String message
+) {
+  auto codedErrorConstructor = rt
+    .global()
+    .getProperty(rt, "ExpoModulesCore_CodedError")
+    .asObject(rt)
+    .asFunction(rt);
+
+  return codedErrorConstructor.callAsConstructor(
+    rt, {
+      jsi::Value(rt, code),
+      jsi::Value(rt, message)
+    }
+  );
+}
+
 void rethrowAsCodedError(
   jsi::Runtime &rt,
-  JSIInteropModuleRegistry *registry,
   jni::JniException &jniException
 ) {
   jni::local_ref<jni::JThrowable> unboxedThrowable = jniException.getThrowable();
@@ -57,22 +75,17 @@ void rethrowAsCodedError(
     auto code = codedException->getCode();
     auto message = codedException->getLocalizedMessage();
 
-    auto *codedErrorPointer = registry->jsRegistry->getOptionalObject<jsi::Function>(
-      JSReferencesCache::JSKeys::CODED_ERROR
+    auto codedError = makeCodedError(
+      rt,
+      jsi::String::createFromUtf8(rt, code),
+      jsi::String::createFromUtf8(rt, message.value_or(""))
     );
-    if (codedErrorPointer != nullptr) {
-      auto &jsCodedError = *codedErrorPointer;
 
-      throw jsi::JSError(
-        message.value_or(""),
-        rt,
-        jsCodedError.callAsConstructor(
-          rt,
-          jsi::String::createFromUtf8(rt, code),
-          jsi::String::createFromUtf8(rt, message.value_or(""))
-        )
-      );
-    }
+    throw jsi::JSError(
+      message.value_or(""),
+      rt,
+      std::move(codedError)
+    );
   }
 
   // Rethrow error if we can't wrap it.

@@ -65,8 +65,13 @@ public:
  */
 [[noreturn]] void rethrowAsCodedError(
   jsi::Runtime &rt,
-  JSIInteropModuleRegistry *registry,
   jni::JniException &jniException
+);
+
+jsi::Value makeCodedError(
+  jsi::Runtime &runtime,
+  jsi::String code,
+  jsi::String message
 );
 
 /**
@@ -79,5 +84,4 @@ void throwPendingJniExceptionAsCppException();
  * Same as `facebook::jni::throwNewJavaException` but throwing exceptions on our own.
  */
 [[noreturn]] void throwNewJavaException(jthrowable throwable);
-
 } // namespace expo
