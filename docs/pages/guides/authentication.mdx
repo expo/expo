@@ -48,6 +48,12 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
     image="/static/images/sdk/auth-session/apple.png"
   />
   <SocialGridItem
+    title="Cognito"
+    protocol={['OAuth 2', 'OpenID']}
+    href="#cognito"
+    image="/static/images/sdk/auth-session/cognito.png"
+  />
+  <SocialGridItem
     title="Coinbase"
     protocol={['OAuth 2']}
     href="#coinbase"
@@ -257,6 +263,123 @@ export default function App() {
 ```
 
 {/* End Azure */}
+
+### Cognito
+
+<CreateAppButton name="Cognito" href="https://console.aws.amazon.com/cognito/v2/idp/user-pools" />
+
+| Website                      | Provider  | PKCE          | Auto Discovery |
+| ---------------------------- | --------- | ------------- | -------------- |
+| [Get Your Config][c-cognito] | OpenID    | Supported     | Not Available  |
+
+[c-cognito]: https://console.aws.amazon.com/cognito/v2/idp/user-pools
+[c-cognito-api-docs]: https://docs.aws.amazon.com/cognito/latest/developerguide/cognito-userpools-server-contract-reference.html
+
+- Leverages the Hosted UI in Cognito ([API documentation][c-cognito-api-docs])
+- Requests code after successfully authenticating, followed by exchanging code for the auth tokens (PKCE)
+- The `/token` endpoint requires a `code_verifier` parameter which you can retrieve from the request before calling `exchangeCodeAsync()`:
+```tsx
+extraParams: {
+  code_verifier: request.codeVerifier,
+}
+```
+
+<Tabs tabs={["Auth Code"]}>
+
+<Tab>
+
+{/* prettier-ignore */}
+```tsx
+import * as React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import { useAuthRequest, exchangeCodeAsync, revokeAsync, ResponseType } from 'expo-auth-session';
+import { Button, Alert } from 'react-native';
+
+WebBrowser.maybeCompleteAuthSession();
+
+const clientId = '<your-client-id-here>';
+const userPoolUrl =
+  'https://<your-user-pool-domain>.auth.<your-region>.amazoncognito.com';
+const redirectUri = 'your-redirect-uri';
+
+export default function App() {
+  const [authTokens, setAuthTokens] = React.useState(null);
+  const discoveryDocument = React.useMemo(() => ({
+    authorizationEndpoint: userPoolUrl + '/oauth2/authorize',
+    tokenEndpoint: userPoolUrl + '/oauth2/token',
+    revocationEndpoint: userPoolUrl + '/oauth2/revoke',
+  }), []);
+
+  const [request, response, promptAsync] = useAuthRequest(
+    {
+      clientId,
+      responseType: ResponseType.Code,
+      redirectUri,
+      usePKCE: true,
+    },
+    discoveryDocument
+  );
+
+  React.useEffect(() => {
+    const exchangeFn = async (exchangeTokenReq) => {
+      try {
+        const exchangeTokenResponse = await exchangeCodeAsync(
+          exchangeTokenReq,
+          discoveryDocument
+        );
+        setAuthTokens(exchangeTokenResponse);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (response) {
+      if (response.error) {
+        Alert.alert(
+          'Authentication error',
+          response.params.error_description || 'something went wrong'
+        );
+        return;
+      }
+      if (response.type === 'success') {
+        exchangeFn({
+          clientId,
+          code: response.params.code,
+          redirectUri,
+          extraParams: {
+            code_verifier: request.codeVerifier,
+          },
+        });
+      }
+    }
+  }, [discoveryDocument, request, response]);
+
+  const logout = async () => {
+    const revokeResponse = await revokeAsync(
+      {
+        clientId: clientId,
+        token: authTokens.refreshToken,
+      },
+      discoveryDocument
+    );
+    if (revokeResponse) {
+      setAuthTokens(null);
+    }
+  };
+  console.log('authTokens: ' + JSON.stringify(authTokens));
+  return authTokens ? (
+    <Button title="Logout" onPress={() => logout()} />
+  ) : (
+    <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
+  );
+}
+```
+
+</Tab>
+
+</Tabs>
+
+{/* End Cognito */}
 
 ### Coinbase
 
