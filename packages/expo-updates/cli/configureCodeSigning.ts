@@ -12,6 +12,7 @@ export const configureCodeSigning: Command = async (argv) => {
       '--help': Boolean,
       '--certificate-input-directory': String,
       '--key-input-directory': String,
+      '--keyid': String,
       // Aliases
       '-h': '--help',
     },
@@ -40,9 +41,11 @@ Configure expo-updates code signing for this project and verify setup
 
   const certificateInput = requireArg(args, '--certificate-input-directory');
   const keyInput = requireArg(args, '--key-input-directory');
+  const keyid = args['--keyid'];
 
   return await configureCodeSigningAsync(getProjectRoot(args), {
     certificateInput,
     keyInput,
+    keyid,
   });
 };
