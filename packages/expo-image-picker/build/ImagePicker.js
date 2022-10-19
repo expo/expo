@@ -34,7 +34,7 @@ function mergeDeprecatedResult(result) {
     const deprecatedResult = {
         ...result,
         get cancelled() {
-            console.warn('Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use an American English spelling: "canceled"');
+            console.warn('Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use "canceled" instead');
             return this.canceled;
         },
     };

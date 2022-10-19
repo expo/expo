@@ -293,7 +293,7 @@ export declare type ImagePickerResult = {
     canceled: boolean;
     /**
      * @hidden
-     * @deprecated Use an American English spelling: `canceled`.
+     * @deprecated Use `canceled`.
      */
     cancelled?: boolean;
     /**
@@ -501,6 +501,10 @@ export declare type OpenFileBrowserOptions = {
      */
     base64: boolean;
 };
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerResult` or `OpenFileBrowserOptions` instead.
+ */
 export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
     allowsMultipleSelection: true;
 } ? ImagePickerResult : ImagePickerResult;
