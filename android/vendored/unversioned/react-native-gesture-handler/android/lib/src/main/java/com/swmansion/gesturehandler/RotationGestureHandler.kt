@@ -45,6 +45,11 @@ class RotationGestureHandler : GestureHandler<RotationGestureHandler>() {
     if (state == STATE_UNDETERMINED) {
       resetProgress()
       rotationGestureDetector = RotationGestureDetector(gestureListener)
+
+      // set the anchor to the position of the first pointer as NaN causes the event not to arrive
+      this.anchorX = event.x
+      this.anchorY = event.y
+
       begin()
     }
     rotationGestureDetector?.onTouchEvent(sourceEvent)
