@@ -1,11 +1,15 @@
 package expo.modules.cellular
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.sip.SipManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -53,6 +57,22 @@ class CellularModule : Module() {
     AsyncFunction("getMobileNetworkCodeAsync") {
       telephonyManager()?.simOperator?.substring(3)
     }
+
+    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      Permissions.askForPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        Manifest.permission.READ_PHONE_STATE
+      )
+    }
+
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      Permissions.getPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        Manifest.permission.READ_PHONE_STATE
+      )
+    }
   }
 
   private fun telephonyManager() =
@@ -62,6 +82,9 @@ class CellularModule : Module() {
 
   private val context
     get() = requireNotNull(appContext.reactContext)
+
+  private val permissionsManager: Permissions
+    get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
 
   @SuppressLint("MissingPermission")
   private fun getCurrentGeneration(): Int {
