@@ -1,6 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-extension UIColor: ConvertibleArgument {
+extension UIColor: Convertible {
   public static func convert(from value: Any?) throws -> Self {
     // swiftlint:disable force_cast
     if let value = value as? String {
@@ -20,7 +20,7 @@ extension UIColor: ConvertibleArgument {
   }
 }
 
-extension CGColor: ConvertibleArgument {
+extension CGColor: Convertible {
   public static func convert(from value: Any?) throws -> Self {
     // swiftlint:disable force_cast
     do {

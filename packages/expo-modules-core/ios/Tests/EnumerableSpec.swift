@@ -4,7 +4,7 @@ import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-final class EnumArgumentSpec: ExpoSpec {
+final class EnumerableSpec: ExpoSpec {
   override func spec() {
     describe("static createFromRawValue") {
       it("succeeds") {
@@ -40,7 +40,7 @@ final class EnumArgumentSpec: ExpoSpec {
   }
 }
 
-fileprivate enum Position: String, EnumArgument {
+private enum Position: String, Enumerable {
   case top
   case right
   case bottom

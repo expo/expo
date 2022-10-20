@@ -1,10 +1,10 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
 /**
- A dynamic type representing an enum that conforms to `EnumArgument`.
+ A dynamic type representing an enum that conforms to `Enumerable`.
  */
 internal struct DynamicEnumType: AnyDynamicType {
-  let innerType: EnumArgument.Type
+  let innerType: Enumerable.Type
 
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return innerType == InnerType.self

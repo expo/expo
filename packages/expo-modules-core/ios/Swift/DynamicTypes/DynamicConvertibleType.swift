@@ -1,10 +1,10 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
 /**
- A dynamic type that wraps any type conforming to `ConvertibleArgument` protocol.
+ A dynamic type that wraps any type conforming to `Convertible` protocol.
  */
 internal struct DynamicConvertibleType: AnyDynamicType {
-  let innerType: ConvertibleArgument.Type
+  let innerType: Convertible.Type
 
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return innerType == InnerType.self

@@ -3,7 +3,7 @@
 import UIKit
 import CoreGraphics
 
-// Here we extend some common iOS types to implement `ConvertibleArgument` protocol and
+// Here we extend some common iOS types to implement `Convertible` protocol and
 // describe how they can be converted from primitive types received from JavaScript runtime.
 // This allows these types to be used as argument types of functions callable from JavaScript.
 // As an example, when the `CGPoint` type is used as an argument type, its instance can be
@@ -11,7 +11,7 @@ import CoreGraphics
 
 // MARK: - Foundation
 
-extension URL: ConvertibleArgument {
+extension URL: Convertible {
   public static func convert(from value: Any?) throws -> Self {
     if let uri = value as? String, let url = URL(string: uri) {
       // `URL(string:)` is an optional init but it doesn't imply it's a valid URL,
@@ -25,7 +25,7 @@ extension URL: ConvertibleArgument {
 
 // MARK: - CoreGraphics
 
-extension CGPoint: ConvertibleArgument {
+extension CGPoint: Convertible {
   public static func convert(from value: Any?) throws -> CGPoint {
     if let value = value as? [Double], value.count == 2 {
       return CGPoint(x: value[0], y: value[1])
@@ -38,7 +38,7 @@ extension CGPoint: ConvertibleArgument {
   }
 }
 
-extension CGSize: ConvertibleArgument {
+extension CGSize: Convertible {
   public static func convert(from value: Any?) throws -> CGSize {
     if let value = value as? [Double], value.count == 2 {
       return CGSize(width: value[0], height: value[1])
@@ -51,7 +51,7 @@ extension CGSize: ConvertibleArgument {
   }
 }
 
-extension CGVector: ConvertibleArgument {
+extension CGVector: Convertible {
   public static func convert(from value: Any?) throws -> CGVector {
     if let value = value as? [Double], value.count == 2 {
       return CGVector(dx: value[0], dy: value[1])
@@ -64,7 +64,7 @@ extension CGVector: ConvertibleArgument {
   }
 }
 
-extension CGRect: ConvertibleArgument {
+extension CGRect: Convertible {
   public static func convert(from value: Any?) throws -> CGRect {
     if let value = value as? [Double], value.count == 4 {
       return CGRect(x: value[0], y: value[1], width: value[2], height: value[3])

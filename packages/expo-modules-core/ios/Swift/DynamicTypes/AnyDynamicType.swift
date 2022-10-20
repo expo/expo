@@ -18,7 +18,7 @@ public protocol AnyDynamicType: CustomStringConvertible {
 
   /**
    Casts given any value to the wrapped type and returns as `Any`.
-   NOTE: It may not be just simple type-casting (e.g. when the wrapped type conforms to `ConvertibleArgument`).
+   NOTE: It may not be just simple type-casting (e.g. when the wrapped type conforms to `Convertible`).
    */
   func cast<ValueType>(_ value: ValueType) throws -> Any
 }
