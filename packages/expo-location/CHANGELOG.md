@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `trueHeading` is sometimes bigger then 360 on Android.
+- Fixed `trueHeading` is sometimes bigger then 360 on Android. ([#19629](https://github.com/expo/expo/pull/19629) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
