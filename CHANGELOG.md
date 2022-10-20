@@ -7,6 +7,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@react-native-community/netinfo` to `9.3.5`, `@react-native-picker/picker` to `2.4.8`, `@shopify/flash-list` to `1.3.1`, and `@shopify/react-native-skia` to `0.1.155` ([#19647](https://github.com/expo/expo/pull/19647) by [@brentvatne](https://github.com/brentvatne))
 - Updated `react-native-pager-view` from `5.4.245` to `6.0.1`. ([#19528](https://github.com/expo/expo/pull/19528) by [@brentvatne](https://github.com/brentvatne))
 - Updated `react-native-safe-area-context` from `4.3.1` to `4.4.1`. ([#19055](https://github.com/expo/expo/pull/19401) by [@brentvatne](https://github.com/brentvatne))
 - Updated `@stripe/stripe-react-native` from `0.13.1` to `0.19.0`. ([#19055](https://github.com/expo/expo/pull/19055) by [@tsapeta](https://github.com/tsapeta), [#19432](https://github.com/expo/expo/pull/19432) by [@kudo](https://github.com/kudo))
