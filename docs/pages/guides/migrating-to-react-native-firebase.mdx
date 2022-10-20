@@ -60,7 +60,7 @@ Firebase Analytics requests in React Native Firebase are almost the same - mostl
 - import * as Analytics from "expo-firebase-analytics";
 + import analytics from "@react-native-firebase/analytics";
 
-// update each request to analytics
+// update each `Analytics` reference to call `analytics()`
 - Analytics.logEvent("test_analytics_event", {
 -  additionaParam: "test",
 - });
