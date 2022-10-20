@@ -64,9 +64,22 @@ type UpdateCheckResultFailure = {
 };
 
 /**
+ * The rollback to embedded result of checking for a new update.
+ */
+type UpdateCheckResultRollbackToEmbedded = {
+  /**
+   * Signifies that the app is already running the latest available update.
+   */
+  isRollbackToEmbedded: true;
+};
+
+/**
  * The result of checking for a new update.
  */
-export type UpdateCheckResult = UpdateCheckResultSuccess | UpdateCheckResultFailure;
+export type UpdateCheckResult =
+  | UpdateCheckResultSuccess
+  | UpdateCheckResultFailure
+  | UpdateCheckResultRollbackToEmbedded;
 
 /**
  * The successful result of fetching a new update.
@@ -98,9 +111,22 @@ type UpdateFetchResultFailure = {
 };
 
 /**
+ * The rollback to embedded result of fetching a new update.
+ */
+type UpdateFetchResultRollbackToEmbedded = {
+  /**
+   * Signifies that the app is already running the latest available update.
+   */
+  isRollbackToEmbedded: true;
+};
+
+/**
  * The result of fetching a new update.
  */
-export type UpdateFetchResult = UpdateFetchResultSuccess | UpdateFetchResultFailure;
+export type UpdateFetchResult =
+  | UpdateFetchResultSuccess
+  | UpdateFetchResultFailure
+  | UpdateFetchResultRollbackToEmbedded;
 
 /**
  * An object that is passed into each event listener when an auto-update check occurs.

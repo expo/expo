@@ -108,10 +108,10 @@ class NewUpdateManifest private constructor(
 
     @Throws(JSONException::class)
     fun fromNewManifest(
-      manifest: NewManifest,
-      manifestHeaderData: ManifestHeaderData,
-      extensions: JSONObject?,
-      configuration: UpdatesConfiguration
+        manifest: NewManifest,
+        responseHeaderData: ResponseHeaderData,
+        extensions: JSONObject?,
+        configuration: UpdatesConfiguration
     ): NewUpdateManifest {
       val id = UUID.fromString(manifest.getID())
       val runtimeVersion = manifest.getRuntimeVersion()
@@ -132,8 +132,8 @@ class NewUpdateManifest private constructor(
         launchAsset,
         assets,
         extensions,
-        manifestHeaderData.serverDefinedHeaders,
-        manifestHeaderData.manifestFilters
+        responseHeaderData.serverDefinedHeaders,
+        responseHeaderData.manifestFilters
       )
     }
 

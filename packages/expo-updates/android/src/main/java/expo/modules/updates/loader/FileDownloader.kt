@@ -42,9 +42,9 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     fun onSuccess(file: File, hash: ByteArray)
   }
 
-  interface ManifestDownloadCallback {
+  interface RemoteUpdateDownloadCallback {
     fun onFailure(message: String, e: Exception)
-    fun onSuccess(updateManifest: UpdateManifest)
+    fun onSuccess(updateResponse: UpdateResponse)
   }
 
   interface AssetDownloadCallback {
@@ -90,13 +90,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     )
   }
 
-  internal fun parseManifestResponse(response: Response, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
+  internal fun parseRemoteUpdateResponse(response: Response, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
     val contentType = response.header("content-type") ?: ""
     val isMultipart = contentType.startsWith("multipart/", ignoreCase = true)
     if (isMultipart) {
       val boundaryParameter = ParameterParser().parse(contentType, ';')["boundary"]
       if (boundaryParameter == null) {
-        val message = "Missing boundary in multipart manifest content-type"
+        val message = "Missing boundary in multipart remote update content-type"
         logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
         callback.onFailure(
           message,
@@ -105,18 +105,44 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         return
       }
 
-      parseMultipartManifestResponse(response, boundaryParameter, configuration, callback)
+      parseMultipartRemoteUpdateResponse(response, boundaryParameter, configuration, callback)
     } else {
       val responseHeaders = response.headers
-      val manifestHeaderData = ManifestHeaderData(
+
+      val responseHeaderData = ResponseHeaderData(
         protocolVersion = responseHeaders["expo-protocol-version"],
         manifestFilters = responseHeaders["expo-manifest-filters"],
         serverDefinedHeaders = responseHeaders["expo-server-defined-headers"],
-        manifestSignature = responseHeaders["expo-manifest-signature"],
-        signature = responseHeaders["expo-signature"]
+        manifestSignature = responseHeaders["expo-manifest-signature"]
       )
 
-      parseManifest(response.body!!.string(), manifestHeaderData, null, null, configuration, callback)
+      val manifestResponseInfo = ResponsePartInfo(
+        responseHeaderData = responseHeaderData,
+        responsePartHeaderData = ResponsePartHeaderData(
+          signature = responseHeaders["expo-signature"]
+        ),
+        body = response.body!!.string()
+      )
+
+      parseManifest(
+        manifestResponseInfo,
+        null,
+        null,
+        configuration,
+        object : ParseManifestCallback {
+          override fun onFailure(message: String, e: Exception) {
+            callback.onFailure(message, e)
+          }
+
+          override fun onSuccess(manifestUpdateResponsePart: UpdateResponsePart.ManifestUpdateResponsePart) {
+            callback.onSuccess(UpdateResponse(
+              responseHeaderData = responseHeaderData,
+              manifestUpdateResponsePart = manifestUpdateResponsePart,
+              messageUpdateResponsePart = null
+            ))
+          }
+        }
+      )
     }
   }
 
@@ -135,10 +161,11 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     return headers.toHeaders()
   }
 
-  private fun parseMultipartManifestResponse(response: Response, boundary: String, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
+  private fun parseMultipartRemoteUpdateResponse(response: Response, boundary: String, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
     var certificateChainString: String? = null
+    var messagePartBodyAndHeaders: Pair<String, Headers>? = null
 
     val multipartStream = MultipartStream(response.body!!.byteStream(), boundary.toByteArray())
 
@@ -160,13 +187,14 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
               "manifest" -> manifestPartBodyAndHeaders = Pair(output.toString(), headers)
               "extensions" -> extensionsBody = output.toString()
               "certificate_chain" -> certificateChainString = output.toString()
+              "message" -> messagePartBodyAndHeaders = Pair(output.toString(), headers)
             }
           }
         }
         nextPart = multipartStream.readBoundary()
       }
     } catch (e: Exception) {
-      val message = "Error while reading multipart manifest response"
+      val message = "Error while reading multipart remote update response"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
       callback.onFailure(
         message,
@@ -175,8 +203,8 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       return
     }
 
-    if (manifestPartBodyAndHeaders == null) {
-      val message = "Multipart manifest response missing manifest part"
+    if (manifestPartBodyAndHeaders == null && messagePartBodyAndHeaders == null) {
+      val message = "Multipart manifest response missing at least one of a manifest or message part"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
       callback.onFailure(message, IOException("Malformed multipart manifest response"))
       return
@@ -185,7 +213,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     val extensions = try {
       extensionsBody?.let { JSONObject(it) }
     } catch (e: Exception) {
-      val message = "Failed to parse multipart manifest extensions"
+      val message = "Failed to parse multipart remote update extensions"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
       callback.onFailure(
         message,
@@ -195,33 +223,174 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     }
 
     val responseHeaders = response.headers
-    val manifestHeaderData = ManifestHeaderData(
+    val responseHeaderData = ResponseHeaderData(
       protocolVersion = responseHeaders["expo-protocol-version"],
       manifestFilters = responseHeaders["expo-manifest-filters"],
       serverDefinedHeaders = responseHeaders["expo-server-defined-headers"],
       manifestSignature = responseHeaders["expo-manifest-signature"],
-      signature = manifestPartBodyAndHeaders.second["expo-signature"]
     )
 
-    parseManifest(manifestPartBodyAndHeaders.first, manifestHeaderData, extensions, certificateChainString, configuration, callback)
+    val manifestResponseInfo = manifestPartBodyAndHeaders?.let {
+      ResponsePartInfo(
+        responseHeaderData = responseHeaderData,
+        responsePartHeaderData = ResponsePartHeaderData(
+          signature = manifestPartBodyAndHeaders.second["expo-signature"]
+        ),
+        body = manifestPartBodyAndHeaders.first
+      )
+    }
+
+    val messageResponseInfo = messagePartBodyAndHeaders?.let {
+      ResponsePartInfo(
+        responseHeaderData = responseHeaderData,
+        responsePartHeaderData = ResponsePartHeaderData(
+          signature = messagePartBodyAndHeaders.second["expo-signature"]
+        ),
+        body = messagePartBodyAndHeaders.first
+      )
+    }
+
+    var parseManifestResponse: UpdateResponsePart.ManifestUpdateResponsePart? = null
+    var parseMessageResponse: UpdateResponsePart.MessageUpdateResponsePart? = null
+    var didError = false
+
+    val maybeFinish = {
+      if (!didError) {
+        val isManifestDone = manifestResponseInfo == null || parseManifestResponse != null
+        val isMessageDone = messageResponseInfo == null || parseMessageResponse != null
+
+        if (isManifestDone && isMessageDone) {
+          callback.onSuccess(UpdateResponse(
+            responseHeaderData = responseHeaderData,
+            manifestUpdateResponsePart = parseManifestResponse,
+            messageUpdateResponsePart = parseMessageResponse
+          ))
+        }
+      }
+    }
+
+    if (messageResponseInfo != null) {
+      parseMessage(
+        messageResponseInfo,
+        certificateChainString,
+        configuration,
+        object : ParseMessageCallback {
+          override fun onFailure(message: String, e: Exception) {
+            if (!didError) {
+              didError = true
+              callback.onFailure(message, e)
+            }
+          }
+
+          override fun onSuccess(messageUpdateResponsePart: UpdateResponsePart.MessageUpdateResponsePart) {
+            parseMessageResponse = messageUpdateResponsePart
+            maybeFinish()
+          }
+
+        }
+      )
+    }
+
+    if (manifestResponseInfo != null) {
+      parseManifest(
+        manifestResponseInfo,
+        extensions,
+        certificateChainString,
+        configuration,
+        object : ParseManifestCallback {
+          override fun onFailure(message: String, e: Exception) {
+            if (!didError) {
+              didError = true
+              callback.onFailure(message, e)
+            }
+          }
+          override fun onSuccess(manifestUpdateResponsePart: UpdateResponsePart.ManifestUpdateResponsePart) {
+            parseManifestResponse = manifestUpdateResponsePart
+            maybeFinish()
+          }
+        }
+      )
+    }
+  }
+
+  interface ParseMessageCallback {
+    fun onFailure(message: String, e: Exception)
+    fun onSuccess(messageUpdateResponsePart: UpdateResponsePart.MessageUpdateResponsePart)
+  }
+
+  private fun parseMessage(
+    messageResponsePartInfo: ResponsePartInfo,
+    certificateChainFromManifestResponse: String?,
+    configuration: UpdatesConfiguration,
+    callback: ParseMessageCallback
+  ) {
+    try {
+      val body = messageResponsePartInfo.body
+
+      // check code signing if code signing is configured
+      // 1. verify the code signing signature (throw if invalid)
+      // 2. then, if the code signing certificate is only valid for a particular project, verify that the manifest
+      //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
+      //    project, it is assumed to be valid for all projects
+      // 3. mark the manifest as verified if both of these pass
+      try {
+        configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
+          val signatureValidationResult = codeSigningConfiguration.validateSignature(
+            messageResponsePartInfo.responsePartHeaderData.signature,
+            body.toByteArray(),
+            certificateChainFromManifestResponse,
+          )
+          if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
+            throw IOException("Message download was successful, but signature was incorrect")
+          }
+
+          if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
+            val messageForProjectInformation = UpdateMessage.fromJSONString(body)
+            signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
+              if (expoProjectInformation.projectId != messageForProjectInformation.signingInfo?.easProjectId ||
+                expoProjectInformation.scopeKey != messageForProjectInformation.signingInfo.scopeKey
+              ) {
+                throw CertificateException("Invalid certificate for message project ID or scope key")
+              }
+            }
+          }
+        }
+      } catch (e: Exception) {
+        callback.onFailure(e.message!!, e)
+        return
+      }
+
+      callback.onSuccess(UpdateResponsePart.MessageUpdateResponsePart(UpdateMessage.fromJSONString(body)))
+    } catch (e: Exception) {
+      val message = "Failed to parse message data: ${e.localizedMessage}"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
+      callback.onFailure(
+        message,
+        e
+      )
+    }
+  }
+
+  interface ParseManifestCallback {
+    fun onFailure(message: String, e: Exception)
+    fun onSuccess(manifestUpdateResponsePart: UpdateResponsePart.ManifestUpdateResponsePart)
   }
 
   private fun parseManifest(
-    manifestBody: String,
-    manifestHeaderData: ManifestHeaderData,
+    manifestResponseInfo: ResponsePartInfo,
     extensions: JSONObject?,
     certificateChainFromManifestResponse: String?,
     configuration: UpdatesConfiguration,
-    callback: ManifestDownloadCallback
+    callback: ParseManifestCallback
   ) {
     try {
-      val updateResponseJson = extractUpdateResponseJson(manifestBody, configuration)
+      val updateResponseJson = extractUpdateResponseJson(manifestResponseInfo.body, configuration)
       val isSignatureInBody =
         updateResponseJson.has("manifestString") && updateResponseJson.has("signature")
       val signature = if (isSignatureInBody) {
         updateResponseJson.getNullable("signature")
       } else {
-        manifestHeaderData.manifestSignature
+        manifestResponseInfo.responseHeaderData.manifestSignature
       }
 
       /**
@@ -235,7 +404,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       val manifestString = if (isSignatureInBody) {
         updateResponseJson.getString("manifestString")
       } else {
-        manifestBody
+        manifestResponseInfo.body
       }
       val preManifest = JSONObject(manifestString)
 
@@ -255,7 +424,17 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
             override fun onCompleted(isValid: Boolean) {
               if (isValid) {
                 try {
-                  checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, true, configuration, callback)
+                  checkCodeSigningAndCreateManifest(
+                    manifestResponseInfo.body,
+                    preManifest,
+                    manifestResponseInfo.responseHeaderData,
+                    manifestResponseInfo.responsePartHeaderData,
+                    extensions,
+                    certificateChainFromManifestResponse,
+                    true,
+                    configuration,
+                    callback
+                  )
                 } catch (e: Exception) {
                   callback.onFailure("Failed to parse manifest data", e)
                 }
@@ -271,7 +450,17 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           }
         )
       } else {
-        checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, false, configuration, callback)
+        checkCodeSigningAndCreateManifest(
+          manifestResponseInfo.body,
+          preManifest,
+          manifestResponseInfo.responseHeaderData,
+          manifestResponseInfo.responsePartHeaderData,
+          extensions,
+          certificateChainFromManifestResponse,
+          false,
+          configuration,
+          callback
+        )
       }
     } catch (e: Exception) {
       val message = "Failed to parse manifest data: ${e.localizedMessage}"
@@ -283,18 +472,18 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     }
   }
 
-  fun downloadManifest(
+  fun downloadRemoteUpdate(
     configuration: UpdatesConfiguration,
     extraHeaders: JSONObject?,
     context: Context,
-    callback: ManifestDownloadCallback
+    callback: RemoteUpdateDownloadCallback
   ) {
     try {
       downloadData(
-        createRequestForManifest(configuration, extraHeaders, context),
+        createRequestForRemoteUpdate(configuration, extraHeaders, context),
         object : Callback {
           override fun onFailure(call: Call, e: IOException) {
-            val message = "Failed to download manifest from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
+            val message = "Failed to download remote update from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
             logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
             callback.onFailure(
               message,
@@ -305,23 +494,21 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           @Throws(IOException::class)
           override fun onResponse(call: Call, response: Response) {
             if (!response.isSuccessful) {
-              val message = "Failed to download manifest from URL: ${configuration.updateUrl}"
+              val message = "Failed to download remote update from URL: ${configuration.updateUrl}"
               logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
               callback.onFailure(
                 message,
-                Exception(
-                  response.body!!.string()
-                )
+                Exception(response.body!!.string())
               )
               return
             }
 
-            parseManifestResponse(response, configuration, callback)
+            parseRemoteUpdateResponse(response, configuration, callback)
           }
         }
       )
     } catch (e: Exception) {
-      val message = "Failed to download manifest from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
+      val message = "Failed to download remote update from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
       logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
       callback.onFailure(
         message,
@@ -405,12 +592,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     private fun checkCodeSigningAndCreateManifest(
       bodyString: String,
       preManifest: JSONObject,
-      manifestHeaderData: ManifestHeaderData,
+      responseHeaderData: ResponseHeaderData,
+      responsePartHeaderData: ResponsePartHeaderData,
       extensions: JSONObject?,
       certificateChainFromManifestResponse: String?,
       isVerified: Boolean,
       configuration: UpdatesConfiguration,
-      callback: ManifestDownloadCallback
+      callback: ParseManifestCallback
     ) {
       if (configuration.expectsSignedManifest) {
         preManifest.put("isVerified", isVerified)
@@ -425,7 +613,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       try {
         configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
           val signatureValidationResult = codeSigningConfiguration.validateSignature(
-            manifestHeaderData.signature,
+            responsePartHeaderData.signature,
             bodyString.toByteArray(),
             certificateChainFromManifestResponse,
           )
@@ -436,7 +624,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
             val manifestForProjectInformation = ManifestFactory.getManifest(
               preManifest,
-              manifestHeaderData,
+              responseHeaderData,
               extensions,
               configuration
             ).manifest
@@ -456,13 +644,13 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         return
       }
 
-      val updateManifest = ManifestFactory.getManifest(preManifest, manifestHeaderData, extensions, configuration)
+      val updateManifest = ManifestFactory.getManifest(preManifest, responseHeaderData, extensions, configuration)
       if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, updateManifest.manifestFilters)) {
         val message =
           "Downloaded manifest is invalid; provides filters that do not match its content"
         callback.onFailure(message, Exception(message))
       } else {
-        callback.onSuccess(updateManifest)
+        callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(updateManifest))
       }
     }
 
@@ -530,7 +718,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         .build()
     }
 
-    internal fun createRequestForManifest(
+    internal fun createRequestForRemoteUpdate(
       configuration: UpdatesConfiguration,
       extraHeaders: JSONObject?,
       context: Context
