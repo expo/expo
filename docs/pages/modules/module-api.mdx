@@ -364,8 +364,8 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 
 Similarly, some common Android types from packages like `java.io`, `java.net`, or `android.graphics` are also made convertible.
 
-| Native Android Type                     | TypeScript                                                                                                                                                                         |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Native Android Type                     | TypeScript                                                                                                                                                                        |
+| --------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `java.net.URL`                          | `string` with a URL. Note that the scheme has to be provided                                                                                                                      |
 | `android.net.Uri`<br/>`java.net.URI`    | `string` with a URI. Note that the scheme has to be provided                                                                                                                      |
 | `java.io.File`<br/>`java.nio.file.Path` | `string` with a path to the file                                                                                                                                                  |
@@ -420,12 +420,12 @@ Function("readFile") { path: String, options: FileReadOptions ->
 </APIBox>
 <APIBox header="Enums">
 
-With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (e.g. `String`, `Int`) and conform to `EnumArgument`.
+With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (e.g. `String`, `Int`) and conform to `Enumerable`.
 
 <CodeBlocksTable>
 
 ```swift
-enum FileEncoding: String, EnumArgument {
+enum FileEncoding: String, Enumerable {
   case utf8
   case base64
 }
