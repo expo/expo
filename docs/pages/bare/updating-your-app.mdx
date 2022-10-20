@@ -92,7 +92,7 @@ If your project is not using EAS Build or you are creating release builds with e
 In **AndroidManifest.xml**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
 
 ```xml
-<meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{'expo-channel-name':'your-channel-name'}"/>
+<meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;your-channel-name&quot;}"/>
 ```
 
 In **Expo.plist**, you'll need to add the following, replacing `your-channel-name` with the channel that matches your project:
