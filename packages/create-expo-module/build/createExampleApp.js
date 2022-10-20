@@ -110,11 +110,11 @@ async function modifyPackageJson(appPath) {
     });
 }
 /**
- * Runs `expo prebuild` in the example app.
+ * Runs `npx expo prebuild` in the example app.
  */
 async function prebuildExampleApp(exampleAppPath) {
     await (0, utils_1.newStep)('Prebuilding the example app', async (step) => {
-        await (0, spawn_async_1.default)('expo', ['prebuild', '--no-install'], {
+        await (0, spawn_async_1.default)('npx', ['expo', 'prebuild', '--no-install'], {
             cwd: exampleAppPath,
             stdio: ['ignore', 'ignore', 'pipe'],
         });
