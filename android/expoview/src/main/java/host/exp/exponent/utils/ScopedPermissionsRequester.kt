@@ -141,6 +141,7 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
       Manifest.permission.ACCESS_FINE_LOCATION -> R.string.perm_fine_location
       Manifest.permission.ACCESS_COARSE_LOCATION -> R.string.perm_coarse_location
       Manifest.permission.ACCESS_BACKGROUND_LOCATION -> R.string.perm_background_location
+      Manifest.permission.READ_PHONE_STATE -> R.string.perm_read_phone_state
       else -> -1
     }
   }

@@ -21,6 +21,12 @@ export default function CellularScreen() {
 
   const _getCellularInfo = async () => {
     try {
+      const response = await Cellular.requestPermissionsAsync();
+      if (!response.granted) {
+        console.warn(
+          "getCurrentGeneration will return unknown, becuase the phone state permission wasn't granted."
+        );
+      }
       const generation = await Cellular.getCellularGenerationAsync();
       setCellularInfo({
         allowsVoip: await Cellular.allowsVoipAsync(),
