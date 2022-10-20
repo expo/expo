@@ -2,9 +2,10 @@
 title: Creating your first build
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 EAS Build allows you to build a ready-to-submit binary of your app for the Apple App Store or Google Play Store. In this guide, let's learn how to do that.
 
@@ -16,7 +17,7 @@ For a small app, builds for Android and iOS platforms trigger within a few minut
 
 EAS Build is a new and rapidly evolving service. Before you set out to create a build for your project we recommend consulting the [limitations](/build-reference/limitations) page and the other prerequisites below.
 
-<Collapsible summary="A React Native iOS and/or Android project that you want to build">
+<Collapsible summary="A React Native Android and/or iOS project that you want to build">
 
 Don't have a project yet? No problem. It's quick and easy to create a "Hello world" app that you can use with this guide.
 
@@ -40,7 +41,8 @@ Paid subscribers get quality improvements such as additional build concurrencies
 
 </Collapsible>
 
-## 1. Install the latest EAS CLI
+<Step label="1">
+## Install the latest EAS CLI
 
 EAS CLI is the command-line app that you will use to interact with EAS services from your terminal. To install it, run the command:
 
@@ -49,16 +51,20 @@ EAS CLI is the command-line app that you will use to interact with EAS services 
 You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
 
 > We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli`, just remember to use that instead of `eas` whenever it's called for in the documentation.
+</Step>
 
-## 2. Log in to your Expo account
+<Step label="2">
+## Log in to your Expo account
 
 If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
 
 <Terminal cmd={['$ eas login']} />
 
 You can check whether you are logged in by running `eas whoami`.
+</Step>
 
-## 3. Configure the project
+<Step label="3">
+## Configure the project
 
 To configure an iOS or an Android project for EAS Build, run the following command:
 
@@ -73,8 +79,10 @@ Additional configuration may be required for some scenarios:
 - Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos#how-to-set-up-eas-build-with).
 - Do you use private npm packages? [Add your npm token](/build-reference/private-npm-packages).
 - Does your app depend on specific versions of tools like Node, Yarn, npm, CocoaPods, or Xcode? [Specify these versions in your build configuration](/build/eas-json).
+</Step>
 
-## 4. Run a build
+<Step label="4">
+## Run a build
 
 ### Build for Android device/emulator or iOS simulator
 
@@ -100,13 +108,14 @@ You can build and sign your app using EAS Build, but you can't upload it to the 
 
 After you have confirmed that you have an Apple App Store or a Google Play Store account and decided whether or not EAS CLI should handle app signing credentials, you can proceed with the following set of commands to build for the platform's store:
 
-- For Android:
-
-<Terminal cmd={['$ eas build --platform android']} />
-
-- For iOS:
-
-<Terminal cmd={['$ eas build --platform ios']} />
+<Tabs tabs={['Android', 'iOS']}>
+  <Tab>
+    <Terminal cmd={['$ eas build --platform android']} />
+  </Tab>
+  <Tab>
+    <Terminal cmd={['$ eas build --platform ios']} />
+  </Tab>
+</Tabs>
 
 > You can attach a message to the build by passing `--message` to the build command, for example, `eas build --platform ios --message "Some message"`. The message will appear on the website. It comes in handy when you want to leave a note with the purpose of the build for your team.
 
@@ -127,8 +136,10 @@ Alternatively, you can use `--platform all` option to build for Android and iOS 
 - If you have not generated a provisioning profile and/or distribution certificate yet, you can let EAS CLI take care of that for you by signing into your Apple Developer Program account and following the prompts.
 - If you have already built your app with `expo build:ios`, you can use the same credentials here.
 - If you want to rather manually generate your credentials, refer to the [manual iOS credentials guide](/app-signing/local-credentials#ios-credentials) for more information.
+</Step>
 
-## 5. Wait for the build to complete
+<Step label="5">
+## Wait for the build to complete
 
 By default, the `eas build` command will wait for your build to complete, but you can interrupt it if you prefer not to wait. Monitor the progress and read the logs by following the link to the build details page that EAS CLI prompts once the build process gets started. You can also find this page by visiting [your build dashboard](https://expo.dev/builds) or running the following command:
 
@@ -137,8 +148,10 @@ By default, the `eas build` command will wait for your build to complete, but yo
 If you are a member of an organization and your build is on its behalf, you will find the build details on [the build dashboard for that account](https://expo.dev/accounts/[account]/builds).
 
 > **Did your build fail?** Double check that you followed any applicable instructions in the [configuration step](#3-configure-the-project) and refer to the [troubleshooting guide](/build-reference/troubleshooting) if needed.
+</Step>
 
-## 6. Deploy the build
+<Step label="6">
+## Deploy the build
 
 If you have made it to this step, congratulations! Depending on which path you chose, you now either have a build that is ready to upload to an app store, or you have a build that you can install directly on an Android device/iOS simulator.
 
@@ -151,6 +164,7 @@ You will only be able to submit to an app store if you built specifically for th
 You will only be able to install the app directly to your Android device/iOS simulator if you explicitly built it for that purpose. If you built for app store distribution, you will need to upload to an app store and then install it from there (for example, from Apple's TestFlight app).
 
 To learn how to install the app directly to your Android device/iOS simulator, navigate to your build details page from [your build dashboard](https://expo.dev/accounts/[account]/builds) and click the "Install" button.
+</Step>
 
 ## Next steps
 
