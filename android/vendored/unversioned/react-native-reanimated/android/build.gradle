@@ -182,7 +182,7 @@ if (CLIENT_SIDE_BUILD) {
     configurations.maybeCreate("default")
 }
 
-def reactNativeRootDir = resolveReactNativeDirectory()
+def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native').toFile()
 
 def reactProperties = new Properties()
 file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
@@ -786,6 +786,7 @@ if (REACT_NATIVE_MINOR_VERSION >= 69 && !isNewArchitectureEnabled()) {
 }
 
 task prepareHermes() {
+    return
     if (REACT_NATIVE_MINOR_VERSION >= 69) {
         if (!isNewArchitectureEnabled()) {
             dependsOn(unzipHermes)
@@ -930,11 +931,11 @@ dependencies {
     extractHeaders("com.facebook.fbjni:fbjni:" + FBJNI_VERSION + ":headers")
     extractSO("com.facebook.fbjni:fbjni:" + FBJNI_VERSION)
 
-    def jscAAR = fileTree("$reactNativeRootDir/../jsc-android/dist/org/webkit/android-jsc").matching({ it.include "**/**/*.aar" }).singleFile
-    extractSO(files(jscAAR))
+    
 }
 
 task unpackReactNativeAAR {
+    return
     def buildType = resolveBuildType()
     def rnAarMatcher = "**/react-native/**/*${buildType}.aar"
     if (REACT_NATIVE_MINOR_VERSION < 69) {
@@ -1013,4 +1014,21 @@ if (CLIENT_SIDE_BUILD) {
         throw GradleScriptException("AAR build failed. No AAR found in ${aarDir}.")
     }
     artifacts.add("default", aar)
+}
+
+tasks.whenTaskAdded { task ->
+  def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
+  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake') || task.name.startsWith('buildCMake') || task.name.startsWith('generateJsonModel'))) {
+    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
+  }
+}
+
+android {
+  buildFeatures {
+    prefab true
+  }
+}
+
+dependencies {
+  compileOnly(project(":ReactAndroid:hermes-engine"))
 }
