@@ -3,7 +3,7 @@
 /*
  A convertible type wrapper for a value that should be either of two generic types.
  */
-open class Either<FirstType, SecondType>: ConvertibleArgument {
+open class Either<FirstType, SecondType>: Convertible {
   /**
    An array of dynamic equivalents for generic either types.
    */

@@ -3,7 +3,7 @@
 /**
  A protocol that allows converting raw values to enum cases.
  */
-public protocol EnumArgument: AnyArgument {
+public protocol Enumerable: AnyArgument {
   /**
    Tries to create an enum case using given raw value.
    May throw errors, e.g. when the raw value doesn't match any case.
@@ -21,11 +21,14 @@ public protocol EnumArgument: AnyArgument {
   var anyRawValue: Any { get }
 }
 
+@available(*, deprecated, renamed: "Enumerable")
+public typealias EnumArgument = Enumerable
+
 /**
- Extension for `EnumArgument` that also conforms to `RawRepresentable`.
+ Extension for `Enumerable` that also conforms to `RawRepresentable`.
  This constraint allows us to reference the associated `RawValue` type.
  */
-public extension EnumArgument where Self: RawRepresentable, Self: Hashable {
+public extension Enumerable where Self: RawRepresentable, Self: Hashable {
   static func create<ArgType>(fromRawValue rawValue: ArgType) throws -> Self {
     guard let rawValue = rawValue as? RawValue else {
       throw EnumCastingException((type: RawValue.self, value: rawValue))
@@ -71,7 +74,7 @@ internal class EnumCastingException: GenericException<(type: Any.Type, value: An
 /**
  An error that is thrown when the value doesn't match any available case.
  */
-internal class EnumNoSuchValueException: GenericException<(type: EnumArgument.Type, value: Any)> {
+internal class EnumNoSuchValueException: GenericException<(type: Enumerable.Type, value: Any)> {
   var allRawValuesFormatted: String {
     return param.type.allRawValues
       .map { "'\($0)'" }
