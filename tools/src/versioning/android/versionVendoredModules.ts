@@ -194,8 +194,8 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: '*.{h,cpp}',
-        find: /(\bkJavaDescriptor\s*=\s*\n?\s*"L)/gm,
-        replaceWith: `$1${prefix}/`,
+        find: /(\bkJavaDescriptor\s*=\s*\n?\s*"L)(com\/)/gm,
+        replaceWith: `$1${prefix}/$2`,
       },
       {
         paths: 'build.gradle',
