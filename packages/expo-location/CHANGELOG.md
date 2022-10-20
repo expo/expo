@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `trueHeading` is sometimes bigger then 360 on Android. ([#19629](https://github.com/expo/expo/pull/19629) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 - [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))

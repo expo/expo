@@ -787,7 +787,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     if (isMissingForegroundPermissions() || mGeofield == null) {
       return -1;
     }
-    return magNorth + mGeofield.getDeclination();
+    return (magNorth + mGeofield.getDeclination()) % 360;
   }
 
   private void stopHeadingWatch() {
