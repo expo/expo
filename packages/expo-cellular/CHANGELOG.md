@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Added missing permissions requester.
+- Added missing permissions requester. ([#19633](https://github.com/expo/expo/pull/19633) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
