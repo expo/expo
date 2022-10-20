@@ -128,14 +128,76 @@ const config: VendoringTargetConfig = {
         ],
         async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
           await fs.copy(path.join(sourceDirectory, 'Common'), path.join(targetDirectory, 'Common'));
-
-          const buildGradlePath = path.join(targetDirectory, 'android', 'build.gradle');
-          let buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
-          buildGradle = buildGradle.replace(
-            'def JS_RUNTIME = {',
-            'def JS_RUNTIME = {\n    return "hermes" // Expo Go always uses hermes\n'
-          );
-          await fs.writeFile(buildGradlePath, buildGradle);
+        },
+        transforms: {
+          content: [
+            {
+              // Always uses hermes as reanimated worklet runtime on Expo Go
+              paths: 'build.gradle',
+              find: /\b(def JS_RUNTIME = \{)/g,
+              replaceWith: '$1\n    return "hermes" // Expo Go always uses hermes\n',
+            },
+            {
+              // react-native root dir is in react-native-lab/react-native
+              paths: 'build.gradle',
+              find: /\b(def reactNativeRootDir)\s*=.+$/gm,
+              replaceWith: `$1 = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native').toFile()`,
+            },
+            {
+              // no-op for extracting tasks
+              paths: 'build.gradle',
+              find: /\b(task (prepareHermes|unpackReactNativeAAR).*\{)$/gm,
+              replaceWith: `$1\n    return`,
+            },
+            {
+              // remove jsc extraction
+              paths: 'build.gradle',
+              find: /def jscAAR = .*\n.*extractSO.*jscAAR.*$/gm,
+              replaceWith: '',
+            },
+            {
+              // add prefab support, setup task dependencies and hermes-engine dependencies
+              paths: 'build.gradle',
+              transform: (text: string) =>
+                text +
+                '\n\n' +
+                `tasks.whenTaskAdded { task ->\n` +
+                `  def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'\n` +
+                `  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake') || task.name.startsWith('buildCMake') || task.name.startsWith('generateJsonModel'))) {\n` +
+                `    task.dependsOn(":ReactAndroid:copy\${buildType}JniLibsProjectOnly")\n` +
+                `  }\n` +
+                `}\n` +
+                `\n` +
+                `android {\n` +
+                `  buildFeatures {\n` +
+                `    prefab true\n` +
+                `  }\n` +
+                `}\n` +
+                `\n` +
+                `dependencies {\n` +
+                `  compileOnly(project(":ReactAndroid:hermes-engine"))\n` +
+                `}\n`,
+            },
+            {
+              // find rn libs in ReactAndroid build output
+              paths: 'CMakeLists.txt',
+              find: 'set (RN_SO_DIR ${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/react/jni)',
+              replaceWith:
+                'set (RN_SO_DIR "${REACT_NATIVE_DIR}/ReactAndroid/build/intermediates/library_*/*/jni")',
+            },
+            {
+              // find hermes from prefab
+              paths: 'CMakeLists.txt',
+              find: /(string\(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_HERMES=1"\))/g,
+              replaceWith: `find_package(hermes-engine REQUIRED CONFIG)\n    $1`,
+            },
+            {
+              // find hermes from prefab
+              paths: 'CMakeLists.txt',
+              find: /"\$\{BUILD_DIR\}\/.+\/libhermes\.so"/g,
+              replaceWith: `hermes-engine::libhermes`,
+            },
+          ],
         },
       },
     },

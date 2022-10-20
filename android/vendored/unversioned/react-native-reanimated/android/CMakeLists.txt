@@ -38,7 +38,7 @@ if(${IS_NEW_ARCHITECTURE_ENABLED})
 
     endif()
 else()
-    set (RN_SO_DIR ${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/react/jni)
+    set (RN_SO_DIR "${REACT_NATIVE_DIR}/ReactAndroid/build/intermediates/library_*/*/jni")
     set (FBJNI_HEADERS_DIR "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/fbjni/headers")
 endif()
 
@@ -234,6 +234,7 @@ target_link_libraries(
 )
 
 if(${JS_RUNTIME} STREQUAL "hermes")
+    find_package(hermes-engine REQUIRED CONFIG)
     string(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_HERMES=1")
     if(${REACT_NATIVE_MINOR_VERSION} LESS 69)
         # From `hermes-engine` npm package
@@ -253,7 +254,7 @@ if(${JS_RUNTIME} STREQUAL "hermes")
     endif()
     target_link_libraries(
             ${PACKAGE_NAME}
-            "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}/libhermes.so"
+            hermes-engine::libhermes
     )
 elseif(${JS_RUNTIME} STREQUAL "v8")
     string(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_V8=1")
