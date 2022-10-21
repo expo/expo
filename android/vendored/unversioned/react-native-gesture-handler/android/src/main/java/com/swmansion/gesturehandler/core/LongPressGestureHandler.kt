@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandler.core
 
 import android.content.Context
 import android.os.Handler

@@ -27,7 +27,7 @@ import com.facebook.react.uimanager.ViewProps
 import com.facebook.react.uimanager.annotations.ReactProp
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerDelegate
 import com.facebook.react.viewmanagers.RNGestureHandlerButtonManagerInterface
-import com.swmansion.gesturehandler.NativeViewGestureHandler
+import com.swmansion.gesturehandler.core.NativeViewGestureHandler
 import com.swmansion.gesturehandler.react.RNGestureHandlerButtonViewManager.ButtonViewGroup
 
 @ReactModule(name = RNGestureHandlerButtonViewManager.REACT_CLASS)
@@ -35,7 +35,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
   private val mDelegate: ViewManagerDelegate<ButtonViewGroup>
 
   init {
-      mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
+    mDelegate = RNGestureHandlerButtonManagerDelegate<ButtonViewGroup, RNGestureHandlerButtonViewManager>(this)
   }
 
   override fun getName() = REACT_CLASS
@@ -91,7 +91,8 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
     return mDelegate
   }
 
-  class ButtonViewGroup(context: Context?) : ViewGroup(context),
+  class ButtonViewGroup(context: Context?) :
+    ViewGroup(context),
     NativeViewGestureHandler.NativeViewGestureHandlerHook {
     // Using object because of handling null representing no value set.
     var rippleColor: Int? = null
@@ -254,9 +255,9 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       }
 
       val drawable = RippleDrawable(
-              colorStateList,
-              null,
-              if (useBorderlessDrawable) null else ShapeDrawable(RectShape())
+        colorStateList,
+        null,
+        if (useBorderlessDrawable) null else ShapeDrawable(RectShape())
       )
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && rippleRadius != null) {
