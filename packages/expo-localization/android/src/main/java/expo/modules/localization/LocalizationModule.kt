@@ -107,7 +107,7 @@ class LocalizationModule : Module() {
     val locales = mutableListOf<Map<String, Any?>>()
     val localeList: LocaleListCompat = LocaleListCompat.getDefault()
     for (i in 0 until localeList.size()) {
-      val locale: Locale = localeList.get(i)
+      val locale: Locale = localeList.get(i) ?: continue
       val decimalFormat = DecimalFormatSymbols.getInstance(locale)
       locales.add(
         mapOf(

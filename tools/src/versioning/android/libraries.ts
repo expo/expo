@@ -76,12 +76,6 @@ export const JniLibNames = [
   'rrc_unimplementedview',
   'rrc_view',
   'runtimeexecutor',
-
-  // TODO: considering versioning prebuilt fbjni by patchelf after RN 0.65 which has newer fbjni version.
-  // or simply upgrade old SDK to use latest fbjni.
-  //
-  // 'fbjni',
-  // 'libfbjni',
 ];
 
 // this list is used in the shell scripts as well as directly by expotools

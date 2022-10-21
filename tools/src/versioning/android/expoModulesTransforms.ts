@@ -53,6 +53,17 @@ function expoModulesBaseTransforms(abiVersion: string): FileTransforms {
 export function expoModulesTransforms(module: string, abiVersion: string): FileTransforms {
   const base = expoModulesBaseTransforms(abiVersion);
   const moduleTransforms: Record<string, FileTransforms> = {
+    'expo-modules-core': {
+      content: [
+        {
+          // We don't have dedicated gradle files for versioned expo-modules.
+          // For the BuildConfig, replace with unversioned expoview BuildConfig.
+          paths: './**/*.{java,kt}',
+          find: new RegExp(`\\bimport ${abiVersion}\\.expo\\.modules\\.BuildConfig`, 'g'),
+          replaceWith: 'import host.exp.expoview.BuildConfig',
+        },
+      ],
+    },
     'expo-updates': {
       content: [
         {
@@ -63,6 +74,11 @@ export function expoModulesTransforms(module: string, abiVersion: string): FileT
               /WHEN_VERSIONING_REMOVE_TO_HERE/,
               text
             ),
+        },
+        {
+          paths: './src/main/{java,kotlin}/expo/modules/updates/UpdatesPackage.kt',
+          find: 'BuildConfig.EX_UPDATES_NATIVE_DEBUG',
+          replaceWith: 'false',
         },
       ],
     },

@@ -1,6 +1,7 @@
 import { FileTransforms, StringTransform } from '../../../Transforms.types';
 
 export function vendoredModulesTransforms(prefix: string): Record<string, FileTransforms> {
+  const sdkVersion = prefix.replace(/abi(\d+)_0_0/, 'sdk$1');
   return {
     '@shopify/react-native-skia': {
       content: [
@@ -24,10 +25,77 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           find: '$nodeModules/versioned-react-native/ReactAndroid/gradle.properties',
           replaceWith: '$defaultDir/gradle.properties',
         },
+      ],
+    },
+    'react-native-svg': {
+      content: [
         {
-          paths: 'ExponentPackage.kt',
-          find: 'import com.shopify',
-          replaceWith: `import ${prefix}.com.shopify`,
+          paths: 'build.gradle',
+          find: /(implementation 'host.exp:reactandroid-abi\d+_0_0:1\.0\.0')/g,
+          replaceWith:
+            '$1\n' +
+            "    compileOnly 'com.facebook.fresco:fresco:+'\n" +
+            "    compileOnly 'com.facebook.fresco:imagepipeline-okhttp3:+'\n" +
+            "    compileOnly 'com.facebook.fresco:ui-common:+'",
+        },
+        {
+          find: /\b(import (static )?)(com.horcrux.)/g,
+          replaceWith: `$1${prefix}.$3`,
+        },
+      ],
+    },
+    'react-native-gesture-handler': {
+      content: [
+        {
+          paths: 'build.gradle',
+          find: /vendored_unversioned_react-native-reanimated/g,
+          replaceWith: `vendored_${sdkVersion}_react-native-reanimated`,
+        },
+      ],
+    },
+    'react-native-reanimated': {
+      content: [
+        {
+          paths: 'build.gradle',
+          find: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../../react-native-lab/react-native').toFile()`,
+          replaceWith: `def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../versioned-react-native').toFile()`,
+        },
+        {
+          paths: 'build.gradle',
+          find: `compileOnly(project(":ReactAndroid:hermes-engine"))`,
+          replaceWith:
+            `if (file("\${reactNativeRootDir}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar").exists()) {\n` +
+            `    compileOnly(files("\${reactNativeRootDir}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar"))\n` +
+            `  }\n` +
+            `  compileOnly 'androidx.swiperefreshlayout:swiperefreshlayout:+'`,
+        },
+        {
+          paths: 'build.gradle',
+          transform: (text: string) =>
+            text + `\nandroid.packagingOptions.excludes.add("**/libhermes*.so")`,
+        },
+        {
+          paths: 'CMakeLists.txt',
+          find: /\b(hermes-engine::libhermes)/g,
+          replaceWith: `$1_${prefix}`,
+        },
+        {
+          paths: 'NativeProxy.java',
+          find: new RegExp(`\\b(?<!${prefix}\\.)(com.swmansion.gesturehandler.)`, 'g'),
+          replaceWith: `${prefix}.$1`,
+        },
+        {
+          paths: '**/*.{java,kt}',
+          find: new RegExp(`\\b(?<!${prefix}\\.)(com.swmansion.reanimated.R\\.)`, 'g'),
+          replaceWith: `${prefix}.$1`,
+        },
+        {
+          paths: 'build.gradle',
+          // The `android/versioned-react-native/ReactAndroid/gradle.properties` is not committed to git,
+          // we use the `react-native-lab/react-native/ReactAndroid/gradle.properties` instead.
+          find: 'file("$reactNativeRootDir/ReactAndroid/gradle.properties")',
+          replaceWith:
+            'file("$reactNativeRootDir/../../react-native-lab/react-native/ReactAndroid/gradle.properties")',
         },
       ],
     },
@@ -45,6 +113,30 @@ export function exponentPackageTransforms(prefix: string): Record<string, String
     '@shopify/flash-list': [
       {
         find: /\bimport (com.shopify.reactnative.flash_list.ReactNativeFlashListPackage)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    '@react-native-community/slider': [
+      {
+        find: /\bimport (com\.reactnativecommunity\.slider)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    'react-native-gesture-handler': [
+      {
+        find: /\bimport (com.swmansion.gesturehandler)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    'react-native-screens': [
+      {
+        find: /\bimport (com.swmansion.rnscreens)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    'react-native-svg': [
+      {
+        find: /\bimport (com.horcrux.svg)/g,
         replaceWith: `import ${prefix}.$1`,
       },
     ],
