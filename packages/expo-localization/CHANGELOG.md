@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build error for setting `compileSdkVersion` to 33. ([#19518](https://github.com/expo/expo/pull/19518) by [@kudo](https://github.com/kudo))
+
 ### ⚠️ Notices
 
 - Deprecated existing constants API while keeping backwards compatibility. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))

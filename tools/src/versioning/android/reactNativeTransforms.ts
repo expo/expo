@@ -120,7 +120,7 @@ function reactNativeCmakeTransforms(abiVersion: string): FileTransform[] {
     })),
     {
       paths: 'CMakeLists.txt',
-      find: 'add_react_android_subdir(build/generated/source/codegen/jni)',
+      find: 'add_react_build_subdir(generated/source/codegen/jni)',
       replaceWith: 'add_react_android_subdir(../codegen/jni)',
     },
     {

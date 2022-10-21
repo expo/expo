@@ -16,7 +16,7 @@ export interface ReactNativeCodegenParameters {
   name: string;
 
   // library type
-  type: 'components' | 'modules';
+  type: 'components' | 'modules' | 'all';
 
   // platform for generated code
   platform: 'android' | 'ios';
@@ -26,6 +26,9 @@ export interface ReactNativeCodegenParameters {
 
   // keep the intermediate schema.json (default is false)
   keepIntermediateSchema?: boolean;
+
+  // java package name
+  javaPackageName?: string;
 }
 
 export async function runReactNativeCodegenAsync(params: ReactNativeCodegenParameters) {
@@ -45,7 +48,7 @@ export async function runReactNativeCodegenAsync(params: ReactNativeCodegenParam
   await spawnAsync('node', [genSchemaScript, schemaOutputPath, params.jsSrcsDir]);
 
   // generate code from schema.json
-  await spawnAsync('node', [
+  const genCodeArgs = [
     genCodeScript,
     '--platform',
     params.platform,
@@ -57,7 +60,11 @@ export async function runReactNativeCodegenAsync(params: ReactNativeCodegenParam
     params.name,
     '--libraryType',
     params.type,
-  ]);
+  ];
+  if (params.javaPackageName) {
+    genCodeArgs.push('--javaPackageName', params.javaPackageName);
+  }
+  await spawnAsync('node', genCodeArgs);
 
   const keepIntermediateSchema = params.keepIntermediateSchema ?? false;
   if (!keepIntermediateSchema) {
