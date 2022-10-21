@@ -126,11 +126,11 @@ To view any existing secrets for this project, run `eas secret:list`:
 
 ### Importing secrets from a dotenv file
 
-If you're using a dotenv file for storing your secrets locally, you can use the `eas secret:sync` command to import all of them to EAS:
+If you're using a dotenv file for storing your secrets locally, you can use the `eas secret:push` command to import all of them to EAS:
 
 <Terminal
   cmd={[
-    '$ eas secret:sync --scope project --env-file ./eas/.env',
+    '$ eas secret:push --scope project --env-file ./eas/.env',
     '✔ Creating secrets on account johndoe...',
     '✔ Created the following secrets on account johndoe:',
     '- ABC',
@@ -143,11 +143,11 @@ Beware that EAS CLI will fail if some of the secrets defined in the dotenv file 
 
 #### Doppler intergration
 
-You can use the `eas secret:sync` command to integrate EAS with your [Doppler](https://doppler.com/) project:
+You can use the `eas secret:push` command to integrate EAS with your [Doppler](https://doppler.com/) project:
 
 <Terminal
   cmd={[
-    '$ doppler run --mount ./eas/.env -- eas secret:sync --scope project --env-file ./eas/.env',
+    '$ doppler run --mount ./eas/.env -- eas secret:push --scope project --env-file ./eas/.env',
   ]}
 />
 
