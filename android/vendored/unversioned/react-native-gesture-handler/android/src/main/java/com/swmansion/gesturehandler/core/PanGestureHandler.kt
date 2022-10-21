@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandler.core
 
 import android.content.Context
 import android.os.Handler
@@ -6,8 +6,8 @@ import android.os.Looper
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
-import com.swmansion.gesturehandler.GestureUtils.getLastPointerX
-import com.swmansion.gesturehandler.GestureUtils.getLastPointerY
+import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
+import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
 
 class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>() {
   var velocityX = 0f
@@ -173,12 +173,14 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
     }
     val vx = velocityX
     if (minVelocityX != MIN_VALUE_IGNORE &&
-      (minVelocityX < 0 && vx <= minVelocityX || minVelocityX in 0.0f..vx)) {
+      (minVelocityX < 0 && vx <= minVelocityX || minVelocityX in 0.0f..vx)
+    ) {
       return true
     }
     val vy = velocityY
     if (minVelocityY != MIN_VALUE_IGNORE &&
-      (minVelocityY < 0 && vx <= minVelocityY || minVelocityY in 0.0f..vx)) {
+      (minVelocityY < 0 && vx <= minVelocityY || minVelocityY in 0.0f..vx)
+    ) {
       return true
     }
     val velocitySq = vx * vx + vy * vy

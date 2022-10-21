@@ -1,4 +1,4 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandler.core
 
 import android.graphics.PointF
 import android.view.MotionEvent
@@ -18,7 +18,8 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
   private var scaleGestureDetector: ScaleGestureDetector? = null
   private var startingSpan = 0f
   private var spanSlop = 0f
-  private val gestureListener: ScaleGestureDetector.OnScaleGestureListener = object : ScaleGestureDetector.OnScaleGestureListener {
+  private val gestureListener: ScaleGestureDetector.OnScaleGestureListener = object :
+    ScaleGestureDetector.OnScaleGestureListener {
     override fun onScale(detector: ScaleGestureDetector): Boolean {
       val prevScaleFactor: Double = scale
       scale *= detector.scaleFactor.toDouble()
@@ -26,8 +27,9 @@ class PinchGestureHandler : GestureHandler<PinchGestureHandler>() {
       if (delta > 0) {
         velocity = (scale - prevScaleFactor) / delta
       }
-      if (abs(startingSpan - detector.currentSpan) >= spanSlop
-              && state == STATE_BEGAN) {
+      if (abs(startingSpan - detector.currentSpan) >= spanSlop &&
+        state == STATE_BEGAN
+      ) {
         activate()
       }
       return true
