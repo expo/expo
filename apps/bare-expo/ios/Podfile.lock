@@ -1360,7 +1360,7 @@ SPEC CHECKSUMS:
   RNCPicker: 2f71e09c52ab6327e2c393213368ea0e5bfbcb65
   RNDateTimePicker: 3f32aa2247836c12618d346113e5e82ea60ddd9c
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
-  RNReanimated: 2e463924d627f7dc857eeecbfef25c4894978cd6
+  RNReanimated: f655ed50cad3a70b03bbaa1c5035aa1217f65dd5
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
