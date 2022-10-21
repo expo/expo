@@ -19,6 +19,7 @@
 
 ### 🐛 Bug fixes
 
+- Skip ADB reverse when Android SDK is missing (allowing `npx expo start --tunnel`). ([#19593](https://github.com/expo/expo/pull/19593) by [@EvanBacon](https://github.com/EvanBacon))
 - Make Expo Metro config for web resolve projects using same `package.json` main fields as Expo Webpack. Behavior can be disabled with `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE`. ([#19529](https://github.com/expo/expo/pull/19529) by [@EvanBacon](https://github.com/EvanBacon))
 - Resolve bundle identifier / package from native project and then fallback to `app.json` when launching redirect page. ([#19260](https://github.com/expo/expo/pull/19260) by [@brentvatne](https://github.com/brentvatne))
 - Resolve bundle identifier from `app.json` correctly when using `npx expo start --dev-client --ios` with no local `ios` directory. ([#18747](https://github.com/expo/expo/pull/18747) by [@EvanBacon](https://github.com/EvanBacon))
