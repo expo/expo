@@ -5,11 +5,17 @@ buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
 
     repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
         mavenCentral()
+        google()
     }
 
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath("com.android.tools.build:gradle:7.2.1")
+        classpath("com.diffplug.spotless:spotless-plugin-gradle:6.7.2")
     }
 }
 
@@ -47,6 +53,10 @@ if (isNewArchitectureEnabled()) {
 }
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+
+if (project == rootProject) {
+    apply from: "spotless.gradle"
+}
 
 def safeExtGet(prop, fallback) {
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
@@ -164,13 +174,8 @@ android {
         exclude "**/libreact_render*.so"
     }
 
-    // Include "lib/" as sources, unfortunately react-native link can't handle
-    // setting up alternative gradle modules. We still have "lib" defined as a
-    // standalone gradle module just to be used in AndroidNativeExample
     sourceSets.main {
         java {
-            srcDirs += 'lib/src/main/java'
-
             // Include "common/" only when it's not provided by Reanimated to mitigate
             // multiple definitions of the same class preventing build
             if (shouldUseCommonInterfaceFromReanimated()) {

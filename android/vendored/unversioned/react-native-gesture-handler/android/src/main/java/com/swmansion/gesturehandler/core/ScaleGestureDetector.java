@@ -5,7 +5,7 @@
  * Modified line 189 to set initial min span to 0 instead of copying it from the system configuration
  */
 
-package com.swmansion.gesturehandler;
+package com.swmansion.gesturehandler.core;
 
 import android.content.Context;
 import android.os.Build;

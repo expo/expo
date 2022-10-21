@@ -5,13 +5,13 @@ import com.facebook.react.uimanager.events.Event
 import com.swmansion.reanimated.ReanimatedModule
 
 class ReanimatedEventDispatcher {
-    private var reanimatedModule: ReanimatedModule? = null
+  private var reanimatedModule: ReanimatedModule? = null
 
-    fun <T : Event<T>>sendEvent(event: T, reactApplicationContext: ReactContext) {
-        if (reanimatedModule == null) {
-            reanimatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)
-        }
-
-        reanimatedModule?.nodesManager?.onEventDispatch(event)
+  fun <T : Event<T>>sendEvent(event: T, reactApplicationContext: ReactContext) {
+    if (reanimatedModule == null) {
+      reanimatedModule = reactApplicationContext.getNativeModule(ReanimatedModule::class.java)
     }
+
+    reanimatedModule?.nodesManager?.onEventDispatch(event)
+  }
 }

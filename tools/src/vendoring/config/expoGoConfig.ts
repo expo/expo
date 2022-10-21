@@ -67,11 +67,16 @@ const config: VendoringTargetConfig = {
             'def shouldUseCommonInterfaceFromReanimated() {\n    return true\n'
           );
           buildGradle = buildGradle.replace(
-            'react-native-reanimated',
+            /react-native-reanimated/g,
             'vendored_unversioned_react-native-reanimated'
           );
           await fs.writeFile(buildGradlePath, buildGradle);
         },
+        excludeFiles: [
+          'android/gradle{/**,**}',
+          'android/settings.gradle',
+          'android/spotless.gradle',
+        ],
       },
     },
     'react-native-reanimated': {

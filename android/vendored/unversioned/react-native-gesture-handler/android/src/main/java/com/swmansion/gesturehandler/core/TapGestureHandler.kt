@@ -1,10 +1,10 @@
-package com.swmansion.gesturehandler
+package com.swmansion.gesturehandler.core
 
 import android.os.Handler
 import android.os.Looper
 import android.view.MotionEvent
-import com.swmansion.gesturehandler.GestureUtils.getLastPointerX
-import com.swmansion.gesturehandler.GestureUtils.getLastPointerY
+import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerX
+import com.swmansion.gesturehandler.core.GestureUtils.getLastPointerY
 import kotlin.math.abs
 
 class TapGestureHandler : GestureHandler<TapGestureHandler>() {
