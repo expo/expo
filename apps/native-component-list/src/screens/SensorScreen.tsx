@@ -26,14 +26,12 @@ export default class SensorScreen extends React.Component {
   }
 }
 
-interface State<M extends object> {
+type State<M> = {
   data: M;
   isAvailable?: boolean;
-}
+};
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-abstract class SensorBlock<M extends object> extends React.Component<{}, State<M>> {
+abstract class SensorBlock<M> extends React.Component<object, State<M>> {
   readonly state: State<M> = { data: {} as M };
 
   _subscription?: Subscription;
@@ -53,7 +51,6 @@ abstract class SensorBlock<M extends object> extends React.Component<{}, State<M
 
   abstract getName: () => string;
   abstract getSensor: () => Sensors.DeviceSensor<M>;
-  abstract renderData: () => JSX.Element;
 
   _toggle = () => {
     if (this._subscription) {
@@ -72,7 +69,7 @@ abstract class SensorBlock<M extends object> extends React.Component<{}, State<M
   };
 
   _subscribe = () => {
-    this._subscription = this.getSensor().addListener((data: any) => {
+    this._subscription = this.getSensor().addListener((data: M) => {
       this.setState({ data });
     });
   };
@@ -81,6 +78,14 @@ abstract class SensorBlock<M extends object> extends React.Component<{}, State<M
     this._subscription && this._subscription.remove();
     this._subscription = undefined;
   };
+
+  renderData() {
+    return (
+      <Text>
+        {Object.entries(this.state.data).map(([key, value]) => `${key}: ${round(value)}`).join(' ')}
+      </Text>
+    );
+  }
 
   render() {
     if (this.state.isAvailable !== true) {
@@ -106,30 +111,22 @@ abstract class SensorBlock<M extends object> extends React.Component<{}, State<M
   }
 }
 
-abstract class ThreeAxisSensorBlock extends SensorBlock<Sensors.ThreeAxisMeasurement> {
-  renderData = () => (
-    <Text>
-      x: {round(this.state.data.x)} y: {round(this.state.data.y)} z: {round(this.state.data.z)}
-    </Text>
-  );
-}
-
-class GyroscopeSensor extends ThreeAxisSensorBlock {
+class GyroscopeSensor extends SensorBlock<Sensors.GyroscopeMeasurement> {
   getName = () => 'Gyroscope';
   getSensor = () => Sensors.Gyroscope;
 }
 
-class AccelerometerSensor extends ThreeAxisSensorBlock {
+class AccelerometerSensor extends SensorBlock<Sensors.AccelerometerMeasurement> {
   getName = () => 'Accelerometer';
   getSensor = () => Sensors.Accelerometer;
 }
 
-class MagnetometerSensor extends ThreeAxisSensorBlock {
+class MagnetometerSensor extends SensorBlock<Sensors.MagnetometerMeasurement> {
   getName = () => 'Magnetometer';
   getSensor = () => Sensors.Magnetometer;
 }
 
-class MagnetometerUncalibratedSensor extends ThreeAxisSensorBlock {
+class MagnetometerUncalibratedSensor extends SensorBlock<Sensors.MagnetometerUncalibratedMeasurement> {
   getName = () => 'Magnetometer (Uncalibrated)';
   getSensor = () => Sensors.MagnetometerUncalibrated;
 }
@@ -192,11 +189,7 @@ class LightSensor extends SensorBlock<Sensors.LightSensorMeasurement> {
 }
 
 function round(n?: number) {
-  if (!n) {
-    return 0;
-  }
-
-  return Math.floor(n * 100) / 100;
+  return n ? Math.floor(n * 100) / 100 : 0;
 }
 
 const styles = StyleSheet.create({
