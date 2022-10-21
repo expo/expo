@@ -641,6 +641,7 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `@react-native-masked-view/masked-view` from `0.2.6` to `0.2.8`. ([#19645](https://github.com/expo/expo/pull/19645) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Updated `react-native-webview` from `11.13.0` to `11.15.0`. ([#15330](https://github.com/expo/expo/pull/15330) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-shared-element` from `0.8.2` to `0.8.3`. ([#15338](https://github.com/expo/expo/pull/15338) by [@kudo](https://github.com/kudo))
 - Updated `lottie-react-native` from `4.0.3` to `5.0.1`. ([#15345](https://github.com/expo/expo/pull/15345) by [@kudo](https://github.com/kudo))
