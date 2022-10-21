@@ -74,9 +74,11 @@ export async function startAsync(
   const platformBundlers = getPlatformBundlers(exp);
 
   if (!options.forceManifestType) {
-    const easUpdatesUrlRegex = /^https:\/\/(staging-)?u\.expo\.dev/;
-    const isEasUpdatesUrl = exp.updates?.url ? easUpdatesUrlRegex.test(exp.updates.url) : false;
-    options.forceManifestType = isEasUpdatesUrl ? 'expo-updates' : 'classic';
+    const classicUpdatesUrlRegex = /^https:\/\/(staging-)?exp\.host/;
+    const isClassicUpdatesUrl = exp.updates?.url
+      ? classicUpdatesUrlRegex.test(exp.updates.url)
+      : false;
+    options.forceManifestType = isClassicUpdatesUrl ? 'classic' : 'expo-updates';
   }
 
   const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
