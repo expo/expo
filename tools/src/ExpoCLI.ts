@@ -1,3 +1,5 @@
+import { extractLocalNpmTarballAsync } from '@expo/cli/build/src/utils/npm';
+import { IOSConfig } from '@expo/config-plugins';
 import spawnAsync from '@expo/spawn-async';
 import process from 'process';
 
@@ -17,7 +19,7 @@ export async function runExpoCliAsync(
   process.on('SIGINT', () => {});
   process.on('SIGTERM', () => {});
 
-  await spawnAsync('expo', [command, ...args], {
+  await spawnAsync('npx', ['expo', command, ...args], {
     cwd: options.cwd || EXPO_DIR,
     stdio: options.stdio || 'inherit',
     env: {
@@ -25,4 +27,19 @@ export async function runExpoCliAsync(
       EXPO_NO_DOCTOR: 'true',
     },
   });
+}
+
+export async function extractTarballAsync(tarFilePath: string, props: ExtractProps): Promise<void> {
+  return await extractLocalNpmTarballAsync(tarFilePath, props);
+}
+
+type ExtractProps = {
+  name: string;
+  cwd: string;
+  strip?: number;
+  fileList?: string[];
+};
+
+export function sanitizedName(name: string): string {
+  return IOSConfig.XcodeUtils.sanitizedName(name);
 }

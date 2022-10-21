@@ -4,7 +4,7 @@ import fs from 'fs-extra';
 import path from 'path';
 
 import { EXPO_DIR, PACKAGES_DIR } from '../Constants';
-import { runExpoCliAsync } from '../ExpoCLI';
+import { runExpoCliAsync, sanitizedName, extractTarballAsync } from '../ExpoCLI';
 import { GitDirectory } from '../Git';
 
 export type GenerateBareAppOptions = {
@@ -37,11 +37,13 @@ export async function action(
 
   await cleanIfNeeded({ clean, projectDir, workspaceDir });
   await createProjectDirectory({ workspaceDir, appName, template, localTemplate });
-  await modifyPackageJson({ packagesToSymlink, projectDir });
+  await modifyPackageJson({ packagesToSymlink, projectDir, appName, localTemplate });
   await modifyAppJson({ projectDir, appName });
   await yarnInstall({ projectDir });
   await symlinkPackages({ packagesToSymlink, projectDir });
-  await runExpoPrebuild({ projectDir });
+  if (!localTemplate) {
+    await runExpoPrebuild({ projectDir });
+  }
   if (rnVersion != null) {
     await updateRNVersion({ rnVersion, projectDir });
   }
@@ -90,9 +92,25 @@ async function createProjectDirectory({
   localTemplate: boolean;
 }) {
   if (localTemplate) {
+    // For local template, create an NPM package from the local template, then unpack it
+    // using the same transforms that @expo/cli uses
     const pathToBareTemplate = path.resolve(EXPO_DIR, 'templates', 'expo-template-bare-minimum');
-    const pathToWorkspace = path.resolve(workspaceDir, appName);
-    return fs.copy(pathToBareTemplate, pathToWorkspace, { recursive: true });
+    const pathToAppDirectory = path.resolve(workspaceDir, appName);
+    const templateVersion = require(path.join(pathToBareTemplate, 'package.json')).version;
+    await spawnAsync('npm', ['pack', '--pack-destination', workspaceDir], {
+      cwd: pathToBareTemplate,
+      stdio: 'ignore',
+    });
+    const tarFilePath = path.resolve(
+      workspaceDir,
+      `expo-template-bare-minimum-${templateVersion}.tgz`
+    );
+    fs.mkdirSync(pathToAppDirectory);
+    await extractTarballAsync(tarFilePath, {
+      cwd: pathToAppDirectory,
+      name: appName,
+    });
+    return fs.rmSync(tarFilePath);
   }
 
   return await runExpoCliAsync('init', [appName, '--no-install', '--template', template], {
@@ -176,12 +194,23 @@ function getPackageDependencies(packageName: string) {
 async function modifyPackageJson({
   packagesToSymlink,
   projectDir,
+  appName,
+  localTemplate,
 }: {
   packagesToSymlink: string[];
   projectDir: string;
+  appName: string;
+  localTemplate: boolean;
 }) {
   const pkgPath = path.resolve(projectDir, 'package.json');
   const pkg = await fs.readJSON(pkgPath);
+
+  if (localTemplate) {
+    // For local template, replace 'expo-template-bare-minimum' and its description and version
+    pkg.name = sanitizedName(appName);
+    pkg.version = '0.0.1';
+    delete pkg.description;
+  }
 
   pkg.expo = pkg.expo ?? {};
   pkg.expo.symlinks = pkg.expo.symlinks ?? [];
