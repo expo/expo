@@ -48,11 +48,10 @@ EX_EXPORT_METHOD_AS(shareAsync,
   _documentInteractionController.delegate = self;
   _documentInteractionController.UTI = params[@"UTI"];
 
-  UIViewController *viewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
-
   EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
+    UIViewController *viewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
     UIView *rootView = [viewController view];
     if ([self.documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:rootView animated:YES]) {
       self.pendingResolver = resolve;
