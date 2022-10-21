@@ -40,6 +40,7 @@ public class RNDismissableDatePickerDialog extends DatePickerDialog {
       int dayOfMonth,
       RNDatePickerDisplay display) {
     super(context, callback, year, monthOfYear, dayOfMonth);
+	setCanceledOnTouchOutside(true);
     fixSpinner(context, year, monthOfYear, dayOfMonth, display);
   }
 
@@ -52,6 +53,7 @@ public class RNDismissableDatePickerDialog extends DatePickerDialog {
       int dayOfMonth,
       RNDatePickerDisplay display) {
     super(context, theme, callback, year, monthOfYear, dayOfMonth);
+	setCanceledOnTouchOutside(true);
     fixSpinner(context, year, monthOfYear, dayOfMonth, display);
   }
 
