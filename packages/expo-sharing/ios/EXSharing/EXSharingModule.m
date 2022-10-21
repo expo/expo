@@ -68,7 +68,19 @@ EX_EXPORT_METHOD_AS(shareAsync,
   _pendingResolver(nil);
   _pendingResolver = nil;
 
-  _documentInteractionController = nil;
+  // This delegate method is called whenever:
+  // a) the share sheet is cancelled
+  // b) an app is chosen, it's dialog opened, and the share is confirmed/ sent
+  // c) an app is chosen, it's dialog opened, and that dialog is cancelled
+  // In case c), the share sheet remains open, even though the promise was resolved
+  // Future attempts to share without closing the sheet will fail to attach the file, so we need to close it
+  // No other delegate methods fire only when the share sheet is dismissed, unfortunately
+  EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    EX_ENSURE_STRONGIFY(self);
+    [self.documentInteractionController dismissMenuAnimated:true];
+    self.documentInteractionController = nil;
+  });
 }
 
 @end
