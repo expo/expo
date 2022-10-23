@@ -70,7 +70,7 @@ EX_EXPORT_METHOD_AS(shareAsync,
   // This delegate method is called whenever:
   // a) the share sheet is canceled
   // b) an app is chosen, it's dialog opened, and the share is confirmed/ sent
-  // c) an app is chosen, it's dialog opened, and that dialog is cancelled
+  // c) an app is chosen, it's dialog opened, and that dialog is canceled
   // In case c), the share sheet remains open, even though the promise was resolved
   // Future attempts to share without closing the sheet will fail to attach the file, so we need to close it
   // No other delegate methods fire only when the share sheet is dismissed, unfortunately
