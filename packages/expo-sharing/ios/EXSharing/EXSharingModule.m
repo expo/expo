@@ -68,7 +68,7 @@ EX_EXPORT_METHOD_AS(shareAsync,
   _pendingResolver = nil;
 
   // This delegate method is called whenever:
-  // a) the share sheet is cancelled
+  // a) the share sheet is canceled
   // b) an app is chosen, it's dialog opened, and the share is confirmed/ sent
   // c) an app is chosen, it's dialog opened, and that dialog is cancelled
   // In case c), the share sheet remains open, even though the promise was resolved
