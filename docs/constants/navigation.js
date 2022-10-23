@@ -286,6 +286,7 @@ const eas = [
         makePage('eas-update/runtime-versions.mdx'),
         makePage('eas-update/environment-variables.mdx'),
         makePage('eas-update/expo-dev-client.mdx'),
+        makePage('eas-update/code-signing.mdx'),
         makePage('eas-update/known-issues.mdx'),
         makePage('eas-update/rollouts.mdx'),
         makePage('eas-update/faq.mdx'),
