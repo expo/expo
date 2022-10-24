@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Use the correct TSConfig package in dependencies to match one referred in `tsconfig.plugin.json`.
+
 ## 2.1.0 — 2022-08-04
 
 ### 🎉 New features
