@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Use the correct TSConfig package in dependencies to match one referred in `tsconfig.plugin.json`. ([#19670](https://github.com/expo/expo/pull/19670) by [@Simek](https://github.com/Simek))
+
 ## 2.1.0 — 2022-08-04
 
 ### 🎉 New features
