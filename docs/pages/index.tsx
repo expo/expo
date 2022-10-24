@@ -12,10 +12,11 @@ import {
   GithubIcon,
   RedditIcon,
   TwitterIcon,
+  breakpoints,
 } from '@expo/styleguide';
 import { useRouter } from 'next/router';
 import React, { PropsWithChildren } from 'react';
-import { Container, Row } from 'react-grid-system';
+import { Container, Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
 import { APIGridCell, CommunityGridCell, GridCell, HomeButton } from '~/ui/components/Home';
@@ -25,7 +26,9 @@ import {
   APIMapsIcon,
   APINotificationsIcon,
   CodecademyImage,
+  CodecademyImageMasks,
   DevicesImage,
+  DevicesImageMasks,
   OfficeHoursImage,
   QuickStartIcon,
   SnackImage,
@@ -52,200 +55,224 @@ const Home = () => {
   const { themeName } = useTheme();
   const { palette, button, background } = theme;
   return (
-    <DocumentationPage router={router} tocVisible={false} hideFromSearch>
-      <H1
-        css={css({ marginBottom: 8, fontFamily: typography.fontStacks.black, fontWeight: '900' })}>
-        Create amazing apps that run everywhere
-      </H1>
-      <Description>
-        Build one JavaScript/TypeScript project that runs natively on all your users' devices.
-      </Description>
-      <CellContainer>
-        <Row>
-          <GridCell xl={4} lg={12} css={quickStartCellStyle}>
-            <div
-              css={[
-                baseGradientStyle,
-                css({
-                  background: `linear-gradient(${background.secondary} 15%, #21262d00 100%)`,
-                }),
-              ]}
-            />
-            <div
-              css={{
-                position: 'relative',
-                zIndex: 1,
-              }}>
-              <H2>
-                <QuickStartIcon /> Quick Start
-              </H2>
-              <br />
-              <Terminal
-                includeMargin={false}
-                cmd={['$ npm i -g expo-cli', '$ npx create-expo-app my-app']}
-                cmdCopy="npm install --global expo-cli && npx create-expo-app my-app"
+    <ScreenClassProvider>
+      <DocumentationPage router={router} tocVisible={false} hideFromSearch>
+        <div css={imageMasksContainerStyle}>
+          <DevicesImageMasks />
+          <CodecademyImageMasks />
+        </div>
+        <H1
+          css={css({
+            marginBottom: 8,
+            fontFamily: typography.fontStacks.black,
+            fontWeight: '900',
+          })}>
+          Create amazing apps that run everywhere
+        </H1>
+        <Description>
+          Build one JavaScript/TypeScript project that runs natively on all your users' devices.
+        </Description>
+        <CellContainer>
+          <Row>
+            <GridCell xl={4} lg={12} css={quickStartCellStyle}>
+              <div
+                css={[
+                  baseGradientStyle,
+                  css({
+                    background: `linear-gradient(${background.secondary} 15%, #21262d00 100%)`,
+                  }),
+                ]}
               />
-            </div>
-          </GridCell>
-          <GridCell
-            xl={8}
-            lg={12}
-            css={[
-              tutorialCellStyle,
-              css({
-                borderColor: palette.primary[themeName === 'dark' ? '300' : '200'],
-              }),
-            ]}>
-            <div
+              <div
+                css={{
+                  position: 'relative',
+                  zIndex: 1,
+                }}>
+                <H2>
+                  <QuickStartIcon /> Quick Start
+                </H2>
+                <br />
+                <Terminal
+                  includeMargin={false}
+                  cmd={['$ npm i -g expo-cli', '$ npx create-expo-app my-app']}
+                  cmdCopy="npm install --global expo-cli && npx create-expo-app my-app"
+                />
+              </div>
+            </GridCell>
+            <GridCell
+              xl={8}
+              lg={12}
               css={[
-                baseGradientStyle,
+                tutorialCellStyle,
                 css({
-                  background: `linear-gradient(${palette.primary['100']} 15%, #201d5200 100%)`,
+                  borderColor: palette.primary[themeName === 'dark' ? '300' : '200'],
                 }),
-              ]}
-            />
-            <DevicesImage />
-            <H2 css={css({ color: palette.primary['900'], zIndex: 1, position: 'relative' })}>
-              Create a universal Android, iOS,
-              <br />
-              and web photo sharing app
-            </H2>
-            <HomeButton
+              ]}>
+              <div
+                css={[
+                  baseGradientStyle,
+                  css({
+                    background: `linear-gradient(${palette.primary['100']} 15%, #201d5200 100%)`,
+                  }),
+                ]}
+              />
+              <DevicesImage />
+              <H2 css={css({ color: palette.primary['900'], zIndex: 1, position: 'relative' })}>
+                Create a universal Android, iOS,
+                <br />
+                and web photo sharing app
+              </H2>
+              <HomeButton
+                css={css({
+                  background: button.primary.background,
+                  color: button.primary.foreground,
+                  height: 40,
+                })}
+                href="/tutorial/planning/"
+                iconRight={<ArrowRightIcon color={button.primary.foreground} />}>
+                Start Tutorial
+              </HomeButton>
+            </GridCell>
+          </Row>
+        </CellContainer>
+        <H3>Learn more</H3>
+        <Description>
+          Try out Expo in minutes and learn how to get the most out of Expo.
+        </Description>
+        <CellContainer>
+          <Row>
+            <GridCell
+              xl={6}
+              lg={6}
               css={css({
-                background: button.primary.background,
-                color: button.primary.foreground,
-                height: 40,
-              })}
-              href="/tutorial/planning/"
-              iconRight={<ArrowRightIcon color={button.primary.foreground} />}>
-              Start Tutorial
-            </HomeButton>
-          </GridCell>
-        </Row>
-      </CellContainer>
-      <H3>Learn more</H3>
-      <Description>Try out Expo in minutes and learn how to get the most out of Expo.</Description>
-      <CellContainer>
-        <Row>
-          <GridCell
-            xl={6}
-            lg={6}
-            css={css({ backgroundColor: palette.blue['000'], borderColor: palette.blue['200'] })}>
-            <SnackImage />
-            <H3 css={css({ color: palette.blue['900'], marginBottom: spacing[1.5] })}>
-              Try Expo in your browser
-            </H3>
-            <P css={css({ color: palette.blue['800'], ...typography.fontSizes[14] })}>
-              Expo’s Snack lets you try Expo
-              <br />
-              with zero local setup.
-            </P>
-            <HomeButton
-              css={css({ backgroundColor: palette.blue['500'], color: palette.blue['100'] })}
-              href="https://snack.expo.dev/"
-              target="_blank"
-              iconRight={<ArrowUpRightIcon color={palette.blue['100']} />}>
-              Create a Snack
-            </HomeButton>
-          </GridCell>
-          <GridCell
-            xl={6}
-            lg={6}
-            css={css({
-              backgroundColor: palette.orange['100'],
-              borderColor: palette.orange[themeName === 'dark' ? '300' : '200'],
-            })}>
-            <CodecademyImage />
-            <H3 css={css({ color: palette.orange['900'] })}>
-              Learn Expo on
-              <br />
-              Codecademy
-            </H3>
-            <HomeButton
-              css={css({ backgroundColor: palette.orange['800'], color: palette.orange['100'] })}
-              href="https://www.codecademy.com/learn/learn-react-native"
-              target="_blank"
-              iconRight={<ArrowUpRightIcon color={palette.orange['100']} />}>
-              Start Course
-            </HomeButton>
-          </GridCell>
-          <GridCell
-            xl={6}
-            lg={6}
-            css={css({ backgroundColor: palette.green['000'], borderColor: palette.green['200'] })}>
-            <WhyImage />
-            <H3 css={css({ color: palette.green['900'], marginBottom: spacing[1.5] })}>
-              Why choose Expo?
-            </H3>
-            <P css={{ color: palette.green['800'], ...typography.fontSizes[14] }}>
-              Learn the tradeoffs of
-              <br />
-              using Expo.
-            </P>
-            <HomeButton
-              css={css({ backgroundColor: palette.green['700'], color: palette.green['000'] })}
-              href="/introduction/faq"
-              iconRight={<ArrowRightIcon color={palette.green['000']} />}>
-              Read
-            </HomeButton>
-          </GridCell>
-          <GridCell
-            xl={6}
-            lg={6}
-            css={css({
-              backgroundColor: palette.yellow['000'],
-              borderColor: palette.yellow['300'],
-            })}>
-            <OfficeHoursImage />
-            <H3 css={css({ color: palette.yellow['900'], marginBottom: spacing[1.5] })}>
-              Join us for Office Hours
-            </H3>
-            <P css={css({ color: palette.yellow['800'], ...typography.fontSizes[14] })}>
-              Get answers to your questions and
-              <br />
-              get advice from the Expo team.
-            </P>
-            <HomeButton
-              css={css({ backgroundColor: palette.yellow['900'], color: palette.yellow['000'] })}
-              href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
-              target="_blank"
-              iconRight={<ArrowUpRightIcon color={palette.yellow['000']} />}>
-              Register
-            </HomeButton>
-          </GridCell>
-        </Row>
-      </CellContainer>
-      <H3>Explore APIs</H3>
-      <Description>
-        Expo supplies a vast array of SDK modules. You can also create your own.
-      </Description>
-      <CellContainer>
-        <Row>
-          <APIGridCell
-            title="Maps"
-            link="/versions/latest/sdk/map-view"
-            icon={<APIMapsIcon size={70} />}
-          />
-          <APIGridCell
-            title="Camera"
-            link="/versions/latest/sdk/camera"
-            icon={<APICameraIcon size={70} />}
-          />
-          <APIGridCell
-            title="Notifications"
-            link="/versions/latest/sdk/notifications"
-            icon={<APINotificationsIcon size={70} />}
-          />
-          <APIGridCell
-            title="View all APIs"
-            link="/versions/latest/"
-            icon={<APIListIcon size={70} />}
-          />
-        </Row>
-      </CellContainer>
-      <H3>Join the community</H3>
-      <JoinTheCommunity />
-    </DocumentationPage>
+                backgroundColor: palette.blue['000'],
+                borderColor: palette.blue['200'],
+              })}>
+              <SnackImage />
+              <H3 css={css({ color: palette.blue['900'], marginBottom: spacing[1.5] })}>
+                Try Expo in your browser
+              </H3>
+              <P css={css({ color: palette.blue['800'], ...typography.fontSizes[14] })}>
+                Expo’s Snack lets you try Expo
+                <br />
+                with zero local setup.
+              </P>
+              <HomeButton
+                css={css({ backgroundColor: palette.blue['500'], color: palette.blue['100'] })}
+                href="https://snack.expo.dev/"
+                target="_blank"
+                iconRight={<ArrowUpRightIcon color={palette.blue['100']} />}>
+                Create a Snack
+              </HomeButton>
+            </GridCell>
+            <GridCell
+              xl={6}
+              lg={6}
+              css={css({
+                backgroundColor: palette.orange['100'],
+                borderColor: palette.orange[themeName === 'dark' ? '300' : '200'],
+              })}>
+              <CodecademyImage />
+              <H3 css={css({ color: palette.orange['900'] })}>
+                Learn Expo on
+                <br />
+                Codecademy
+              </H3>
+              <HomeButton
+                css={css({
+                  backgroundColor: palette.orange['800'],
+                  color: palette.orange['100'],
+                })}
+                href="https://www.codecademy.com/learn/learn-react-native"
+                target="_blank"
+                iconRight={<ArrowUpRightIcon color={palette.orange['100']} />}>
+                Start Course
+              </HomeButton>
+            </GridCell>
+            <GridCell
+              xl={6}
+              lg={6}
+              css={css({
+                backgroundColor: palette.green['000'],
+                borderColor: palette.green['200'],
+              })}>
+              <WhyImage />
+              <H3 css={css({ color: palette.green['900'], marginBottom: spacing[1.5] })}>
+                Why choose Expo?
+              </H3>
+              <P css={{ color: palette.green['800'], ...typography.fontSizes[14] }}>
+                Learn the tradeoffs of
+                <br />
+                using Expo.
+              </P>
+              <HomeButton
+                css={css({ backgroundColor: palette.green['700'], color: palette.green['000'] })}
+                href="/introduction/faq"
+                iconRight={<ArrowRightIcon color={palette.green['000']} />}>
+                Read
+              </HomeButton>
+            </GridCell>
+            <GridCell
+              xl={6}
+              lg={6}
+              css={css({
+                backgroundColor: palette.yellow['000'],
+                borderColor: palette.yellow['300'],
+              })}>
+              <OfficeHoursImage />
+              <H3 css={css({ color: palette.yellow['900'], marginBottom: spacing[1.5] })}>
+                Join us for Office Hours
+              </H3>
+              <P css={css({ color: palette.yellow['800'], ...typography.fontSizes[14] })}>
+                Get answers to your questions and
+                <br />
+                get advice from the Expo team.
+              </P>
+              <HomeButton
+                css={css({
+                  backgroundColor: palette.yellow['900'],
+                  color: palette.yellow['000'],
+                })}
+                href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
+                target="_blank"
+                iconRight={<ArrowUpRightIcon color={palette.yellow['000']} />}>
+                Register
+              </HomeButton>
+            </GridCell>
+          </Row>
+        </CellContainer>
+        <H3>Explore APIs</H3>
+        <Description>
+          Expo supplies a vast array of SDK modules. You can also create your own.
+        </Description>
+        <CellContainer>
+          <Row>
+            <APIGridCell
+              title="Maps"
+              link="/versions/latest/sdk/map-view"
+              icon={<APIMapsIcon size={70} />}
+            />
+            <APIGridCell
+              title="Camera"
+              link="/versions/latest/sdk/camera"
+              icon={<APICameraIcon size={70} />}
+            />
+            <APIGridCell
+              title="Notifications"
+              link="/versions/latest/sdk/notifications"
+              icon={<APINotificationsIcon size={70} />}
+            />
+            <APIGridCell
+              title="View all APIs"
+              link="/versions/latest/"
+              icon={<APIListIcon size={70} />}
+            />
+          </Row>
+        </CellContainer>
+        <H3>Join the community</H3>
+        <JoinTheCommunity />
+      </DocumentationPage>
+    </ScreenClassProvider>
   );
 };
 
@@ -314,6 +341,10 @@ const quickStartCellStyle = css({
   backgroundImage: 'url("/static/images/home/QuickStartPattern.svg")',
   backgroundBlendMode: 'multiply',
   minHeight: 250,
+
+  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
+    minHeight: 200,
+  },
 });
 
 const tutorialCellStyle = css({
@@ -321,6 +352,14 @@ const tutorialCellStyle = css({
   backgroundImage: 'url("/static/images/home/TutorialPattern.svg")',
   backgroundBlendMode: 'multiply',
   minHeight: 250,
+
+  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
+    minHeight: 200,
+  },
+});
+
+const imageMasksContainerStyle = css({
+  height: 0,
 });
 
 export default Home;
