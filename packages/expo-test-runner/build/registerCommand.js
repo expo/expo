@@ -49,7 +49,6 @@ function registerCommand(commander, commandName, fn) {
         .option('--platform <platform>', 'Platform for which the project should be created. Available options: `ios`, `android`, `both`.')
         .option('-p, --path <string>', 'Location where the test app will be created.')
         .action(async (providedOptions) => {
-        var _a;
         if (providedOptions.platform) {
             providedOptions.platform = mapPlatform(providedOptions.platform);
         }
@@ -58,7 +57,7 @@ function registerCommand(commander, commandName, fn) {
         }
         // clean temp folder if the path wasn't provided.
         providedOptions.shouldBeCleaned = !providedOptions.path;
-        providedOptions.path = (_a = providedOptions.path) !== null && _a !== void 0 ? _a : tempy.directory();
+        providedOptions.path = providedOptions.path ?? tempy.directory();
         providedOptions.configFile = ConfigReader_1.default.getFilePath(providedOptions.configFile);
         const options = providedOptions;
         const configReader = new ConfigReader_1.default(options.configFile);
