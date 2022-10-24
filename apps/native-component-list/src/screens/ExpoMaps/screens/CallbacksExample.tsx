@@ -29,8 +29,8 @@ export default function CallbacksExample() {
 
   const [snackbarText, setSnackbarText] = useState<string | undefined>(undefined);
 
-  const [latitude, setLatitude] = useState<number>(40.4);
-  const [longitude, setLongitude] = useState<number>(-3.7);
+  const [latitude] = useState<number>(40.4);
+  const [longitude] = useState<number>(-3.7);
 
   const callbacksData = [
     {
@@ -90,7 +90,7 @@ export default function CallbacksExample() {
       onValueChange: () => {
         setOnPoiClickEnabled(!onPoiClickEnabled);
       },
-      enabled: provider == 'google',
+      enabled: provider === 'google',
     },
     {
       title: 'Enable onMarkerPress event',
@@ -261,7 +261,7 @@ export default function CallbacksExample() {
         </Maps.Cluster>
       </Maps.ExpoMap>
       <Snackbar
-        visible={snackbarText != undefined}
+        visible={snackbarText !== undefined}
         onDismiss={() => setSnackbarText(undefined)}
         style={{ backgroundColor: 'white' }}
         wrapperStyle={styles.snackbar}

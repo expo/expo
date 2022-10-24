@@ -304,13 +304,14 @@ export async function buildClusterObject(child: Cluster): Promise<ClusterObject 
     return null;
   });
 
-  if (clusterChildrenArray != undefined) {
+  if (clusterChildrenArray !== undefined) {
     let iconPath: Asset | undefined = undefined;
     if (child.props.icon !== undefined) {
       iconPath = await Asset.fromModule(child.props.icon).downloadAsync();
     }
 
-    const clusterPropObjects = await Promise.all(clusterChildrenArray);
+    // TODO(@lukmccall): remove any cast
+    const clusterPropObjects = await Promise.all(clusterChildrenArray as any);
     let minimumClusterSize: number;
 
     if (child.props.minimumClusterSize !== undefined && child.props.minimumClusterSize > 0) {

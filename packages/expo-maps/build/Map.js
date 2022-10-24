@@ -136,7 +136,8 @@ export class ExpoMap extends React.Component {
             Utils.warnIfChildIsIncompatible(child);
             return null;
         });
-        if (childrenArray != undefined) {
+        if (childrenArray !== undefined) {
+            // TODO(@lukmccall): remove any cast
             const propObjects = await Promise.all(childrenArray);
             if (this._ismounted) {
                 this.setState({

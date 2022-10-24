@@ -1,15 +1,12 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 
-interface ExampleListItem {
+interface ExampleListItemInterface {
   onExampleSelect: () => void;
   name: string;
 }
 
-export default function ExampleListItem({
-  onExampleSelect,
-  name,
-}: ExampleListItem) {
+export default function ExampleListItem({ onExampleSelect, name }: ExampleListItemInterface) {
   return (
     <TouchableOpacity onPress={onExampleSelect} style={styles.exampleListItem}>
       <Text style={styles.nameText}>{name}</Text>

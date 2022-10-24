@@ -1,19 +1,19 @@
+import CallbacksExample from '../screens/CallbacksExample';
+import CirclesExample from '../screens/CirclesExample';
 import ControlsExample from '../screens/ControlsExample';
+import GeoJsonExample from '../screens/GeoJsonExample';
 import GesturesExample from '../screens/GesturesExample';
 import GoogleMapsStylingExample from '../screens/GoogleMapsStylingExample';
+import HeatmapsExample from '../screens/HeatmapsExample';
+import KMLExample from '../screens/KMLExample';
+import MapMoveExample from '../screens/MapMoveExample';
+import MapTypesExample from '../screens/MapTypesExample';
 import MarkersExample from '../screens/MarkersExample';
+import OverlaysExample from '../screens/OverlaysExample';
+import POIExample from '../screens/POIExample';
 import PolygonsExample from '../screens/PolygonsExample';
 import PolylinesExample from '../screens/PolylinesExample';
-import CirclesExample from '../screens/CirclesExample';
-import MapTypesExample from '../screens/MapTypesExample';
 import TrafficExample from '../screens/TrafficExample';
-import KMLExample from '../screens/KMLExample';
-import GeoJsonExample from '../screens/GeoJsonExample';
-import CallbacksExample from '../screens/CallbacksExample';
-import POIExample from '../screens/POIExample';
-import OverlaysExample from '../screens/OverlaysExample';
-import HeatmapsExample from '../screens/HeatmapsExample';
-import MapMoveExample from '../screens/MapMoveExample';
 
 // TODO: Type this better
 interface ConcreteExampleScreen {
@@ -37,7 +37,7 @@ interface ConcreteExampleScreen {
   screen: (props: any) => JSX.Element;
 }
 
-export const CONCRETE_EXAMPLE_SCREENS: Array<ConcreteExampleScreen> = [
+export const CONCRETE_EXAMPLE_SCREENS: ConcreteExampleScreen[] = [
   {
     name: 'Markers',
     screen: MarkersExample,

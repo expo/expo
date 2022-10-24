@@ -147,8 +147,9 @@ export class ExpoMap extends React.Component<ExpoMapViewProps> {
       return null;
     });
 
-    if (childrenArray != undefined) {
-      const propObjects = await Promise.all(childrenArray);
+    if (childrenArray !== undefined) {
+      // TODO(@lukmccall): remove any cast
+      const propObjects = await Promise.all(childrenArray as any);
       if (this._ismounted) {
         this.setState({
           markers: propObjects.filter((elem) => elem?.type === 'marker'),

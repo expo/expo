@@ -28,7 +28,7 @@ export default function ControlsExample() {
         enableRotateGestures
       />
       <View style={{ padding: 20 }}>
-        {Platform.OS == 'android' && (
+        {Platform.OS === 'android' && (
           <SwitchContainer
             title="Show zoom controls"
             value={showZoomControls}

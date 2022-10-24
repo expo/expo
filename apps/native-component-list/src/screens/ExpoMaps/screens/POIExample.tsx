@@ -41,7 +41,7 @@ export default function POIExample() {
         }}
       />
       <View style={styles.switchContainer}>
-        {provider == 'apple' && (
+        {provider === 'apple' && (
           <SwitchContainer
             title="Enable POI search"
             value={enablePOISearching}
@@ -53,14 +53,14 @@ export default function POIExample() {
           value={enablePOIs}
           onValueChange={() => setEnablePOIs(!enablePOIs)}
         />
-        {provider == 'google' && (
+        {provider === 'google' && (
           <SwitchContainer
             title="Clickable POIs"
             value={clickablePOIs}
             onValueChange={() => setClickablePOIs(!clickablePOIs)}
           />
         )}
-        {provider == 'apple' && (
+        {provider === 'apple' && (
           <SwitchContainer
             title="Enable POI cafe filter"
             value={enablePOIFilter}
@@ -92,7 +92,7 @@ export default function POIExample() {
           onValueChange={() => {
             setEnablePlaceSearch(!enablePlaceSearch);
             if (!enablePlaceSearch) {
-              if (provider == 'apple') {
+              if (provider === 'apple') {
                 setPlaceToSearch(appleMapsSearchRequest);
               } else {
                 setPlaceToSearch(googleMapsSearchRequest);

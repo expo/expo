@@ -242,11 +242,12 @@ export async function buildClusterObject(child) {
         warnIfChildIsIncompatible(clusterChild);
         return null;
     });
-    if (clusterChildrenArray != undefined) {
+    if (clusterChildrenArray !== undefined) {
         let iconPath = undefined;
         if (child.props.icon !== undefined) {
             iconPath = await Asset.fromModule(child.props.icon).downloadAsync();
         }
+        // TODO(@lukmccall): remove any cast
         const clusterPropObjects = await Promise.all(clusterChildrenArray);
         let minimumClusterSize;
         if (child.props.minimumClusterSize !== undefined && child.props.minimumClusterSize > 0) {
