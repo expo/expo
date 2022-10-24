@@ -18,7 +18,7 @@ export function githubUrl(path: string) {
   }
 
   const filePath =
-    path.replace(/\/$/, '').replace('/versions/latest', '/versions/unversioned') + '.md';
+    path.replace(/\/$/, '').replace('/versions/latest', '/versions/unversioned') + '.mdx';
 
   return `https://github.com/expo/expo/edit/main/docs/pages${filePath}`;
 }
