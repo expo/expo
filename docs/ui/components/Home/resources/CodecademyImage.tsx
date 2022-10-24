@@ -18,19 +18,6 @@ export const CodecademyImage = () => (
       fill={theme.palette.orange['800']}
       stroke={theme.palette.orange['800']}
     />
-    <mask
-      id="9cc3c1cf68eeb3d655221dab7774e70e"
-      style={{ maskType: 'alpha' }}
-      maskUnits="userSpaceOnUse"
-      x="75"
-      y="1"
-      width="50"
-      height="65">
-      <path
-        d="M75.8173 26.277C75.8173 12.8234 86.7236 1.91711 100.177 1.91711V1.91711C113.631 1.91711 124.537 12.8234 124.537 26.277V65.631H75.8173V26.277Z"
-        fill="#11162D"
-      />
-    </mask>
     <g mask="url(#9cc3c1cf68eeb3d655221dab7774e70e)">
       <circle cx="87.8602" cy="65.6313" r="22.3086" fill="#E36209" />
       <circle cx="117.339" cy="57.2905" r="24.8014" fill={theme.palette.orange['200']} />
@@ -130,5 +117,23 @@ export const CodecademyImage = () => (
       fill={theme.palette.orange['200']}
       stroke={theme.palette.orange['800']}
     />
+  </svg>
+);
+
+export const CodecademyImageMasks = () => (
+  <svg width="0" height="0">
+    <mask
+      id="9cc3c1cf68eeb3d655221dab7774e70e"
+      style={{ maskType: 'alpha' }}
+      maskUnits="userSpaceOnUse"
+      x="75"
+      y="1"
+      width="50"
+      height="65">
+      <path
+        d="M75.8173 26.277C75.8173 12.8234 86.7236 1.91711 100.177 1.91711V1.91711C113.631 1.91711 124.537 12.8234 124.537 26.277V65.631H75.8173V26.277Z"
+        fill="#11162D"
+      />
+    </mask>
   </svg>
 );

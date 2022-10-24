@@ -344,88 +344,91 @@ export const DevicesImage = () => (
       d="M134.302 13.9601C134.856 13.6266 135.491 13.4504 136.139 13.4504H180.206C180.899 13.4504 181.576 13.6521 182.156 14.0309L185.142 15.9811C187.227 17.343 186.263 20.5831 183.773 20.5831C182.389 20.5831 181.268 21.7046 181.268 23.088V24.1495C181.268 26.1191 179.671 27.7158 177.701 27.7158H138.716C136.746 27.7158 135.149 26.1191 135.149 24.1495V23.1602C135.149 21.7369 133.996 20.5831 132.572 20.5831C129.96 20.5831 129.005 17.1432 131.245 15.7973L134.302 13.9601Z"
       fill={darkTheme.background.tertiary}
     />
-    <defs>
-      <filter
-        id="3fe977fb0acabded0c62aa0c9c945938"
-        x="162.611"
-        y="17.3787"
-        width="216.241"
-        height="238.724"
-        filterUnits="userSpaceOnUse"
-        colorInterpolationFilters="sRGB">
-        <feFlood floodOpacity="0" result="BackgroundImageFix" />
-        <feColorMatrix
-          in="SourceAlpha"
-          type="matrix"
-          values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
-          result="hardAlpha"
-        />
-        <feOffset dy="5" />
-        <feGaussianBlur stdDeviation="5" />
-        <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0" />
-        <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_39:1396" />
-        <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_39:1396" result="shape" />
-      </filter>
-      <linearGradient
-        id="efeb358a5390d90e5e3ede15cf021e74"
-        x1="229.398"
-        y1="45.9863"
-        x2="261.629"
-        y2="225.302"
-        gradientUnits="userSpaceOnUse">
-        <stop stopColor="#735BFF" />
-        <stop offset="1" stopColor="#AB41FF" />
-      </linearGradient>
-      <linearGradient
-        id="798da3dad1527946ee33aecf8f9ec234"
-        x1="22.0813"
-        y1="53.6141"
-        x2="94.9801"
-        y2="223.711"
-        gradientUnits="userSpaceOnUse">
-        <stop stopColor="#735BFF" />
-        <stop offset="1" stopColor="#AB41FF" />
-      </linearGradient>
-      <linearGradient
-        id="e2839d57a5b978f1058be04fb2a500dd"
-        x1="122.012"
-        y1="21.9108"
-        x2="194.91"
-        y2="192.008"
-        gradientUnits="userSpaceOnUse">
-        <stop stopColor="#735BFF" />
-        <stop offset="1" stopColor="#AB41FF" />
-      </linearGradient>
-      <clipPath id="clip0_39:1396">
-        <rect
-          x="214.901"
-          y="22.3787"
-          width="158"
-          height="188"
-          rx="4"
-          transform="rotate(13 214.901 22.3787)"
-          fill="white"
-        />
-      </clipPath>
-      <clipPath id="clip1_39:1396">
-        <rect
-          width="12.7276"
-          height="12.7276"
-          fill="white"
-          transform="translate(263.63 138.778) rotate(13)"
-        />
-      </clipPath>
-      <clipPath id="clip2_39:1396">
-        <rect
-          width="12.7276"
-          height="12.7276"
-          fill="white"
-          transform="translate(73.1624 119.133) rotate(-13)"
-        />
-      </clipPath>
-      <clipPath id="clip3_39:1396">
-        <rect width="12.7276" height="12.7276" fill="white" transform="translate(154.93 107.311)" />
-      </clipPath>
-    </defs>
+  </svg>
+);
+
+export const DevicesImageMasks = () => (
+  <svg width="0" height="0">
+    <filter
+      id="3fe977fb0acabded0c62aa0c9c945938"
+      x="162.611"
+      y="17.3787"
+      width="216.241"
+      height="238.724"
+      filterUnits="userSpaceOnUse"
+      colorInterpolationFilters="sRGB">
+      <feFlood floodOpacity="0" result="BackgroundImageFix" />
+      <feColorMatrix
+        in="SourceAlpha"
+        type="matrix"
+        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"
+        result="hardAlpha"
+      />
+      <feOffset dy="5" />
+      <feGaussianBlur stdDeviation="5" />
+      <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.12 0" />
+      <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_39:1396" />
+      <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_39:1396" result="shape" />
+    </filter>
+    <linearGradient
+      id="efeb358a5390d90e5e3ede15cf021e74"
+      x1="229.398"
+      y1="45.9863"
+      x2="261.629"
+      y2="225.302"
+      gradientUnits="userSpaceOnUse">
+      <stop stopColor="#735BFF" />
+      <stop offset="1" stopColor="#AB41FF" />
+    </linearGradient>
+    <linearGradient
+      id="798da3dad1527946ee33aecf8f9ec234"
+      x1="22.0813"
+      y1="53.6141"
+      x2="94.9801"
+      y2="223.711"
+      gradientUnits="userSpaceOnUse">
+      <stop stopColor="#735BFF" />
+      <stop offset="1" stopColor="#AB41FF" />
+    </linearGradient>
+    <linearGradient
+      id="e2839d57a5b978f1058be04fb2a500dd"
+      x1="122.012"
+      y1="21.9108"
+      x2="194.91"
+      y2="192.008"
+      gradientUnits="userSpaceOnUse">
+      <stop stopColor="#735BFF" />
+      <stop offset="1" stopColor="#AB41FF" />
+    </linearGradient>
+    <clipPath id="clip0_39:1396">
+      <rect
+        x="214.901"
+        y="22.3787"
+        width="158"
+        height="188"
+        rx="4"
+        transform="rotate(13 214.901 22.3787)"
+        fill="white"
+      />
+    </clipPath>
+    <clipPath id="clip1_39:1396">
+      <rect
+        width="12.7276"
+        height="12.7276"
+        fill="white"
+        transform="translate(263.63 138.778) rotate(13)"
+      />
+    </clipPath>
+    <clipPath id="clip2_39:1396">
+      <rect
+        width="12.7276"
+        height="12.7276"
+        fill="white"
+        transform="translate(73.1624 119.133) rotate(-13)"
+      />
+    </clipPath>
+    <clipPath id="clip3_39:1396">
+      <rect width="12.7276" height="12.7276" fill="white" transform="translate(154.93 107.311)" />
+    </clipPath>
   </svg>
 );
