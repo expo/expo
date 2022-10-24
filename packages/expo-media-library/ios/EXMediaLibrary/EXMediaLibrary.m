@@ -972,8 +972,8 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
                                                @"icns": @(PHAssetMediaTypeImage)};
 
     EXLogWarn(@"Asset media type is recognized from file extension and this behavior can differ on iOS Simulator and a physical device.");
-    PHAssetMediaType fallbackMediaType = [kExtensionLookupFallback objectForKey:[localUri pathExtension]];
-    return fallbackMediaType ? fallbackMediaType : PHAssetMediaTypeUnknown;
+    NSNumber* fallbackMediaType = [kExtensionLookupFallback objectForKey:[localUri pathExtension]];
+    return fallbackMediaType ? [fallbackMediaType intValue] : PHAssetMediaTypeUnknown;
   }
   
   if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
