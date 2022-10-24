@@ -924,7 +924,12 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
 + (PHAssetMediaType)_assetTypeForUri:(nonnull NSString *)localUri
 {
   CFStringRef fileExtension = (__bridge CFStringRef)[localUri pathExtension];
-  CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+  CFStringRef fileUTI;
+  if (@available(iOS 14, *)) {
+    fileUTI = (__bridge CFStringRef)[[UTType typeWithFilenameExtension:(__bridge NSString*)fileExtension] identifier];
+  } else {
+    fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+  }
 
   // A fix for promise rejection on M1 simulator when run in Rosetta (as is by default as we don't compile ARM64 yet)
   // https://developer.apple.com/forums/thread/702933
