@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - Fixed build error for setting `compileSdkVersion` to 33. ([#19432](https://github.com/expo/expo/pull/19432) by [@kudo](https://github.com/kudo))
+- Fixed the `POST_NOTIFICATIONS` runtime permission integration when `targerSdkVersion` is set to 33. ([#19672](https://github.com/expo/expo/pull/19672) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
