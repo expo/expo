@@ -116,8 +116,11 @@ export default function App() {
   async function stopRecording() {
     console.log('Stopping recording..');
     setRecording(undefined);
-    /* @info */ await recording.stopAndUnloadAsync();
-    const uri = recording.getURI(); /* @end */
+    /* @info */ await recording.stopAndUnloadAsync(); /* @end */
+    /* @info iOS may reroute audio playback to the phone earpiece when recording is allowed, so disable once finished. */ await Audio.setAudioModeAsync({
+      allowsRecordingIOS: false,
+    }); /* @end */
+    /* @info */ const uri = recording.getURI(); /* @end */
     console.log('Recording stopped and stored at', uri);
   }
 
