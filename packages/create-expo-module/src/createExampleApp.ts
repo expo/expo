@@ -140,11 +140,11 @@ async function modifyPackageJson(appPath: string): Promise<void> {
 }
 
 /**
- * Runs `expo prebuild` in the example app.
+ * Runs `npx expo prebuild` in the example app.
  */
 async function prebuildExampleApp(exampleAppPath: string): Promise<void> {
   await newStep('Prebuilding the example app', async (step) => {
-    await spawnAsync('expo', ['prebuild', '--no-install'], {
+    await spawnAsync('npx', ['expo', 'prebuild', '--no-install'], {
       cwd: exampleAppPath,
       stdio: ['ignore', 'ignore', 'pipe'],
     });
