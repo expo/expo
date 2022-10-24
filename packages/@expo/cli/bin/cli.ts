@@ -24,6 +24,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   config: () => import('../src/config').then((i) => i.expoConfig),
   export: () => import('../src/export').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web').then((i) => i.expoExportWeb),
+  'bundle:proxy': () => import('../src/bundle-proxy').then((i) => i.expoBundleProxy),
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
@@ -82,6 +83,8 @@ if (!isSubcommand && args['--help']) {
     prebuild,
     'run:ios': runIos,
     'run:android': runAndroid,
+    // Don't document this command
+    'bundle:proxy': bundleProxy_unused,
     ...others
   } = commands;
 

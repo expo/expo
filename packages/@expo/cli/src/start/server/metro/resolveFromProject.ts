@@ -57,3 +57,16 @@ export function importCliSaveAssetsFromProject(
     '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
   ).default;
 }
+
+/**
+ * Import the internal `buildBundleWithConfig()` function from `react-native` for the purpose
+ * of exporting with some sensible defaults like a resolved project entry.
+ */
+export function importCliBuildBundleWithConfigFromProject(
+  projectRoot: string
+): typeof import('@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle').buildBundleWithConfig {
+  return importFromProject(
+    projectRoot,
+    '@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle'
+  ).buildBundleWithConfig;
+}

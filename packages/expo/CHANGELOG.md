@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added internal `bundle:proxy` command for use in Xcode and Android Studio builds.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
