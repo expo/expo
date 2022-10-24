@@ -378,6 +378,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoMaps/ExpoMapsScreen'));
+    },
+    name: 'ExpoMaps',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/AV/VideoScreen'));
     },
     name: 'Video',
