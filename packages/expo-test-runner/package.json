@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.9.0",
-    "@tsconfig/node12": "^1.0.7",
+    "@tsconfig/node14": "^1.0.3",
     "@types/fs-extra": "^9.0.1",
     "@types/node": "^12",
     "@types/node-fetch": "^2.5.12",

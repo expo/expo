@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Bump `@tsconfig/node` to match other Expo Modules packages development setup. ([#19671](https://github.com/expo/expo/pull/19671) by [@Simek](https://github.com/Simek))
+
 ## 0.11.0 — 2022-10-06
 
 ### 🎉 New features
