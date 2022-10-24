@@ -126,7 +126,7 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
 
       let iconURL = (clusterObject.icon != nil) ? URL(fileURLWithPath: clusterObject.icon!) : nil
 
-      if (iconURL != nil) {
+      if iconURL != nil {
         let clusterAnnotation = ExpoMKClusterImageAnnotation(memberAnnotations: memberAnnotations)
         clusterAnnotation.icon = iconURL!.standardized.path
         clusterAnnotation.id = clusterObject.id

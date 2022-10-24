@@ -14,9 +14,9 @@ class AppleMapsGeoJsons: GeoJsons {
     deleteGeoJsons()
     if #available(iOS 13.0, *) {
       for geoJsonObject in geoJsonObjects {
-        
+
         let appleMapsObjects = try! MKGeoJSONDecoder().decode(geoJsonObject.geoJsonString.data(using: .utf8)!) as! [MKGeoJSONFeature]
-        
+
         for object in appleMapsObjects {
           let geometry = object.geometry.first
           if let polygon = geometry as? MKPolygon {
@@ -43,37 +43,37 @@ class AppleMapsGeoJsons: GeoJsons {
       // Fallback on earlier versions
     }
   }
-  
+
   private func applyPolygonDefaultStyle(polygon: ExpoMKPolygon, defaultStyle: GeoJsonObjectDefaultStyle?) {
-    if (defaultStyle?.polygon?.strokeColor != nil) {
+    if defaultStyle?.polygon?.strokeColor != nil {
       polygon.strokeColor = defaultStyle!.polygon!.strokeColor!
     }
-    if (defaultStyle?.polygon?.fillColor != nil) {
+    if defaultStyle?.polygon?.fillColor != nil {
       polygon.fillColor = defaultStyle!.polygon!.fillColor!
     }
-    if (defaultStyle?.polygon?.strokeWidth != nil) {
+    if defaultStyle?.polygon?.strokeWidth != nil {
       polygon.strokeWidth = defaultStyle!.polygon!.strokeWidth!
     }
-    if (defaultStyle?.polygon?.strokeJointType != nil) {
+    if defaultStyle?.polygon?.strokeJointType != nil {
       polygon.jointType = jointToCGLineJoin(defaultStyle!.polygon!.strokeJointType!)
     }
-    if (defaultStyle?.polygon?.strokeJointType != nil) {
-      polygon.strokePattern = strokePatternToLineDashPatternPolygon(pattern: defaultStyle!.polygon!.strokePattern!) 
+    if defaultStyle?.polygon?.strokeJointType != nil {
+      polygon.strokePattern = strokePatternToLineDashPatternPolygon(pattern: defaultStyle!.polygon!.strokePattern!)
     }
   }
-  
+
   private func applyPolylineDefaultStyle(polyline: ExpoMKPolyline, defaultStyle: GeoJsonObjectDefaultStyle?) {
-    if (defaultStyle?.polyline?.color != nil) {
+    if defaultStyle?.polyline?.color != nil {
       polyline.color = defaultStyle!.polyline!.color!
     }
-    if (defaultStyle?.polyline?.width != nil) {
+    if defaultStyle?.polyline?.width != nil {
       polyline.width = Float(defaultStyle!.polyline!.width!)
     }
-    if (defaultStyle?.polyline?.pattern != nil) {
+    if defaultStyle?.polyline?.pattern != nil {
       polyline.pattern = strokePatternToLineDashPatternPolyline(pattern: defaultStyle!.polygon!.strokePattern!, dotLength: 0)
     }
   }
-  
+
   private func applyMarkerDefaultStyle(marker: ExpoMKColorAnnotation, defaultStyle: GeoJsonObjectDefaultStyle?) {
     var hue: CGFloat = 0
     defaultStyle?.marker?.color?.getHue(&hue, saturation: nil, brightness: nil, alpha: nil)
@@ -81,10 +81,9 @@ class AppleMapsGeoJsons: GeoJsons {
     marker.subtitle = defaultStyle?.marker?.snippet
     marker.color = hue
   }
-  
+
   func deleteGeoJsons() {
     mapView.removeAnnotations(annotations)
     mapView.removeOverlays(overlays)
   }
 }
-

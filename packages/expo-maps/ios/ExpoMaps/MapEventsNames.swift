@@ -8,18 +8,18 @@ enum MapEventsNames: String {
   case ON_MARKER_DRAG_ENDED_EVENT = "onMarkerDragEnded"
 }
 
-func createCameraEventContent(latitude: Double, longitude: Double) -> [String : Any?] {
-  return ["latitude" : latitude, "longitude" : longitude]
+func createCameraEventContent(latitude: Double, longitude: Double) -> [String: Any?] {
+  return ["latitude": latitude, "longitude": longitude]
 }
 
-func createMarkerClickEventContent(id: String) -> [String : Any?] {
-  return ["id" : id]
+func createMarkerClickEventContent(id: String) -> [String: Any?] {
+  return ["id": id]
 }
 
-func createMarkerDragStartedEventContent(id: String) -> [String : Any?] {
-  return ["id" : id]
+func createMarkerDragStartedEventContent(id: String) -> [String: Any?] {
+  return ["id": id]
 }
 
-func createMarkerDragEndedEventContent(id: String, latitude: Double, longitude: Double) -> [String : Any?] {
-  return ["id" : id, "latitude" : latitude, "longitude" : longitude]
+func createMarkerDragEndedEventContent(id: String, latitude: Double, longitude: Double) -> [String: Any?] {
+  return ["id": id, "latitude": latitude, "longitude": longitude]
 }

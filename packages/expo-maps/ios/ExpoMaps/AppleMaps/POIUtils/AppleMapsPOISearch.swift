@@ -1,10 +1,10 @@
 import MapKit
 
 class AppleMapsPOISearch {
-  
+
   private var mapView: MKMapView
   private var markers: AppleMapsMarkers
-  
+
   private var pointOfInterestCategories: [MKPointOfInterestCategory]?
   private var searchResultRegion: MKCoordinateRegion?
   private var places: [MKMapItem]? {
@@ -18,16 +18,16 @@ class AppleMapsPOISearch {
       localSearch?.cancel()
     }
   }
-  
+
   init(mapView: MKMapView, markers: AppleMapsMarkers) {
     self.mapView = mapView
     self.markers = markers
   }
-  
+
   func setPointsOfInterestCategories(categories: [MKPointOfInterestCategory]?) {
     pointOfInterestCategories = categories
   }
-  
+
   private func search() {
     localSearch?.start { [unowned self] (response, error) in
       guard error == nil else {
@@ -40,16 +40,16 @@ class AppleMapsPOISearch {
   }
 }
 
-//MKLocalSearch.Request
+// MKLocalSearch.Request
 extension AppleMapsPOISearch {
-  
+
   func createSearchRequest(for suggestedCompletion: MKLocalSearchCompletion) {
     let searchRequest = MKLocalSearch.Request(completion: suggestedCompletion)
     setSearchFilter(request: searchRequest)
     seatSearchRegion(request: searchRequest)
     search(using: searchRequest)
   }
-  
+
   func createSearchRequest(for queryString: String?) {
     let searchRequest = MKLocalSearch.Request()
     searchRequest.naturalLanguageQuery = queryString
@@ -57,7 +57,7 @@ extension AppleMapsPOISearch {
     seatSearchRegion(request: searchRequest)
     search(using: searchRequest)
   }
-  
+
   private func setSearchFilter(request: MKLocalSearch.Request) {
     guard #available(iOS 13.0, *) else {
       return
@@ -71,27 +71,27 @@ extension AppleMapsPOISearch {
     request.pointOfInterestFilter = filter
 
   }
-  
+
   private func seatSearchRegion(request: MKLocalSearch.Request) {
     request.region = mapView.region
   }
-  
+
   private func search(using searchRequest: MKLocalSearch.Request) {
     localSearch = MKLocalSearch(request: searchRequest)
     search()
   }
-  
+
 }
 
-//displaying search results
+// displaying search results
 extension AppleMapsPOISearch {
-  
+
   private func displayMarkers() {
     let pointsOfInterestToDisplay = getMarkersToDisplay()
     setMarkersDisplayRegion()
     markers.setPOIMarkers(markerObjects: pointsOfInterestToDisplay)
   }
-  
+
   private func getMarkersToDisplay() -> [MarkerObject] {
     guard let places = places else { return [] }
     let annotations = places.compactMap { item -> MarkerObject? in
@@ -106,12 +106,12 @@ extension AppleMapsPOISearch {
     }
     return annotations
   }
-  
+
   private func setMarkersDisplayRegion() {
     guard let region = searchResultRegion else {
       return
     }
     mapView.region = region
   }
-  
+
 }

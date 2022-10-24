@@ -3,7 +3,6 @@ import ExpoModulesCore
 import GoogleMaps
 import GoogleMapsUtils
 
-
 struct ClusterRecord: Record {
   init() {}
 
@@ -21,4 +20,3 @@ struct ClusterRecord: Record {
   }
 }
 #endif
-

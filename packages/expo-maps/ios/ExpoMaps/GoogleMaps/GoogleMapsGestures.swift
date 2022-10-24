@@ -1,13 +1,13 @@
 import GoogleMaps
 
-class GoogleMapsGestures : Gestures {
-  
+class GoogleMapsGestures: Gestures {
+
   private let mapView: GMSMapView
-  
+
   init(mapView: GMSMapView) {
     self.mapView = mapView
   }
-  
+
   func setEnabledRotateGesture(enabled: Bool) {
     mapView.settings.rotateGestures = enabled
   }

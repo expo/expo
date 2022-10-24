@@ -1,7 +1,7 @@
 import MapKit
 
 class AppleMapsPolylines: Polylines {
-  
+
   private let mapView: MKMapView
   private var polylines: [MKPolyline] = []
   private var kmlPolylines: [MKPolyline] = []
@@ -18,7 +18,7 @@ class AppleMapsPolylines: Polylines {
       polylines.append(polyline)
     }
   }
-  
+
   func setKMLPolylines(polylineObjects: [PolylineObject]) {
     detachAndDeleteKMLPolylines()
     for polylineObject in polylineObjects {
@@ -32,12 +32,12 @@ class AppleMapsPolylines: Polylines {
     mapView.removeOverlays(polylines)
     polylines = []
   }
-  
+
   private func detachAndDeleteKMLPolylines() {
     mapView.removeOverlays(kmlPolylines)
     kmlPolylines = []
   }
-  
+
   private func createPolyline(polylineObject: PolylineObject) -> MKPolyline {
     var overlayPoints: [CLLocationCoordinate2D] = []
     for point in polylineObject.points {
@@ -52,7 +52,7 @@ class AppleMapsPolylines: Polylines {
       pattern: polylineObject.pattern, dotLength: dotLength)
     polyline.jointType = jointToCGLineJoin(polylineObject.jointType)
     polyline.capType = capToCGLineCap(polylineObject.capType)
-    
+
     return polyline
   }
 

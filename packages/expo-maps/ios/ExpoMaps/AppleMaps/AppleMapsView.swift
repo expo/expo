@@ -208,7 +208,7 @@ public final class AppleMapsView: UIView, ExpoMapView, UIGestureRecognizerDelega
   }
 
   func setInitialCameraPosition(initialCameraPosition: CameraMoveRecord) {
-    if (!wasInitialCameraPositionSet) {
+    if !wasInitialCameraPositionSet {
       cameraAnimator.moveCamera(cameraMove: initialCameraPosition, promise: nil)
       wasInitialCameraPositionSet = true
     }

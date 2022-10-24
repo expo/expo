@@ -2,7 +2,7 @@ import GooglePlaces
 import GoogleMaps
 
 class GooglePlacesFetchPlace {
-  
+
   private var placesClient: GMSPlacesClient
   private var tokenUtils: GoogleMapsPlacesTokenUtils
   private var markers: GoogleMapsMarkers
@@ -12,24 +12,23 @@ class GooglePlacesFetchPlace {
       displayMarker()
     }
   }
-  
+
   init(placesClient: GMSPlacesClient, tokenUtils: GoogleMapsPlacesTokenUtils, markers: GoogleMapsMarkers, mapView: GMSMapView) {
     self.placesClient = placesClient
     self.tokenUtils = tokenUtils
     self.markers = markers
     self.mapView = mapView
   }
-  
+
   func search(placeId: String) {
     guard let token = tokenUtils.getToken() else {
       print("No token provided for auto complete request!")
       return
     }
-    
+
     let fields = GMSPlaceField(rawValue: UInt(GMSPlaceField.name.rawValue)
                                | UInt(GMSPlaceField.coordinate.rawValue))
-    
-    
+
     placesClient.fetchPlace(fromPlaceID: placeId, placeFields: fields, sessionToken: token, callback: { (place, error) in
       if let error = error {
         print("An error occurred: \(error.localizedDescription)")
@@ -38,14 +37,14 @@ class GooglePlacesFetchPlace {
         self.fetchedPlace = place
       }
     })
-    
+
     tokenUtils.setNewSessionToken()
   }
-  
+
 }
 
 extension GooglePlacesFetchPlace {
-  
+
   private func displayMarker() {
     if let marker = getMarkerToDisplay() {
       markers.setPOIMarkers(markerObjects: [marker])
@@ -56,7 +55,7 @@ extension GooglePlacesFetchPlace {
       mapView.moveCamera(update)
     }
   }
-  
+
   private func getMarkerToDisplay() -> MarkerObject? {
     guard let place = fetchedPlace else { return nil }
     let marker = MarkerObject()
@@ -68,5 +67,5 @@ extension GooglePlacesFetchPlace {
     marker.draggable = false
     return marker
   }
-  
+
 }

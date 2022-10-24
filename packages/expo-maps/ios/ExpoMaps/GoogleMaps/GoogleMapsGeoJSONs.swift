@@ -16,9 +16,9 @@ class GoogleMapsGeoJsons: GeoJsons {
     for geoJsonObject in geoJsonObjects {
       let geoJsonParser = GMUGeoJSONParser(data: geoJsonObject.geoJsonString.data(using: .utf8)!)
       geoJsonParser.parse()
-      
+
       for feature in geoJsonParser.features {
-        if (feature.geometry.type == "Polygon") {
+        if feature.geometry.type == "Polygon" {
           feature.style = GMUStyle(
             styleID: "defaultExpoMapsStyle",
             stroke: geoJsonObject.defaultStyle?.polygon?.strokeColor,
@@ -32,7 +32,7 @@ class GoogleMapsGeoJsons: GeoJsons {
             hasFill: geoJsonObject.defaultStyle?.polygon?.fillColor != nil,
             hasStroke: geoJsonObject.defaultStyle?.polygon?.strokeColor != nil
           )
-        } else if (feature.geometry.type == "LineString") {
+        } else if feature.geometry.type == "LineString" {
           feature.style = GMUStyle(
             styleID: "defaultExpoMapsStyle",
             stroke: geoJsonObject.defaultStyle?.polyline?.color,
@@ -58,7 +58,7 @@ class GoogleMapsGeoJsons: GeoJsons {
       renderers.append(renderer)
     }
   }
-  
+
   private func deleteGeoJsons() {
     for renderer in renderers {
       renderer.clear()

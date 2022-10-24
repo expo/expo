@@ -19,7 +19,7 @@ class GoogleMapsHeatmaps: Heatmaps {
       if let gradient = heatmapObject.gradient {
         heatmap.gradient = GMUGradient(
           colors: gradient.colors,
-          startPoints:gradient.locations.map({NSNumber(value: $0)}),
+          startPoints: gradient.locations.map({NSNumber(value: $0)}),
           colorMapSize: 256)
       }
       if let radius = heatmapObject.radius {heatmap.radius = radius}
@@ -29,7 +29,7 @@ class GoogleMapsHeatmaps: Heatmaps {
           coordinate: CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude),
           intensity: $0.data ?? 1.0)
       })
-        
+
       heatmap.map = mapView
       heatmaps.append(heatmap)
     }

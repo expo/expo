@@ -3,19 +3,18 @@ import ExpoModulesCore
 import GoogleMaps
 
 class GoogleMapsCameraAnimations {
-  private let mapView: GMSMapView;
+  private let mapView: GMSMapView
 
   init(mapView: GMSMapView) {
     self.mapView = mapView
   }
-
 
   func moveCamera(cameraMove: CameraMoveRecord, promise: Promise?) {
     var boundsUpdate: GMSCameraUpdate?
     let target = CLLocationCoordinate2D(
       latitude: cameraMove.target["latitude"] as? CLLocationDegrees ?? mapView.camera.target.latitude,
       longitude: cameraMove.target["longitude"] as? CLLocationDegrees ?? mapView.camera.target.longitude
-    );
+    )
 
     if let delta = cameraMove.latLngDelta {
       let latitudeDelta = delta["latitudeDelta"] as! Double
@@ -27,7 +26,7 @@ class GoogleMapsCameraAnimations {
       boundsUpdate = GMSCameraUpdate.fit(GMSCoordinateBounds(coordinate: topLeft, coordinate: bottomRight))
     }
 
-    if (cameraMove.animate) {
+    if cameraMove.animate {
       CATransaction.begin()
       CATransaction.setCompletionBlock {
         /*

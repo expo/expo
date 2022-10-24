@@ -13,7 +13,7 @@ public final class GoogleMapsView: UIView, ExpoMapView {
   private let polygons: GoogleMapsPolygons
   private let polylines: GoogleMapsPolylines
   private let circles: GoogleMapsCircles
-  
+
 #if HAS_GOOGLE_UTILS
   private let clusters: GoogleMapsClusters
   private let googleMapsClusterManagerDelegate: GoogleMapsClusterManagerDelegate
@@ -22,7 +22,7 @@ public final class GoogleMapsView: UIView, ExpoMapView {
   private let overlays: GoogleMapsOverlays
   private let heatmaps: GoogleMapsHeatmaps
 #endif
-  
+
   private let places: GoogleMapsPlaces
   private var wasInitialCameraPositionSet = false
   private let cameraAnimations: GoogleMapsCameraAnimations
@@ -200,7 +200,7 @@ public final class GoogleMapsView: UIView, ExpoMapView {
   }
 
   func setInitialCameraPosition(initialCameraPosition: CameraMoveRecord) {
-    if (!wasInitialCameraPositionSet) {
+    if !wasInitialCameraPositionSet {
       cameraAnimations.moveCamera(cameraMove: initialCameraPosition, promise: nil)
       wasInitialCameraPositionSet = true
     }

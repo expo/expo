@@ -3,7 +3,7 @@ import MapKit
 
 struct UserLocationRecord: Record {
   init() {}
-  
+
   @Field var position: [String: Any?]
   @Field var altitude: Double?
   @Field var accuracy: Double?
@@ -12,7 +12,7 @@ struct UserLocationRecord: Record {
   @Field var speedAccuracy: Double?
   @Field var heading: Double?
   @Field var timestamp: Double?
-  
+
   init(location: CLLocation) {
     position = LatLngRecord(coordinate: location.coordinate).toDictionary()
     altitude = location.altitude
@@ -23,7 +23,7 @@ struct UserLocationRecord: Record {
     heading = location.course
     timestamp = location.timestamp.timeIntervalSinceReferenceDate * 1000
   }
-  
+
   init(location: MKUserLocation) {
     position = LatLngRecord(coordinate: location.coordinate).toDictionary()
     altitude = location.location?.altitude

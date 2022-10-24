@@ -5,8 +5,8 @@ import MapKit
  */
 func createAppleMarker(markerObject: MarkerObject, includeDragging: Bool) -> ExpoMKAnnotation {
   let iconURL = (markerObject.icon != nil) ? URL(fileURLWithPath: markerObject.icon!) : nil
-  
-  if (iconURL != nil) {
+
+  if iconURL != nil {
     let marker = ExpoMKImageAnnotation(coordinate: CLLocationCoordinate2D(latitude: markerObject.latitude, longitude: markerObject.longitude))
     marker.id = markerObject.id
     marker.title = markerObject.markerTitle
@@ -15,11 +15,11 @@ func createAppleMarker(markerObject: MarkerObject, includeDragging: Bool) -> Exp
     marker.centerOffsetX = markerObject.anchorU ?? 0
     marker.centerOffsetY = markerObject.anchorV ?? 0
     marker.alpha = markerObject.opacity
-    
-    if (includeDragging) {
+
+    if includeDragging {
       marker.isDraggable = markerObject.draggable
     }
-    
+
     return marker
   } else {
     let marker = ExpoMKColorAnnotation(coordinate: CLLocationCoordinate2D(latitude: markerObject.latitude, longitude: markerObject.longitude))
@@ -32,11 +32,11 @@ func createAppleMarker(markerObject: MarkerObject, includeDragging: Bool) -> Exp
     marker.centerOffsetX = markerObject.anchorU ?? 0
     marker.centerOffsetY = markerObject.anchorV ?? 0
     marker.alpha = markerObject.opacity
-    
-    if (includeDragging) {
+
+    if includeDragging {
       marker.isDraggable = markerObject.draggable
     }
-    
+
     return marker
   }
 }

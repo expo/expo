@@ -15,17 +15,17 @@ class GoogleMapsMarkers: Markers {
     detachAndDeleteMarkers()
     for markerObject in markerObjects {
       let marker: GMSMarker = createGoogleMarker(markerObject: markerObject, includeDragging: true)
-      
+
       marker.map = mapView
       googleMapsMarkersManager.appendMarker(marker: marker, id: markerObject.id)
     }
   }
-  
+
   func setPOIMarkers(markerObjects: [MarkerObject]) {
     detachAndDeletePOIMarkers()
     for markerObject in markerObjects {
       let marker: GMSMarker = createGoogleMarker(markerObject: markerObject, includeDragging: false)
-      
+
       marker.map = mapView
       poiMarkers.append(marker)
     }
@@ -34,7 +34,7 @@ class GoogleMapsMarkers: Markers {
   internal func detachAndDeleteMarkers() {
     googleMapsMarkersManager.clearMarkers()
   }
-  
+
   func detachAndDeletePOIMarkers() {
     for marker in poiMarkers {
       marker.map = nil

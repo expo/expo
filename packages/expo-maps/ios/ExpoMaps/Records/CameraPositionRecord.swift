@@ -13,10 +13,10 @@ struct CameraPositionRecord: Record {
   @Field var longitudeDelta: Double?
 
   init(cameraPosition: GMSCameraPosition, visibleRegion: GMSVisibleRegion?) {
-    target = LatLngRecord(coordinate: cameraPosition.target).toDictionary();
+    target = LatLngRecord(coordinate: cameraPosition.target).toDictionary()
     zoom = cameraPosition.zoom
-    bearing = cameraPosition.bearing;
-    tilt = cameraPosition.viewingAngle;
+    bearing = cameraPosition.bearing
+    tilt = cameraPosition.viewingAngle
     if let visibleRegion = visibleRegion {
       latitudeDelta = abs(visibleRegion.nearLeft.latitude - visibleRegion.farRight.latitude)
       longitudeDelta = abs(visibleRegion.nearLeft.longitude - visibleRegion.farRight.longitude)

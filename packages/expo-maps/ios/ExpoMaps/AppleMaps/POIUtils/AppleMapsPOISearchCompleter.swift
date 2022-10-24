@@ -2,37 +2,37 @@ import MapKit
 import ExpoModulesCore
 
 class AppleMapsPOISearchCompleter: NSObject, SearchCompleter {
-  
+
   private var searchCompleter = MKLocalSearchCompleter()
   private var searchCompleterResults: [MKLocalSearchCompletion]?
   private var searchCompletionsPromise: Promise?
-  
+
   init(delegate: MKLocalSearchCompleterDelegate?) {
     super.init()
     let delegate = delegate ?? self
     searchCompleter.delegate = delegate
   }
-  
+
   func autoComplete(searchQueryFragment: String) {
     searchCompleter.queryFragment = searchQueryFragment
   }
-  
+
   func autoComplete(searchQueryFragment: String, promise: Promise) {
     searchCompletionsPromise = promise
     searchCompleter.queryFragment = searchQueryFragment
   }
-  
+
   func getSearchCompletions() -> [String] {
     if let results = searchCompleterResults {
       return mapSearchCompletions(completions: results)
     }
     return []
   }
-  
+
   func setSearchCompleterRegion(region: MKCoordinateRegion) {
     searchCompleter.region = region
   }
-  
+
   @available(iOS 13.0, *)
   func setSearchCompleterFilters(filter: MKPointOfInterestFilter?) {
     searchCompleter.resultTypes = .pointOfInterest
@@ -42,12 +42,12 @@ class AppleMapsPOISearchCompleter: NSObject, SearchCompleter {
     }
     searchCompleter.pointOfInterestFilter = filter
   }
-  
+
   private func resolveSearchCompletionsPromise() {
     guard searchCompletionsPromise != nil else {
       return
     }
-    
+
     if let results = searchCompleterResults {
       let searchCompletions = mapSearchCompletions(completions: results)
       searchCompletionsPromise?.resolve(searchCompletions)
@@ -57,7 +57,7 @@ class AppleMapsPOISearchCompleter: NSObject, SearchCompleter {
     }
     searchCompletionsPromise = nil
   }
-  
+
   func mapSearchCompletions(completions: [MKLocalSearchCompletion]) -> [String] {
     var stringCompletions: [String] = []
     for completion in completions {
@@ -69,10 +69,10 @@ class AppleMapsPOISearchCompleter: NSObject, SearchCompleter {
 }
 
 extension AppleMapsPOISearchCompleter: MKLocalSearchCompleterDelegate {
-  
+
   func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
     searchCompleterResults = completer.results
     resolveSearchCompletionsPromise()
   }
-  
+
 }

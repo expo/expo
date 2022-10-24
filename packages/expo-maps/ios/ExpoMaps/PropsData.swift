@@ -7,7 +7,7 @@ enum MapType: String, EnumArgument {
   case terrain
 }
 
-//TODO: unify with google maps
+// TODO: unify with google maps
 enum POICategoryType: String, EnumArgument {
   case airport
   case atm
@@ -23,16 +23,16 @@ enum POICategoryType: String, EnumArgument {
 }
 
 struct MarkerObject: Record {
-  @Field var id: String? = nil
+  @Field var id: String?
   @Field var latitude: Double = 0
   @Field var longitude: Double = 0
-  @Field var markerTitle: String? = nil
-  @Field var markerSnippet: String? = nil
-  @Field var icon: String? = nil
-  @Field var color: UIColor? = nil
+  @Field var markerTitle: String?
+  @Field var markerSnippet: String?
+  @Field var icon: String?
+  @Field var color: UIColor?
   @Field var draggable: Bool = false
-  @Field var anchorU: Double? = nil
-  @Field var anchorV: Double? = nil
+  @Field var anchorU: Double?
+  @Field var anchorV: Double?
   @Field var opacity: Double = 1
 }
 
@@ -44,25 +44,25 @@ struct Point: Record {
 struct PointWithData: Record {
   @Field var latitude: Double = 0
   @Field var longitude: Double = 0
-  @Field var data: Float? = nil
+  @Field var data: Float?
 }
 
 struct PolygonObject: Record {
   @Field var points: [Point] = []
-  @Field var fillColor: UIColor? = nil
-  @Field var strokeColor: UIColor? = nil
-  @Field var strokeWidth: Float? = nil
-  @Field var strokePattern: [PatternItem]? = nil
-  @Field var jointType: Joint? = nil
+  @Field var fillColor: UIColor?
+  @Field var strokeColor: UIColor?
+  @Field var strokeWidth: Float?
+  @Field var strokePattern: [PatternItem]?
+  @Field var jointType: Joint?
 }
 
 struct PolylineObject: Record {
   @Field var points: [Point] = []
-  @Field var color: UIColor? = nil
-  @Field var width: Float? = nil
-  @Field var pattern: [PatternItem]? = nil
-  @Field var jointType: Joint? = nil
-  @Field var capType: Cap? = nil
+  @Field var color: UIColor?
+  @Field var width: Float?
+  @Field var pattern: [PatternItem]?
+  @Field var jointType: Joint?
+  @Field var capType: Cap?
 }
 
 struct PatternItem: Record {
@@ -96,13 +96,13 @@ struct CircleObject: Record {
 }
 
 struct ClusterObject: Record {
-  @Field var id: String? = nil
+  @Field var id: String?
   @Field var name: String = "default_cluster"
   @Field var minimumClusterSize: Int = 2
-  @Field var markerTitle: String? = nil
-  @Field var markerSnippet: String? = nil
-  @Field var icon: String? = nil
-  @Field var color: UIColor? = nil
+  @Field var markerTitle: String?
+  @Field var markerSnippet: String?
+  @Field var icon: String?
+  @Field var color: UIColor?
   @Field var opacity: Double = 1
   @Field var markers: [MarkerObject] = []
 }
@@ -147,7 +147,6 @@ struct OverlayObject: Record {
   @Field var icon: String = ""
 }
 
-
 struct Bounds: Record {
   @Field var southWest: Point = Point()
   @Field var northEast: Point = Point()
@@ -160,7 +159,7 @@ struct Gradient: Record {
 
 struct HeatmapObject: Record {
   @Field var points: [PointWithData] = []
-  @Field var gradient: Gradient? = nil
-  @Field var radius: UInt? = nil
-  @Field var opacity: Float? = nil
+  @Field var gradient: Gradient?
+  @Field var radius: UInt?
+  @Field var opacity: Float?
 }

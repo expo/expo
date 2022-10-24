@@ -98,14 +98,13 @@ class GoogleMapsViewDelegate: NSObject, GMSMapViewDelegate {
     return false
   }
 
-
   func mapView(
     _ mapView: GMSMapView,
     didTapPOIWithPlaceID placeId: String,
     name: String,
     location: CLLocationCoordinate2D
   ) {
-    if (expoMapView!.clickablePOIs) {
+    if expoMapView!.clickablePOIs {
       infoMarker.position = location
       infoMarker.title = name
       infoMarker.map = mapView
@@ -115,7 +114,7 @@ class GoogleMapsViewDelegate: NSObject, GMSMapViewDelegate {
   }
 
   override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-    if (keyPath == "myLocation") {
+    if keyPath == "myLocation" {
       if let mapView = object as? GMSMapView {
         expoMapView?.onLocationChange(UserLocationRecord(location: mapView.myLocation!).toDictionary())
       }

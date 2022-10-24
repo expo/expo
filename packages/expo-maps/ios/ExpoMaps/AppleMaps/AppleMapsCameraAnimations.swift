@@ -3,7 +3,7 @@ import MapKit
 import ExpoModulesCore
 
 class AppleMapsCameraAnimations {
-  private let mapView: MKMapView;
+  private let mapView: MKMapView
 
   init(mapView: MKMapView) {
     self.mapView = mapView
@@ -11,11 +11,11 @@ class AppleMapsCameraAnimations {
 
   func moveCamera(cameraMove: CameraMoveRecord, promise: Promise?) {
     let newCamera = MKMapCamera()
-    var mapRect: MKMapRect? = nil
+    var mapRect: MKMapRect?
     let target = CLLocationCoordinate2D(
       latitude: cameraMove.target["latitude"] as? CLLocationDegrees ?? mapView.camera.centerCoordinate.latitude,
       longitude: cameraMove.target["longitude"] as? CLLocationDegrees ?? mapView.camera.centerCoordinate.longitude
-    );
+    )
 
     newCamera.centerCoordinate = target
     newCamera.heading = cameraMove.bearing ?? mapView.camera.heading
@@ -50,21 +50,21 @@ class AppleMapsCameraAnimations {
       mapRect = MKMapRect(x: topLeft.x, y: topLeft.y, width: bottomRight.x - topLeft.x, height: bottomRight.y - topLeft.y)
     }
 
-    if (cameraMove.animate) {
+    if cameraMove.animate {
       UIView.animate(withDuration: Double(cameraMove.duration) / 1000, animations: { () -> Void in
         if let mapRect = mapRect {
           self.mapView.setVisibleMapRect(mapRect, animated: true)
         } else {
-          self.mapView.setCamera(newCamera, animated: true);
+          self.mapView.setCamera(newCamera, animated: true)
         }
-      }, completion: { [self] (finished) -> Void in
+      }, completion: { [self] (_) -> Void in
         promise?.resolve(CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span).toDictionary())
       })
     } else {
       if let mapRect = mapRect {
         mapView.setVisibleMapRect(mapRect, animated: false)
       } else {
-        mapView.setCamera(newCamera, animated: false);
+        mapView.setCamera(newCamera, animated: false)
       }
       promise?.resolve(CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span).toDictionary())
     }

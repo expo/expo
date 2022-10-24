@@ -10,17 +10,17 @@ class AppleMapsControls: Controls {
    func setShowCompass(enable: Bool) {
      mapView.showsCompass = enable
    }
-     
+
    func setShowMyLocationButton(enable: Bool) {
-     if (enable == true) {
+     if enable == true {
         enableMyLocationButton()
      }
    }
 
     func setShowLevelPicker(enable: Bool) {
-      //TODO: enable floor picker
+      // TODO: enable floor picker
     }
-    
+
     private func enableMyLocationButton() {
       mapView.showsUserLocation = true
       let myLocationButton = MKUserTrackingButton(mapView: mapView)
@@ -30,7 +30,7 @@ class AppleMapsControls: Controls {
       myLocationButton.layer.cornerRadius = 5
       myLocationButton.translatesAutoresizingMaskIntoConstraints = false
       mapView.addSubview(myLocationButton)
-             
+
       NSLayoutConstraint.activate([
           myLocationButton.topAnchor.constraint(equalTo: mapView.topAnchor,
 constant: 100),

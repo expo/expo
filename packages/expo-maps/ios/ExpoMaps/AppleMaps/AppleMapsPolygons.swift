@@ -1,7 +1,7 @@
 import MapKit
 
 class AppleMapsPolygons: Polygons {
-  
+
   private let mapView: MKMapView
   private var polygons: [MKPolygon] = []
   private var kmlPolygons: [MKPolygon] = []
@@ -18,7 +18,7 @@ class AppleMapsPolygons: Polygons {
       polygons.append(polygon)
     }
   }
-  
+
   func setKMLPolygons(polygonObjects: [PolygonObject]) {
     detachAndDeleteKMLPolygons()
     for polygonObject in polygonObjects {
@@ -32,12 +32,12 @@ class AppleMapsPolygons: Polygons {
     mapView.removeOverlays(polygons)
     polygons = []
   }
-  
+
   private func detachAndDeleteKMLPolygons() {
     mapView.removeOverlays(kmlPolygons)
     kmlPolygons = []
   }
-  
+
   private func createPolygon(polygonObject: PolygonObject) -> MKPolygon {
     var overlayPoints: [CLLocationCoordinate2D] = []
     for point in polygonObject.points {
@@ -54,7 +54,7 @@ class AppleMapsPolygons: Polygons {
       if polygonObject.strokeWidth == nil {polygon.strokeWidth = 1.0}
     }
     polygon.jointType = jointToCGLineJoin(polygonObject.jointType)
-    
+
     return polygon
   }
 }
