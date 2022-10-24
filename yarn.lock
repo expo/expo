@@ -3309,10 +3309,10 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-community/netinfo@9.3.3":
-  version "9.3.3"
-  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-9.3.3.tgz#ee6a36f7f084d84e90342743026717e7ddad6a90"
-  integrity sha512-/nlrGqItwRnqjis7yWhUq6lpxS8Sm1DMNsjNfABih9wGnh58Tu28z3Box/ifFnu0kD2Fdp0UZXe74QwoZDKA4A==
+"@react-native-community/netinfo@9.3.5":
+  version "9.3.5"
+  resolved "https://registry.yarnpkg.com/@react-native-community/netinfo/-/netinfo-9.3.5.tgz#0c60c798b5e0e14dd3b3fbab629a6e9609f709fd"
+  integrity sha512-Mqbh/J8YCfc+EqSjq5OJn2USmcD8On4048pKEfyCsCDty3lQs1SNcmHqJdu9idNU2v//aM73T8F+re59cf78Ig==
 
 "@react-native-community/slider@4.2.4":
   version "4.2.4"
@@ -3324,15 +3324,15 @@
   resolved "https://registry.yarnpkg.com/@react-native-community/viewpager/-/viewpager-5.0.11.tgz#dbeb2d1b2452607926407c99e4de59c7db9e3019"
   integrity sha512-eboJwbDQjP1qJP3LFzVspgh88IGNF07S2qpU296j+4kL0inVuL+HXs81SuczMGtJmDZ4u19RNEBVq79of/h+jQ==
 
-"@react-native-masked-view/masked-view@0.2.6":
-  version "0.2.6"
-  resolved "https://registry.yarnpkg.com/@react-native-masked-view/masked-view/-/masked-view-0.2.6.tgz#b26c52d5db3ad0926b13deea79c69620966a9221"
-  integrity sha512-303CxmetUmgiX9NSUxatZkNh9qTYYdiM8xkGf9I3Uj20U3eGY3M78ljeNQ4UVCJA+FNGS5nC1dtS9GjIqvB4dg==
+"@react-native-masked-view/masked-view@0.2.8":
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/@react-native-masked-view/masked-view/-/masked-view-0.2.8.tgz#34405a4361882dae7c81b1b771fe9f5fbd545a97"
+  integrity sha512-+1holBPDF1yi/y0uc1WB6lA5tSNHhM7PpTMapT3ypvSnKQ9+C6sy/zfjxNxRA/llBQ1Ci6f94EaK56UCKs5lTA==
 
-"@react-native-picker/picker@2.4.6":
-  version "2.4.6"
-  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.4.6.tgz#a6f804c41ca2a0bb52f1d04402e2fb76b5074e78"
-  integrity sha512-TyrQZKwi7tbGbETxpQpaf0Jld6Fw/RRWVPAShRobTUWwUglveP71mtdLwuNJV+1NXI6PqW/OvCEk9ZmFfGj0fQ==
+"@react-native-picker/picker@2.4.8":
+  version "2.4.8"
+  resolved "https://registry.yarnpkg.com/@react-native-picker/picker/-/picker-2.4.8.tgz#a1a21f3d6ecadedbc3f0b691a444ddd7baa081f8"
+  integrity sha512-5NQ5XPo1B03YNqKFrV6h9L3CQaHlB80wd4ETHUEABRP2iLh7FHLVObX2GfziD+K/VJb8G4KZcZ23NFBFP1f7bg==
 
 "@react-native-segmented-control/segmented-control@2.4.0":
   version "2.4.0"
@@ -3501,18 +3501,18 @@
     component-type "^1.2.1"
     join-component "^1.1.0"
 
-"@shopify/flash-list@1.3.0":
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-1.3.0.tgz#0ac09f844afb1d73371b84ef049ec9c3a5db112e"
-  integrity sha512-1NyLYs9AzwLBRAjdESAcq7fZLccVBGwmiq78ygh+QokcrpAcRkiQDWJAK0zfk+Wej/1thggiFxo6X2Xu1X98Pg==
+"@shopify/flash-list@1.3.1":
+  version "1.3.1"
+  resolved "https://registry.yarnpkg.com/@shopify/flash-list/-/flash-list-1.3.1.tgz#0bf5816028049a26fec09117ad70b761a8258a99"
+  integrity sha512-4Bse5zZ9xVRb7eU50kjK0nqKus5nXiqPNUcNKATI//rFvARxFqjhVDkaB18HKF9/8cxvtYgS4Rr9CUt1aZMMfQ==
   dependencies:
     recyclerlistview "4.1.2"
     tslib "2.4.0"
 
-"@shopify/react-native-skia@0.1.153":
-  version "0.1.153"
-  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.153.tgz#59eb0e58c300d7e5dc74732bc60b3a14a721dc70"
-  integrity sha512-YrV4NDvJi7T2ha7F4MqNtYl+MZfUWtkGSodaylNBr6EJkG3HaG7pYQNqK6xYOSyPJZ104E2LBZF4dMoY3qaSfQ==
+"@shopify/react-native-skia@0.1.155":
+  version "0.1.155"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.155.tgz#44bc58a39939fd6f6bf83481f417fb8494b2e99e"
+  integrity sha512-tRJy1gXrRCjPgG4CLvyxEOSHDU5IHsBS7TGsdyP/6cz9gcb1QrTejUi1+dfixjMcsRof4wYpprlIvnfwjNLWpg==
   dependencies:
     canvaskit-wasm "0.36.1"
     react-reconciler "0.26.2"
