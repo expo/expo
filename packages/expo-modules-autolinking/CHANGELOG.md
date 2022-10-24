@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Bump `@tsconfig/node` to match other Expo Modules packages development setup.
+
 ## 0.11.0 — 2022-10-06
 
 ### 🎉 New features
