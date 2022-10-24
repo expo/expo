@@ -1,8 +1,13 @@
 import 'expo/build/Expo.fx';
 import { AppRegistry, Platform } from 'react-native';
-import withExpoRoot from './withExpoRoot';
 export default function registerRootComponent(component) {
-    AppRegistry.registerComponent('main', () => withExpoRoot(component));
+    if (process.env.NODE_ENV === 'production') {
+        AppRegistry.registerComponent('main', () => component);
+    }
+    else {
+        const { withDevTools } = require('./withDevTools');
+        AppRegistry.registerComponent('main', () => withDevTools(component));
+    }
     if (Platform.OS === 'web') {
         const rootTag = document.getElementById('root') ?? document.getElementById('main');
         AppRegistry.runApplication('main', { rootTag });
