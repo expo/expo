@@ -935,7 +935,7 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   // https://developer.apple.com/forums/thread/702933
   if(fileUTI == nil){
     // List from https://stackoverflow.com/a/70102692
-    NSDictionary* kExtensionLookupFallback = @{@"jpeg": @(PHAssetMediaTypeImage),
+    NSDictionary *kExtensionLookupFallback = @{@"jpeg": @(PHAssetMediaTypeImage),
                                                @"jpg": @(PHAssetMediaTypeImage),
                                                @"jpe": @(PHAssetMediaTypeImage),
                                                @"png": @(PHAssetMediaTypeImage),
@@ -972,7 +972,7 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
                                                @"icns": @(PHAssetMediaTypeImage)};
 
     EXLogWarn(@"Asset media type is recognized from file extension and this behavior can differ on iOS Simulator and a physical device.");
-    NSNumber* fallbackMediaType = [kExtensionLookupFallback objectForKey:[localUri pathExtension]];
+    NSNumber *fallbackMediaType = [kExtensionLookupFallback objectForKey:[localUri pathExtension]];
     return fallbackMediaType ? [fallbackMediaType intValue] : PHAssetMediaTypeUnknown;
   }
   

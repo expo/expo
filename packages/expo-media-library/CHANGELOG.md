@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
 - Fix promise rejection on M1 iOS Simulator due to `UTTypeCreatePreferredIdentifierForTag` not working as expected. ([#19669](https://github.com/expo/expo/pull/19669) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
