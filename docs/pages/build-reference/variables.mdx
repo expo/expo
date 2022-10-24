@@ -95,7 +95,7 @@ To create **app-specific secrets**, navigate to [the "Secrets" tab in your proje
 
 ### Adding secrets with EAS CLI
 
-To create a new secret, run `eas secret:create`
+To create a new secret, run `eas secret:create`:
 
 <Terminal
   cmd={[
@@ -121,6 +121,33 @@ To view any existing secrets for this project, run `eas secret:list`:
     '├────────────────┼────────┼─────────┼──────────────────────────────────────┼─────────────────┤',
     '│ sentryApiKey   │ string │ project │ 88dd0296-9119-4d50-a91b-1f646733f569 │ Oct 05 11:51:40 │',
     '└────────────────┴────────┴─────────┴──────────────────────────────────────┴─────────────────┘',
+  ]}
+/>
+
+### Importing secrets from a dotenv file
+
+If you're using a **.env** file for storing your secrets locally, you can use the `eas secret:push` command to import all of them to EAS:
+
+<Terminal
+  cmd={[
+    '$ eas secret:push --scope project --env-file ./eas/.env',
+    '✔ Creating secrets on account johndoe...',
+    '✔ Created the following secrets on account johndoe:',
+    '- ABC',
+    '- DEF',
+    '- GHI',
+  ]}
+/>
+
+Beware that EAS CLI will fail if some of the secrets defined in the dotenv file already exist on the server. To force overriding those secrets, pass the `--force` flag to the command.
+
+#### Doppler intergration
+
+You can use the `eas secret:push` command to integrate EAS with your [Doppler](https://doppler.com/) project:
+
+<Terminal
+  cmd={[
+    '$ doppler run --mount ./eas/.env -- eas secret:push --scope project --env-file ./eas/.env',
   ]}
 />
 
