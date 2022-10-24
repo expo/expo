@@ -17,7 +17,6 @@ class BundlerController {
         this.process = bundler;
     }
     async stop() {
-        var _a;
         try {
             // Fixes:
             // Error: read EIO
@@ -42,7 +41,7 @@ class BundlerController {
                     }
                 }, 100);
             });
-            await killProcess((_a = this.process) === null || _a === void 0 ? void 0 : _a.pid, 2000);
+            await killProcess(this.process?.pid, 2000);
         }
         catch (error) {
             console.log(`Cannot kill bundler: ${error}.`);

@@ -105,13 +105,12 @@ class TemplateProject {
         });
     }
     getTemplateFiles() {
-        var _a, _b;
         const tff = new TemplateFile_1.TemplateFilesFactory('detox');
-        const additionalFiles = (_a = this.config.additionalFiles) === null || _a === void 0 ? void 0 : _a.reduce((reducer, file) => ({
+        const additionalFiles = this.config.additionalFiles?.reduce((reducer, file) => ({
             ...reducer,
             [file]: new TemplateFile_1.UserFile(this.userFilePath(file)),
         }), {});
-        if ((_b = this.config.android) === null || _b === void 0 ? void 0 : _b.detoxTestFile) {
+        if (this.config.android?.detoxTestFile) {
             additionalFiles['android/app/src/androidTest/java/com/testrunner/DetoxTest.java'] =
                 new TemplateFile_1.UserFile(this.userFilePath(this.config.android.detoxTestFile), Platform_1.Platform.Android);
         }
@@ -161,7 +160,7 @@ class TemplateProject {
         }
         finally {
             // If bundler wasn't started is noop.
-            await (bundler === null || bundler === void 0 ? void 0 : bundler.stop());
+            await bundler?.stop();
         }
     }
 }

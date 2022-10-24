@@ -12,8 +12,8 @@ const autolinking_1 = require("./autolinking");
 function registerSearchCommand(commandName, fn) {
     return commander_1.default
         .command(`${commandName} [paths...]`)
-        .option('-i, --ignore-paths <ignorePaths...>', 'Paths to ignore when looking up for modules.', (value, previous) => (previous !== null && previous !== void 0 ? previous : []).concat(value))
-        .option('-e, --exclude <exclude...>', 'Package names to exclude when looking up for modules.', (value, previous) => (previous !== null && previous !== void 0 ? previous : []).concat(value))
+        .option('-i, --ignore-paths <ignorePaths...>', 'Paths to ignore when looking up for modules.', (value, previous) => (previous ?? []).concat(value))
+        .option('-e, --exclude <exclude...>', 'Package names to exclude when looking up for modules.', (value, previous) => (previous ?? []).concat(value))
         .option('-p, --platform [platform]', 'The platform that the resulting modules must support. Available options: "ios", "android"', 'ios')
         .option('--silent', 'Silence resolution warnings')
         .action(async (searchPaths, providedOptions) => {
