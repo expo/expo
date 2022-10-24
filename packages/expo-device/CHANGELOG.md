@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `<bluetooth_name> is only readable to apps with targetSdkVersion lower than or equal to: 31` error when the `targetSdkVersion` is set to 33. ([#19666](https://github.com/expo/expo/pull/19666) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Refactored inline emulator checks to use enhanced checking in `EmulatorUtilities.isRunningOnEmulator() `. ([#16177](https://github.com/expo/expo/pull/16177)) by [@kbrandwijk](https://github.com/kbrandwijk), [@keith-kurak](https://github.com/keith-kurak))
