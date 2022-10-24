@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsPOISearch {
-
   private var mapView: MKMapView
   private var markers: AppleMapsMarkers
 
@@ -29,7 +28,7 @@ class AppleMapsPOISearch {
   }
 
   private func search() {
-    localSearch?.start { [unowned self] (response, error) in
+    localSearch?.start { [unowned self] response, error in
       guard error == nil else {
           print("MKLocalSearch search start resulted in an error")
           return
@@ -42,7 +41,6 @@ class AppleMapsPOISearch {
 
 // MKLocalSearch.Request
 extension AppleMapsPOISearch {
-
   func createSearchRequest(for suggestedCompletion: MKLocalSearchCompletion) {
     let searchRequest = MKLocalSearch.Request(completion: suggestedCompletion)
     setSearchFilter(request: searchRequest)
@@ -69,7 +67,6 @@ extension AppleMapsPOISearch {
       filter = MKPointOfInterestFilter.includingAll
     }
     request.pointOfInterestFilter = filter
-
   }
 
   private func seatSearchRegion(request: MKLocalSearch.Request) {
@@ -80,12 +77,10 @@ extension AppleMapsPOISearch {
     localSearch = MKLocalSearch(request: searchRequest)
     search()
   }
-
 }
 
 // displaying search results
 extension AppleMapsPOISearch {
-
   private func displayMarkers() {
     let pointsOfInterestToDisplay = getMarkersToDisplay()
     setMarkersDisplayRegion()
@@ -113,5 +108,4 @@ extension AppleMapsPOISearch {
     }
     mapView.region = region
   }
-
 }

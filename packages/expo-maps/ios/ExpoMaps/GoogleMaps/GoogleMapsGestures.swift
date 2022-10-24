@@ -1,7 +1,6 @@
 import GoogleMaps
 
 class GoogleMapsGestures: Gestures {
-
   private let mapView: GMSMapView
 
   init(mapView: GMSMapView) {

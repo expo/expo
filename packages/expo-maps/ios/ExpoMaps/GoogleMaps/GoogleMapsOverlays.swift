@@ -1,7 +1,6 @@
 import GoogleMaps
 
 class GoogleMapsOverlays: Overlays {
-
   private let mapView: GMSMapView
   private var overlays: [GMSGroundOverlay] = []
 

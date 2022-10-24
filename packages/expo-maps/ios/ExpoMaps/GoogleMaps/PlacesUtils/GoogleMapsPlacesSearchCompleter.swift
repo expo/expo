@@ -3,7 +3,6 @@ import GoogleMaps
 import ExpoModulesCore
 
 class GoogleMapsPlacesSearchCompleter: SearchCompleter {
-
   private var placesClient: GMSPlacesClient
   private var tokenUtils: GoogleMapsPlacesTokenUtils
   private var searchCompleterResults: [GMSAutocompletePrediction]?
@@ -25,7 +24,7 @@ class GoogleMapsPlacesSearchCompleter: SearchCompleter {
       return
     }
 
-    placesClient.findAutocompletePredictions(fromQuery: searchQueryFragment, filter: filter, sessionToken: token, callback: {(results, error) in
+    placesClient.findAutocompletePredictions(fromQuery: searchQueryFragment, filter: filter, sessionToken: token, callback: {results, error in
         if let error = error {
           let errorMessage = "Autocomplete error: \(error)"
           promise?.reject("", errorMessage)
@@ -68,5 +67,4 @@ class GoogleMapsPlacesSearchCompleter: SearchCompleter {
     let results = getSearchCompletions()
     searchCompletionsPromise.resolve(results)
   }
-
 }

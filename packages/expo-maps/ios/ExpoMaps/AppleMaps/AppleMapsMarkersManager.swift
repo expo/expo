@@ -1,5 +1,4 @@
 class AppleMapsMarkersManager {
-
   private var markersMap: [ExpoMKAnnotation: String?] = [:]
   private var clustersItemsMap: [ExpoMKAnnotation: String?] = [:]
 
@@ -12,7 +11,7 @@ class AppleMapsMarkersManager {
   }
 
   func getMarkerId(marker: ExpoMKAnnotation) -> String? {
-    return markersMap[marker] ?? nil
+    return markersMap[marker]
   }
 
   func getMarkers() -> [ExpoMKAnnotation] {
@@ -28,7 +27,7 @@ class AppleMapsMarkersManager {
   }
 
   func getClusterItemId(clusterItem: ExpoMKAnnotation) -> String? {
-    return clustersItemsMap[clusterItem] ?? nil
+    return clustersItemsMap[clusterItem]
   }
 
   func getClustersItems() -> [ExpoMKAnnotation] {

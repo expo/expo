@@ -3,7 +3,6 @@ import GoogleMaps
 import ExpoModulesCore
 
 class GoogleMapsPlaces: PointsOfInterests {
-
   private let mapView: GMSMapView
   private var markers: GoogleMapsMarkers
   private let placesClient: GMSPlacesClient
@@ -38,5 +37,4 @@ class GoogleMapsPlaces: PointsOfInterests {
     let tmpStr = place.components(separatedBy: ";")
     return tmpStr[1]
   }
-
 }

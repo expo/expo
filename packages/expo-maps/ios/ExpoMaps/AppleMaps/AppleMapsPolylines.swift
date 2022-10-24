@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsPolylines: Polylines {
-
   private let mapView: MKMapView
   private var polylines: [MKPolyline] = []
   private var kmlPolylines: [MKPolyline] = []

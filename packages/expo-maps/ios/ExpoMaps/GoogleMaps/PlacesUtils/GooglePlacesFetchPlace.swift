@@ -2,7 +2,6 @@ import GooglePlaces
 import GoogleMaps
 
 class GooglePlacesFetchPlace {
-
   private var placesClient: GMSPlacesClient
   private var tokenUtils: GoogleMapsPlacesTokenUtils
   private var markers: GoogleMapsMarkers
@@ -29,7 +28,7 @@ class GooglePlacesFetchPlace {
     let fields = GMSPlaceField(rawValue: UInt(GMSPlaceField.name.rawValue)
                                | UInt(GMSPlaceField.coordinate.rawValue))
 
-    placesClient.fetchPlace(fromPlaceID: placeId, placeFields: fields, sessionToken: token, callback: { (place, error) in
+    placesClient.fetchPlace(fromPlaceID: placeId, placeFields: fields, sessionToken: token, callback: { place, error in
       if let error = error {
         print("An error occurred: \(error.localizedDescription)")
       }
@@ -40,11 +39,9 @@ class GooglePlacesFetchPlace {
 
     tokenUtils.setNewSessionToken()
   }
-
 }
 
 extension GooglePlacesFetchPlace {
-
   private func displayMarker() {
     if let marker = getMarkerToDisplay() {
       markers.setPOIMarkers(markerObjects: [marker])
@@ -67,5 +64,4 @@ extension GooglePlacesFetchPlace {
     marker.draggable = false
     return marker
   }
-
 }

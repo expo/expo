@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsKMLs: NSObject, XMLParserDelegate, KMLs {
-
   private let mapView: MKMapView
   private let markers: AppleMapsMarkers
   private let polylines: AppleMapsPolylines

@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsGeoJsons: GeoJsons {
-
   private let mapView: MKMapView
   private var annotations: [MKAnnotation] = []
   private var overlays: [MKOverlay] = []
@@ -14,7 +13,6 @@ class AppleMapsGeoJsons: GeoJsons {
     deleteGeoJsons()
     if #available(iOS 13.0, *) {
       for geoJsonObject in geoJsonObjects {
-
         let appleMapsObjects = try! MKGeoJSONDecoder().decode(geoJsonObject.geoJsonString.data(using: .utf8)!) as! [MKGeoJSONFeature]
 
         for object in appleMapsObjects {

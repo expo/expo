@@ -1,7 +1,6 @@
 import MapKit
 
 open class ExpoMKAnnotation: NSObject, MKAnnotation {
-
   // This property must be key-value observable, which the `@objc dynamic` attributes provide.
   @objc public dynamic var coordinate: CLLocationCoordinate2D
 
@@ -28,11 +27,9 @@ open class ExpoMKAnnotation: NSObject, MKAnnotation {
 }
 
 class ExpoMKImageAnnotation: ExpoMKAnnotation {
-
   var icon: String = ""
 }
 
 class ExpoMKColorAnnotation: ExpoMKAnnotation {
-
   var color: Double = 0
 }

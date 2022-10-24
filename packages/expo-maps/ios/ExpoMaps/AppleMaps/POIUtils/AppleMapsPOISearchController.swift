@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsPOISearchController: NSObject {
-
   private var navigationBar: UINavigationBar
   private var navigationItem: UINavigationItem
   private var searchController: UISearchController?
@@ -47,12 +46,10 @@ class AppleMapsPOISearchController: NSObject {
     searchBar?.placeholder = "Search for points of interst..."
     searchBar?.delegate = self
   }
-
 }
 
 // table view delegate
 extension AppleMapsPOISearchController: UITableViewDelegate {
-
   func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
     tableView.deselectRow(at: indexPath, animated: true)
     if let suggestion =
@@ -62,11 +59,9 @@ extension AppleMapsPOISearchController: UITableViewDelegate {
       poiSearchService.createSearchRequest(for: suggestion)
     }
   }
-
 }
 
 extension AppleMapsPOISearchController: UISearchBarDelegate {
-
   func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
     searchBar.setShowsCancelButton(true, animated: true)
   }
@@ -82,5 +77,4 @@ extension AppleMapsPOISearchController: UISearchBarDelegate {
       poiSearchService.createSearchRequest(for: text)
     }
   }
-
 }

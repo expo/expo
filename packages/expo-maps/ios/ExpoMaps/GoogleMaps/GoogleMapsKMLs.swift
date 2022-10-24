@@ -3,7 +3,6 @@ import GoogleMaps
 import GoogleMapsUtils
 
 class GoogleMapsKMLs: KMLs {
-
   private let mapView: GMSMapView
   private var renderers: [GMUGeometryRenderer] = []
 

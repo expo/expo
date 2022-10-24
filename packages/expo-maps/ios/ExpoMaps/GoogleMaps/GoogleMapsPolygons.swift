@@ -1,7 +1,6 @@
 import GoogleMaps
 
 class GoogleMapsPolygons: Polygons {
-
   private let mapView: GMSMapView
   private var polygons: [GMSPolygon] = []
   private var edges: [ExpoGoogleMapsPolyline] = []

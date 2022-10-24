@@ -2,7 +2,6 @@ import ExpoModulesCore
 import simd
 
 public class ExpoAppleMapsModule: Module {
-
   public func definition() -> ModuleDefinition {
     Name("ExpoAppleMaps")
 
@@ -128,7 +127,6 @@ public class ExpoAppleMapsModule: Module {
       Prop("createPOISearchRequest") { (view: AppleMapsView, place: String) in
         view.createPOISearchRequest(place: place)
       }
-
     }
   }
 }

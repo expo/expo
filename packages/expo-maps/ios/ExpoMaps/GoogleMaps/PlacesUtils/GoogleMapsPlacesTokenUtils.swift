@@ -1,7 +1,6 @@
 import GooglePlaces
 
 class GoogleMapsPlacesTokenUtils {
-
   private var token: GMSAutocompleteSessionToken?
 
   init() {
@@ -23,5 +22,4 @@ class GoogleMapsPlacesTokenUtils {
     print("GMSAutocompleteSessionToken was not set")
     return nil
   }
-
 }

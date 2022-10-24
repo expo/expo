@@ -57,7 +57,7 @@ class AppleMapsCameraAnimations {
         } else {
           self.mapView.setCamera(newCamera, animated: true)
         }
-      }, completion: { [self] (_) -> Void in
+      }, completion: { [self] _ -> Void in
         promise?.resolve(CameraPositionRecord(camera: mapView.camera, coordinateSpan: mapView.region.span).toDictionary())
       })
     } else {

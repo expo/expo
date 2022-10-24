@@ -3,7 +3,6 @@ import GoogleMaps
 import GoogleMapsUtils
 
 class GoogleMapsClusters: Clusters {
-
   private let mapView: GMSMapView
   private var clusterRenderersDelegates: [ExpoClusterRendererDelegate] = []
   private let googleMapsMarkersManager: GoogleMapsMarkersManager
@@ -63,7 +62,6 @@ class GoogleMapsClusters: Clusters {
 }
 
 class ExpoClusterRendererDelegate: NSObject, GMUClusterRendererDelegate {
-
   private let title: String?
   private let snippet: String?
   private let icon: String?
@@ -93,7 +91,6 @@ class ExpoClusterRendererDelegate: NSObject, GMUClusterRendererDelegate {
 }
 
 class ExpoClusterRenderer: GMUDefaultClusterRenderer {
-
   init(minimumClusterSize: Int, mapView: GMSMapView, clusterIconGenerator: GMUClusterIconGenerator) {
     super.init(mapView: mapView, clusterIconGenerator: clusterIconGenerator)
     self.minimumClusterSize = UInt(minimumClusterSize)

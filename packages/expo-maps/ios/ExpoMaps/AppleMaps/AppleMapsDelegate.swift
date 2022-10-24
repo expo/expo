@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsDelegate: NSObject, MKMapViewDelegate {
-
   private let markersManager: AppleMapsMarkersManager
   private let sendEvent: (String, [String: Any?]) -> Void
   // Dictionary which holds cluster names connected with clusters appearance data

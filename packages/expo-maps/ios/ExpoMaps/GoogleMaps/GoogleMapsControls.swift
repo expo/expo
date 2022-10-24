@@ -1,7 +1,6 @@
 import GoogleMaps
 
 class GoogleMapsControls: Controls {
-
   private let mapView: GMSMapView
 
   init(mapView: GMSMapView) {

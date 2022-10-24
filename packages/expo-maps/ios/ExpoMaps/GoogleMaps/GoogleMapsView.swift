@@ -3,7 +3,6 @@ import GooglePlaces
 import ExpoModulesCore
 
 public final class GoogleMapsView: UIView, ExpoMapView {
-
   private let mapView: GMSMapView
   private let googleMapsViewDelegate: GoogleMapsViewDelegate
   private let controls: GoogleMapsControls

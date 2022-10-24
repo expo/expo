@@ -236,7 +236,7 @@ public final class AppleMapsView: UIView, ExpoMapView, UIGestureRecognizerDelega
 
   // based on https://gis.stackexchange.com/questions/7430/what-ratio-scales-do-google-maps-zoom-levels-correspond-to
   static func googleMapsZoomLevelToMeters(latitude: Double, zoom: Double) -> Double {
-    let metersPerPixel = 156543.03392 * cos(latitude * Double.pi / 180) / pow(2, zoom - 1)
+    let metersPerPixel = 156_543.033_92 * cos(latitude * Double.pi / 180) / pow(2, zoom - 1)
     return UIScreen.main.bounds.size.width * metersPerPixel
   }
 }

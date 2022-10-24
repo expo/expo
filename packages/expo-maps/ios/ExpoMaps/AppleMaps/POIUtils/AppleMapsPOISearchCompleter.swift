@@ -2,7 +2,6 @@ import MapKit
 import ExpoModulesCore
 
 class AppleMapsPOISearchCompleter: NSObject, SearchCompleter {
-
   private var searchCompleter = MKLocalSearchCompleter()
   private var searchCompleterResults: [MKLocalSearchCompletion]?
   private var searchCompletionsPromise: Promise?
@@ -65,14 +64,11 @@ class AppleMapsPOISearchCompleter: NSObject, SearchCompleter {
     }
     return stringCompletions
   }
-
 }
 
 extension AppleMapsPOISearchCompleter: MKLocalSearchCompleterDelegate {
-
   func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
     searchCompleterResults = completer.results
     resolveSearchCompletionsPromise()
   }
-
 }

@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsPolygons: Polygons {
-
   private let mapView: MKMapView
   private var polygons: [MKPolygon] = []
   private var kmlPolygons: [MKPolygon] = []

@@ -1,7 +1,6 @@
 import GoogleMaps
 
 class GoogleMapsMarkers: Markers {
-
   private let mapView: GMSMapView
   private let googleMapsMarkersManager: GoogleMapsMarkersManager
   private var poiMarkers: [GMSMarker] = []

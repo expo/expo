@@ -2,7 +2,6 @@ import MapKit
 import ExpoModulesCore
 
 class AppleMapsPOI: NSObject, PointsOfInterests {
-
   private var pointsOfInterestSearchCompleter: AppleMapsPOISearchCompleter
   private var pointsOfInterestSearchService: AppleMapsPOISearch
   private var pointsOfInterestSearchController: AppleMapsPOISearchController
@@ -57,13 +56,11 @@ class AppleMapsPOI: NSObject, PointsOfInterests {
       mapView.pointOfInterestFilter = MKPointOfInterestFilter.excludingAll
     }
   }
-
 }
 
 // adding filter with specified categories
 @available(iOS 13.0, *)
 extension AppleMapsPOI {
-
   func setEnabledPOIFilter(categories: [POICategoryType]) {
     if categories.isEmpty {
       poiFilterCategories = nil
@@ -117,5 +114,4 @@ extension AppleMapsPOI {
     }
     return mappedCategory
   }
-
 }

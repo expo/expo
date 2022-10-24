@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsClusters: Clusters {
-
   private let mapView: MKMapView
   private let markersManager: AppleMapsMarkersManager
 

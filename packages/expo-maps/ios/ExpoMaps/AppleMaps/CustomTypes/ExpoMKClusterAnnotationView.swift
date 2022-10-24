@@ -1,7 +1,6 @@
 import MapKit
 
 class ExpoMKClusterColorAnnotationView: MKMarkerAnnotationView {
-
   override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
     super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
 
@@ -24,7 +23,6 @@ class ExpoMKClusterColorAnnotationView: MKMarkerAnnotationView {
 }
 
 class ExpoMKClusterImageAnnotationView: MKAnnotationView {
-
   override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
     super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
 

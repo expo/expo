@@ -5,7 +5,6 @@ import GoogleMapsUtils
 #endif
 
 class GoogleMapsMarkersManager {
-
   private var markersMap: [GMSMarker: String?] = [:]
 #if HAS_GOOGLE_UTILS
   private var clustersMap: [GMUClusterManager: String?] = [:]
@@ -25,7 +24,7 @@ class GoogleMapsMarkersManager {
   }
 
   func getMarkerId(marker: GMSMarker) -> String? {
-    return markersMap[marker] ?? nil
+    return markersMap[marker]
   }
 
 #if HAS_GOOGLE_UTILS
@@ -51,11 +50,11 @@ class GoogleMapsMarkersManager {
   }
 
   func getClusterId(cluster: GMUClusterManager) -> String? {
-    return clustersMap[cluster] ?? nil
+    return clustersMap[cluster]
   }
 
   func getClusterItemId(clusterItem: GMSMarker) -> String? {
-    return clustersItemsMap[clusterItem] ?? nil
+    return clustersItemsMap[clusterItem]
   }
 #endif
 }

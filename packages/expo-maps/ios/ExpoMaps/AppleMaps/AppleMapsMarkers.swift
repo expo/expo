@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsMarkers: NSObject, Markers {
-
   private let mapView: MKMapView
   private let markersManager: AppleMapsMarkersManager
   private var kmlMarkers: [ExpoMKAnnotation] = []

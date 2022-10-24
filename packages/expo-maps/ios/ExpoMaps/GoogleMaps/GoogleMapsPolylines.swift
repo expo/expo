@@ -1,7 +1,6 @@
 import GoogleMaps
 
 class GoogleMapsPolylines: Polylines {
-
   private let mapView: GMSMapView
   private var polylines: [ExpoGoogleMapsPolyline] = []
 

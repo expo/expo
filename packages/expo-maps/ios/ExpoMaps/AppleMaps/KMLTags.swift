@@ -1,5 +1,4 @@
 protocol KMLTag {
-
   var tagName: String { get }
   var styleId: String? { get }
 
@@ -15,7 +14,6 @@ protocol KMLTag {
 }
 
 extension KMLTag {
-
   func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) { }
 
   func updateStyleWithParentStyleId(styleId: String) { }
@@ -37,7 +35,6 @@ class KMLElement: KMLTag {
 }
 
 class KMLPolyStyleElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.polyStyle
   var styleId: String?
   var color: String?
@@ -75,7 +72,6 @@ class KMLPolyStyleElement: KMLTag {
 }
 
 class KMLLineStyleElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.lineStyle
   var styleId: String?
   var color: String?
@@ -118,7 +114,6 @@ class KMLLineStyleElement: KMLTag {
 }
 
 class KMLIconStyleElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.iconStyle
   var styleId: String?
   var color: String?
@@ -156,7 +151,6 @@ class KMLIconStyleElement: KMLTag {
 }
 
 class KMLStyleElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.style
   var styleId: String?
   var polyStyle: KMLPolyStyleElement?
@@ -188,7 +182,6 @@ class KMLStyleElement: KMLTag {
 }
 
 class KMLCascadingStyleElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.cascadingStyle
   var styleId: String?
   var styleElement: KMLStyleElement?
@@ -214,7 +207,6 @@ class KMLCascadingStyleElement: KMLTag {
 }
 
 class KMLStyleMapElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.styleMap
   var styleId: String?
   var styleElement: KMLTag?
@@ -240,7 +232,6 @@ class KMLStyleMapElement: KMLTag {
 }
 
 class KMLStylePairElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.pair
   private(set) var styleId: String?
   private(set) var referencedStyleId: String?
@@ -288,7 +279,6 @@ enum KMLTagType {
 }
 
 class KMLDocumentElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.document
   var styleId: String?
   var featureElements: [KMLTag]
@@ -337,7 +327,6 @@ class KMLDocumentElement: KMLTag {
 }
 
 class KMLPlacemarkElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.placemark
   var styleId: String?
   var geometryElement: KMLTag?
@@ -392,7 +381,6 @@ class KMLPlacemarkElement: KMLTag {
 }
 
 class KMLFolderElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.folder
   var styleId: String?
   var featureElements: [KMLTag]
@@ -445,7 +433,6 @@ class KMLFolderElement: KMLTag {
 }
 
 class KMLMultiGeometryElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.multiGeometry
   var styleId: String?
   var geometryElements: [KMLTag]
@@ -498,7 +485,6 @@ class KMLMultiGeometryElement: KMLTag {
 }
 
 class KMLOuterBoundaryElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.outerBoundary
   private(set) var styleId: String?
   var coordinates: [Coordinate]
@@ -520,7 +506,6 @@ class KMLOuterBoundaryElement: KMLTag {
 }
 
 class KMLLinearRingElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.linearRing
   private(set) var styleId: String?
   var coordinates: [Coordinate]
@@ -557,7 +542,6 @@ struct Coordinate {
 }
 
 class KMLPolygonElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.polygon
   var styleId: String?
   var coordinates: [Coordinate]
@@ -598,7 +582,6 @@ class KMLPolygonElement: KMLTag {
 }
 
 class KMLLineElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.lineString
   var styleId: String?
   var coordinates: [Coordinate]
@@ -642,7 +625,6 @@ class KMLLineElement: KMLTag {
 }
 
 class KMLPointElement: KMLTag {
-
   private(set) var tagName: String = KMLTagName.point
   var styleId: String?
   var coordinate: Coordinate

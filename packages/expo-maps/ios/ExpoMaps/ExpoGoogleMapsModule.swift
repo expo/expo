@@ -1,7 +1,6 @@
 import ExpoModulesCore
 
 public class ExpoGoogleMapsModule: Module {
-
   public func definition() -> ModuleDefinition {
     Name("ExpoGoogleMaps")
 

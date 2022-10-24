@@ -1,7 +1,6 @@
 import MapKit
 
 class AppleMapsPOISearchResultsView: UITableViewController {
-
   var searchCompleterResults: [MKLocalSearchCompletion]?
   var mapView: MKMapView?
   private var appleMapsPOISearchCompleter: AppleMapsPOISearchCompleter?
@@ -44,33 +43,27 @@ class AppleMapsPOISearchResultsView: UITableViewController {
     let attributes = [NSAttributedString.Key.backgroundColor: UIColor.lightGray]
     let highlightedString = NSMutableAttributedString(string: text)
     let ranges = rangeValues.map { $0.rangeValue }
-    ranges.forEach { (range) in
+    ranges.forEach { range in
       highlightedString.addAttributes(attributes, range: range)
     }
     return highlightedString
   }
-
 }
 
 extension AppleMapsPOISearchResultsView: UISearchResultsUpdating {
-
   func updateSearchResults(for searchController: UISearchController) {
     appleMapsPOISearchCompleter?.autoComplete(searchQueryFragment: searchController.searchBar.text ?? "")
   }
-
 }
 
 extension AppleMapsPOISearchResultsView: MKLocalSearchCompleterDelegate {
-
   func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
     searchCompleterResults = completer.results
     tableView?.reloadData()
   }
-
 }
 
 private class PlacesSearchTableViewCell: UITableViewCell {
-
   static let reuseID = "PlacesSearchTableViewCellReuseID"
   override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
     super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
@@ -78,5 +71,4 @@ private class PlacesSearchTableViewCell: UITableViewCell {
   required init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
 }

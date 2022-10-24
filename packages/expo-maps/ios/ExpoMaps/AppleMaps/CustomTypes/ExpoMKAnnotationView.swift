@@ -1,7 +1,6 @@
 import MapKit
 
 class ExpoMKColorAnnotationView: MKMarkerAnnotationView, UIGestureRecognizerDelegate {
-
   override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
     super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
 
@@ -27,7 +26,6 @@ class ExpoMKColorAnnotationView: MKMarkerAnnotationView, UIGestureRecognizerDele
 }
 
 class ExpoMKImageAnnotationView: MKAnnotationView {
-
   override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
     super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
 
