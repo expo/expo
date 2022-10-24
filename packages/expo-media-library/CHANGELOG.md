@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- Fix promise rejection on M1 iOS Simulator due to `UTTypeCreatePreferredIdentifierForTag` not working as expected.
 
 ### 💡 Others
 
