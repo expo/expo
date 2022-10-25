@@ -26,13 +26,13 @@ export default class SensorScreen extends React.Component {
   }
 }
 
-type State<M> = {
-  data: M;
+type State<Measurement> = {
+  data: Measurement;
   isAvailable?: boolean;
 };
 
-abstract class SensorBlock<M> extends React.Component<object, State<M>> {
-  readonly state: State<M> = { data: {} as M };
+abstract class SensorBlock<Measurement> extends React.Component<object, State<Measurement>> {
+  readonly state: State<Measurement> = { data: {} as Measurement };
 
   _subscription?: Subscription;
 
@@ -50,7 +50,7 @@ abstract class SensorBlock<M> extends React.Component<object, State<M>> {
   }
 
   abstract getName: () => string;
-  abstract getSensor: () => Sensors.DeviceSensor<M>;
+  abstract getSensor: () => Sensors.DeviceSensor<Measurement>;
 
   _toggle = () => {
     if (this._subscription) {
@@ -69,7 +69,7 @@ abstract class SensorBlock<M> extends React.Component<object, State<M>> {
   };
 
   _subscribe = () => {
-    this._subscription = this.getSensor().addListener((data: M) => {
+    this._subscription = this.getSensor().addListener((data: Measurement) => {
       this.setState({ data });
     });
   };
