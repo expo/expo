@@ -228,6 +228,7 @@ export async function createVersionedHermesTarball(
     const tarball = path.join(EXPO_DIR, `${versionName}hermes.tar.gz`);
     logger.log(`Archiving hermes tarball: ${tarball}`);
     await removeUnusedHeaders(hermesRoot, versionName);
+    // NOTE(kudo): we should include the _LICENSE_ file in the tarball, otherwise CocoaPods will get empty result from tarball extraction.
     await spawnAsync('tar', ['cvfz', tarball, 'destroot', 'LICENSE'], {
       cwd: hermesRoot,
       stdio: options?.verbose ? 'inherit' : 'ignore',
