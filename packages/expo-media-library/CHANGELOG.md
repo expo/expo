@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix promise rejection on M1 iOS Simulator due to `UTTypeCreatePreferredIdentifierForTag` not working as expected. ([#19669](https://github.com/expo/expo/pull/19669) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 - [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))

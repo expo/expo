@@ -921,11 +921,66 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   return [NSString stringWithFormat:@"ph://%@", assetId];
 }
 
+// A fix for promise rejection on M1 simulator when run in Rosetta (as is by default as we don't compile ARM64 yet)
+// https://developer.apple.com/forums/thread/702933
++ (PHAssetMediaType)assetTypeForFileExtension:(nonnull NSString *)fileExtension
+{
+  // List from https://stackoverflow.com/a/70102692
+  NSDictionary *kExtensionLookupFallback = @{@"jpeg": @(PHAssetMediaTypeImage),
+                                             @"jpg": @(PHAssetMediaTypeImage),
+                                             @"jpe": @(PHAssetMediaTypeImage),
+                                             @"png": @(PHAssetMediaTypeImage),
+                                             @"mp3": @(PHAssetMediaTypeAudio),
+                                             @"mpga": @(PHAssetMediaTypeAudio),
+                                             @"mov": @(PHAssetMediaTypeVideo),
+                                             @"qt": @(PHAssetMediaTypeVideo),
+                                             @"mpg": @(PHAssetMediaTypeVideo),
+                                             @"mpeg": @(PHAssetMediaTypeVideo),
+                                             @"mpe": @(PHAssetMediaTypeVideo),
+                                             @"m75": @(PHAssetMediaTypeVideo),
+                                             @"m15": @(PHAssetMediaTypeVideo),
+                                             @"m2v": @(PHAssetMediaTypeVideo),
+                                             @"ts": @(PHAssetMediaTypeVideo),
+                                             @"mp4": @(PHAssetMediaTypeVideo),
+                                             @"mpg4": @(PHAssetMediaTypeVideo),
+                                             @"m4p": @(PHAssetMediaTypeVideo),
+                                             @"avi": @(PHAssetMediaTypeVideo),
+                                             @"vfw": @(PHAssetMediaTypeVideo),
+                                             @"aiff": @(PHAssetMediaTypeAudio),
+                                             @"aif": @(PHAssetMediaTypeAudio),
+                                             @"wav": @(PHAssetMediaTypeAudio),
+                                             @"wave": @(PHAssetMediaTypeAudio),
+                                             @"bwf": @(PHAssetMediaTypeAudio),
+                                             @"midi": @(PHAssetMediaTypeAudio),
+                                             @"mid": @(PHAssetMediaTypeAudio),
+                                             @"smf": @(PHAssetMediaTypeAudio),
+                                             @"kar": @(PHAssetMediaTypeAudio),
+                                             @"tiff": @(PHAssetMediaTypeImage),
+                                             @"tif": @(PHAssetMediaTypeImage),
+                                             @"gif": @(PHAssetMediaTypeImage),
+                                             @"qtif": @(PHAssetMediaTypeImage),
+                                             @"qti": @(PHAssetMediaTypeImage),
+                                             @"icns": @(PHAssetMediaTypeImage)};
+
+  EXLogWarn(@"Asset media type is recognized from file extension and this behavior can differ on iOS Simulator and a physical device.");
+  NSNumber *fallbackMediaType = [kExtensionLookupFallback objectForKey:fileExtension];
+  return fallbackMediaType ? [fallbackMediaType intValue] : PHAssetMediaTypeUnknown;
+}
+
 + (PHAssetMediaType)_assetTypeForUri:(nonnull NSString *)localUri
 {
   CFStringRef fileExtension = (__bridge CFStringRef)[localUri pathExtension];
-  CFStringRef fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
-  
+  CFStringRef fileUTI;
+  if (@available(iOS 14, *)) {
+    fileUTI = (__bridge CFStringRef)[[UTType typeWithFilenameExtension:(__bridge NSString*)fileExtension] identifier];
+  } else {
+    fileUTI = UTTypeCreatePreferredIdentifierForTag(kUTTagClassFilenameExtension, fileExtension, NULL);
+  }
+
+  if (fileUTI == nil){
+    return [EXMediaLibrary assetTypeForFileExtension:[localUri pathExtension]];
+  }
+
   if (UTTypeConformsTo(fileUTI, kUTTypeImage)) {
     return PHAssetMediaTypeImage;
   }
