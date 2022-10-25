@@ -6,7 +6,6 @@
   "@react-native-community/netinfo": "9.3.5",
   "@react-native-community/slider": "4.2.4",
   "@react-native-community/viewpager": "5.0.11",
-  "@react-native-firebase/app": "~15.4.0",
   "@react-native-picker/picker": "2.4.8",
   "@react-native-segmented-control/segmented-control": "2.4.0",
   "@stripe/stripe-react-native": "0.19.0",
