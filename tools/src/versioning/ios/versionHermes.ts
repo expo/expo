@@ -228,7 +228,7 @@ export async function createVersionedHermesTarball(
     const tarball = path.join(EXPO_DIR, `${versionName}hermes.tar.gz`);
     logger.log(`Archiving hermes tarball: ${tarball}`);
     await removeUnusedHeaders(hermesRoot, versionName);
-    await spawnAsync('tar', ['cvfz', tarball, 'destroot'], {
+    await spawnAsync('tar', ['cvfz', tarball, 'destroot', 'LICENSE'], {
       cwd: hermesRoot,
       stdio: options?.verbose ? 'inherit' : 'ignore',
     });
