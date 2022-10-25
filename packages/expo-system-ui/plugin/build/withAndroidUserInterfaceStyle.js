@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setStrings = exports.resolveProps = exports.withAndroidUserInterfaceStyle = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
 const assert_1 = __importDefault(require("assert"));
+const config_plugins_1 = require("expo/config-plugins");
 // strings.xml keys, this should not change.
 const USER_INTERFACE_STYLE_KEY = 'expo_system_ui_user_interface_style';
 const withAndroidUserInterfaceStyle = (config) => {
