@@ -27,7 +27,7 @@ export function App(props: LauncherAppProps) {
   return (
     <LoadInitialData loader={<Splash />}>
       <AppProviders>
-        <Stack.Navigator initialRouteName="Main" mode="modal">
+        <Stack.Navigator initialRouteName="Main" mode="modal" detachInactiveScreens={false}>
           <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
 
           <Stack.Screen

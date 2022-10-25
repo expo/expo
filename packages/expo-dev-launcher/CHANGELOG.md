@@ -16,6 +16,8 @@
 ### ⚠️ Notices
 
 - Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
+- Moved to React Navigation v6, required for React Native 0.70.x. ([#19675](https://github.com/expo/expo/pull/19675) by [@douglowder](https://github.com/douglowder))
+
 ## 1.3.1 — 2022-10-11
 
 ### 🐛 Bug fixes
