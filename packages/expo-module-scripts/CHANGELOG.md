@@ -10,11 +10,15 @@
 
 ### 🐛 Bug fixes
 
-- Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
 
 - Use the correct TSConfig package in dependencies to match one referred in `tsconfig.plugin.json`. ([#19670](https://github.com/expo/expo/pull/19670) by [@Simek](https://github.com/Simek))
+
+## 2.1.1 - 2022-08-22
+
+### 🐛 Bug fixes
+
+- Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
 
 ## 2.1.0 — 2022-08-04
 
