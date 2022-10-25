@@ -1,24 +1,28 @@
 package expo.modules.localization
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.icu.util.LocaleData
 import android.icu.util.ULocale
-import android.os.Bundle
-import android.view.View
-import android.text.TextUtils
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import android.os.Bundle
+import android.text.TextUtils
 import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
+import android.view.View
 import androidx.core.os.LocaleListCompat
 import androidx.core.os.bundleOf
-
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-
-import kotlin.collections.ArrayList
 import java.text.DecimalFormatSymbols
 import java.util.*
+
+// must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
+private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
+private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
+
 
 class LocalizationModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -39,6 +43,19 @@ class LocalizationModule : Module() {
     Function("getCalendars") {
       return@Function getCalendars()
     }
+
+    OnCreate {
+      if(appContext.reactContext != null) setRTLFromStringResources(appContext.reactContext!!)
+    }
+  }
+
+  private fun setRTLFromStringResources(context: Context) {
+    val allowRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_allowRTL);
+    if(allowRTL != "true" && allowRTL != "false") return;
+    val editor: SharedPreferences.Editor =
+      context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit()
+    editor.putBoolean(KEY_FOR_PREFS_ALLOWRTL, allowRTL == "true")
+    editor.apply()
   }
 
   // TODO: Bacon: add set language

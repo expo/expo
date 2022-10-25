@@ -19,6 +19,22 @@ public class LocalizationModule: Module {
     Function("getCalendars") {
       return Self.getCalendars()
     }
+    OnCreate {
+      let enableRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_allowRTL")
+      if(enableRTL != nil) {
+        self.setRTLPref(enableRTL as? Int == 1);
+      }
+    }
+  }
+
+  func getPreferredLangRTL() -> Bool {
+    return NSLocale.characterDirection(forLanguage: NSLocale.preferredLanguages.first ?? "en-US") == NSLocale.LanguageDirection.rightToLeft
+  }
+
+  public func setRTLPref(_ allowRTL: Bool) -> Void {
+    UserDefaults.standard.set(allowRTL, forKey: "RCTI18nUtil_allowRTL")
+    UserDefaults.standard.set(allowRTL ? getPreferredLangRTL() : false, forKey: "RCTI18nUtil_forceRTL")
+    UserDefaults.standard.synchronize()
   }
 
   // If the application isn't manually localized for the device language then the

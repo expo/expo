@@ -5,8 +5,8 @@ import android.content.SharedPreferences
 import expo.modules.manifests.core.Manifest
 
 // must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
-private val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
-private val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
+private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
+private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
 
 class ExperienceRTLManager {
   companion object {
