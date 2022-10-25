@@ -104,6 +104,12 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       .replace(/_/g, '.')}/${versionName}hermes.tar.gz'
   end`,
       },
+      {
+        // Revert the previous podspec source transform
+        paths: 'hermes-engine.podspec',
+        replace: /(\.source\s*)= \{ :path => "." \}\n/g,
+        with: '$1= source\n',
+      },
     ],
   };
 }
