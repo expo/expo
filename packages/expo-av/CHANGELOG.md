@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 13.0.0 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
+
 ## 13.0.0-beta.1 — 2022-10-06
 
 ### 🛠 Breaking changes

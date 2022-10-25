@@ -38,7 +38,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

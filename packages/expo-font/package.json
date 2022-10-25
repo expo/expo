@@ -37,7 +37,7 @@
     "fontfaceobserver": "^2.1.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

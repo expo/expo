@@ -1,6 +1,6 @@
 {
   "name": "expo-linking",
-  "version": "3.2.2",
+  "version": "3.2.3",
   "description": "Create and open deep links universally",
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
@@ -37,7 +37,7 @@
     "url-parse": "^1.5.9"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "jest": {
     "preset": "expo-module-scripts"

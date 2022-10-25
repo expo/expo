@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Automatically use modular headers for pod dependencies when the package has Swift modules to link. ([#19443](https://github.com/expo/expo/pull/19443) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.12.0 — 2022-10-25
+
+### 🎉 New features
+
+- Automatically use modular headers for pod dependencies when the package has Swift modules to link. ([#19443](https://github.com/expo/expo/pull/19443) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
