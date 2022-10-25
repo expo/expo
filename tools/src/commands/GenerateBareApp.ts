@@ -105,7 +105,7 @@ async function createProjectDirectory({
       workspaceDir,
       `expo-template-bare-minimum-${templateVersion}.tgz`
     );
-    fs.mkdirSync(pathToAppDirectory);
+    await fs.mkdirs(pathToAppDirectory);
     await extractTarballAsync(tarFilePath, {
       cwd: pathToAppDirectory,
       name: appName,
