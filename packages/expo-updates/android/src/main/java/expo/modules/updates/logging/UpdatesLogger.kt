@@ -1,9 +1,6 @@
 package expo.modules.updates.logging
 
 import android.content.Context
-import expo.modules.core.logging.LogType
-import expo.modules.core.logging.Logger
-import expo.modules.core.logging.LoggerOptions
 import java.lang.Exception
 import java.util.*
 
@@ -27,7 +24,6 @@ class UpdatesLogger(
     updateId: String?,
     assetId: String?
   ) {
-    logger.trace(logEntryString(message, code, LogType.Trace, updateId, assetId))
   }
 
   fun debug(
@@ -43,7 +39,6 @@ class UpdatesLogger(
     updateId: String?,
     assetId: String?
   ) {
-    logger.debug(logEntryString(message, code, LogType.Debug, updateId, assetId))
   }
 
   fun info(
@@ -59,7 +54,6 @@ class UpdatesLogger(
     updateId: String?,
     assetId: String?
   ) {
-    logger.info(logEntryString(message, code, LogType.Info, updateId, assetId))
   }
 
   fun warn(
@@ -75,7 +69,6 @@ class UpdatesLogger(
     updateId: String?,
     assetId: String?
   ) {
-    logger.warn(logEntryString(message, code, LogType.Warn, updateId, assetId))
   }
 
   fun error(
@@ -93,7 +86,6 @@ class UpdatesLogger(
     assetId: String?,
     exception: Exception? = null
   ) {
-    logger.error(logEntryString(message, code, LogType.Error, updateId, assetId, exception))
   }
 
   fun fatal(
@@ -111,51 +103,6 @@ class UpdatesLogger(
     assetId: String?,
     exception: Exception? = null
   ) {
-    logger.fatal(logEntryString(message, code, LogType.Fatal, updateId, assetId, exception))
-  }
-
-  // Private methods and fields
-
-  private val logger = Logger(
-    EXPO_UPDATES_LOGGING_TAG,
-    context,
-    LoggerOptions.union(listOf(LoggerOptions.logToOS, LoggerOptions.logToFile))
-  )
-
-  private fun logEntryString(
-    message: String,
-    code: UpdatesErrorCode,
-    level: LogType,
-    updateId: String?,
-    assetId: String?,
-    exception: Exception? = null
-  ): String {
-    val timestamp = Date().time
-
-    val throwable = exception as? Throwable ?: Throwable()
-
-    val stacktrace = when (level) {
-      // Limit stack to 20 frames
-      LogType.Error -> throwable.stackTrace.take(MAX_FRAMES_IN_STACKTRACE)
-        .map { f -> f.toString() }
-      LogType.Fatal -> throwable.stackTrace.take(MAX_FRAMES_IN_STACKTRACE)
-        .map { f -> f.toString() }
-      else -> {
-        null
-      }
-    }
-
-    val logEntry = UpdatesLogEntry(
-      timestamp,
-      message,
-      code.code,
-      level.type,
-      updateId,
-      assetId,
-      stacktrace
-    )
-
-    return logEntry.asString()
   }
 
   companion object {

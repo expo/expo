@@ -5,7 +5,6 @@ import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
 import com.facebook.react.ReactInstanceManager
-import com.facebook.react.bridge.DefaultJSExceptionHandler
 import com.facebook.react.bridge.ReactMarker
 import com.facebook.react.bridge.ReactMarkerConstants
 import com.facebook.react.devsupport.DisabledDevSupportManager
@@ -35,7 +34,6 @@ class ErrorRecovery(
   internal val logger = UpdatesLogger(context)
 
   private var weakReactInstanceManager: WeakReference<ReactInstanceManager>? = null
-  private var previousExceptionHandler: DefaultJSExceptionHandler? = null
 
   fun initialize(delegate: ErrorRecoveryDelegate) {
     if (!::handler.isInitialized) {
@@ -84,19 +82,6 @@ class ErrorRecovery(
       return
     }
 
-    val devSupportManager = reactInstanceManager.devSupportManager as DisabledDevSupportManager
-    val defaultJSExceptionHandler = object : DefaultJSExceptionHandler() {
-      override fun handleException(e: Exception?) {
-        this@ErrorRecovery.handleException(e!!)
-      }
-    }
-    val devSupportManagerClass = devSupportManager.javaClass
-    previousExceptionHandler = devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
-      field.isAccessible = true
-      val previousValue = field[devSupportManager]
-      field[devSupportManager] = defaultJSExceptionHandler
-      return@let previousValue as DefaultJSExceptionHandler
-    }
     weakReactInstanceManager = WeakReference(reactInstanceManager)
   }
 
@@ -106,16 +91,9 @@ class ErrorRecovery(
         Log.d(TAG, "Unexpected type of ReactInstanceManager.DevSupportManager. expo-updates could not unregister its error handler")
         return
       }
-      if (previousExceptionHandler == null) {
-        return
-      }
 
       val devSupportManager = reactInstanceManager.devSupportManager as DisabledDevSupportManager
       val devSupportManagerClass = devSupportManager.javaClass
-      devSupportManagerClass.getDeclaredField("mDefaultJSExceptionHandler").let { field ->
-        field.isAccessible = true
-        field[devSupportManager] = previousExceptionHandler
-      }
       weakReactInstanceManager = null
     }
     // quitSafely will wait for processing messages to finish but cancel all messages scheduled for

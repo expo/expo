@@ -1,7 +1,6 @@
 package expo.modules.updates.logging
 
 import android.content.Context
-import expo.modules.core.logging.PersistentFileLog
 import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
 import java.lang.Error
 import java.lang.Long.max
@@ -22,10 +21,6 @@ class UpdatesLogReader(
     completionHandler: (_: Error?) -> Unit
   ) {
     val epochTimestamp = epochFromDateOrOneDayAgo(olderThan)
-    persistentLog.purgeEntriesNotMatchingFilter(
-      { entryString -> isEntryStringLaterThanTimestamp(entryString, epochTimestamp) },
-      completionHandler
-    )
   }
 
   /**
@@ -34,11 +29,8 @@ class UpdatesLogReader(
    */
   fun getLogEntries(newerThan: Date): List<String> {
     val epochTimestamp = epochFromDateOrOneDayAgo(newerThan)
-    return persistentLog.readEntries()
-      .filter { entryString -> isEntryStringLaterThanTimestamp(entryString, epochTimestamp) }
+    return listOf()
   }
-
-  private val persistentLog = PersistentFileLog(EXPO_UPDATES_LOGGING_TAG, context)
 
   private fun isEntryStringLaterThanTimestamp(entryString: String, timestamp: Long): Boolean {
     val entry = UpdatesLogEntry.create(entryString) ?: return false
