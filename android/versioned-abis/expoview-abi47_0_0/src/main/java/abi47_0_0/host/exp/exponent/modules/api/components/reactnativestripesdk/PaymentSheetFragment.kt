@@ -10,7 +10,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
@@ -109,18 +108,20 @@ class PaymentSheetFragment(
         addressBundle?.getString("line1"),
         addressBundle?.getString("line2"),
         addressBundle?.getString("postalCode"),
-        addressBundle?.getString("state"))
+        addressBundle?.getString("state")
+      )
       defaultBillingDetails = PaymentSheet.BillingDetails(
         address,
         billingDetailsBundle.getString("email"),
         billingDetailsBundle.getString("name"),
-        billingDetailsBundle.getString("phone"))
+        billingDetailsBundle.getString("phone")
+      )
     }
 
     paymentSheetConfiguration = PaymentSheet.Configuration(
       merchantDisplayName = merchantDisplayName,
       allowsDelayedPaymentMethods = allowsDelayedPaymentMethods ?: false,
-      defaultBillingDetails=defaultBillingDetails,
+      defaultBillingDetails = defaultBillingDetails,
       customer = if (customerId.isNotEmpty() && customerEphemeralKeySecret.isNotEmpty()) PaymentSheet.CustomerConfiguration(
         id = customerId,
         ephemeralKeySecret = customerEphemeralKeySecret
@@ -140,13 +141,13 @@ class PaymentSheetFragment(
 
   fun present(promise: Promise) {
     this.presentPromise = promise
-    if(paymentSheet != null) {
+    if (paymentSheet != null) {
       if (!paymentIntentClientSecret.isNullOrEmpty()) {
         paymentSheet?.presentWithPaymentIntent(paymentIntentClientSecret!!, paymentSheetConfiguration)
       } else if (!setupIntentClientSecret.isNullOrEmpty()) {
         paymentSheet?.presentWithSetupIntent(setupIntentClientSecret!!, paymentSheetConfiguration)
       }
-    } else if(flowController != null) {
+    } else if (flowController != null) {
       flowController?.presentPaymentOptions()
     }
   }

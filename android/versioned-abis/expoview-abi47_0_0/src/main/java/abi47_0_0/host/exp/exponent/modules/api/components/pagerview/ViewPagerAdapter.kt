@@ -6,7 +6,6 @@ import android.widget.FrameLayout
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import java.util.*
 
-
 class ViewPagerAdapter() : Adapter<ViewPagerViewHolder>() {
   private val childrenViews: ArrayList<View> = ArrayList()
 
@@ -44,15 +43,15 @@ class ViewPagerAdapter() : Adapter<ViewPagerViewHolder>() {
 
   fun removeChild(child: View) {
     val index = childrenViews.indexOf(child)
-    
-    if(index > -1) {
+
+    if (index > -1) {
       removeChildAt(index)
     }
   }
 
   fun removeAll() {
     for (index in 1..childrenViews.size) {
-      val child = childrenViews[index-1]
+      val child = childrenViews[index - 1]
       if (child.parent?.parent != null) {
         (child.parent.parent as ViewGroup).removeView(child.parent as View)
       }

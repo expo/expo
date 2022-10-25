@@ -19,7 +19,6 @@ import abi47_0_0.com.facebook.react.uimanager.UIManagerModule
 import abi47_0_0.com.facebook.react.uimanager.events.EventDispatcher
 import abi47_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.createError
 
-
 class AddToWalletButtonView(private val context: ThemedReactContext, private val requestManager: RequestManager) : AppCompatImageView(context) {
   private var cardDetails: ReadableMap? = null
   private var ephemeralKey: String? = null
@@ -41,7 +40,8 @@ class AddToWalletButtonView(private val context: ThemedReactContext, private val
           this,
           cardDescription,
           ephemeralKey,
-          token)
+          token
+        )
       } ?: run {
         dispatchEvent(
           createError("Failed", "Missing parameters. `ephemeralKey` must be supplied in the props to <AddToWalletButton />")
@@ -89,7 +89,9 @@ class AddToWalletButtonView(private val context: ThemedReactContext, private val
               RippleDrawable(
                 ColorStateList.valueOf(Color.parseColor("#e0e0e0")),
                 resource,
-                null))
+                null
+              )
+            )
             return true
           }
         })

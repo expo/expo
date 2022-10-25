@@ -4,7 +4,6 @@ import android.os.Parcel
 import android.os.Parcelable
 import com.stripe.android.pushProvisioning.PushProvisioningEphemeralKeyProvider
 
-
 class EphemeralKeyProvider(private val ephemeralKey: String) : PushProvisioningEphemeralKeyProvider {
 
   private constructor(parcel: Parcel) : this(

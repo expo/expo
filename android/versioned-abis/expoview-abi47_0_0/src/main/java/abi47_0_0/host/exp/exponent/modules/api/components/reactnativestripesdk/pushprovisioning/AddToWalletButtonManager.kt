@@ -8,7 +8,6 @@ import abi47_0_0.com.facebook.react.uimanager.ThemedReactContext
 import abi47_0_0.com.facebook.react.uimanager.annotations.ReactProp
 import abi47_0_0.com.facebook.react.bridge.ReactApplicationContext
 
-
 class AddToWalletButtonManager(applicationContext: ReactApplicationContext) : SimpleViewManager<AddToWalletButtonView?>() {
   private val requestManager = Glide.with(applicationContext)
   override fun getName() = "AddToWalletButton"

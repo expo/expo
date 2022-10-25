@@ -39,5 +39,4 @@ internal class CardFormCompleteEvent constructor(viewTag: Int, private val cardD
   companion object {
     const val EVENT_NAME = "onFormComplete"
   }
-
 }
