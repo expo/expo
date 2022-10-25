@@ -1,6 +1,6 @@
 {
   "name": "expo-apple-authentication",
-  "version": "4.3.0",
+  "version": "5.0.0",
   "description": "A unimodule that provides SignIn With Apple",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,7 +32,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/apple-authentication/",
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

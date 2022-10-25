@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added `DirectoriesModule` to expo-file-system on Android as a temporary solution to fix cache directories being incorrect in new Sweet API modules. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 15.1.0 — 2022-10-25
+
+### 🎉 New features
+
+- Added `DirectoriesModule` to expo-file-system on Android as a temporary solution to fix cache directories being incorrect in new Sweet API modules. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
 
 ## 15.0.0 — 2022-10-06
 

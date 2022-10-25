@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-core",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "description": "Core support for Google Firebase",
   "main": "build/FirebaseCore.js",
   "types": "build/FirebaseCore.d.ts",
@@ -37,7 +37,7 @@
     "expo-constants": "~14.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

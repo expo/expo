@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '11.0.0'
+version = '12.0.0'
 
 
 buildscript {
@@ -75,7 +75,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 18
-    versionName '11.0.0'
+    versionName '12.0.0'
   }
   lintOptions {
     abortOnError false

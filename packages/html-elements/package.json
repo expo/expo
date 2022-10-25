@@ -1,6 +1,6 @@
 {
   "name": "@expo/html-elements",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Universal semantic HTML React components for iOS, Android, web, and desktop",
   "main": "build/Elements.js",
   "types": "build/Elements.d.ts",
@@ -36,6 +36,6 @@
     "preset": "expo-module-scripts/enzyme"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   }
 }

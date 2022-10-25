@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.7.2 — 2022-10-25
+
+### 💡 Others
+
 - Update docs to remove mentions of `expo start:web`. ([#18419](https://github.com/expo/expo/pull/18419) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.7.1 — 2022-07-16

@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fix crash on some Android devices when WebView returns an unknown error. ([#18911](https://github.com/expo/expo/pull/18911) by [@matkastner](https://github.com/matkastner))
-
 ### 💡 Others
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fix crash on some Android devices when WebView returns an unknown error. ([#18911](https://github.com/expo/expo/pull/18911) by [@matkastner](https://github.com/matkastner))
 
 ## 11.3.0 — 2022-07-07
 

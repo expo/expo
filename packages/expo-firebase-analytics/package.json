@@ -1,6 +1,6 @@
 {
   "name": "expo-firebase-analytics",
-  "version": "7.2.0",
+  "version": "8.0.0",
   "sideEffects": false,
   "description": "A universal module that interfaces with the native firebase analytics API",
   "main": "build/Analytics.js",
@@ -36,10 +36,10 @@
     "preset": "expo-module-scripts"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "dependencies": {
-    "expo-firebase-core": "~5.2.0"
+    "expo-firebase-core": "~6.0.0"
   },
   "peerDependencies": {
     "expo": "*"
