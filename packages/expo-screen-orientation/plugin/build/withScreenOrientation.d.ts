@@ -1,5 +1,5 @@
-import { ConfigPlugin, InfoPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin, InfoPlist } from 'expo/config-plugins';
 export declare const INITIAL_ORIENTATION_KEY = "EXDefaultScreenOrientationMask";
 declare const OrientationLock: {
     DEFAULT: string;

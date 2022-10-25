@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setUserInterfaceStyle = exports.getUserInterfaceStyle = exports.withIosUserInterfaceStyle = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const withIosUserInterfaceStyle = (config) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults = setUserInterfaceStyle(config, config.modResults);

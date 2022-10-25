@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setICloudEntitlements = exports.withDocumentPickerIOS = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const withDocumentPickerIOS = (config, { iCloudContainerEnvironment } = {}) => {
     return (0, config_plugins_1.withEntitlementsPlist)(config, (config) => {
         config.modResults = setICloudEntitlements(config, { iCloudContainerEnvironment }, config.modResults);

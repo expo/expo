@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-contacts/package.json');
 const CONTACTS_USAGE = 'Allow $(PRODUCT_NAME) to access your contacts';
 const withContacts = (config, { contactsPermission } = {}) => {

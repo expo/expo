@@ -1,6 +1,6 @@
-import { ConfigPlugin, AndroidConfig } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
 import { NavigationBarVisibility, NavigationBarBehavior, NavigationBarPosition, NavigationBarButtonStyle } from 'expo-navigation-bar';
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin, AndroidConfig } from 'expo/config-plugins';
 export declare type Props = {
     borderColor?: string;
     backgroundColor?: string | null;
