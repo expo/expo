@@ -2335,6 +2335,7 @@
 				"${PODS_CONFIGURATION_BUILD_DIR}/StripeUICore/StripeUICore.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ABI45_0_0React-Core/ABI45_0_0AccessibilityResources.bundle",
 				"${PODS_CONFIGURATION_BUILD_DIR}/ABI46_0_0React-Core/ABI46_0_0AccessibilityResources.bundle",
+				"${PODS_CONFIGURATION_BUILD_DIR}/ABI47_0_0React-Core/ABI47_0_0AccessibilityResources.bundle",
 				"${PODS_ROOT}/FBSDKCoreKit/FacebookSDKStrings.bundle",
 				"${PODS_ROOT}/GoogleSignIn/Resources/GoogleSignIn.bundle",
 			);
@@ -2352,6 +2353,7 @@
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/StripeUICore.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ABI45_0_0AccessibilityResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ABI46_0_0AccessibilityResources.bundle",
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/ABI47_0_0AccessibilityResources.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/FacebookSDKStrings.bundle",
 				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleSignIn.bundle",
 			);
@@ -2368,10 +2370,12 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Expo Go (versioned)/Pods-Expo Go-Expo Go (versioned)-frameworks.sh",
 				"${PODS_XCFRAMEWORKS_BUILD_DIR}/hermes-engine/hermes.framework/hermes",
+				"${PODS_XCFRAMEWORKS_BUILD_DIR}/ABI47_0_0hermes-engine/ABI47_0_0hermes.framework/ABI47_0_0hermes",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/hermes.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/ABI47_0_0hermes.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
