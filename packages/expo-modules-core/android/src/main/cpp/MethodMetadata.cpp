@@ -160,11 +160,11 @@ MethodMetadata::MethodMetadata(
   bool isAsync,
   jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
-) : longLivedObjectCollection_(longLivedObjectCollection),
-    name(std::move(name)),
+) : name(std::move(name)),
     args(args),
     isAsync(isAsync),
-    jBodyReference(std::move(jBodyReference)) {
+    jBodyReference(std::move(jBodyReference)),
+    longLivedObjectCollection_(longLivedObjectCollection) {
   argTypes.reserve(args);
   for (size_t i = 0; i < args; i++) {
     auto expectedType = expectedArgTypes->getElement(i);
@@ -181,13 +181,13 @@ MethodMetadata::MethodMetadata(
   bool isAsync,
   std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
-) : longLivedObjectCollection_(longLivedObjectCollection),
-    name(std::move(name)),
+) : name(std::move(name)),
     args(args),
     isAsync(isAsync),
     argTypes(std::move(expectedArgTypes)),
-    jBodyReference(std::move(jBodyReference)
-    ) {}
+    jBodyReference(std::move(jBodyReference)),
+    longLivedObjectCollection_(longLivedObjectCollection) {
+}
 
 std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
   jsi::Runtime &runtime,
