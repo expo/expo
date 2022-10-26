@@ -19,10 +19,12 @@ typedef void (^AnimatedOperation)(ABI47_0_0REANodesManager *nodesManager);
 
 ABI47_0_0RCT_EXPORT_MODULE(ReanimatedModule);
 
+#ifdef ABI47_0_0RCT_NEW_ARCH_ENABLED
 + (BOOL)requiresMainQueueSetup
 {
   return YES;
 }
+#endif // ABI47_0_0RCT_NEW_ARCH_ENABLED
 
 - (void)invalidate
 {
