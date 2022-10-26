@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Updated mocks for Expo SDK 47.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
