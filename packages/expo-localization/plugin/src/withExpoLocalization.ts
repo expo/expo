@@ -7,13 +7,11 @@ import {
 
 const pkg = require('expo-localization/package.json');
 
-const withExpoLocalization: ConfigPlugin<{ supportsRTL?: boolean } | void> = (
-  config,
-  { supportsRTL } = {}
-) => {
+const withExpoLocalization: ConfigPlugin = (config) => {
+  if (config.supportsRTL === undefined) return config;
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
-  config.ios.infoPlist.ExpoLocalization_supportsRTL = supportsRTL || false;
+  config.ios.infoPlist.ExpoLocalization_supportsRTL = config.supportsRTL || false;
 
   return withStringsXml(config, (config) => {
     config.modResults = AndroidConfig.Strings.setStringItem(
@@ -22,7 +20,7 @@ const withExpoLocalization: ConfigPlugin<{ supportsRTL?: boolean } | void> = (
         // <string name="expo_custom_value" translatable="false">value</string>
         {
           $: { name: 'ExpoLocalization_supportsRTL', translatable: 'false' },
-          _: supportsRTL || false ? 'true' : 'false',
+          _: String(config.supportsRTL),
         },
       ],
       config.modResults

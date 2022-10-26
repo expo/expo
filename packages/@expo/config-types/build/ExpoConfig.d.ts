@@ -302,6 +302,10 @@ export interface ExpoConfig {
         };
         [k: string]: any;
     };
+    /**
+     * Determines if React Native renders in RTL if locale uses RTL. Defaults to `false`.
+     */
+    supportsRTL?: boolean;
 }
 /**
  * Configuration for loading and splash screen for standalone apps.
