@@ -49,7 +49,6 @@ export default {
     reactRemoveProperties: true,
     removeConsole,
   },
-  swcMinify: true,
   poweredByHeader: false,
   webpack: (config, options) => {
     // Add support for MDX with our custom loader

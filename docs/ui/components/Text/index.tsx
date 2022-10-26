@@ -87,10 +87,18 @@ export const kbdStyle = css({
   top: -1,
 });
 
+const isExternalLink = (href?: string) => href?.includes('://');
+
 export const KBD = createTextComponent(TextElement.KBD, css([typography.utility.pre, kbdStyle]));
 
 export const A = (props: Omit<LinkProps, 'router'> & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;
-  return <LinkBase css={[link, isStyled && css(typography.utility.anchor)]} {...rest} />;
+  return (
+    <LinkBase
+      css={[link, isStyled && css(typography.utility.anchor)]}
+      openInNewTab={isExternalLink(props.href)}
+      {...rest}
+    />
+  );
 };
 A.displayName = 'Text(a)';

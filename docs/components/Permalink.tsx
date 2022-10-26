@@ -6,6 +6,7 @@ import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
+import { A } from '~/ui/components/Text';
 
 type BaseProps = React.PropsWithChildren<{
   component: any;
@@ -28,7 +29,7 @@ const STYLES_PERMALINK_TARGET = css`
 const STYLES_PERMALINK_LINK = css`
   position: relative;
   color: inherit;
-  text-decoration: inherit;
+  text-decoration: none !important;
 
   /* Disable link when used in collapsible, to allow expand on click */
   details & {
@@ -94,13 +95,13 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
 
     return (
       <PermalinkBase component={component} data-components-heading>
-        <a css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey} ref={heading?.ref}>
+        <A css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey} ref={heading?.ref}>
           <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
           <span css={STYLES_PERMALINK_ICON}>
             <PermalinkIcon />
           </span>
-        </a>
+        </A>
       </PermalinkBase>
     );
   }
