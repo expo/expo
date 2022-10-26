@@ -105,11 +105,8 @@ const general = [
     makePage('development/introduction.mdx'),
     makePage('development/create-development-builds.mdx'),
     makePage('development/develop-your-project.mdx'),
-    // makePage('development/getting-started.mdx'),
-    // makePage('development/build.mdx'),
     makePage('development/installation.mdx'),
     makePage('development/development-workflows.mdx'),
-    makePage('development/extensions.mdx'),
     makePage('development/compatibility.mdx'),
   ]),
   makeSection('Integrations', [

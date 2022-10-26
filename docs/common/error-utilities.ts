@@ -151,6 +151,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/development/getting-started/': '/development/create-development-builds/',
   '/development/troubleshooting/': '/development/introduction/',
   '/development/upgrading/': '/development/introduction/',
+  '/development/extensions/': '/development/development-workflows/',
 
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
