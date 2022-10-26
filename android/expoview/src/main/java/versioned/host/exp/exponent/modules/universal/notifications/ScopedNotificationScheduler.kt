@@ -1,6 +1,7 @@
 package versioned.host.exp.exponent.modules.universal.notifications
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.os.ResultReceiver
 import expo.modules.core.Promise
@@ -53,9 +54,13 @@ class ScopedNotificationScheduler(context: Context, private val experienceKey: E
           super.onReceiveResult(resultCode, resultData)
 
           if (resultCode == NotificationsService.SUCCESS_CODE) {
-            val request = resultData?.getParcelable<NotificationRequest>(NotificationsService.NOTIFICATION_REQUESTS_KEY)
+            val request = when {
+              Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> resultData?.getParcelable(NotificationsService.NOTIFICATION_REQUEST_KEY, ScopedNotificationRequest::class.java)
+              else -> resultData?.getParcelable(NotificationsService.NOTIFICATION_REQUEST_KEY)
+            }
             if (request == null || !scopedNotificationsUtils.shouldHandleNotification(request, experienceKey)) {
               promise.resolve(null)
+              return
             }
             doCancelScheduledNotificationAsync(identifier, promise)
           } else {
