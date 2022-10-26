@@ -19,10 +19,12 @@ typedef void (^AnimatedOperation)(REANodesManager *nodesManager);
 
 RCT_EXPORT_MODULE(ReanimatedModule);
 
+#ifdef RCT_NEW_ARCH_ENABLED
 + (BOOL)requiresMainQueueSetup
 {
   return YES;
 }
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (void)invalidate
 {
