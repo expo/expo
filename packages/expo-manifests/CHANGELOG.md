@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added a `supportRTL` manifest flag for enabling RTL on suitable locales.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
