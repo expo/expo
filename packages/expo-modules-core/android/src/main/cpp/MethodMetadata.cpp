@@ -19,10 +19,16 @@ namespace expo {
 // https://github.com/facebook/react-native/blob/7dceb9b63c0bfd5b13bf6d26f9530729506e9097/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.cpp#L57
 jni::local_ref<react::JCxxCallbackImpl::JavaPart> createJavaCallbackFromJSIFunction(
   jsi::Function &&function,
+  std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
   jsi::Runtime &rt,
   std::shared_ptr<react::CallInvoker> jsInvoker
 ) {
-  auto weakWrapper = react::CallbackWrapper::createWeak(std::move(function), rt,
+  auto strongLongLiveObjectCollection = longLivedObjectCollection.lock();
+  if (!strongLongLiveObjectCollection) {
+    throw std::runtime_error("The LongLivedObjectCollection for MethodMetadata is not alive.");
+  }
+  auto weakWrapper = react::CallbackWrapper::createWeak(strongLongLiveObjectCollection,
+                                                        std::move(function), rt,
                                                         std::move(jsInvoker));
 
   // This needs to be a shared_ptr because:
@@ -150,12 +156,14 @@ std::vector<jvalue> MethodMetadata::convertJSIArgsToJNI(
 }
 
 MethodMetadata::MethodMetadata(
+  std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
   std::string name,
   int args,
   bool isAsync,
   std::unique_ptr<int[]> desiredTypes,
   jni::global_ref<jobject> &&jBodyReference
-) : name(std::move(name)),
+) : longLivedObjectCollection_(longLivedObjectCollection),
+    name(std::move(name)),
     args(args),
     isAsync(isAsync),
     desiredTypes(std::move(desiredTypes)),
@@ -308,12 +316,14 @@ jsi::Function MethodMetadata::createPromiseBody(
       auto &runtimeHolder = moduleRegistry->runtimeHolder;
       jobject resolve = createJavaCallbackFromJSIFunction(
         std::move(resolveJSIFn),
+        longLivedObjectCollection_,
         rt,
         runtimeHolder->jsInvoker
       ).release();
 
       jobject reject = createJavaCallbackFromJSIFunction(
         std::move(rejectJSIFn),
+        longLivedObjectCollection_,
         rt,
         runtimeHolder->jsInvoker
       ).release();
