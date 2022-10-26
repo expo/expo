@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `~CallbackWrapper()` dangling pointer crashes when reloading the app on Android. ([#19699](https://github.com/expo/expo/pull/19699) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.13.0 — 2022-10-25
