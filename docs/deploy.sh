@@ -123,6 +123,11 @@ redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
 
 redirects[introduction/walkthrough]=tutorial/planning/
 
+# development builds
+redirects[development/build]=development/create-development-builds/
+redirects[development/getting-started]=development/create-development-builds/
+redirects[development/troubleshooting]=development/introduction/
+redirects[development/upgrading]=development/introduction/
 # Guides that have been deleted
 redirects[guides/using-gatsby]=guides/
 redirects[guides/testing-on-devices]=workflow/run-on-device
