@@ -69,7 +69,7 @@ open class HomeActivity : BaseExperienceActivity() {
     EventBus.getDefault().registerSticky(this)
     kernel.startJSKernel(this)
 
-    ExperienceRTLManager.setRTLPref(this, false)
+    ExperienceRTLManager.setSupportsRTL(this, false)
 
     SplashScreen.show(this, SplashScreenImageResizeMode.NATIVE, ReactRootView::class.java, true)
 

@@ -3,15 +3,18 @@
 import Foundation
 
 @objc
-public class ExTextDirectionController: NSObject {
-  class func getPreferredLangRTL() -> Bool {
+public class EXTextDirectionController: NSObject {
+  class func isRTLPreferredForCurrentLocale() -> Bool {
     return NSLocale.characterDirection(forLanguage: NSLocale.preferredLanguages.first ?? "en-US") == NSLocale.LanguageDirection.rightToLeft
   }
 
   @objc
-  public class func setRTLPref(_ allowRTL: Bool) {
-    UserDefaults.standard.set(allowRTL, forKey: "RCTI18nUtil_allowRTL")
-    UserDefaults.standard.set(allowRTL ? getPreferredLangRTL() : false, forKey: "RCTI18nUtil_forceRTL")
+  public class func setSupportsRTL(_ supportsRTL: Bool) {
+    // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
+    // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
+    // On iOS we need to set both forceRTL and allowRTL so apps don't have to include localization strings.
+    UserDefaults.standard.set(supportsRTL, forKey: "RCTI18nUtil_allowRTL")
+    UserDefaults.standard.set(supportsRTL ? isRTLPreferredForCurrentLocale() : false, forKey: "RCTI18nUtil_forceRTL")
     UserDefaults.standard.synchronize()
   }
 }

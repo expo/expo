@@ -272,10 +272,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appStateDidBecomeActive
 {
-  if (self.isHomeApp) {
-    [ExTextDirectionController setRTLPref:false];
+  if (_isHomeApp) {
+    [EXTextDirectionController setSupportsRTL:false];
   } else if(_appRecord.appLoader.manifest != nil) {
-    [ExTextDirectionController setRTLPref:_appRecord.appLoader.manifest.allowRTL];
+    [EXTextDirectionController setSupportsRTL:_appRecord.appLoader.manifest.supportsRTL];
   }
   dispatch_async(dispatch_get_main_queue(), ^{
     // Reset the root view background color and window color if we switch between Expo home and project
@@ -478,8 +478,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
-  if (!self.isHomeApp) {
-    [ExTextDirectionController setRTLPref:_appRecord.appLoader.manifest.allowRTL];
+  if (!_isHomeApp) {
+    [EXTextDirectionController setSupportsRTL:_appRecord.appLoader.manifest.supportsRTL];
   }
   [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {

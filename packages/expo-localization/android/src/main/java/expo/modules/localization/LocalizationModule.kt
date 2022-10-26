@@ -50,8 +50,10 @@ class LocalizationModule : Module() {
   }
 
   private fun setRTLFromStringResources(context: Context) {
-    val allowRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_allowRTL);
-    if(allowRTL != "true" && allowRTL != "false") return;
+    // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
+    // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
+    val supportsRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_supportsRTL);
+    if(supportsRTL != "true" && supportsRTL != "false") return;
     val editor: SharedPreferences.Editor =
       context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit()
     editor.putBoolean(KEY_FOR_PREFS_ALLOWRTL, allowRTL == "true")

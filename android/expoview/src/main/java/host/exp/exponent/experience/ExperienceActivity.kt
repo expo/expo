@@ -408,7 +408,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       )
       showOrReconfigureManagedAppSplashScreen(optimisticManifest)
       setLoadingProgressStatusIfEnabled()
-      ExperienceRTLManager.setRTLPrefFromManifest(this, optimisticManifest)
+      ExperienceRTLManager.setSupportsRTLFromManifest(this, optimisticManifest)
     }
   }
 
@@ -510,7 +510,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
     BranchManager.handleLink(this, intentUri, detachSdkVersion)
 
-    ExperienceRTLManager.setRTLPrefFromManifest(this, manifest)
+    ExperienceRTLManager.setSupportsRTLFromManifest(this, manifest)
 
     runOnUiThread {
       if (!isInForeground) {
