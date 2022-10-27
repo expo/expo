@@ -175,7 +175,6 @@ class ClipboardModule : Module() {
           }
           timestamp = clip.timestamp
 
-
           this@ClipboardModule.sendEvent(
             CLIPBOARD_CHANGED_EVENT_NAME,
             bundleOf(
