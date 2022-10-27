@@ -86,7 +86,7 @@
     "@types/semver": "^7.3.6",
     "@types/sha1": "^1.1.2",
     "expo-module-scripts": "^3.0.0",
-    "jest-expo": "~46.0.0",
+    "jest-expo": "~47.0.0",
     "react-native-bundle-visualizer": "^3.0.0",
     "uuid": "^3.3.2"
   }

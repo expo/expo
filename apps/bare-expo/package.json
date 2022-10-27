@@ -131,7 +131,7 @@
     "detox": "^19.4.1",
     "expo-module-scripts": "^3.0.0",
     "expo-yarn-workspaces": "^2.0.0",
-    "jest-expo": "~46.0.0",
+    "jest-expo": "~47.0.0",
     "jest-expo-puppeteer": "^1.1.1",
     "puppeteer": "^2.1.1"
   }
