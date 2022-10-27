@@ -3,9 +3,14 @@
 exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="css-1u2eykn"
+    class="css-133zsmp"
     data-sidebar="true"
   >
+    <p
+      class="css-xqbzh-TextComponent"
+    >
+      On this page
+    </p>
     <a
       class="css-1fc6p3j"
       href="#base-level-heading"
