@@ -1,10 +1,9 @@
 import { css } from '@emotion/react';
 import { borderRadius, iconSize, shadows, spacing, theme, ChevronDownIcon } from '@expo/styleguide';
-import React from 'react';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
-import { LABEL } from '~/ui/components/Text';
+import { A, LABEL } from '~/ui/components/Text';
 
 const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
 
@@ -36,7 +35,7 @@ export function ApiVersionSelect() {
       </select>
       {/* Changing versions is a JS only mechanism. To help crawlers find other versions, we add hidden links. */}
       {VERSIONS.map(version => (
-        <a css={crawlerLinkStyle} key={version} href={`/versions/${version}`} />
+        <A css={crawlerLinkStyle} key={version} href={`/versions/${version}`} />
       ))}
     </div>
   );

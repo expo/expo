@@ -25,7 +25,7 @@ export const createPermalinkedComponent = (
             `It looks like the header on this page includes a link, this is an invalid pattern, nested link will be removed!`,
             child?.props?.href
           );
-        return child?.props?.children;
+        return (child as JSX.Element)?.props?.children;
       }
       return child;
     });

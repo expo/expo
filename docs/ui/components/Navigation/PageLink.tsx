@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { borderRadius, iconSize, shadows, spacing, theme, typography } from '@expo/styleguide';
-import React from 'react';
 
 import { NavigationRenderProps } from './types';
 

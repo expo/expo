@@ -58,14 +58,14 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
 
   return (
     <div css={STYLES_CONTAINER}>
-      <NextLink href={info.href as string} as={info.as || info.href} passHref>
-        <a
-          {...customDataAttributes}
-          ref={ref}
-          css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}>
-          {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
-          {children}
-        </a>
+      <NextLink
+        href={info.href as string}
+        as={info.as || info.href}
+        {...customDataAttributes}
+        ref={ref}
+        css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}>
+        {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
+        {children}
       </NextLink>
     </div>
   );

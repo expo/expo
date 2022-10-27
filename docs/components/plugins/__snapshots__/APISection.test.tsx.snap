@@ -7,8 +7,8 @@ exports[`APISection expo-apple-authentication 1`] = `
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#component"
+      class="css-ah3byb"
+      href="/#component"
     >
       <span
         class="css-s3qkfm"
@@ -57,8 +57,8 @@ exports[`APISection expo-apple-authentication 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationbutton"
+        class="css-ah3byb"
+        href="/#appleauthenticationbutton"
       >
         <span
           class="css-s3qkfm"
@@ -264,6 +264,7 @@ not appear on the screen.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Apple
 Documentation
@@ -278,8 +279,8 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#props"
+        class="css-ah3byb"
+        href="/#props"
       >
         <span
           class="css-s3qkfm"
@@ -329,8 +330,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#buttonstyle"
+            class="css-ah3byb"
+            href="/#buttonstyle"
           >
             <span
               class="css-s3qkfm"
@@ -411,8 +412,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#buttontype"
+            class="css-ah3byb"
+            href="/#buttontype"
           >
             <span
               class="css-s3qkfm"
@@ -493,8 +494,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#cornerradius"
+            class="css-ah3byb"
+            href="/#cornerradius"
           >
             <span
               class="css-s3qkfm"
@@ -582,8 +583,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#style"
+            class="css-ah3byb"
+            href="/#style"
           >
             <span
               class="css-s3qkfm"
@@ -653,6 +654,7 @@ for more details.
                 class="css-ccg2mn-ExternalLink"
                 href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
                 rel="noopener noreferrer"
+                target="_blank"
               >
                 Omit
               </a>
@@ -708,8 +710,8 @@ properties.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#onpress"
+            class="css-ah3byb"
+            href="/#onpress"
           >
             <span
               class="css-s3qkfm"
@@ -797,8 +799,8 @@ in here.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#inherited-props"
+          class="css-ah3byb"
+          href="/#inherited-props"
         >
           <span
             class="css-s3qkfm"
@@ -865,8 +867,8 @@ in here.
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#methods"
+      class="css-ah3byb"
+      href="/#methods"
     >
       <span
         class="css-s3qkfm"
@@ -915,8 +917,8 @@ in here.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#getcredentialstateasyncuser"
+        class="css-ah3byb"
+        href="/#getcredentialstateasyncuser"
       >
         <span
           class="css-s3qkfm"
@@ -1100,8 +1102,8 @@ This should come from the user field of an
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns"
+          class="css-ah3byb"
+          href="/#returns"
         >
           <span
             class="css-s3qkfm"
@@ -1175,6 +1177,7 @@ This should come from the user field of an
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -1218,8 +1221,8 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#isavailableasync"
+        class="css-ah3byb"
+        href="/#isavailableasync"
       >
         <span
           class="css-s3qkfm"
@@ -1279,8 +1282,8 @@ value depending on the state of the credential.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-1"
+          class="css-ah3byb"
+          href="/#returns-1"
         >
           <span
             class="css-s3qkfm"
@@ -1354,6 +1357,7 @@ value depending on the state of the credential.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -1392,8 +1396,8 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#refreshasyncoptions"
+        class="css-ah3byb"
+        href="/#refreshasyncoptions"
       >
         <span
           class="css-s3qkfm"
@@ -1535,8 +1539,8 @@ Calling this method will show the sign in modal before actually refreshing the u
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-2"
+          class="css-ah3byb"
+          href="/#returns-2"
         >
           <span
             class="css-s3qkfm"
@@ -1610,6 +1614,7 @@ Calling this method will show the sign in modal before actually refreshing the u
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -1660,8 +1665,8 @@ refresh operation.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#signinasyncoptions"
+        class="css-ah3byb"
+        href="/#signinasyncoptions"
       >
         <span
           class="css-s3qkfm"
@@ -1847,8 +1852,8 @@ the user, since this remains the same for apps released by the same developer.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-3"
+          class="css-ah3byb"
+          href="/#returns-3"
         >
           <span
             class="css-s3qkfm"
@@ -1922,6 +1927,7 @@ the user, since this remains the same for apps released by the same developer.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -1972,8 +1978,8 @@ sign-in operation.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#signoutasyncoptions"
+        class="css-ah3byb"
+        href="/#signoutasyncoptions"
       >
         <span
           class="css-s3qkfm"
@@ -2145,8 +2151,8 @@ from using
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-4"
+          class="css-ah3byb"
+          href="/#returns-4"
         >
           <span
             class="css-s3qkfm"
@@ -2220,6 +2226,7 @@ from using
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -2267,8 +2274,8 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#event-subscriptions"
+      class="css-ah3byb"
+      href="/#event-subscriptions"
     >
       <span
         class="css-s3qkfm"
@@ -2317,8 +2324,8 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#addrevokelistenerlistener"
+        class="css-ah3byb"
+        href="/#addrevokelistenerlistener"
       >
         <span
           class="css-s3qkfm"
@@ -2434,8 +2441,8 @@ sign-out operation.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-5"
+          class="css-ah3byb"
+          href="/#returns-5"
         >
           <span
             class="css-s3qkfm"
@@ -2520,8 +2527,8 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#types"
+      class="css-ah3byb"
+      href="/#types"
     >
       <span
         class="css-s3qkfm"
@@ -2570,8 +2577,8 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationcredential"
+        class="css-ah3byb"
+        href="/#appleauthenticationcredential"
       >
         <span
           class="css-s3qkfm"
@@ -2695,6 +2702,7 @@ which contains all of the pertinent user and credential information.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Apple
 Documentation
@@ -3049,8 +3057,8 @@ developers.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationfullname"
+        class="css-ah3byb"
+        href="/#appleauthenticationfullname"
       >
         <span
           class="css-s3qkfm"
@@ -3348,8 +3356,8 @@ may be
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationrefreshoptions"
+        class="css-ah3byb"
+        href="/#appleauthenticationrefreshoptions"
       >
         <span
           class="css-s3qkfm"
@@ -3450,6 +3458,7 @@ You must include the ID string of the user whose credentials you'd like to refre
             class="css-ccg2mn-ExternalLink"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Apple
 Documentation
@@ -3591,6 +3600,7 @@ OAuth 2.0 protocol
                   class="css-ccg2mn-ExternalLink"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   RFC6749
                 </a>
@@ -3637,8 +3647,8 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationsigninoptions"
+        class="css-ah3byb"
+        href="/#appleauthenticationsigninoptions"
       >
         <span
           class="css-s3qkfm"
@@ -3739,6 +3749,7 @@ None of these options are required.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Apple
 Documentation
@@ -3815,6 +3826,7 @@ for more details.
                   class="css-ccg2mn-ExternalLink"
                   href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   OpenID Connect specification
                 </a>
@@ -3924,6 +3936,7 @@ OAuth 2.0 protocol
                   class="css-ccg2mn-ExternalLink"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   RFC6749
                 </a>
@@ -3943,8 +3956,8 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationsignoutoptions"
+        class="css-ah3byb"
+        href="/#appleauthenticationsignoutoptions"
       >
         <span
           class="css-s3qkfm"
@@ -4045,6 +4058,7 @@ You must include the ID string of the user to sign out.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Apple
 Documentation
@@ -4123,6 +4137,7 @@ OAuth 2.0 protocol
                   class="css-ccg2mn-ExternalLink"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   RFC6749
                 </a>
@@ -4169,8 +4184,8 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#subscription"
+        class="css-ah3byb"
+        href="/#subscription"
       >
         <span
           class="css-s3qkfm"
@@ -4286,8 +4301,8 @@ OAuth 2.0 protocol
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#enums"
+      class="css-ah3byb"
+      href="/#enums"
     >
       <span
         class="css-s3qkfm"
@@ -4336,8 +4351,8 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationbuttonstyle"
+        class="css-ah3byb"
+        href="/#appleauthenticationbuttonstyle"
       >
         <span
           class="css-s3qkfm"
@@ -4411,8 +4426,8 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#white"
+            class="css-ah3byb"
+            href="/#white"
           >
             <span
               class="css-s3qkfm"
@@ -4485,8 +4500,8 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#white_outline"
+            class="css-ah3byb"
+            href="/#white_outline"
           >
             <span
               class="css-s3qkfm"
@@ -4559,8 +4574,8 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#black"
+            class="css-ah3byb"
+            href="/#black"
           >
             <span
               class="css-s3qkfm"
@@ -4630,8 +4645,8 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationbuttontype"
+        class="css-ah3byb"
+        href="/#appleauthenticationbuttontype"
       >
         <span
           class="css-s3qkfm"
@@ -4705,8 +4720,8 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#sign_in"
+            class="css-ah3byb"
+            href="/#sign_in"
           >
             <span
               class="css-s3qkfm"
@@ -4779,8 +4794,8 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#continue"
+            class="css-ah3byb"
+            href="/#continue"
           >
             <span
               class="css-s3qkfm"
@@ -4886,8 +4901,8 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#sign_up"
+            class="css-ah3byb"
+            href="/#sign_up"
           >
             <span
               class="css-s3qkfm"
@@ -4957,8 +4972,8 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationcredentialstate"
+        class="css-ah3byb"
+        href="/#appleauthenticationcredentialstate"
       >
         <span
           class="css-s3qkfm"
@@ -5058,6 +5073,7 @@ OAuth 2.0 protocol
             class="css-ccg2mn-ExternalLink"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Apple
 Documentation
@@ -5079,8 +5095,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#revoked"
+            class="css-ah3byb"
+            href="/#revoked"
           >
             <span
               class="css-s3qkfm"
@@ -5147,8 +5163,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#authorized"
+            class="css-ah3byb"
+            href="/#authorized"
           >
             <span
               class="css-s3qkfm"
@@ -5215,8 +5231,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#not_found"
+            class="css-ah3byb"
+            href="/#not_found"
           >
             <span
               class="css-s3qkfm"
@@ -5283,8 +5299,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#transferred"
+            class="css-ah3byb"
+            href="/#transferred"
           >
             <span
               class="css-s3qkfm"
@@ -5348,8 +5364,8 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationoperation"
+        class="css-ah3byb"
+        href="/#appleauthenticationoperation"
       >
         <span
           class="css-s3qkfm"
@@ -5406,8 +5422,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#implicit"
+            class="css-ah3byb"
+            href="/#implicit"
           >
             <span
               class="css-s3qkfm"
@@ -5480,8 +5496,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#login"
+            class="css-ah3byb"
+            href="/#login"
           >
             <span
               class="css-s3qkfm"
@@ -5548,8 +5564,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#refresh"
+            class="css-ah3byb"
+            href="/#refresh"
           >
             <span
               class="css-s3qkfm"
@@ -5616,8 +5632,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#logout"
+            class="css-ah3byb"
+            href="/#logout"
           >
             <span
               class="css-s3qkfm"
@@ -5681,8 +5697,8 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationscope"
+        class="css-ah3byb"
+        href="/#appleauthenticationscope"
       >
         <span
           class="css-s3qkfm"
@@ -5823,6 +5839,7 @@ You will still need to handle null values for any fields you request.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Apple
 Documentation
@@ -5844,8 +5861,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#full_name"
+            class="css-ah3byb"
+            href="/#full_name"
           >
             <span
               class="css-s3qkfm"
@@ -5912,8 +5929,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#email"
+            class="css-ah3byb"
+            href="/#email"
           >
             <span
               class="css-s3qkfm"
@@ -5977,8 +5994,8 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#appleauthenticationuserdetectionstatus"
+        class="css-ah3byb"
+        href="/#appleauthenticationuserdetectionstatus"
       >
         <span
           class="css-s3qkfm"
@@ -6067,6 +6084,7 @@ for more details.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Apple
 Documentation
@@ -6088,8 +6106,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#unsupported"
+            class="css-ah3byb"
+            href="/#unsupported"
           >
             <span
               class="css-s3qkfm"
@@ -6162,8 +6180,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#unknown"
+            class="css-ah3byb"
+            href="/#unknown"
           >
             <span
               class="css-s3qkfm"
@@ -6236,8 +6254,8 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#likely_real"
+            class="css-ah3byb"
+            href="/#likely_real"
           >
             <span
               class="css-s3qkfm"
@@ -6309,8 +6327,8 @@ exports[`APISection expo-barcode-scanner 1`] = `
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#component"
+      class="css-ah3byb"
+      href="/#component"
     >
       <span
         class="css-s3qkfm"
@@ -6359,8 +6377,8 @@ exports[`APISection expo-barcode-scanner 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodescanner"
+        class="css-ah3byb"
+        href="/#barcodescanner"
       >
         <span
           class="css-s3qkfm"
@@ -6436,8 +6454,8 @@ exports[`APISection expo-barcode-scanner 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#props"
+        class="css-ah3byb"
+        href="/#props"
       >
         <span
           class="css-s3qkfm"
@@ -6487,8 +6505,8 @@ exports[`APISection expo-barcode-scanner 1`] = `
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#barcodetypes"
+            class="css-ah3byb"
+            href="/#barcodetypes"
           >
             <span
               class="css-s3qkfm"
@@ -6603,8 +6621,8 @@ minimize battery usage.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#onbarcodescanned"
+            class="css-ah3byb"
+            href="/#onbarcodescanned"
           >
             <span
               class="css-s3qkfm"
@@ -6759,8 +6777,8 @@ data has been retrieved.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#type"
+            class="css-ah3byb"
+            href="/#type"
           >
             <span
               class="css-s3qkfm"
@@ -6887,8 +6905,8 @@ Same as
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#inherited-props"
+          class="css-ah3byb"
+          href="/#inherited-props"
         >
           <span
             class="css-s3qkfm"
@@ -6955,8 +6973,8 @@ Same as
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#hooks"
+      class="css-ah3byb"
+      href="/#hooks"
     >
       <span
         class="css-s3qkfm"
@@ -7005,8 +7023,8 @@ Same as
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#usepermissionsoptions"
+        class="css-ah3byb"
+        href="/#usepermissionsoptions"
       >
         <span
           class="css-s3qkfm"
@@ -7226,8 +7244,8 @@ This can be used to quickly create specific permission hooks in every module.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns"
+          class="css-ah3byb"
+          href="/#returns"
         >
           <span
             class="css-s3qkfm"
@@ -7350,8 +7368,8 @@ This can be used to quickly create specific permission hooks in every module.
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#methods"
+      class="css-ah3byb"
+      href="/#methods"
     >
       <span
         class="css-s3qkfm"
@@ -7400,8 +7418,8 @@ This can be used to quickly create specific permission hooks in every module.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodescannergetpermissionsasync"
+        class="css-ah3byb"
+        href="/#barcodescannergetpermissionsasync"
       >
         <span
           class="css-s3qkfm"
@@ -7462,8 +7480,8 @@ This can be used to quickly create specific permission hooks in every module.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-1"
+          class="css-ah3byb"
+          href="/#returns-1"
         >
           <span
             class="css-s3qkfm"
@@ -7537,6 +7555,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -7579,8 +7598,8 @@ This can be used to quickly create specific permission hooks in every module.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodescannerrequestpermissionsasync"
+        class="css-ah3byb"
+        href="/#barcodescannerrequestpermissionsasync"
       >
         <span
           class="css-s3qkfm"
@@ -7659,8 +7678,8 @@ This can be used to quickly create specific permission hooks in every module.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-2"
+          class="css-ah3byb"
+          href="/#returns-2"
         >
           <span
             class="css-s3qkfm"
@@ -7734,6 +7753,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -7776,8 +7796,8 @@ This can be used to quickly create specific permission hooks in every module.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodescannerscanfromurlasyncurl-barcodetypes"
+        class="css-ah3byb"
+        href="/#barcodescannerscanfromurlasyncurl-barcodetypes"
       >
         <span
           class="css-s3qkfm"
@@ -7989,8 +8009,8 @@ the platform.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-3"
+          class="css-ah3byb"
+          href="/#returns-3"
         >
           <span
             class="css-s3qkfm"
@@ -8064,6 +8084,7 @@ the platform.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -8101,8 +8122,8 @@ code.
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#interfaces"
+      class="css-ah3byb"
+      href="/#interfaces"
     >
       <span
         class="css-s3qkfm"
@@ -8151,8 +8172,8 @@ code.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#permissionresponse"
+        class="css-ah3byb"
+        href="/#permissionresponse"
       >
         <span
           class="css-s3qkfm"
@@ -8212,8 +8233,8 @@ code.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#permissionresponse--properties"
+          class="css-ah3byb"
+          href="/#permissionresponse--properties"
         >
           <span
             class="css-s3qkfm"
@@ -8423,8 +8444,8 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#types"
+      class="css-ah3byb"
+      href="/#types"
     >
       <span
         class="css-s3qkfm"
@@ -8473,8 +8494,8 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodebounds"
+        class="css-ah3byb"
+        href="/#barcodebounds"
       >
         <span
           class="css-s3qkfm"
@@ -8629,8 +8650,8 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodeevent"
+        class="css-ah3byb"
+        href="/#barcodeevent"
       >
         <span
           class="css-s3qkfm"
@@ -8767,8 +8788,8 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodeeventcallbackarguments"
+        class="css-ah3byb"
+        href="/#barcodeeventcallbackarguments"
       >
         <span
           class="css-s3qkfm"
@@ -8887,8 +8908,8 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodepoint"
+        class="css-ah3byb"
+        href="/#barcodepoint"
       >
         <span
           class="css-s3qkfm"
@@ -9052,8 +9073,8 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodescannedcallback"
+        class="css-ah3byb"
+        href="/#barcodescannedcallback"
       >
         <span
           class="css-s3qkfm"
@@ -9175,8 +9196,8 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodescannerresult"
+        class="css-ah3byb"
+        href="/#barcodescannerresult"
       >
         <span
           class="css-s3qkfm"
@@ -9480,8 +9501,8 @@ For some types, they will represent the area used by the scanner.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#barcodesize"
+        class="css-ah3byb"
+        href="/#barcodesize"
       >
         <span
           class="css-s3qkfm"
@@ -9626,8 +9647,8 @@ For some types, they will represent the area used by the scanner.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#permissionhookoptions"
+        class="css-ah3byb"
+        href="/#permissionhookoptions"
       >
         <span
           class="css-s3qkfm"
@@ -9701,8 +9722,8 @@ For some types, they will represent the area used by the scanner.
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#enums"
+      class="css-ah3byb"
+      href="/#enums"
     >
       <span
         class="css-s3qkfm"
@@ -9751,8 +9772,8 @@ For some types, they will represent the area used by the scanner.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#permissionstatus"
+        class="css-ah3byb"
+        href="/#permissionstatus"
       >
         <span
           class="css-s3qkfm"
@@ -9809,8 +9830,8 @@ For some types, they will represent the area used by the scanner.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#denied"
+            class="css-ah3byb"
+            href="/#denied"
           >
             <span
               class="css-s3qkfm"
@@ -9883,8 +9904,8 @@ For some types, they will represent the area used by the scanner.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#granted"
+            class="css-ah3byb"
+            href="/#granted"
           >
             <span
               class="css-s3qkfm"
@@ -9957,8 +9978,8 @@ For some types, they will represent the area used by the scanner.
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#undetermined"
+            class="css-ah3byb"
+            href="/#undetermined"
           >
             <span
               class="css-s3qkfm"
@@ -10030,8 +10051,8 @@ exports[`APISection expo-pedometer 1`] = `
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#methods"
+      class="css-ah3byb"
+      href="/#methods"
     >
       <span
         class="css-s3qkfm"
@@ -10080,8 +10101,8 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#getpermissionsasync"
+        class="css-ah3byb"
+        href="/#getpermissionsasync"
       >
         <span
           class="css-s3qkfm"
@@ -10135,8 +10156,8 @@ exports[`APISection expo-pedometer 1`] = `
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns"
+          class="css-ah3byb"
+          href="/#returns"
         >
           <span
             class="css-s3qkfm"
@@ -10210,6 +10231,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -10235,8 +10257,8 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#getstepcountasyncstart-end"
+        class="css-ah3byb"
+        href="/#getstepcountasyncstart-end"
       >
         <span
           class="css-s3qkfm"
@@ -10333,6 +10355,7 @@ exports[`APISection expo-pedometer 1`] = `
                   class="css-ccg2mn-ExternalLink"
                   href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Date
                 </a>
@@ -10371,6 +10394,7 @@ exports[`APISection expo-pedometer 1`] = `
                   class="css-ccg2mn-ExternalLink"
                   href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
                   rel="noopener noreferrer"
+                  target="_blank"
                 >
                   Date
                 </a>
@@ -10405,8 +10429,8 @@ exports[`APISection expo-pedometer 1`] = `
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-1"
+          class="css-ah3byb"
+          href="/#returns-1"
         >
           <span
             class="css-s3qkfm"
@@ -10480,6 +10504,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -10524,6 +10549,7 @@ exports[`APISection expo-pedometer 1`] = `
         class="css-ccg2mn-ExternalLink"
         href="https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc"
         rel="noopener noreferrer"
+        target="_blank"
       >
         Apple documentation states
       </a>
@@ -10581,8 +10607,8 @@ a start date that is more than seven days in the past returns only the available
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#isavailableasync"
+        class="css-ah3byb"
+        href="/#isavailableasync"
       >
         <span
           class="css-s3qkfm"
@@ -10642,8 +10668,8 @@ a start date that is more than seven days in the past returns only the available
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-2"
+          class="css-ah3byb"
+          href="/#returns-2"
         >
           <span
             class="css-s3qkfm"
@@ -10717,6 +10743,7 @@ a start date that is more than seven days in the past returns only the available
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -10750,8 +10777,8 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#requestpermissionsasync"
+        class="css-ah3byb"
+        href="/#requestpermissionsasync"
       >
         <span
           class="css-s3qkfm"
@@ -10805,8 +10832,8 @@ available on this device.
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-3"
+          class="css-ah3byb"
+          href="/#returns-3"
         >
           <span
             class="css-s3qkfm"
@@ -10880,6 +10907,7 @@ available on this device.
             class="css-ccg2mn-ExternalLink"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
+            target="_blank"
           >
             Promise
           </a>
@@ -10905,8 +10933,8 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#watchstepcountcallback"
+        class="css-ah3byb"
+        href="/#watchstepcountcallback"
       >
         <span
           class="css-s3qkfm"
@@ -11048,8 +11076,8 @@ provided with a single argument that is
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#returns-4"
+          class="css-ah3byb"
+          href="/#returns-4"
         >
           <span
             class="css-s3qkfm"
@@ -11158,8 +11186,8 @@ provided with a single argument that is
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#interfaces"
+      class="css-ah3byb"
+      href="/#interfaces"
     >
       <span
         class="css-s3qkfm"
@@ -11208,8 +11236,8 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#permissionresponse"
+        class="css-ah3byb"
+        href="/#permissionresponse"
       >
         <span
           class="css-s3qkfm"
@@ -11263,8 +11291,8 @@ provided with a single argument that is
         data-heading="true"
       >
         <a
-          class="css-1y1hc0n"
-          href="#permissionresponse--properties"
+          class="css-ah3byb"
+          href="/#permissionresponse--properties"
         >
           <span
             class="css-s3qkfm"
@@ -11464,8 +11492,8 @@ provided with a single argument that is
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#types"
+      class="css-ah3byb"
+      href="/#types"
     >
       <span
         class="css-s3qkfm"
@@ -11514,8 +11542,8 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#pedometerresult"
+        class="css-ah3byb"
+        href="/#pedometerresult"
       >
         <span
           class="css-s3qkfm"
@@ -11631,8 +11659,8 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#pedometerupdatecallback"
+        class="css-ah3byb"
+        href="/#pedometerupdatecallback"
       >
         <span
           class="css-s3qkfm"
@@ -11754,8 +11782,8 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#permissionexpiration"
+        class="css-ah3byb"
+        href="/#permissionexpiration"
       >
         <span
           class="css-s3qkfm"
@@ -11832,8 +11860,8 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#subscription"
+        class="css-ah3byb"
+        href="/#subscription"
       >
         <span
           class="css-s3qkfm"
@@ -11949,8 +11977,8 @@ provided with a single argument that is
     data-heading="true"
   >
     <a
-      class="css-1y1hc0n"
-      href="#enums"
+      class="css-ah3byb"
+      href="/#enums"
     >
       <span
         class="css-s3qkfm"
@@ -11999,8 +12027,8 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-1y1hc0n"
-        href="#permissionstatus"
+        class="css-ah3byb"
+        href="/#permissionstatus"
       >
         <span
           class="css-s3qkfm"
@@ -12057,8 +12085,8 @@ provided with a single argument that is
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#denied"
+            class="css-ah3byb"
+            href="/#denied"
           >
             <span
               class="css-s3qkfm"
@@ -12125,8 +12153,8 @@ provided with a single argument that is
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#granted"
+            class="css-ah3byb"
+            href="/#granted"
           >
             <span
               class="css-s3qkfm"
@@ -12193,8 +12221,8 @@ provided with a single argument that is
           data-heading="true"
         >
           <a
-            class="css-1y1hc0n"
-            href="#undetermined"
+            class="css-ah3byb"
+            href="/#undetermined"
           >
             <span
               class="css-s3qkfm"

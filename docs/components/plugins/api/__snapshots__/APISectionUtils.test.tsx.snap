@@ -36,6 +36,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       class="css-ccg2mn-ExternalLink"
       href="https://developer.android.com/google/play/installreferrer"
       rel="noopener noreferrer"
+      target="_blank"
     >
       <code
         class="inline css-ov7own-InlineCode"
@@ -123,6 +124,7 @@ exports[`APISectionUtils.resolveTypeName Promise 1`] = `
     class="css-ccg2mn-ExternalLink"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
+    target="_blank"
   >
     Promise
   </a>
@@ -140,6 +142,7 @@ exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
     class="css-ccg2mn-ExternalLink"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
+    target="_blank"
   >
     Promise
   </a>
@@ -237,6 +240,7 @@ exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
     class="css-ccg2mn-ExternalLink"
     href="https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys"
     rel="noopener noreferrer"
+    target="_blank"
   >
     Pick
   </a>
@@ -286,6 +290,7 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
       class="css-ccg2mn-ExternalLink"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
+      target="_blank"
     >
       Error
     </a>
@@ -318,6 +323,7 @@ exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 
       class="css-ccg2mn-ExternalLink"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
+      target="_blank"
     >
       Error
     </a>
@@ -362,6 +368,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
     class="css-ccg2mn-ExternalLink"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
+    target="_blank"
   >
     Promise
   </a>
@@ -420,6 +427,7 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
       class="css-ccg2mn-ExternalLink"
       href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
       rel="noopener noreferrer"
+      target="_blank"
     >
       Omit
     </a>

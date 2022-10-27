@@ -8,7 +8,8 @@ import {
   ChevronDownIcon,
   borderRadius,
 } from '@expo/styleguide';
-import * as React from 'react';
+
+import { A } from '../Text';
 
 import * as Utilities from '~/common/utilities';
 import { usePageApiVersion } from '~/providers/page-api-version';
@@ -59,7 +60,7 @@ export const VersionSelector = () => {
         // Add hidden links to create crawlable references to other SDK versions
         // We can use JS to switch between them, while helping search bots find other SDK versions
         VERSIONS.map(version => (
-          <a key={version} style={{ display: 'none' }} href={`/versions/${version}/`} />
+          <A key={version} style={{ display: 'none' }} href={`/versions/${version}/`} />
         ))
       }
       <select

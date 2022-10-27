@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { typography } from '@expo/styleguide';
 import React, { forwardRef, DOMAttributes } from 'react';
 
-type Props = DOMAttributes<HTMLButtonElement | HTMLAnchorElement> & {
+type Props = DOMAttributes<HTMLButtonElement> & {
   testID?: string;
 };
 

@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { theme as styleguideTheme, borderRadius, typography, shadows } from '@expo/styleguide';
-import React, { ReactNode, MouseEvent } from 'react';
+import { ReactNode, MouseEvent, PropsWithChildren } from 'react';
 
 import { ButtonBase } from './ButtonBase';
 import { hexToAccessibleHSLA, hexToRGBA } from './colors';
@@ -10,9 +10,8 @@ import { LinkBase } from '~/ui/components/Text';
 type ButtonTheme = keyof typeof styleguideTheme.button;
 type ButtonSize = 'mini' | 'small' | 'large';
 
-export type ButtonProps = {
-  onClick?: (event: MouseEvent) => void;
-  children?: ReactNode | string;
+export type ButtonProps = PropsWithChildren<{
+  onClick?: (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void;
   disabled?: boolean;
   theme?: ButtonTheme;
   style?: any;
@@ -30,7 +29,7 @@ export type ButtonProps = {
   openInNewTab?: boolean;
   title?: string;
   rel?: string;
-};
+}>;
 
 type Theme = {
   backgroundColor: string;
@@ -161,7 +160,7 @@ export function Button(props: ButtonProps) {
   );
 }
 
-function onNonInteractClick(event: MouseEvent) {
+function onNonInteractClick(event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) {
   event.preventDefault();
 }
 

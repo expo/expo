@@ -1,28 +1,27 @@
 import { css } from '@emotion/react';
 import { borderRadius, spacing, theme, typography, iconSize } from '@expo/styleguide';
 import { IconProps } from '@expo/styleguide/dist/types';
-import Link from 'next/link';
-import * as React from 'react';
+import { ComponentType } from 'react';
+
+import { A } from '../Text';
 
 type SidebarHeadEntryProps = {
   href: string;
   title: string;
   isActive: boolean;
-  Icon: React.ComponentType<IconProps>;
+  Icon: ComponentType<IconProps>;
 };
 
 export const SidebarHeadEntry = ({ href, title, isActive, Icon }: SidebarHeadEntryProps) => {
   return (
-    <Link href={href} passHref>
-      <a css={[entryContainerStyle, isActive && activeEntryContainerStyle]}>
-        <Icon
-          css={entryIconStyle}
-          color={isActive ? theme.link.default : theme.icon.default}
-          width={iconSize.small}
-        />
-        <span>{title}</span>
-      </a>
-    </Link>
+    <A href={href} css={[entryContainerStyle, isActive && activeEntryContainerStyle]}>
+      <Icon
+        css={entryIconStyle}
+        color={isActive ? theme.link.default : theme.icon.default}
+        width={iconSize.small}
+      />
+      <span>{title}</span>
+    </A>
   );
 };
 
