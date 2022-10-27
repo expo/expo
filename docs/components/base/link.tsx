@@ -31,15 +31,18 @@ const Link = (props: LinkProps) =>
 export default Link;
 
 export const InternalLink = ({ href, children, className }: LinkProps) => (
-  <NextLink href={href || ''} passHref>
-    <a css={STYLES_EXTERNAL_LINK} className={className}>
-      {children}
-    </a>
+  <NextLink href={href || ''} css={STYLES_EXTERNAL_LINK} className={className}>
+    {children}
   </NextLink>
 );
 
 export const ExternalLink = ({ href, children, className }: LinkProps) => (
-  <a href={href} css={STYLES_EXTERNAL_LINK} className={className} rel="noopener noreferrer">
+  <NextLink
+    href={href || ''}
+    css={STYLES_EXTERNAL_LINK}
+    className={className}
+    rel="noopener noreferrer"
+    target="_blank">
     {children}
-  </a>
+  </NextLink>
 );
