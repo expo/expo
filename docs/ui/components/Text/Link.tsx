@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import NextLink from 'next/link';
-import { forwardRef, PropsWithChildren, MouseEvent } from 'react';
+import { CSSProperties, forwardRef, PropsWithChildren, MouseEvent } from 'react';
 
 import { durations } from '~/ui/foundations/durations';
 
@@ -12,9 +12,9 @@ export type LinkProps = PropsWithChildren<{
   title?: string;
   rel?: string;
   isStyled?: boolean;
-  onClick?: (event: React.MouseEvent<HTMLAnchorElement>) => void;
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void;
   testID?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
   className?: string;
   openInNewTab?: boolean;
   ariaLabel?: string;

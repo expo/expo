@@ -91,7 +91,7 @@ const isExternalLink = (href?: string) => href?.includes('://');
 
 export const KBD = createTextComponent(TextElement.KBD, css([typography.utility.pre, kbdStyle]));
 
-export const A = (props: Omit<LinkProps, 'router'> & { isStyled?: boolean }) => {
+export const A = (props: LinkProps & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;
   return (
     <LinkBase

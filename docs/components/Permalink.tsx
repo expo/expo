@@ -6,7 +6,7 @@ import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
-import { A } from '~/ui/components/Text';
+import { LinkBase } from '~/ui/components/Text';
 
 type BaseProps = React.PropsWithChildren<{
   component: any;
@@ -14,6 +14,7 @@ type BaseProps = React.PropsWithChildren<{
 }>;
 
 type EnhancedProps = React.PropsWithChildren<{
+  // Sidebar heading level override
   nestingLevel?: number;
   additionalProps?: AdditionalProps;
   id?: string;
@@ -70,12 +71,6 @@ const PermalinkBase = ({ component, children, className, ...rest }: BaseProps) =
     children
   );
 
-/**
- * Props:
- * - children: Title or component containing title text
- * - nestingLevel: Sidebar heading level override
- * - additionalProps: Additional properties passed to component
- */
 const Permalink: React.FC<EnhancedProps> = withHeadingManager(
   (props: EnhancedProps & HeadingManagerProps) => {
     // NOTE(jim): Not the greatest way to generate permalinks.
@@ -95,13 +90,13 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
 
     return (
       <PermalinkBase component={component} data-components-heading>
-        <A css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey} ref={heading?.ref}>
+        <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey} ref={heading?.ref}>
           <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
           <span css={STYLES_PERMALINK_ICON}>
             <PermalinkIcon />
           </span>
-        </A>
+        </LinkBase>
       </PermalinkBase>
     );
   }
