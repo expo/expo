@@ -41,56 +41,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class=" css-19f55nd-PDIV"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
+                <a
+                  class="css-1y1hc0n"
+                  href="#name"
                 >
                   <span
-                    class="css-120d683"
+                    class="css-s3qkfm"
                     id="name"
                   />
-                  <a
-                    class="css-8y2kaf"
-                    href="#name"
+                  <span
+                    class="css-6n7j50"
                   >
-                    <span
-                      class="css-6n7j50"
+                    <code
+                      class="inline css-ov7own-InlineCode"
                     >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        name
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
+                      name
+                    </code>
+                  </span>
+                  <span
+                    class="css-1eysgws"
+                  >
+                    <svg
+                      aria-label="permalink"
+                      class="anchor-icon"
+                      fill="none"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
+                      <path
+                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
           </td>
@@ -168,56 +164,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class=" css-19f55nd-PDIV"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
+                <a
+                  class="css-1y1hc0n"
+                  href="#androidnavigationbar"
                 >
                   <span
-                    class="css-120d683"
+                    class="css-s3qkfm"
                     id="androidnavigationbar"
                   />
-                  <a
-                    class="css-8y2kaf"
-                    href="#androidnavigationbar"
+                  <span
+                    class="css-6n7j50"
                   >
-                    <span
-                      class="css-6n7j50"
+                    <code
+                      class="inline css-ov7own-InlineCode"
                     >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        androidNavigationBar
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
+                      androidNavigationBar
+                    </code>
+                  </span>
+                  <span
+                    class="css-1eysgws"
+                  >
+                    <svg
+                      aria-label="permalink"
+                      class="anchor-icon"
+                      fill="none"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
+                      <path
+                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
           </td>
@@ -339,56 +331,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class=" css-19f55nd-PDIV"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
+                <a
+                  class="css-1y1hc0n"
+                  href="#visible"
                 >
                   <span
-                    class="css-120d683"
+                    class="css-s3qkfm"
                     id="visible"
                   />
-                  <a
-                    class="css-8y2kaf"
-                    href="#visible"
+                  <span
+                    class="css-6n7j50"
                   >
-                    <span
-                      class="css-6n7j50"
+                    <code
+                      class="inline css-ov7own-InlineCode"
                     >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        visible
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
+                      visible
+                    </code>
+                  </span>
+                  <span
+                    class="css-1eysgws"
+                  >
+                    <svg
+                      aria-label="permalink"
+                      class="anchor-icon"
+                      fill="none"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
+                      <path
+                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
           </td>
@@ -466,56 +454,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class=" css-19f55nd-PDIV"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
+                <a
+                  class="css-1y1hc0n"
+                  href="#always"
                 >
                   <span
-                    class="css-120d683"
+                    class="css-s3qkfm"
                     id="always"
                   />
-                  <a
-                    class="css-8y2kaf"
-                    href="#always"
+                  <span
+                    class="css-6n7j50"
                   >
-                    <span
-                      class="css-6n7j50"
+                    <code
+                      class="inline css-ov7own-InlineCode"
                     >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        always
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
+                      always
+                    </code>
+                  </span>
+                  <span
+                    class="css-1eysgws"
+                  >
+                    <svg
+                      aria-label="permalink"
+                      class="anchor-icon"
+                      fill="none"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
+                      <path
+                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
           </td>
@@ -549,56 +533,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class=" css-19f55nd-PDIV"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
+                <a
+                  class="css-1y1hc0n"
+                  href="#backgroundcolor"
                 >
                   <span
-                    class="css-120d683"
+                    class="css-s3qkfm"
                     id="backgroundcolor"
                   />
-                  <a
-                    class="css-8y2kaf"
-                    href="#backgroundcolor"
+                  <span
+                    class="css-6n7j50"
                   >
-                    <span
-                      class="css-6n7j50"
+                    <code
+                      class="inline css-ov7own-InlineCode"
                     >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        backgroundColor
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
+                      backgroundColor
+                    </code>
+                  </span>
+                  <span
+                    class="css-1eysgws"
+                  >
+                    <svg
+                      aria-label="permalink"
+                      class="anchor-icon"
+                      fill="none"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
+                      <path
+                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
           </td>
@@ -645,56 +625,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class=" css-19f55nd-PDIV"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
+                <a
+                  class="css-1y1hc0n"
+                  href="#intentfilters"
                 >
                   <span
-                    class="css-120d683"
+                    class="css-s3qkfm"
                     id="intentfilters"
                   />
-                  <a
-                    class="css-8y2kaf"
-                    href="#intentfilters"
+                  <span
+                    class="css-6n7j50"
                   >
-                    <span
-                      class="css-6n7j50"
+                    <code
+                      class="inline css-ov7own-InlineCode"
                     >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        intentFilters
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
+                      intentFilters
+                    </code>
+                  </span>
+                  <span
+                    class="css-1eysgws"
+                  >
+                    <svg
+                      aria-label="permalink"
+                      class="anchor-icon"
+                      fill="none"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
+                      <path
+                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
           </td>
@@ -809,56 +785,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class=" css-19f55nd-PDIV"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
+                <a
+                  class="css-1y1hc0n"
+                  href="#autoverify"
                 >
                   <span
-                    class="css-120d683"
+                    class="css-s3qkfm"
                     id="autoverify"
                   />
-                  <a
-                    class="css-8y2kaf"
-                    href="#autoverify"
+                  <span
+                    class="css-6n7j50"
                   >
-                    <span
-                      class="css-6n7j50"
+                    <code
+                      class="inline css-ov7own-InlineCode"
                     >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        autoVerify
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
+                      autoVerify
+                    </code>
+                  </span>
+                  <span
+                    class="css-1eysgws"
+                  >
+                    <svg
+                      aria-label="permalink"
+                      class="anchor-icon"
+                      fill="none"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
+                      <path
+                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
           </td>
@@ -892,56 +864,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class=" css-19f55nd-PDIV"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
+                <a
+                  class="css-1y1hc0n"
+                  href="#data"
                 >
                   <span
-                    class="css-120d683"
+                    class="css-s3qkfm"
                     id="data"
                   />
-                  <a
-                    class="css-8y2kaf"
-                    href="#data"
+                  <span
+                    class="css-6n7j50"
                   >
-                    <span
-                      class="css-6n7j50"
+                    <code
+                      class="inline css-ov7own-InlineCode"
                     >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        data
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
+                      data
+                    </code>
+                  </span>
+                  <span
+                    class="css-1eysgws"
+                  >
+                    <svg
+                      aria-label="permalink"
+                      class="anchor-icon"
+                      fill="none"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
+                      <path
+                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
           </td>
@@ -974,56 +942,52 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 class=" css-19f55nd-PDIV"
                 data-text="true"
               >
-                <div
-                  class="css-79elbk"
+                <a
+                  class="css-1y1hc0n"
+                  href="#host"
                 >
                   <span
-                    class="css-120d683"
+                    class="css-s3qkfm"
                     id="host"
                   />
-                  <a
-                    class="css-8y2kaf"
-                    href="#host"
+                  <span
+                    class="css-6n7j50"
                   >
-                    <span
-                      class="css-6n7j50"
+                    <code
+                      class="inline css-ov7own-InlineCode"
                     >
-                      <code
-                        class="inline css-ov7own-InlineCode"
-                      >
-                        host
-                      </code>
-                    </span>
-                    <span
-                      class="css-1eysgws"
+                      host
+                    </code>
+                  </span>
+                  <span
+                    class="css-1eysgws"
+                  >
+                    <svg
+                      aria-label="permalink"
+                      class="anchor-icon"
+                      fill="none"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      width="24"
+                      xmlns="http://www.w3.org/2000/svg"
                     >
-                      <svg
-                        aria-label="permalink"
-                        class="anchor-icon"
-                        fill="none"
-                        height="24"
-                        viewBox="0 0 24 24"
-                        width="24"
-                        xmlns="http://www.w3.org/2000/svg"
-                      >
-                        <path
-                          d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                        <path
-                          d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                          stroke="#9B9B9B"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                        />
-                      </svg>
-                    </span>
-                  </a>
-                </div>
+                      <path
+                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                      <path
+                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                        stroke="#9B9B9B"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                      />
+                    </svg>
+                  </span>
+                </a>
               </div>
             </div>
           </td>
