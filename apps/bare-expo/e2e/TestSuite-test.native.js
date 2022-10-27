@@ -40,6 +40,9 @@ describe('test-suite', () => {
         await device.launchApp({
           newInstance: true,
           url: `bareexpo://test-suite/run?tests=${testName}`,
+          launchArgs: {
+            EXDevMenuIsOnboardingFinished: true,
+          },
         });
 
         const launchWaitingTime = platform === 'ios' ? 100 : 3000;

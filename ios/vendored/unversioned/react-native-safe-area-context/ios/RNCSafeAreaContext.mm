@@ -1,15 +1,15 @@
 #import "RNCSafeAreaContext.h"
 
-#if __has_include(<SafeAreaContextSpec/SafeAreaContextSpec.h>)
+#if __has_include(<safeareacontext/safeareacontext.h>)
 #define RCT_USE_CODEGEN 1
 #else
 #define RCT_USE_CODEGEN 0
 #endif
 
-#import <UIKit/UIKit.h>
 #import <React/RCTUtils.h>
+#import <UIKit/UIKit.h>
 #if RCT_USE_CODEGEN
-#import <SafeAreaContextSpec/SafeAreaContextSpec.h>
+#import <safeareacontext/safeareacontext.h>
 #endif
 
 #if RCT_USE_CODEGEN
@@ -62,7 +62,7 @@ RCT_EXPORT_MODULE()
       }
     };
   });
-  
+
   return constants;
 }
 

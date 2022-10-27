@@ -1,4 +1,6 @@
 import { ExecutionEnvironment } from 'expo-constants';
+import { NativeModules } from 'react-native';
+const originalNativeModules = NativeModules;
 const PROPS_TO_IGNORE = new Set([
     /**
      * We don't want to throw when the expo or expo-modules-core packages try to access any of these
@@ -8,6 +10,20 @@ const PROPS_TO_IGNORE = new Set([
     'EXDevLauncher',
     'EXReactNativeEventEmitter',
     'NativeUnimoduleProxy',
+    /**
+     * Other modules that are accessed via packages in the Expo SDK but have built-in fallbacks
+     */
+    'ExpoImageModule',
+    'ExpoRandom',
+    'PlatformLocalStorage',
+    'RNC_AsyncSQLiteDBStorage',
+    'RNCAsyncStorage',
+    'RNGetRandomValues',
+    'RNVectorIconsManager',
+    'RNVectorIconsModule',
+    // False alarm from lottie where it uses react-native-safe-module to detect corresponding native module, but it doesn't exist in lottie.
+    'LottieAnimationViewManager',
+    'LottieAnimationView',
     /**
      * Other methods that can be called on the NativeModules object that we should ignore. The
      * underlying NativeModules object is sometimes a proxy itself so may not have these methods
@@ -48,7 +64,7 @@ export function createProxyForNativeModules(NativeModules) {
                 !additionalModulesToIgnore.has(prop) &&
                 !alreadyErroredModules.has(prop)) {
                 alreadyErroredModules.add(prop);
-                const isRunningInStoreClient = global.ExpoModules?.NativeModulesProxy?.modulesConstants.ExponentConstants
+                const isRunningInStoreClient = global.expo?.modules?.NativeModulesProxy?.modulesConstants.ExponentConstants
                     ?.executionEnvironment === ExecutionEnvironment.StoreClient ||
                     target.NativeUnimoduleProxy?.modulesConstants.ExponentConstants?.executionEnvironment ===
                         ExecutionEnvironment.StoreClient;
@@ -81,5 +97,14 @@ export function disableMissingNativeModuleErrors(moduleNames) {
     else {
         enabled = false;
     }
+}
+/**
+ * Access a native module without throwing an error if it doesn't exist.
+ *
+ * @param moduleName Name of module to access
+ * @returns Corresponding native module object, or null if it doesn't exist
+ */
+export function getNativeModuleIfExists(moduleName) {
+    return originalNativeModules[moduleName];
 }
 //# sourceMappingURL=NativeModules.js.map

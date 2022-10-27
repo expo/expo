@@ -4,6 +4,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 
+import { Podspec } from '../../CocoaPods';
 import logger from '../../Logger';
 import { Package } from '../../Packages';
 import { copyFileWithTransformsAsync } from '../../Transforms';
@@ -30,23 +31,32 @@ export async function versionExpoModulesAsync(
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
   // Prepare versioning task (for single package).
-  const versionPackageTask = taskQueue.wrap(async (pkg) => {
+  const versionPackageTask = taskQueue.wrap(async (pkg: Package) => {
     logger.log(`- ${chalk.green(pkg.podspecName!)}`);
-    const sourceDirectory = path.join(pkg.path, pkg.iosSubdirectory);
-    const targetDirectory = path.join(versionedDirectory, pkg.podspecName!);
 
-    // Find all iOS files within the package, except the podspec.
-    // Podspecs depend on the corresponding `package.json`,
-    // that we don't want to copy (no need to version JS files, workspace project names duplication).
-    // Instead, we generate the static podspec in JSON format (see `generateVersionedPodspecAsync`).
-    const files = await searchFilesAsync(sourceDirectory, '**', {
-      ignore: [`${pkg.podspecName}.podspec`],
-    });
+    if (!pkg.podspecPath || !pkg.podspecName) {
+      throw new Error(`Podspec for package ${pkg.packageName} not found`);
+    }
+
+    const sourceDirectory = path.join(pkg.path, path.dirname(pkg.podspecPath));
+    const targetDirectory = path.join(versionedDirectory, pkg.podspecName);
 
     // Ensure the target directory is empty
     if (await fs.pathExists(targetDirectory)) {
       await fs.remove(targetDirectory);
     }
+
+    // Create a podspec in JSON format so we don't have to keep `package.json`s
+    const podspec = await generateVersionedPodspecAsync(pkg, prefix, targetDirectory);
+
+    // Find files within the package based on source_files in the podspec, except the podspec itself.
+    // Podspecs depend on the corresponding `package.json`,
+    // that we don't want to copy (no need to version JS files, workspace project names duplication).
+    // Instead, we generate the static podspec in JSON format (see `generateVersionedPodspecAsync`).
+    // Be aware that it doesn't include source files for subspecs!
+    const files = await searchFilesAsync(sourceDirectory, podspec.source_files, {
+      ignore: [`${pkg.podspecName}.podspec`],
+    });
 
     // Copy files to the new directory with applied transforms
     for (const sourceFile of files) {
@@ -57,9 +67,6 @@ export async function versionExpoModulesAsync(
         transforms,
       });
     }
-
-    // Create a podspec in JSON format so we don't have to keep `package.json`s
-    await generateVersionedPodspecAsync(pkg, prefix, targetDirectory);
   });
 
   logger.info('📂 Versioning expo modules');
@@ -78,7 +85,7 @@ async function generateVersionedPodspecAsync(
   pkg: Package,
   prefix: string,
   targetDirectory: string
-) {
+): Promise<Podspec> {
   const podspec = await pkg.getPodspecAsync();
 
   if (!podspec) {
@@ -112,4 +119,6 @@ async function generateVersionedPodspecAsync(
   await fs.outputJson(targetPath, podspec, {
     spaces: 2,
   });
+
+  return podspec;
 }

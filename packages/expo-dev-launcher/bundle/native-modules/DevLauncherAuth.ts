@@ -1,8 +1,16 @@
-import { NativeModules, AppState, Linking, Platform } from 'react-native';
+import {
+  AppState,
+  EmitterSubscription,
+  Linking,
+  Platform,
+  NativeEventSubscription,
+  NativeModules,
+} from 'react-native';
 
 const DevLauncherAuth = NativeModules.EXDevLauncherAuth;
 
-let redirectHandler: ((event: any) => void) | null = null;
+let appStateSubscription: NativeEventSubscription | null = null;
+let redirectSubscription: EmitterSubscription | null = null;
 let onWebBrowserCloseAndroid: null | (() => void) = null;
 let isAppStateAvailable: boolean = AppState.currentState !== null;
 
@@ -18,20 +26,20 @@ function onAppStateChangeAndroid(state: any) {
 }
 
 function stopWaitingForRedirect() {
-  if (!redirectHandler) {
+  if (!redirectSubscription) {
     throw new Error(
       `The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`
     );
   }
 
-  Linking.removeEventListener('url', redirectHandler);
-  redirectHandler = null;
+  redirectSubscription.remove();
+  redirectSubscription = null;
 }
 
 async function openBrowserAndWaitAndroidAsync(startUrl: string): Promise<any> {
   const appStateChangedToActive = new Promise<void>((resolve) => {
     onWebBrowserCloseAndroid = resolve;
-    AppState.addEventListener('change', onAppStateChangeAndroid);
+    appStateSubscription = AppState.addEventListener('change', onAppStateChangeAndroid);
   });
 
   let result = { type: 'cancel' };
@@ -43,25 +51,28 @@ async function openBrowserAndWaitAndroidAsync(startUrl: string): Promise<any> {
     result = { type: 'dismiss' };
   }
 
-  AppState.removeEventListener('change', onAppStateChangeAndroid);
+  if (appStateSubscription != null) {
+    appStateSubscription.remove();
+    appStateSubscription = null;
+  }
   onWebBrowserCloseAndroid = null;
   return result;
 }
 
 function waitForRedirectAsync(returnUrl: string): Promise<any> {
   return new Promise((resolve) => {
-    redirectHandler = (event: any) => {
+    const redirectHandler = (event: any) => {
       if (event.url.startsWith(returnUrl)) {
         resolve({ url: event.url, type: 'success' });
       }
     };
 
-    Linking.addEventListener('url', redirectHandler);
+    redirectSubscription = Linking.addEventListener('url', redirectHandler);
   });
 }
 
 async function openAuthSessionPolyfillAsync(startUrl: string, returnUrl: string): Promise<any> {
-  if (redirectHandler) {
+  if (redirectSubscription) {
     throw new Error(
       `The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`
     );

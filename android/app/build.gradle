@@ -17,7 +17,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 173
-    versionName '2.25.1'
+    versionCode 175
+    versionName '2.26.0'
     // END VERSIONS
 
     multiDexEnabled true
@@ -109,12 +109,6 @@ android {
   }
 }
 
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r245459'
-  }
-}
-
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -123,23 +117,11 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
 
   // Our dependencies
-  implementation ('androidx.appcompat:appcompat:1.3.1') {
-    // Workaround for https://github.com/expo/expo/issues/17372
-    // Remove this version pinning when we drop sdk 44
-    version {
-      strictly '1.3.1'
-    }
-  }
+  implementation ('androidx.appcompat:appcompat:1.4.1')
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation ('androidx.appcompat:appcompat:1.3.1') {
-    // Workaround for https://github.com/expo/expo/issues/17372
-    // Remove this version pinning when we drop sdk 44
-    version {
-      strictly '1.3.1'
-    }
-  }
+  implementation ('androidx.appcompat:appcompat:1.4.1')
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   implementation 'com.jakewharton:butterknife:10.2.1'
   implementation 'de.greenrobot:eventbus:2.4.0'
@@ -212,6 +194,11 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_47
+  versionedImplementation(project(':expoview-abi47_0_0'))
+  // END_SDK_47
+
+
   // BEGIN_SDK_46
   versionedImplementation(project(':expoview-abi46_0_0'))
   // END_SDK_46
@@ -221,11 +208,6 @@ dependencies {
   versionedImplementation(project(':expoview-abi45_0_0'))
   // END_SDK_45
 
-
-  // BEGIN_SDK_44
-  versionedImplementation(project(':expoview-abi44_0_0'))
-  // END_SDK_44
-
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'
 
@@ -233,7 +215,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
+  api 'org.webkit:android-jsc:r250230' // needs to be before react-native
   api 'com.facebook.react:react-native:+'
   END UNCOMMENT WHEN DISTRIBUTING */
 

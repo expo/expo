@@ -19,7 +19,10 @@ import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.kernel.DevMenuManager
 import host.exp.exponent.kernel.DevMenuModuleInterface
 import host.exp.exponent.kernel.KernelConstants
+import host.exp.expoview.Exponent
 import host.exp.expoview.R
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.*
 import javax.inject.Inject
 
@@ -86,7 +89,10 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     }
     items.putBundle("dev-inspector", inspectorMap)
 
-    if (devSettings != null && devSupportManager.devSupportEnabled) {
+    if (devSettings != null && devSupportManager.devSupportEnabled && isJsExecutorInspectable) {
+      debuggerMap.putString("label", getString(R.string.devmenu_open_js_debugger))
+      debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
+    } else if (devSettings != null && devSupportManager.devSupportEnabled) {
       debuggerMap.putString("label", getString(if (devSettings.isRemoteJSDebugEnabled) R.string.devmenu_stop_remote_debugging else R.string.devmenu_start_remote_debugging))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
     } else {
@@ -131,8 +137,12 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     UiThreadUtil.runOnUiThread {
       when (itemKey) {
         "dev-remote-debug" -> {
-          devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
-          devSupportManager.handleReloadJS()
+          if (isJsExecutorInspectable) {
+            openJsInspector()
+          } else {
+            devSettings.isRemoteJSDebugEnabled = !devSettings.isRemoteJSDebugEnabled
+            devSupportManager.handleReloadJS()
+          }
         }
         "dev-hmr" -> {
           val nextEnabled = !devSettings.isHotModuleReplacementEnabled
@@ -221,6 +231,30 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
    */
   private fun getString(ref: Int): String {
     return reactApplicationContext.resources.getString(ref)
+  }
+
+  /**
+   * Indicates whether the underlying js executor supports inspecting.
+   * NOTE: because current react-native doesn't pass jsi runtime `isInspectable` to java,
+   * workaround to determine the state by executor name.
+   */
+  private val isJsExecutorInspectable: Boolean by lazy {
+    val activity = currentActivity as? ReactNativeActivity
+    activity?.jsExecutorName == "JSIExecutor+HermesRuntime"
+  }
+
+  /**
+   * Open the JavaScript inspector
+   */
+  private fun openJsInspector() {
+    reactApplicationContext.runOnNativeModulesQueueThread {
+      val devSupportManager = getDevSupportManager()
+      devSupportManager?.devSettings?.packagerConnectionSettings?.inspectorServerHost?.let {
+        val url = "http://$it/inspector?applicationId=${reactApplicationContext.packageName}"
+        val request = Request.Builder().url(url).put("".toRequestBody()).build()
+        Exponent.instance.exponentNetwork.noCacheClient.newCall(request).execute()
+      }
+    }
   }
 
   //endregion internals

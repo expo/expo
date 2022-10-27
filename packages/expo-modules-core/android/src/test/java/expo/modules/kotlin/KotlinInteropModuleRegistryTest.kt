@@ -12,6 +12,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import io.mockk.mockk
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.lang.ref.WeakReference
 
 private class TestException : CodedException("Something went wrong")
@@ -63,6 +66,8 @@ private val provider = object : ModulesProvider {
   }
 }
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [30])
 class KotlinInteropModuleRegistryTest {
   private val interopModuleRegistry = KotlinInteropModuleRegistry(
     provider,

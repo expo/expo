@@ -2,7 +2,6 @@ package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.KPromiseWrapper
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
@@ -57,8 +56,6 @@ abstract class AsyncFunction(
       argsCount,
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, bridgePromise ->
-      val kotlinPromise = KPromiseWrapper(bridgePromise as com.facebook.react.bridge.Promise)
-
       val queue = when (queue) {
         Queues.MAIN -> appContext.mainQueue
         Queues.DEFAULT -> appContext.modulesQueue
@@ -69,12 +66,12 @@ abstract class AsyncFunction(
           exceptionDecorator({
             FunctionCallException(name, jsObject.name, it)
           }) {
-            callUserImplementation(args, kotlinPromise)
+            callUserImplementation(args, bridgePromise)
           }
         } catch (e: CodedException) {
-          kotlinPromise.reject(e)
+          bridgePromise.reject(e)
         } catch (e: Throwable) {
-          kotlinPromise.reject(UnexpectedException(e))
+          bridgePromise.reject(UnexpectedException(e))
         }
       }
     }

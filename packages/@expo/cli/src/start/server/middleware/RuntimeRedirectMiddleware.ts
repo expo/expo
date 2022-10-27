@@ -6,6 +6,7 @@ import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
   parsePlatformHeader,
+  resolvePlatformFromUserAgentHeader,
   RuntimePlatform,
 } from './resolvePlatform';
 import { ServerRequest, ServerResponse } from './server.types';
@@ -36,7 +37,7 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
   async handleRequestAsync(req: ServerRequest, res: ServerResponse): Promise<void> {
     const { query } = parse(req.url!, true);
     const isDevClient = query['choice'] === 'expo-dev-client';
-    const platform = parsePlatformHeader(req);
+    const platform = parsePlatformHeader(req) ?? resolvePlatformFromUserAgentHeader(req);
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
     const runtime = isDevClient ? 'custom' : 'expo';

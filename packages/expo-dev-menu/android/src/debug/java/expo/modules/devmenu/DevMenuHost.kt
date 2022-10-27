@@ -3,20 +3,17 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context
 import android.util.Log
-import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.devsupport.DevServerHelper
-import com.facebook.react.jscexecutor.JSCExecutorFactory
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.shell.MainReactPackage
-import com.facebook.soloader.SoLoader
 import devmenu.com.swmansion.gesturehandler.react.RNGestureHandlerPackage
 import devmenu.com.swmansion.reanimated.ReanimatedPackage
 import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
+import expo.modules.devmenu.react.createNonDebuggableJavaScriptExecutorFactory
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
@@ -39,11 +36,8 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
     try {
       val devLauncherPackage = Class.forName("expo.modules.devlauncher.DevLauncherPackage")
-
-      if (devLauncherPackage != null) {
-        val pkg = devLauncherPackage.getConstructor().newInstance() as ReactPackage
-        packages.add(pkg)
-      }
+      val pkg = devLauncherPackage.getConstructor().newInstance() as ReactPackage
+      packages.add(pkg)
     } catch (e: ClassNotFoundException) {
       // dev launcher is not installed in this project
     }
@@ -60,11 +54,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
   fun getContext(): Context = super.getApplication()
 
   override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
-    SoLoader.init(application.applicationContext, /* native exopackage */ false)
-    if (SoLoader.getLibraryPath("libjsc.so") != null) {
-      return JSCExecutorFactory(application.packageName, AndroidInfoHelpers.getFriendlyDeviceName())
-    }
-    return HermesExecutorFactory()
+    return createNonDebuggableJavaScriptExecutorFactory(application)
   }
 
   override fun createReactInstanceManager(): ReactInstanceManager {

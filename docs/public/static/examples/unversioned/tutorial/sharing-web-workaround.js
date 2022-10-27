@@ -1,34 +1,34 @@
-import React from 'react';
-import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import uploadToAnonymousFilesAsync from 'anonymous-files';
 import * as ImagePicker from 'expo-image-picker';
 import * as Sharing from 'expo-sharing';
-import uploadToAnonymousFilesAsync from 'anonymous-files';
+import React from 'react';
+import { Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export default function App() {
-  let [selectedImage, setSelectedImage] = React.useState(null);
+  const [selectedImage, setSelectedImage] = React.useState(null);
 
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
+  const openImagePickerAsync = async () => {
+    const permissionResult = await ImagePicker.requestCameraPermissionsAsync();
 
     if (permissionResult.granted === false) {
       alert('Permission to access camera roll is required!');
       return;
     }
 
-    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+    const pickerResult = await ImagePicker.launchImageLibraryAsync();
     if (pickerResult.cancelled === true) {
       return;
     }
 
     if (Platform.OS === 'web') {
-      let remoteUri = await uploadToAnonymousFilesAsync(pickerResult.uri);
+      const remoteUri = await uploadToAnonymousFilesAsync(pickerResult.uri);
       setSelectedImage({ localUri: pickerResult.uri, remoteUri });
     } else {
       setSelectedImage({ localUri: pickerResult.uri, remoteUri: null });
     }
   };
 
-  let openShareDialogAsync = async () => {
+  const openShareDialogAsync = async () => {
     if (!(await Sharing.isAvailableAsync())) {
       alert(`The image is available for sharing at: ${selectedImage.remoteUri}`);
       return;

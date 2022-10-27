@@ -63,7 +63,7 @@ xcuserdata
 /android/versioned-react-native/codegen
 /android/versioned-react-native/sdks
 ReactAndroid-temp.aar
-/android/ReactAndroid/prebuiltHermes
+/android/prebuiltHermes
 
 # Tools
 jarjar-rules.txt
@@ -149,3 +149,4 @@ docs/pages/versions/*/react-native/*.diff
 /ios/Pods
 /ios/build
 **/ios/.xcode.env.local
+/ios/versioned-react-native/*/ReactNative/sdks/hermes-engine/destroot

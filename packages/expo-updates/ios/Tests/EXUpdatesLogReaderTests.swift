@@ -60,21 +60,33 @@ class EXUpdatesLogReaderTests: XCTestCase {
     let logReader = UpdatesLogReader()
 
     let date1 = Date()
+    purgeEntriesSync(logReader: logReader, olderThan: date1)
+
     logErrorSync(message: "Test message", code: .noUpdatesAvailable)
     RunLoop.current.run(until: Date().addingTimeInterval(1))
 
     let date2 = Date()
-    logWarnSync(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
+    logWarnSync(message: "Test message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
 
     let entries1: [String] = logReader.getLogEntries(newerThan: date1)
+      .filter {entryString in
+        entryString.contains("Test message")
+      }
     XCTAssertEqual(2, entries1.count)
 
     let entries2: [String] = logReader.getLogEntries(newerThan: date2)
+      .filter {entryString in
+        entryString.contains("Test message")
+      }
     XCTAssertEqual(1, entries2.count)
 
     purgeEntriesSync(logReader: logReader, olderThan: date2)
 
     let entries3: [String] = logReader.getLogEntries(newerThan: date1)
+      .filter {entryString in
+        entryString.contains("Test message")
+      }
+
     XCTAssertEqual(1, entries3.count)
   }
 

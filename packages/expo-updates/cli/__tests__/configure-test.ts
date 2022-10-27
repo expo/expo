@@ -20,55 +20,61 @@ describe('codesigning:configure', () => {
     vol.reset();
   });
 
-  it('configures a project with a certificate', async () => {
-    const projectRoot = '/wat';
+  describe.each([
+    { keyid: undefined, expectedKeyId: 'main' },
+    { keyid: 'blah', expectedKeyId: 'blah' },
+  ])('with %p', ({ keyid, expectedKeyId }) => {
+    it('configures a project with a certificate', async () => {
+      const projectRoot = '/wat';
 
-    const keyPair = generateKeyPair();
-    const validityNotBefore = new Date();
-    const validityNotAfter = new Date();
-    validityNotAfter.setFullYear(validityNotAfter.getFullYear() + 1);
-    const certificate = generateSelfSignedCodeSigningCertificate({
-      keyPair,
-      validityNotBefore,
-      validityNotAfter,
-      commonName: 'hello',
-    });
+      const keyPair = generateKeyPair();
+      const validityNotBefore = new Date();
+      const validityNotAfter = new Date();
+      validityNotAfter.setFullYear(validityNotAfter.getFullYear() + 1);
+      const certificate = generateSelfSignedCodeSigningCertificate({
+        keyPair,
+        validityNotBefore,
+        validityNotAfter,
+        commonName: 'hello',
+      });
 
-    const keyPairPEM = convertKeyPairToPEM(keyPair);
-    const certificatePEM = convertCertificateToCertificatePEM(certificate);
+      const keyPairPEM = convertKeyPairToPEM(keyPair);
+      const certificatePEM = convertCertificateToCertificatePEM(certificate);
 
-    const expoPackageJson = JSON.stringify({
-      name: 'expo',
-      version: '40.0.0',
-    });
+      const expoPackageJson = JSON.stringify({
+        name: 'expo',
+        version: '40.0.0',
+      });
 
-    vol.fromJSON(
-      {
-        'package.json': JSON.stringify({ dependencies: { expo: '40.0.0' } }),
-        'app.json': JSON.stringify({ name: 'test', slug: 'wat', sdkVersion: '40.0.0' }),
-        'certificates/certificate.pem': certificatePEM,
-        'keys/private-key.pem': keyPairPEM.privateKeyPEM,
-        'keys/public-key.pem': keyPairPEM.publicKeyPEM,
-        'node_modules/expo/package.json': expoPackageJson,
-      },
-      projectRoot
-    );
+      vol.fromJSON(
+        {
+          'package.json': JSON.stringify({ dependencies: { expo: '40.0.0' } }),
+          'app.json': JSON.stringify({ name: 'test', slug: 'wat', sdkVersion: '40.0.0' }),
+          'certificates/certificate.pem': certificatePEM,
+          'keys/private-key.pem': keyPairPEM.privateKeyPEM,
+          'keys/public-key.pem': keyPairPEM.publicKeyPEM,
+          'node_modules/expo/package.json': expoPackageJson,
+        },
+        projectRoot
+      );
 
-    const configBefore = getConfig(projectRoot);
-    expect((configBefore.exp.updates as any)?.codeSigningCertificate).toBeUndefined();
+      const configBefore = getConfig(projectRoot);
+      expect((configBefore.exp.updates as any)?.codeSigningCertificate).toBeUndefined();
 
-    await configureCodeSigningAsync(projectRoot, {
-      certificateInput: 'certificates',
-      keyInput: 'keys',
-    });
+      await configureCodeSigningAsync(projectRoot, {
+        certificateInput: 'certificates',
+        keyInput: 'keys',
+        keyid,
+      });
 
-    const config = getConfig(projectRoot);
-    expect((config.exp.updates as any).codeSigningCertificate).toEqual(
-      './certificates/certificate.pem'
-    );
-    expect((config.exp.updates as any).codeSigningMetadata).toMatchObject({
-      keyid: 'main',
-      alg: 'rsa-v1_5-sha256',
+      const config = getConfig(projectRoot);
+      expect((config.exp.updates as any).codeSigningCertificate).toEqual(
+        './certificates/certificate.pem'
+      );
+      expect((config.exp.updates as any).codeSigningMetadata).toMatchObject({
+        keyid: expectedKeyId,
+        alg: 'rsa-v1_5-sha256',
+      });
     });
   });
 
@@ -102,7 +108,11 @@ describe('codesigning:configure', () => {
     expect((configBefore.exp.updates as any)?.codeSigningCertificate).toBeUndefined();
 
     await expect(
-      configureCodeSigningAsync(projectRoot, { certificateInput: 'certificates', keyInput: 'keys' })
+      configureCodeSigningAsync(projectRoot, {
+        certificateInput: 'certificates',
+        keyInput: 'keys',
+        keyid: undefined,
+      })
     ).rejects.toThrow('Certificate validity expired');
 
     const config = getConfig(projectRoot);

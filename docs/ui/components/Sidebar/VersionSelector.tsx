@@ -8,11 +8,14 @@ import {
   ChevronDownIcon,
   borderRadius,
 } from '@expo/styleguide';
-import * as React from 'react';
+
+import { A } from '../Text';
 
 import * as Utilities from '~/common/utilities';
-import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
+
+const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
 
 const STYLES_CONTAINER = css({
   position: 'relative',
@@ -24,7 +27,7 @@ const STYLES_SELECT = css({
   color: theme.text.default,
   margin: 0,
   marginTop: spacing[1],
-  padding: `0 ${spacing[3]}px`,
+  padding: `${spacing[2]}px ${spacing[3]}px`,
   minHeight: 40,
   borderRadius: borderRadius.medium,
   marginBottom: spacing[4],
@@ -57,7 +60,7 @@ export const VersionSelector = () => {
         // Add hidden links to create crawlable references to other SDK versions
         // We can use JS to switch between them, while helping search bots find other SDK versions
         VERSIONS.map(version => (
-          <a key={version} style={{ display: 'none' }} href={`/versions/${version}/`} />
+          <A key={version} style={{ display: 'none' }} href={`/versions/${version}/`} />
         ))
       }
       <select
@@ -67,7 +70,11 @@ export const VersionSelector = () => {
         onChange={e => setVersion(e.target.value)}>
         {VERSIONS.map(version => (
           <option key={version} value={version}>
-            {Utilities.getUserFacingVersionString(version, LATEST_VERSION, BETA_VERSION)}
+            {Utilities.getUserFacingVersionString(
+              version,
+              LATEST_VERSION,
+              typeof BETA_VERSION === 'boolean' ? undefined : BETA_VERSION
+            )}
           </option>
         ))}
       </select>

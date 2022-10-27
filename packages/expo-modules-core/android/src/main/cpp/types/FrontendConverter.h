@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "CppType.h"
+
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 
@@ -10,6 +12,7 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 class JSIInteropModuleRegistry;
+class SingleType;
 
 /**
  * A base interface for all frontend converter classes - converters that cast jsi values into JNI objects.
@@ -225,5 +228,86 @@ public:
 
 private:
   std::vector<std::shared_ptr<FrontendConverter>> converters;
+};
+
+/**
+ * Converter from js array object to Java primitive array.
+ */
+class PrimitiveArrayFrontendConverter : public FrontendConverter {
+public:
+  PrimitiveArrayFrontendConverter(
+    jni::local_ref<jni::JavaClass<SingleType>::javaobject> expectedType
+  );
+
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+
+private:
+  /**
+   * A string representation of desired Java type.
+   */
+  std::string javaType;
+  /**
+   * Bare parameter type.
+   */
+  CppType parameterType;
+  /**
+   * Converter used to convert array elements.
+   */
+  std::shared_ptr<FrontendConverter> parameterConverter;
+};
+
+/**
+ * Converter from js array object to [java.utils.ArrayList].
+ */
+class ListFrontendConverter : public FrontendConverter {
+public:
+  ListFrontendConverter(
+    jni::local_ref<jni::JavaClass<SingleType>::javaobject> expectedType
+  );
+
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+private:
+  /**
+   * Converter used to convert array elements.
+   */
+  std::shared_ptr<FrontendConverter> parameterConverter;
+};
+
+/**
+ * Converter from js object to [java.utils.LinkedHashMap].
+ */
+class MapFrontendConverter : public FrontendConverter {
+public:
+  MapFrontendConverter(
+    jni::local_ref<jni::JavaClass<SingleType>::javaobject> expectedType
+  );
+
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+private:
+  /**
+   * Converter used to convert values.
+   */
+  std::shared_ptr<FrontendConverter> valueConverter;
 };
 } // namespace expo

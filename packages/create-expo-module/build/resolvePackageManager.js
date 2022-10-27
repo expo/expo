@@ -6,13 +6,13 @@ const child_process_1 = require("child_process");
 function resolvePackageManager() {
     // Attempt to detect if the user started the command using `yarn` or `pnpm`
     const userAgent = process.env.npm_config_user_agent;
-    if (userAgent === null || userAgent === void 0 ? void 0 : userAgent.startsWith('yarn')) {
+    if (userAgent?.startsWith('yarn')) {
         return 'yarn';
     }
-    else if (userAgent === null || userAgent === void 0 ? void 0 : userAgent.startsWith('pnpm')) {
+    else if (userAgent?.startsWith('pnpm')) {
         return 'pnpm';
     }
-    else if (userAgent === null || userAgent === void 0 ? void 0 : userAgent.startsWith('npm')) {
+    else if (userAgent?.startsWith('npm')) {
         return 'npm';
     }
     // Try availability

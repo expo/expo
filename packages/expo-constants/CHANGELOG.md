@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 14.0.0 — 2022-10-06
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
 - Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

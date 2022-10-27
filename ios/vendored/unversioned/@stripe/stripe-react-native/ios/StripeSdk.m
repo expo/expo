@@ -71,6 +71,7 @@ RCT_EXTERN_METHOD(
 
 RCT_EXTERN_METHOD(
                   handleNextAction:(NSString *)paymentIntentClientSecret
+                  returnURL:(NSString *)returnURL
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
                   )
@@ -122,9 +123,23 @@ RCT_EXTERN_METHOD(
                   rejecter: (RCTPromiseRejectBlock)reject
                   )
 RCT_EXTERN_METHOD(
+                  canAddCardToWallet:(NSDictionary *)params
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+RCT_EXTERN_METHOD(
                   isCardInWallet:(NSDictionary *)params
                   resolver: (RCTPromiseResolveBlock)resolve
                   rejecter: (RCTPromiseRejectBlock)reject
                   )
-
+RCT_EXTERN_METHOD(
+                  collectBankAccountToken:(NSString *)clientSecret
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
+RCT_EXTERN_METHOD(
+                  collectFinancialConnectionsAccounts:(NSString *)clientSecret
+                  resolver: (RCTPromiseResolveBlock)resolve
+                  rejecter: (RCTPromiseRejectBlock)reject
+                  )
 @end

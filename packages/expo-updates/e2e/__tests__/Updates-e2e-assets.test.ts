@@ -90,6 +90,25 @@ describe('Asset deletion recovery', () => {
      */
     expect(readAssetsMessage.numFiles).toEqual(clearAssetsMessage.numFilesBefore);
     expect(readAssetsMessage.updateId).toEqual(clearAssetsMessage.updateId);
+
+    /**
+     * Check readLogEntriesAsync
+     */
+    const logEntries = await Server.waitForLogEntries(10000 * TIMEOUT_BIAS);
+    console.debug(
+      'Total number of log entries = ' +
+        logEntries.length +
+        '\n' +
+        JSON.stringify(logEntries, null, 2)
+    );
+
+    // Should have at least one message
+    expect(logEntries.length > 0).toBe(true);
+    // There should be a message 'No update available' because of the other actions
+    // that have been run already
+    expect(logEntries.map((entry) => entry.message)).toEqual(
+      expect.arrayContaining([expect.stringContaining('No update available')])
+    );
   });
 
   it('embedded assets deleted from internal storage should be re-copied from a new embedded update', async () => {

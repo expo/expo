@@ -8,6 +8,7 @@ import { graphqlClient } from '../graphql/client';
 import { CurrentUserQuery } from '../graphql/generated';
 import { UserQuery } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
+import { APISettings } from '../settings';
 import UserSettings from './UserSettings';
 
 export type Actor = NonNullable<CurrentUserQuery['meActor']>;
@@ -33,7 +34,8 @@ export function getActorDisplayName(user?: Actor): string {
 }
 
 export async function getUserAsync(): Promise<Actor | undefined> {
-  if (!currentUser && (UserSettings.getAccessToken() || UserSettings.getSession()?.sessionSecret)) {
+  const hasCredentials = UserSettings.getAccessToken() || UserSettings.getSession()?.sessionSecret;
+  if (!APISettings.isOffline && !currentUser && hasCredentials) {
     const user = await UserQuery.currentUserAsync();
     currentUser = user ?? undefined;
     if (user) {

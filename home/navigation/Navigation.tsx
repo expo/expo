@@ -2,25 +2,22 @@ import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import {
   NavigationContainer,
   useTheme,
-  NavigationContainerRef,
   RouteProp,
+  useNavigationContainerRef,
 } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
+import { DiagnosticsStackScreen } from 'screens/DiagnosticsScreen';
 
 import DiagnosticsIcon from '../components/Icons';
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
 import { AccountModal } from '../screens/AccountModal';
-import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
 import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
 import { BranchListScreen } from '../screens/BranchListScreen';
 import { DeleteAccountScreen } from '../screens/DeleteAccountScreen';
-import { DiagnosticsScreen } from '../screens/DiagnosticsScreen';
-import GeofencingScreen from '../screens/GeofencingScreen';
 import { HomeScreen } from '../screens/HomeScreen';
-import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
 import { ProjectScreen } from '../screens/ProjectScreen';
 import { ProjectsListScreen } from '../screens/ProjectsListScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
@@ -31,12 +28,16 @@ import {
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
-import { DiagnosticsStackRoutes, HomeStackRoutes, SettingsStackRoutes } from './Navigation.types';
+import { HomeStackRoutes, SettingsStackRoutes, ModalStackRoutes } from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
 const HomeStack = createStackNavigator<HomeStackRoutes>();
 const SettingsStack = createStackNavigator<SettingsStackRoutes>();
+
+// We have to disable this option on Android to not use `react-native-screen`,
+// which aren't correcly installed in the Home app.
+const shouldDetachInactiveScreens = Platform.OS !== 'android';
 
 function useThemeName() {
   const theme = useTheme();
@@ -49,6 +50,7 @@ function HomeStackScreen() {
   return (
     <HomeStack.Navigator
       initialRouteName="Home"
+      detachInactiveScreens={shouldDetachInactiveScreens}
       screenOptions={defaultNavigationOptions(themeName)}>
       <HomeStack.Screen
         name="Home"
@@ -102,6 +104,7 @@ function SettingsStackScreen() {
   return (
     <SettingsStack.Navigator
       initialRouteName="Settings"
+      detachInactiveScreens={shouldDetachInactiveScreens}
       screenOptions={defaultNavigationOptions(themeName)}>
       <SettingsStack.Screen name="Settings" component={SettingsScreen} />
       <SettingsStack.Screen
@@ -115,45 +118,14 @@ function SettingsStackScreen() {
   );
 }
 
-const DiagnosticsStack = createStackNavigator<DiagnosticsStackRoutes>();
-
-function DiagnosticsStackScreen() {
-  const theme = useThemeName();
-  return (
-    <DiagnosticsStack.Navigator
-      initialRouteName="Diagnostics"
-      screenOptions={defaultNavigationOptions(theme)}>
-      <DiagnosticsStack.Screen
-        name="Diagnostics"
-        component={DiagnosticsScreen}
-        options={{
-          title: 'Diagnostics',
-        }}
-      />
-      <DiagnosticsStack.Screen
-        name="Audio"
-        component={AudioDiagnosticsScreen}
-        options={{ title: 'Audio Diagnostics' }}
-      />
-      <DiagnosticsStack.Screen
-        name="Location"
-        component={LocationDiagnosticsScreen}
-        options={{ title: 'Location Diagnostics' }}
-      />
-      <DiagnosticsStack.Screen
-        name="Geofencing"
-        component={GeofencingScreen}
-        options={{ title: 'Geofencing' }}
-      />
-    </DiagnosticsStack.Navigator>
-  );
-}
-
 const RootStack = createStackNavigator();
 
 function TabNavigator(props: { theme: string }) {
   return (
-    <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName="HomeStack">
+    <BottomTab.Navigator
+      {...getNavigatorProps(props)}
+      initialRouteName="HomeStack"
+      detachInactiveScreens={shouldDetachInactiveScreens}>
       <BottomTab.Screen
         name="HomeStack"
         component={HomeStackScreen}
@@ -186,10 +158,10 @@ function TabNavigator(props: { theme: string }) {
   );
 }
 
-const ModalStack = createStackNavigator();
+const ModalStack = createStackNavigator<ModalStackRoutes>();
 
 export default (props: { theme: ColorTheme }) => {
-  const navigationRef = React.useRef<NavigationContainerRef>(null);
+  const navigationRef = useNavigationContainerRef<ModalStackRoutes>();
   const isNavigationReadyRef = React.useRef(false);
   const initialURLWasConsumed = React.useRef(false);
 
@@ -218,11 +190,11 @@ export default (props: { theme: ColorTheme }) => {
       });
     }
 
-    Linking.addEventListener('url', handleDeepLinks);
+    const deepLinkSubscription = Linking.addEventListener('url', handleDeepLinks);
 
     return () => {
       isNavigationReadyRef.current = false;
-      Linking.removeEventListener('url', handleDeepLinks);
+      deepLinkSubscription.remove();
     };
   }, []);
 
@@ -235,19 +207,22 @@ export default (props: { theme: ColorTheme }) => {
       }}>
       <ModalStack.Navigator
         initialRouteName="RootStack"
+        detachInactiveScreens={shouldDetachInactiveScreens}
         screenOptions={({ route, navigation }) => ({
           headerShown: false,
           gestureEnabled: true,
           cardOverlayEnabled: true,
           cardStyle: { backgroundColor: 'transparent' },
-          headerStatusBarHeight:
-            navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
+          presentation: 'modal',
+          headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
           ...TransitionPresets.ModalPresentationIOS,
-        })}
-        mode="modal">
+        })}>
         <ModalStack.Screen name="RootStack">
           {() => (
-            <RootStack.Navigator initialRouteName="Tabs" mode="modal">
+            <RootStack.Navigator
+              initialRouteName="Tabs"
+              detachInactiveScreens={shouldDetachInactiveScreens}
+              screenOptions={{ presentation: 'modal' }}>
               <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
                 {() => <TabNavigator theme={props.theme} />}
               </RootStack.Screen>
@@ -262,7 +237,7 @@ export default (props: { theme: ColorTheme }) => {
                     cardOverlayEnabled: true,
                     headerStatusBarHeight:
                       navigation
-                        .dangerouslyGetState()
+                        .getState()
                         .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
                         ? 0
                         : undefined,

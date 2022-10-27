@@ -6,6 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 13.0.0 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0-beta.1 — 2022-10-06
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
 - Added support for audio panning on Android (MediaPlayer implementation only) via `audioPan` prop. ([#15530](https://github.com/expo/expo/pull/15530) by [@DominickVale](https://github.com/DominickVale))
 - Added `videoStyle` prop for Video component. ([#18549](https://github.com/expo/expo/pull/18549) by [@alantoa](https://github.com/alantoa))
 - Native module for video view is now written in Swift using the new API. ([#18633](https://github.com/expo/expo/pull/18633) by [@tsapeta](https://github.com/tsapeta))
@@ -16,7 +32,13 @@
 
 ### 💡 Others
 
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove unnecessary CocoaPods dependency on `ReactCommon` and `React-runtimeexecutor`. ([#19067](https://github.com/expo/expo/pull/19067) by [@tsapeta](https://github.com/tsapeta))
+
+### 📚 3rd party library updates
+
+- Upgraded ExoPlayer dependencies to 2.18.1 on Android. ([#19332](https://github.com/expo/expo/pull/19332) by [@kudo](https://github.com/kudo))
 
 ## 12.0.2 — 2022-07-18
 

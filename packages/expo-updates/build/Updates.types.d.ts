@@ -149,7 +149,8 @@ export declare enum UpdatesLogEntryCode {
     UPDATE_HAS_INVALID_SIGNATURE = "UpdateHasInvalidSignature",
     UPDATE_FAILED_TO_LOAD = "UpdateFailedToLoad",
     ASSETS_FAILED_TO_LOAD = "AssetsFailedToLoad",
-    JS_RUNTIME_ERROR = "JSRuntimeError"
+    JS_RUNTIME_ERROR = "JSRuntimeError",
+    UNKNOWN = "Unknown"
 }
 /**
  * The possible log levels for expo-updates log entries

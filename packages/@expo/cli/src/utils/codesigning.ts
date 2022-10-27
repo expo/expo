@@ -23,6 +23,7 @@ import * as Log from '../log';
 import { CommandError } from './errors';
 
 export type CodeSigningInfo = {
+  keyId: string;
   privateKey: string;
   certificateForPrivateKey: string;
   /**
@@ -257,6 +258,7 @@ async function getProjectCodeSigningCertificateAsync(
     });
 
   return {
+    keyId: keyid,
     privateKey: privateKeyPEM,
     certificateForPrivateKey: certificatePEM,
     certificateChainForResponse: [],
@@ -330,6 +332,7 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
   // TODO(wschurman): maybe do more validation
 
   return {
+    keyId: 'expo-go',
     certificateChainForResponse: certificatePEMs,
     certificateForPrivateKey: certificatePEMs[0],
     privateKey: privateKeyPEM,
@@ -355,6 +358,7 @@ async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
   });
 
   return {
+    keyId: 'expo-go',
     certificateChainForResponse: [developmentSigningCertificate, expoGoIntermediateCertificate],
     certificateForPrivateKey: developmentSigningCertificate,
     privateKey: keyPairPEM.privateKeyPEM,

@@ -1,6 +1,6 @@
 {
   "name": "lottie-react-native",
-  "version": "5.1.3",
+  "version": "5.1.4",
   "summary": "Lottie component for React Native (iOS and Android)",
   "authors": {
     "intelligibabble": "leland.m.richardson@gmail.com"
@@ -10,11 +10,11 @@
   "platforms": {
     "ios": "11.0",
     "osx": "10.10",
-    "tvos": "9.0"
+    "tvos": "11.0"
   },
   "source": {
     "git": "https://github.com/react-community/lottie-react-native.git",
-    "tag": "v5.1.3"
+    "tag": "v5.1.4"
   },
   "source_files": "src/ios/**/*.{h,m,swift}",
   "requires_arc": true,
@@ -25,7 +25,7 @@
   "dependencies": {
     "React-Core": [],
     "lottie-ios": [
-      "~> 3.2.3"
+      "~> 3.4.0"
     ]
   },
   "swift_version": "5.0"

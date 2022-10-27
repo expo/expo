@@ -76,17 +76,29 @@ export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.p
 export const kbdStyle = css({
   fontFamily: typography.fontFaces.medium,
   color: theme.text.secondary,
-  padding: `${spacing[0.5]}px ${spacing[1.5]}px`,
+  padding: `0 ${spacing[1]}px`,
   boxShadow: `0 0.1rem 0 1px ${theme.border.default}`,
   borderRadius: borderRadius.small,
   position: 'relative',
+  display: 'inline-flex',
+  margin: 0,
+  minWidth: 22,
+  justifyContent: 'center',
   top: -1,
 });
 
+const isExternalLink = (href?: string) => href?.includes('://');
+
 export const KBD = createTextComponent(TextElement.KBD, css([typography.utility.pre, kbdStyle]));
 
-export const A = (props: Omit<LinkProps, 'router'> & { isStyled?: boolean }) => {
+export const A = (props: LinkProps & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;
-  return <LinkBase css={[link, isStyled && css(typography.utility.anchor)]} {...rest} />;
+  return (
+    <LinkBase
+      css={[link, isStyled && css(typography.utility.anchor)]}
+      openInNewTab={isExternalLink(props.href)}
+      {...rest}
+    />
+  );
 };
 A.displayName = 'Text(a)';

@@ -404,6 +404,9 @@
     projectUrl = expoUrl;
   }
   
+  // Disable onboarding popup if "&disableOnboarding=1" is a param
+  [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
+
   NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
 
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl

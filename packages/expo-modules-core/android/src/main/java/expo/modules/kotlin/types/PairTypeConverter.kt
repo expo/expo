@@ -58,12 +58,8 @@ class PairTypeConverter(
   }
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(
-    SingleType(
-      CppType.READABLE_ARRAY,
-      arrayOf(
-        converters[0].getCppRequiredTypes(),
-        converters[1].getCppRequiredTypes()
-      )
-    )
+    SingleType(CppType.READABLE_ARRAY)
   )
+
+  override fun isTrivial() = false
 }

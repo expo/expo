@@ -8,21 +8,21 @@
 
 - (GADAdSize)getAdSizeFromString:(NSString *)bannerSize {
   if ([bannerSize isEqualToString:@"banner"]) {
-    return kGADAdSizeBanner;
+    return GADAdSizeBanner;
   } else if ([bannerSize isEqualToString:@"largeBanner"]) {
-    return kGADAdSizeLargeBanner;
+    return GADAdSizeLargeBanner;
   } else if ([bannerSize isEqualToString:@"mediumRectangle"]) {
-    return kGADAdSizeMediumRectangle;
+    return GADAdSizeMediumRectangle;
   } else if ([bannerSize isEqualToString:@"fullBanner"]) {
-    return kGADAdSizeFullBanner;
+    return GADAdSizeFullBanner;
   } else if ([bannerSize isEqualToString:@"leaderboard"]) {
-    return kGADAdSizeLeaderboard;
+    return GADAdSizeLeaderboard;
   } else if ([bannerSize isEqualToString:@"smartBannerPortrait"]) {
     return kGADAdSizeSmartBannerPortrait;
   } else if ([bannerSize isEqualToString:@"smartBannerLandscape"]) {
     return kGADAdSizeSmartBannerLandscape;
   } else {
-    return kGADAdSizeBanner;
+    return GADAdSizeBanner;
   }
 }
 

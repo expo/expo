@@ -31,6 +31,7 @@ export var UpdatesLogEntryCode;
     UpdatesLogEntryCode["UPDATE_FAILED_TO_LOAD"] = "UpdateFailedToLoad";
     UpdatesLogEntryCode["ASSETS_FAILED_TO_LOAD"] = "AssetsFailedToLoad";
     UpdatesLogEntryCode["JS_RUNTIME_ERROR"] = "JSRuntimeError";
+    UpdatesLogEntryCode["UNKNOWN"] = "Unknown";
 })(UpdatesLogEntryCode || (UpdatesLogEntryCode = {}));
 /**
  * The possible log levels for expo-updates log entries
