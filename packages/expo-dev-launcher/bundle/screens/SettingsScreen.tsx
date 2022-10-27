@@ -15,11 +15,11 @@ import {
 import * as React from 'react';
 import { ScrollView, Switch } from 'react-native';
 import { useQueryClient } from 'react-query';
+
 import { SafeAreaTop } from '../components/SafeAreaTop';
 import { ScreenContainer } from '../components/ScreenContainer';
-
 import { Toasts } from '../components/Toasts';
-import { copyToClipboardAsync, updatesConfig } from '../native-modules/DevLauncherInternal';
+import { copyToClipboardAsync } from '../native-modules/DevLauncherInternal';
 import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { useDevMenuPreferences } from '../providers/DevMenuPreferencesProvider';
 import { useQueryOptions } from '../providers/QueryProvider';

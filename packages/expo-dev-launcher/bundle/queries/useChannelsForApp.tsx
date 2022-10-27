@@ -55,7 +55,9 @@ export function useChannelsForApp(appId: string) {
   React.useEffect(() => {
     if (query.error && toastStack.getItems().length === 0) {
       toastStack.push(() => (
-        <Toasts.Error>Something went wrong trying to find the channels for this branch.</Toasts.Error>
+        <Toasts.Error>
+          Something went wrong trying to find the channels for this branch.
+        </Toasts.Error>
       ));
     }
   }, [query.error]);
