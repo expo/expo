@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- Removed deprecated Android `kotlin-android-extensions` plugin
+- Removed deprecated Android `kotlin-android-extensions` plugin ([#19732](https://github.com/expo/expo/pull/19732) by [@josephyanks](https://github.com/josephyanks))
 
 ### 🛠 Breaking changes
 
