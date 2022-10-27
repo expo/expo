@@ -52,7 +52,6 @@ describe('startAsync', () => {
         protocol: 'http',
         url: expect.stringMatching(/http:\/\/localhost:\d+/),
       },
-      messageSocket: expect.anything(),
       middleware: {
         use: expect.any(Function),
       },
