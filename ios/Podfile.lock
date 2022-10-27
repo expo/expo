@@ -2062,10 +2062,10 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.13.0):
+  - ExpoModulesCore (0.13.1):
     - React-Core
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (0.13.0):
+  - ExpoModulesCore/Tests (0.13.1):
     - ExpoModulesTestCore
     - React-Core
     - ReactCommon/turbomodule/core
@@ -2092,9 +2092,9 @@ PODS:
     - React-Core
   - EXSecureStore (12.0.0):
     - ExpoModulesCore
-  - EXSensors (12.0.0):
+  - EXSensors (12.0.1):
     - ExpoModulesCore
-  - EXSharing (11.0.0):
+  - EXSharing (11.0.1):
     - ExpoModulesCore
   - EXSMS (11.0.0):
     - ExpoModulesCore
@@ -4529,7 +4529,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 772f7ee5ba2e8011c15680c1ec09caa19bfc07a7
   ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
   ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
-  ExpoModulesCore: b6d393d972a33c20c1e04a26aa5c0df8b433e64a
+  ExpoModulesCore: 6fbdb1ccef4b8a8b12a0776c6829dae002a8b174
   ExpoModulesTestCore: 3fb10c0d3787ae9d5ca570b0c851d0db0cb40ccb
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
   ExpoStoreReview: ff6d631f2949eb7e4b2d14146ef6af25a16d770d
@@ -4540,8 +4540,8 @@ SPEC CHECKSUMS:
   EXScreenCapture: d9f1ec31042dfef109290d06c2b4789b7444d16d
   EXScreenOrientation: 00bcda69cab1f688552dff5578c549cb01a674fd
   EXSecureStore: daec0117c922a67c658cb229152a9e252e5c1750
-  EXSensors: 40a7fa5440b1e9744b90ef3bef8c6b6db8f1f1fa
-  EXSharing: 2b9ce030aa7d18b7d20e4e41b7d4e09e7c1dfa88
+  EXSensors: 535beac36b78487d53c630eb627d7528bcc610b3
+  EXSharing: e4c5ebc5b36828f1e0dff1415b2b28b23dc770b8
   EXSMS: 9b0da8ca484165b7f1ebbd5cfedd670b5abf87fd
   EXSpeech: b1e02f7d9d4e9731133da25ee4b26cc0740707ed
   EXSplashScreen: 01ea595f48c111fa4db68d20717f33d750568455

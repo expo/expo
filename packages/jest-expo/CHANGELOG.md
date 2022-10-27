@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Updated mocks for Expo SDK 47. ([#19706](https://github.com/expo/expo/pull/19706) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 47.0.0 — 2022-10-27
+
+### 🎉 New features
+
+- Updated mocks for Expo SDK 47. ([#19706](https://github.com/expo/expo/pull/19706) by [@tsapeta](https://github.com/tsapeta))
 
 ## 46.0.2 — 2022-10-25
 
