@@ -17,6 +17,8 @@ import { DevServerManager, MultiBundlerStartOptions } from './server/DevServerMa
 import { openPlatformsAsync } from './server/openPlatforms';
 import { getPlatformBundlers, PlatformBundlers } from './server/platformBundlers';
 
+const debug = require('debug')('expo:start:startAsync');
+
 async function getMultiBundlerStartOptions(
   projectRoot: string,
   { forceManifestType, ...options }: Options,
@@ -74,9 +76,17 @@ export async function startAsync(
   const platformBundlers = getPlatformBundlers(exp);
 
   if (!options.forceManifestType) {
-    const classicUpdatesUrlRegex = /^https:\/\/(staging-)?exp\.host/;
-    const isClassicUpdatesUrl = exp.updates?.url
-      ? classicUpdatesUrlRegex.test(exp.updates.url)
+    const classicUpdatesUrlRegex = /^(staging-)?exp\.host/;
+    let parsedUpdatesUrl = { hostname: '' };
+
+    try {
+      parsedUpdatesUrl = new URL(exp.updates?.url ?? '');
+    } catch {
+      debug(`Failed to parse \`updates.url\` in this project's app config.`);
+    }
+
+    const isClassicUpdatesUrl = parsedUpdatesUrl.hostname
+      ? classicUpdatesUrlRegex.test(parsedUpdatesUrl.hostname)
       : false;
     options.forceManifestType = isClassicUpdatesUrl ? 'classic' : 'expo-updates';
   }
