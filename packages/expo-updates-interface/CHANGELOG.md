@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed deprecated Android `kotlin-android-extensions` plugin
+
 ## 0.8.0 — 2022-10-25
 
 ### 🛠 Breaking changes

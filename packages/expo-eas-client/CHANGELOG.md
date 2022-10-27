@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed deprecated Android `kotlin-android-extensions` plugin
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
