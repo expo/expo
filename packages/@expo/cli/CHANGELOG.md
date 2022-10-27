@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent extraneous `Found multiple AppDelegate file paths` warnings when using CLI commands with a multi-target iOS app. ([#18890](https://github.com/expo/expo/pull/18890) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.4.1 — 2022-10-27
