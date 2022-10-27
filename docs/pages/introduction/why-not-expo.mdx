@@ -90,15 +90,13 @@ The following list is specifically oriented towards the limitations that exist a
 
 <Collapsible summary={<span><span className="strike">Build service only works in the managed workflow</span> (Resolved in December 2020)</span>}>
 
-~~To build your app binaries for distribution on the Apple App Store and Google Play Store you will need to follow the same steps that you would in any native project, the Expo build service can't handle it for you. We are working on bringing bare workflow support to the build service in the near future.~~
 
-You can now use [EAS Build](/build/introduction) to build and sign your apps. [Read the announcement blog post](https://blog.expo.dev/expo-application-services-eas-build-and-submit-fc1d1476aa2e).
 
 </Collapsible>
 
 <Collapsible summary="Configuration must be done on each native project rather than once with Expo config">
 
-Configuring app icons, launch screen, and so on must be configured in the native projects for each platform using the standard native tooling rather than once using a simple JSON object.
+Configuring app icons, launch screen, and so on must be configured in the native projects for each platform using the standard native tooling rather than in one place via **app.json** or **app.config.js**.
 
 </Collapsible>
 
@@ -106,7 +104,6 @@ Configuring app icons, launch screen, and so on must be configured in the native
 
 > We are either actively working on or planning to build solutions to all of the limitations listed above, and if you think anything is missing, please bring it to our attention by posting to our [feature requests board](https://expo.canny.io/feature-requests) or the [forums](https://forums.expo.dev/).
 
-If you've been reading along each section of the introduction, you will have a pretty good high-level understanding of Expo tools.
 
 - If you have heard enough and want to get to coding, jump ahead to [Installation](/get-started/installation).
 - If you have some unanswered questions, continue to the [Common Questions](/introduction/faq) page.
