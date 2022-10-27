@@ -34,7 +34,9 @@ export async function getSchemesForIosAsync(projectRoot: string): Promise<string
       debug(`ios application schemes:`, schemes);
       return sortLongest(schemes);
     }
-  } catch {}
+  } catch (error) {
+    debug(`expected error collecting ios application schemes for the main target:`, error);
+  }
   // No ios folder or some other error
   return [];
 }
@@ -47,7 +49,8 @@ export async function getSchemesForAndroidAsync(projectRoot: string): Promise<st
     const schemes = await AndroidConfig.Scheme.getSchemesFromManifest(manifest);
     debug(`android application schemes:`, schemes);
     return sortLongest(schemes);
-  } catch {
+  } catch (error) {
+    debug(`expected error collecting android application schemes for the main activity:`, error);
     // No android folder or some other error
     return [];
   }
