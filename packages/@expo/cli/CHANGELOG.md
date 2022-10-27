@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Don't print source map size in `npx expo export` when the source maps are not written. ([#19710](https://github.com/expo/expo/pull/19710) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.4.0 — 2022-10-25
