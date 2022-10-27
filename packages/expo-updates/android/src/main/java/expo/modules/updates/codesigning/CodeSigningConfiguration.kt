@@ -60,7 +60,7 @@ class CodeSigningConfiguration(
     )
   }
 
-  fun validateSignatureInternal(info: SignatureHeaderInfo, bodyBytes: ByteArray, manifestResponseCertificateChain: String?): SignatureValidationResult {
+  private fun validateSignatureInternal(info: SignatureHeaderInfo, bodyBytes: ByteArray, manifestResponseCertificateChain: String?): SignatureValidationResult {
     val certificateChain = if (includeManifestResponseCertificateChain) {
       CertificateChain(
         separateCertificateChain(manifestResponseCertificateChain ?: "") + embeddedCertificateString
