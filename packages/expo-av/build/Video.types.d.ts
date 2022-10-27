@@ -151,7 +151,7 @@ export declare type VideoProps = {
      */
     usePoster?: boolean;
     /**
-     * A React Component to display the poster image.
+     * A react-native `Image` like component to display the poster image.
      */
     PosterComponent?: React.ComponentType<{
         style: ImageProps['style'];
