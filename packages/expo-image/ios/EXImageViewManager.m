@@ -1,7 +1,7 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <EXImage/EXImageViewManager.h>
-#import <EXImage/EXImageView.h>
+#import <ExpoImage/EXImageViewManager.h>
+#import <ExpoImage/EXImageView.h>
 #import <React/RCTImageShadowView.h>
 #import "EXImageCustomCoders.h"
 

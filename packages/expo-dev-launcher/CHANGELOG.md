@@ -13,6 +13,17 @@
 
 ### 💡 Others
 
+### ⚠️ Notices
+
+- Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
+- Moved to React Navigation v6, required for React Native 0.70.x. ([#19675](https://github.com/expo/expo/pull/19675) by [@douglowder](https://github.com/douglowder))
+
+## 1.3.1 — 2022-10-11
+
+### 🐛 Bug fixes
+
+- Fixed development servers not showing up in the `expo-dev-launcher` on the first boot. ([#19286](https://github.com/expo/expo/pull/19286) by [@lukmccall](https://github.com/lukmccall))
+
 ## 1.3.0 — 2022-09-16
 
 ### 🎉 New features
@@ -21,6 +32,7 @@
 
 ### 🐛 Bug fixes
 
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Remove the deprecated `Linking.removeEventListener` in expo-dev-launcher bundle. ([#18939](https://github.com/expo/expo/pull/18939) by [@kudo](https://github.com/kudo))
 - Fixed the incompatibility with react-native-v8 on Android. ([#19117](https://github.com/expo/expo/pull/19117) by [@kudo](https://github.com/kudo))
 - Fixed crash when loading bundle without explicit port on Android. ([#19136](https://github.com/expo/expo/pull/19136) by [@kudo](https://github.com/kudo))

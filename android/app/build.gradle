@@ -17,7 +17,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -109,12 +109,6 @@ android {
   }
 }
 
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r245459'
-  }
-}
-
 dependencies {
   implementation fileTree(dir: 'libs', include: ['*.jar'])
 
@@ -200,6 +194,11 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_47
+  versionedImplementation(project(':expoview-abi47_0_0'))
+  // END_SDK_47
+
+
   // BEGIN_SDK_46
   versionedImplementation(project(':expoview-abi46_0_0'))
   // END_SDK_46
@@ -216,7 +215,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
+  api 'org.webkit:android-jsc:r250230' // needs to be before react-native
   api 'com.facebook.react:react-native:+'
   END UNCOMMENT WHEN DISTRIBUTING */
 

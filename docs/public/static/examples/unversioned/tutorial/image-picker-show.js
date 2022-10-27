@@ -1,12 +1,12 @@
+import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 
 export default function App() {
-  let [selectedImage, setSelectedImage] = React.useState(null);
+  const [selectedImage, setSelectedImage] = React.useState(null);
 
-  let openImagePickerAsync = async () => {
-    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+  const openImagePickerAsync = async () => {
+    const pickerResult = await ImagePicker.launchImageLibraryAsync();
     if (pickerResult.cancelled === true) {
       return;
     }

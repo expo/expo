@@ -10,14 +10,16 @@ rescue
   reactVersion = '0.66.0'
 end
 
-rnVersion = reactVersion.split('.')[1]
+splitedReactVersion = reactVersion.split('.')
+rnVersion = splitedReactVersion[1]
+rnPatchVersion = splitedReactVersion[2]
 
 folly_prefix = ""
 if rnVersion.to_i >= 64
   folly_prefix = "RCT-"
 end
 
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=' + rnVersion
+folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=' + rnVersion + ' -DRNPATCHVERSION=' + rnPatchVersion
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2021.04.26.00'
 boost_compiler_flags = '-Wno-documentation'

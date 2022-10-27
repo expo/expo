@@ -54,7 +54,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -235,13 +235,14 @@ button.
 not appear on the screen.
     </p>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -258,7 +259,9 @@ not appear on the screen.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -331,7 +334,7 @@ for more details.
     </h2>
     <div>
       <div
-        class="css-g8zh0a"
+        class="css-18dzyrv"
       >
         <h3
           class="css-m417je-H3"
@@ -417,7 +420,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-18dzyrv"
       >
         <h3
           class="css-m417je-H3"
@@ -503,7 +506,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-18dzyrv"
       >
         <h3
           class="css-m417je-H3"
@@ -596,7 +599,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-18dzyrv"
       >
         <h3
           class="css-m417je-H3"
@@ -726,7 +729,7 @@ properties.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-18dzyrv"
       >
         <h3
           class="css-m417je-H3"
@@ -877,7 +880,7 @@ in here.
         data-text="true"
       >
         <li
-          class="docs-list-item css-1yzgz3v-LI"
+          class="docs-list-item css-1vg85kg-LI"
         >
           <code
             class="inline css-ov7own-InlineCode"
@@ -945,7 +948,7 @@ in here.
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -1006,13 +1009,13 @@ in here.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -1033,7 +1036,7 @@ in here.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -1056,7 +1059,10 @@ in here.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 The unique identifier for the user whose credential state you'd like to check.
 This should come from the user field of an 
                 <a
@@ -1070,7 +1076,7 @@ This should come from the user field of an
                   </code>
                 </a>
                  object.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -1085,13 +1091,14 @@ This should come from the user field of an
     
 
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -1108,21 +1115,28 @@ This should come from the user field of an
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         
 
-        <strong
-          class="css-1qx481h-B"
+        <p
+          class="css-6jxvia-P"
+          data-text="true"
         >
-          Note:
-        </strong>
-         This method must be tested on a real device. On the iOS simulator it always throws an error.
+          <strong
+            class="css-1qx481h-B"
+          >
+            Note:
+          </strong>
+           This method must be tested on a real device. On the iOS simulator it always throws an error.
+        </p>
         
 
       </div>
     </blockquote>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1182,7 +1196,7 @@ This should come from the user field of an
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -1245,7 +1259,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -1309,7 +1323,7 @@ value depending on the state of the credential.
       Determine if the current device's operating system supports Apple authentication.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1369,7 +1383,7 @@ value depending on the state of the credential.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -1427,7 +1441,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -1488,13 +1502,13 @@ value depending on the state of the credential.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -1515,7 +1529,7 @@ value depending on the state of the credential.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -1543,7 +1557,10 @@ value depending on the state of the credential.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 An 
                 <a
                   class="css-153g748-InternalLink"
@@ -1556,7 +1573,7 @@ value depending on the state of the credential.
                   </code>
                 </a>
                  object
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -1570,7 +1587,7 @@ value depending on the state of the credential.
 Calling this method will show the sign in modal before actually refreshing the user credentials.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1630,7 +1647,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -1700,7 +1717,7 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -1761,13 +1778,13 @@ refresh operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -1788,7 +1805,7 @@ refresh operation.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -1822,7 +1839,10 @@ refresh operation.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 An optional 
                 <a
                   class="css-153g748-InternalLink"
@@ -1835,7 +1855,7 @@ refresh operation.
                   </code>
                 </a>
                  object
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -1887,7 +1907,7 @@ You can use
 the user, since this remains the same for apps released by the same developer.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -1947,7 +1967,7 @@ the user, since this remains the same for apps released by the same developer.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -2017,7 +2037,7 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -2078,13 +2098,13 @@ sign-in operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -2105,7 +2125,7 @@ sign-in operation.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -2133,7 +2153,10 @@ sign-in operation.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 An 
                 <a
                   class="css-153g748-InternalLink"
@@ -2146,7 +2169,7 @@ sign-in operation.
                   </code>
                 </a>
                  object
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -2190,7 +2213,7 @@ from using
        methods.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -2250,7 +2273,7 @@ from using
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -2371,7 +2394,7 @@ sign-out operation.
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -2432,13 +2455,13 @@ sign-out operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -2459,7 +2482,7 @@ sign-out operation.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -2491,7 +2514,7 @@ sign-out operation.
       </table>
     </div>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -2551,7 +2574,7 @@ sign-out operation.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -2636,7 +2659,7 @@ sign-out operation.
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -2735,13 +2758,14 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -2758,7 +2782,9 @@ which contains all of the pertinent user and credential information.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -2782,13 +2808,13 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -2809,7 +2835,7 @@ for more details.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -2851,7 +2877,7 @@ the app's server counterpart. Unlike
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -2895,7 +2921,7 @@ an Apple domain.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -2955,7 +2981,7 @@ your app.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -2990,7 +3016,7 @@ your app.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3024,7 +3050,7 @@ your app.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3080,7 +3106,7 @@ will be
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3116,7 +3142,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -3190,13 +3216,13 @@ may be
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -3217,7 +3243,7 @@ may be
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3250,7 +3276,7 @@ may be
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3283,7 +3309,7 @@ may be
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3316,7 +3342,7 @@ may be
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3349,7 +3375,7 @@ may be
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3382,7 +3408,7 @@ may be
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3419,7 +3445,7 @@ may be
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -3495,13 +3521,14 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -3518,7 +3545,9 @@ You must include the ID string of the user whose credentials you'd like to refre
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -3542,13 +3571,13 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -3569,7 +3598,7 @@ for more details.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3632,7 +3661,7 @@ requests they will be
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3678,7 +3707,7 @@ OAuth 2.0 protocol
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3709,7 +3738,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -3785,13 +3814,14 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -3808,7 +3838,9 @@ None of these options are required.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -3832,13 +3864,13 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -3859,7 +3891,7 @@ for more details.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3903,7 +3935,7 @@ for more details.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -3966,7 +3998,7 @@ requests they will be
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -4016,7 +4048,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -4092,13 +4124,14 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -4115,7 +4148,9 @@ You must include the ID string of the user to sign out.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -4139,13 +4174,13 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -4166,7 +4201,7 @@ for more details.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -4212,7 +4247,7 @@ OAuth 2.0 protocol
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -4243,7 +4278,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -4304,13 +4339,13 @@ OAuth 2.0 protocol
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -4331,7 +4366,7 @@ OAuth 2.0 protocol
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -4418,7 +4453,7 @@ OAuth 2.0 protocol
     </div>
   </h2>
   <div
-    class="css-ii449t"
+    class="css-k1r7bq"
   >
     <h3
       class="css-m417je-H3"
@@ -4493,10 +4528,10 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4556,7 +4591,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4571,10 +4606,10 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4634,7 +4669,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4649,10 +4684,10 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4712,7 +4747,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4728,7 +4763,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-k1r7bq"
   >
     <h3
       class="css-m417je-H3"
@@ -4803,10 +4838,10 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4866,7 +4901,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationButtonType
         .
@@ -4881,10 +4916,10 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -4944,7 +4979,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationButtonType
         .
@@ -4959,7 +4994,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <strong
         class="css-1qx481h-B"
@@ -4968,7 +5003,7 @@ OAuth 2.0 protocol
          
       </strong>
       <div
-        class="css-1kq9nqw-PlatformTag"
+        class="css-u7asze-PlatformTag"
       >
         <svg
           color="var(--expo-theme-palette-blue-900)"
@@ -4995,7 +5030,7 @@ OAuth 2.0 protocol
       </div>
       <br />
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5055,7 +5090,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationButtonType
         .
@@ -5071,7 +5106,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-k1r7bq"
   >
     <h3
       class="css-m417je-H3"
@@ -5146,13 +5181,14 @@ OAuth 2.0 protocol
       .
     </p>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -5169,7 +5205,9 @@ OAuth 2.0 protocol
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -5190,10 +5228,10 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5253,7 +5291,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationCredentialState
         .
@@ -5262,10 +5300,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5325,7 +5363,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationCredentialState
         .
@@ -5334,10 +5372,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5397,7 +5435,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationCredentialState
         .
@@ -5406,10 +5444,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5469,7 +5507,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationCredentialState
         .
@@ -5479,7 +5517,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-k1r7bq"
   >
     <h3
       class="css-m417je-H3"
@@ -5537,10 +5575,10 @@ for more details.
       </div>
     </h3>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5600,7 +5638,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationOperation
         .
@@ -5615,10 +5653,10 @@ for more details.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5678,7 +5716,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationOperation
         .
@@ -5687,10 +5725,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5750,7 +5788,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationOperation
         .
@@ -5759,10 +5797,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -5822,7 +5860,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationOperation
         .
@@ -5832,7 +5870,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-k1r7bq"
   >
     <h3
       class="css-m417je-H3"
@@ -5907,13 +5945,14 @@ for more details.
       .
     </p>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -5930,23 +5969,31 @@ for more details.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         
 
-        Note that it is possible that you will not be granted all of the scopes which you request.
+        <p
+          class="css-6jxvia-P"
+          data-text="true"
+        >
+          Note that it is possible that you will not be granted all of the scopes which you request.
 You will still need to handle null values for any fields you request.
+        </p>
         
 
       </div>
     </blockquote>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -5963,7 +6010,9 @@ You will still need to handle null values for any fields you request.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -5984,10 +6033,10 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6047,7 +6096,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationScope
         .
@@ -6056,10 +6105,10 @@ for more details.
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6119,7 +6168,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationScope
         .
@@ -6129,7 +6178,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-ii449t"
+    class="css-k1r7bq"
   >
     <h3
       class="css-m417je-H3"
@@ -6193,13 +6242,14 @@ for more details.
       An enum whose values specify the system's best guess for how likely the current user is a real person.
     </p>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -6216,7 +6266,9 @@ for more details.
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         <strong
           class="css-1qx481h-B"
         >
@@ -6237,10 +6289,10 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6300,7 +6352,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6315,10 +6367,10 @@ for more details.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6378,7 +6430,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6393,10 +6445,10 @@ for more details.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -6456,7 +6508,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6528,7 +6580,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -6664,7 +6716,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-        class="css-g8zh0a"
+        class="css-18dzyrv"
       >
         <h3
           class="css-m417je-H3"
@@ -6784,7 +6836,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-18dzyrv"
       >
         <h3
           class="css-m417je-H3"
@@ -6884,13 +6936,14 @@ provided with an
         
 
         <blockquote
-          class="css-1nn217x-Quote"
-          data-text="true"
+          class="css-1xjn6jt-Callout"
+          data-testid="callout-container"
         >
           <div
-            style="margin-top: 2px;"
+            class="css-ks2t0-Callout"
           >
             <svg
+              color="var(--expo-theme-icon-default)"
               fill="none"
               height="16"
               role="img"
@@ -6907,36 +6960,43 @@ provided with an
               />
             </svg>
           </div>
-          <div>
+          <div
+            class="css-19syq17-Callout"
+          >
             
 
-            <strong
-              class="css-1qx481h-B"
+            <p
+              class="css-6jxvia-P"
+              data-text="true"
             >
-              Note:
-            </strong>
-             Passing 
-            <code
-              class="inline css-ov7own-InlineCode"
-            >
-              undefined
-            </code>
-             to the 
-            <code
-              class="inline css-ov7own-InlineCode"
-            >
-              onBarCodeScanned
-            </code>
-             prop will result in no scanning. This
+              <strong
+                class="css-1qx481h-B"
+              >
+                Note:
+              </strong>
+               Passing 
+              <code
+                class="inline css-ov7own-InlineCode"
+              >
+                undefined
+              </code>
+               to the 
+              <code
+                class="inline css-ov7own-InlineCode"
+              >
+                onBarCodeScanned
+              </code>
+               prop will result in no scanning. This
 can be used to effectively "pause" the scanner so that it doesn't continually scan even after
 data has been retrieved.
+            </p>
             
 
           </div>
         </blockquote>
       </div>
       <div
-        class="css-g8zh0a"
+        class="css-18dzyrv"
       >
         <h3
           class="css-m417je-H3"
@@ -7126,7 +7186,7 @@ Same as
         data-text="true"
       >
         <li
-          class="docs-list-item css-1yzgz3v-LI"
+          class="docs-list-item css-1vg85kg-LI"
         >
           <code
             class="inline css-ov7own-InlineCode"
@@ -7194,7 +7254,7 @@ Same as
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -7255,13 +7315,13 @@ Same as
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -7282,7 +7342,7 @@ Same as
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -7335,7 +7395,7 @@ Same as
 This can be used to quickly create specific permission hooks in every module.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="css-uucypz-H4"
@@ -7346,7 +7406,7 @@ This can be used to quickly create specific permission hooks in every module.
     </div>
     <pre>
       <pre
-        class="css-1kjja91"
+        class="css-p0nog9"
         data-text="true"
       >
         <code
@@ -7363,7 +7423,7 @@ This can be used to quickly create specific permission hooks in every module.
           >
             [
           </span>
-          status
+          permissionResponse
           <span
             class="token punctuation"
           >
@@ -7418,7 +7478,7 @@ This can be used to quickly create specific permission hooks in every module.
       </pre>
     </pre>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -7478,7 +7538,7 @@ This can be used to quickly create specific permission hooks in every module.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -7601,7 +7661,7 @@ This can be used to quickly create specific permission hooks in every module.
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -7666,7 +7726,7 @@ This can be used to quickly create specific permission hooks in every module.
       Checks user's permissions for accessing the camera.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -7726,7 +7786,7 @@ This can be used to quickly create specific permission hooks in every module.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -7788,7 +7848,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -7871,7 +7931,7 @@ This can be used to quickly create specific permission hooks in every module.
       .
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -7931,7 +7991,7 @@ This can be used to quickly create specific permission hooks in every module.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -7993,7 +8053,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -8055,13 +8115,13 @@ This can be used to quickly create specific permission hooks in every module.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -8082,7 +8142,7 @@ This can be used to quickly create specific permission hooks in every module.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -8105,13 +8165,16 @@ This can be used to quickly create specific permission hooks in every module.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 URL to get the image from.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -8140,20 +8203,24 @@ This can be used to quickly create specific permission hooks in every module.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 An array of bar code types. Defaults to all supported bar code types on
 the platform.
-              </span>
+              </p>
               
 
               <blockquote
-                class="css-1nn217x-Quote"
-                data-text="true"
+                class="css-1xjn6jt-Callout"
+                data-testid="callout-container"
               >
                 <div
-                  style="margin-top: 2px;"
+                  class="css-ks2t0-Callout"
                 >
                   <svg
+                    color="var(--expo-theme-icon-default)"
                     fill="none"
                     height="16"
                     role="img"
@@ -8170,15 +8237,22 @@ the platform.
                     />
                   </svg>
                 </div>
-                <div>
+                <div
+                  class="css-19syq17-Callout"
+                >
                   
 
-                  <strong
-                    class="css-1qx481h-B"
+                  <p
+                    class="css-6jxvia-P"
+                    data-text="true"
                   >
-                    Note:
-                  </strong>
-                   Only QR codes are supported on iOS.
+                    <strong
+                      class="css-1qx481h-B"
+                    >
+                      Note:
+                    </strong>
+                     Only QR codes are supported on iOS.
+                  </p>
                   
 
                 </div>
@@ -8195,7 +8269,7 @@ the platform.
       Scan bar codes from the image given by the URL.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -8255,7 +8329,7 @@ the platform.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -8366,7 +8440,7 @@ code.
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -8430,7 +8504,7 @@ code.
       An object obtained by permissions get and request functions.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -8490,13 +8564,13 @@ code.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -8517,7 +8591,7 @@ code.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -8548,7 +8622,7 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -8582,7 +8656,7 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -8611,7 +8685,7 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -8700,7 +8774,7 @@ in order to enable/disable the permission.
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -8761,13 +8835,13 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -8788,7 +8862,7 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -8822,7 +8896,7 @@ in order to enable/disable the permission.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -8860,7 +8934,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -8938,13 +9012,13 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -8965,7 +9039,7 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9002,7 +9076,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -9063,13 +9137,13 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -9090,7 +9164,7 @@ in order to enable/disable the permission.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9126,7 +9200,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -9194,13 +9268,13 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -9221,7 +9295,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9256,7 +9330,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9295,7 +9369,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -9358,13 +9432,13 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="css-rufzkc-Table"
       >
         <table
-          class="css-1gg2jm1-Table"
+          class="css-1goywt6-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
           >
             <tr
-              class="css-1cjtxd5-Row"
+              class="css-29opv4-Row"
             >
               <th
                 class="css-1p6k6di-HeaderCell"
@@ -9385,7 +9459,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </thead>
           <tbody>
             <tr
-              class="css-1cjtxd5-Row"
+              class="css-29opv4-Row"
             >
               <td
                 class="css-4ul8tm-Cell"
@@ -9422,7 +9496,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -9480,13 +9554,14 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       </div>
     </h3>
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -9503,41 +9578,48 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         
 
-        <strong
-          class="css-1qx481h-B"
+        <p
+          class="css-6jxvia-P"
+          data-text="true"
         >
-          Note:
-        </strong>
-         
-        <code
-          class="inline css-ov7own-InlineCode"
-        >
-          bounds
-        </code>
-         and 
-        <code
-          class="inline css-ov7own-InlineCode"
-        >
-          cornerPoints
-        </code>
-         are not always available. On iOS, for 
-        <code
-          class="inline css-ov7own-InlineCode"
-        >
-          code39
-        </code>
-         and 
-        <code
-          class="inline css-ov7own-InlineCode"
-        >
-          pdf417
-        </code>
-        
+          <strong
+            class="css-1qx481h-B"
+          >
+            Note:
+          </strong>
+           
+          <code
+            class="inline css-ov7own-InlineCode"
+          >
+            bounds
+          </code>
+           and 
+          <code
+            class="inline css-ov7own-InlineCode"
+          >
+            cornerPoints
+          </code>
+           are not always available. On iOS, for 
+          <code
+            class="inline css-ov7own-InlineCode"
+          >
+            code39
+          </code>
+           and 
+          <code
+            class="inline css-ov7own-InlineCode"
+          >
+            pdf417
+          </code>
+          
 you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode.
 For some types, they will represent the area used by the scanner.
+        </p>
         
 
       </div>
@@ -9546,13 +9628,13 @@ For some types, they will represent the area used by the scanner.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -9573,7 +9655,7 @@ For some types, they will represent the area used by the scanner.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9620,7 +9702,7 @@ For some types, they will represent the area used by the scanner.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9661,7 +9743,7 @@ For some types, they will represent the area used by the scanner.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9690,7 +9772,7 @@ For some types, they will represent the area used by the scanner.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9723,7 +9805,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -9784,13 +9866,13 @@ For some types, they will represent the area used by the scanner.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -9811,7 +9893,7 @@ For some types, they will represent the area used by the scanner.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9840,7 +9922,7 @@ For some types, they will represent the area used by the scanner.
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -9873,7 +9955,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -10006,7 +10088,7 @@ For some types, they will represent the area used by the scanner.
     </div>
   </h2>
   <div
-    class="css-ii449t"
+    class="css-k1r7bq"
   >
     <h3
       class="css-m417je-H3"
@@ -10064,10 +10146,10 @@ For some types, they will represent the area used by the scanner.
       </div>
     </h3>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -10127,7 +10209,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         PermissionStatus
         .
@@ -10142,10 +10224,10 @@ For some types, they will represent the area used by the scanner.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -10205,7 +10287,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         PermissionStatus
         .
@@ -10220,10 +10302,10 @@ For some types, they will represent the area used by the scanner.
       </p>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -10283,7 +10365,7 @@ For some types, they will represent the area used by the scanner.
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         PermissionStatus
         .
@@ -10355,7 +10437,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
   </h2>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -10413,7 +10495,7 @@ exports[`APISection expo-pedometer 1`] = `
       </div>
     </h3>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -10473,7 +10555,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -10518,7 +10600,7 @@ exports[`APISection expo-pedometer 1`] = `
     </ul>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -10579,13 +10661,13 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -10606,7 +10688,7 @@ exports[`APISection expo-pedometer 1`] = `
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -10635,13 +10717,16 @@ exports[`APISection expo-pedometer 1`] = `
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 A date indicating the start of the range over which to measure steps.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -10670,9 +10755,12 @@ exports[`APISection expo-pedometer 1`] = `
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 A date indicating the end of the range over which to measure steps.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -10685,7 +10773,7 @@ exports[`APISection expo-pedometer 1`] = `
       Get the step count between two dates.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -10745,7 +10833,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -10824,13 +10912,14 @@ exports[`APISection expo-pedometer 1`] = `
     
 
     <blockquote
-      class="css-1nn217x-Quote"
-      data-text="true"
+      class="css-1xjn6jt-Callout"
+      data-testid="callout-container"
     >
       <div
-        style="margin-top: 2px;"
+        class="css-ks2t0-Callout"
       >
         <svg
+          color="var(--expo-theme-icon-default)"
           fill="none"
           height="16"
           role="img"
@@ -10847,18 +10936,25 @@ exports[`APISection expo-pedometer 1`] = `
           />
         </svg>
       </div>
-      <div>
+      <div
+        class="css-19syq17-Callout"
+      >
         
 
-        Only the past seven days worth of data is stored and available for you to retrieve. Specifying
+        <p
+          class="css-6jxvia-P"
+          data-text="true"
+        >
+          Only the past seven days worth of data is stored and available for you to retrieve. Specifying
 a start date that is more than seven days in the past returns only the available data.
+        </p>
         
 
       </div>
     </blockquote>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -10922,7 +11018,7 @@ a start date that is more than seven days in the past returns only the available
       Returns whether the pedometer is enabled on the device.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -10982,7 +11078,7 @@ a start date that is more than seven days in the past returns only the available
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -11035,7 +11131,7 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -11093,7 +11189,7 @@ available on this device.
       </div>
     </h3>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11153,7 +11249,7 @@ available on this device.
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -11198,7 +11294,7 @@ available on this device.
     </ul>
   </div>
   <div
-    class="css-g8zh0a"
+    class="css-18dzyrv"
   >
     <h3
       class="css-m417je-H3"
@@ -11259,13 +11355,13 @@ available on this device.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -11286,7 +11382,7 @@ available on this device.
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-4ul8tm-Cell"
@@ -11314,7 +11410,10 @@ available on this device.
             <td
               class="css-4ul8tm-Cell"
             >
-              <span>
+              <p
+                class="css-6jxvia-P"
+                data-text="true"
+              >
                 A callback that is invoked when new step count data is available. The callback is
 provided with a single argument that is 
                 <a
@@ -11328,7 +11427,7 @@ provided with a single argument that is
                   </code>
                 </a>
                 .
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -11341,7 +11440,7 @@ provided with a single argument that is
       Subscribe to pedometer updates.
     </p>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11401,7 +11500,7 @@ provided with a single argument that is
       data-text="true"
     >
       <li
-        class="docs-list-item css-1yzgz3v-LI"
+        class="docs-list-item css-1vg85kg-LI"
       >
         <svg
           class="css-1a9xr20"
@@ -11510,7 +11609,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -11568,7 +11667,7 @@ provided with a single argument that is
       </div>
     </h3>
     <div
-      class="css-1o90nzw"
+      class="css-1wdnwk5"
     >
       <h4
         class="  css-uucypz-H4"
@@ -11628,13 +11727,13 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -11655,7 +11754,7 @@ provided with a single argument that is
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -11682,7 +11781,7 @@ provided with a single argument that is
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -11714,7 +11813,7 @@ provided with a single argument that is
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -11741,7 +11840,7 @@ provided with a single argument that is
             </td>
           </tr>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -11828,7 +11927,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -11889,13 +11988,13 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -11916,7 +12015,7 @@ provided with a single argument that is
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -11949,7 +12048,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -12012,13 +12111,13 @@ provided with a single argument that is
         class="css-rufzkc-Table"
       >
         <table
-          class="css-1gg2jm1-Table"
+          class="css-1goywt6-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
           >
             <tr
-              class="css-1cjtxd5-Row"
+              class="css-29opv4-Row"
             >
               <th
                 class="css-1p6k6di-HeaderCell"
@@ -12039,7 +12138,7 @@ provided with a single argument that is
           </thead>
           <tbody>
             <tr
-              class="css-1cjtxd5-Row"
+              class="css-29opv4-Row"
             >
               <td
                 class="css-4ul8tm-Cell"
@@ -12076,7 +12175,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -12158,7 +12257,7 @@ provided with a single argument that is
     </p>
   </div>
   <div
-    class="css-6fgdpv"
+    class="css-kyhipd"
   >
     <h3
       class="css-m417je-H3"
@@ -12219,13 +12318,13 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1gg2jm1-Table"
+        class="css-1goywt6-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
         >
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <th
               class="css-1p6k6di-HeaderCell"
@@ -12246,7 +12345,7 @@ provided with a single argument that is
         </thead>
         <tbody>
           <tr
-            class="css-1cjtxd5-Row"
+            class="css-29opv4-Row"
           >
             <td
               class="css-1i3ovdz-Cell"
@@ -12333,7 +12432,7 @@ provided with a single argument that is
     </div>
   </h2>
   <div
-    class="css-ii449t"
+    class="css-k1r7bq"
   >
     <h3
       class="css-m417je-H3"
@@ -12391,10 +12490,10 @@ provided with a single argument that is
       </div>
     </h3>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -12454,7 +12553,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         PermissionStatus
         .
@@ -12463,10 +12562,10 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -12526,7 +12625,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         PermissionStatus
         .
@@ -12535,10 +12634,10 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-xlf1x8"
+      class="css-181x4m0"
     >
       <div
-        class="css-14s291h"
+        class="css-1ow0rw3"
       >
         <h4
           class="  css-uucypz-H4"
@@ -12598,7 +12697,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-17lv2s9-InlineCode"
+        class="inline css-1v964ss-InlineCode"
       >
         PermissionStatus
         .

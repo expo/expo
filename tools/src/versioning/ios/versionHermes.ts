@@ -95,7 +95,9 @@ function createHermesTransforms(versionName: string, versionedJsiDir: string): F
     {
       paths: 'API/hermes/CMakeLists.txt',
       find: 'MACOSX_FRAMEWORK_IDENTIFIER dev.hermesengine.',
-      replaceWith: `MACOSX_FRAMEWORK_IDENTIFIER dev.${versionName}hermesengine.`,
+      // CFBundleIdentifier does not support underscores, replacing with hyphens.
+      // https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/TP40009249-102070-TPXREF105
+      replaceWith: `MACOSX_FRAMEWORK_IDENTIFIER dev.${versionName.replace(/_/g, '-')}hermesengine.`,
     },
     {
       paths: 'utils/*.sh',
@@ -228,7 +230,8 @@ export async function createVersionedHermesTarball(
     const tarball = path.join(EXPO_DIR, `${versionName}hermes.tar.gz`);
     logger.log(`Archiving hermes tarball: ${tarball}`);
     await removeUnusedHeaders(hermesRoot, versionName);
-    await spawnAsync('tar', ['cvfz', tarball, 'destroot'], {
+    // NOTE(kudo): we should include the _LICENSE_ file in the tarball, otherwise CocoaPods will get empty result from tarball extraction.
+    await spawnAsync('tar', ['cvfz', tarball, 'destroot', 'LICENSE'], {
       cwd: hermesRoot,
       stdio: options?.verbose ? 'inherit' : 'ignore',
     });

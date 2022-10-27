@@ -29,6 +29,10 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
     {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
   });
 
+  loadJClass(env, "expo/modules/kotlin/jni/PromiseImpl", {
+    {"<init>", "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"}
+  });
+
   loadJClass(env, "java/lang/Object", {});
   loadJClass(env, "java/lang/String", {});
   loadJClass(env, "expo/modules/kotlin/jni/JavaScriptObject", {});
@@ -36,6 +40,8 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
   loadJClass(env, "expo/modules/kotlin/jni/JavaScriptTypedArray", {});
   loadJClass(env, "com/facebook/react/bridge/ReadableNativeArray", {});
   loadJClass(env, "com/facebook/react/bridge/ReadableNativeMap", {});
+  loadJClass(env, "com/facebook/react/bridge/WritableNativeArray", {});
+  loadJClass(env, "com/facebook/react/bridge/WritableNativeMap", {});
 }
 
 void JavaReferencesCache::loadJClass(

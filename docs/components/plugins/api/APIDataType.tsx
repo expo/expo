@@ -16,8 +16,7 @@ export const APIDataType = ({ typeDefinition, inline = true }: APIDataTypeProps)
   const isIntersectionWithObject =
     type === 'intersection' && types?.filter(typeDefinitionContainsObject).length;
   const isUnionWithObject =
-    elementType &&
-    elementType.type === 'union' &&
+    (type === 'union' || (elementType && elementType.type === 'union')) &&
     types?.filter(typeDefinitionContainsObject).length;
   const isObjectWrapped =
     type === 'reference' &&

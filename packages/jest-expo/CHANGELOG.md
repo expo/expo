@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 46.0.2 — 2022-10-25
+
+### 🐛 Bug fixes
+
 - Update `transform` in `jest-preset` to support transforming other file extensions such as .jsx, .tsx, etc. ([#18476](https://github.com/expo/expo/pull/18476) by [@@amandeepmittal](https://github.com/@amandeepmittal))
 
-### 💡 Others
+### ⚠️ Notices
+
+- Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
 
 ## 46.0.1 — 2022-07-11
 

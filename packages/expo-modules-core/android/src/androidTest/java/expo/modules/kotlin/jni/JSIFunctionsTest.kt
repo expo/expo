@@ -12,19 +12,20 @@ import expo.modules.kotlin.typedarray.Float32Array
 import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
 import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
 class JSIFunctionsTest {
-  enum class SimpleEnumClass {
+  enum class SimpleEnumClass : Enumerable {
     V1, V2
   }
 
-  enum class StringEnumClass(val value: String) {
+  enum class StringEnumClass(val value: String) : Enumerable {
     K1("V1"), K2("V2")
   }
 
-  enum class IntEnumClass(val value: Int) {
+  enum class IntEnumClass(val value: Int) : Enumerable {
     K1(1), K2(2)
   }
 
@@ -39,11 +40,11 @@ class JSIFunctionsTest {
       Function("boolF") { a: Boolean -> a }
     }
   ) {
-    val stringValue = evaluateScript("ExpoModules.TestModule.stringF('expo')").getString()
-    val intValue = evaluateScript("ExpoModules.TestModule.intF(123)").getDouble().toInt()
-    val doubleValue = evaluateScript("ExpoModules.TestModule.doubleF(123.3)").getDouble()
-    val floatValue = evaluateScript("ExpoModules.TestModule.floatF(123.3)").getDouble().toFloat()
-    val boolValue = evaluateScript("ExpoModules.TestModule.boolF(true)").getBool()
+    val stringValue = evaluateScript("expo.modules.TestModule.stringF('expo')").getString()
+    val intValue = evaluateScript("expo.modules.TestModule.intF(123)").getDouble().toInt()
+    val doubleValue = evaluateScript("expo.modules.TestModule.doubleF(123.3)").getDouble()
+    val floatValue = evaluateScript("expo.modules.TestModule.floatF(123.3)").getDouble().toFloat()
+    val boolValue = evaluateScript("expo.modules.TestModule.boolF(true)").getBool()
 
     Truth.assertThat(stringValue).isEqualTo("expo")
     Truth.assertThat(intValue).isEqualTo(123)
@@ -59,7 +60,7 @@ class JSIFunctionsTest {
       Function("listF") { a: List<String> -> a }
     }
   ) {
-    val value = evaluateScript("ExpoModules.TestModule.listF(['expo', 'is', 'awesome'])").getArray()
+    val value = evaluateScript("expo.modules.TestModule.listF(['expo', 'is', 'awesome'])").getArray()
     Truth.assertThat(value).hasLength(3)
     val e1 = value[0].getString()
     val e2 = value[1].getString()
@@ -76,7 +77,7 @@ class JSIFunctionsTest {
       Function("listF") { a: List<List<Int>> -> a }
     }
   ) {
-    val value = evaluateScript("ExpoModules.TestModule.listF([[1,2,3], [4,5,6]])").getArray()
+    val value = evaluateScript("expo.modules.TestModule.listF([[1,2,3], [4,5,6]])").getArray()
     Truth.assertThat(value).hasLength(2)
     val e1 = value[0].getArray()
     val e2 = value[1].getArray()
@@ -104,7 +105,7 @@ class JSIFunctionsTest {
         }
       }
     ) {
-      evaluateScript("ExpoModules.TestModule.list(['V1', 'V2'])")
+      evaluateScript("expo.modules.TestModule.list(['V1', 'V2'])")
       Truth.assertThat(wasCalled).isTrue()
     }
   }
@@ -131,7 +132,7 @@ class JSIFunctionsTest {
         }
       }
     ) {
-      evaluateScript("ExpoModules.TestModule.list([{'foo':'foo'}, {'bar':'bar'}])")
+      evaluateScript("expo.modules.TestModule.list([{'foo':'foo'}, {'bar':'bar'}])")
       Truth.assertThat(wasCalled).isTrue()
     }
   }
@@ -143,7 +144,7 @@ class JSIFunctionsTest {
       Function("mapF") { a: Map<String, String> -> a }
     }
   ) {
-    val value = evaluateScript("ExpoModules.TestModule.mapF({ 'k1': 'v1', 'k2': 'v2' })").getObject()
+    val value = evaluateScript("expo.modules.TestModule.mapF({ 'k1': 'v1', 'k2': 'v2' })").getObject()
     val k1 = value.getProperty("k1").getString()
     val k2 = value.getProperty("k2").getString()
 
@@ -164,7 +165,7 @@ class JSIFunctionsTest {
         }
       }
     ) {
-      evaluateScript("ExpoModules.TestModule.f('string from js')")
+      evaluateScript("expo.modules.TestModule.f('string from js')")
       Truth.assertThat(wasCalled).isTrue()
     }
   }
@@ -181,7 +182,7 @@ class JSIFunctionsTest {
         }
       }
     ) {
-      evaluateScript("ExpoModules.TestModule.f({ 'k1': 'v1' })")
+      evaluateScript("expo.modules.TestModule.f({ 'k1': 'v1' })")
       Truth.assertThat(wasCalled).isTrue()
     }
   }
@@ -211,9 +212,9 @@ class JSIFunctionsTest {
         }
       }
     ) {
-      evaluateScript("ExpoModules.TestModule.f1('V2')")
-      evaluateScript("ExpoModules.TestModule.f2('V2')")
-      evaluateScript("ExpoModules.TestModule.f3(2)")
+      evaluateScript("expo.modules.TestModule.f1('V2')")
+      evaluateScript("expo.modules.TestModule.f2('V2')")
+      evaluateScript("expo.modules.TestModule.f3(2)")
       Truth.assertThat(f1WasCalled).isTrue()
       Truth.assertThat(f2WasCalled).isTrue()
       Truth.assertThat(f3WasCalled).isTrue()
@@ -239,7 +240,7 @@ class JSIFunctionsTest {
         }
       }
     ) {
-      val result = evaluateScript("ExpoModules.TestModule.f({ 'x': 123, 's': 'expo' })").getObject()
+      val result = evaluateScript("expo.modules.TestModule.f({ 'x': 123, 's': 'expo' })").getObject()
 
       val x = result.getProperty("x").getDouble().toInt()
       val s = result.getProperty("s").getString()
@@ -262,7 +263,7 @@ class JSIFunctionsTest {
       """
       let exception = null;
       try {
-        ExpoModules.TestModule.f()
+        expo.modules.TestModule.f()
       } catch (e) {
         if (e instanceof global.ExpoModulesCore_CodedError) {
           exception = e;
@@ -289,7 +290,7 @@ class JSIFunctionsTest {
       """
       let exception = null;
       try {
-        ExpoModules.TestModule.f()
+        expo.modules.TestModule.f()
       } catch (e) {
         if (e instanceof global.ExpoModulesCore_CodedError) {
           exception = e;
@@ -312,7 +313,7 @@ class JSIFunctionsTest {
       }
     }
   ) {
-    evaluateScript("ExpoModules.TestModule.f()")
+    evaluateScript("expo.modules.TestModule.f()")
   }
 
   @Test
@@ -334,7 +335,7 @@ class JSIFunctionsTest {
       }
     }
   ) {
-    evaluateScript("ExpoModules.TestModule.f(new Int32Array([1,2,3]), new Float32Array([1.0,2.0,3.0]), new Int8Array([1,2,3]))")
+    evaluateScript("expo.modules.TestModule.f(new Int32Array([1,2,3]), new Float32Array([1.0,2.0,3.0]), new Int8Array([1,2,3]))")
   }
 
   @Test
@@ -349,7 +350,7 @@ class JSIFunctionsTest {
     evaluateScript(
       """
       const typedArray = new Int32Array([1,2,3]);
-      ExpoModules.TestModule.f(typedArray);
+      expo.modules.TestModule.f(typedArray);
       if (typedArray[0] !== 1 || typedArray[1] !== 999 || typedArray[2] !== 3) {
         throw new Error("Array was copied")
       }
@@ -358,13 +359,13 @@ class JSIFunctionsTest {
   }
 
   @Test(expected = JavaScriptEvaluateException::class)
-  fun should_throw_if_js_value_cannnot_be_passed() = withJSIInterop(
+  fun should_throw_if_js_value_cannot_be_passed() = withJSIInterop(
     inlineModule {
       Name("TestModule")
       Function("f") { _: Int -> }
     }
   ) {
-    evaluateScript("ExpoModules.TestModule.f(Symbol())")
+    evaluateScript("expo.modules.TestModule.f(Symbol())")
   }
 
   @Test
@@ -374,7 +375,7 @@ class JSIFunctionsTest {
       Function("intArray") { a: IntArray -> a }
     }
   ) {
-    val array = evaluateScript("ExpoModules.TestModule.intArray([1, 2, 3])").getArray()
+    val array = evaluateScript("expo.modules.TestModule.intArray([1, 2, 3])").getArray()
     Truth.assertThat(array.size).isEqualTo(3)
 
     val e1 = array[0].getDouble().toInt()
@@ -393,7 +394,7 @@ class JSIFunctionsTest {
       Function("stringArray") { a: Array<String> -> a }
     }
   ) {
-    val array = evaluateScript("ExpoModules.TestModule.stringArray(['a', 'b', 'c'])").getArray()
+    val array = evaluateScript("expo.modules.TestModule.stringArray(['a', 'b', 'c'])").getArray()
     Truth.assertThat(array.size).isEqualTo(3)
 
     val e1 = array[0].getString()
@@ -412,7 +413,7 @@ class JSIFunctionsTest {
       Function("array") { a: Array<IntArray> -> a }
     }
   ) {
-    val array = evaluateScript("ExpoModules.TestModule.array([[1,2], [3, 4]])").getArray()
+    val array = evaluateScript("expo.modules.TestModule.array([[1,2], [3, 4]])").getArray()
     Truth.assertThat(array.size).isEqualTo(2)
 
     val a1 = array[0].getArray()
@@ -454,7 +455,7 @@ class JSIFunctionsTest {
         }
       }
     ) {
-      evaluateScript("ExpoModules.TestModule.jsObjectArray([{'foo':'foo'}, {'bar':'bar'}])")
+      evaluateScript("expo.modules.TestModule.jsObjectArray([{'foo':'foo'}, {'bar':'bar'}])")
       Truth.assertThat(wasCalled).isTrue()
     }
   }
@@ -474,8 +475,8 @@ class JSIFunctionsTest {
       }
     }
   ) {
-    val int = evaluateScript("ExpoModules.TestModule.eitherFirst(123)").getDouble().toInt()
-    val string = evaluateScript("ExpoModules.TestModule.eitherSecond('expo')").getString()
+    val int = evaluateScript("expo.modules.TestModule.eitherFirst(123)").getDouble().toInt()
+    val string = evaluateScript("expo.modules.TestModule.eitherSecond('expo')").getString()
 
     Truth.assertThat(int).isEqualTo(123)
     Truth.assertThat(string).isEqualTo("expo")

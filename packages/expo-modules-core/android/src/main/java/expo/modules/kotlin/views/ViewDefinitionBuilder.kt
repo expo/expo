@@ -21,17 +21,21 @@ class ViewDefinitionBuilder<T : View>(private val viewType: KClass<T>) {
   internal var onViewDestroys: ((View) -> Unit)? = null
 
   @PublishedApi
+  internal var onViewDidUpdateProps: ((View) -> Unit)? = null
+
+  @PublishedApi
   internal var viewGroupDefinition: ViewGroupDefinition? = null
   private var callbacksDefinition: CallbacksDefinition? = null
 
   fun build(): ViewManagerDefinition =
     ViewManagerDefinition(
-      createViewFactory(),
-      viewType.java,
-      props,
-      onViewDestroys,
-      callbacksDefinition,
-      viewGroupDefinition
+      viewFactory = createViewFactory(),
+      viewType = viewType.java,
+      props = props,
+      onViewDestroys = onViewDestroys,
+      callbacksDefinition = callbacksDefinition,
+      viewGroupDefinition = viewGroupDefinition,
+      onViewDidUpdateProps = onViewDidUpdateProps
     )
 
   /**
@@ -39,6 +43,13 @@ class ViewDefinitionBuilder<T : View>(private val viewType: KClass<T>) {
    */
   inline fun <reified ViewType : View> OnViewDestroys(noinline body: (view: ViewType) -> Unit) {
     onViewDestroys = { body(it as ViewType) }
+  }
+
+  /**
+   * Defines the view lifecycle method that is called when the view finished updating all props.
+   */
+  inline fun <reified ViewType : View> OnViewDidUpdateProps(noinline body: (view: ViewType) -> Unit) {
+    onViewDidUpdateProps = { body(it as ViewType) }
   }
 
   /**

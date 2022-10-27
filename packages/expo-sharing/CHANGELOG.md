@@ -4,13 +4,19 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- On iOS, dismiss share sheet after sharing to an app is canceled, so the file doesn't fail to attach when trying to share again ([#19656](https://github.com/expo/expo/pull/19656) by [@keith-kurak](https://github.com/keith-kurak))
+
 ### 💡 Others
+
+## 11.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ## 10.3.0 — 2022-07-07
 

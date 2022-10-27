@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.4.1)
 project(expo-modules-core)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_ANDROID_STL_TYPE c++_shared)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
@@ -86,7 +85,7 @@ if(${UNIT_TEST})
         PATHS ${HERMES_SO_DIR}
         NO_CMAKE_FIND_ROOT_PATH
     )
-    set(JSEXECUTOR_INCLUDE "${HERMES_HEADER_DIR}")
+    set(JSEXECUTOR_INCLUDE ${HERMES_HEADER_DIR} ${HERMES_HEADER_DIR}/API ${HERMES_HEADER_DIR}/public)
   else()
     find_library(
         JSEXECUTOR_LIB

@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 fabric_compiler_flags = '-DRN_FABRIC_ENABLED'
-folly_version = '2021.06.28.00-v2'
+folly_version = '2021.07.22.00'
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
 Pod::Spec.new do |s|
