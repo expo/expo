@@ -476,7 +476,7 @@ export type CameraNativeProps = {
 };
 
 export type BarCodeSettings = {
-  barCodeTypes: string[];
+  barCodeTypes: number[];
   interval?: number;
 };
 
