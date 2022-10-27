@@ -87,6 +87,7 @@ async function initAsync(workingDir, repoRoot, runtimeVersion) {
       'expo-manifests': 'file:../expo/packages/expo-manifests',
       'expo-modules-autolinking': 'file:../expo/packages/expo-modules-autolinking',
       'expo-modules-core': 'file:../expo/packages/expo-modules-core',
+      'expo-splash-screen': 'file:../expo/packages/expo-splash-screen',
       'expo-structured-headers': 'file:../expo/packages/expo-structured-headers',
       'expo-updates-interface': 'file:../expo/packages/expo-updates-interface',
     },
