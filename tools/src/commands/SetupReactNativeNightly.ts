@@ -25,9 +25,6 @@ async function main() {
   logger.info('Adding pinned packages:');
   const pinnedPackages = {
     'react-native': nightlyVersion,
-
-    // Remove this after we upgrade reanimated
-    'react-native-reanimated': '2.10.0',
   };
   await addPinnedPackagesAsync(pinnedPackages);
 
@@ -37,12 +34,6 @@ async function main() {
   await updateReactNativePackageAsync();
 
   await patchReanimatedAsync();
-
-  // Workaround for deprecated `Linking.removeEventListener`
-  // Remove this after we migrate to @react-navigation/native@^6.0.12
-  // https://linear.app/expo/issue/ENG-4148/upgrade-react-navigation-across-expoexpo-monorepo
-  // https://github.com/react-navigation/react-navigation/commit/bd5cd55e130cba2c6c35bbf360e3727a9fcf00e4
-  await patchReactNavigationAsync();
 
   logger.info('Setting up project files for bare-expo.');
   await updateBareExpoAsync();
@@ -62,17 +53,17 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
 async function updateReactNativePackageAsync() {
   const root = path.join(EXPO_DIR, 'node_modules', 'react-native');
 
-  // Third party libraries used to use react-native minor version, update the version 1000.999.0 as the latest version
+  // Third party libraries used to use react-native minor version, update the version 9999.9999.9999 as the latest version
   await transformFileAsync(path.join(root, 'package.json'), [
     {
       find: '"version": "0.0.0-',
-      replaceWith: '"version": "1000.999.0-',
+      replaceWith: '"version": "9999.9999.9999-',
     },
   ]);
   await transformFileAsync(path.join(root, 'ReactAndroid', 'gradle.properties'), [
     {
-      find: 'VERSION_NAME=1000.0.0-',
-      replaceWith: 'VERSION_NAME=1000.999.0-',
+      find: 'VERSION_NAME=0.0.0-',
+      replaceWith: 'VERSION_NAME=9999.9999.9999-',
     },
   ]);
 
@@ -80,9 +71,9 @@ async function updateReactNativePackageAsync() {
   await fs.writeFile(path.join(root, 'sdks', '.hermesversion'), 'main');
   await transformFileAsync(path.join(root, 'sdks', 'hermes-engine', 'hermes-engine.podspec'), [
     {
-      // Use the fake version to force building hermes from source
-      find: "version = package['version']",
-      replaceWith: "version = '1000.0.0'",
+      // Because we changed the version in package.json, the `isNightly` check in hermes-engine.podspec is broken
+      find: "isNightly = version.start_with?('0.0.0-')",
+      replaceWith: 'isNightly = true',
     },
   ]);
 
@@ -129,22 +120,6 @@ async function patchReanimatedAsync() {
       find: /(\s*"\$\{NODE_MODULES_DIR\}\/react-native\/ReactAndroid\/src\/main\/jni")/g,
       replaceWith:
         '$1\n        "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/jni/react/turbomodule"',
-    },
-  ]);
-}
-
-async function patchReactNavigationAsync() {
-  const root = path.join(EXPO_DIR, 'node_modules', '@react-navigation');
-  await transformFileAsync(path.join(root, 'native', 'src', 'useLinking.native.tsx'), [
-    {
-      find: `\
-      Linking.addEventListener('url', callback);
-
-      return () => Linking.removeEventListener('url', callback);`,
-      replaceWith: `\
-      const subscription = Linking.addEventListener('url', callback);
-
-      return () => subscription.remove();`,
     },
   ]);
 }
