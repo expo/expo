@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Revert [#18381](https://github.com/expo/expo/pull/18381) (custom entry support).
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
