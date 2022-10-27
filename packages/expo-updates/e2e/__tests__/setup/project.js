@@ -58,15 +58,18 @@ async function prepareLocalUpdatesModule(repoRoot) {
   await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
 }
 
-async function initAsync(workingDir, repoRoot, runtimeVersion) {
+async function initAsync(projectRoot, { repoRoot, runtimeVersion }) {
   const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
 
+  console.log('Creating expo app');
+  const workingDir = path.dirname(projectRoot);
+  const projectName = path.basename(projectRoot);
+
   // initialize project
-  await spawnAsync('expo-cli', ['init', 'updates-e2e', '--yes'], {
+  await spawnAsync('yarn', ['create', 'expo-app', projectName, '--yes'], {
     cwd: workingDir,
     stdio: 'inherit',
   });
-  const projectRoot = path.join(workingDir, 'updates-e2e');
 
   await prepareLocalUpdatesModule(repoRoot);
 
@@ -117,7 +120,7 @@ async function initAsync(workingDir, repoRoot, runtimeVersion) {
     ...appJson,
     expo: {
       ...appJson.expo,
-      name: 'updates-e2e',
+      name: projectName,
       runtimeVersion,
       plugins: ['expo-updates'],
       android: { ...appJson.android, package: 'dev.expo.updatese2e' },
@@ -172,6 +175,10 @@ async function initAsync(workingDir, repoRoot, runtimeVersion) {
     localCliBin,
     ['prebuild', '--template', `expo-template-bare-minimum-${templateVersion}.tgz`],
     {
+      // Ensure this always runs headless
+      env: {
+        CI: 'true',
+      },
       cwd: projectRoot,
       stdio: 'inherit',
     }

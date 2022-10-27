@@ -35,7 +35,9 @@ const runtimeVersion = '1.0.0';
       'Missing one or more environment variables; see instructions in e2e/__tests__/setup/index.js'
     );
   }
-  const projectRoot = await initAsync(workingDir, repoRoot, runtimeVersion);
+  const projectRoot = path.join(workingDir, 'updates-e2e');
+
+  await initAsync(projectRoot, { repoRoot, runtimeVersion });
 
   // Order is somewhat important here as the `basic` and `assets` apps are created by modifying the
   // same project (not creating a new one).
