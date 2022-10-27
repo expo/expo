@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `AppContext.hasActiveReactInstance` on Android.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

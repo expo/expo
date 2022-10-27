@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Fixed clipboard listener is called twice on Android.
+- Fixed clipboard listener can crash the application during initialization on Android.
+
 ### 💡 Others
 
 ## 4.0.0 — 2022-10-25
