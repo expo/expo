@@ -1,12 +1,12 @@
 import { ExpoAppManifest } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
-import { BundleOutput } from '@expo/dev-server';
 import minimatch from 'minimatch';
 import path from 'path';
 
 import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
+import { BundleOutput } from './fork-bundleAsync';
 import { Asset, saveAssetsAsync } from './saveAssets';
 
 const debug = require('debug')('expo:export:exportAssets') as typeof console.log;

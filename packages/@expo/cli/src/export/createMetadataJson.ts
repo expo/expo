@@ -1,5 +1,6 @@
-import type { BundleOutput } from '@expo/dev-server';
 import path from 'path';
+
+import { BundleOutput } from './fork-bundleAsync';
 
 export type BundlePlatform = 'android' | 'ios';
 

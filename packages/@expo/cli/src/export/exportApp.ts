@@ -67,7 +67,24 @@ export async function exportAppAsync(
   );
 
   // Log bundle size info to the user
-  printBundleSizes(bundles);
+  printBundleSizes(
+    Object.fromEntries(
+      Object.entries(bundles).map(([key, value]) => {
+        if (!dumpSourcemap) {
+          return [
+            key,
+            {
+              ...value,
+              // Remove source maps from the bundles if they aren't going to be written.
+              map: undefined,
+            },
+          ];
+        }
+
+        return [key, value];
+      })
+    )
+  );
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
