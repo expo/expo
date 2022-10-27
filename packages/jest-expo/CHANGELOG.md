@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Updated mocks for Expo SDK 47. ([#19706](https://github.com/expo/expo/pull/19706) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
