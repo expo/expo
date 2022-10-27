@@ -54,9 +54,7 @@ export async function hasRequiredIOSFilesAsync(projectRoot: string) {
   try {
     // If any of the following required files are missing, then the project is malformed.
     await Promise.all([
-      IOSConfig.Paths.getAppDelegate(projectRoot),
       IOSConfig.Paths.getAllXcodeProjectPaths(projectRoot),
-      IOSConfig.Paths.getAllInfoPlistPaths(projectRoot),
       IOSConfig.Paths.getAllPBXProjectPaths(projectRoot),
     ]);
     return true;

@@ -12,10 +12,11 @@ export class AppleAppIdResolver extends AppIdResolver {
     super(projectRoot, 'ios', 'ios.bundleIdentifier');
   }
 
+  /** @return `true` if the app has valid `*.pbxproj` file */
   async hasNativeProjectAsync(): Promise<boolean> {
     try {
       // Never returns nullish values.
-      return !!IOSConfig.Paths.getAppDelegateFilePath(this.projectRoot);
+      return !!IOSConfig.Paths.getAllPBXProjectPaths(this.projectRoot).length;
     } catch (error: any) {
       debug('Expected error checking for native project:', error);
       return false;
