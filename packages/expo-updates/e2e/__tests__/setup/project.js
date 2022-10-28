@@ -199,7 +199,8 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion }) {
   return projectRoot;
 }
 
-async function setupBasicAppAsync(projectRoot) {
+async function setupBasicAppAsync(projectRoot, repoRoot) {
+  const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
   // copy App.js from test fixtures
   const appJsSourcePath = path.resolve(__dirname, '..', 'fixtures', 'App.js');
   const appJsDestinationPath = path.resolve(projectRoot, 'App.js');
@@ -211,7 +212,7 @@ async function setupBasicAppAsync(projectRoot) {
 
   // export update for test server to host
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
+  await spawnAsync(localCliBin, ['export'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
@@ -237,14 +238,14 @@ async function setupAssetsAppAsync(projectRoot) {
     path.resolve(__dirname, '..', 'fixtures', 'test.png'),
     path.join(projectRoot, 'test.png')
   );
-  await spawnAsync('expo-cli', ['install', '@expo-google-fonts/inter'], {
+  await spawnAsync(localCliBin, ['install', '@expo-google-fonts/inter'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
 
   // export update for test server to host
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
+  await spawnAsync(localCliBin, ['export'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });

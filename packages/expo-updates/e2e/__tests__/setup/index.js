@@ -41,7 +41,7 @@ const runtimeVersion = '1.0.0';
 
   // Order is somewhat important here as the `basic` and `assets` apps are created by modifying the
   // same project (not creating a new one).
-  await setupBasicAppAsync(projectRoot);
+  await setupBasicAppAsync(projectRoot, repoRoot);
   await buildAndroidAsync(projectRoot, artifactsDest, 'basic');
   await buildIosAsync(projectRoot, artifactsDest, 'basic');
 
