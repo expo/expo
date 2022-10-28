@@ -1,6 +1,7 @@
 const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs/promises');
 const path = require('path');
+const glob = require('glob');
 
 async function prepareLocalUpdatesModule(repoRoot) {
   // copy UpdatesE2ETest exported module into the local package
@@ -169,20 +170,24 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion }) {
     cwd: localTemplatePath,
     stdio: 'inherit',
   });
-  const templateVersion = require(path.join(localTemplatePath, 'package.json')).version;
 
-  await spawnAsync(
-    localCliBin,
-    ['prebuild', '--template', `expo-template-bare-minimum-${templateVersion}.tgz`],
-    {
-      // Ensure this always runs headless
-      env: {
-        CI: 'true',
-      },
-      cwd: projectRoot,
-      stdio: 'inherit',
-    }
-  );
+  const localTemplatePathName = glob.sync(
+    path.join(projectRoot, 'expo-template-bare-minimum-*.tgz')
+  )[0];
+
+  if (!localTemplatePathName) {
+    throw new Error(`Failed to locate packed template in ${projectRoot}`);
+  }
+
+  await spawnAsync(localCliBin, ['prebuild', '--template', localTemplatePathName], {
+    env: {
+      ...process.env,
+      EXPO_DEBUG: '1',
+      CI: '1',
+    },
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
 
   // enable proguard on Android
   await fs.appendFile(
