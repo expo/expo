@@ -465,7 +465,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 5.3. Re-publish project templates
 
-**Why:** Ensure that the templates include the latest version of packages, so when we release the beta
+**Why:** Ensure that the templates include the latest version of packages, so when we release the beta everything is up to date.
 
 **How:** Follow [0.9. Publish `sdk-XX` project templates](#09-publish-sdk-xx-project-templates) but be sure that the published template has the `sdk-xx` tag on npm in addition to `next`.
 
