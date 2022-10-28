@@ -61,8 +61,7 @@ jobs:
           yarn-workspace: 'true'
           yarn-tools: 'true'
           gradle: 'true'
-          hermes-engine-aar: 'false'
-          rebuild-hermes-engine-aar-if-needed: 'false'
+          hermes-engine-aar: 'true'
           ndk: 'true'
           react-native-gradle-downloads: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
