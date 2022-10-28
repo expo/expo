@@ -1,4 +1,5 @@
 /packages/@expo/cli                             @EvanBacon @bycedric
+/packages/@expo/package-manager                 @EvanBacon @bycedric
 /packages/babel-preset-expo                     @brentvatne @ide @EvanBacon
 /packages/expo-app-loader-provider              @tsapeta
 /packages/expo-apple-authentication             @tsapeta
