@@ -17,7 +17,13 @@ Unversioned QA: Test in native-component-list.
   - Disable Fast Refresh, make and save a change, it shouldn't show up
   - Reload manually, your change should appear
   - Make and save another change, reenable Fast Refresh, your change should show up automatically
-- Debug Remote JS
+- Debug JS in-place (Hermes)
+  - Add `jsEngine` as `hermes` in _apps/native-component-list/app.json_
+  - Open JS debugger either pressing `j` by `expo-cli` terminal UI hotkey or from the dev-menu in Expo Go
+  - Add a breakpoint (maybe add a button to your app), ensure the breakpoint works
+  - Click Reload on the webpage, make sure it reloads the app
+- Debug Remote JS (JSC)
+  - Add `jsEngine` as `jsc` in _apps/native-component-list/app.json_
   - Start Remote JS debugging
   - Add a breakpoint (maybe add a button to your app), ensure the breakpoint works
   - Click Reload on the webpage, make sure it reloads the app
