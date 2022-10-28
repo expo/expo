@@ -47,7 +47,7 @@
     "@expo/osascript": "^2.0.31",
     "@expo/package-manager": "~0.0.53",
     "@expo/plist": "^0.0.18",
-    "@expo/prebuild-config": "~5.0.3",
+    "@expo/prebuild-config": "~5.0.5",
     "@expo/rudder-sdk-node": "1.1.1",
     "@expo/spawn-async": "1.5.0",
     "@expo/xcpretty": "^4.2.1",
