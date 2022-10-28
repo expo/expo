@@ -6,7 +6,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 To develop applications with Expo, you need two tools. A command-line tool called [Expo CLI](#1-expo-cli) to serve your project, and a mobile client app called [Expo Go](#2-expo-go-app-for-ios-and) to open the project on iOS and Android platforms. Additionally, you can use any web browser to run the project on the web.
 
-> You don't need macOS to build an iOS app with Expo. You only need an iOS device to run the Expo Go app. Windows, Linux, and macOS are all supported for your development machine.
+> **info** You don't need macOS to build an iOS app with Expo. You only need an iOS device to run the Expo Go app. Windows, Linux, and macOS are all supported for your development machine.
 
 ## 1. Expo CLI
 
@@ -17,21 +17,23 @@ To develop applications with Expo, you need two tools. A command-line tool calle
 To use Expo CLI, you need to have the following tools installed on your developer machine:
 
 - [Node.js LTS release](https://nodejs.org/en/)
+  > Only Node.js LTS releases (even-numbered) are recommended. As Node.js [officially states](https://nodejs.org/en/about/releases/), "Production applications should only use Active LTS or Maintenance LTS releases.".
 - [Git](https://git-scm.com)
-- [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) required only for macOS or Linux users
-
-> Only Node.js LTS releases (even-numbered) are recommended. As Node.js [officially states](https://nodejs.org/en/about/releases/), "Production applications should only use Active LTS or Maintenance LTS releases."
+- For macOS or Linux users: [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall)
 
 ### Recommended tools
 
-- [VS Code Editor](https://code.visualstudio.com/download)
-  - [VS Code Expo Extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) for **app.json** debugging and autocomplete
 - [Yarn](https://classic.yarnpkg.com/en/docs/install)
-- Windows users: [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows), Bash via WSL, or the VS Code terminal
+- [VS Code Editor](https://code.visualstudio.com/download)
+  - [VS Code Expo Extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) for **app.json** or **app.config.js** debugging and autocomplete.
+
+For Windows users we recommend using [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows), Bash via WSL, or the VS Code terminal
 
 ### Using Expo CLI
 
-You can use Expo CLI without installation by leveraging `npx` &mdash; a Node.js package runner. For example, to see a list of available commands in Expo CLI, open the terminal on your development machine and run the following command:
+You can use Expo CLI without installation by leveraging `npx` &mdash; a Node.js package runner.
+
+For example, to see a list of available commands in Expo CLI, open the terminal on your development machine and run the following command:
 
 <Terminal cmd={['# See a list of available commands in Expo CLI', '$ npx expo -h']} />
 
