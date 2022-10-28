@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `PosterComponent` prop to `Video` component. ([#19625](https://github.com/expo/expo/pull/19625) by [@youedd](https://github.com/youedd)
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
