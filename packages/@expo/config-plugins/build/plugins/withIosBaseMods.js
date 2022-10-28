@@ -208,6 +208,7 @@ const defaultProviders = {
         projectRoot
       }
     }) {
+      // TODO: Get application AppDelegate file from pbxproj.
       return _ios().Paths.getAppDelegateFilePath(projectRoot);
     },
 
