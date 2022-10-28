@@ -33,7 +33,7 @@ You can consider using the Firebase JS SDK when you:
 
 #### Caveats
 
-Firebase JS SDK does not support all services for mobile apps. Some of these services are Dynamic Links and Crashlytics. See the [React Native Firebase](#using-react-native-firebase) section if you want to use these services.
+Firebase JS SDK does not support all services for mobile apps. Some of these services are Analytics, Dynamic Links and Crashlytics. See the [React Native Firebase](#using-react-native-firebase) section if you want to use these services.
 
 ### Install and initialize Firebase JS SDK
 
@@ -143,6 +143,12 @@ module.exports = defaultConfig;
   href="https://firebase.google.com/docs/projects/api-keys"
 />
 
+<BoxLink
+  title="Migrate from Expo Firebase packages to React Native Firebase"
+  description="For more information on migrating from expo-firebase-analytics or expo-firebase-recaptcha packages to React Native Firebase."
+  href="https://expo.fyi/firebase-migration-guide"
+/>
+
 ## Using React Native Firebase
 
 [React Native Firebase](https://rnfirebase.io/) provides access to native code by wrapping the native SDKs for Android and iOS into a JavaScript API. Each Firebase service is available as a module that can be added as a dependency to your project. For example, the `auth` module provides access to the Firebase Authentication service.
@@ -156,9 +162,9 @@ You can consider using React Native Firebase when:
 - You have a bare React Native app with React Native Firebase already configured but are migrating to use Expo SDK.
 - You want to use [Firebase Analytics](https://rnfirebase.io/analytics/usage) in your app.
 
-<Collapsible summary="Migrating from Firebase JS SDK?">
+<Collapsible summary="Migrating from Expo Firebase packages?">
 
-To migrate from Firebase JS SDK to React Native Firebase, follow the steps in [Using React Native Firebase](#install-and-initialize-react-native-firebase) and adapt your code as per the modules available in the React Native Firebase library.
+If your project has been previously using `expo-firebase-analytics` and `expo-firebase-recaptcha` packages, you can migrate to the React Native Firebase library. For more information, see [Firebase migration guide](https://expo.fyi/firebase-migration-guide).
 
 </Collapsible>
 
@@ -190,12 +196,16 @@ Once you have configured the React Native Firebase library in your project, come
 
 If you are using **[EAS Build](/build/introduction/), you can create and install a development build** on your devices. You do not need to run the project locally before creating a development build. For more information on creating a development build, see the section on [installing a development build](/development/getting-started/#creating-and-installing-your-first-development-build).
 
+<Collapsible summary="Run project locally?">
+
 If you want to run the project locally:
 
 - You need both Android Studio and Xcode installed and configured on your computer.
 - Then, you can run the project using `npx expo run:android` or `npx expo run:ios` command.
 
 If a particular React Native Firebase module requires custom native configuration steps, you must add it as a `plugin` to [Expo config file](/workflow/configuration/). Then, to run the project locally, you will have to run the `npx expo prebuild --clean` command to apply the native changes before the `npx expo run` commands.
+
+</Collapsible>
 
 ### Next
 
