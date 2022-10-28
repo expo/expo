@@ -67,8 +67,6 @@ Only the second purpose applies with the new build system. All assets referenced
 
 ### Custom `"main"` entry point in **package.json** is not yet supported
 
-> Support for custom entry points is available in SDK 47 and later.
-
 If your app depends on a custom `"main"` entry point, you will need to remove that field from **package.json** and then create **index.js** in the root of your project and use [registerRootComponent](/versions/latest/sdk/register-root-component/) to register your root component. For example, if your app root component lives in **src/App.tsx**, your **index.js** should look like the following:
 
 ```js
@@ -77,6 +75,8 @@ import App from './src/App';
 
 registerRootComponent(App);
 ```
+
+Support for custom entry points is in progress and is coming soon.
 
 ### Monorepos may require additional setup
 
