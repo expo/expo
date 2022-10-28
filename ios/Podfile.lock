@@ -1540,7 +1540,7 @@ PODS:
     - ABI47_0_0React-jsi (= 0.70.4)
     - ABI47_0_0ReactCommon/turbomodule/core (= 0.70.4)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI47_0_0hermes-engine (0.70.3)
+  - ABI47_0_0hermes-engine (0.70.4)
   - ABI47_0_0lottie-react-native (5.1.4):
     - ABI47_0_0React-Core
     - lottie-ios (~> 3.4.0)
@@ -2304,7 +2304,7 @@ PODS:
     - AppAuth/Core (~> 1.6)
     - GTMSessionFetcher/Core (< 3.0, >= 1.5)
   - GTMSessionFetcher/Core (1.7.2)
-  - hermes-engine (0.70.3)
+  - hermes-engine (0.70.4)
   - JKBigInteger (0.0.6)
   - libevent (2.1.12)
   - lottie-ios (3.4.4)
@@ -4435,7 +4435,7 @@ SPEC CHECKSUMS:
   ABI47_0_0EXVideoThumbnails: cfd2fd09789eb41c37f188e0f39a0d0edcacc9aa
   ABI47_0_0FBLazyVector: 425abc0f1db842b768f448c10272a47030336622
   ABI47_0_0FBReactNativeSpec: f0f69a49ea14f6ea911e22090c78c3504381a7b3
-  ABI47_0_0hermes-engine: 6c792f43283abe46a1ec286f1301cef48c389019
+  ABI47_0_0hermes-engine: fcd2ccecde7447086996f7f2c6040f5d069f8faa
   ABI47_0_0lottie-react-native: 907512cfdae64cca54a2a83029f1e37ed8864f93
   ABI47_0_0RCTRequired: 5a847fa18a8856d35552072abe27642bd4ea8e71
   ABI47_0_0RCTTypeSafety: 9a9a5e49635caf26c3f3b76218a7aaeb6b1be681
@@ -4577,7 +4577,7 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
-  hermes-engine: bb344d89a0d14c2c91ad357480a79698bb80e186
+  hermes-engine: 3623325e0d0676a45fbc544d72c57dd79fce7446
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
