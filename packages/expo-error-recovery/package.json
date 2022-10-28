@@ -1,6 +1,6 @@
 {
   "name": "expo-error-recovery",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Utilities for helping you gracefully handle crashes due to fatal JavaScript errors.",
   "main": "build/ErrorRecovery.js",
   "types": "build/ErrorRecovery.d.ts",
