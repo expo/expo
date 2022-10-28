@@ -127,18 +127,18 @@ Learn once, bundle everywhere!
 
 Universal Expo Metro is designed to be fully universal, meaning any web bundling features should also work on native too. Because of this we make some breaking changes between the two bundler implementations, carefully check the difference if you're moving from Webpack to Metro.
 
-| Feature          | Metro                | Webpack                |
-| ---------------- | -------------------- | ---------------------- |
-| Start command    | `npx expo start`     | `npx expo start`       |
-| Bundle command   | `npx expo export`    | `npx expo export:web`  |
-| Output folder    | `dist/`              | `web-build/`           |
-| Static folder    | `public/`            | `web/`                 |
-| Config file      | `metro.config.js`    | `webpack.config.js`    |
-| Default config   | `@expo/metro-config` | `@expo/webpack-config` |
+| Feature          | Metro                            | Webpack                |
+|------------------|----------------------------------|------------------------|
+| Start command    | `npx expo start`                 | `npx expo start`       |
+| Bundle command   | `npx expo export`                | `npx expo export:web`  |
+| Output folder    | `dist/`                          | `web-build/`           |
+| Static folder    | `public/`                        | `web/`                 |
+| Config file      | `metro.config.js`                | `webpack.config.js`    |
+| Default config   | `@expo/metro-config`             | `@expo/webpack-config` |
 | Fast Refresh     | <PendingIcon /> (coming soon)    | <NoIcon />             |
-| Tree Shaking     | <NoIcon />           | <YesIcon />            |
-| CSS Handling     | <NoIcon />           | <YesIcon />            |
-| Asset Manifests  | <NoIcon />           | <YesIcon />            |
+| Tree Shaking     | <NoIcon />                       | <YesIcon />            |
+| CSS Handling     | <NoIcon />                       | <YesIcon />            |
+| Asset Manifests  | <NoIcon />                       | <YesIcon />            |
 | Bundle Splitting | <PendingIcon /> (pending native) | <YesIcon />            |
 
 Note that aliases, resolution, and other bundler features are now universal across platforms as well!
