@@ -108,7 +108,8 @@ export async function exportAppAsync(
           // @ts-expect-error: tolerable type mismatches: unused `readonly` (common in Metro) and `undefined` instead of `null`.
           bundle.assets,
           platform,
-          outputPath
+          outputPath,
+          undefined
         );
       })
     );
