@@ -59,9 +59,7 @@ async function prepareLocalUpdatesModule(repoRoot) {
   await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
 }
 
-async function initAsync(projectRoot, { repoRoot, runtimeVersion }) {
-  const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
-
+async function initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin }) {
   console.log('Creating expo app');
   const workingDir = path.dirname(projectRoot);
   const projectName = path.basename(projectRoot);
@@ -199,8 +197,7 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion }) {
   return projectRoot;
 }
 
-async function setupBasicAppAsync(projectRoot, repoRoot) {
-  const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
+async function setupBasicAppAsync(projectRoot, localCliBin) {
   // copy App.js from test fixtures
   const appJsSourcePath = path.resolve(__dirname, '..', 'fixtures', 'App.js');
   const appJsDestinationPath = path.resolve(projectRoot, 'App.js');
@@ -223,7 +220,7 @@ async function setupBasicAppAsync(projectRoot, repoRoot) {
   });
 }
 
-async function setupAssetsAppAsync(projectRoot) {
+async function setupAssetsAppAsync(projectRoot, localCliBin) {
   // copy App-assets.js from test fixtures
   const appJsSourcePath = path.resolve(__dirname, '..', 'fixtures', 'App-assets.js');
   const appJsDestinationPath = path.resolve(projectRoot, 'App.js');

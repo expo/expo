@@ -21,9 +21,6 @@ async function buildAsync(projectRoot, destinationFolder, fileSuffix) {
       'build',
     ],
     {
-      env: {
-        CI: '1',
-      },
       cwd: path.join(projectRoot, 'ios'),
     }
   );
