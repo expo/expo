@@ -4,13 +4,13 @@
 
 ### 🛠 Breaking changes
 
-- Removed deprecated Android `kotlin-android-extensions` plugin ([#19732](https://github.com/expo/expo/pull/19732) by [@josephyanks](https://github.com/josephyanks))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Removed deprecated Android `kotlin-android-extensions` plugin ([#19732](https://github.com/expo/expo/pull/19732) by [@josephyanks](https://github.com/josephyanks))
 
 ## 0.4.0 — 2022-10-25
 
