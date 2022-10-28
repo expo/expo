@@ -26,7 +26,7 @@
 /packages/expo-document-picker                  @barthap
 /packages/expo-error-recovery                   @lukmccall
 /packages/expo-face-detector                    @kudo
-/packages/expo-file-system                      @brentvatne @kudo @esamelson @ide @tsapeta
+/packages/expo-file-system                      @brentvatne @kudo @ide @tsapeta
 /packages/expo-firebase-core                    @brentvatne
 /packages/expo-firebase-analytics               @brentvatne
 /packages/expo-firebase-recaptcha               @brentvatne
