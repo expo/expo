@@ -28,6 +28,7 @@ export var UpdatesLogEntryCode;
     UpdatesLogEntryCode["UPDATE_ASSETS_NOT_AVAILABLE"] = "UpdateAssetsNotAvailable";
     UpdatesLogEntryCode["UPDATE_SERVER_UNREACHABLE"] = "UpdateServerUnreachable";
     UpdatesLogEntryCode["UPDATE_HAS_INVALID_SIGNATURE"] = "UpdateHasInvalidSignature";
+    UpdatesLogEntryCode["UPDATE_CODE_SIGNING_ERROR"] = "UpdateCodeSigningError";
     UpdatesLogEntryCode["UPDATE_FAILED_TO_LOAD"] = "UpdateFailedToLoad";
     UpdatesLogEntryCode["ASSETS_FAILED_TO_LOAD"] = "AssetsFailedToLoad";
     UpdatesLogEntryCode["JS_RUNTIME_ERROR"] = "JSRuntimeError";
