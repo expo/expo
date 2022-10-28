@@ -9,7 +9,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline} from '~/ui/components/Snippet';
 
-`Pedometer` from **`expo-sensors`** uses Core Motion on iOS and the system `hardware.Sensor` on Android to get the user's step count, and also allows you to subscribe to pedometer updates.
+`Pedometer` from **`expo-sensors`** uses the system `hardware.Sensor` on Android and Core Motion on iOS to get the user's step count, and also allows you to subscribe to pedometer updates.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -113,7 +113,3 @@ import { Pedometer } from 'expo-sensors';
 ```
 
 <APISection packageName="expo-pedometer" apiName="Pedometer" />
-
-## Standalone Applications
-
-You'll need to configure an Android OAuth client for your app on the Google Play console for it to work as a standalone application on the Android platform. See https://developers.google.com/fit/android/get-api-key

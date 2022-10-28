@@ -44,7 +44,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
   const Header = exposeInSidebar ? H2Nested : H4;
 
   const isSensorClass = name.endsWith('Sensor');
-  const className = isSensorClass ? name.replace('Sensor', '') : name;
+  const className = isSensorClass && name !== 'LightSensor' ? name.replace('Sensor', '') : name;
 
   const properties = children?.filter(isProp);
   const methods = children
