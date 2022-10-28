@@ -147,19 +147,34 @@ class ClipboardModule : Module() {
 
   private inner class ClipboardEventEmitter {
     private var isListening = true
+    private var timestamp = -1L
+    fun resumeListening() {
+      isListening = true
+    }
 
-    fun resumeListening() { isListening = true }
-    fun pauseListening() { isListening = false }
+    fun pauseListening() {
+      isListening = false
+    }
 
     fun attachListener() = maybeClipboardManager?.addPrimaryClipChangedListener(listener).ifNull {
       Log.e(TAG, "'CLIPBOARD_SERVICE' unavailable. Events won't be received")
     }
+
     fun detachListener() = maybeClipboardManager?.removePrimaryClipChangedListener(listener)
 
     private val listener = ClipboardManager.OnPrimaryClipChangedListener {
+      if (!appContext.hasActiveReactInstance) {
+        return@OnPrimaryClipChangedListener
+      }
+
       maybeClipboardManager.takeIf { isListening }
         ?.primaryClipDescription
         ?.let { clip ->
+          if (timestamp == clip.timestamp) {
+            return@OnPrimaryClipChangedListener
+          }
+          timestamp = clip.timestamp
+
           this@ClipboardModule.sendEvent(
             CLIPBOARD_CHANGED_EVENT_NAME,
             bundleOf(

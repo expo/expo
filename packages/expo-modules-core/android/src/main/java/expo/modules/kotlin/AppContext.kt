@@ -164,13 +164,15 @@ class AppContext(
    * A directory for storing user documents and other permanent files.
    */
   val persistentFilesDirectory: File
-    get() = appDirectories?.persistentFilesDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+    get() = appDirectories?.persistentFilesDirectory
+      ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
 
   /**
    * A directory for storing temporary files that can be removed at any time by the device's operating system.
    */
   val cacheDirectory: File
-    get() = appDirectories?.cacheDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+    get() = appDirectories?.cacheDirectory
+      ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
 
   /**
    * Provides access to the permissions manager from the legacy module registry
@@ -225,6 +227,12 @@ class AppContext(
    */
   val reactContext: Context?
     get() = reactContextHolder.get()
+
+  /**
+   * @return true if there is an non-null, alive react native instance
+   */
+  val hasActiveReactInstance: Boolean
+    get() = reactContextHolder.get()?.hasActiveReactInstance() ?: false
 
   /**
    * Provides access to the event emitter

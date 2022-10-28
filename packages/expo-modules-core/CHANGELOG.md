@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `AppContext.hasActiveReactInstance` on Android. ([#19723](https://github.com/expo/expo/pull/19723) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
