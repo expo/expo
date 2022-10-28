@@ -3,7 +3,7 @@
 /packages/expo-app-loader-provider              @tsapeta
 /packages/expo-apple-authentication             @tsapeta
 /packages/expo-application                      @ide
-/packages/expo-asset                            @tsapeta @esamelson @wschurman
+/packages/expo-asset                            @tsapeta @wschurman
 /packages/expo-av                               @barthap @kudo
 /packages/expo-background-fetch                 @tsapeta @kudo
 /packages/expo-barcode-scanner                  @lukmccall
@@ -18,10 +18,10 @@
 /packages/expo-constants                        @wschurman @esamelson @brentvatne
 /packages/expo-contacts                         @EvanBacon
 /packages/expo-crypto                           @EvanBacon
-/packages/expo-dev-client                       @lukmccall @esamelson @ajsmth
-/packages/expo-dev-launcher                     @lukmccall @esamelson @ajsmth
-/packages/expo-dev-menu                         @lukmccall @esamelson @ajsmth
-/packages/expo-dev-menu-interface               @lukmccall @esamelson @ajsmth
+/packages/expo-dev-client                       @lukmccall @ajsmth
+/packages/expo-dev-launcher                     @lukmccall @ajsmth
+/packages/expo-dev-menu                         @lukmccall @ajsmth
+/packages/expo-dev-menu-interface               @lukmccall @ajsmth
 /packages/expo-device                           @ide @tsapeta
 /packages/expo-document-picker                  @barthap
 /packages/expo-error-recovery                   @lukmccall @esamelson
@@ -68,12 +68,12 @@
 /packages/expo-status-bar                       @brentvatne
 /packages/expo-store-review                     @EvanBacon
 /packages/expo-stories                          @ajsmth
-/packages/expo-structured-headers               @esamelson
+/packages/expo-structured-headers               @douglowder
 /packages/expo-system-ui                        @EvanBacon
 /packages/expo-task-manager                     @tsapeta @bycedric
 /packages/expo-tracking-transparency            @tsapeta
-/packages/expo-updates                          @esamelson @wschurman @douglowder
-/packages/expo-updates-interface                @esamelson @wschurman @douglowder
+/packages/expo-updates                          @wschurman @douglowder
+/packages/expo-updates-interface                @wschurman @douglowder
 /packages/expo-video-thumbnails                 @tsapeta
 /packages/expo-web-browser                      @tsapeta @barthap
 /packages/expo-yarn-workspaces                  @ide
