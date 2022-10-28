@@ -20,11 +20,11 @@ class ViewEventDelegate<T>(
 
   operator fun getValue(thisRef: View, property: KProperty<*>): ViewEventCallback<T> {
     if (!isValidated) {
-      throw IllegalStateException("You have to export this property as a callback in the `ViewManager`.")
+      throw IllegalStateException("You have to export '${property.name}' property as a event in the `View` component")
     }
 
     val view = viewHolder.get()
-      ?: throw IllegalStateException("Can't send an event from the view that is deallocated.")
+      ?: throw IllegalStateException("Can't send the '${property.name}' event from the view that is deallocated")
     return ViewEvent(property.name, type, view, coalescingKey)
   }
 }
