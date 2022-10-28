@@ -18,10 +18,10 @@
 /packages/expo-constants                        @wschurman @brentvatne
 /packages/expo-contacts                         @EvanBacon
 /packages/expo-crypto                           @EvanBacon
-/packages/expo-dev-client                       @lukmccall @ajsmth
-/packages/expo-dev-launcher                     @lukmccall @ajsmth
-/packages/expo-dev-menu                         @lukmccall @ajsmth
-/packages/expo-dev-menu-interface               @lukmccall @ajsmth
+/packages/expo-dev-client                       @lukmccall @douglowder
+/packages/expo-dev-launcher                     @lukmccall @douglowder
+/packages/expo-dev-menu                         @lukmccall @douglowder
+/packages/expo-dev-menu-interface               @lukmccall @douglowder
 /packages/expo-device                           @ide @tsapeta
 /packages/expo-document-picker                  @barthap
 /packages/expo-error-recovery                   @lukmccall
@@ -67,7 +67,7 @@
 /packages/expo-standard-web-crypto              @EvanBacon
 /packages/expo-status-bar                       @brentvatne
 /packages/expo-store-review                     @EvanBacon
-/packages/expo-stories                          @ajsmth
+/packages/expo-stories                          @bycedric @EvanBacon
 /packages/expo-structured-headers               @douglowder
 /packages/expo-system-ui                        @EvanBacon
 /packages/expo-task-manager                     @tsapeta @bycedric
