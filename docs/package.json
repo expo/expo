@@ -1,6 +1,7 @@
 {
   "name": "expo-docs",
   "version": "46.0.0",
+  "betaVersion": "47.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,7 +18,7 @@
     "lint-links": "remark -u validate-links ./pages",
     "watch": "tsc --noEmit -w",
     "test": "yarn generate-static-resoures && node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
+    "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.cjs",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js"
   },
