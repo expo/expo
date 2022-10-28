@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.4.2 — 2022-10-28
+
+### 🛠 Breaking changes
+
 - Revert [#18381](https://github.com/expo/expo/pull/18381) (custom entry support).
 
 ### 🎉 New features
@@ -13,8 +23,6 @@
 ### 🐛 Bug fixes
 
 - Prevent extraneous `Found multiple AppDelegate file paths` warnings when using CLI commands with a multi-target iOS app. ([#18890](https://github.com/expo/expo/pull/18890) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 💡 Others
 
 ## 0.4.1 — 2022-10-27
 
