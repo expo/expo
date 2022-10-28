@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Revert [#18381](https://github.com/expo/expo/pull/18381) (custom entry support).
+
 ### 🎉 New features
 
 - Add `-p` to `npx expo export`. ([#19715](https://github.com/expo/expo/pull/19715) by [@EvanBacon](https://github.com/EvanBacon))
