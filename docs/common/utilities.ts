@@ -54,7 +54,7 @@ export const getUserFacingVersionString = (
   latestVersion?: string,
   betaVersion?: string
 ): string => {
-  const versionString = `SDK${version?.substring(1, 3)}`;
+  const versionString = `SDK ${version?.substring(1, 3)}`;
 
   if (version === 'latest') {
     return latestVersion ? `${getUserFacingVersionString(latestVersion)} (Latest)` : 'Latest';
