@@ -9242,77 +9242,6 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         </span>
       </a>
     </h3>
-    <blockquote
-      class="css-1xjn6jt-Callout"
-      data-testid="callout-container"
-    >
-      <div
-        class="css-ks2t0-Callout"
-      >
-        <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
-          role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
-        >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
-        </svg>
-      </div>
-      <div
-        class="css-19syq17-Callout"
-      >
-        
-
-        <p
-          class="css-6jxvia-P"
-          data-text="true"
-        >
-          <strong
-            class="css-1qx481h-B"
-          >
-            Note:
-          </strong>
-           
-          <code
-            class="inline css-ov7own-InlineCode"
-          >
-            bounds
-          </code>
-           and 
-          <code
-            class="inline css-ov7own-InlineCode"
-          >
-            cornerPoints
-          </code>
-           are not always available. On iOS, for 
-          <code
-            class="inline css-ov7own-InlineCode"
-          >
-            code39
-          </code>
-           and 
-          <code
-            class="inline css-ov7own-InlineCode"
-          >
-            pdf417
-          </code>
-          
-you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode.
-For some types, they will represent the area used by the scanner.
-        </p>
-        
-
-      </div>
-    </blockquote>
     <div
       class="css-rufzkc-Table"
     >
@@ -9354,12 +9283,6 @@ For some types, they will represent the area used by the scanner.
               >
                 bounds
               </strong>
-              <br />
-              <span
-                class="css-1g95u6x"
-              >
-                (optional)
-              </span>
             </td>
             <td
               class="css-1i3ovdz-Cell"
@@ -9387,6 +9310,21 @@ For some types, they will represent the area used by the scanner.
                   BarCodeBounds
                 </a>
                  object.
+
+                <code
+                  class="inline css-ov7own-InlineCode"
+                >
+                  bounds
+                </code>
+                 in some case will be representing an empty rectangle.
+Moreover, 
+                <code
+                  class="inline css-ov7own-InlineCode"
+                >
+                  bounds
+                </code>
+                 doesn't have to bound the whole barcode.
+For some types, they will represent the area used by the scanner.
               </span>
             </td>
           </tr>
@@ -9401,12 +9339,6 @@ For some types, they will represent the area used by the scanner.
               >
                 cornerPoints
               </strong>
-              <br />
-              <span
-                class="css-1g95u6x"
-              >
-                (optional)
-              </span>
             </td>
             <td
               class="css-1i3ovdz-Cell"
@@ -9428,6 +9360,26 @@ For some types, they will represent the area used by the scanner.
             >
               <span>
                 Corner points of the bounding box.
+
+                <code
+                  class="inline css-ov7own-InlineCode"
+                >
+                  cornerPoints
+                </code>
+                 is not always available and may be empty. On iOS, for 
+                <code
+                  class="inline css-ov7own-InlineCode"
+                >
+                  code39
+                </code>
+                 and 
+                <code
+                  class="inline css-ov7own-InlineCode"
+                >
+                  pdf417
+                </code>
+                
+you don't get this value.
               </span>
             </td>
           </tr>
