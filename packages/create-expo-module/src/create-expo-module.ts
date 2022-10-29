@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import fs from 'fs-extra';
+import { boolish } from 'getenv';
 import path from 'path';
 import prompts from 'prompts';
 
@@ -14,7 +15,11 @@ import { resolvePackageManager } from './resolvePackageManager';
 import { CommandOptions, SubstitutionData } from './types';
 import { newStep } from './utils';
 
+const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
+
+// Opt in to using beta versions
+const EXPO_BETA = boolish('EXPO_BETA', false);
 
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
@@ -116,6 +121,7 @@ async function getFilesAsync(root: string, dir: string | null = null): Promise<s
  * Asks NPM registry for the url to the tarball.
  */
 async function getNpmTarballUrl(packageName: string, version: string = 'latest'): Promise<string> {
+  debug(`Using module template ${chalk.bold(packageName)}@${chalk.bold(version)}`);
   const { stdout } = await spawnAsync('npm', ['view', `${packageName}@${version}`, 'dist.tarball']);
   return stdout.trim();
 }
@@ -125,7 +131,10 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
  */
 async function downloadPackageAsync(targetDir: string): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
-    const tarballUrl = await getNpmTarballUrl('expo-module-template');
+    const tarballUrl = await getNpmTarballUrl(
+      'expo-module-template',
+      EXPO_BETA ? 'next' : 'latest'
+    );
 
     await downloadTarball({
       url: tarballUrl,
