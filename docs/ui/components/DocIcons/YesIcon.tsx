@@ -1,5 +1,4 @@
 import { StatusSuccessIcon, theme } from '@expo/styleguide';
-import * as React from 'react';
 
 import { IconBase, DocIconProps } from './IconBase';
 
