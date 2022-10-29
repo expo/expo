@@ -209,7 +209,8 @@ async function setupBasicAppAsync(projectRoot, localCliBin) {
 
   // export update for test server to host
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync(localCliBin, ['export'], {
+  await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
+  //await spawnAsync(localCliBin, ['export'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
@@ -242,7 +243,8 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
 
   // export update for test server to host
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync(localCliBin, ['export'], {
+  await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
+  //await spawnAsync(localCliBin, ['export'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
