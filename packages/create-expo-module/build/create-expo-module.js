@@ -9,6 +9,7 @@ const commander_1 = require("commander");
 const download_tarball_1 = __importDefault(require("download-tarball"));
 const ejs_1 = __importDefault(require("ejs"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
+const getenv_1 = require("getenv");
 const path_1 = __importDefault(require("path"));
 const prompts_1 = __importDefault(require("prompts"));
 const createExampleApp_1 = require("./createExampleApp");
@@ -16,7 +17,10 @@ const packageManager_1 = require("./packageManager");
 const prompts_2 = require("./prompts");
 const resolvePackageManager_1 = require("./resolvePackageManager");
 const utils_1 = require("./utils");
+const debug = require('debug')('create-expo-module:main');
 const packageJson = require('../package.json');
+// Opt in to using beta versions
+const EXPO_BETA = (0, getenv_1.boolish)('EXPO_BETA', false);
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
 // Ignore some paths. Especially `package.json` as it is rendered
@@ -100,6 +104,7 @@ async function getFilesAsync(root, dir = null) {
  * Asks NPM registry for the url to the tarball.
  */
 async function getNpmTarballUrl(packageName, version = 'latest') {
+    debug(`Using module template ${chalk_1.default.bold(packageName)}@${chalk_1.default.bold(version)}`);
     const { stdout } = await (0, spawn_async_1.default)('npm', ['view', `${packageName}@${version}`, 'dist.tarball']);
     return stdout.trim();
 }
@@ -108,7 +113,7 @@ async function getNpmTarballUrl(packageName, version = 'latest') {
  */
 async function downloadPackageAsync(targetDir) {
     return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
-        const tarballUrl = await getNpmTarballUrl('expo-module-template');
+        const tarballUrl = await getNpmTarballUrl('expo-module-template', EXPO_BETA ? 'next' : 'latest');
         await (0, download_tarball_1.default)({
             url: tarballUrl,
             dir: targetDir,
