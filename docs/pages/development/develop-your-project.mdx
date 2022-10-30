@@ -5,6 +5,7 @@ title: Develop your project
 import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 Usually, creating a new native build from scratch takes long enough that you'll be tempted to switch tasks and lose your focus. However, with the development build installed on your device or an emulator/simulator, you won't have to wait for the native build process until you [change the underlying native code](#rebuild-a-development-build) that powers your app.
 
@@ -48,3 +49,11 @@ import 'expo-dev-client';
 ## Rebuild a development build
 
 If you add a library to your project that contains native code APIs, for example, [`expo-secure-store`](/versions/latest/sdk/securestore/), you will have to rebuild the development client. This is because the native code of the library is not included in the development client automatically when installing the library as a dependency on your project.
+
+## Next
+
+<BoxLink
+  title="Develop your project"
+  description="Learn about extending the capabilities of your development build with tools, workflows and extensions."
+  href="/development/development-workflows"
+/>
