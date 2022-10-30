@@ -86,12 +86,23 @@ Learn more about [Netlify](https://www.netlify.com/).
 
 ### Manual deployment with the Netlify CDN
 
-```sh
-npm install netlify-cli -g
-netlify deploy
-```
+1. Install the Netlify CLI by running `npm install netlify-cli -g`
 
-Choose `web-build` as the path to deploy.
+2. Build your Expo web app with `npx expo export:web` (SDK 45 and lower should use `expo build:web` via the legacy global Expo CLI).
+
+3. If your app uses routes you must configure `redirects` so the client has full control over the routing logic:
+
+   3.1. Run `cd web-build`
+
+   3.2. Create a `_redirects` file by running `echo "/* /index.html 200" > "\_redirects"`
+
+4. To deploy:
+
+   4.1. Run `netlify deploy`
+
+   4.2. Choose `web-build` as the publish directory
+
+   4.3. You should see a URL that you can use to view your project online.
 
 ### Continuous delivery
 
