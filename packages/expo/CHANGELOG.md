@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 47.0.0-beta.7 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
+
 ## 47.0.0-beta.6 — 2022-10-30
 
 _This version does not introduce any user-facing changes._
