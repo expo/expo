@@ -35,7 +35,7 @@
     "@types/xml2js": "^0.4.5"
   },
   "dependencies": {
-    "@expo/config": "7.0.2",
+    "@expo/config": "~7.0.2",
     "@expo/config-plugins": "~5.0.3",
     "@expo/config-types": "^47.0.0",
     "@expo/image-utils": "0.3.22",
