@@ -59,7 +59,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.14.0",
-    "@expo/cli": "0.4.4",
+    "@expo/cli": "0.4.5",
     "@expo/vector-icons": "^13.0.0",
     "@expo/config-plugins": "5.0.3",
     "@expo/config": "7.0.3",
