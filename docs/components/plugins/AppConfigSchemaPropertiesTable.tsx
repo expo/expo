@@ -197,7 +197,6 @@ const AppConfigProperty = ({
 
 const boxStyle = css({
   [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
-    fontSize: '90%',
     paddingTop: spacing[4],
   },
 });
