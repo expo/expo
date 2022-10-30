@@ -122,14 +122,14 @@ export function _getType({ enum: enm, type }: Partial<Property>) {
 }
 
 export function createDescription(propertyEntry: [string, Property]) {
-  const propertyValue = propertyEntry[1];
+  const { description, meta } = propertyEntry[1];
 
   let propertyDescription = ``;
-  if (propertyValue.description) {
-    propertyDescription += propertyValue.description;
+  if (description) {
+    propertyDescription += description;
   }
-  if (propertyValue.meta && propertyValue.meta.regexHuman) {
-    propertyDescription += `\n\n` + propertyValue.meta.regexHuman;
+  if (meta && meta.regexHuman) {
+    propertyDescription += `\n\n` + meta.regexHuman;
   }
 
   return propertyDescription;
@@ -142,7 +142,11 @@ const AppConfigSchemaPropertiesTable = ({ schema }: AppConfigSchemaProps) => {
   return (
     <div>
       {formattedSchema.map((formattedProperty, index) => (
-        <AppConfigProperty {...formattedProperty} index={index} nestingLevel={0} />
+        <AppConfigProperty
+          {...formattedProperty}
+          key={`${formattedProperty.name}-${index}`}
+          nestingLevel={0}
+        />
       ))}
     </div>
   );
@@ -158,9 +162,8 @@ const AppConfigProperty = ({
   nestingLevel,
   subproperties,
   parent,
-  index,
-}: FormattedProperty & { index: number; nestingLevel: number }) => (
-  <APIBox key={`${name}-${index}`} css={[boxStyle, nestedBoxStyle]}>
+}: FormattedProperty & { nestingLevel: number }) => (
+  <APIBox css={[boxStyle, nestedBoxStyle]}>
     <PropertyName name={name} nestingLevel={nestingLevel} />
     <CALLOUT theme="secondary">
       Type: <InlineCode>{type || 'undefined'}</InlineCode>
@@ -189,7 +192,11 @@ const AppConfigProperty = ({
     <div>
       {subproperties.length > 0 &&
         subproperties.map((formattedProperty, index) => (
-          <AppConfigProperty {...formattedProperty} index={index} nestingLevel={nestingLevel + 1} />
+          <AppConfigProperty
+            {...formattedProperty}
+            key={`${name}-${index}`}
+            nestingLevel={nestingLevel + 1}
+          />
         ))}
     </div>
   </APIBox>
