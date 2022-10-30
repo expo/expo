@@ -33,7 +33,17 @@
   "license": "MIT",
   "homepage": "https://github.com/expo/expo/tree/main/packages/html-elements",
   "jest": {
-    "preset": "expo-module-scripts/enzyme"
+    "projects": [
+      {
+        "preset": "jest-expo/ios"
+      },
+      {
+        "preset": "jest-expo/android"
+      },
+      {
+        "preset": "jest-expo/web"
+      }
+    ]
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"
