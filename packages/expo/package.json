@@ -61,6 +61,8 @@
     "@babel/runtime": "^7.14.0",
     "@expo/cli": "0.4.3",
     "@expo/vector-icons": "^13.0.0",
+    "@expo/config-plugins": "5.0.3",
+    "@expo/config": "7.0.2",
     "babel-preset-expo": "~9.2.1",
     "cross-spawn": "^6.0.5",
     "expo-application": "~5.0.1",
