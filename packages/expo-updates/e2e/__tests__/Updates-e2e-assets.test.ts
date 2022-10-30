@@ -106,9 +106,12 @@ describe('Asset deletion recovery', () => {
     expect(logEntries.length > 0).toBe(true);
     // There should be a message 'No update available' because of the other actions
     // that have been run already
+    // (this check will be reworked after some logging PRs go in)
+    /*
     expect(logEntries.map((entry) => entry.message)).toEqual(
       expect.arrayContaining([expect.stringContaining('No update available')])
     );
+     */
   });
 
   it('embedded assets deleted from internal storage should be re-copied from a new embedded update', async () => {

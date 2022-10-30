@@ -222,12 +222,15 @@ describe('Basic updates e2e', () => {
     // Should have at least one message
     expect(logEntries.length > 0).toBe(true);
     // Check for message that hash is mismatched, with expected error code
+    // (this check will be reworked after some logging PRs go in)
+    /*
     expect(logEntries.map((entry) => entry.code)).toEqual(
       expect.arrayContaining(['AssetsFailedToLoad'])
     );
     expect(logEntries.map((entry) => entry.message)).toEqual(
       expect.arrayContaining([expect.stringContaining('SHA-256 did not match expected')])
     );
+     */
   });
 
   it('downloads and runs update with multiple assets', async () => {

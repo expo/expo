@@ -35,15 +35,18 @@ const runtimeVersion = '1.0.0';
       'Missing one or more environment variables; see instructions in e2e/__tests__/setup/index.js'
     );
   }
-  const projectRoot = await initAsync(workingDir, repoRoot, runtimeVersion);
+  const projectRoot = path.join(workingDir, 'updates-e2e');
+  const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
+
+  await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin });
 
   // Order is somewhat important here as the `basic` and `assets` apps are created by modifying the
   // same project (not creating a new one).
-  await setupBasicAppAsync(projectRoot);
+  await setupBasicAppAsync(projectRoot, localCliBin);
   await buildAndroidAsync(projectRoot, artifactsDest, 'basic');
   await buildIosAsync(projectRoot, artifactsDest, 'basic');
 
-  await setupAssetsAppAsync(projectRoot);
+  await setupAssetsAppAsync(projectRoot, localCliBin);
   await buildAndroidAsync(projectRoot, artifactsDest, 'assets');
   await buildIosAsync(projectRoot, artifactsDest, 'assets');
 
