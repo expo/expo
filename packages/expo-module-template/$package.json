@@ -28,8 +28,8 @@
   "homepage": "<%- repo %>#readme",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^3.0.1",
-    "expo-modules-core": "^0.13.2"
+    "expo-module-scripts": "^3.0.2",
+    "expo-modules-core": "^0.13.3"
   },
   "peerDependencies": {
     "expo": "*",
