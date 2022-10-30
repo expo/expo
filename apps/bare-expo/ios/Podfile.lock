@@ -26,7 +26,7 @@ PODS:
     - ExpoModulesCore
   - EXCamera (13.0.0):
     - ExpoModulesCore
-  - EXConstants (14.0.1):
+  - EXConstants (14.0.2):
     - ExpoModulesCore
   - EXContacts (11.0.1):
     - ExpoModulesCore
@@ -77,7 +77,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.0.0):
     - ExpoModulesCore
-  - Expo (47.0.0-beta.5):
+  - Expo (47.0.0-beta.6):
     - ExpoModulesCore
   - expo-dev-client (2.0.0):
     - EXManifests
@@ -217,7 +217,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (11.0.0):
     - ExpoModulesCore
-  - EXSplashScreen (0.17.2):
+  - EXSplashScreen (0.17.3):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (11.0.0):
@@ -1235,7 +1235,7 @@ SPEC CHECKSUMS:
   EXBrightness: 597fa022c000754f57a3b690fe052746861b9ac4
   EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
   EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
-  EXConstants: 0c074fd13db73c566fdbda0b2e9cd59ed495dde6
+  EXConstants: 3c86653c422dd77e40d10cbbabb3025003977415
   EXContacts: ef197934926d31c2a58092e081ca9e7c402f13fd
   EXDevice: 734a55d8935ea8e075d12df1919a0497153bf55c
   EXDocumentPicker: 067af3535841bd1298d772c0eaa6d262ba9d38a4
@@ -1256,7 +1256,7 @@ SPEC CHECKSUMS:
   EXNetwork: c16feb0dc85dacaf11fef55721e0b8ead2a8038f
   EXNotifications: 2bda232eb900aa6d602e40cad363879ae827d672
   EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
-  Expo: 07b1802226b0a4e6d2a873facc3d703f4e918010
+  Expo: 5a8e74b20cf87f5aa69f535d97bf0facfd8cc42e
   expo-dev-client: d703087f68db9f3540a2346c077945976d8c97b6
   expo-dev-launcher: 4b79cc4ecc33f134a416db3f5368ce33c80bf874
   expo-dev-menu: 2542485cf601d1e17cf98a72262ac802a2fce198
@@ -1287,7 +1287,7 @@ SPEC CHECKSUMS:
   EXSharing: e4c5ebc5b36828f1e0dff1415b2b28b23dc770b8
   EXSMS: 9b0da8ca484165b7f1ebbd5cfedd670b5abf87fd
   EXSpeech: b1e02f7d9d4e9731133da25ee4b26cc0740707ed
-  EXSplashScreen: 5c2d78fde1191a5fe7dc0b914282e04584bd40cc
+  EXSplashScreen: 20052670daff7650fa01140a178d0af1a914584b
   EXSQLite: 13c91c389b3c6241ddcf5c47eaa43289721193fe
   EXStructuredHeaders: 9cc9881a24e2ae5cd2225e4d752208b4dc9fcb2e
   EXTaskManager: 0afcc6fd813dec5dee98aa5ec4f22c2a840dd4a7
@@ -1360,7 +1360,7 @@ SPEC CHECKSUMS:
   RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
   RNDateTimePicker: 3f32aa2247836c12618d346113e5e82ea60ddd9c
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
-  RNReanimated: 593c667bdcb9aa41d3701768aa5ab2e7d3828693
+  RNReanimated: f655ed50cad3a70b03bbaa1c5035aa1217f65dd5
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
