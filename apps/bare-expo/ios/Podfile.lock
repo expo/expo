@@ -8,7 +8,7 @@ PODS:
     - ExpoModulesCore
   - EXApplication (5.0.1):
     - ExpoModulesCore
-  - EXAV (13.0.0):
+  - EXAV (13.0.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (11.0.1):
@@ -77,7 +77,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.0.0):
     - ExpoModulesCore
-  - Expo (47.0.0-beta.3):
+  - Expo (47.0.0-beta.5):
     - ExpoModulesCore
   - expo-dev-client (2.0.0):
     - EXManifests
@@ -162,7 +162,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCellular (5.0.1):
     - ExpoModulesCore
-  - ExpoClipboard (4.0.0):
+  - ExpoClipboard (4.0.1):
     - ExpoModulesCore
   - ExpoCrypto (12.0.0):
     - ExpoModulesCore
@@ -187,7 +187,7 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.0.0):
     - ExpoModulesCore
-  - ExpoModulesCore (0.13.2):
+  - ExpoModulesCore (0.13.3):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoRandom (13.0.0):
@@ -1228,7 +1228,7 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 027807bbae8d9406c7ea60c718e97534186756ac
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
-  EXAV: 3002fcf092ad23fa905169373de4926e0d5a1e94
+  EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
   EXBarCodeScanner: 25f8a6a43c817a94afe54d07a1b9fe25550ea0fe
   EXBlur: 9edea8b6f11ef7384f919927add644cd6ac07fcf
@@ -1256,14 +1256,14 @@ SPEC CHECKSUMS:
   EXNetwork: c16feb0dc85dacaf11fef55721e0b8ead2a8038f
   EXNotifications: 2bda232eb900aa6d602e40cad363879ae827d672
   EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
-  Expo: 7943741d546f0101bd344344038ad4324daaa380
+  Expo: 07b1802226b0a4e6d2a873facc3d703f4e918010
   expo-dev-client: d703087f68db9f3540a2346c077945976d8c97b6
   expo-dev-launcher: 4b79cc4ecc33f134a416db3f5368ce33c80bf874
   expo-dev-menu: 2542485cf601d1e17cf98a72262ac802a2fce198
   expo-dev-menu-interface: 45581093393dacd51ce5e7f641cf9ed5064a2e3f
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
-  ExpoClipboard: 8830cadcbe71882ab70bc43f383b0e0c5235effe
+  ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
   ExpoHaptics: e15e7ae352286c88f42531c269007960f4c302b0
   ExpoImage: 219eb2d8b6952861c7d351c5dd86d45b0584be08
@@ -1273,7 +1273,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: 772f7ee5ba2e8011c15680c1ec09caa19bfc07a7
   ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
   ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
-  ExpoModulesCore: f422ba8448aa2fe08559afc2b5748f169629f66c
+  ExpoModulesCore: 1897e20cc253efa3a79648ecafcb5b172592b7e4
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
   ExpoStoreReview: ff6d631f2949eb7e4b2d14146ef6af25a16d770d
   ExpoSystemUI: c844dec5e49e677bcd6bfe15cc305b02127b1124
@@ -1360,7 +1360,7 @@ SPEC CHECKSUMS:
   RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
   RNDateTimePicker: 3f32aa2247836c12618d346113e5e82ea60ddd9c
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
-  RNReanimated: f655ed50cad3a70b03bbaa1c5035aa1217f65dd5
+  RNReanimated: 593c667bdcb9aa41d3701768aa5ab2e7d3828693
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
