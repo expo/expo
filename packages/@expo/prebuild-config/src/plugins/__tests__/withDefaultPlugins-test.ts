@@ -153,7 +153,7 @@ function getLargeConfig(): ExportedConfig {
         'android.permission.ACCESS_FINE_LOCATION',
       ],
       permissions: [
-        'android.permission.CAMERA',
+        'CAMERA',
         'com.sec.android.provider.badge.permission.WRITE',
         'android.permission.RECORD_AUDIO',
       ],
