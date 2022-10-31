@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Display the debug option more prominently in the UI.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
