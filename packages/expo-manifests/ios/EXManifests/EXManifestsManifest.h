@@ -73,7 +73,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)iosSplashImageUrl;
 - (nullable NSString *)iosSplashImageResizeMode;
 - (nullable NSString *)iosGoogleServicesFile;
-- (nullable BOOL *)supportsRTL;
 
 # pragma mark - helper methods
 
