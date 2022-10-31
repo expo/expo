@@ -6,51 +6,38 @@ import { render, getByTestId } from '@testing-library/react';
 import React from 'react';
 
 import { LinearGradient } from '../LinearGradient';
+import { getLinearGradientBackgroundImage } from '../NativeLinearGradient.web';
 
-it(`renders a multi-color gradient background with alpha`, () => {
+it(`renders`, () => {
   const colors = ['cyan', '#ff00ff', 'rgba(0,0,0,0)', 'rgba(0,255,255,0.5)'];
   const component = render(<LinearGradient colors={colors} testID="gradient" />);
   const view = getByTestId(component.container, 'gradient');
 
-  // TODO: figure out how to test this - not sure what the right way is to read
-  // style properties when the styles are compiled into a css class as seen below
   expect(view).toMatchInlineSnapshot(`
     <div
       class="css-view-175oi2r"
       data-testid="gradient"
     />
   `);
-
-  // const backgroundImage = view.style['backgroundImage'];
-
-  // // Ensure the correct number of colors are present
-  // expect((backgroundImage.match(/rgba/g) || []).length).toBe(colors.length);
-
-  // // Match colors
-  // expect(backgroundImage).toMatchSnapshot();
 });
 
-it(`renders a complex gradient with angles and locations`, () => {
-  const component = render(
-    <LinearGradient
-      testID="gradient"
-      colors={['red', 'rgba(0,255,255,0)']}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      locations={[0.5, 1]}
-    />
-  );
+it(`computes the correct gradient background image for a simple set of props`, () => {
+  const colors = ['cyan', '#ff00ff', 'rgba(0,0,0,0)', 'rgba(0,255,255,0.5)'];
+  const backgroundImage = getLinearGradientBackgroundImage(colors);
 
-  const view = getByTestId(component.container, 'gradient');
+  // // Ensure the correct number of colors are present
+  expect((backgroundImage.match(/rgba/g) || []).length).toBe(colors.length);
 
-  // TODO: figure out how to test this - not sure what the right way is to read
-  // style properties when the styles are compiled into a css class as seen below
-  expect(view).toMatchInlineSnapshot(`
-    <div
-      class="css-view-175oi2r"
-      data-testid="gradient"
-    />
-  `);
+  // // Match colors
+  expect(backgroundImage).toMatchSnapshot();
+});
 
-  // expect(getStyleProp(component.find('View'), 'backgroundImage')).toMatchSnapshot();
+it(`computes the correct gradient background image for a complex set of props`, () => {
+  const colors = ['red', 'rgba(0,255,255,0)'];
+  const startPoint: [number, number] = [0, 0];
+  const endPoint: [number, number] = [1, 1];
+  const locations = [0.5, 1];
+  const backgroundImage = getLinearGradientBackgroundImage(colors, locations, startPoint, endPoint);
+
+  expect(backgroundImage).toMatchSnapshot();
 });
