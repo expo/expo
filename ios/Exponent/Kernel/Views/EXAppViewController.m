@@ -270,12 +270,17 @@ NS_ASSUME_NONNULL_BEGIN
   [_appRecord.appLoader requestFromCache];
 }
 
+- (bool)_readSupportsRTLFromManifest:(EXManifestsManifest *)manifest
+{
+  return [[[[manifest rawManifestJSON] valueForKey:@"extra"] valueForKey: @"supportsRTL"] boolValue];
+}
+
 - (void)appStateDidBecomeActive
 {
   if (_isHomeApp) {
     [EXTextDirectionController setSupportsRTL:false];
   } else if(_appRecord.appLoader.manifest != nil) {
-    [EXTextDirectionController setSupportsRTL:_appRecord.appLoader.manifest.supportsRTL];
+    [EXTextDirectionController setSupportsRTL:[self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest]];
   }
   dispatch_async(dispatch_get_main_queue(), ^{
     // Reset the root view background color and window color if we switch between Expo home and project
@@ -479,7 +484,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   if (!_isHomeApp) {
-    [EXTextDirectionController setSupportsRTL:_appRecord.appLoader.manifest.supportsRTL];
+    [EXTextDirectionController setSupportsRTL:[self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest]];
   }
   [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {

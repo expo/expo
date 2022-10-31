@@ -20,7 +20,10 @@ class ExperienceRTLManager {
     }
 
     fun setSupportsRTLFromManifest(context: Context, manifest: Manifest) {
-      setSupportsRTL(context, manifest.getSupportsRTL() ?: false)
+      setSupportsRTL(
+        context,
+        (manifest.getExpoClientConfigRootObject()?.getJSONObject("extra")?.getBoolean("supportsRTL") ?: false)
+      )
     }
   }
 }

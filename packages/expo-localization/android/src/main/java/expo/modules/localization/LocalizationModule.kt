@@ -23,7 +23,6 @@ import java.util.*
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
 private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
 
-
 class LocalizationModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoLocalization")
@@ -45,18 +44,18 @@ class LocalizationModule : Module() {
     }
 
     OnCreate {
-      if(appContext.reactContext != null) setRTLFromStringResources(appContext.reactContext!!)
+      if (appContext.reactContext != null) setRTLFromStringResources(appContext.reactContext!!)
     }
   }
 
   private fun setRTLFromStringResources(context: Context) {
     // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
     // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
-    val supportsRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_supportsRTL);
-    if(supportsRTL != "true" && supportsRTL != "false") return;
+    val supportsRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_supportsRTL)
+    if (supportsRTL != "true" && supportsRTL != "false") return
     val editor: SharedPreferences.Editor =
       context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit()
-    editor.putBoolean(KEY_FOR_PREFS_ALLOWRTL, allowRTL == "true")
+    editor.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
     editor.apply()
   }
 

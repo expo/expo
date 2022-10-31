@@ -305,14 +305,4 @@
   return nil;
 }
 
-- (BOOL)supportsRTL
-{
-  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
-  if (!expoClientConfig) {
-    return nil;
-  }
-  NSNumber *enabledNumber = [expoClientConfig nullableNumberForKey:@"supportsRTL"];
-  return enabledNumber != nil && [enabledNumber boolValue];
-}
-
 @end

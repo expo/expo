@@ -113,11 +113,6 @@ abstract class Manifest(protected val json: JSONObject) {
     return expoClientConfig.getNullable("name")
   }
 
-  fun getSupportsRTL(): Boolean? {
-    val expoClientConfig = getExpoClientConfigRootObject() ?: return null
-    return expoClientConfig.getNullable("supportsRTL")
-  }
-
   fun getVersion(): String? {
     val expoClientConfig = getExpoClientConfigRootObject() ?: return null
     return expoClientConfig.getNullable("version")
