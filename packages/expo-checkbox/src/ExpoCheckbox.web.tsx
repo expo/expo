@@ -42,7 +42,8 @@ const ExpoCheckbox: CheckboxComponent = (props) => {
   );
 
   const nativeControl = createElement('input', {
-    accessibilitystate: { disabled, checked: value },
+    accessibilityChecked: value,
+    accessibilityDisabled: disabled,
     checked: value,
     disabled,
     onChange: handleChange,

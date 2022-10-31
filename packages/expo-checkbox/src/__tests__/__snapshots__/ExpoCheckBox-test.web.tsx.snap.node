@@ -7,7 +7,7 @@ Array [
     data-testid="checkbox"
   >
     <input
-      accessibilitystate="[object Object]"
+      aria-checked="true"
       checked=""
       class="r-WebkitAppearance-n1uzsy r-bottom-1p0dtai r-height-1pi2tsx r-left-1d2f490 r-margin-crgep1 r-padding-t60dpp r-position-u8s1d r-right-zchlnj r-top-ipm5af r-width-13qz1uu r-cursor-1ei5mc7"
       type="checkbox"
