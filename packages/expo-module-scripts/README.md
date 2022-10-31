@@ -156,15 +156,7 @@ The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/pac
 }
 ```
 
-**For unit testing component-based modules:**
-
-```json
-{
-  "jest": {
-    "preset": "expo-module-scripts/enzyme"
-  }
-}
-```
+**For unit testing component-based modules** use @testing-library/react and @testing-library/react-native.
 
 ### 📝 LICENSE
 

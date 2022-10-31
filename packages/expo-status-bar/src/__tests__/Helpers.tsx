@@ -1,4 +1,4 @@
-import { mount } from 'enzyme';
+import { render } from '@testing-library/react-native';
 import { Appearance, ColorSchemeName } from 'react-native';
 
 export function mockProperty(obj, propertyName, mock, fn: any) {
@@ -22,7 +22,9 @@ export function mockAppearance(colorScheme: ColorSchemeName, fn: any) {
 }
 
 export function renderedPropValue(element: any, prop: string) {
-  const result = mount(element);
-
-  return result.children().first().props()[prop];
+  const result = render(element);
+  // @ts-ignore: brentvatne: I'm not sure how else to read the props off of a
+  // component that renders null in testing-library, so I'm using this fairly
+  // brittle internal API.
+  return result.container._fiber.return.child.child.pendingProps[prop];
 }

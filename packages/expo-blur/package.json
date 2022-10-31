@@ -15,7 +15,7 @@
     "expo-module": "expo-module"
   },
   "jest": {
-    "preset": "expo-module-scripts/enzyme"
+    "preset": "expo-module-scripts"
   },
   "keywords": [
     "react-native",
@@ -35,6 +35,9 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/blur-view/",
   "dependencies": {},
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-native": "^11.3.0",
     "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {

@@ -20,7 +20,7 @@
     "gradient"
   ],
   "jest": {
-    "preset": "expo-module-scripts/enzyme"
+    "preset": "expo-module-scripts"
   },
   "repository": {
     "type": "git",
@@ -34,6 +34,9 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/linear-gradient/",
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-native": "^11.3.0",
     "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {

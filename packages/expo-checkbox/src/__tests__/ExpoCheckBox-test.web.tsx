@@ -1,33 +1,36 @@
-import { mount } from 'enzyme';
+/**
+ * @jest-environment jsdom
+ */
+
+import { render } from '@testing-library/react';
 import React from 'react';
 
 import Checkbox from '../Checkbox';
 
 describe('Checkbox', () => {
-  it('renders content matching snapshot', () => {
-    const wrapper = mount(<Checkbox value color="#4630EB" />);
-    expect(wrapper).toMatchSnapshot();
+  it('renders content matching snapshot', async () => {
+    const wrapper = render(<Checkbox value color="#4630EB" testID="checkbox" />);
+    const view = await wrapper.findAllByTestId('checkbox');
+    expect(view).toMatchSnapshot();
   });
 
-  it('renders a native checkbox', () => {
-    const wrapper = mount(<Checkbox color="#4630EB" />);
-    const checkbox = wrapper.find('input').first();
-
-    expect(checkbox).toBeDefined();
-    expect(checkbox.props()).toMatchObject({ type: 'checkbox' });
+  it('renders a native checkbox', async () => {
+    const wrapper = render(<Checkbox color="#4630EB" testID="checkbox" />);
+    expect(await wrapper.findAllByRole('checkbox')).toHaveLength(1);
   });
 
   it('handles checkbox events', async () => {
     const onChange = jest.fn();
     const onValueChange = jest.fn();
+    const checked = true;
 
-    const wrapper = mount(<Checkbox value onChange={onChange} onValueChange={onValueChange} />);
-    const input = wrapper.find('input').first();
-
-    // this will only trigger a change, with the current value (true)
-    input.simulate('change');
+    const wrapper = render(
+      <Checkbox value={checked} onChange={onChange} onValueChange={onValueChange} />
+    );
+    const checkbox = await wrapper.findByRole('checkbox');
+    checkbox.click();
 
     expect(onChange).toBeCalledWith(expect.any(Object));
-    expect(onValueChange).toBeCalledWith(true);
+    expect(onValueChange).toBeCalledWith(!checked);
   });
 });

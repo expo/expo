@@ -27,7 +27,8 @@ const ExpoCheckbox = (props) => {
             value && disabled && styles.fakeControlCheckedAndDisabled,
         ] }));
     const nativeControl = createElement('input', {
-        accessibilityState: { disabled, checked: value },
+        accessibilityChecked: value,
+        accessibilityDisabled: disabled,
         checked: value,
         disabled,
         onChange: handleChange,
