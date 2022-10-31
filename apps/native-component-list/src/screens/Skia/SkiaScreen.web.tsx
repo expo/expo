@@ -1,4 +1,5 @@
-import { WithSkiaWeb } from '@shopify/react-native-skia/src/web';
+// @ts-ignore
+import { WithSkiaWeb } from '@shopify/react-native-skia/lib/module/web';
 import { version as CanvasKitVersion } from 'canvaskit-wasm/package.json';
 import { Text } from 'react-native';
 
