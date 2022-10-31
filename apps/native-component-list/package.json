@@ -55,7 +55,7 @@
     "@react-navigation/stack": "~6.3.2",
     "@react-navigation/elements": "~1.3.6",
     "@shopify/flash-list": "1.3.1",
-    "@shopify/react-native-skia": "0.1.155",
+    "@shopify/react-native-skia": "0.1.157",
     "@use-expo/permissions": "^2.0.0",
     "date-format": "^2.0.0",
     "deep-object-diff": "^1.1.0",
