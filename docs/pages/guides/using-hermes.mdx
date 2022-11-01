@@ -12,11 +12,18 @@ import { Terminal } from '~/ui/components/Snippet';
 
 A limitation with JavaScriptCore is that the debugger does not work with modules built on top of [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91). If your app uses [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2, for example, [remote JS debugging will not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations). Hermes makes it possible to debug your app even when using JSI modules.
 
+## Support
+
+The Hermes engine is fully supported across all Expo tooling. See the table below to check if your project is using a compatible version:
+
+| Platform | Expo Go | [Development Builds](/development/introduction.mdx) |
+| -------- | ------- | --------------------------------------------------- |
+| Android  | SDK 42  | SDK 42                                              |
+| iOS      | SDK 47  | SDK 43                                              |
+
 ## Android setup
 
-> Hermes for Android is supported from SDK 42 and above in Expo Go, [development builds](/development/introduction.mdx) using `expo-dev-client` and standalone apps built with EAS Build. For bare apps created before SDK 42, [follow these instructions to update your project configuration](https://expo.fyi/hermes-android-config).
-
-To get started, open your **app.json** and add `jsEngine` field:
+To get started, open your **app.json** and add the `jsEngine` field:
 
 {/* prettier-ignore */}
 ```js
@@ -29,11 +36,9 @@ To get started, open your **app.json** and add `jsEngine` field:
 }
 ```
 
-Now you can build an APK or AAB through `eas build` and your app will run with Hermes instead of JavaScriptCore.
+Development builds will need to be recompiled with `eas build`.
 
 ## iOS setup
-
-> Hermes for iOS is supported from SDK 43 and above in [development builds](/development/introduction.mdx) using `expo-dev-client` and standalone apps built with EAS Build. Hermes is not supported in Expo Go for iOS. For bare apps created before SDK 43, [follow these instructions to update your project configuration](https://expo.fyi/hermes-ios-config).
 
 To get started, open your **app.json** and add `jsEngine` field:
 
@@ -48,7 +53,7 @@ To get started, open your **app.json** and add `jsEngine` field:
 }
 ```
 
-Now you can build your app through `eas build` and your app will run with Hermes instead of JavaScriptCore.
+Development builds will need to be recompiled with `eas build`.
 
 <Collapsible summary="Are you using an M1 Mac?">
 
