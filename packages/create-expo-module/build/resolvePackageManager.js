@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resolvePackageManager = void 0;
+exports.formatRunCommand = exports.resolvePackageManager = void 0;
 const child_process_1 = require("child_process");
 /** Determine which package manager to use for installing dependencies based on how the process was started. */
 function resolvePackageManager() {
@@ -33,4 +33,16 @@ function isPackageManagerAvailable(manager) {
     catch { }
     return false;
 }
+function formatRunCommand(manager, cmd) {
+    switch (manager) {
+        case 'pnpm':
+            return `pnpm run ${cmd}`;
+        case 'yarn':
+            return `yarn ${cmd}`;
+        case 'npm':
+        default:
+            return `npm run ${cmd}`;
+    }
+}
+exports.formatRunCommand = formatRunCommand;
 //# sourceMappingURL=resolvePackageManager.js.map

@@ -32,3 +32,15 @@ function isPackageManagerAvailable(manager: PackageManagerName): boolean {
   } catch {}
   return false;
 }
+
+export function formatRunCommand(manager: PackageManagerName, cmd: string) {
+  switch (manager) {
+    case 'pnpm':
+      return `pnpm run ${cmd}`;
+    case 'yarn':
+      return `yarn ${cmd}`;
+    case 'npm':
+    default:
+      return `npm run ${cmd}`;
+  }
+}
