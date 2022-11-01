@@ -14,6 +14,10 @@ def reactNativeFilePath = ["node", "--print", "require.resolve('react-native/pac
 def inputFile = new File(reactNativeFilePath)
 def json = new JsonSlurper().parseText(inputFile.text)
 def reactNativeVersion = json.version as String
+if (reactNativeVersion.startsWith('0.0.0-')) {
+  // react-native nightly build published as `0.0.0-20221002-2027-2319f75c8` form, but its semantic is latest
+  reactNativeVersion = '9999.9999.9999'
+}
 def (major, minor, patch) = reactNativeVersion.tokenize('.')
 
 def engine = "jsc"
