@@ -205,6 +205,11 @@ async function askForSubstitutionDataAsync(slug: string): Promise<SubstitutionDa
     repo,
   } = await prompts(promptQueries, { onCancel });
 
+  const reactNativeVersion = await getReactNativeVersionAsync();
+  debug(
+    `Installing ${chalk.bold('react-native')}@${chalk.bold(reactNativeVersion)} as devDependencies`
+  );
+
   return {
     project: {
       slug,
@@ -216,6 +221,7 @@ async function askForSubstitutionDataAsync(slug: string): Promise<SubstitutionDa
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
     repo,
+    reactNativeVersion,
   };
 }
 
@@ -244,6 +250,25 @@ async function confirmTargetDirAsync(targetDir: string): Promise<void> {
   if (!shouldContinue) {
     process.exit(0);
   }
+}
+
+/**
+ * Get the react-native version for devDependencies
+ */
+async function getReactNativeVersionAsync() {
+  const version = EXPO_BETA ? 'next' : 'latest';
+  const { stdout } = await spawnAsync('npm', [
+    'view',
+    '--json',
+    `expo@${version}`,
+    'devDependencies',
+  ]);
+  const devDependencies = JSON.parse(stdout.trim());
+  const reactNativeVersion = devDependencies['react-native'];
+  if (!reactNativeVersion) {
+    throw new Error(`Cannot get react-native devDependencies from expo@${version}`);
+  }
+  return reactNativeVersion;
 }
 
 const program = new Command();

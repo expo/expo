@@ -25,6 +25,7 @@ export type SubstitutionData = {
   author: string;
   license: string;
   repo: string;
+  reactNativeVersion: string;
 };
 
 export type CustomPromptObject = PromptObject & {
