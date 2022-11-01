@@ -23,11 +23,12 @@ def getRNVersion() {
   def coreVersion = version.split("-")[0]
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
-  return versionToNumber(
-      major,
-      minor,
-      patch
-  )
+  def versionNumber = versionToNumber(major, minor, patch)
+  if (versionNumber == versionToNumber(0, 0, 0)) {
+    // react-native nightly build published as `0.0.0-20221002-2027-2319f75c8` form, but its semantic is latest
+    return versionToNumber(9999, 9999, 9999)
+  }
+  return versionNumber
 }
 
 ensureDependeciesWereEvaluated(project)
