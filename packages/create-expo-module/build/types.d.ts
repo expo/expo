@@ -23,7 +23,6 @@ export declare type SubstitutionData = {
     author: string;
     license: string;
     repo: string;
-    reactNativeVersion: string;
 };
 export declare type CustomPromptObject = PromptObject & {
     name: string;

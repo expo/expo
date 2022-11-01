@@ -29,8 +29,7 @@
   "dependencies": {},
   "devDependencies": {
     "expo-module-scripts": "^3.0.2",
-    "expo-modules-core": "^0.13.3",
-    "react-native": "<%- reactNativeVersion %>"
+    "expo-modules-core": "^0.13.3"
   },
   "peerDependencies": {
     "expo": "*",
