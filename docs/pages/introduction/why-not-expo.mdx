@@ -5,8 +5,9 @@ sidebar_title: Limitations
 
 import { InlineCode } from '~/components/base/code';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { BuildIcon, EasMetadataIcon, UpdateIcon } from '@expo/styleguide';
 
-We believe Expo tools are a great option for anyone looking to create amazing cross-platform apps quickly. Nonetheless, everyone's project is unique, and there may be reasons Expo is not the right choice for what you're building. Read on for some reasons why you may _not_ want to use Expo tools.
+We believe Expo tools are a great option for anyone looking to create amazing cross-platform apps quickly. Nonetheless, everyone's project is unique, and there may be reasons Expo is not the right choice for what you're building. Read on for some reasons why you may **not** want to use Expo tools.
 
 ## EAS
 
@@ -16,6 +17,21 @@ For more information on what current limitations exist with EAS, see the followi
   title="EAS Build"
   description="EAS Build is designed to work for any React Native project, whether or not you also use Expo Prebuild or manage your own native files. In some situations, you may need to change your project configuration, or it may be incompatible with your app. Learn more."
   href="/build-reference/limitations/"
+  Icon={BuildIcon}
+/>
+
+<BoxLink
+  title="EAS Update"
+  description="EAS Update is a hosted service that allows you to serve bug fixes and pushing quick updates to the app stores. There are some known issues you may encounter using it. Learn more."
+  href="/eas-update/known-issues/"
+  Icon={UpdateIcon}
+/>
+
+<BoxLink
+  title="EAS Metadata"
+  description="EAS Metadata aims to make creating or maintaining an app in the stores as easy as possible by using one configuration file. In some situations, not be the right fit for a project. Learn more."
+  href="/eas/metadata/faq/#anti-pitch"
+  Icon={EasMetadataIcon}
 />
 
 ### Bare workflow
