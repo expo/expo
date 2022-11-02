@@ -55,7 +55,7 @@ describe('constructDevClientUrl', () => {
   it(`creates tunnel`, () => {
     expect(
       createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostType: 'tunnel' })
-    ).toMatchInlineSnapshot(`"bacon://expo-development-client/?url=http%3A%2F%2Ftunnel.dev%3A80"`);
+    ).toMatchInlineSnapshot(`"bacon://expo-development-client/?url=http%3A%2F%2Ftunnel.dev"`);
   });
   it(`creates localhost`, () => {
     expect(
@@ -75,10 +75,6 @@ describe('constructUrl', () => {
   it(`skips default port with environment variable`, () => {
     process.env.EXPO_PACKAGER_PROXY_URL = 'http://expo.dev';
     expect(createDefaultCreator().constructUrl({})).toMatchInlineSnapshot(`"http://expo.dev"`);
-  });
-  it(`adds a default port by default when using a non-standard URL`, () => {
-    process.env.EXPO_PACKAGER_PROXY_URL = 'http://expo.dev';
-    expect(createDefaultCreator().constructUrl({})).toMatchInlineSnapshot(`"http://expo.dev:80"`);
   });
 
   it(`creates default`, () => {
@@ -103,7 +99,7 @@ describe('constructUrl', () => {
   });
   it(`uses tunnel`, () => {
     expect(createDefaultCreator().constructUrl({ hostType: 'tunnel' })).toMatchInlineSnapshot(
-      `"http://tunnel.dev:80"`
+      `"http://tunnel.dev"`
     );
   });
   it(`uses defaults`, () => {
