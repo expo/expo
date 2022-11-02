@@ -106,9 +106,9 @@ jobs:
         if: failure()
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_ios }}
+          SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_api }}
         with:
-          channel: '#expo-ios'
+          channel: '#expo-sdk'
           status: ${{ job.status }}
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite Nightly
