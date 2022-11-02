@@ -68,7 +68,7 @@ jobs:
         working-directory: apps/bare-expo/ios
       - name: 🥥 Install pods in apps/bare-expo/ios
         run: |
-          rm -f Podfile.lock
+          pod update hermes-engine --no-repo-update
           pod install
         working-directory: apps/bare-expo/ios
       - name: 🧹 Clean Detox
