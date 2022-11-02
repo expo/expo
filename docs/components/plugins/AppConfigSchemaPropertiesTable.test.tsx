@@ -3,7 +3,6 @@ import { screen } from '@testing-library/react';
 import AppConfigSchemaPropertiesTable, {
   formatSchema,
   createDescription,
-  _getType,
   Property,
 } from './AppConfigSchemaPropertiesTable';
 
@@ -107,7 +106,7 @@ describe('AppConfigSchemaPropertiesTable', () => {
       <AppConfigSchemaPropertiesTable schema={{ entry: testSchema.androidNavigationBar }} />
     );
 
-    expect(screen.getByText('- Specifies the background color of the navigation bar.'));
+    expect(screen.getByText('Specifies the background color of the navigation bar.'));
     expect(screen.getByText('6 character long hex color string, eg:'));
     expect(screen.getByText('Set this property using just Xcode'));
     expect(screen.getByText('Set this property using AppConstants.java.'));
@@ -116,32 +115,32 @@ describe('AppConfigSchemaPropertiesTable', () => {
 
 describe('formatSchema', () => {
   const formattedSchema = formatSchema(Object.entries(testSchema));
-  test('name is property nestingLevel 0', () => {
-    expect(formattedSchema[0].nestingLevel).toBe(0);
+  test('name is property at root level', () => {
+    expect(formattedSchema[0].name).toBe('name');
   });
-  test('androidNavigationBar is property nestingLevel 0', () => {
-    expect(formattedSchema[1].nestingLevel).toBe(0);
+  test('androidNavigationBar has two subproperties', () => {
+    expect(formattedSchema[1].subproperties.length).toBe(2);
   });
-  test('visible is subproperty nestingLevel 1', () => {
-    expect(formattedSchema[2].nestingLevel).toBe(1);
+  test('visible is androidNavigationBar subproperty', () => {
+    expect(formattedSchema[1].subproperties[0].name).toBe('visible');
   });
-  test('always is subproperty nestingLevel 2', () => {
-    expect(formattedSchema[3].nestingLevel).toBe(2);
+  test('always is visible subproperty', () => {
+    expect(formattedSchema[1].subproperties[0].subproperties[0].name).toBe('always');
   });
-  test('backgroundColor is subproperty nestingLevel 1', () => {
-    expect(formattedSchema[4].nestingLevel).toBe(1);
+  test('backgroundColor is androidNavigationBar subproperty', () => {
+    expect(formattedSchema[1].subproperties[1].name).toBe('backgroundColor');
   });
-  test('intentFilters is property nestingLevel 0', () => {
-    expect(formattedSchema[5].nestingLevel).toBe(0);
+  test('intentFilters is property at root level', () => {
+    expect(formattedSchema[2].name).toBe('intentFilters');
   });
-  test('autoVerify is subproperty nestingLevel 1', () => {
-    expect(formattedSchema[6].nestingLevel).toBe(1);
+  test('autoVerify is intentFilters subproperty', () => {
+    expect(formattedSchema[2].subproperties[0].name).toBe('autoVerify');
   });
-  test('data is subproperty nestingLevel 1', () => {
-    expect(formattedSchema[7].nestingLevel).toBe(1);
+  test('data is intentFilters subproperty', () => {
+    expect(formattedSchema[2].subproperties[1].name).toBe('data');
   });
-  test('host is subproperty nestingLevel 2', () => {
-    expect(formattedSchema[8].nestingLevel).toBe(2);
+  test('host is data subproperty', () => {
+    expect(formattedSchema[2].subproperties[1].subproperties[0].name).toBe('host');
   });
 });
 
@@ -151,9 +150,7 @@ describe('createDescription', () => {
     const intentFiltersObjectValue = intentFiltersObject[1] as any;
     const result = createDescription(intentFiltersObject);
 
-    expect(result).toBe(
-      `**(${_getType(intentFiltersObjectValue)})** - ${intentFiltersObjectValue.description}`
-    );
+    expect(result).toBe(`${intentFiltersObjectValue.description}`);
   });
 
   test('regexHuman is added correctly', () => {
@@ -163,9 +160,7 @@ describe('createDescription', () => {
     const result = createDescription(backgroundColorObject);
 
     expect(result).toBe(
-      `**(${_getType(backgroundColorObjectValue)})** - ${
-        backgroundColorObjectValue.description
-      }\n\n${backgroundColorObjectValue.meta!.regexHuman}`
+      `${backgroundColorObjectValue.description}\n\n${backgroundColorObjectValue.meta!.regexHuman}`
     );
   });
 });

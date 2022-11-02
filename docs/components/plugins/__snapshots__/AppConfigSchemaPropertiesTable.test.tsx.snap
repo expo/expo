@@ -2,453 +2,411 @@
 
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
-  <div
-    class="css-rufzkc-Table"
-  >
-    <table
-      class="css-1goywt6-Table"
+  <div>
+    <div
+      class="css-1lzbq05-AppConfigProperty"
     >
-      <thead
-        class="css-3b8qij-TableHead"
+      <div
+        class=" css-19f55nd-PDIV"
+        data-text="true"
       >
-        <tr
-          class="css-29opv4-Row"
+        <a
+          class="css-ah3byb"
+          href="/#name"
         >
-          <th
-            class="css-1p6k6di-HeaderCell"
+          <span
+            class="css-s3qkfm"
+            id="name"
+          />
+          <span
+            class="css-6n7j50"
           >
-            Property
-          </th>
-          <th
-            class="css-1p6k6di-HeaderCell"
+            <code
+              class="inline css-1cjswoo-PropertyName"
+            >
+              name
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
           >
-            Description
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          class="css-29opv4-Row"
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+      <p
+        class="css-6kj7vp-TextComponent"
+      >
+        Type: 
+        <code
+          class="inline css-ov7own-InlineCode"
         >
-          <td
-            class="css-1i3ovdz-Cell"
+          string
+        </code>
+      </p>
+      <br />
+      <p
+        class="css-6jxvia-P"
+        data-text="true"
+      >
+        Name of your app.
+      </p>
+      <details
+        class="css-1nmf69-Collapsible"
+      >
+        <summary
+          class="css-15fupqd-Collapsible"
+        >
+          <div
+            class="css-166ujkg-Collapsible"
           >
-            <div
-              data-testid="name"
-              style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
+            <svg
+              class="css-1wgpnk4-Collapsible"
+              fill="none"
+              height="16"
+              role="img"
+              size="16"
+              viewBox="0 0 20 20"
+              width="16"
+            >
+              <title>
+                Triangle-down-icon
+              </title>
+              <path
+                d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                fill="var(--expo-theme-icon-default)"
+              />
+            </svg>
+          </div>
+          <span
+            class="css-x1nydd-TextComponent"
+          >
+            Bare Workflow
+          </span>
+        </summary>
+        <div
+          class="css-1gk6nru-Collapsible"
+        >
+          <p
+            class="css-6jxvia-P"
+            data-text="true"
+          >
+            Edit the 'Display Name' field in Xcode
+          </p>
+        </div>
+      </details>
+      <div />
+    </div>
+    <div
+      class="css-1lzbq05-AppConfigProperty"
+    >
+      <div
+        class=" css-19f55nd-PDIV"
+        data-text="true"
+      >
+        <a
+          class="css-ah3byb"
+          href="/#androidnavigationbar"
+        >
+          <span
+            class="css-s3qkfm"
+            id="androidnavigationbar"
+          />
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="inline css-1cjswoo-PropertyName"
+            >
+              androidNavigationBar
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+      <p
+        class="css-6kj7vp-TextComponent"
+      >
+        Type: 
+        <code
+          class="inline css-ov7own-InlineCode"
+        >
+          object
+        </code>
+      </p>
+      <br />
+      <p
+        class="css-6jxvia-P"
+        data-text="true"
+      >
+        Configuration for the bottom navigation bar on Android.
+      </p>
+      <details
+        class="css-1nmf69-Collapsible"
+      >
+        <summary
+          class="css-15fupqd-Collapsible"
+        >
+          <div
+            class="css-166ujkg-Collapsible"
+          >
+            <svg
+              class="css-1wgpnk4-Collapsible"
+              fill="none"
+              height="16"
+              role="img"
+              size="16"
+              viewBox="0 0 20 20"
+              width="16"
+            >
+              <title>
+                Triangle-down-icon
+              </title>
+              <path
+                d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                fill="var(--expo-theme-icon-default)"
+              />
+            </svg>
+          </div>
+          <span
+            class="css-x1nydd-TextComponent"
+          >
+            ExpoKit
+          </span>
+        </summary>
+        <div
+          class="css-1gk6nru-Collapsible"
+        >
+          <p
+            class="css-6jxvia-P"
+            data-text="true"
+          >
+            Set this property using AppConstants.java.
+          </p>
+        </div>
+      </details>
+      <details
+        class="css-1nmf69-Collapsible"
+      >
+        <summary
+          class="css-15fupqd-Collapsible"
+        >
+          <div
+            class="css-166ujkg-Collapsible"
+          >
+            <svg
+              class="css-1wgpnk4-Collapsible"
+              fill="none"
+              height="16"
+              role="img"
+              size="16"
+              viewBox="0 0 20 20"
+              width="16"
+            >
+              <title>
+                Triangle-down-icon
+              </title>
+              <path
+                d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                fill="var(--expo-theme-icon-default)"
+              />
+            </svg>
+          </div>
+          <span
+            class="css-x1nydd-TextComponent"
+          >
+            Bare Workflow
+          </span>
+        </summary>
+        <div
+          class="css-1gk6nru-Collapsible"
+        >
+          <p
+            class="css-6jxvia-P"
+            data-text="true"
+          >
+            Set this property using just Xcode
+          </p>
+        </div>
+      </details>
+      <div>
+        <div
+          class="css-1lzbq05-AppConfigProperty"
+        >
+          <div
+            class=" css-19f55nd-PDIV"
+            data-text="true"
+          >
+            <a
+              class="css-ah3byb"
+              href="/#visible"
+            >
+              <span
+                class="css-s3qkfm"
+                id="visible"
+              />
+              <span
+                class="css-6n7j50"
+              >
+                <code
+                  class="inline css-1cjswoo-PropertyName"
+                >
+                  visible
+                </code>
+              </span>
+              <span
+                class="css-1eysgws"
+              >
+                <svg
+                  aria-label="permalink"
+                  class="anchor-icon"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </a>
+          </div>
+          <p
+            class="css-6kj7vp-TextComponent"
+          >
+            Type: 
+            <code
+              class="inline css-ov7own-InlineCode"
+            >
+              enum
+            </code>
+             • Path:
+             
+            <code
+              class="css-1c83t10-AppConfigProperty"
+            >
+              androidNavigationBar
+              .
+              visible
+            </code>
+          </p>
+          <br />
+          <p
+            class="css-6jxvia-P"
+            data-text="true"
+          >
+            Determines how and when the navigation bar is shown.
+          </p>
+          <details
+            class="css-1nmf69-Collapsible"
+          >
+            <summary
+              class="css-15fupqd-Collapsible"
             >
               <div
-                class=" css-19f55nd-PDIV"
+                class="css-166ujkg-Collapsible"
+              >
+                <svg
+                  class="css-1wgpnk4-Collapsible"
+                  fill="none"
+                  height="16"
+                  role="img"
+                  size="16"
+                  viewBox="0 0 20 20"
+                  width="16"
+                >
+                  <title>
+                    Triangle-down-icon
+                  </title>
+                  <path
+                    d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                    fill="var(--expo-theme-icon-default)"
+                  />
+                </svg>
+              </div>
+              <span
+                class="css-x1nydd-TextComponent"
+              >
+                ExpoKit
+              </span>
+            </summary>
+            <div
+              class="css-1gk6nru-Collapsible"
+            >
+              <p
+                class="css-6jxvia-P"
                 data-text="true"
               >
-                <a
-                  class="css-ah3byb"
-                  href="/#name"
-                >
-                  <span
-                    class="css-s3qkfm"
-                    id="name"
-                  />
-                  <span
-                    class="css-6n7j50"
-                  >
-                    <code
-                      class="inline css-ov7own-InlineCode"
-                    >
-                      name
-                    </code>
-                  </span>
-                  <span
-                    class="css-1eysgws"
-                  >
-                    <svg
-                      aria-label="permalink"
-                      class="anchor-icon"
-                      fill="none"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                    </svg>
-                  </span>
-                </a>
-              </div>
+                Set this property using Xcode.
+              </p>
             </div>
-          </td>
-          <td
-            class="css-4ul8tm-Cell"
-          >
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
-            >
-              <strong
-                class="css-1qx481h-B"
-              >
-                (string)
-              </strong>
-               - Name of your app.
-            </p>
-            <details
-              class="css-1nmf69-Collapsible"
-            >
-              <summary
-                class="css-15fupqd-Collapsible"
-              >
-                <div
-                  class="css-166ujkg-Collapsible"
-                >
-                  <svg
-                    class="css-1wgpnk4-Collapsible"
-                    fill="none"
-                    height="16"
-                    role="img"
-                    size="16"
-                    viewBox="0 0 20 20"
-                    width="16"
-                  >
-                    <title>
-                      Triangle-down-icon
-                    </title>
-                    <path
-                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                      fill="var(--expo-theme-icon-default)"
-                    />
-                  </svg>
-                </div>
-                <span
-                  class="css-x1nydd-TextComponent"
-                >
-                  Bare Workflow
-                </span>
-              </summary>
-              <div
-                class="css-1gk6nru-Collapsible"
-              >
-                <p
-                  class="css-6jxvia-P"
-                  data-text="true"
-                >
-                  Edit the 'Display Name' field in Xcode
-                </p>
-              </div>
-            </details>
-          </td>
-        </tr>
-        <tr
-          class="css-29opv4-Row"
-        >
-          <td
-            class="css-1i3ovdz-Cell"
-          >
+          </details>
+          <div>
             <div
-              data-testid="androidNavigationBar"
-              style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
-            >
-              <div
-                class=" css-19f55nd-PDIV"
-                data-text="true"
-              >
-                <a
-                  class="css-ah3byb"
-                  href="/#androidnavigationbar"
-                >
-                  <span
-                    class="css-s3qkfm"
-                    id="androidnavigationbar"
-                  />
-                  <span
-                    class="css-6n7j50"
-                  >
-                    <code
-                      class="inline css-ov7own-InlineCode"
-                    >
-                      androidNavigationBar
-                    </code>
-                  </span>
-                  <span
-                    class="css-1eysgws"
-                  >
-                    <svg
-                      aria-label="permalink"
-                      class="anchor-icon"
-                      fill="none"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                    </svg>
-                  </span>
-                </a>
-              </div>
-            </div>
-          </td>
-          <td
-            class="css-4ul8tm-Cell"
-          >
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
-            >
-              <strong
-                class="css-1qx481h-B"
-              >
-                (object)
-              </strong>
-               - Configuration for the bottom navigation bar on Android.
-            </p>
-            <details
-              class="css-1nmf69-Collapsible"
-            >
-              <summary
-                class="css-15fupqd-Collapsible"
-              >
-                <div
-                  class="css-166ujkg-Collapsible"
-                >
-                  <svg
-                    class="css-1wgpnk4-Collapsible"
-                    fill="none"
-                    height="16"
-                    role="img"
-                    size="16"
-                    viewBox="0 0 20 20"
-                    width="16"
-                  >
-                    <title>
-                      Triangle-down-icon
-                    </title>
-                    <path
-                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                      fill="var(--expo-theme-icon-default)"
-                    />
-                  </svg>
-                </div>
-                <span
-                  class="css-x1nydd-TextComponent"
-                >
-                  ExpoKit
-                </span>
-              </summary>
-              <div
-                class="css-1gk6nru-Collapsible"
-              >
-                <p
-                  class="css-6jxvia-P"
-                  data-text="true"
-                >
-                  Set this property using AppConstants.java.
-                </p>
-              </div>
-            </details>
-            <details
-              class="css-1nmf69-Collapsible"
-            >
-              <summary
-                class="css-15fupqd-Collapsible"
-              >
-                <div
-                  class="css-166ujkg-Collapsible"
-                >
-                  <svg
-                    class="css-1wgpnk4-Collapsible"
-                    fill="none"
-                    height="16"
-                    role="img"
-                    size="16"
-                    viewBox="0 0 20 20"
-                    width="16"
-                  >
-                    <title>
-                      Triangle-down-icon
-                    </title>
-                    <path
-                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                      fill="var(--expo-theme-icon-default)"
-                    />
-                  </svg>
-                </div>
-                <span
-                  class="css-x1nydd-TextComponent"
-                >
-                  Bare Workflow
-                </span>
-              </summary>
-              <div
-                class="css-1gk6nru-Collapsible"
-              >
-                <p
-                  class="css-6jxvia-P"
-                  data-text="true"
-                >
-                  Set this property using just Xcode
-                </p>
-              </div>
-            </details>
-          </td>
-        </tr>
-        <tr
-          class="css-29opv4-Row"
-        >
-          <td
-            class="css-1i3ovdz-Cell"
-          >
-            <div
-              data-testid="visible"
-              style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
-            >
-              <div
-                class=" css-19f55nd-PDIV"
-                data-text="true"
-              >
-                <a
-                  class="css-ah3byb"
-                  href="/#visible"
-                >
-                  <span
-                    class="css-s3qkfm"
-                    id="visible"
-                  />
-                  <span
-                    class="css-6n7j50"
-                  >
-                    <code
-                      class="inline css-ov7own-InlineCode"
-                    >
-                      visible
-                    </code>
-                  </span>
-                  <span
-                    class="css-1eysgws"
-                  >
-                    <svg
-                      aria-label="permalink"
-                      class="anchor-icon"
-                      fill="none"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                    </svg>
-                  </span>
-                </a>
-              </div>
-            </div>
-          </td>
-          <td
-            class="css-4ul8tm-Cell"
-          >
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
-            >
-              <strong
-                class="css-1qx481h-B"
-              >
-                (enum)
-              </strong>
-               - Determines how and when the navigation bar is shown.
-            </p>
-            <details
-              class="css-1nmf69-Collapsible"
-            >
-              <summary
-                class="css-15fupqd-Collapsible"
-              >
-                <div
-                  class="css-166ujkg-Collapsible"
-                >
-                  <svg
-                    class="css-1wgpnk4-Collapsible"
-                    fill="none"
-                    height="16"
-                    role="img"
-                    size="16"
-                    viewBox="0 0 20 20"
-                    width="16"
-                  >
-                    <title>
-                      Triangle-down-icon
-                    </title>
-                    <path
-                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                      fill="var(--expo-theme-icon-default)"
-                    />
-                  </svg>
-                </div>
-                <span
-                  class="css-x1nydd-TextComponent"
-                >
-                  ExpoKit
-                </span>
-              </summary>
-              <div
-                class="css-1gk6nru-Collapsible"
-              >
-                <p
-                  class="css-6jxvia-P"
-                  data-text="true"
-                >
-                  Set this property using Xcode.
-                </p>
-              </div>
-            </details>
-          </td>
-        </tr>
-        <tr
-          class="css-29opv4-Row"
-        >
-          <td
-            class="css-1i3ovdz-Cell"
-          >
-            <div
-              data-testid="always"
-              style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
+              class="css-1lzbq05-AppConfigProperty"
             >
               <div
                 class=" css-19f55nd-PDIV"
@@ -466,7 +424,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-6n7j50"
                   >
                     <code
-                      class="inline css-ov7own-InlineCode"
+                      class="inline css-1cjswoo-PropertyName"
                     >
                       always
                     </code>
@@ -501,442 +459,445 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </span>
                 </a>
               </div>
-            </div>
-          </td>
-          <td
-            class="css-4ul8tm-Cell"
-          >
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
-            >
-              <strong
-                class="css-1qx481h-B"
+              <p
+                class="css-6kj7vp-TextComponent"
               >
-                (boolean)
-              </strong>
-               - Test sub-sub-property
-            </p>
-          </td>
-        </tr>
-        <tr
-          class="css-29opv4-Row"
-        >
-          <td
-            class="css-1i3ovdz-Cell"
-          >
-            <div
-              data-testid="backgroundColor"
-              style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
-            >
-              <div
-                class=" css-19f55nd-PDIV"
+                Type: 
+                <code
+                  class="inline css-ov7own-InlineCode"
+                >
+                  boolean
+                </code>
+                 • Path:
+                 
+                <code
+                  class="css-1c83t10-AppConfigProperty"
+                >
+                  androidNavigationBar.visible
+                  .
+                  always
+                </code>
+              </p>
+              <br />
+              <p
+                class="css-6jxvia-P"
                 data-text="true"
               >
-                <a
-                  class="css-ah3byb"
-                  href="/#backgroundcolor"
-                >
-                  <span
-                    class="css-s3qkfm"
-                    id="backgroundcolor"
-                  />
-                  <span
-                    class="css-6n7j50"
-                  >
-                    <code
-                      class="inline css-ov7own-InlineCode"
-                    >
-                      backgroundColor
-                    </code>
-                  </span>
-                  <span
-                    class="css-1eysgws"
-                  >
-                    <svg
-                      aria-label="permalink"
-                      class="anchor-icon"
-                      fill="none"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                    </svg>
-                  </span>
-                </a>
-              </div>
+                Test sub-sub-property
+              </p>
+              <div />
             </div>
-          </td>
-          <td
-            class="css-4ul8tm-Cell"
-          >
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
-            >
-              <strong
-                class="css-1qx481h-B"
-              >
-                (string)
-              </strong>
-               - Specifies the background color of the navigation bar.
-            </p>
-            
-
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
-            >
-              6 character long hex color string, eg: 
-              <code
-                class="inline css-ov7own-InlineCode"
-              >
-                '#000000'
-              </code>
-            </p>
-          </td>
-        </tr>
-        <tr
-          class="css-29opv4-Row"
+          </div>
+        </div>
+        <div
+          class="css-1lzbq05-AppConfigProperty"
         >
-          <td
-            class="css-1i3ovdz-Cell"
+          <div
+            class=" css-19f55nd-PDIV"
+            data-text="true"
           >
-            <div
-              data-testid="intentFilters"
-              style="margin-left: 0px; display: block; list-style-type: circle; overflow-x: visible;"
+            <a
+              class="css-ah3byb"
+              href="/#backgroundcolor"
             >
-              <div
-                class=" css-19f55nd-PDIV"
-                data-text="true"
+              <span
+                class="css-s3qkfm"
+                id="backgroundcolor"
+              />
+              <span
+                class="css-6n7j50"
               >
-                <a
-                  class="css-ah3byb"
-                  href="/#intentfilters"
+                <code
+                  class="inline css-1cjswoo-PropertyName"
                 >
-                  <span
-                    class="css-s3qkfm"
-                    id="intentfilters"
-                  />
-                  <span
-                    class="css-6n7j50"
-                  >
-                    <code
-                      class="inline css-ov7own-InlineCode"
-                    >
-                      intentFilters
-                    </code>
-                  </span>
-                  <span
-                    class="css-1eysgws"
-                  >
-                    <svg
-                      aria-label="permalink"
-                      class="anchor-icon"
-                      fill="none"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                    </svg>
-                  </span>
-                </a>
-              </div>
-            </div>
-          </td>
-          <td
-            class="css-4ul8tm-Cell"
-          >
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
-            >
-              <strong
-                class="css-1qx481h-B"
-              >
-                (array)
-              </strong>
-               - Configuration for setting an array of custom intent filters in Android manifest.
-            </p>
-            <details
-              class="css-1nmf69-Collapsible"
-            >
-              <summary
-                class="css-15fupqd-Collapsible"
-              >
-                <div
-                  class="css-166ujkg-Collapsible"
-                >
-                  <svg
-                    class="css-1wgpnk4-Collapsible"
-                    fill="none"
-                    height="16"
-                    role="img"
-                    size="16"
-                    viewBox="0 0 20 20"
-                    width="16"
-                  >
-                    <title>
-                      Triangle-down-icon
-                    </title>
-                    <path
-                      d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                      fill="var(--expo-theme-icon-default)"
-                    />
-                  </svg>
-                </div>
-                <span
-                  class="css-x1nydd-TextComponent"
-                >
-                  Bare Workflow
-                </span>
-              </summary>
-              <div
-                class="css-1gk6nru-Collapsible"
-              >
-                <p
-                  class="css-6jxvia-P"
-                  data-text="true"
-                >
-                  This is set in AndroidManifest.xml directly.
-                </p>
-              </div>
-            </details>
-            <blockquote
-              class="css-1xjn6jt-Callout"
-              data-testid="callout-container"
-            >
-              <div
-                class="css-ks2t0-Callout"
+                  backgroundColor
+                </code>
+              </span>
+              <span
+                class="css-1eysgws"
               >
                 <svg
-                  color="var(--expo-theme-icon-default)"
+                  aria-label="permalink"
+                  class="anchor-icon"
                   fill="none"
-                  height="16"
-                  role="img"
-                  size="16"
-                  viewBox="0 0 20 20"
-                  width="16"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <title>
-                    Info-icon
-                  </title>
                   <path
-                    d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-                    fill="var(--expo-theme-icon-default)"
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
                   />
                 </svg>
-              </div>
-              <div
-                class="css-19syq17-Callout"
-              >
-                
+              </span>
+            </a>
+          </div>
+          <p
+            class="css-6kj7vp-TextComponent"
+          >
+            Type: 
+            <code
+              class="inline css-ov7own-InlineCode"
+            >
+              string
+            </code>
+             • Path:
+             
+            <code
+              class="css-1c83t10-AppConfigProperty"
+            >
+              androidNavigationBar
+              .
+              backgroundColor
+            </code>
+          </p>
+          <br />
+          <p
+            class="css-6jxvia-P"
+            data-text="true"
+          >
+            Specifies the background color of the navigation bar.
+          </p>
+          
 
-                <span>
-                  [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
-                </span>
-                
+          <p
+            class="css-6jxvia-P"
+            data-text="true"
+          >
+            6 character long hex color string, eg: 
+            <code
+              class="inline css-ov7own-InlineCode"
+            >
+              '#000000'
+            </code>
+          </p>
+          <div />
+        </div>
+      </div>
+    </div>
+    <div
+      class="css-1lzbq05-AppConfigProperty"
+    >
+      <div
+        class=" css-19f55nd-PDIV"
+        data-text="true"
+      >
+        <a
+          class="css-ah3byb"
+          href="/#intentfilters"
+        >
+          <span
+            class="css-s3qkfm"
+            id="intentfilters"
+          />
+          <span
+            class="css-6n7j50"
+          >
+            <code
+              class="inline css-1cjswoo-PropertyName"
+            >
+              intentFilters
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </div>
+      <p
+        class="css-6kj7vp-TextComponent"
+      >
+        Type: 
+        <code
+          class="inline css-ov7own-InlineCode"
+        >
+          array
+        </code>
+      </p>
+      <br />
+      <p
+        class="css-6jxvia-P"
+        data-text="true"
+      >
+        Configuration for setting an array of custom intent filters in Android manifest.
+      </p>
+      <details
+        class="css-1nmf69-Collapsible"
+      >
+        <summary
+          class="css-15fupqd-Collapsible"
+        >
+          <div
+            class="css-166ujkg-Collapsible"
+          >
+            <svg
+              class="css-1wgpnk4-Collapsible"
+              fill="none"
+              height="16"
+              role="img"
+              size="16"
+              viewBox="0 0 20 20"
+              width="16"
+            >
+              <title>
+                Triangle-down-icon
+              </title>
+              <path
+                d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
+                fill="var(--expo-theme-icon-default)"
+              />
+            </svg>
+          </div>
+          <span
+            class="css-x1nydd-TextComponent"
+          >
+            Bare Workflow
+          </span>
+        </summary>
+        <div
+          class="css-1gk6nru-Collapsible"
+        >
+          <p
+            class="css-6jxvia-P"
+            data-text="true"
+          >
+            This is set in AndroidManifest.xml directly.
+          </p>
+        </div>
+      </details>
+      <blockquote
+        class="css-1xjn6jt-Callout"
+        data-testid="callout-container"
+      >
+        <div
+          class="css-ks2t0-Callout"
+        >
+          <svg
+            color="var(--expo-theme-icon-default)"
+            fill="none"
+            height="16"
+            role="img"
+            size="16"
+            viewBox="0 0 20 20"
+            width="16"
+          >
+            <title>
+              Info-icon
+            </title>
+            <path
+              d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
+              fill="var(--expo-theme-icon-default)"
+            />
+          </svg>
+        </div>
+        <div
+          class="css-19syq17-Callout"
+        >
+          
 
-              </div>
-            </blockquote>
-          </td>
-        </tr>
-        <tr
-          class="css-29opv4-Row"
+          <span>
+            [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
+          </span>
+          
+
+        </div>
+      </blockquote>
+      <div>
+        <div
+          class="css-1lzbq05-AppConfigProperty"
         >
-          <td
-            class="css-1i3ovdz-Cell"
+          <div
+            class=" css-19f55nd-PDIV"
+            data-text="true"
           >
-            <div
-              data-testid="autoVerify"
-              style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
+            <a
+              class="css-ah3byb"
+              href="/#autoverify"
             >
-              <div
-                class=" css-19f55nd-PDIV"
-                data-text="true"
+              <span
+                class="css-s3qkfm"
+                id="autoverify"
+              />
+              <span
+                class="css-6n7j50"
               >
-                <a
-                  class="css-ah3byb"
-                  href="/#autoverify"
+                <code
+                  class="inline css-1cjswoo-PropertyName"
                 >
-                  <span
-                    class="css-s3qkfm"
-                    id="autoverify"
-                  />
-                  <span
-                    class="css-6n7j50"
-                  >
-                    <code
-                      class="inline css-ov7own-InlineCode"
-                    >
-                      autoVerify
-                    </code>
-                  </span>
-                  <span
-                    class="css-1eysgws"
-                  >
-                    <svg
-                      aria-label="permalink"
-                      class="anchor-icon"
-                      fill="none"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                    </svg>
-                  </span>
-                </a>
-              </div>
-            </div>
-          </td>
-          <td
-            class="css-4ul8tm-Cell"
-          >
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
-            >
-              <strong
-                class="css-1qx481h-B"
+                  autoVerify
+                </code>
+              </span>
+              <span
+                class="css-1eysgws"
               >
-                (boolean)
-              </strong>
-               - You may also use an intent filter to set your app as the default handler for links
-            </p>
-          </td>
-        </tr>
-        <tr
-          class="css-29opv4-Row"
-        >
-          <td
-            class="css-1i3ovdz-Cell"
-          >
-            <div
-              data-testid="data"
-              style="margin-left: 32px; display: list-item; list-style-type: default; overflow-x: visible;"
-            >
-              <div
-                class=" css-19f55nd-PDIV"
-                data-text="true"
-              >
-                <a
-                  class="css-ah3byb"
-                  href="/#data"
+                <svg
+                  aria-label="permalink"
+                  class="anchor-icon"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <span
-                    class="css-s3qkfm"
-                    id="data"
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
                   />
-                  <span
-                    class="css-6n7j50"
-                  >
-                    <code
-                      class="inline css-ov7own-InlineCode"
-                    >
-                      data
-                    </code>
-                  </span>
-                  <span
-                    class="css-1eysgws"
-                  >
-                    <svg
-                      aria-label="permalink"
-                      class="anchor-icon"
-                      fill="none"
-                      height="24"
-                      viewBox="0 0 24 24"
-                      width="24"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                      <path
-                        d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                        stroke="#9B9B9B"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                      />
-                    </svg>
-                  </span>
-                </a>
-              </div>
-            </div>
-          </td>
-          <td
-            class="css-4ul8tm-Cell"
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </a>
+          </div>
+          <p
+            class="css-6kj7vp-TextComponent"
           >
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
+            Type: 
+            <code
+              class="inline css-ov7own-InlineCode"
             >
-              <strong
-                class="css-1qx481h-B"
-              >
-                (array || object)
-              </strong>
-            </p>
-          </td>
-        </tr>
-        <tr
-          class="css-29opv4-Row"
-        >
-          <td
-            class="css-1i3ovdz-Cell"
+              boolean
+            </code>
+             • Path:
+             
+            <code
+              class="css-1c83t10-AppConfigProperty"
+            >
+              intentFilters
+              .
+              autoVerify
+            </code>
+          </p>
+          <br />
+          <p
+            class="css-6jxvia-P"
+            data-text="true"
           >
+            You may also use an intent filter to set your app as the default handler for links
+          </p>
+          <div />
+        </div>
+        <div
+          class="css-1lzbq05-AppConfigProperty"
+        >
+          <div
+            class=" css-19f55nd-PDIV"
+            data-text="true"
+          >
+            <a
+              class="css-ah3byb"
+              href="/#data"
+            >
+              <span
+                class="css-s3qkfm"
+                id="data"
+              />
+              <span
+                class="css-6n7j50"
+              >
+                <code
+                  class="inline css-1cjswoo-PropertyName"
+                >
+                  data
+                </code>
+              </span>
+              <span
+                class="css-1eysgws"
+              >
+                <svg
+                  aria-label="permalink"
+                  class="anchor-icon"
+                  fill="none"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  width="24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                  <path
+                    d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                    stroke="#9B9B9B"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                  />
+                </svg>
+              </span>
+            </a>
+          </div>
+          <p
+            class="css-6kj7vp-TextComponent"
+          >
+            Type: 
+            <code
+              class="inline css-ov7own-InlineCode"
+            >
+              array || object
+            </code>
+             • Path:
+             
+            <code
+              class="css-1c83t10-AppConfigProperty"
+            >
+              intentFilters
+              .
+              data
+            </code>
+          </p>
+          <br />
+          <div>
             <div
-              data-testid="host"
-              style="margin-left: 64px; display: list-item; list-style-type: circle; overflow-x: visible;"
+              class="css-1lzbq05-AppConfigProperty"
             >
               <div
                 class=" css-19f55nd-PDIV"
@@ -954,7 +915,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                     class="css-6n7j50"
                   >
                     <code
-                      class="inline css-ov7own-InlineCode"
+                      class="inline css-1cjswoo-PropertyName"
                     >
                       host
                     </code>
@@ -989,25 +950,32 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </span>
                 </a>
               </div>
-            </div>
-          </td>
-          <td
-            class="css-4ul8tm-Cell"
-          >
-            <p
-              class="css-6jxvia-P"
-              data-text="true"
-            >
-              <strong
-                class="css-1qx481h-B"
+              <p
+                class="css-6kj7vp-TextComponent"
               >
-                (string)
-              </strong>
-            </p>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+                Type: 
+                <code
+                  class="inline css-ov7own-InlineCode"
+                >
+                  string
+                </code>
+                 • Path:
+                 
+                <code
+                  class="css-1c83t10-AppConfigProperty"
+                >
+                  intentFilters.data
+                  .
+                  host
+                </code>
+              </p>
+              <br />
+              <div />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 `;
