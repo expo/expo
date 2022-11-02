@@ -68,7 +68,7 @@ export class DevServerManagerActions {
     const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
     if (!apps.length) {
       Log.warn(
-        `No compatible apps connected. This feature is only available for apps using the Hermes runtime. ${learnMore(
+        `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine. ${learnMore(
           'https://docs.expo.dev/guides/using-hermes/'
         )}`
       );

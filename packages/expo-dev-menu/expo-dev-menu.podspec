@@ -10,6 +10,8 @@ rescue
   reactVersion = '0.66.0'
 end
 
+# react-native nightly build published as `0.0.0-20221002-2027-2319f75c8` form, but its semantic is latest
+reactVersion = '9999.9999.9999' if reactVersion.start_with?('0.0.0-')
 splitedReactVersion = reactVersion.split('.')
 rnVersion = splitedReactVersion[1]
 rnPatchVersion = splitedReactVersion[2]

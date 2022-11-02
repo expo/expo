@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 4.0.1 — 2022-10-30
+
+### 🐛 Bug fixes
+
+- Fixed clipboard listener is called twice on Android. ([#19723](https://github.com/expo/expo/pull/19723) by [@lukmccall](https://github.com/lukmccall))
+- Fixed clipboard listener can crash the application during initialization on Android. ([#19723](https://github.com/expo/expo/pull/19723) by [@lukmccall](https://github.com/lukmccall))
+
 ## 4.0.0 — 2022-10-25
 
 ### 🛠 Breaking changes

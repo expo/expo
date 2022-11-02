@@ -184,6 +184,12 @@ const config: VendoringTargetConfig = {
                 `}\n`,
             },
             {
+              // sets the major version of the package
+              paths: 'build.gradle',
+              find: /def REANIMATED_MAJOR_VERSION = getReanimatedVersion\(\)/,
+              replaceWith: 'def REANIMATED_MAJOR_VERSION = 2',
+            },
+            {
               // find rn libs in ReactAndroid build output
               paths: 'CMakeLists.txt',
               find: 'set (RN_SO_DIR ${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/react/jni)',

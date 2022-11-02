@@ -1,5 +1,7 @@
 # jest-expo-enzyme
 
+> ⚠️ This library is deprecated, Enzyme does not support React 18+. Use [@testing-library/react-native](https://testing-library.com/docs/react-native-testing-library/intro) instead.
+
 A [Jest](https://facebook.github.io/jest/) preset that enables you to test your universal Expo & React elements with the [**Enzyme**](https://airbnb.io/enzyme/) testing library.
 
 The default preset extends `jest-expo` which means it will run **iOS, Android, and web** platforms with the recommended Enzyme configs for web and native. Notice that we omit the `node` runner because SSR environments don't need to test how virtual DOM is rendered.

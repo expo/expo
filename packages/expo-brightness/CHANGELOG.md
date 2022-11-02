@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Deprecate `useSystemBrightnessAsync` and add it as renamed `restoreSystemBrightnessAsync` method to avoid violating Rules of Hooks. ([#19701](https://github.com/expo/expo/pull/19701) by [@Simek](https://github.com/Simek))
+
 ## 11.0.0 — 2022-10-25
 
 ### 🛠 Breaking changes

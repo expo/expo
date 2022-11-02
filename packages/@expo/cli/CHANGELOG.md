@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
+- Display the debug option more prominently in the UI. ([#19793](https://github.com/expo/expo/pull/19793) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.4.5 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.4 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
 
 ## 0.4.3 — 2022-10-28
 
