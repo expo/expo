@@ -34,7 +34,7 @@ export type BundleAssetWithFileHashes = Metro.AssetData & {
 };
 export type BundleOutput = {
   code: string;
-  map: string;
+  map?: string;
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
   assets: readonly BundleAssetWithFileHashes[];
@@ -184,7 +184,7 @@ export async function bundleAsync(
       const hermesBundleOutput = await buildHermesBundleAsync(
         projectRoot,
         bundleOutput.code,
-        bundleOutput.map,
+        bundleOutput.map!,
         bundle.minify
       );
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;

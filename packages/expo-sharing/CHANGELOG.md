@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On iOS, dismiss share sheet after sharing to an app is canceled, so the file doesn't fail to attach when trying to share again ([#19656](https://github.com/expo/expo/pull/19656) by [@keith-kurak](https://github.com/keith-kurak))
-
 ### 💡 Others
+
+## 11.0.1 — 2022-10-27
+
+### 🐛 Bug fixes
+
+- On iOS, dismiss share sheet after sharing to an app is canceled, so the file doesn't fail to attach when trying to share again ([#19656](https://github.com/expo/expo/pull/19656) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 11.0.0 — 2022-10-25
 

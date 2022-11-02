@@ -3,6 +3,7 @@ title: Environment variables and secrets
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
 The ["Environment variables in Expo"](/guides/environment-variables.mdx) guide presents several options for how you can access system environment variables to your app JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables.mdx#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
@@ -201,81 +202,89 @@ Using this approach, we would always need to remember to run `API_URL=https://ap
 
 The following are two possible alternative approaches, each with different tradeoffs.
 
-1. **Move values to application code and switch based on channel**. Rather than putting configuration in environment variables and extras, create a JavaScript file, possibly named **Config.js**. This approach will work well for you as long as you don't need to use the configuration values to modify build time configuration, such as the `ios.bundleIdentifier`, `icon`, and so on. This approach also gives you the ability to promote updates between environments, because the configuration that is used will switch when it's loaded from a binary with a different channel. It might look something like this:
+<Step label="1">
 
-  <Collapsible summary="Config.js">
+**Move values to application code and switch based on channel**. Rather than putting configuration in environment variables and extras, create a JavaScript file, possibly named **Config.js**. This approach will work well for you as long as you don't need to use the configuration values to modify build time configuration, such as the `ios.bundleIdentifier`, `icon`, and so on. This approach also gives you the ability to promote updates between environments, because the configuration that is used will switch when it's loaded from a binary with a different channel. It might look something like this:
 
-    ```js
-    import * as Updates from 'expo-updates';
+<Collapsible summary="Config.js">
 
-    let Config = {
-      apiUrl: 'https://localhost:3000',
-      enableHiddenFeatures: true,
-    };
+```js
+import * as Updates from 'expo-updates';
 
-    if (Updates.channel === 'production') {
-      Config.apiUrl = 'https://api.production.com';
-      Config.enableHiddenFeatures = false;
-    } else if (Updates.channel === 'staging') {
-      Config.apiUrl = 'https://api.staging.com';
-      Config.enableHiddenFeatures = true;
-    }
+let Config = {
+  apiUrl: 'https://localhost:3000',
+  enableHiddenFeatures: true,
+};
 
-    export default Config;
-    ```
+if (Updates.channel === 'production') {
+  Config.apiUrl = 'https://api.production.com';
+  Config.enableHiddenFeatures = false;
+} else if (Updates.channel === 'staging') {
+  Config.apiUrl = 'https://api.staging.com';
+  Config.enableHiddenFeatures = true;
+}
 
-  </Collapsible>
+export default Config;
+```
 
-2. **Use a single environment variable to toggle configuration**. In our **eas.json** we can set an environment variable such as `APP_ENV` and then switch on that value inside of **app.config.js**. This way, we only have to be sure to set one environment variable: `APP_ENV=production eas update`.
+</Collapsible>
 
-  <Collapsible summary="eas.json">
+</Step>
 
-    ```json
-    {
-      "build": {
-        "production": {
-          "channel": "production",
-          "env": {
-            "APP_ENV": "production"
-          }
-        },
-        "preview": {
-          "channel": "staging",
-          "env": {
-            "APP_ENV": "staging"
-          }
-        }
+<Step label="2">
+
+**Use a single environment variable to toggle configuration**. In our **eas.json** we can set an environment variable such as `APP_ENV` and then switch on that value inside of **app.config.js**. This way, we only have to be sure to set one environment variable: `APP_ENV=production eas update`.
+
+<Collapsible summary="eas.json">
+
+```json
+{
+  "build": {
+    "production": {
+      "channel": "production",
+      "env": {
+        "APP_ENV": "production"
+      }
+    },
+    "preview": {
+      "channel": "staging",
+      "env": {
+        "APP_ENV": "staging"
       }
     }
-    ```
+  }
+}
+```
 
-  </Collapsible>
+</Collapsible>
 
-  <Collapsible summary="app.config.js">
+<Collapsible summary="app.config.js">
 
-    ```js
-    let Config = {
-      apiUrl: 'https://localhost:3000',
-      enableHiddenFeatures: true,
-    };
+```js
+let Config = {
+  apiUrl: 'https://localhost:3000',
+  enableHiddenFeatures: true,
+};
 
-    if (process.env.APP_ENV === 'production') {
-      Config.apiUrl = 'https://api.production.com';
-      Config.enableHiddenFeatures = false;
-    } else if (process.env.APP_ENV === 'staging') {
-      Config.apiUrl = 'https://api.staging.com';
-      Config.enableHiddenFeatures = true;
-    }
+if (process.env.APP_ENV === 'production') {
+  Config.apiUrl = 'https://api.production.com';
+  Config.enableHiddenFeatures = false;
+} else if (process.env.APP_ENV === 'staging') {
+  Config.apiUrl = 'https://api.staging.com';
+  Config.enableHiddenFeatures = true;
+}
 
-    export default {
-      // ...
-      extra: {
-        ...Config,
-      },
-    };
-    ```
+export default {
+  // ...
+  extra: {
+    ...Config,
+  },
+};
+```
 
-  </Collapsible>
+</Collapsible>
+
+</Step>
 
 ### How are naming collisions between secrets and the `env` field in eas.json handled?
 
@@ -290,3 +299,38 @@ Environment variables set in your build profile that impact **app.config.js** wi
 ### Can I just set my environment variables on a CI provider?
 
 Environment variables must be defined in **eas.json** in order to be made available to EAS Build workers. If you are [triggering builds from CI](/build/building-on-ci.mdx) this same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets in **eas.json**.
+
+### How to upload a secret file and use it in my app config?
+
+A common use case for uploading file secrets to EAS is when you want to supply your build with the **google-services.json** and **GoogleService-Info.plist** files. Usually, those files should not be checked in to the repository.
+
+Here's an example how to upload **google-services.json** to EAS and use it in your app config:
+
+<Step label="1">
+
+Upload the file to EAS.
+
+<Terminal
+  cmd={[
+    '$ eas secret:create --scope project --name GOOGLE_SERVICES_JSON --type file --value ./path/to/google-services.json',
+    '✔ ️Created a new secret GOOGLE_SERVICES_JSON on project @user/myproject.',
+  ]}
+/>
+
+</Step>
+
+<Step label="2">
+
+Use **app.config.js** to read the path to **google-services.json**.
+
+```js app.config.js
+export default {
+  // ...
+  android: {
+    googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+    // ...
+  },
+};
+```
+
+</Step>

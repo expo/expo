@@ -30,9 +30,12 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/status-bar/",
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-native": "^11.3.0",
     "expo-module-scripts": "^3.0.0"
   },
   "jest": {
-    "preset": "expo-module-scripts/enzyme"
+    "preset": "expo-module-scripts"
   }
 }

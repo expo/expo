@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.17.3 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.2 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
 ## 0.17.0 — 2022-10-25
 
 ### 🛠 Breaking changes

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 5.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
 ## 5.0.0 — 2022-10-25
 
 ### 🛠 Breaking changes

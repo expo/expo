@@ -15,61 +15,19 @@ export default function NativeLinearGradient({
 
   const { width = 1, height = 1 } = layout ?? {};
 
-  const pseudoAngle = React.useMemo(() => {
-    const getControlPoints = (): NativeLinearGradientPoint[] => {
-      let correctedStartPoint: NativeLinearGradientPoint = [0, 0];
-      if (Array.isArray(startPoint)) {
-        correctedStartPoint = [
-          startPoint[0] != null ? startPoint[0] : 0.0,
-          startPoint[1] != null ? startPoint[1] : 0.0,
-        ];
-      }
-      let correctedEndPoint: NativeLinearGradientPoint = [0.0, 1.0];
-      if (Array.isArray(endPoint)) {
-        correctedEndPoint = [
-          endPoint[0] != null ? endPoint[0] : 0.0,
-          endPoint[1] != null ? endPoint[1] : 1.0,
-        ];
-      }
-      return [correctedStartPoint, correctedEndPoint];
-    };
-
-    const [start, end] = getControlPoints();
-    start[0] *= width;
-    end[0] *= width;
-    start[1] *= height;
-    end[1] *= height;
-    const py = end[1] - start[1];
-    const px = end[0] - start[0];
-
-    return 90 + (Math.atan2(py, px) * 180) / Math.PI;
-  }, [width, height, startPoint, endPoint]);
-
-  const gradientColors = React.useMemo(() => {
-    return colors.map((color: number, index: number): string | void => {
-      const hexColor = normalizeColor(color);
-      let output = hexColor;
-      if (locations && locations[index]) {
-        const location = Math.max(0, Math.min(1, locations[index]));
-        // Convert 0...1 to 0...100
-        const percentage = location * 100;
-        output += ` ${percentage}%`;
-      }
-      return output;
-    });
-  }, [colors, locations]);
-
-  const colorStyle = gradientColors.join(',');
-  const backgroundImage = `linear-gradient(${pseudoAngle}deg, ${colorStyle})`;
   // TODO(Bacon): In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
   // browser support.
+  const linearGradientBackgroundImage = React.useMemo(() => {
+    return getLinearGradientBackgroundImage(colors, locations, startPoint, endPoint, width, height);
+  }, [colors, locations, startPoint, endPoint, width, height]);
+
   return (
     <View
       {...props}
       style={[
         props.style,
         // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
-        { backgroundImage },
+        { backgroundImage: linearGradientBackgroundImage },
       ]}
       onLayout={(event) => {
         const { x, y, width, height } = event.nativeEvent.layout;
@@ -90,4 +48,69 @@ export default function NativeLinearGradient({
       }}
     />
   );
+}
+
+/**
+ * Extracted to a separate function in order to be able to test logic independently.
+ */
+export function getLinearGradientBackgroundImage(
+  colors: number[] | string[],
+  locations?: number[] | null,
+  startPoint?: NativeLinearGradientPoint | null,
+  endPoint?: NativeLinearGradientPoint | null,
+  width: number = 1,
+  height: number = 1
+) {
+  const gradientColors = calculateGradientColors(colors, locations);
+  const angle = calculatePseudoAngle(width, height, startPoint, endPoint);
+  return `linear-gradient(${angle}deg, ${gradientColors.join(', ')})`;
+}
+
+function calculatePseudoAngle(
+  width: number,
+  height: number,
+  startPoint?: NativeLinearGradientPoint | null,
+  endPoint?: NativeLinearGradientPoint | null
+) {
+  const getControlPoints = (): NativeLinearGradientPoint[] => {
+    let correctedStartPoint: NativeLinearGradientPoint = [0, 0];
+    if (Array.isArray(startPoint)) {
+      correctedStartPoint = [
+        startPoint[0] != null ? startPoint[0] : 0.0,
+        startPoint[1] != null ? startPoint[1] : 0.0,
+      ];
+    }
+    let correctedEndPoint: NativeLinearGradientPoint = [0.0, 1.0];
+    if (Array.isArray(endPoint)) {
+      correctedEndPoint = [
+        endPoint[0] != null ? endPoint[0] : 0.0,
+        endPoint[1] != null ? endPoint[1] : 1.0,
+      ];
+    }
+    return [correctedStartPoint, correctedEndPoint];
+  };
+
+  const [start, end] = getControlPoints();
+  start[0] *= width;
+  end[0] *= width;
+  start[1] *= height;
+  end[1] *= height;
+  const py = end[1] - start[1];
+  const px = end[0] - start[0];
+
+  return 90 + (Math.atan2(py, px) * 180) / Math.PI;
+}
+
+function calculateGradientColors(colors: number[] | string[], locations?: number[] | null) {
+  return colors.map((color: number | string, index: number): string | void => {
+    const hexColor = normalizeColor(color);
+    let output = hexColor;
+    if (locations && locations[index]) {
+      const location = Math.max(0, Math.min(1, locations[index]));
+      // Convert 0...1 to 0...100
+      const percentage = location * 100;
+      output += ` ${percentage}%`;
+    }
+    return output;
+  });
 }

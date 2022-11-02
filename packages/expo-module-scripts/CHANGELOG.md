@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 3.0.2 — 2022-10-30
+
+### 💡 Others
+
+- Remove Enzyme plugin - it does not work with React 18. Not considered a breaking change because the Enzyme plugin has never worked with React 18 and so is already broken. ([#19777](https://github.com/expo/expo/pull/19777) by [@brentvatne](https://github.com/brentvatne))
+
+## 3.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.0 — 2022-10-25
 
 ### 🛠 Breaking changes

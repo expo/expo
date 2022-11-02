@@ -1,10 +1,10 @@
 import { theme } from '@expo/styleguide';
-import React from 'react';
+import { CSSProperties } from 'react';
 
 type Props = {
   alt: string;
-  style?: React.CSSProperties;
-  containerStyle?: React.CSSProperties;
+  style?: CSSProperties;
+  containerStyle?: CSSProperties;
   src: string;
 };
 

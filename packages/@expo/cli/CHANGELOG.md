@@ -6,9 +6,43 @@
 
 ### 🎉 New features
 
+- Display the debug option more prominently in the UI. ([#19793](https://github.com/expo/expo/pull/19793) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.4.5 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.4 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.3 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.4.2 — 2022-10-28
+
+### 🛠 Breaking changes
+
+- Revert [#18381](https://github.com/expo/expo/pull/18381) (custom entry support).
+
+### 🎉 New features
+
+- Add `-p` to `npx expo export`. ([#19715](https://github.com/expo/expo/pull/19715) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Prevent extraneous `Found multiple AppDelegate file paths` warnings when using CLI commands with a multi-target iOS app. ([#18890](https://github.com/expo/expo/pull/18890) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.4.1 — 2022-10-27
+
+### 🐛 Bug fixes
+
+- Don't print source map size in `npx expo export` when the source maps are not written. ([#19710](https://github.com/expo/expo/pull/19710) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.4.0 — 2022-10-25
 
