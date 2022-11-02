@@ -1899,7 +1899,7 @@ PODS:
     - ABI47_0_0React-Core
   - ABI47_0_0RNGestureHandler (2.8.0):
     - ABI47_0_0React-Core
-  - ABI47_0_0RNReanimated (2.11.0):
+  - ABI47_0_0RNReanimated (2.12.0):
     - ABI47_0_0RCTRequired
     - ABI47_0_0RCTTypeSafety
     - ABI47_0_0React-callinvoker
@@ -2685,7 +2685,7 @@ PODS:
     - React-Core
   - RNGestureHandler (2.8.0):
     - React-Core
-  - RNReanimated (2.11.0):
+  - RNReanimated (2.12.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -4472,7 +4472,7 @@ SPEC CHECKSUMS:
   ABI47_0_0ReactCommon: 3ef5d3970f9ffefc4c1535f3ee8bc71fa1e979d1
   ABI47_0_0RNFlashList: 80c69d926348dafb23488cf647c28c343f0370b3
   ABI47_0_0RNGestureHandler: a691eab4cb48abad81e6d45c728474d7af2a4eb3
-  ABI47_0_0RNReanimated: 81edc437451e216ffc8e60a46957223b81549282
+  ABI47_0_0RNReanimated: fb0af774050ede9a36f59af894db4270a28f0e12
   ABI47_0_0RNScreens: b7b92c672e91734079636fbcf8fdac5a249aca8d
   ABI47_0_0RNSVG: 6ebc184a6e7f101269a30971df3bae6e93422b65
   ABI47_0_0stripe-react-native: aa41ff248a3cd58900f8cd9c7675189769e45b01
@@ -4630,7 +4630,7 @@ SPEC CHECKSUMS:
   ReactCommon: abf3605a56f98b91671d0d1327addc4ffb87af77
   RNFlashList: 18d906a373da5ff16776e5013df9495d826edc7e
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
-  RNReanimated: 590d19d77725fa713c2a0f7f656f6ac41b9ab3e8
+  RNReanimated: fa9ee65f05e359382230f70c37dd973cac9e2b1d
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
   Stripe: 90c12b350ae9e8a262efa87d230c00110c741f88

@@ -1,5 +1,5 @@
-#import "ABI47_0_0REAKeyboardEventObserver.h"
 #import <Foundation/Foundation.h>
+#import <ABI47_0_0RNReanimated/ABI47_0_0REAKeyboardEventObserver.h>
 #import <ABI47_0_0React/ABI47_0_0RCTDefines.h>
 #import <ABI47_0_0React/ABI47_0_0RCTUIManager.h>
 
