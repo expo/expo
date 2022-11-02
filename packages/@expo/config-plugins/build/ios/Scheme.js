@@ -71,7 +71,7 @@ function appendScheme(scheme, infoPlist) {
 
   const existingSchemes = (_infoPlist$CFBundleUR = infoPlist.CFBundleURLTypes) !== null && _infoPlist$CFBundleUR !== void 0 ? _infoPlist$CFBundleUR : [];
 
-  if (existingSchemes.some(({
+  if (existingSchemes !== null && existingSchemes !== void 0 && existingSchemes.some(({
     CFBundleURLSchemes
   }) => CFBundleURLSchemes.includes(scheme))) {
     return infoPlist;
@@ -113,7 +113,7 @@ function removeScheme(scheme, infoPlist) {
 function hasScheme(scheme, infoPlist) {
   const existingSchemes = infoPlist.CFBundleURLTypes;
   if (!Array.isArray(existingSchemes)) return false;
-  return existingSchemes.some(({
+  return existingSchemes === null || existingSchemes === void 0 ? void 0 : existingSchemes.some(({
     CFBundleURLSchemes: schemes
   }) => Array.isArray(schemes) ? schemes.includes(scheme) : false);
 }
