@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Merge `@expo/dev-server` into `@expo/cli`.
+- Merge `@expo/dev-server` into `@expo/cli`. ([#19820](https://github.com/expo/expo/pull/19820) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
