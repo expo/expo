@@ -4,7 +4,6 @@ import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
 import process from 'process';
-import semver from 'semver';
 
 import {
   importHermesCommandFromProject,
@@ -14,17 +13,9 @@ import {
 export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform): boolean {
   switch (platform) {
     case 'android': {
-      if (!gteSdkVersion(expoConfig, '42.0.0')) {
-        // Hermes on Android is supported after SDK 42.
-        return false;
-      }
       return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) === 'hermes';
     }
     case 'ios': {
-      if (!gteSdkVersion(expoConfig, '43.0.0')) {
-        // Hermes on iOS is supported after SDK 43.
-        return false;
-      }
       return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) === 'hermes';
     }
     default:
@@ -229,23 +220,6 @@ async function readHermesHeaderAsync(file: string): Promise<Buffer> {
   await fs.read(fd, buffer, 0, 12, null);
   await fs.close(fd);
   return buffer;
-}
-
-// Cloned from xdl/src/Versions.ts, we cannot use that because of circular dependency
-function gteSdkVersion(expJson: Pick<ExpoConfig, 'sdkVersion'>, sdkVersion: string): boolean {
-  if (!expJson.sdkVersion) {
-    return false;
-  }
-
-  if (expJson.sdkVersion === 'UNVERSIONED') {
-    return true;
-  }
-
-  try {
-    return semver.gte(expJson.sdkVersion, sdkVersion);
-  } catch {
-    throw new Error(`${expJson.sdkVersion} is not a valid version. Must be in the form of x.y.z`);
-  }
 }
 
 async function parsePodfilePropertiesAsync(

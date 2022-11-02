@@ -1,10 +1,9 @@
-import { ExpoConfig, getConfig, getConfigFilePaths, Platform } from '@expo/config';
-import { LoadOptions } from '@expo/metro-config';
+import { ExpoConfig, getConfigFilePaths, Platform } from '@expo/config';
+import { LoadOptions, loadAsync } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
-import { Log } from '../log';
 import {
   buildHermesBundleAsync,
   isEnableHermesManaged,
@@ -12,26 +11,24 @@ import {
 } from '../start/server/metro/HermesBundler';
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
 import {
-  importExpoMetroConfigFromProject,
   importMetroFromProject,
   importMetroServerFromProject,
 } from '../start/server/metro/resolveFromProject';
 import { withMetroMultiPlatformAsync } from '../start/server/metro/withMetroMultiPlatform';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 
-export type MetroDevServerOptions = LoadOptions & {
-  quiet?: boolean;
-};
 export type BundleOptions = {
   entryPoint: string;
-  platform: 'android' | 'ios' | 'web';
+  platform: Platform;
   dev?: boolean;
   minify?: boolean;
   sourceMapUrl?: string;
 };
+
 export type BundleAssetWithFileHashes = Metro.AssetData & {
-  fileHashes: string[]; // added by the hashAssets asset plugin
+  fileHashes: string[]; // added by the hashAssets asset plugin (For EAS Update server)
 };
+
 export type BundleOutput = {
   code: string;
   map?: string;
@@ -39,23 +36,6 @@ export type BundleOutput = {
   hermesSourcemap?: string;
   assets: readonly BundleAssetWithFileHashes[];
 };
-
-function getExpoMetroConfig(projectRoot: string): typeof import('@expo/metro-config') {
-  try {
-    return importExpoMetroConfigFromProject(projectRoot);
-  } catch {
-    // If expo isn't installed, use the unversioned config and warn about installing expo.
-  }
-
-  const unversionedVersion = require('@expo/metro-config/package.json').version;
-  Log.log(
-    chalk.gray(
-      `\u203A Unversioned ${chalk.bold`@expo/metro-config@${unversionedVersion}`} is being used. Bundling apps may not work as expected, and is subject to breaking changes. Install ${chalk.bold`expo`} or set the app.json sdkVersion to use a stable version of @expo/metro-config.`
-    )
-  );
-
-  return require('@expo/metro-config');
-}
 
 let nextBuildID = 0;
 
@@ -75,7 +55,7 @@ async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, p
 export async function bundleAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
-  options: MetroDevServerOptions,
+  options: LoadOptions,
   bundles: BundleOptions[]
 ): Promise<Partial<Record<Platform, BundleOutput>>> {
   // Assert early so the user doesn't have to wait until bundling is complete to find out that
@@ -96,12 +76,9 @@ export async function bundleAsync(
     },
   };
 
-  const ExpoMetroConfig = getExpoMetroConfig(projectRoot);
+  let config = await loadAsync(projectRoot, { reporter, ...options });
 
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
-
-  const bundlerPlatforms = getPlatformBundlers(exp);
+  const bundlerPlatforms = getPlatformBundlers(expoConfig);
 
   config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
 
@@ -122,14 +99,12 @@ export async function bundleAsync(
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
       onProgress: (transformedFileCount: number, totalFileCount: number) => {
-        if (!options.quiet) {
-          terminalReporter.update({
-            buildID,
-            type: 'bundle_transform_progressed',
-            transformedFileCount,
-            totalFileCount,
-          });
-        }
+        terminalReporter.update({
+          buildID,
+          type: 'bundle_transform_progressed',
+          transformedFileCount,
+          totalFileCount,
+        });
       },
     };
     const bundleDetails = {
@@ -190,6 +165,7 @@ export async function bundleAsync(
   try {
     const intermediateOutputs = await Promise.all(bundles.map((bundle) => buildAsync(bundle)));
     const bundleOutputs: BundleOutput[] = [];
+
     for (let i = 0; i < bundles.length; ++i) {
       // hermesc does not support parallel building even we spawn processes.
       // we should build them sequentially.

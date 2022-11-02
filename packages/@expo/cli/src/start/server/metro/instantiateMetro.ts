@@ -1,13 +1,13 @@
 import { getConfig } from '@expo/config';
+import { LoadOptions, loadAsync } from '@expo/metro-config';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
-import { MetroDevServerOptions } from '../../../export/bundleAsync';
 import { createDevServerMiddleware } from '../middleware/devServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
+import { importMetroFromProject } from './resolveFromProject';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 export type MessageSocket = {
@@ -17,7 +17,7 @@ export type MessageSocket = {
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
   projectRoot: string,
-  options: Omit<MetroDevServerOptions, 'logger'>
+  options: Omit<LoadOptions, 'logger'>
 ): Promise<{
   server: http.Server;
   middleware: any;
@@ -26,7 +26,6 @@ export async function instantiateMetroAsync(
   let reportEvent: ((event: any) => void) | undefined;
 
   const Metro = importMetroFromProject(projectRoot);
-  const ExpoMetroConfig = importExpoMetroConfigFromProject(projectRoot);
 
   const terminal = new Terminal(process.stdout);
   const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
@@ -40,7 +39,7 @@ export async function instantiateMetroAsync(
     },
   };
 
-  let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  let metroConfig = await loadAsync(projectRoot, { reporter, ...options });
 
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
   const { exp } = getConfig(projectRoot, {
