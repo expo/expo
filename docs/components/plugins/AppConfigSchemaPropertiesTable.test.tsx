@@ -115,7 +115,7 @@ describe('AppConfigSchemaPropertiesTable', () => {
 
 describe('formatSchema', () => {
   const formattedSchema = formatSchema(Object.entries(testSchema));
-  test('name is property at toot level', () => {
+  test('name is property at root level', () => {
     expect(formattedSchema[0].name).toBe('name');
   });
   test('androidNavigationBar has two subproperties', () => {
