@@ -54,7 +54,6 @@ async function createExampleApp(data, targetDir, packageManager) {
     });
     await prebuildExampleApp(appTargetPath);
     await modifyPackageJson(appTargetPath);
-    await modifyMetroConfigAsync(appTargetPath);
     await (0, utils_1.newStep)('Installing dependencies in the example app', async (step) => {
         await (0, packageManager_1.installDependencies)(packageManager, appTargetPath);
         await podInstall(appTargetPath);
@@ -115,23 +114,6 @@ async function modifyPackageJson(appPath) {
     await fs_extra_1.default.writeJson(packageJsonPath, packageJson, {
         spaces: 2,
     });
-}
-/**
- * Modify metro.config.js for incompatible react-native when using npm v7+
- */
-async function modifyMetroConfigAsync(appPath) {
-    const metroConfigPath = path_1.default.join(appPath, 'metro.config.js');
-    let contents = await fs_extra_1.default.readFile(metroConfigPath, { encoding: 'utf8' });
-    contents = contents.replace(/\b(const config =.*$)/gm, '$1\n' +
-        `
-// npm v7+ will install ../node_modules/react-native because of peerDependencies.
-// To prevent the incompatible react-native bewtween ./node_modules/react-native and ../node_modules/react-native,
-// excludes the one from the parent folder when bundling.
-config.resolver.blockList = [
-  ...Array.from(config.resolver.blockList ?? []),
-  new RegExp(path.resolve('..', 'node_modules', 'react-native')),
-];`);
-    await fs_extra_1.default.writeFile(metroConfigPath, contents);
 }
 /**
  * Runs `npx expo prebuild` in the example app.
