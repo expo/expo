@@ -22,6 +22,7 @@ jobs:
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
+      REACT_NATIVE_OVERRIDE_VERSION: 9999.9999.9999
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
