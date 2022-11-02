@@ -314,7 +314,7 @@ Object {
     ],
     "package": "com.bacon.todo",
     "permissions": Array [
-      "CAMERA",
+      "android.permission.CAMERA",
       "com.sec.android.provider.badge.permission.WRITE",
       "android.permission.ACCESS_COARSE_LOCATION",
     ],
@@ -1528,7 +1528,7 @@ Object {
     ],
     "package": "com.bacon.todo",
     "permissions": Array [
-      "CAMERA",
+      "android.permission.CAMERA",
       "com.sec.android.provider.badge.permission.WRITE",
       "android.permission.ACCESS_COARSE_LOCATION",
     ],
