@@ -74,9 +74,6 @@ export async function authenticateAsync(options = {}) {
     }
     const promptMessage = options.promptMessage || 'Authenticate';
     const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
-    if (result.warning) {
-        console.warn(result.warning);
-    }
     return result;
 }
 // @needsAudit
