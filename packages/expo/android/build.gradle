@@ -120,10 +120,12 @@ android {
         srcDirs += new File(project.buildDir, generatedFilesSrcDir)
 
         def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 69, 0)) {
+        if (rnVersion >= versionToNumber(0, 71, 0)) {
           srcDirs += "src/reactNativeHostWrapper"
+        } else if (rnVersion >= versionToNumber(0, 69, 0)) {
+          srcDirs += "src/reactNativeHostWrapper69"
         } else if (rnVersion >= versionToNumber(0, 67, 0)) {
-          srcDirs += "src/reactNativeHostWrapper68"
+          srcDirs += "src/reactNativeHostWrapper67"
         } else {
           srcDirs += "src/reactNativeHostWrapper64"
         }
