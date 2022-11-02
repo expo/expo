@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `EXPO_NO_DEFAULT_PORT` to skip proxy port as proxy port is no longer required.
+
 ### 🎉 New features
 
 - Display the debug option more prominently in the UI. ([#19793](https://github.com/expo/expo/pull/19793) by [@EvanBacon](https://github.com/EvanBacon))

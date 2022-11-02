@@ -2,7 +2,6 @@ import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
-import { env } from '../../utils/env';
 import { getIpAddress } from '../../utils/ip';
 
 const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
