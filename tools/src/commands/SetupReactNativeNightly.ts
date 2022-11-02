@@ -214,16 +214,10 @@ task unpackReactNativeAAR {
 
 /**
  * Remove deprecated kotlin-android-extensions
- * TODO: remove this after detox updated and #19732 landed
+ * TODO: remove this after detox updated
  */
 async function removeKotlinAndroidExtensionAsync() {
-  const gradleFiles = [
-    'node_modules/detox/android/detox/build.gradle',
-    'packages/expo-eas-client/android/build.gradle',
-    'packages/expo-module-template/android/build.gradle',
-    'packages/expo-structured-headers/android/build.gradle',
-    'packages/expo-updates-interface/android/build.gradle',
-  ];
+  const gradleFiles = ['node_modules/detox/android/detox/build.gradle'];
 
   await Promise.all(
     gradleFiles.map((file) =>
