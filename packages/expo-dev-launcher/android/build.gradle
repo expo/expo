@@ -40,7 +40,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 9
-    versionName "1.1.1"
+    versionName "2.0.0"
   }
 
   lintOptions {
@@ -68,8 +68,15 @@ android {
   }
 
   sourceSets {
-    main {
+    debug {
       java {
+        def expoPackageVersion = getExpoPackageVersion()
+        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
+          srcDirs += "src/expo-45"
+        } else {
+          srcDirs += "src/expo-44"
+        }
+
         def rnVersion = getRNVersion()
         if (rnVersion >= versionToNumber(0, 69, 0)) {
           srcDirs += "src/react-native-69"
@@ -87,16 +94,6 @@ android {
           srcDirs += 'src/with-updates'
         } else {
           srcDirs += 'src/without-updates'
-        }
-      }
-    }
-    debug {
-      java {
-        def expoPackageVersion = getExpoPackageVersion()
-        if (expoPackageVersion >= versionToNumber(45, 0, 0)) {
-          srcDirs += "src/expo-45"
-        } else {
-          srcDirs += "src/expo-44"
         }
       }
     }
@@ -195,7 +192,12 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
 }
 
 def getRNVersion() {
-  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
+  def versionNumber = getNodeModulesPackageVersion("react-native", "reactNativeVersion")
+  if (versionNumber == versionToNumber(0, 0, 0)) {
+    // react-native nightly build published as `0.0.0-20221002-2027-2319f75c8` form, but its semantic is latest
+    return versionToNumber(9999, 9999, 9999)
+  }
+  return versionNumber
 }
 
 def getExpoPackageVersion() {

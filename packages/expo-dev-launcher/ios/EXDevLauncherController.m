@@ -263,6 +263,8 @@
 
 - (void)navigateToLauncher
 {
+  NSAssert([NSThread isMainThread], @"This function must be called on main thread");
+
   [_appBridge invalidate];
   [self invalidateDevMenuApp];
   
@@ -276,36 +278,10 @@
   [self _removeInitModuleObserver];
 
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-  
-  NSMutableDictionary *insets = [NSMutableDictionary new];
-  [insets setObject:@(0) forKey:@"top"];
-  [insets setObject:@(0) forKey:@"right"];
-  [insets setObject:@(0) forKey:@"bottom"];
-  [insets setObject:@(0) forKey:@"left"];
-  
-  if (@available(iOS 11.0, *)) {
-    UIWindow* window = [[UIApplication sharedApplication] keyWindow];
-    UIEdgeInsets safeAreaInsets = window.safeAreaInsets;
-    
-    [insets setObject:@(safeAreaInsets.top) forKey:@"top"];
-    [insets setObject:@(safeAreaInsets.right) forKey:@"right"];
-    [insets setObject:@(safeAreaInsets.bottom) forKey:@"bottom"];
-    [insets setObject:@(safeAreaInsets.left) forKey:@"left"];
-  }
-  
 
   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
                                                    moduleName:@"main"
-                                            initialProperties:@{
-                                              @"insets": insets,
-                                              @"isSimulator":
-                                                              #if TARGET_IPHONE_SIMULATOR
-                                                              @YES
-                                                              #else
-                                                              @NO
-                                                              #endif
-                                              
-                                            }];
+                                            initialProperties:@{}];
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
   
@@ -351,8 +327,11 @@
       if (!self) {
         return;
       }
-      
-      EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:error.description stack:nil];
+
+      EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
+      NSURL *appUrl = devLauncherUrl.url;
+      NSString *errorMessage = [NSString stringWithFormat:@"Failed to load app from %@ with error: %@", appUrl.absoluteString, error.localizedDescription];
+      EXDevLauncherAppError *appError = [[EXDevLauncherAppError alloc] initWithMessage:errorMessage stack:nil];
       [self.errorManager showError:appError];
     });
   }];
@@ -425,6 +404,9 @@
     projectUrl = expoUrl;
   }
   
+  // Disable onboarding popup if "&disableOnboarding=1" is a param
+  [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
+
   NSString *installationID = [_installationIDHelper getOrCreateInstallationID];
 
   NSDictionary *updatesConfiguration = [EXDevLauncherUpdatesHelper createUpdatesConfigurationWithURL:expoUrl
@@ -565,9 +547,6 @@
     
     [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
 
-    [[UIDevice currentDevice] setValue:@(orientation) forKey:@"orientation"];
-    [UIViewController attemptRotationToDeviceOrientation];
-    
     if (backgroundColor) {
       self.window.rootViewController.view.backgroundColor = backgroundColor;
       self.window.backgroundColor = backgroundColor;

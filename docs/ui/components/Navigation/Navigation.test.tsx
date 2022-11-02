@@ -1,16 +1,14 @@
+import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
-import node from 'unist-builder';
-import visit from 'unist-util-visit';
+import mockRouter from 'next-router-mock';
+import { MemoryRouterProvider } from 'next-router-mock/MemoryRouterProvider';
+import { u as node } from 'unist-builder';
+import { visit } from 'unist-util-visit';
 
 import { findActiveRoute, Navigation } from './Navigation';
 import { NavigationNode } from './types';
 
-jest.mock('next/router', () => ({
-  useRouter: jest.fn().mockReturnValue({
-    query: {},
-  }),
-}));
+jest.mock('next/router', () => mockRouter);
 
 /** A set of navigation nodes to test with */
 const nodes: NavigationNode[] = [
@@ -40,7 +38,11 @@ const nodes: NavigationNode[] = [
 describe(Navigation, () => {
   it('renders pages', () => {
     const section = getNode(nodes, { name: 'Get started' });
-    render(<Navigation routes={children(section)} />);
+    render(
+      <MemoryRouterProvider>
+        <Navigation routes={children(section)} />
+      </MemoryRouterProvider>
+    );
     // Get started ->
     expect(screen.getByText('Introduction')).toBeInTheDocument();
     expect(screen.getByText('Create a new app')).toBeInTheDocument();
@@ -49,7 +51,11 @@ describe(Navigation, () => {
 
   it('renders pages inside groups', () => {
     const section = getNode(nodes, { name: 'Tutorial' });
-    render(<Navigation routes={children(section)} />);
+    render(
+      <MemoryRouterProvider>
+        <Navigation routes={children(section)} />
+      </MemoryRouterProvider>
+    );
     // Tutorial ->
     expect(screen.getByText('Building apps')).toBeInTheDocument();
     // Tutorial -> Building apps ->
@@ -58,7 +64,11 @@ describe(Navigation, () => {
   });
 
   it('renders pages inside groups inside sections', () => {
-    render(<Navigation routes={nodes} />);
+    render(
+      <MemoryRouterProvider>
+        <Navigation routes={nodes} />
+      </MemoryRouterProvider>
+    );
     // Get started ->
     expect(screen.getByText('Introduction')).toBeInTheDocument();
     // Tutorial -> First steps ->

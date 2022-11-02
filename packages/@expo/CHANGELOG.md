@@ -11,4 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix incorrect hermesc path on SDK 46. ([#18548](https://github.com/expo/expo/pull/18548) by [@thespacemanatee](https://github.com/thespacemanatee))
+
+- [prebuild-config] bump image-utils version. ([#19711]([https://github.com/expo/expo/pull/19711) by [@kbrandwijk](https://github.com/kbrandwijk))
+
 ### 💡 Others

@@ -16,15 +16,12 @@ class DevLauncherAuth(reactContext: ReactApplicationContext?) :
 
   private val localStore = reactApplicationContext.getSharedPreferences(SessionStore, Context.MODE_PRIVATE)
 
-  private val devMenuManager = DevMenuManager
-
   override fun getName(): String {
     return "EXDevLauncherAuth"
   }
 
   @ReactMethod
   fun setSessionAsync(session: String?, promise: Promise) {
-    devMenuManager.getExpoApiClient().setSessionSecret(session)
     saveSessionToLocalStorage(session)
     promise.resolve(null)
   }

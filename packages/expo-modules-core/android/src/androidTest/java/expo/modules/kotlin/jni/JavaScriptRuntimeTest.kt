@@ -80,10 +80,10 @@ class JavaScriptRuntimeTest {
 
   @Test
   fun evaluate_returns_function() {
-    val number = jsiInterop.evaluateScript("(function() {})")
-    Truth.assertThat(number.isFunction()).isTrue()
-    Truth.assertThat(number.isObject()).isTrue()
-    Truth.assertThat(number.kind()).isEqualTo("function")
+    val function = jsiInterop.evaluateScript("(function() {})")
+    Truth.assertThat(function.isFunction()).isTrue()
+    Truth.assertThat(function.isObject()).isTrue()
+    Truth.assertThat(function.kind()).isEqualTo("function")
   }
 
   @Test

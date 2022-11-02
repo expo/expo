@@ -23,17 +23,18 @@ def getRNVersion() {
   def coreVersion = version.split("-")[0]
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
-  return versionToNumber(
-      major,
-      minor,
-      patch
-  )
+  def versionNumber = versionToNumber(major, minor, patch)
+  if (versionNumber == versionToNumber(0, 0, 0)) {
+    // react-native nightly build published as `0.0.0-20221002-2027-2319f75c8` form, but its semantic is latest
+    return versionToNumber(9999, 9999, 9999)
+  }
+  return versionNumber
 }
 
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '46.0.1'
+version = '47.0.0-beta.7'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -104,7 +105,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 1
-    versionName "46.0.1"
+    versionName "47.0.0-beta.7"
     consumerProguardFiles("proguard-rules.pro")
   }
   lintOptions {

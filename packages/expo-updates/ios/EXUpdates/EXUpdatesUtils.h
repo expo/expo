@@ -18,6 +18,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getRuntimeVersionWithConfig:(EXUpdatesConfig *)config;
 + (NSURL *)urlForBundledAsset:(EXUpdatesAsset *)asset;
 + (NSString *)pathForBundledAsset:(EXUpdatesAsset *)asset;
++ (BOOL)isNativeDebuggingEnabled;
++ (void)purgeUpdatesLogsOlderThanOneDay;
 
 @end
 

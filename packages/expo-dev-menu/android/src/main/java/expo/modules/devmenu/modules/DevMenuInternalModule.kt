@@ -1,6 +1,5 @@
 package expo.modules.devmenu.modules
 
-import android.os.Build
 import com.facebook.react.bridge.Promise
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReactContextBaseJavaModule
@@ -37,24 +36,9 @@ interface DevMenuInternalMenuControllerModuleInterface {
   fun fireCallback(name: String, promise: Promise)
 }
 
-interface DevMenuInternalSessionManagerModuleInterface {
-  fun restoreSession(): String?
-
-  @ReactMethod
-  fun restoreSessionAsync(promise: Promise)
-
-  @ReactMethod
-  fun setSessionAsync(session: ReadableMap?, promise: Promise)
-}
-
 interface DevMenuInternalFontManagerModuleInterface {
   @ReactMethod
   fun loadFontsAsync(promise: Promise)
-}
-
-interface DevMenuInternalWebBrowserModuleInterface {
-  @ReactMethod
-  fun openWebBrowserAsync(startUrl: String?, promise: Promise)
 }
 
 class DevMenuInternalModule(

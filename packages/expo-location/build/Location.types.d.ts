@@ -1,4 +1,4 @@
-import { PermissionResponse as UMPermissionResponse } from 'expo-modules-core';
+import { PermissionResponse } from 'expo-modules-core';
 /**
  * Enum with available location accuracies.
  */
@@ -447,11 +447,12 @@ export declare type PermissionDetailsLocationAndroid = {
     accuracy: 'fine' | 'coarse' | 'none';
 };
 /**
- * `LocationPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse)
+ * `LocationPermissionResponse` extends [PermissionResponse](#permissionresponse)
  * type exported by `expo-modules-core` and contains additional platform-specific fields.
  */
-export interface LocationPermissionResponse extends UMPermissionResponse {
+export declare type LocationPermissionResponse = PermissionResponse & {
     ios?: PermissionDetailsLocationIOS;
     android?: PermissionDetailsLocationAndroid;
-}
+};
+export { PermissionResponse };
 //# sourceMappingURL=Location.types.d.ts.map

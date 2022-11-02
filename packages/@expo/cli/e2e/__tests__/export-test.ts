@@ -48,15 +48,15 @@ it('runs `npx expo export --help`', async () => {
         $ npx expo export <dir>
 
       Options
-        <dir>                   Directory of the Expo project. Default: Current working directory
-        --platform <platform>   Options: android, ios, web, all. Default: all
-        --dev                   Configure static files for developing locally using a non-https server
-        --output-dir <dir>      The directory to export the static files to. Default: dist
-        --max-workers <number>  Maximum number of tasks to allow the bundler to spawn
-        --dump-assetmap         Dump the asset map for further processing
-        --dump-sourcemap        Dump the source map for debugging the JS bundle
-        -c, --clear             Clear the bundler cache
-        -h, --help              Usage info
+        <dir>                      Directory of the Expo project. Default: Current working directory
+        --dev                      Configure static files for developing locally using a non-https server
+        --output-dir <dir>         The directory to export the static files to. Default: dist
+        --max-workers <number>     Maximum number of tasks to allow the bundler to spawn
+        --dump-assetmap            Dump the asset map for further processing
+        --dump-sourcemap           Dump the source map for debugging the JS bundle
+        -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        -c, --clear                Clear the bundler cache
+        -h, --help                 Usage info
     "
   `);
 });

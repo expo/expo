@@ -21,15 +21,16 @@ import { UserProfileScreen } from './screens/UserProfileScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-type LauncherAppProps = {
-  isSimulator?: boolean;
-};
+type LauncherAppProps = object;
 
 export function App(props: LauncherAppProps) {
   return (
     <LoadInitialData loader={<Splash />}>
       <AppProviders>
-        <Stack.Navigator initialRouteName="Main" mode="modal">
+        <Stack.Navigator
+          initialRouteName="Main"
+          screenOptions={{ presentation: 'modal' }}
+          detachInactiveScreens={false}>
           <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
 
           <Stack.Screen
@@ -47,7 +48,7 @@ export function App(props: LauncherAppProps) {
 
 const Main = () => {
   return (
-    <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }}>
+    <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }} detachInactiveScreens={false}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}

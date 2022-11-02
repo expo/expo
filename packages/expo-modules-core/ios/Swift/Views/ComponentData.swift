@@ -69,28 +69,15 @@ public final class ComponentData: RCTComponentData {
 }
 
 /**
- Creates a setter for the event prop.
+ Creates a setter for the event prop. Used only by Paper.
  */
 private func createEventSetter(eventName: String, bridge: RCTBridge?) -> RCTPropBlockAlias {
   return { [weak bridge] (target: RCTComponent, value: Any) in
-    // Find view's property that is named as the prop and is wrapped by `Event`.
-    let child = Mirror(reflecting: target).children.first {
-      $0.label == "_\(eventName)"
-    }
-    guard let event = child?.value as? AnyEventInternal else {
-      return
-    }
-
-    // For callbacks React Native passes a bool value whether the prop is specified or not.
-    if value as? Bool == true {
-      event.settle { [weak target] (body: Any) in
-        if let target = target {
-          let componentEvent = RCTComponentEvent(name: eventName, viewTag: target.reactTag, body: ["payload": body])
-          bridge?.eventDispatcher().send(componentEvent)
-        }
+    installEventDispatcher(forEvent: eventName, onView: target) { [weak target] (body: [String: Any]) in
+      if let target = target {
+        let componentEvent = RCTComponentEvent(name: eventName, viewTag: target.reactTag, body: body)
+        bridge?.eventDispatcher().send(componentEvent)
       }
-    } else {
-      event.invalidate()
     }
   }
 }

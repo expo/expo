@@ -9,6 +9,7 @@ import expo.modules.kotlin.exception.FieldRequiredException
 import expo.modules.kotlin.exception.RecordCastException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.DynamicAwareTypeConverters
 import expo.modules.kotlin.types.TypeConverter
@@ -57,7 +58,7 @@ class RecordTypeConverter<T : Record>(
     return value as T
   }
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_MAP)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.READABLE_MAP)
 
   private fun convertFromReadableMap(jsMap: ReadableMap): T {
     val kClass = type.classifier as KClass<*>

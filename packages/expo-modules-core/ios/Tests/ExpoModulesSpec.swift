@@ -41,7 +41,7 @@ class ExpoModulesSpec: ExpoSpec {
       }
 
       it("can access native module") {
-        let nativeModule = try! runtime?.eval("ExpoModules.\(testModuleName)")
+        let nativeModule = try! runtime?.eval("expo.modules.\(testModuleName)")
         expect(nativeModule?.isUndefined()) == false
         expect(nativeModule?.isObject()) == true
         expect(nativeModule?.getRaw()).notTo(beNil())
@@ -58,7 +58,7 @@ class ExpoModulesSpec: ExpoSpec {
 
     describe("module") {
       it("exposes constants") {
-        let dict = try! runtime!.eval("ExpoModules.TestModule").asDict()
+        let dict = try! runtime!.eval("expo.modules.TestModule").asDict()
 
         dict.forEach { (key: String, value: Any) in
           expect(value) === dict[key]!
@@ -66,17 +66,17 @@ class ExpoModulesSpec: ExpoSpec {
       }
 
       it("has function") {
-        expect(try! runtime?.eval("typeof ExpoModules.TestModule.\(testFunctionName)").asString()) == "function"
-        expect(try! runtime?.eval("ExpoModules.TestModule.\(testFunctionName)").isFunction()) == true
+        expect(try! runtime?.eval("typeof expo.modules.TestModule.\(testFunctionName)").asString()) == "function"
+        expect(try! runtime?.eval("expo.modules.TestModule.\(testFunctionName)").isFunction()) == true
       }
 
       it("calls function") {
-        expect(try! runtime?.eval("ExpoModules.TestModule.\(testFunctionName)()").asDouble()) == Double.pi
+        expect(try! runtime?.eval("expo.modules.TestModule.\(testFunctionName)()").asDouble()) == Double.pi
       }
 
       it("throws from sync function") {
         // Invoke the throwing function and return the error (eval shouldn't rethrow here)
-        let error = try! runtime!.eval("try { ExpoModules.TestModule.\(throwingFunctionName)() } catch (error) { error }").asObject()
+        let error = try! runtime!.eval("try { expo.modules.TestModule.\(throwingFunctionName)() } catch (error) { error }").asObject()
 
         // We just check if it contains the description — they won't be equal for the following reasons:
         // - the `exceptionToThrow` is just the root cause, in fact it returns `FunctionCallException`

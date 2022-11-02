@@ -62,6 +62,8 @@ jobs:
           yarn-tools: 'true'
           gradle: 'true'
           hermes-engine-aar: 'true'
+          ndk: 'true'
+          react-native-gradle-downloads: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Yarn install

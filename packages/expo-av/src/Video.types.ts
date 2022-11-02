@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ImageProps, ViewProps } from 'react-native';
+import { ImageProps, ViewProps, StyleProp, ViewStyle } from 'react-native';
 
 import {
   AVPlaybackNativeSource,
@@ -119,6 +119,10 @@ export type VideoProps = {
    * An optional property to pass custom styles to the poster image.
    */
   posterStyle?: ImageProps['style'];
+  /**
+   * An optional property to pass custom styles to the internal video component.
+   */
+  videoStyle?: StyleProp<ViewStyle>;
 
   // Callbacks
   /**
@@ -171,6 +175,13 @@ export type VideoProps = {
    * A boolean which, if set to `true`, will display an image (whose source is set via the prop `posterSource`) while the video is loading.
    */
   usePoster?: boolean;
+  /**
+   * A react-native `Image` like component to display the poster image.
+   */
+  PosterComponent?: React.ComponentType<{
+    style: ImageProps['style'];
+    source: ImageProps['source'];
+  }>;
 
   // Playback API
   /**
@@ -263,6 +274,7 @@ export type VideoNativeProps = {
   onReadyForDisplay?: (event: { nativeEvent: VideoReadyForDisplayEvent }) => void;
   onFullscreenUpdate?: (event: { nativeEvent: VideoFullscreenUpdateEvent }) => void;
   useNativeControls?: boolean;
+  videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
 
 // @docsMissing

@@ -5,7 +5,5 @@ export type ExpoDevMenuItem = {
 
 export type ExpoDevMenu = {
   openMenu();
-  openProfile();
-  openSettings();
   addDevMenuCallbacks(names: string[]);
 };

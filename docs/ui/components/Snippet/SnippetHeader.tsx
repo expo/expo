@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { borderRadius, theme, darkTheme } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 
 import { LABEL } from '~/ui/components/Text';
 
@@ -23,7 +23,7 @@ const headerStyle = css`
   border-top-left-radius: ${borderRadius.medium}px;
   border-top-right-radius: ${borderRadius.medium}px;
   display: flex;
-  padding: 0 8px 0 16px;
+  padding: 0 0 0 16px;
   justify-content: space-between;
   min-height: 42px;
 `;
@@ -31,6 +31,7 @@ const headerStyle = css`
 const headerDarkStyle = css`
   background-color: ${darkTheme.background.tertiary};
   border-color: transparent;
+  padding-right: 8px;
 `;
 
 const headerTitleStyle = css`

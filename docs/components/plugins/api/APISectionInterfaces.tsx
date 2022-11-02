@@ -5,6 +5,7 @@ import { renderMethod } from './APISectionMethods';
 import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code, H4 } from '~/components/plugins/Headings';
+import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   CommentData,
   InterfaceDefinitionData,
@@ -91,7 +92,7 @@ const renderInterfacePropertyRow = ({
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell fitContent>
-        <InlineCode>{resolveTypeName(type)}</InlineCode>
+        <APIDataType typeDefinition={type} />
       </Cell>
       <Cell fitContent>{renderInterfaceComment(comment, signatures, initValue)}</Cell>
     </Row>
@@ -114,7 +115,7 @@ const renderInterface = ({
   return (
     <div key={`interface-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
-      <APISectionPlatformTags comment={comment} prefix="Only for:" firstElement />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <H3Code tags={getTagNamesList(comment)}>
         <InlineCode>{name}</InlineCode>
       </H3Code>

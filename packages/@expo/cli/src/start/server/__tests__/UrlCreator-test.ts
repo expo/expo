@@ -5,6 +5,7 @@ import { UrlCreator } from '../UrlCreator';
 jest.mock('../../../log');
 
 beforeEach(() => {
+  delete process.env.EXPO_NO_DEFAULT_PORT;
   delete process.env.EXPO_PACKAGER_PROXY_URL;
   delete process.env.REACT_NATIVE_PACKAGER_HOSTNAME;
 });
@@ -31,6 +32,11 @@ describe('constructLoadingUrl', () => {
     expect(
       createDefaultCreator().constructLoadingUrl({ scheme: 'my-scheme' }, 'android')
     ).toMatchInlineSnapshot(`"my-scheme://100.100.1.100:8081/_expo/loading?platform=android"`);
+  });
+  it(`allows null platform`, () => {
+    expect(createDefaultCreator().constructLoadingUrl({}, null)).toMatchInlineSnapshot(
+      `"http://100.100.1.100:8081/_expo/loading"`
+    );
   });
 });
 
@@ -67,6 +73,16 @@ describe('constructDevClientUrl', () => {
 });
 
 describe('constructUrl', () => {
+  it(`skips default port with environment variable`, () => {
+    process.env.EXPO_NO_DEFAULT_PORT = 'true';
+    process.env.EXPO_PACKAGER_PROXY_URL = 'http://expo.dev';
+    expect(createDefaultCreator().constructUrl({})).toMatchInlineSnapshot(`"http://expo.dev"`);
+  });
+  it(`adds a default port by default when using a non-standard URL`, () => {
+    process.env.EXPO_PACKAGER_PROXY_URL = 'http://expo.dev';
+    expect(createDefaultCreator().constructUrl({})).toMatchInlineSnapshot(`"http://expo.dev:80"`);
+  });
+
   it(`creates default`, () => {
     expect(createDefaultCreator().constructUrl({})).toMatchInlineSnapshot(
       `"http://100.100.1.100:8081"`

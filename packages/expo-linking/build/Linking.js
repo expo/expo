@@ -29,7 +29,7 @@ function getHostUri() {
 function isExpoHosted() {
     const hostUri = getHostUri();
     return !!(hostUri &&
-        (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
+        (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test|expo\.dev)(:.*)?(\/.*)?$/.test(hostUri) ||
             Constants.manifest?.developer ||
             Constants.manifest2?.extra?.expoGo?.developer));
 }
@@ -313,7 +313,7 @@ export async function openURL(url) {
  * `false` if not.
  *
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
- * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#opening-links-to-other-apps).
+ * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#linking-from-your-app).
  */
 export async function canOpenURL(url) {
     validateURL(url);

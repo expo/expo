@@ -3,7 +3,7 @@ package expo.modules.kotlin.types
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
-import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KClass
 import kotlin.reflect.KType
@@ -35,7 +35,24 @@ class ArrayTypeConverter(
     return array
   }
 
-  override fun convertFromAny(value: Any): Array<*> = value as Array<*>
+  override fun convertFromAny(value: Any): Array<*> {
+    return if (arrayElementConverter.isTrivial()) {
+      value as Array<*>
+    } else {
+      (value as Array<*>).map {
+        exceptionDecorator({ cause ->
+          CollectionElementCastException(
+            arrayType,
+            arrayType.arguments.first().type!!,
+            it!!::class,
+            cause
+          )
+        }) {
+          arrayElementConverter.convert(it)
+        }
+      }.toTypedArray()
+    }
+  }
 
   /**
    * We can't use a Array<Any?> here. We have to create a typed array.
@@ -51,5 +68,7 @@ class ArrayTypeConverter(
     ) as Array<Any?>
   }
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_ARRAY)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forPrimitiveArray(arrayElementConverter.getCppRequiredTypes())
+
+  override fun isTrivial() = arrayElementConverter.isTrivial()
 }

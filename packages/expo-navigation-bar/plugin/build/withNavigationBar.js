@@ -4,11 +4,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setNavigationBarStyles = exports.setNavigationBarColors = exports.setStrings = exports.withAndroidNavigationBarExpoGoManifest = exports.resolveProps = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
 // @ts-ignore: uses flow
 const normalize_color_1 = __importDefault(require("@react-native/normalize-color"));
 // @ts-ignore
 const debug_1 = __importDefault(require("debug"));
+const config_plugins_1 = require("expo/config-plugins");
 const debug = (0, debug_1.default)('expo:system-navigation-bar:plugin');
 const pkg = require('expo-navigation-bar/package.json');
 // strings.xml keys, this should not change.
@@ -37,19 +37,18 @@ function convertColorAndroid(input) {
     return color | 0x0;
 }
 function resolveProps(config, _props) {
-    var _a, _b, _c, _d;
     let props;
     if (!_props) {
         props = {
-            backgroundColor: (_a = config.androidNavigationBar) === null || _a === void 0 ? void 0 : _a.backgroundColor,
-            barStyle: ((_b = config.androidNavigationBar) === null || _b === void 0 ? void 0 : _b.barStyle)
-                ? LEGACY_BAR_STYLE_MAP[(_c = config.androidNavigationBar) === null || _c === void 0 ? void 0 : _c.barStyle]
+            backgroundColor: config.androidNavigationBar?.backgroundColor,
+            barStyle: config.androidNavigationBar?.barStyle
+                ? LEGACY_BAR_STYLE_MAP[config.androidNavigationBar?.barStyle]
                 : undefined,
             // Resources for:
             // - sticky-immersive: https://youtu.be/cBi8fjv90E4?t=416 -- https://developer.android.com/training/system-ui/immersive#sticky-immersive
             // - immersive: https://youtu.be/cBi8fjv90E4?t=168 -- https://developer.android.com/training/system-ui/immersive#immersive
             // - leanback: https://developer.android.com/training/system-ui/immersive#leanback
-            legacyVisible: (_d = config.androidNavigationBar) === null || _d === void 0 ? void 0 : _d.visible,
+            legacyVisible: config.androidNavigationBar?.visible,
         };
         if (props.legacyVisible) {
             // Using legacyVisible can break the setPositionAsync method:
@@ -68,12 +67,11 @@ exports.resolveProps = resolveProps;
  * of the static values that Expo Go reads from (`androidNavigationBar`).
  */
 const withAndroidNavigationBarExpoGoManifest = (config, props) => {
-    var _a, _b;
     if (!config.androidNavigationBar) {
         // Remap the config plugin props so Expo Go knows how to apply them.
         config.androidNavigationBar = {
-            backgroundColor: (_a = props.backgroundColor) !== null && _a !== void 0 ? _a : undefined,
-            barStyle: (_b = Object.entries(LEGACY_BAR_STYLE_MAP).find(([, v]) => v === props.barStyle)) === null || _b === void 0 ? void 0 : _b[0],
+            backgroundColor: props.backgroundColor ?? undefined,
+            barStyle: Object.entries(LEGACY_BAR_STYLE_MAP).find(([, v]) => v === props.barStyle)?.[0],
             visible: props.legacyVisible,
         };
     }

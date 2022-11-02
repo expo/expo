@@ -23,6 +23,9 @@ export async function launchWithPermissionsAsync(config, permissions, options) {
         }
       }, {}),
       newInstance: true,
+      launchArgs: {
+        EXDevMenuIsOnboardingFinished: true,
+      },
     });
   } else {
     await init(config, options);

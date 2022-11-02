@@ -397,7 +397,7 @@ export async function test(t) {
               showBadge: false,
               sound: null,
               audioAttributes: {
-                usage: Notifications.AndroidAudioUsage.NOTIFICATION_COMMUNICATION_INSTANT,
+                usage: Notifications.AndroidAudioUsage.NOTIFICATION,
                 contentType: Notifications.AndroidAudioContentType.SONIFICATION,
                 flags: {
                   enforceAudibility: true,
@@ -1525,6 +1525,7 @@ export async function test(t) {
             let notificationSent = false;
             Alert.alert(`Please move the app to the background and wait for 5 seconds`);
             let userInteractionTimeout = null;
+            let subscription = null;
             async function handleStateChange(state) {
               const identifier = 'test-interactive-notification';
               if (state === 'background' && !notificationSent) {
@@ -1549,7 +1550,10 @@ export async function test(t) {
                 t.expect(handleSuccessSpy).not.toHaveBeenCalled();
                 t.expect(handleErrorSpy).not.toHaveBeenCalledWith(identifier);
                 t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
-                AppState.removeEventListener('change', handleStateChange);
+                if (subscription != null) {
+                  subscription.remove();
+                  subscription = null;
+                }
                 resolve();
               }
             }
@@ -1557,14 +1561,17 @@ export async function test(t) {
               console.warn(
                 "Scheduled notification test was skipped and marked as successful. It required user interaction which hasn't occured in time."
               );
-              AppState.removeEventListener('change', handleStateChange);
+              if (subscription != null) {
+                subscription.remove();
+                subscription = null;
+              }
               Alert.alert(
                 'Scheduled notification test was skipped',
                 `The test required user interaction which hasn't occurred in time (${secondsToTimeout} seconds). It has been marked as passing. Better luck next time!`
               );
               resolve();
             }, secondsToTimeout * 1000);
-            AppState.addEventListener('change', handleStateChange);
+            subscription = AppState.addEventListener('change', handleStateChange);
           }),
         30000
       );

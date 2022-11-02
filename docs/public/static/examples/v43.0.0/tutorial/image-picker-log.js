@@ -1,17 +1,10 @@
+import * as ImagePicker from 'expo-image-picker';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
 
 export default function App() {
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestCameraRollPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
-    }
-
-    let pickerResult = await ImagePicker.launchImageLibraryAsync();
+  const openImagePickerAsync = async () => {
+    const pickerResult = await ImagePicker.launchImageLibraryAsync();
     console.log(pickerResult);
   };
 

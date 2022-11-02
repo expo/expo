@@ -17,13 +17,15 @@ async function isAuthenticatedAsync(): Promise<boolean> {
 }
 
 export class DevelopmentSession {
-  private timeout: NodeJS.Timeout | null = null;
+  protected timeout: NodeJS.Timeout | null = null;
 
   constructor(
     /** Project root directory. */
     private projectRoot: string,
     /** Development Server URL. */
-    public url: string | null
+    public url: string | null,
+    /** Catch any errors that may occur during the `startAsync` method. */
+    private onError: (error: Error) => void
   ) {}
 
   /**
@@ -35,7 +37,6 @@ export class DevelopmentSession {
    * @param projectRoot Project root folder, used for retrieving device installation IDs.
    * @param props.exp Partial Expo config with values that will be used in the Expo Go app.
    * @param props.runtime which runtime the app should be opened in. `native` for dev clients, `web` for web browsers.
-   * @returns
    */
   public async startAsync({
     exp = getConfig(this.projectRoot).exp,
@@ -44,35 +45,42 @@ export class DevelopmentSession {
     exp?: Pick<ExpoConfig, 'name' | 'description' | 'slug' | 'primaryColor'>;
     runtime: 'native' | 'web';
   }): Promise<void> {
-    if (APISettings.isOffline) {
-      debug('Development session will not ping because the server is offline.');
+    try {
+      if (APISettings.isOffline) {
+        debug('Development session will not ping because the server is offline.');
+        this.stopNotifying();
+        return;
+      }
+
+      const deviceIds = await this.getDeviceInstallationIdsAsync();
+
+      if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
+        debug(
+          'Development session will not ping because the user is not authenticated and there are no devices.'
+        );
+        this.stopNotifying();
+        return;
+      }
+
+      if (this.url) {
+        debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
+
+        await updateDevelopmentSessionAsync({
+          url: this.url,
+          runtime,
+          exp,
+          deviceIds,
+        });
+      }
+
       this.stopNotifying();
-      return;
-    }
 
-    const deviceIds = await this.getDeviceInstallationIdsAsync();
-
-    if (!(await isAuthenticatedAsync()) && !deviceIds?.length) {
-      debug(
-        'Development session will not ping because the user is not authenticated and there are no devices.'
-      );
+      this.timeout = setTimeout(() => this.startAsync({ exp, runtime }), UPDATE_FREQUENCY);
+    } catch (error: any) {
+      debug(`Error updating development session API: ${error}`);
       this.stopNotifying();
-      return;
+      this.onError(error);
     }
-
-    if (this.url) {
-      debug(`Development session ping (runtime: ${runtime}, url: ${this.url})`);
-      await updateDevelopmentSessionAsync({
-        url: this.url,
-        runtime,
-        exp,
-        deviceIds,
-      });
-    }
-
-    this.stopNotifying();
-
-    this.timeout = setTimeout(() => this.startAsync({ exp, runtime }), UPDATE_FREQUENCY);
   }
 
   /** Get all recent devices for the project. */

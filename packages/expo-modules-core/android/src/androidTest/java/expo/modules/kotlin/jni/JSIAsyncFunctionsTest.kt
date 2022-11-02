@@ -6,20 +6,21 @@ import com.google.common.truth.Truth
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
 import org.junit.Test
 
 class JSIAsyncFunctionsTest {
-  enum class SimpleEnumClass {
+  enum class SimpleEnumClass : Enumerable {
     V1, V2
   }
 
-  enum class StringEnumClass(val value: String) {
+  enum class StringEnumClass(val value: String) : Enumerable {
     K1("V1"), K2("V2")
   }
 
-  enum class IntEnumClass(val value: Int) {
+  enum class IntEnumClass(val value: Int) : Enumerable {
     K1(1), K2(2)
   }
 
@@ -34,11 +35,11 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("boolF") { a: Boolean -> a }
     }
   ) { methodQueue ->
-    val stringValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.stringF('expo')").getString()
-    val intValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.intF(123)").getDouble().toInt()
-    val doubleValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.doubleF(123.3)").getDouble()
-    val floatValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.floatF(123.3)").getDouble().toFloat()
-    val boolValue = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.boolF(true)").getBool()
+    val stringValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.stringF('expo')").getString()
+    val intValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.intF(123)").getDouble().toInt()
+    val doubleValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.doubleF(123.3)").getDouble()
+    val floatValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.floatF(123.3)").getDouble().toFloat()
+    val boolValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.boolF(true)").getBool()
 
     Truth.assertThat(stringValue).isEqualTo("expo")
     Truth.assertThat(intValue).isEqualTo(123)
@@ -54,7 +55,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("listF") { a: List<String> -> a }
     }
   ) { methodQueue ->
-    val value = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.listF(['expo', 'is', 'awesome'])").getArray()
+    val value = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.listF(['expo', 'is', 'awesome'])").getArray()
     Truth.assertThat(value).hasLength(3)
     val e1 = value[0].getString()
     val e2 = value[1].getString()
@@ -71,7 +72,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("listF") { a: List<List<Int>> -> a }
     }
   ) { methodQueue ->
-    val value = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.listF([[1,2,3], [4,5,6]])").getArray()
+    val value = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.listF([[1,2,3], [4,5,6]])").getArray()
     Truth.assertThat(value).hasLength(2)
     val e1 = value[0].getArray()
     val e2 = value[1].getArray()
@@ -91,7 +92,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("mapF") { a: Map<String, String> -> a }
     }
   ) { methodQueue ->
-    val value = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.mapF({ 'k1': 'v1', 'k2': 'v2' })").getObject()
+    val value = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.mapF({ 'k1': 'v1', 'k2': 'v2' })").getObject()
     val k1 = value.getProperty("k1").getString()
     val k2 = value.getProperty("k2").getString()
 
@@ -124,9 +125,9 @@ class JSIAsyncFunctionsTest {
         }
       }
     ) { methodQueue ->
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f1('V2')")
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f2('V2')")
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f3(2)")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f1('V2')")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f2('V2')")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f3(2)")
       Truth.assertThat(f1WasCalled).isTrue()
       Truth.assertThat(f2WasCalled).isTrue()
       Truth.assertThat(f3WasCalled).isTrue()
@@ -152,7 +153,7 @@ class JSIAsyncFunctionsTest {
         }
       }
     ) { methodQueue ->
-      val result = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f({ 'x': 123, 's': 'expo' })").getObject()
+      val result = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f({ 'x': 123, 's': 'expo' })").getObject()
 
       val x = result.getProperty("x").getDouble().toInt()
       val s = result.getProperty("s").getString()
@@ -172,7 +173,7 @@ class JSIAsyncFunctionsTest {
     }
   ) { methodQueue ->
     val exception = Assert.assertThrows(PromiseException::class.java) {
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f()")
     }
 
     Truth.assertThat(exception.code).isEqualTo("Code")
@@ -189,10 +190,85 @@ class JSIAsyncFunctionsTest {
     }
   ) { methodQueue ->
     val exception = Assert.assertThrows(PromiseException::class.java) {
-      waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+      waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f()")
     }
 
     Truth.assertThat(exception.code).isEqualTo("ERR_UNEXPECTED")
     Truth.assertThat(exception.message).contains("java.lang.IllegalStateException")
+  }
+
+  @Test(expected = PromiseException::class)
+  fun should_reject_if_js_value_cannot_be_passed() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("f") { _: Int -> }
+    }
+  ) { methodQueue ->
+    waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f(Symbol())")
+  }
+
+  @Test
+  fun int_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("intArray") { a: IntArray -> a }
+    }
+  ) { methodQueue ->
+    val array = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.intArray([1, 2, 3])").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getDouble().toInt()
+    val e2 = array[1].getDouble().toInt()
+    val e3 = array[2].getDouble().toInt()
+
+    Truth.assertThat(e1).isEqualTo(1)
+    Truth.assertThat(e2).isEqualTo(2)
+    Truth.assertThat(e3).isEqualTo(3)
+  }
+
+  @Test
+  fun string_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("stringArray") { a: Array<String> -> a }
+    }
+  ) { methodQueue ->
+    val array = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.stringArray(['a', 'b', 'c'])").getArray()
+    Truth.assertThat(array.size).isEqualTo(3)
+
+    val e1 = array[0].getString()
+    val e2 = array[1].getString()
+    val e3 = array[2].getString()
+
+    Truth.assertThat(e1).isEqualTo("a")
+    Truth.assertThat(e2).isEqualTo("b")
+    Truth.assertThat(e3).isEqualTo("c")
+  }
+
+  @Test
+  fun int_array_array_should_be_convertible() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("array") { a: Array<IntArray> -> a }
+    }
+  ) { methodQueue ->
+    val array = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.array([[1,2], [3, 4]])").getArray()
+    Truth.assertThat(array.size).isEqualTo(2)
+
+    val a1 = array[0].getArray()
+    val a2 = array[1].getArray()
+
+    Truth.assertThat(a1.size).isEqualTo(2)
+    Truth.assertThat(a2.size).isEqualTo(2)
+
+    val e1 = a1[0].getDouble().toInt()
+    val e2 = a1[1].getDouble().toInt()
+    val e3 = a2[0].getDouble().toInt()
+    val e4 = a2[1].getDouble().toInt()
+
+    Truth.assertThat(e1).isEqualTo(1)
+    Truth.assertThat(e2).isEqualTo(2)
+    Truth.assertThat(e3).isEqualTo(3)
+    Truth.assertThat(e4).isEqualTo(4)
   }
 }

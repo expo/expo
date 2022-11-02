@@ -31,5 +31,7 @@ export const H2 = createHeading(RawH2, 2);
 export const H3 = createHeading(RawH3, 3);
 export const H4 = createHeading(RawH4, 4);
 
+export const H2Nested = createHeading(RawH4, 2);
+
 export const H3Code = createHeading(RawH3, 3, HeadingType.InlineCode);
 export const H4Code = createHeading(RawH4, 4, HeadingType.InlineCode);

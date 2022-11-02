@@ -18,13 +18,6 @@ export type MediaLibraryPermissionResponse = PermissionResponse & {
 };
 
 // @needsAudit
-/**
- * An alias for the `MediaLibraryPermissionResponse` object.
- * @deprecated Use `ImagePicker.MediaLibraryPermissionResponse` instead.
- */
-export type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
-
-// @needsAudit
 export enum MediaTypeOptions {
   /**
    * Images and videos.
@@ -213,8 +206,16 @@ export enum UIImagePickerPresentationStyle {
   Automatic = 'automatic',
 }
 
-// @needsAudit
-export type ImageInfo = {
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerAsset` instead
+ */
+export type ImageInfo = ImagePickerAsset;
+
+/**
+ * Represents an asset (image or video) returned by the image picker or camera.
+ */
+export type ImagePickerAsset = {
   /**
    * URI to the local image or video file (usable as the source of an `Image` element, in the case of
    * an image) and `width` and `height` specify the dimensions of the media.
@@ -261,28 +262,23 @@ export type ImageInfo = {
    * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
    * respective EXIF values for those tags.
    */
-  exif?: Record<string, any>;
+  exif?: Record<string, any> | null;
   /**
-   * Included if the `base64` option is truthy, and is a Base64-encoded string of the selected
-   * image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI,
+   * When the `base64` option is truthy, it is a Base64-encoded string of the selected image's JPEG data, otherwise `null`.
+   * If you prepend this with `'data:image/jpeg;base64,'` to create a data URI,
    * you can use it as the source of an `Image` element; for example:
    * ```ts
    * <Image
-   *   source={{ uri: 'data:image/jpeg;base64,' + launchCameraResult.base64 }}
+   *   source={{ uri: 'data:image/jpeg;base64,' + asset.base64 }}
    *   style={{ width: 200, height: 200 }}
    * />
    * ```
    */
-  base64?: string;
+  base64?: string | null;
   /**
-   * Length of the video in milliseconds.
+   * Length of the video in milliseconds or `null` if the asset is not a video.
    */
-  duration?: number;
-  /**
-   * Boolean flag which shows if request was cancelled. If asset data have been returned this should
-   * always be `false`.
-   */
-  cancelled: boolean;
+  duration?: number | null;
 };
 
 // @needsAudit
@@ -302,18 +298,93 @@ export type ImagePickerErrorResult = {
 };
 
 // @needsAudit
+export type ImagePickerResult = {
+  /**
+   * An array of picked assets or `null` when the request was canceled.
+   */
+  assets: ImagePickerAsset[] | null;
+  /**
+   * Boolean flag which shows if request was canceled. If asset data have been returned this should
+   * always be `false`.
+   */
+  canceled: boolean;
+  /**
+   * @deprecated Use `canceled` instead.
+   */
+  cancelled?: boolean;
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  selected?: ImagePickerAsset[];
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  uri?: string;
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  assetId?: string | null;
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  width?: number;
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  height?: number;
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  type?: 'image' | 'video';
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  fileName?: string | null;
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  fileSize?: number;
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  exif?: Record<string, any> | null;
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  base64?: string | null;
+  /**
+   * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
+   */
+  duration?: number | null;
+} & (ImagePickerSuccessResult | ImagePickerCanceledResult);
+
 /**
- * An object returned when the pick action has been cancelled by the user.
+ * @hidden
  */
-export type ImagePickerCancelledResult = { cancelled: true };
+export type ImagePickerSuccessResult = {
+  canceled: false;
+  assets: ImagePickerAsset[];
+};
 
-// @needsAudit
-export type ImagePickerResult = ImagePickerCancelledResult | ImageInfo;
+/**
+ * @hidden
+ */
+export type ImagePickerCanceledResult = {
+  canceled: true;
+  assets: null;
+};
 
-// @needsAudit @docsMissing
-export type ImagePickerMultipleResult =
-  | ImagePickerCancelledResult
-  | { cancelled: false; selected: ImageInfo[] };
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerResult` instead.
+ */
+export type ImagePickerCancelledResult = ImagePickerCanceledResult;
+
+/**
+ * @hidden
+ * @deprecated `ImagePickerMultipleResult` has been deprecated in favor of `ImagePickerResult`.
+ */
+export type ImagePickerMultipleResult = ImagePickerResult;
 
 // @needsAudit
 export type ImagePickerOptions = {
@@ -445,10 +516,13 @@ export type OpenFileBrowserOptions = {
   base64: boolean;
 };
 
-// @needsAudit @docsMissing
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerResult` or `OpenFileBrowserOptions` instead.
+ */
 export type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> =
   T extends {
     allowsMultipleSelection: true;
   }
-    ? ImagePickerMultipleResult
+    ? ImagePickerResult
     : ImagePickerResult;

@@ -17,7 +17,6 @@ const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json
  * Searches for modules to link based on given config.
  */
 async function findModulesAsync(providedOptions) {
-    var _a;
     const options = await (0, mergeLinkingOptions_1.mergeLinkingOptionsAsync)(providedOptions);
     const results = new Map();
     const nativeModuleNames = new Set();
@@ -35,7 +34,7 @@ async function findModulesAsync(providedOptions) {
                 fallbackToDirName: isNativeModulesDir,
             });
             // we ignore the `exclude` option for custom native modules
-            if ((!isNativeModulesDir && ((_a = options.exclude) === null || _a === void 0 ? void 0 : _a.includes(name))) ||
+            if ((!isNativeModulesDir && options.exclude?.includes(name)) ||
                 !expoModuleConfig.supportsPlatform(options.platform)) {
                 continue;
             }
@@ -82,7 +81,6 @@ function configPriority(fullpath) {
  * @param revision resolved package revision
  */
 function addRevisionToResults(results, name, revision) {
-    var _a, _b, _c, _d, _e;
     if (!results.has(name)) {
         // The revision that was found first will be the main one.
         // An array of duplicates and the config are needed only here.
@@ -91,10 +89,10 @@ function addRevisionToResults(results, name, revision) {
             duplicates: [],
         });
     }
-    else if (((_a = results.get(name)) === null || _a === void 0 ? void 0 : _a.path) !== revision.path &&
-        ((_c = (_b = results.get(name)) === null || _b === void 0 ? void 0 : _b.duplicates) === null || _c === void 0 ? void 0 : _c.every(({ path }) => path !== revision.path))) {
+    else if (results.get(name)?.path !== revision.path &&
+        results.get(name)?.duplicates?.every(({ path }) => path !== revision.path)) {
         const { config, duplicates, ...duplicateEntry } = revision;
-        (_e = (_d = results.get(name)) === null || _d === void 0 ? void 0 : _d.duplicates) === null || _e === void 0 ? void 0 : _e.push(duplicateEntry);
+        results.get(name)?.duplicates?.push(duplicateEntry);
     }
 }
 /**
@@ -151,12 +149,11 @@ function resolvePackageNameAndVersion(packagePath, { fallbackToDirName } = {}) {
  * Filters out packages that are not the dependencies of the project.
  */
 function filterToProjectDependencies(results, options = {}) {
-    var _a;
     const filteredResults = {};
     const visitedPackages = new Set();
     // iterate through always included package names and add them to the visited packages
     // if the results contains them
-    for (const name of (_a = options.alwaysIncludedPackagesNames) !== null && _a !== void 0 ? _a : []) {
+    for (const name of options.alwaysIncludedPackagesNames ?? []) {
         if (results[name] && !visitedPackages.has(name)) {
             filteredResults[name] = results[name];
             visitedPackages.add(name);

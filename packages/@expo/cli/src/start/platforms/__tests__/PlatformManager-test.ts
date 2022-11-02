@@ -16,9 +16,20 @@ jest.mock('@expo/config', () => ({
   })),
 }));
 
+const originalEnv = process.env;
+
+afterAll(() => {
+  process.env = originalEnv;
+});
+
 describe('openAsync', () => {
   // Mock haven
-  function createManager({ customUrl = 'custom://path', isAppInstalled = true } = {}) {
+  function createManager({
+    customUrl = 'custom://path',
+    isAppInstalled = true,
+    hasAppId = true,
+  }: { customUrl?: string | null; isAppInstalled?: boolean; hasAppId?: boolean } = {}) {
+    const getRedirectUrl = jest.fn((): null | string => null);
     const getExpoGoUrl = jest.fn(() => 'exp://localhost:19000/');
     const getDevServerUrl = jest.fn(() => 'http://localhost:19000/');
     const getCustomRuntimeUrl = jest.fn(() => customUrl);
@@ -38,11 +49,17 @@ describe('openAsync', () => {
       getCustomRuntimeUrl,
       getDevServerUrl,
       getExpoGoUrl,
+      getRedirectUrl,
     });
 
     // @ts-expect-error
     manager._getAppIdResolver = jest.fn(() => ({
-      getAppIdAsync: jest.fn(() => 'dev.bacon.app'),
+      getAppIdAsync: jest.fn(() => {
+        if (!hasAppId) {
+          throw new Error('No application ID');
+        }
+        return 'dev.bacon.app';
+      }),
     }));
     return {
       manager,
@@ -51,6 +68,7 @@ describe('openAsync', () => {
       getCustomRuntimeUrl,
       getDevServerUrl,
       getExpoGoUrl,
+      getRedirectUrl,
     };
   }
 
@@ -72,6 +90,9 @@ describe('openAsync', () => {
     expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
     expect(getExpoGoUrl).toHaveBeenCalledTimes(1);
 
+    // Ensure we don't make the expensive call to check if the app is installed.
+    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(0);
+
     expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
     expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
@@ -80,6 +101,96 @@ describe('openAsync', () => {
     // Logging
     expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
     expect(Log.warn).toHaveBeenCalledTimes(0);
+    expect(Log.error).toHaveBeenCalledTimes(0);
+  });
+
+  it(`opens a project using the redirect page`, async () => {
+    const { manager, getRedirectUrl, getExpoGoUrl, device, resolveDeviceAsync } = createManager({
+      isAppInstalled: true,
+    });
+
+    const url = 'http://localhost:19000/_expo/loading';
+    getRedirectUrl.mockImplementationOnce(() => url);
+
+    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+      url,
+    });
+
+    expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
+    expect(getExpoGoUrl).toHaveBeenCalledTimes(0);
+
+    // Ensure we check if the app is installed (once!).
+    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAsync).toHaveBeenNthCalledWith(1, 'dev.bacon.app');
+
+    expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
+    expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
+    expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+
+    // Logging
+    expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
+    expect(Log.warn).toHaveBeenCalledTimes(0);
+    expect(Log.error).toHaveBeenCalledTimes(0);
+  });
+
+  it(`opens a project using Expo Go because no dev client could handle the redirect page`, async () => {
+    const { manager, getRedirectUrl, getExpoGoUrl, device, resolveDeviceAsync } = createManager({
+      isAppInstalled: false,
+    });
+
+    const url = 'exp://localhost:19000/';
+    getRedirectUrl.mockImplementationOnce(() => 'http://localhost:19000/_expo/loading');
+
+    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+      url,
+    });
+
+    expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
+    expect(getRedirectUrl).toHaveBeenCalledTimes(1);
+    expect(getExpoGoUrl).toHaveBeenCalledTimes(1);
+
+    // Ensure we check if the app is installed (once!).
+    expect(device.isAppInstalledAsync).toHaveBeenCalledTimes(1);
+    expect(device.isAppInstalledAsync).toHaveBeenNthCalledWith(1, 'dev.bacon.app');
+
+    expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
+    expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
+    expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+
+    // Logging
+    expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
+    expect(Log.warn).toHaveBeenCalledTimes(1);
+    expect(Log.warn).toHaveBeenNthCalledWith(1, expect.stringMatching(/iPhone 13/gm));
+    expect(Log.error).toHaveBeenCalledTimes(0);
+  });
+
+  it(`opens a project using Expo Go because dev client application ID couldn't be resolved`, async () => {
+    const { manager, getRedirectUrl, getExpoGoUrl, device, resolveDeviceAsync } = createManager({
+      hasAppId: false,
+    });
+
+    const url = 'exp://localhost:19000/';
+    getRedirectUrl.mockImplementationOnce(() => 'http://localhost:19000/_expo/loading');
+
+    expect(await manager.openAsync({ runtime: 'expo' })).toStrictEqual({
+      url,
+    });
+
+    expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);
+    expect(getRedirectUrl).toHaveBeenCalledTimes(1);
+    expect(getExpoGoUrl).toHaveBeenCalledTimes(1);
+
+    expect(device.activateWindowAsync).toHaveBeenCalledTimes(1);
+    expect(device.ensureExpoGoAsync).toHaveBeenCalledTimes(1);
+    expect(device.ensureExpoGoAsync).toHaveBeenNthCalledWith(1, '45.0.0');
+    expect(device.openUrlAsync).toHaveBeenNthCalledWith(1, url);
+
+    // Logging
+    expect(device.logOpeningUrl).toHaveBeenNthCalledWith(1, url);
+    expect(Log.warn).toHaveBeenCalledTimes(1);
+    expect(Log.warn).toHaveBeenNthCalledWith(1, expect.stringMatching(/ios.bundleIdentifier/gm));
     expect(Log.error).toHaveBeenCalledTimes(0);
   });
 
@@ -144,7 +255,7 @@ describe('openAsync', () => {
     });
 
     await expect(manager.openAsync({ runtime: 'custom' })).rejects.toThrow(
-      /The development client \(dev\.bacon\.app\) for this project is not installed/
+      /No development build \(dev\.bacon\.app\) for this project is installed/
     );
 
     expect(resolveDeviceAsync).toHaveBeenCalledTimes(1);

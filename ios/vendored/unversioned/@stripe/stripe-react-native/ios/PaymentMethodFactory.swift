@@ -53,6 +53,8 @@ class PaymentMethodFactory {
                 return try createUSBankAccountPaymentMethodParams()
             case STPPaymentMethodType.payPal:
                 return try createPayPalPaymentMethodParams()
+            case STPPaymentMethodType.affirm:
+                return try createAffirmPaymentMethodParams()
 //            case STPPaymentMethodType.weChatPay:
 //                return try createWeChatPayPaymentMethodParams()
             default:
@@ -101,6 +103,8 @@ class PaymentMethodFactory {
             case STPPaymentMethodType.USBankAccount:
                 return try createUSBankAccountPaymentMethodOptions()
             case STPPaymentMethodType.payPal:
+                return nil
+            case STPPaymentMethodType.affirm:
                 return nil
             default:
                 throw PaymentMethodError.paymentNotSupported
@@ -360,6 +364,11 @@ class PaymentMethodFactory {
     
     private func createPayPalPaymentMethodParams() throws -> STPPaymentMethodParams {
         return STPPaymentMethodParams(payPal: STPPaymentMethodPayPalParams(), billingDetails: billingDetailsParams, metadata: nil)
+    }
+    
+    private func createAffirmPaymentMethodParams() throws -> STPPaymentMethodParams {
+        let params = STPPaymentMethodAffirmParams()
+        return STPPaymentMethodParams(affirm: params, metadata: nil)
     }
 }
 

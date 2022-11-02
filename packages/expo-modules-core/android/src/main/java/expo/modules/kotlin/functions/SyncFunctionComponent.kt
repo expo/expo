@@ -1,6 +1,5 @@
 package expo.modules.kotlin.functions
 
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
@@ -28,14 +27,13 @@ class SyncFunctionComponent(
     jsObject.registerSyncFunction(
       name,
       argsCount,
-      getCppRequiredTypes()
+      getCppRequiredTypes().toTypedArray()
     ) { args ->
       return@registerSyncFunction exceptionDecorator({
-        FunctionCallException(jsObject.name, name, it)
+        FunctionCallException(name, jsObject.name, it)
       }) {
         val result = call(args)
-        val convertedResult = JSTypeConverter.convertToJSValue(result)
-        return@exceptionDecorator Arguments.fromJavaArgs(arrayOf(convertedResult))
+        return@exceptionDecorator JSTypeConverter.convertToJSValue(result)
       }
     }
   }

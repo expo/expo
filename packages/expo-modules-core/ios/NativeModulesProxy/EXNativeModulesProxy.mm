@@ -8,6 +8,10 @@
 #import <React/RCTModuleData.h>
 #import <React/RCTEventDispatcherProtocol.h>
 
+#ifdef RN_FABRIC_ENABLED
+#import <React/RCTComponentViewFactory.h>
+#endif
+
 #import <jsi/jsi.h>
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
@@ -285,10 +289,6 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
   // Add modules from legacy module registry only when the NativeModulesProxy owns the registry.
   if (ownsModuleRegistry) {
-    // Event emitter is a bridge module, however it's also needed by expo modules,
-    // so later we'll register an instance created by React Native as expo module.
-    [additionalModuleClasses addObject:[EXReactNativeEventEmitter class]];
-
     // Add dynamic wrappers for the classic view managers.
     for (EXViewManager *viewManager in [_exModuleRegistry getAllViewManagers]) {
       if (![visitedSweetModules containsObject:viewManager.viewName]) {
@@ -379,6 +379,12 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
                                                                   managerClass:wrappedViewModuleClass
                                                                         bridge:bridge];
   componentDataByName[className] = componentData;
+
+#ifdef RN_FABRIC_ENABLED
+  Class viewClass = [ExpoFabricView makeViewClassForAppContext:_appContext className:className];
+  [[RCTComponentViewFactory currentComponentViewFactory] registerComponentViewClass:viewClass];
+#endif
+
   return wrappedViewModuleClass;
 }
 

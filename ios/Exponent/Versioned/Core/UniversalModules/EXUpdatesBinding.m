@@ -14,6 +14,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+/**
+ * Scoped internal module which overrides EXUpdatesService at runtime in Expo Go, and gives
+ * EXUpdatesModule access to properties from the correct instance of EXAppLoaderExpoUpdates (through
+ * EXUpdatesKernelService) as well as the global database object (through
+ * EXUpdatesDatabaseKernelService).
+ */
 @implementation EXUpdatesBinding : EXUpdatesService
 
 - (instancetype)initWithScopeKey:(NSString *)scopeKey updatesKernelService:(id<EXUpdatesBindingDelegate>)updatesKernelService databaseKernelService:(id<EXUpdatesDatabaseBindingDelegate>)databaseKernelService
@@ -89,6 +95,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)resetSelectionPolicy
 {
   // no-op in managed
+}
+
++ (const NSArray<Protocol *> *)exportedInterfaces {
+  return @[@protocol(EXUpdatesModuleInterface)];
 }
 
 @end

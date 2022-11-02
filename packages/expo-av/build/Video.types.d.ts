@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ImageProps, ViewProps } from 'react-native';
+import { ImageProps, ViewProps, StyleProp, ViewStyle } from 'react-native';
 import { AVPlaybackNativeSource, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 export declare type VideoNaturalSize = {
     /**
@@ -100,6 +100,10 @@ export declare type VideoProps = {
      */
     posterStyle?: ImageProps['style'];
     /**
+     * An optional property to pass custom styles to the internal video component.
+     */
+    videoStyle?: StyleProp<ViewStyle>;
+    /**
      * A function to be called regularly with the `AVPlaybackStatus` of the video. You will likely be using this a lot.
      * See the [AV documentation](av.md) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
      * @param status
@@ -146,6 +150,13 @@ export declare type VideoProps = {
      * A boolean which, if set to `true`, will display an image (whose source is set via the prop `posterSource`) while the video is loading.
      */
     usePoster?: boolean;
+    /**
+     * A react-native `Image` like component to display the poster image.
+     */
+    PosterComponent?: React.ComponentType<{
+        style: ImageProps['style'];
+        source: ImageProps['source'];
+    }>;
     /**
      * A dictionary setting a new `AVPlaybackStatusToSet` on the video.
      * See the [AV documentation](./av#default-initial--avplaybackstatustoset) for more information on `AVPlaybackStatusToSet`.
@@ -245,6 +256,7 @@ export declare type VideoNativeProps = {
         nativeEvent: VideoFullscreenUpdateEvent;
     }) => void;
     useNativeControls?: boolean;
+    videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
 export declare type VideoState = {
     showPoster: boolean;

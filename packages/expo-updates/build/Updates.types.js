@@ -18,4 +18,32 @@ export var UpdateEventType;
      */
     UpdateEventType["ERROR"] = "error";
 })(UpdateEventType || (UpdateEventType = {}));
+/**
+ * The possible code values for expo-updates log entries
+ */
+export var UpdatesLogEntryCode;
+(function (UpdatesLogEntryCode) {
+    UpdatesLogEntryCode["NONE"] = "None";
+    UpdatesLogEntryCode["NO_UPDATES_AVAILABLE"] = "NoUpdatesAvailable";
+    UpdatesLogEntryCode["UPDATE_ASSETS_NOT_AVAILABLE"] = "UpdateAssetsNotAvailable";
+    UpdatesLogEntryCode["UPDATE_SERVER_UNREACHABLE"] = "UpdateServerUnreachable";
+    UpdatesLogEntryCode["UPDATE_HAS_INVALID_SIGNATURE"] = "UpdateHasInvalidSignature";
+    UpdatesLogEntryCode["UPDATE_CODE_SIGNING_ERROR"] = "UpdateCodeSigningError";
+    UpdatesLogEntryCode["UPDATE_FAILED_TO_LOAD"] = "UpdateFailedToLoad";
+    UpdatesLogEntryCode["ASSETS_FAILED_TO_LOAD"] = "AssetsFailedToLoad";
+    UpdatesLogEntryCode["JS_RUNTIME_ERROR"] = "JSRuntimeError";
+    UpdatesLogEntryCode["UNKNOWN"] = "Unknown";
+})(UpdatesLogEntryCode || (UpdatesLogEntryCode = {}));
+/**
+ * The possible log levels for expo-updates log entries
+ */
+export var UpdatesLogEntryLevel;
+(function (UpdatesLogEntryLevel) {
+    UpdatesLogEntryLevel["TRACE"] = "trace";
+    UpdatesLogEntryLevel["DEBUG"] = "debug";
+    UpdatesLogEntryLevel["INFO"] = "info";
+    UpdatesLogEntryLevel["WARN"] = "warn";
+    UpdatesLogEntryLevel["ERROR"] = "error";
+    UpdatesLogEntryLevel["FATAL"] = "fatal";
+})(UpdatesLogEntryLevel || (UpdatesLogEntryLevel = {}));
 //# sourceMappingURL=Updates.types.js.map

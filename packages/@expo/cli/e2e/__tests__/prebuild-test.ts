@@ -141,9 +141,7 @@ it(
       'expo-splash-screen',
       'expo-status-bar',
       'react',
-      'react-dom',
       'react-native',
-      'react-native-web',
     ]);
 
     // Updated scripts
@@ -171,7 +169,7 @@ it(
         "android/app/src/main/java/com/example/minimal/newarchitecture/MainApplicationReactNativeHost.java",
         "android/app/src/main/java/com/example/minimal/newarchitecture/components/MainComponentsRegistry.java",
         "android/app/src/main/java/com/example/minimal/newarchitecture/modules/MainApplicationTurboModuleManagerDelegate.java",
-        "android/app/src/main/jni/Android.mk",
+        "android/app/src/main/jni/CMakeLists.txt",
         "android/app/src/main/jni/MainApplicationModuleProvider.cpp",
         "android/app/src/main/jni/MainApplicationModuleProvider.h",
         "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.cpp",

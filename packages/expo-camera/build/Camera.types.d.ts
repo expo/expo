@@ -129,6 +129,14 @@ export declare type CameraPictureOptions = {
      */
     exif?: boolean;
     /**
+     * Additional EXIF data to be included for the image. Only useful when `exif` option is set to `true`.
+     * @platform android
+     * @platform ios
+     */
+    additionalExif?: {
+        [name: string]: any;
+    };
+    /**
      * A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured.
      * The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it
      * is not your case, this callback lets you skip waiting for it to be saved.
@@ -220,7 +228,31 @@ export declare type Point = {
     x: number;
     y: number;
 };
+export declare type BarCodeSize = {
+    /**
+     * The height value.
+     */
+    height: number;
+    /**
+     * The width value.
+     */
+    width: number;
+};
+/**
+ * These coordinates are represented in the coordinate space of the camera source (e.g. when you
+ * are using the camera view, these values are adjusted to the dimensions of the view).
+ */
 export declare type BarCodePoint = Point;
+export declare type BarCodeBounds = {
+    /**
+     * The origin point of the bounding box.
+     */
+    origin: BarCodePoint;
+    /**
+     * The size of the bounding box.
+     */
+    size: BarCodeSize;
+};
 export declare type BarCodeScanningResult = {
     /**
      * The barcode type.
@@ -232,8 +264,17 @@ export declare type BarCodeScanningResult = {
     data: string;
     /**
      * Corner points of the bounding box.
+     * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
+     * you don't get this value.
      */
-    cornerPoints?: BarCodePoint[];
+    cornerPoints: BarCodePoint[];
+    /**
+     * The [BarCodeBounds](#barcodebounds) object.
+     * `bounds` in some case will be representing an empty rectangle.
+     * Moreover, `bounds` doesn't have to bound the whole barcode.
+     * For some types, they will represent the area used by the scanner.
+     */
+    bounds: BarCodeBounds;
 };
 export declare type Face = {
     faceID: number;
@@ -306,7 +347,7 @@ export declare type CameraProps = ViewProps & {
     /**
      * A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported
      * by the device use [`getSupportedRatiosAsync`](#getsupportedratiosasync).
-     * @default 4:3.
+     * @default 4:3
      * @platform android
      */
     ratio?: string;

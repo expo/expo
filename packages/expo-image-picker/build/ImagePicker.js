@@ -17,20 +17,44 @@ function validateOptions(options) {
     }
     return options;
 }
+const DEPRECATED_RESULT_KEYS = [
+    'uri',
+    'assetId',
+    'width',
+    'height',
+    'type',
+    'exif',
+    'base64',
+    'duration',
+    'fileName',
+    'fileSize',
+];
+function mergeDeprecatedResult(result) {
+    const firstAsset = result.assets?.[0];
+    const deprecatedResult = {
+        ...result,
+        get cancelled() {
+            console.warn('Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use "canceled" instead');
+            return this.canceled;
+        },
+    };
+    for (const key of DEPRECATED_RESULT_KEYS) {
+        Object.defineProperty(deprecatedResult, key, {
+            get() {
+                console.warn(`Key "${key}" in the image picker result is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead`);
+                return firstAsset?.[key];
+            },
+        });
+    }
+    return deprecatedResult;
+}
 // @needsAudit
 /**
  * Checks user's permissions for accessing camera.
- * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerarollpermissionresponse).
+ * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerapermissionresponse).
  */
 export async function getCameraPermissionsAsync() {
     return ExponentImagePicker.getCameraPermissionsAsync();
-}
-/**
- * @deprecated Use `getMediaLibraryPermissionsAsync()` instead.
- */
-export async function getCameraRollPermissionsAsync() {
-    console.warn('ImagePicker.getCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.getMediaLibraryPermissionsAsync()');
-    return getMediaLibraryPermissionsAsync();
 }
 // @needsAudit
 /**
@@ -49,13 +73,6 @@ export async function getMediaLibraryPermissionsAsync(writeOnly = false) {
  */
 export async function requestCameraPermissionsAsync() {
     return ExponentImagePicker.requestCameraPermissionsAsync();
-}
-/**
- * @deprecated Use `requestMediaLibraryPermissionsAsync()` instead.
- */
-export async function requestCameraRollPermissionsAsync() {
-    console.warn('ImagePicker.requestCameraRollPermissionsAsync() is deprecated in favour of ImagePicker.requestMediaLibraryPermissionsAsync()');
-    return requestMediaLibraryPermissionsAsync();
 }
 // @needsAudit
 /**
@@ -126,21 +143,21 @@ export async function getPendingResultAsync() {
  * intended. The `cancelled` event will not be returned in the browser due to platform restrictions
  * and inconsistencies across browsers.
  * @param options An `ImagePickerOptions` object.
- * @return If the user cancelled the action, the method returns `{ cancelled: true }`. Otherwise,
- * this method returns information about the selected media item. When the chosen item is an image,
- * this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`;
- * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+ * @return A promise that resolves to an object with `canceled` and `assets` fields.
+ * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
+ * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export async function launchCameraAsync(options = {}) {
     if (!ExponentImagePicker.launchCameraAsync) {
         throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
     }
-    return await ExponentImagePicker.launchCameraAsync(validateOptions(options));
+    const result = await ExponentImagePicker.launchCameraAsync(validateOptions(options));
+    return mergeDeprecatedResult(result);
 }
 // @needsAudit
 /**
  * Display the system UI for choosing an image or a video from the phone's library.
- * Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be called
+ * Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be     called
  * immediately in a user interaction like a button press, otherwise the browser will block the
  * request without a warning.
  * **Animated GIFs support** If the selected image is an animated GIF, the result image will be an
@@ -152,10 +169,9 @@ export async function launchCameraAsync(options = {}) {
  * work as intended. The `cancelled` event will not be returned in the browser due to platform
  * restrictions and inconsistencies across browsers.
  * @param options An object extended by [`ImagePickerOptions`](#imagepickeroptions).
- * @return If the user cancelled the action, the method returns `{ cancelled: true }`. Otherwise,
- * this method returns information about the selected media item. When the chosen item is an image,
- * this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`;
- * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+ * @return A promise that resolves to an object with `canceled` and `assets` fields.
+ * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
+ * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export async function launchImageLibraryAsync(options) {
     if (!ExponentImagePicker.launchImageLibraryAsync) {
@@ -166,7 +182,9 @@ export async function launchImageLibraryAsync(options) {
             "Disable either 'allowsEditing' or 'allowsMultipleSelection' in 'launchImageLibraryAsync' " +
             'to fix this warning.');
     }
-    return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
+    const result = await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
+    return mergeDeprecatedResult(result);
 }
-export { MediaTypeOptions, VideoExportPreset, PermissionStatus, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
+export { MediaTypeOptions, VideoExportPreset, PermissionStatus, // deprecated
+UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
 //# sourceMappingURL=ImagePicker.js.map

@@ -1,8 +1,8 @@
 package expo.modules.kotlin.objects
 
-import com.facebook.react.bridge.Arguments
 import expo.modules.kotlin.functions.SyncFunctionComponent
 import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JNIFunctionBody
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 
@@ -28,8 +28,7 @@ class PropertyComponent(
   fun attachToJSObject(jsObject: JavaScriptModuleObject) {
     val jniGetter = if (getter != null) {
       JNIFunctionBody {
-        val result = getter.call(emptyArray())
-        return@JNIFunctionBody Arguments.fromJavaArgs(arrayOf(result))
+        return@JNIFunctionBody getter.call(emptyArray())
       }
     } else {
       null
@@ -46,7 +45,7 @@ class PropertyComponent(
 
     jsObject.registerProperty(
       name,
-      setter?.getCppRequiredTypes()?.first() ?: CppType.NONE.value,
+      setter?.getCppRequiredTypes()?.first() ?: ExpectedType(CppType.NONE),
       jniGetter,
       jniSetter
     )

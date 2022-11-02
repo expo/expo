@@ -2,12 +2,13 @@ package versioned.host.exp.exponent
 
 import expo.modules.application.ApplicationPackage
 import expo.modules.av.AVPackage
+import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchPackage
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryPackage
 import expo.modules.brightness.BrightnessPackage
 import expo.modules.calendar.CalendarPackage
-import expo.modules.camera.CameraPackage
+import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
 import expo.modules.constants.ConstantsPackage
@@ -70,7 +71,6 @@ object ExperiencePackagePicker : ModulesProvider {
     BarCodeScannerPackage(),
     BrightnessPackage(),
     CalendarPackage(),
-    CameraPackage(),
     ConstantsPackage(),
     ContactsPackage(),
     DevicePackage(),
@@ -128,6 +128,7 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    CameraViewModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,
@@ -136,6 +137,7 @@ object ExperiencePackagePicker : ModulesProvider {
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
     RandomModule::class.java,
+    VideoViewModule::class.java,
     WebBrowserModule::class.java,
   )
 }

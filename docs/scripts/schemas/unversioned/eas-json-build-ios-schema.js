@@ -17,13 +17,11 @@ export default [
       'Controls how EAS CLI bumps your application build version. Defaults to `false`.',
       '',
       'Allowed values:',
-      ' - `"version"` - the patch of `expo.version` is bumped (e.g. `1.2.3` -> `1.2.4`).',
-      ' - `"buildNumber"` (or `true`) - the last component of `expo.ios.buildNumber` is bumped (e.g. `1.2.3.39` -> `1.2.3.40`).',
+      ' - `"version"` - bumps the patch of `expo.version` (e.g. `1.2.3` -> `1.2.4`).',
+      ' - `"buildNumber"` (or `true`) - bumps the last component of `expo.ios.buildNumber` (e.g. `1.2.3.39` -> `1.2.3.40`).',
       ' - `false` - versions won\'t be bumped automatically (default)',
       '',
-      'In the case of a bare project, it also updates versions in native code. `expo.version` corresponds to `CFBundleShortVersionString` and `expo.ios.buildNumber` to `CFBundleVersion` in the `Info.plist`. The App Store is using those values to identify the app build, `CFBundleShortVersionString` is the version visible to users, whereas `CFBundleVersion` defines the build number. The combination of those needs to be unique, so you can bump either of them.',
-      '',
-      `This feature is not intended for use with dynamic configuration (app.config.js). EAS CLI will throw an error if you don't use app.json.`,
+      `Based on the value of "cli.appVersionSource" option in **eas.json**, the values will be updated locally in your project or on EAS servers. [Learn more](../build-reference/app-versions)`,
     ],
   },
   {
@@ -73,10 +71,10 @@ export default [
     ],
   },
   {
-    name: 'artifactPath',
+    name: 'applicationArchivePath',
     type: 'string',
     description: [
-      'Path (or pattern) where EAS Build is going to look for the build artifacts. EAS Build uses the `fast-glob` npm package for pattern matching, ([see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax)). You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/Build/Products/*-iphonesimulator/*.app` when building for simulator and `ios/build/*.ipa` in other cases.'
+      'Path (or pattern) where EAS Build is going to look for the application archive. EAS Build uses the `fast-glob` npm package for pattern matching ([see their README to learn more about the syntax you can use](https://github.com/mrmlnc/fast-glob#pattern-syntax)). You should modify that path only if you are using a custom `Gymfile`. The default is `ios/build/Build/Products/*-iphonesimulator/*.app` when building for simulator and `ios/build/*.ipa` in other cases.'
     ],
   },
 ]

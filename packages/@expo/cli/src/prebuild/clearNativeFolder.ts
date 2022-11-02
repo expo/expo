@@ -54,9 +54,7 @@ export async function hasRequiredIOSFilesAsync(projectRoot: string) {
   try {
     // If any of the following required files are missing, then the project is malformed.
     await Promise.all([
-      IOSConfig.Paths.getAppDelegate(projectRoot),
       IOSConfig.Paths.getAllXcodeProjectPaths(projectRoot),
-      IOSConfig.Paths.getAllInfoPlistPaths(projectRoot),
       IOSConfig.Paths.getAllPBXProjectPaths(projectRoot),
     ]);
     return true;
@@ -137,6 +135,9 @@ export async function promptToClearMalformedNativeProjectsAsync(
       initial: true,
     }))
   ) {
+    if (!isInteractive()) {
+      Log.warn(`${message}, project files will be cleared and reinitialized.`);
+    }
     await clearNativeFolder(projectRoot, platforms);
   } else {
     // Warn the user that the process may fail.

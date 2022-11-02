@@ -82,8 +82,11 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public override func view() -> UIView! {
-    guard let view = wrappedModuleHolder.definition.viewManager?.createView() else {
-      fatalError("Module `\(wrappedModuleHolder.name)` doesn't define the view manager nor view factory.")
+    guard let appContext = wrappedModuleHolder.appContext else {
+      fatalError(Exceptions.AppContextLost().reason)
+    }
+    guard let view = wrappedModuleHolder.definition.viewManager?.createView(appContext: appContext) else {
+      fatalError("Cannot create a view from module '\(self.name)'")
     }
     return view
   }
@@ -101,10 +104,11 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func set_proxiedProperties(_ json: Any, forView view: UIView, withDefaultView defaultView: UIView) {
-    guard let json = json as? [String: Any],
-          let props = wrappedModuleHolder.definition.viewManager?.propsDict() else {
+    guard let json = json as? [String: Any], let viewManager = wrappedModuleHolder.definition.viewManager else {
       return
     }
+    let props = viewManager.propsDict()
+
     for (key, value) in json {
       if let prop = props[key] {
         let value = Conversions.fromNSObject(value)
@@ -115,7 +119,10 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
         try? prop.set(value: value, onView: view)
       }
     }
+    viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
   }
+
+  public static let viewManagerAdapterPrefix = "ViewManagerAdapter_"
 
   /**
    Creates a subclass of `ViewModuleWrapper` in runtime. The new class overrides `moduleName` stub.
@@ -123,7 +130,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
   @objc
   public static func createViewModuleWrapperClass(module: ViewModuleWrapper) -> ViewModuleWrapper.Type? {
     // We're namespacing the view name so we know it uses our architecture.
-    let prefixedViewName = "ViewManagerAdapter_\(module.name())"
+    let prefixedViewName = "\(viewManagerAdapterPrefix)\(module.name())"
 
     return prefixedViewName.withCString { viewNamePtr in
       // Create a new class that inherits from `ViewModuleWrapper`. The class name passed here, doesn't work for Swift classes,

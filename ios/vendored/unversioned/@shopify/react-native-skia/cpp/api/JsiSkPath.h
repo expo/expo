@@ -348,7 +348,7 @@ public:
     return thisValue.getObject(runtime);
   }
 
-  JSI_HOST_FUNCTION(rlineTo) {
+  JSI_HOST_FUNCTION(rLineTo) {
     SkScalar x = arguments[0].asNumber();
     SkScalar y = arguments[1].asNumber();
     getObject()->rLineTo(x, y);
@@ -536,7 +536,7 @@ public:
     JSI_EXPORT_FUNC(JsiSkPath, moveTo),
     JSI_EXPORT_FUNC(JsiSkPath, rMoveTo),
     JSI_EXPORT_FUNC(JsiSkPath, lineTo),
-    JSI_EXPORT_FUNC(JsiSkPath, rlineTo),
+    JSI_EXPORT_FUNC(JsiSkPath, rLineTo),
     JSI_EXPORT_FUNC(JsiSkPath, cubicTo),
     JSI_EXPORT_FUNC(JsiSkPath, rCubicTo),
     JSI_EXPORT_FUNC(JsiSkPath, reset),

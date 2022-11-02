@@ -73,14 +73,30 @@ public class ExpoDevLauncherReactDelegateHandler: ExpoReactDelegateHandler, RCTB
   // MARK: EXDevelopmentClientControllerDelegate implementations
 
   public func devLauncherController(_ developmentClientController: EXDevLauncherController, didStartWithSuccess success: Bool) {
-    let bridge = RCTBridge(delegate: self.bridgeDelegate, launchOptions: self.launchOptions)
+    var launchOptions: [AnyHashable: Any] = [:]
+
+    if let initialLaunchOptions = self.launchOptions {
+      for (key, value) in initialLaunchOptions {
+        launchOptions[key] = value
+      }
+    }
+
+    for (key, value) in developmentClientController.getLaunchOptions() {
+      launchOptions[key] = value
+    }
+
+    let bridge = RCTBridge(delegate: self.bridgeDelegate, launchOptions: launchOptions)
     developmentClientController.appBridge = bridge
 
     let rootView = RCTRootView(bridge: bridge!, moduleName: self.rootViewModuleName!, initialProperties: self.rootViewInitialProperties)
     rootView.backgroundColor = self.deferredRootView?.backgroundColor ?? UIColor.white
     let window = getWindow()
-    window.rootViewController = self.reactDelegate?.createRootViewController()
-    window.rootViewController!.view = rootView
+
+    // NOTE: this order of assignment seems to actually have an effect on behaviour
+    // direct assignment of window.rootViewController.view = rootView does not work
+    let rootViewController = self.reactDelegate?.createRootViewController()
+    rootViewController!.view = rootView
+    window.rootViewController = rootViewController
     window.makeKeyAndVisible()
 
     // it is purposeful that we don't clean up saved properties here, because we may initialize

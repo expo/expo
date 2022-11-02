@@ -15,7 +15,7 @@ import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
-import { withMetroMultiPlatform } from '../start/server/metro/withMetroMultiPlatform';
+import { withMetroMultiPlatformAsync } from '../start/server/metro/withMetroMultiPlatform';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 
 export type MetroDevServerOptions = LoadOptions & {
@@ -34,7 +34,7 @@ export type BundleAssetWithFileHashes = Metro.AssetData & {
 };
 export type BundleOutput = {
   code: string;
-  map: string;
+  map?: string;
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
   assets: readonly BundleAssetWithFileHashes[];
@@ -106,7 +106,10 @@ export async function bundleAsync(
 
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
-  config = withMetroMultiPlatform(projectRoot, config, getPlatformBundlers(exp));
+
+  const bundlerPlatforms = getPlatformBundlers(exp);
+
+  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
 
   const metroServer = await metro.runMetro(config, {
     watch: false,
@@ -181,7 +184,7 @@ export async function bundleAsync(
       const hermesBundleOutput = await buildHermesBundleAsync(
         projectRoot,
         bundleOutput.code,
-        bundleOutput.map,
+        bundleOutput.map!,
         bundle.minify
       );
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;

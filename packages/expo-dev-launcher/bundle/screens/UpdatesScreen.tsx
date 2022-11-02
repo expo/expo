@@ -19,6 +19,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { BasicButton } from '../components/BasicButton';
 import { EASUpdateRow } from '../components/EASUpdatesRows';
 import { FlatList } from '../components/FlatList';
+import { ScreenContainer } from '../components/ScreenContainer';
 import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
 import { useChannelsForApp } from '../queries/useChannelsForApp';
@@ -89,29 +90,31 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
 
   function EmptyList() {
     return (
-      <View mt="large" mx="medium" bg="default" rounded="large" padding="medium">
-        <View>
-          <Heading>There are no updates available for this branch.</Heading>
-          <Spacer.Vertical size="small" />
-          <Text color="secondary" size="small">
-            Updates allow you to deliver code directly to your users.
-          </Text>
+      <ScreenContainer>
+        <View mt="large" mx="medium" bg="default" rounded="large" padding="medium">
+          <View>
+            <Heading>There are no updates available for this branch.</Heading>
+            <Spacer.Vertical size="small" />
+            <Text color="secondary" size="small">
+              Updates allow you to deliver code directly to your users.
+            </Text>
 
-          <View py="medium" align="centered">
-            <Button.ScaleOnPressContainer
-              bg="tertiary"
-              onPress={() => {
-                Linking.openURL(`https://docs.expo.dev/eas-update/how-eas-update-works/`);
-              }}>
-              <View px="2.5" py="2">
-                <Button.Text weight="medium" color="tertiary">
-                  Publish an update
-                </Button.Text>
-              </View>
-            </Button.ScaleOnPressContainer>
+            <View py="medium" align="centered">
+              <Button.ScaleOnPressContainer
+                bg="tertiary"
+                onPress={() => {
+                  Linking.openURL(`https://docs.expo.dev/eas-update/how-eas-update-works/`);
+                }}>
+                <View px="2.5" py="2">
+                  <Button.Text weight="medium" color="tertiary">
+                    Publish an update
+                  </Button.Text>
+                </View>
+              </Button.ScaleOnPressContainer>
+            </View>
           </View>
         </View>
-      </View>
+      </ScreenContainer>
     );
   }
 
@@ -137,25 +140,27 @@ export function UpdatesScreen({ route }: UpdatesScreenProps) {
   }
 
   return (
-    <View flex="1">
-      <BranchDetailsHeader
-        branchName={branchName}
-        updates={updates}
-        onOpenPress={() => onUpdatePress(updates[0])}
-      />
-      <FlatList
-        isLoading={isLoading}
-        isRefreshing={isRefreshing}
-        onRefresh={() => refetch()}
-        ListHeaderComponent={Header}
-        data={updates}
-        extraData={{ length: updates.length, loadingUpdateId }}
-        renderItem={renderUpdate}
-        keyExtractor={(item) => item.id}
-        ListFooterComponent={Footer}
-        ListEmptyComponent={EmptyList}
-      />
-    </View>
+    <ScreenContainer>
+      <View flex="1">
+        <BranchDetailsHeader
+          branchName={branchName}
+          updates={updates}
+          onOpenPress={() => onUpdatePress(updates[0])}
+        />
+        <FlatList
+          isLoading={isLoading}
+          isRefreshing={isRefreshing}
+          onRefresh={() => refetch()}
+          ListHeaderComponent={Header}
+          data={updates}
+          extraData={{ length: updates.length, loadingUpdateId }}
+          renderItem={renderUpdate}
+          keyExtractor={(item) => item.id}
+          ListFooterComponent={Footer}
+          ListEmptyComponent={EmptyList}
+        />
+      </View>
+    </ScreenContainer>
   );
 }
 

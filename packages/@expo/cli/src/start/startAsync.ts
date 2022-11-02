@@ -3,7 +3,7 @@ import chalk from 'chalk';
 
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
-import { logEvent } from '../utils/analytics/rudderstackClient';
+import { logEventAsync } from '../utils/analytics/rudderstackClient';
 import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
@@ -103,7 +103,7 @@ export async function startAsync(
   // Some tracking thing
 
   if (options.devClient) {
-    track(projectRoot, exp);
+    await trackAsync(projectRoot, exp);
   }
 
   await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
@@ -133,13 +133,13 @@ export async function startAsync(
   );
 }
 
-function track(projectRoot: string, exp: ExpoConfig) {
-  logEvent('dev client start command', {
+async function trackAsync(projectRoot: string, exp: ExpoConfig): Promise<void> {
+  await logEventAsync('dev client start command', {
     status: 'started',
     ...getDevClientProperties(projectRoot, exp),
   });
-  installExitHooks(() => {
-    logEvent('dev client start command', {
+  installExitHooks(async () => {
+    await logEventAsync('dev client start command', {
       status: 'finished',
       ...getDevClientProperties(projectRoot, exp),
     });

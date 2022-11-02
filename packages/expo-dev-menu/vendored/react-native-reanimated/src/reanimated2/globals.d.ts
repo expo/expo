@@ -1,5 +1,6 @@
 import { AnimatedStyle, StyleProps } from './commonTypes';
 import { ReanimatedConsole } from './core';
+import FrameCallbackRegistryUI from './frameCallback/FrameCallbackRegistryUI';
 import { MeasuredDimensions } from './NativeMethods';
 import { NativeReanimated } from './NativeReanimated/NativeReanimated';
 declare global {
@@ -30,6 +31,7 @@ declare global {
   const ReanimatedDataMock: {
     now: () => number;
   };
+  const _frameCallbackRegistry: FrameCallbackRegistryUI;
   namespace NodeJS {
     interface Global {
       _setGlobalConsole: (console?: ReanimatedConsole) => void;
@@ -55,6 +57,7 @@ declare global {
       ReanimatedDataMock: {
         now: () => number;
       };
+      _frameCallbackRegistry: FrameCallbackRegistryUI;
     }
   }
 }

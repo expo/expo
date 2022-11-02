@@ -221,7 +221,7 @@ export class GitDirectory {
    */
   async logAsync(options: GitLogOptions = {}): Promise<GitLog[]> {
     const fromCommit = options.fromCommit ?? '';
-    const toCommit = options.toCommit ?? 'head';
+    const toCommit = options.toCommit ?? 'HEAD';
     const commitSeparator = options.symmetricDifference ? '...' : '..';
     const paths = options.paths ?? ['.'];
     const cherryPickOptions = options.cherryPick
@@ -432,7 +432,7 @@ export class GitDirectory {
   /**
    * Reads a file content from a given ref.
    */
-  async readFileAsync(ref: string, path): Promise<string> {
+  async readFileAsync(ref: string, path: string): Promise<string> {
     const { stdout } = await this.runAsync(['show', `${ref}:${relative(EXPO_DIR, path)}`]);
     return stdout;
   }

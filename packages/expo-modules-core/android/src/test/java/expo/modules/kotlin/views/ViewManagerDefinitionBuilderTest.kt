@@ -42,7 +42,7 @@ class ViewManagerDefinitionBuilderTest {
       }
       .build()
 
-    definition.createView(mockk())
+    definition.createView(mockk(), mockk())
     definition.setProps(
       JavaOnlyMap().apply {
         putInt("p1", 1)

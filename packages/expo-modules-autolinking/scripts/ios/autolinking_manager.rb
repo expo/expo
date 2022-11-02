@@ -26,6 +26,8 @@ module Expo
       end
 
       global_flags = @options.fetch(:flags, {})
+      tests_only = @options.fetch(:testsOnly, false)
+      include_tests = @options.fetch(:includeTests, false)
 
       project_directory = Pod::Config.instance.project_root
 
@@ -41,21 +43,29 @@ module Expo
 
             podspec_dir_path = Pathname.new(pod.podspec_dir).relative_path_from(project_directory).to_path
 
+            # Ensure that the dependencies of packages with Swift code use modular headers, otherwise
+            # `pod install` may fail if there is no `use_modular_headers!` declaration or
+            # `:modular_headers => true` is not used for this particular dependency.
+            # The latter require adding transitive dependencies to user's Podfile that we'd rather like to avoid.
+            if package.has_swift_modules_to_link?
+              podspec = get_podspec_for_pod(pod)
+              use_modular_headers_for_dependencies(podspec.all_dependencies)
+            end
+
             pod_options = {
               :path => podspec_dir_path,
               :configuration => package.debugOnly ? ['Debug'] : [] # An empty array means all configurations
             }.merge(global_flags, package.flags)
 
-            if links_for_testing?
-              podspec_file_path = File.join(podspec_dir_path, pod.pod_name + ".podspec")
-              podspec = Pod::Specification.from_file(podspec_file_path)
+            if tests_only || include_tests
+              podspec = podspec || get_podspec_for_pod(pod)
               test_specs_names = podspec.test_specs.map { |test_spec|
                 test_spec.name.delete_prefix(podspec.name + "/")
               }
 
               # Jump to the next package when it doesn't have any test specs (except interfaces, they're required)
               # TODO: Can remove interface check once we move all the interfaces into the core.
-              next if test_specs_names.empty? && !pod.pod_name.end_with?('Interface')
+              next if tests_only && test_specs_names.empty? && !pod.pod_name.end_with?('Interface')
 
               pod_options[:testspecs] = test_specs_names
             end
@@ -93,13 +103,9 @@ module Expo
       @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
     end
 
-    public def links_for_testing?
-      @options.fetch(:testsOnly, false)
-    end
-
     # For now there is no need to generate the modules provider for testing.
     public def should_generate_modules_provider?
-      return !links_for_testing?
+      return !@options.fetch(:testsOnly, false)
     end
 
     # privates
@@ -158,6 +164,22 @@ module Expo
         '--target',
         target_path
       ])
+    end
+
+    private def get_podspec_for_pod(pod)
+      podspec_file_path = File.join(pod.podspec_dir, pod.pod_name + ".podspec")
+      return Pod::Specification.from_file(podspec_file_path)
+    end
+
+    private def use_modular_headers_for_dependencies(dependencies)
+      dependencies.each { |dependency|
+        unless @target_definition.build_pod_as_module?(dependency.name)
+          UI.info "[Expo] ".blue << "Enabling modular headers for pod #{dependency.name.green}"
+
+          # This is an equivalent to setting `:modular_headers => true` for the specific dependency.
+          @target_definition.set_use_modular_headers_for_pod(dependency.name, true)
+        end
+      }
     end
 
   end # class AutolinkingManager

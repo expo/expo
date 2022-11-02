@@ -26,9 +26,14 @@
     appVersion = [manager.currentManifest version];
   }
   
-  NSString *engine = @"JSC";
-  if ([[[[manager currentBridge] batchedBridge] bridgeDescription] containsString:@"Hermes"]) {
+  NSString *engine;
+  NSString *bridgeDescription = [[[manager currentBridge] batchedBridge] bridgeDescription];
+  if ([bridgeDescription containsString:@"Hermes"]) {
     engine = @"Hermes";
+  } else if ([bridgeDescription containsString:@"V8"]) {
+    engine = @"V8";
+  } else {
+    engine = @"JSC";
   }
   
   NSString *hostUrl = [manager.currentManifestURL absoluteString] ?: @"";

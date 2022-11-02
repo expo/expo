@@ -17,12 +17,26 @@ import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogEntry
+import expo.modules.updates.logging.UpdatesLogReader
+import expo.modules.updates.logging.UpdatesLogger
+import java.util.Date
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
 import expo.modules.updates.UpdatesConfiguration
 /* ktlint-enable no-unused-imports */
 
+/**
+ * Exported module which provides to the JS runtime information about the currently running update
+ * and updates state, along with methods to check for and download new updates, reload with the
+ * newest downloaded update applied, and read/clear native log entries.
+ *
+ * Communicates with the updates hub ([UpdatesController] in most apps, [ExpoUpdatesAppLoader] in
+ * Expo Go and legacy standalone apps) via [UpdatesService], an internal module which is overridden
+ * by [UpdatesBinding], a scoped module, in Expo Go.
+ */
 class UpdatesModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
@@ -40,6 +54,7 @@ class UpdatesModule(
   }
 
   override fun getConstants(): Map<String, Any> {
+    UpdatesLogger(context).info("UpdatesModule: getConstants called", UpdatesErrorCode.None)
     val constants = mutableMapOf<String, Any>()
     try {
       val updatesServiceLocal: UpdatesInterface? = updatesService
@@ -243,6 +258,55 @@ class UpdatesModule(
         "ERR_UPDATES_FETCH",
         "The updates module controller has not been properly initialized. If you're using a development client, you cannot fetch updates. Otherwise, make sure you have called the native method UpdatesController.initialize()."
       )
+    }
+  }
+
+  @ExpoMethod
+  fun readLogEntriesAsync(maxAge: Long, promise: Promise) {
+    AsyncTask.execute {
+      val reader = UpdatesLogReader(context)
+      val date = Date()
+      val epoch = Date(date.time - maxAge)
+      val results = reader.getLogEntries(epoch)
+        .mapNotNull { UpdatesLogEntry.create(it) }
+        .map { entry ->
+          Bundle().apply {
+            putLong("timestamp", entry.timestamp)
+            putString("message", entry.message)
+            putString("code", entry.code)
+            putString("level", entry.level)
+            if (entry.updateId != null) {
+              putString("updateId", entry.updateId)
+            }
+            if (entry.assetId != null) {
+              putString("assetId", entry.assetId)
+            }
+            if (entry.stacktrace != null) {
+              putStringArray("stacktrace", entry.stacktrace.toTypedArray())
+            }
+          }
+        }
+      promise.resolve(results)
+    }
+  }
+
+  @ExpoMethod
+  fun clearLogEntriesAsync(promise: Promise) {
+    AsyncTask.execute {
+      val reader = UpdatesLogReader(context)
+      reader.purgeLogEntries(
+        olderThan = Date()
+      ) { error ->
+        if (error != null) {
+          promise.reject(
+            "ERR_UPDATES_READ_LOGS",
+            "There was an error when clearing the expo-updates log file",
+            error
+          )
+        } else {
+          promise.resolve(null)
+        }
+      }
     }
   }
 

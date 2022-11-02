@@ -204,7 +204,10 @@ class Video extends React.Component {
             this.props.onFullscreenUpdate(event.nativeEvent);
         }
     };
-    _renderPoster = () => this.props.usePoster && this.state.showPoster ? (React.createElement(Image, { style: [_STYLES.poster, this.props.posterStyle], source: this.props.posterSource })) : null;
+    _renderPoster = () => {
+        const PosterComponent = this.props.PosterComponent ?? Image;
+        return this.props.usePoster && this.state.showPoster ? (React.createElement(PosterComponent, { style: [_STYLES.poster, this.props.posterStyle], source: this.props.posterSource })) : null;
+    };
     render() {
         const source = getNativeSourceFromSource(this.props.source) || undefined;
         let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
@@ -247,6 +250,7 @@ class Video extends React.Component {
                 ...Object.keys(status),
             ]),
             style: StyleSheet.flatten([_STYLES.base, this.props.style]),
+            videoStyle: StyleSheet.flatten([_STYLES.video, this.props.videoStyle]),
             source,
             resizeMode: nativeResizeMode,
             status,
@@ -258,7 +262,7 @@ class Video extends React.Component {
             onFullscreenUpdate: this._nativeOnFullscreenUpdate,
         };
         return (React.createElement(View, { style: nativeProps.style, pointerEvents: "box-none" },
-            React.createElement(ExponentVideo, { ref: this._nativeRef, ...nativeProps, style: _STYLES.video }),
+            React.createElement(ExponentVideo, { ref: this._nativeRef, ...nativeProps, style: nativeProps.videoStyle }),
             this._renderPoster()));
     }
 }

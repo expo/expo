@@ -18,10 +18,8 @@ import {
   StatusIndicator,
   Image,
   scale,
-  SettingsFilledIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Platform } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 
 import { useAppInfo } from '../hooks/useAppInfo';
@@ -233,29 +231,27 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
           />
         </View>
         <Divider />
-        {Platform.OS === 'android' && (
-          <>
-            <View bg="default">
-              <SettingsRowButton
-                disabled={!devSettings.isJSInspectorAvailable}
-                label="Open JavaScript Inspector"
-                icon={<SettingsFilledIcon />}
-                onPress={actions.openJSInspector}
-              />
-            </View>
-            <Divider />
-          </>
+        {devSettings.isJSInspectorAvailable ? (
+          <View bg="default">
+            <SettingsRowButton
+              disabled={!devSettings.isJSInspectorAvailable}
+              label="Open JS debugger"
+              icon={<DebugIcon />}
+              onPress={actions.openJSInspector}
+            />
+          </View>
+        ) : (
+          <View bg="default">
+            <SettingsRowSwitch
+              disabled={!devSettings.isRemoteDebuggingAvailable}
+              testID="remote-js-debugger"
+              label="Remote JS debugger"
+              icon={<DebugIcon />}
+              isEnabled={devSettings.isDebuggingRemotely}
+              setIsEnabled={actions.toggleDebugRemoteJS}
+            />
+          </View>
         )}
-        <View bg="default">
-          <SettingsRowSwitch
-            disabled={!devSettings.isRemoteDebuggingAvailable}
-            testID="local-dev-tools"
-            label="Local dev tools"
-            icon={<DebugIcon />}
-            isEnabled={devSettings.isDebuggingRemotely}
-            setIsEnabled={actions.toggleDebugRemoteJS}
-          />
-        </View>
         <Divider />
         <View bg="default" roundedBottom="large">
           <SettingsRowSwitch
@@ -351,6 +347,7 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
           </Row>
         </Button.ScaleOnPressContainer>
       </View>
+      <Spacer.Vertical size="large" />
     </View>
   );
 }

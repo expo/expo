@@ -82,7 +82,7 @@ async function action(options) {
 
   const tagOptions = new Map<string, string[]>();
   tagOptions.set(`${sdkTag} and latest`, [sdkTag, 'latest']);
-  tagOptions.set(`${sdkTag} and beta`, [sdkTag, 'beta']);
+  tagOptions.set(`${sdkTag} and beta and next`, [sdkTag, 'beta', 'next']);
   tagOptions.set(sdkTag, [sdkTag]);
 
   const { tagChoice } = await inquirer.prompt<{ tagChoice: string }>([
