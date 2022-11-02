@@ -169,4 +169,4 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- Remove console.warn from LocalAuthentication, preventing to run it every time that user cancel authentication or authentication fail. ([#19803](https://github.com/expo/expo/pull/19803) by [@GustavoMont](https://github.com/GustavoMont))
+- Removed `console.warn` from the `authenticateAsync` function, preventing running it every time the user cancels authentication or authentication fails. ([#19803](https://github.com/expo/expo/pull/19803) by [@GustavoMont](https://github.com/GustavoMont))
