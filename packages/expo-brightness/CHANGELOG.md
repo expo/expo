@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Deprecate `useSystemBrightnessAsync` and add it as renamed `restoreSystemBrightnessAsync` method to avoid violating Rules of Hooks. ([#19701](https://github.com/expo/expo/pull/19701) by [@Simek](https://github.com/Simek))
+
 ## 11.0.0 — 2022-10-25
 
 ### 🛠 Breaking changes
@@ -20,7 +22,6 @@
 
 - [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
-- Deprecate `useSystemBrightnessAsync` and add it as renamed `restoreSystemBrightnessAsync` method to avoid violating Rules of Hooks. ([#19701](https://github.com/expo/expo/pull/19701) by [@Simek](https://github.com/Simek))
 
 ## 10.3.0 — 2022-07-07
 
