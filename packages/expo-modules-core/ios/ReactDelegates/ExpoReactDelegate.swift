@@ -22,10 +22,11 @@ public class ExpoReactDelegate: NSObject {
   }
 
   @objc
-  public func createRootView(bridge: RCTBridge,
-                             moduleName: String,
-                             initialProperties: [AnyHashable: Any]?,
-                             fabricEnabled: Bool = EXAppDefines.APP_NEW_ARCH_ENABLED
+  public func createRootView(
+    bridge: RCTBridge,
+    moduleName: String,
+    initialProperties: [AnyHashable: Any]?,
+    fabricEnabled: Bool = EXAppDefines.APP_NEW_ARCH_ENABLED
   ) -> UIView {
     return self.handlers.lazy
       .compactMap { $0.createRootView(reactDelegate: self, bridge: bridge, moduleName: moduleName, initialProperties: initialProperties) }
