@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Expo Go download loading bar.
+
 ### 💡 Others
 
 ## 0.4.5 — 2022-10-30
