@@ -166,3 +166,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Added estimate of supported authentication types for Android. ([#8431](https://github.com/expo/expo/pull/8431) by [@bycedric](https://github.com/bycedric))
+
+### 💡 Others
+
+- Remove console.warn from LocalAuthentication, preventing to run it every time that user cancel authentication or authentication fail
