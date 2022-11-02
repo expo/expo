@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed build errors when testing on React Native nightly builds. ([#19369](https://github.com/expo/expo/pull/19369) by [@kudo](https://github.com/kudo))
+- Fixed missing _disable-missing-native-module-errors.js_ in the package. ([#19815](https://github.com/expo/expo/pull/19815) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
