@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Fix ngrok error message format.
+
 ## 0.4.5 — 2022-10-30
 
 _This version does not introduce any user-facing changes._
