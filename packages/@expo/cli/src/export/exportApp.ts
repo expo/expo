@@ -1,12 +1,14 @@
+import { getConfig } from '@expo/config';
 import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
+import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFromProject';
+import { getPlatformBundlers } from '../start/server/platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
-import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
@@ -54,17 +56,17 @@ export async function exportAppAsync(
 
   await copyPublicFolderAsync(publicPath, outputDir);
 
+  const platformBundlers = getPlatformBundlers(getConfig(projectRoot).exp);
+  // Create a bundler interface
+  const bundler = new MetroBundlerDevServer(projectRoot, platformBundlers, false);
+
   // Run metro bundler and create the JS bundles/source maps.
-  const bundles = await createBundlesAsync(
-    projectRoot,
-    { resetCache: !!clear },
-    {
-      platforms,
-      dev,
-      useDevServer: true,
-      // TODO: Disable source map generation if we aren't outputting them.
-    }
-  );
+  const bundles = await bundler.bundleAsync({
+    mode: dev ? 'development' : 'production',
+    clear,
+    platforms,
+    // TODO: Disable source map generation if we aren't outputting them.
+  });
 
   // Log bundle size info to the user
   printBundleSizes(

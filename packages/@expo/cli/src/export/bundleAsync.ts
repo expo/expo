@@ -77,7 +77,7 @@ export async function bundleAsync(
   expoConfig: ExpoConfig,
   options: MetroDevServerOptions,
   bundles: BundleOptions[]
-): Promise<BundleOutput[]> {
+): Promise<Partial<Record<Platform, BundleOutput>>> {
   // Assert early so the user doesn't have to wait until bundling is complete to find out that
   // Hermes won't be available.
   await Promise.all(
@@ -195,7 +195,15 @@ export async function bundleAsync(
       // we should build them sequentially.
       bundleOutputs.push(await maybeAddHermesBundleAsync(bundles[i], intermediateOutputs[i]));
     }
-    return bundleOutputs;
+
+    // ex: { ios: bundle, android: bundle }
+    return bundles.reduce<Partial<Record<Platform, BundleOutput>>>(
+      (prev, { platform }, index) => ({
+        ...prev,
+        [platform]: bundleOutputs[index],
+      }),
+      {}
+    );
   } catch (error) {
     // New line so errors don't show up inline with the progress bar
     console.log('');

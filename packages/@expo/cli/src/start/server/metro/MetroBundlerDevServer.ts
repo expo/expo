@@ -1,4 +1,5 @@
-import { getConfig } from '@expo/config';
+import { getConfig, Platform } from '@expo/config';
+import { bundleAsync, BundleOutput } from '../../../export/bundleAsync';
 
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -7,6 +8,7 @@ import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../Bun
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
+import { resolveEntryPoint } from '../middleware/resolveEntryPoint';
 import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
@@ -130,6 +132,35 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   protected getConfigModuleIds(): string[] {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
+  }
+
+  async bundleAsync({
+    mode,
+    maxWorkers,
+    clear,
+    platforms,
+  }: {
+    mode: 'development' | 'production';
+    maxWorkers?: number;
+    clear: boolean;
+    platforms: Platform[];
+  }) {
+    const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+
+    return bundleAsync(
+      this.projectRoot,
+      exp,
+      {
+        resetCache: clear,
+        maxWorkers,
+        quiet: false,
+      },
+      platforms.map((platform: Platform) => ({
+        platform,
+        entryPoint: resolveEntryPoint(this.projectRoot, platform),
+        dev: mode === 'development',
+      }))
+    );
   }
 }
 
