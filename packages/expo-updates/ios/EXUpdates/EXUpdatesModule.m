@@ -20,6 +20,15 @@
 
 @end
 
+/**
+ * Exported module which provides to the JS runtime information about the currently running update
+ * and updates state, along with methods to check for and download new updates, reload with the
+ * newest downloaded update applied, and read/clear native log entries.
+ *
+ * Communicates with the updates hub (EXUpdatesAppController in most apps, EXAppLoaderExpoUpdates in
+ * Expo Go and legacy standalone apps) via EXUpdatesService, an internal module which is overridden
+ * by EXUpdatesBinding, a scoped module, in Expo Go.
+ */
 @implementation EXUpdatesModule
 
 EX_EXPORT_MODULE(ExpoUpdates);
@@ -143,21 +152,16 @@ EX_EXPORT_METHOD_AS(readLogEntriesAsync,
                                  resolve:(EXPromiseResolveBlock)resolve
                                   reject:(EXPromiseRejectBlock)reject)
 {
-  // Once persistent logs are implemented, the iOS 15 restriction will be removed
-  if (@available(iOS 15.0, *)) {
-    EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
-    NSError *error = nil;
-    // maxAge is in milliseconds, convert to seconds to compute NSDate
-    NSTimeInterval age = [maxAge intValue] / 1000;
-    NSDate *epoch = [NSDate dateWithTimeIntervalSinceNow:-age];
-    NSArray<NSDictionary *> *entries = [reader getLogEntriesNewerThan:epoch error:&error];
-    if (error != nil) {
-      reject(@"ERR_UPDATES_READ_LOGS", [error localizedDescription], error);
-    } else {
-      resolve(entries);
-    }
+  EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
+  NSError *error = nil;
+  // maxAge is in milliseconds, convert to seconds to compute NSDate
+  NSTimeInterval age = [maxAge intValue] / 1000;
+  NSDate *epoch = [NSDate dateWithTimeIntervalSinceNow:-age];
+  NSArray<NSDictionary *> *entries = [reader getLogEntriesNewerThan:epoch error:&error];
+  if (error != nil) {
+    reject(@"ERR_UPDATES_READ_LOGS", [error localizedDescription], error);
   } else {
-    reject(@"ERR_UPDATES_READ_LOGS", @"Log reader requires iOS 15 or higher", nil);
+    resolve(entries);
   }
 }
 
@@ -165,8 +169,14 @@ EX_EXPORT_METHOD_AS(clearLogEntriesAsync,
                      clearLogEntriesAsync:(EXPromiseResolveBlock)resolve
                                    reject:(EXPromiseRejectBlock)reject)
 {
-  // This method is a no-op until persistent logs are implemented
-  resolve(nil);
+  EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
+  [reader purgeLogEntriesOlderThan:[NSDate date] completion:^(NSError *error) {
+    if (error) {
+      reject(@"ERR_UPDATES_READ_LOGS", [error localizedDescription], error);
+    } else {
+      resolve(nil);
+    }
+  }];
 }
 
 EX_EXPORT_METHOD_AS(fetchUpdateAsync,

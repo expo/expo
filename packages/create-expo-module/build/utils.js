@@ -55,9 +55,8 @@ exports.findGitHubEmail = findGitHubEmail;
  * Get the GitHub username from an email address if the email can be found in any commits on GitHub.
  */
 async function findGitHubProfileUrl(email) {
-    var _a;
     try {
-        const username = (_a = (await (0, github_username_1.default)(email))) !== null && _a !== void 0 ? _a : '';
+        const username = (await (0, github_username_1.default)(email)) ?? '';
         return `https://github.com/${username}`;
     }
     catch {

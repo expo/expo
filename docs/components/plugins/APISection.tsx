@@ -10,16 +10,18 @@ import APISectionInterfaces from '~/components/plugins/api/APISectionInterfaces'
 import APISectionMethods from '~/components/plugins/api/APISectionMethods';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
-import { TypeDocKind, getComponentName } from '~/components/plugins/api/APISectionUtils';
+import { getComponentName, TypeDocKind } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
 
-const LATEST_VERSION = `v${require('~/package.json').version}`;
+const { LATEST_VERSION } = versions;
 
 type Props = {
   packageName: string;
   apiName?: string;
   forceVersion?: string;
   strictTypes?: boolean;
+  testRequire?: any;
 };
 
 const filterDataByKind = (
@@ -68,12 +70,11 @@ const renderAPI = (
   version: string = 'unversioned',
   apiName?: string,
   strictTypes: boolean = false,
-  isTestMode: boolean = false
+  testRequire: any = undefined
 ): JSX.Element => {
   try {
-    // note(simek): When the path prefix is interpolated Next or Webpack fails to locate the file
-    const { children: data } = isTestMode
-      ? require(`../../public/static/data/${version}/${packageName}.json`)
+    const { children: data } = testRequire
+      ? testRequire(`~/public/static/data/${version}/${packageName}.json`)
       : require(`~/public/static/data/${version}/${packageName}.json`);
 
     const methods = filterDataByKind(
@@ -81,7 +82,6 @@ const renderAPI = (
       TypeDocKind.Function,
       entry => !isListener(entry) && !isHook(entry) && !isComponent(entry)
     );
-    const hooks = filterDataByKind(data, TypeDocKind.Function, isHook);
     const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, isListener);
 
     const types = filterDataByKind(
@@ -135,15 +135,16 @@ const renderAPI = (
     const classes = filterDataByKind(
       data,
       TypeDocKind.Class,
-      entry => !isComponent(entry) && (apiName ? !entry.name.includes(apiName) : true)
+      entry => !isComponent(entry) && entry.name !== 'default'
     );
 
     const componentsChildren = components
       .map((cls: ClassDefinitionData) =>
         cls.children?.filter(
           child =>
-            child.kind === TypeDocKind.Method &&
+            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
             child?.flags?.isExternal !== true &&
+            !child.inheritedFrom &&
             child.name !== 'render' &&
             // note(simek): hide unannotated "private" methods
             !child.name.startsWith('_')
@@ -153,12 +154,27 @@ const renderAPI = (
 
     const methodsNames = methods.map(method => method.name);
     const staticMethods = componentsChildren.filter(
-      // note(simek): hide duplicate exports for Camera API
-      method => method?.flags?.isStatic === true && !methodsNames.includes(method.name)
+      // note(simek): hide duplicate exports from class components
+      method =>
+        method?.kind === TypeDocKind.Method &&
+        method?.flags?.isStatic === true &&
+        !methodsNames.includes(method.name) &&
+        !isHook(method as GeneratedData)
     );
     const componentMethods = componentsChildren
-      .filter(method => method?.flags?.isStatic !== true && !method?.overwrites)
+      .filter(
+        method =>
+          method?.kind === TypeDocKind.Method &&
+          method?.flags?.isStatic !== true &&
+          !method?.overwrites
+      )
       .filter(Boolean);
+
+    const hooks = filterDataByKind(
+      [...data, ...componentsChildren].filter(Boolean),
+      [TypeDocKind.Function, TypeDocKind.Property],
+      isHook
+    );
 
     return (
       <>
@@ -187,12 +203,18 @@ const renderAPI = (
   }
 };
 
-const APISection = ({ packageName, apiName, forceVersion, strictTypes = false }: Props) => {
+const APISection = ({
+  packageName,
+  apiName,
+  forceVersion,
+  strictTypes = false,
+  testRequire = undefined,
+}: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
-  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, !!forceVersion);
+  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, testRequire);
 };
 
 export default APISection;

@@ -175,6 +175,13 @@ export type VideoProps = {
    * A boolean which, if set to `true`, will display an image (whose source is set via the prop `posterSource`) while the video is loading.
    */
   usePoster?: boolean;
+  /**
+   * A react-native `Image` like component to display the poster image.
+   */
+  PosterComponent?: React.ComponentType<{
+    style: ImageProps['style'];
+    source: ImageProps['source'];
+  }>;
 
   // Playback API
   /**

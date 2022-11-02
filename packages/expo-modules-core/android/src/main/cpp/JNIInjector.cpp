@@ -6,6 +6,12 @@
 #include "JavaScriptObject.h"
 #include "JavaScriptTypedArray.h"
 #include "JavaReferencesCache.h"
+#include "JavaCallback.h"
+#include "types/FrontendConverterProvider.h"
+
+#if RN_FABRIC_ENABLED
+#include "FabricComponentsRegistry.h"
+#endif
 
 #include <jni.h>
 #include <fbjni/fbjni.h>
@@ -15,11 +21,16 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
   return facebook::jni::initialize(vm, [] {
     // Loads references to often use Java classes
     expo::JavaReferencesCache::instance()->loadJClasses(jni::Environment::current());
+    expo::FrontendConverterProvider::instance()->createConverters();
 
     expo::JSIInteropModuleRegistry::registerNatives();
     expo::JavaScriptModuleObject::registerNatives();
     expo::JavaScriptValue::registerNatives();
     expo::JavaScriptObject::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
+    expo::JavaCallback::registerNatives();
+#if RN_FABRIC_ENABLED
+    expo::FabricComponentsRegistry::registerNatives();
+#endif
   });
 }

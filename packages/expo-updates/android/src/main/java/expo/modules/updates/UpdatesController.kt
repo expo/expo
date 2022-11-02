@@ -30,12 +30,34 @@ import expo.modules.updates.loader.LoaderTask
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
 import expo.modules.updates.loader.RemoteLoader
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogReader
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import expo.modules.updates.selectionpolicy.SelectionPolicyFactory
 import java.io.File
 import java.lang.ref.WeakReference
 
+/**
+ * Main entry point to expo-updates in normal release builds (development clients, including Expo
+ * Go, use a different entry point). Singleton that keeps track of updates state, holds references
+ * to instances of other updates classes, and is the central hub for all updates-related tasks.
+ *
+ * The `start` method in this class should be invoked early in the application lifecycle, via
+ * [UpdatesPackage]. It delegates to an instance of [LoaderTask] to start the process of loading and
+ * launching an update, then responds appropriately depending on the callbacks that are invoked.
+ *
+ * This class also provides getter methods to access information about the updates state, which are
+ * used by the exported [UpdatesModule] through [UpdatesService]. Such information includes
+ * references to: the database, the [UpdatesConfiguration] object, the path on disk to the updates
+ * directory, any currently active [LoaderTask], the current [SelectionPolicy], the error recovery
+ * handler, and the current launched update. This class is intended to be the source of truth for
+ * these objects, so other classes shouldn't retain any of them indefinitely.
+ *
+ * This class also optionally holds a reference to the app's [ReactNativeHost], which allows
+ * expo-updates to reload JS and send events through the bridge.
+ */
 class UpdatesController private constructor(
   context: Context,
   var updatesConfiguration: UpdatesConfiguration
@@ -62,6 +84,15 @@ class UpdatesController private constructor(
     }
   }
 
+  private fun purgeUpdatesLogsOlderThanOneDay(context: Context) {
+    UpdatesLogReader(context).purgeLogEntries {
+      if (it != null) {
+        Log.e(TAG, "UpdatesLogReader: error in purgeLogEntries", it)
+      }
+    }
+  }
+
+  private val logger = UpdatesLogger(context)
   private var isStarted = false
   private var loaderTask: LoaderTask? = null
   private var remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
@@ -71,7 +102,7 @@ class UpdatesController private constructor(
     UpdatesUtils.getRuntimeVersion(updatesConfiguration)
   )
   val fileDownloader: FileDownloader = FileDownloader(context)
-  private val errorRecovery: ErrorRecovery = ErrorRecovery()
+  private val errorRecovery: ErrorRecovery = ErrorRecovery(context)
 
   private fun setRemoteLoadStatus(status: ErrorRecoveryDelegate.RemoteLoadStatus) {
     remoteLoadStatus = status
@@ -143,6 +174,10 @@ class UpdatesController private constructor(
   val isUsingEmbeddedAssets: Boolean
     get() = launcher?.isUsingEmbeddedAssets ?: false
 
+  /**
+   * Any process that calls this *must* manually release the lock by calling `releaseDatabase()` in
+   * every possible case (success, error) as soon as it is finished.
+   */
   fun getDatabase(): UpdatesDatabase = databaseHolder.database
 
   fun releaseDatabase() {
@@ -214,6 +249,8 @@ class UpdatesController private constructor(
       return
     }
 
+    purgeUpdatesLogsOlderThanOneDay(context)
+
     initializeDatabaseHandler()
     initializeErrorRecovery(context)
 
@@ -229,6 +266,7 @@ class UpdatesController private constructor(
       selectionPolicy,
       object : LoaderTaskCallback {
         override fun onFailure(e: Exception) {
+          logger.error("UpdatesController loaderTask onFailure: ${e.localizedMessage}", UpdatesErrorCode.None)
           launcher = NoDatabaseLauncher(context, updatesConfiguration, e)
           isEmergencyLaunch = true
           notifyController()
@@ -260,6 +298,7 @@ class UpdatesController private constructor(
               if (exception == null) {
                 throw AssertionError("Background update with error status must have a nonnull exception object")
               }
+              logger.error("UpdatesController onBackgroundUpdateFinished: Error: ${exception.localizedMessage}", UpdatesErrorCode.Unknown, exception)
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
               val params = Arguments.createMap()
               params.putString("message", exception.message)
@@ -270,12 +309,14 @@ class UpdatesController private constructor(
                 throw AssertionError("Background update with error status must have a nonnull update object")
               }
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+              logger.info("UpdatesController onBackgroundUpdateFinished: Update available", UpdatesErrorCode.None)
               val params = Arguments.createMap()
               params.putString("manifestString", update.manifest.toString())
               UpdatesUtils.sendEventToReactNative(reactNativeHost, UPDATE_AVAILABLE_EVENT, params)
             }
             BackgroundUpdateStatus.NO_UPDATE_AVAILABLE -> {
               remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
+              logger.error("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
               UpdatesUtils.sendEventToReactNative(
                 reactNativeHost,
                 UPDATE_NO_UPDATE_AVAILABLE_EVENT,
@@ -310,6 +351,7 @@ class UpdatesController private constructor(
         val remoteLoader = RemoteLoader(context, updatesConfiguration, database, fileDownloader, updatesDirectory, launchedUpdate)
         remoteLoader.start(object : Loader.LoaderCallback {
           override fun onFailure(e: Exception) {
+            logger.error("UpdatesController loadRemoteUpdate onFailure: ${e.localizedMessage}", UpdatesErrorCode.UpdateFailedToLoad, launchedUpdate?.loggingId, null)
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
             releaseDatabase()
           }

@@ -17,11 +17,31 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
     {"<init>", "(Z)V"}
   });
 
+  loadJClass(env, "java/lang/Integer", {
+    {"<init>", "(I)V"}
+  });
+
+  loadJClass(env, "java/lang/Float", {
+    {"<init>", "(F)V"}
+  });
+
   loadJClass(env, "com/facebook/react/bridge/PromiseImpl", {
     {"<init>", "(Lcom/facebook/react/bridge/Callback;Lcom/facebook/react/bridge/Callback;)V"}
   });
 
+  loadJClass(env, "expo/modules/kotlin/jni/PromiseImpl", {
+    {"<init>", "(Lexpo/modules/kotlin/jni/JavaCallback;Lexpo/modules/kotlin/jni/JavaCallback;)V"}
+  });
+
   loadJClass(env, "java/lang/Object", {});
+  loadJClass(env, "java/lang/String", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptObject", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptValue", {});
+  loadJClass(env, "expo/modules/kotlin/jni/JavaScriptTypedArray", {});
+  loadJClass(env, "com/facebook/react/bridge/ReadableNativeArray", {});
+  loadJClass(env, "com/facebook/react/bridge/ReadableNativeMap", {});
+  loadJClass(env, "com/facebook/react/bridge/WritableNativeArray", {});
+  loadJClass(env, "com/facebook/react/bridge/WritableNativeMap", {});
 }
 
 void JavaReferencesCache::loadJClass(
@@ -51,6 +71,19 @@ JavaReferencesCache::CachedJClass &JavaReferencesCache::getJClass(
   const std::string &className
 ) {
   return jClassRegistry.at(className);
+}
+
+JavaReferencesCache::CachedJClass &JavaReferencesCache::getOrLoadJClass(
+  JNIEnv *env,
+  const std::string &className
+) {
+  auto result = jClassRegistry.find(className);
+  if (result == jClassRegistry.end()) {
+    loadJClass(env, className, {});
+    return jClassRegistry.at(className);
+  }
+
+  return result->second;
 }
 
 jmethodID JavaReferencesCache::CachedJClass::getMethod(

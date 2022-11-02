@@ -8,7 +8,7 @@ import { createDevServerMiddleware } from '../middleware/devServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
-import { withMetroMultiPlatform } from './withMetroMultiPlatform';
+import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 export type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
@@ -43,9 +43,12 @@ export async function instantiateMetroAsync(
   let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true });
+  const { exp } = getConfig(projectRoot, {
+    skipSDKVersionRequirement: true,
+    skipPlugins: true,
+  });
   const platformBundlers = getPlatformBundlers(exp);
-  metroConfig = withMetroMultiPlatform(projectRoot, metroConfig, platformBundlers);
+  metroConfig = await withMetroMultiPlatformAsync(projectRoot, metroConfig, platformBundlers);
 
   const {
     middleware,

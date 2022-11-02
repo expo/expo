@@ -2,6 +2,8 @@ package expo.modules.kotlin.views
 
 import android.view.View
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.exception.PropSetException
+import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.types.AnyType
 
 class ConcreteViewProp<ViewType : View, PropType>(
@@ -12,6 +14,10 @@ class ConcreteViewProp<ViewType : View, PropType>(
 
   @Suppress("UNCHECKED_CAST")
   override fun set(prop: Dynamic, onView: View) {
-    setter(onView as ViewType, propType.convert(prop) as PropType)
+    exceptionDecorator({
+      PropSetException(name, onView::class, it)
+    }) {
+      setter(onView as ViewType, propType.convert(prop) as PropType)
+    }
   }
 }

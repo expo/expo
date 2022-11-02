@@ -14,7 +14,6 @@ import com.facebook.soloader.SoLoader
 import com.squareup.leakcanary.LeakCanary
 import de.greenrobot.event.EventBus
 import expo.modules.barcodescanner.BarCodeScannerPackage
-import expo.modules.camera.CameraPackage
 import expo.modules.constants.ConstantsPackage
 import expo.modules.core.interfaces.Package
 import expo.modules.device.DevicePackage
@@ -148,7 +147,6 @@ open class HomeActivity : BaseExperienceActivity() {
         FontLoaderPackage(),
         BarCodeScannerPackage(),
         KeepAwakePackage(),
-        CameraPackage(),
         FaceDetectorPackage(),
         MediaLibraryPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created

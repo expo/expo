@@ -38,7 +38,7 @@
   if (![requireAuth boolValue]) {
     [dictionary setObject:(__bridge id)accessibility forKey:(__bridge id)kSecAttrAccessible];
   } else {
-    SecAccessControlRef accessOptions = SecAccessControlCreateWithFlags(nil, accessibility, kSecAccessControlUserPresence, nil);
+    SecAccessControlRef accessOptions = SecAccessControlCreateWithFlags(nil, accessibility, kSecAccessControlBiometryCurrentSet, nil);
     [dictionary setObject:(__bridge_transfer id)accessOptions forKey:(__bridge id)kSecAttrAccessControl];
   }
 
@@ -229,7 +229,7 @@ EX_EXPORT_METHOD_AS(setValueWithKeyAsync,
 {
   NSString *validatedKey = [self validatedKey:key];
   if (!validatedKey) {
-    reject(@"E_SECURESTORE_SETVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
+    reject(@"E_SECURESTORE_SETVALUEFAIL", @"Invalid key", nil);
   } else {
     NSError *error;
     BOOL setValue = [self _setValue:value
@@ -239,7 +239,7 @@ EX_EXPORT_METHOD_AS(setValueWithKeyAsync,
     if (setValue) {
       resolve(nil);
     } else {
-      reject(@"E_SECURESTORE_SETVALUEFAIL", nil, EXErrorWithMessage([[self class] _messageForError:error]));
+      reject(@"E_SECURESTORE_SETVALUEFAIL", [[self class] _messageForError:error], nil);
     }
   }
 }
@@ -252,7 +252,7 @@ EX_EXPORT_METHOD_AS(getValueWithKeyAsync,
 {
   NSString *validatedKey = [self validatedKey:key];
   if (!validatedKey) {
-    reject(@"E_SECURESTORE_GETVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
+    reject(@"E_SECURESTORE_GETVALUEFAIL", @"Invalid key", nil);
   } else {
     NSError *error;
     NSString *value = [self _getValueWithKey:validatedKey
@@ -262,7 +262,7 @@ EX_EXPORT_METHOD_AS(getValueWithKeyAsync,
       if (error.code == errSecItemNotFound) {
         resolve([NSNull null]);
       } else {
-        reject(@"E_SECURESTORE_GETVALUEFAIL", nil, EXErrorWithMessage([[self class] _messageForError:error]));
+        reject(@"E_SECURESTORE_GETVALUEFAIL", [[self class] _messageForError:error], nil);
       }
     } else {
       resolve(value);
@@ -278,7 +278,7 @@ EX_EXPORT_METHOD_AS(deleteValueWithKeyAsync,
 {
   NSString *validatedKey = [self validatedKey:key];
   if (!validatedKey) {
-    reject(@"E_SECURESTORE_DELETEVALUEFAIL", nil, EXErrorWithMessage(@"Invalid key."));
+    reject(@"E_SECURESTORE_DELETEVALUEFAIL", @"Invalid key", nil);
   } else {
     [self _deleteValueWithKey:validatedKey
                   withOptions:options];

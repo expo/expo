@@ -3,11 +3,16 @@
 exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
 <div>
   <nav
-    class="css-1u2eykn"
+    class="css-133zsmp"
     data-sidebar="true"
   >
+    <p
+      class="css-xqbzh-TextComponent"
+    >
+      On this page
+    </p>
     <a
-      class="css-10qhea3"
+      class="css-1fc6p3j"
       href="#base-level-heading"
       style="padding-left: 0px;"
     >
@@ -18,7 +23,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </span>
     </a>
     <a
-      class="css-1e15kg4"
+      class="css-1yg0875"
       href="#level-3-subheading"
       style="padding-left: 12px;"
     >
@@ -29,7 +34,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       </span>
     </a>
     <a
-      class="css-1e15kg4"
+      class="css-1yg0875"
       href="#code-heading-depth-1"
       style="padding-left: 12px;"
     >

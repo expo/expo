@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.withDevLauncherAppDelegate = exports.modifyAppDelegate = exports.modifyLegacyAppDelegate = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const semver_1 = __importDefault(require("semver"));
 const constants_1 = require("./constants");
 const resolveExpoUpdatesVersion_1 = require("./resolveExpoUpdatesVersion");
@@ -153,7 +153,7 @@ const DEV_LAUNCHER_INITIALIZE_REACT_NATIVE_APP_FUNCTION_DEFINITION = (viewContro
     rootView.backgroundColor = [UIColor whiteColor];
   }
 
-  UIViewController *rootViewController = ${viewControllerInit !== null && viewControllerInit !== void 0 ? viewControllerInit : '[UIViewController new]'};
+  UIViewController *rootViewController = ${viewControllerInit ?? '[UIViewController new]'};
   rootViewController.view = rootView;
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];

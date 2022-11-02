@@ -15,7 +15,7 @@ export const HomeButton = ({ children, style, href, ...rest }: ButtonProps) => (
       paddingRight: spacing[3.5],
       position: 'absolute',
       bottom: 28,
-      zIndex: 10,
+      zIndex: 1,
       ...style,
     }}>
     {children}

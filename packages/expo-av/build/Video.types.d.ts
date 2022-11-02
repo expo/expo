@@ -151,6 +151,13 @@ export declare type VideoProps = {
      */
     usePoster?: boolean;
     /**
+     * A react-native `Image` like component to display the poster image.
+     */
+    PosterComponent?: React.ComponentType<{
+        style: ImageProps['style'];
+        source: ImageProps['source'];
+    }>;
+    /**
      * A dictionary setting a new `AVPlaybackStatusToSet` on the video.
      * See the [AV documentation](./av#default-initial--avplaybackstatustoset) for more information on `AVPlaybackStatusToSet`.
      */

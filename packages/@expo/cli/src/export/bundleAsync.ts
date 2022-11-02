@@ -5,7 +5,6 @@ import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
 import { Log } from '../log';
-import { WebSupportProjectPrerequisite } from '../start/doctor/web/WebSupportProjectPrerequisite';
 import {
   buildHermesBundleAsync,
   isEnableHermesManaged,
@@ -17,7 +16,7 @@ import {
   importMetroFromProject,
   importMetroServerFromProject,
 } from '../start/server/metro/resolveFromProject';
-import { withMetroMultiPlatform } from '../start/server/metro/withMetroMultiPlatform';
+import { withMetroMultiPlatformAsync } from '../start/server/metro/withMetroMultiPlatform';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 
 export type MetroDevServerOptions = LoadOptions & {
@@ -35,7 +34,7 @@ export type BundleAssetWithFileHashes = Metro.AssetData & {
 };
 export type BundleOutput = {
   code: string;
-  map: string;
+  map?: string;
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
   assets: readonly BundleAssetWithFileHashes[];
@@ -104,11 +103,7 @@ export async function bundleAsync(
 
   const bundlerPlatforms = getPlatformBundlers(exp);
 
-  if (bundlerPlatforms.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  }
-
-  config = withMetroMultiPlatform(projectRoot, config, bundlerPlatforms);
+  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
 
   const metroServer = await metro.runMetro(config, {
     watch: false,
@@ -183,7 +178,7 @@ export async function bundleAsync(
       const hermesBundleOutput = await buildHermesBundleAsync(
         projectRoot,
         bundleOutput.code,
-        bundleOutput.map,
+        bundleOutput.map!,
         bundle.minify
       );
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;

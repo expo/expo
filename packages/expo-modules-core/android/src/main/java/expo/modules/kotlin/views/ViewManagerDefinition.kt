@@ -1,27 +1,29 @@
 package expo.modules.kotlin.views
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.ViewManager
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
+import expo.modules.kotlin.logger
 import expo.modules.kotlin.recycle
 
 class ViewManagerDefinition(
-  private val viewFactory: (Context) -> View,
+  private val viewFactory: (Context, AppContext) -> View,
   private val viewType: Class<out View>,
   private val props: Map<String, AnyViewProp>,
   val onViewDestroys: ((View) -> Unit)? = null,
   val callbacksDefinition: CallbacksDefinition? = null,
-  val viewGroupDefinition: ViewGroupDefinition? = null
+  val viewGroupDefinition: ViewGroupDefinition? = null,
+  val onViewDidUpdateProps: ((View) -> Unit)? = null
 ) {
 
-  fun createView(context: Context): View = viewFactory(context)
+  fun createView(context: Context, appContext: AppContext): View = viewFactory(context, appContext)
 
   val propsNames: List<String> = props.keys.toList()
 
@@ -42,7 +44,7 @@ class ViewManagerDefinition(
         try {
           propDelegate.set(this, onView)
         } catch (exception: Throwable) {
-          Log.e("ExpoModulesCore", "Cannot set the '$key' prop on the '${viewType.simpleName}'.", exception)
+          logger.error("❌ Cannot set the '$key' prop on the '${viewType.simpleName}'", exception)
 
           handleException(
             onView,

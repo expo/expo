@@ -1,5 +1,5 @@
 import { borderRadius, iconSize, spacing, UsersIcon } from '@expo/styleguide-native';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { Button, View, Row, Image, Text } from 'expo-dev-client-components';
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
@@ -7,6 +7,7 @@ import { StyleSheet } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 import { HomeScreenDataQuery } from '../../graphql/types';
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useTheme } from '../../utils/useTheme';
 
 type Props = {
@@ -15,7 +16,7 @@ type Props = {
 
 export function HomeScreenHeader({ currentUser }: Props) {
   const { theme, themeType } = useTheme();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<HomeStackRoutes>>();
 
   async function onAccountButtonPress() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

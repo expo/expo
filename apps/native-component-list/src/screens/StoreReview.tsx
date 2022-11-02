@@ -13,7 +13,7 @@ type Props = {
 function getStoreUrlInfo(): string {
   const storeUrl = StoreReview.storeUrl();
   if (storeUrl) {
-    return `On iOS <10.3, or Android devices pressing this button will open ${storeUrl}.`;
+    return `On Android devices pressing this button will open ${storeUrl}.`;
   }
   return 'You will need to add ios.appStoreUrl, and android.playStoreUrl to your app.config.js in order to use this feature on Android.';
 }

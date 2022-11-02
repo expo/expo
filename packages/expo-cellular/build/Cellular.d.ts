@@ -1,4 +1,4 @@
-import { CellularGeneration } from './Cellular.types';
+import { CellularGeneration, PermissionResponse } from './Cellular.types';
 export { CellularGeneration };
 /**
  * Indicates if the carrier allows making VoIP calls on its network. On Android, this checks whether
@@ -95,6 +95,10 @@ export declare const mobileNetworkCode: string | null;
 /**
  * @return Returns a promise which fulfils with a [`Cellular.CellularGeneration`](#cellulargeneration)
  * enum value that represents the current cellular-generation type.
+ *
+ * You will need to check if the native permission has been accepted to obtain generation.
+ * If the permission is denied `getCellularGenerationAsync` will resolve to `Cellular.Cellular Generation.UNKNOWN`.
+
  *
  * On web, this method uses [`navigator.connection.effectiveType`](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation/effectiveType)
  * to detect the effective type of the connection using a combination of recently observed
@@ -196,4 +200,22 @@ export declare function getMobileCountryCodeAsync(): Promise<string | null>;
  * ```
  */
 export declare function getMobileNetworkCodeAsync(): Promise<string | null>;
+/**
+ * Checks user's permissions for accessing phone state.
+ */
+export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Asks the user to grant permissions for accessing the phone state.
+ */
+export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Check or request permissions to access the phone state.
+ * This uses both `Cellular.requestPermissionsAsync` and `Cellular.getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Cellular.usePermissions();
+ * ```
+ */
+export declare const usePermissions: (options?: import("expo-modules-core").PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
 //# sourceMappingURL=Cellular.d.ts.map

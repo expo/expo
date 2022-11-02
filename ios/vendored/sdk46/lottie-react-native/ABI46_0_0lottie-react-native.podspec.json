@@ -25,7 +25,7 @@
   "dependencies": {
     "ABI46_0_0React-Core": [],
     "lottie-ios": [
-      "~> 3.2.3"
+      "~> 3.4.0"
     ]
   },
   "swift_version": "5.0"

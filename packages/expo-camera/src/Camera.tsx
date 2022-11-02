@@ -384,6 +384,7 @@ export default class Camera extends React.Component<CameraProps> {
     const onBarCodeScanned = this.props.onBarCodeScanned
       ? this._onObjectDetected(this.props.onBarCodeScanned)
       : undefined;
+
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (

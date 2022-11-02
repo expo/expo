@@ -40,5 +40,5 @@ fi
 
 # Execute argument, if present
 if [[ "$#" -gt 0 ]]; then
-  "$NODE_BINARY" $@
+  "$NODE_BINARY" "$@"
 fi

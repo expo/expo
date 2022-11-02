@@ -1,6 +1,8 @@
 import { getConfig } from '@expo/config';
 import assert from 'assert';
+import chalk from 'chalk';
 
+import { Log } from '../../log';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { CommandError, UnimplementedError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
@@ -33,8 +35,13 @@ export class PlatformManager<
       platform: 'ios' | 'android';
       /** Get the base URL for the dev server hosting this platform manager. */
       getDevServerUrl: () => string | null;
-      /** Expo Go URL */
-      getExpoGoUrl: () => string | null;
+      /** Expo Go URL. */
+      getExpoGoUrl: () => string;
+      /**
+       * Get redirect URL for native disambiguation.
+       * @returns a URL like `http://localhost:19000/_expo/loading`
+       */
+      getRedirectUrl: () => string | null;
       /** Dev Client */
       getCustomRuntimeUrl: (props?: { scheme?: string }) => string | null;
       /** Resolve a device, this function should automatically handle opening the device and asserting any system validations. */
@@ -49,14 +56,58 @@ export class PlatformManager<
     throw new UnimplementedError();
   }
 
+  /**
+   * Get the URL for users intending to launch the project in Expo Go.
+   * The CLI will check if the project has a custom dev client and if the redirect page feature is enabled.
+   * If both are true, the CLI will return the redirect page URL.
+   */
+  protected async getExpoGoOrCustomRuntimeUrlAsync(
+    deviceManager: DeviceManager<IDevice>
+  ): Promise<string> {
+    // Determine if the redirect page feature is enabled first since it's the cheapest to check.
+    const redirectUrl = this.props.getRedirectUrl();
+    if (redirectUrl) {
+      // If the redirect page feature is enabled, check if the project has a resolvable native identifier.
+      let applicationId;
+      try {
+        applicationId = await this._getAppIdResolver().getAppIdAsync();
+      } catch {
+        Log.warn(
+          chalk`\u203A Launching in Expo Go. If you want to use a ` +
+            `development build, you need to create and install one first, or, if you already ` +
+            chalk`have a build, add {bold ios.bundleIdentifier} and {bold android.package} to ` +
+            `this project's app config.\n${learnMore('https://docs.expo.dev/development/build/')}`
+        );
+      }
+      if (applicationId) {
+        debug(`Resolving launch URL: (appId: ${applicationId}, redirect URL: ${redirectUrl})`);
+        // NOTE(EvanBacon): This adds considerable amount of time to the command, we should consider removing or memoizing it.
+        // Finally determine if the target device has a custom dev client installed.
+        if (await deviceManager.isAppInstalledAsync(applicationId)) {
+          return redirectUrl;
+        } else {
+          // Log a warning if no development build is available on the device, but the
+          // interstitial page would otherwise be opened.
+          Log.warn(
+            chalk`\u203A The {bold expo-dev-client} package is installed, but a development build is not ` +
+              chalk`installed on {bold ${deviceManager.name}}.\nLaunching in Expo Go. If you want to use a ` +
+              `development build, you need to create and install one first.\n${learnMore(
+                'https://docs.expo.dev/development/build/'
+              )}`
+          );
+        }
+      }
+    }
+
+    return this.props.getExpoGoUrl();
+  }
+
   protected async openProjectInExpoGoAsync(
     resolveSettings: Partial<IResolveDeviceProps> = {}
   ): Promise<{ url: string }> {
-    const url = this.props.getExpoGoUrl();
-    // This should never happen, but just in case...
-    assert(url, 'Could not get dev server URL');
-
     const deviceManager = await this.props.resolveDeviceAsync(resolveSettings);
+    const url = await this.getExpoGoOrCustomRuntimeUrlAsync(deviceManager);
+
     deviceManager.logOpeningUrl(url);
 
     // TODO: Expensive, we should only do this once.
@@ -93,8 +144,8 @@ export class PlatformManager<
 
     if (!(await deviceManager.isAppInstalledAsync(applicationId))) {
       throw new CommandError(
-        `The development client (${applicationId}) for this project is not installed. ` +
-          `Please build and install the client on the device first.\n${learnMore(
+        `No development build (${applicationId}) for this project is installed. ` +
+          `Please make and install a development build on the device first.\n${learnMore(
             'https://docs.expo.dev/development/build/'
           )}`
       );

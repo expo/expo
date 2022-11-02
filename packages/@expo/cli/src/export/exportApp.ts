@@ -67,7 +67,24 @@ export async function exportAppAsync(
   );
 
   // Log bundle size info to the user
-  printBundleSizes(bundles);
+  printBundleSizes(
+    Object.fromEntries(
+      Object.entries(bundles).map(([key, value]) => {
+        if (!dumpSourcemap) {
+          return [
+            key,
+            {
+              ...value,
+              // Remove source maps from the bundles if they aren't going to be written.
+              map: undefined,
+            },
+          ];
+        }
+
+        return [key, value];
+      })
+    )
+  );
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
@@ -91,7 +108,8 @@ export async function exportAppAsync(
           // @ts-expect-error: tolerable type mismatches: unused `readonly` (common in Metro) and `undefined` instead of `null`.
           bundle.assets,
           platform,
-          outputPath
+          outputPath,
+          undefined
         );
       })
     );
@@ -128,7 +146,7 @@ export async function exportAppAsync(
   }
 
   // Generate a `metadata.json` and the export is complete.
-  await writeMetadataJsonAsync({ outputDir, bundles, fileNames });
+  await writeMetadataJsonAsync({ outputDir: outputPath, bundles, fileNames });
 }
 
 /**

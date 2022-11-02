@@ -35,11 +35,6 @@ export declare type BarCodeBounds = {
      */
     size: BarCodeSize;
 };
-/**
- * > __Note:__ `bounds` and `cornerPoints` are not always available. On iOS, for `code39` and `pdf417`
- * > you don't get those values. Moreover, on iOS, those values don't have to bounds the whole barcode.
- * > For some types, they will represent the area used by the scanner.
- */
 export declare type BarCodeScannerResult = {
     /**
      * The barcode type.
@@ -51,12 +46,17 @@ export declare type BarCodeScannerResult = {
     data: string;
     /**
      * The [BarCodeBounds](#barcodebounds) object.
+     * `bounds` in some case will be representing an empty rectangle.
+     * Moreover, `bounds` doesn't have to bound the whole barcode.
+     * For some types, they will represent the area used by the scanner.
      */
-    bounds?: BarCodeBounds;
+    bounds: BarCodeBounds;
     /**
      * Corner points of the bounding box.
+     * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
+     * you don't get this value.
      */
-    cornerPoints?: BarCodePoint[];
+    cornerPoints: BarCodePoint[];
 };
 export declare type BarCodeEvent = BarCodeScannerResult & {
     target?: number;
@@ -126,7 +126,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
      *
      * @example
      * ```ts
-     * const [status, requestPermission] = BarCodeScanner.usePermissions();
+     * const [permissionResponse, requestPermission] = BarCodeScanner.usePermissions();
      * ```
      */
     static usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
@@ -155,5 +155,5 @@ export { PermissionResponse, PermissionStatus, PermissionHookOptions };
 export declare const Constants: {
     BarCodeType: any;
     Type: any;
-}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>], scanFromURLAsync: typeof BarCodeScanner.scanFromURLAsync;
+}, getPermissionsAsync: typeof BarCodeScanner.getPermissionsAsync, requestPermissionsAsync: typeof BarCodeScanner.requestPermissionsAsync, scanFromURLAsync: typeof BarCodeScanner.scanFromURLAsync;
 //# sourceMappingURL=BarCodeScanner.d.ts.map

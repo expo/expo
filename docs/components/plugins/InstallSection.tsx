@@ -1,9 +1,11 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
-import * as React from 'react';
+import { PropsWithChildren, useContext } from 'react';
 
+import { PageApiVersionContext } from '~/providers/page-api-version';
 import { usePageMetadata } from '~/providers/page-metadata';
 import { Terminal } from '~/ui/components/Snippet';
+import { A } from '~/ui/components/Text';
 
 const STYLES_P = css`
   line-height: 1.8rem;
@@ -29,7 +31,7 @@ const STYLES_LINK = css`
   }
 `;
 
-type InstallSectionProps = React.PropsWithChildren<{
+type InstallSectionProps = PropsWithChildren<{
   packageName: string;
   hideBareInstructions?: boolean;
   cmd?: string[];
@@ -39,13 +41,26 @@ type InstallSectionProps = React.PropsWithChildren<{
 const getPackageLink = (packageNames: string) =>
   `https://github.com/expo/expo/tree/main/packages/${packageNames.split(' ')[0]}`;
 
+function getInstallCmd(packageName: string) {
+  return `$ npx expo install ${packageName}`;
+}
+
 const InstallSection = ({
   packageName,
   hideBareInstructions = false,
-  cmd = [`$ expo install ${packageName}`],
+  cmd = [getInstallCmd(packageName)],
   href = getPackageLink(packageName),
 }: InstallSectionProps) => {
   const { sourceCodeUrl } = usePageMetadata();
+  const { version } = useContext(PageApiVersionContext);
+
+  // Recommend just `expo install` for SDK 43, 44, and 45.
+  // TODO: remove this when we drop SDK 45 from docs
+  if (version.startsWith('v43') || version.startsWith('v44') || version.startsWith('v45')) {
+    if (cmd[0] === getInstallCmd(packageName)) {
+      cmd[0] = cmd[0].replace('npx expo', 'expo');
+    }
+  }
 
   return (
     <>
@@ -53,13 +68,13 @@ const InstallSection = ({
       {hideBareInstructions ? null : (
         <p css={STYLES_P}>
           If you're installing this in a{' '}
-          <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
+          <A css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
             bare React Native app
-          </a>
+          </A>
           , you should also follow{' '}
-          <a css={STYLES_BOLD} href={sourceCodeUrl ?? href}>
+          <A css={STYLES_BOLD} href={sourceCodeUrl ?? href}>
             these additional installation instructions
-          </a>
+          </A>
           .
         </p>
       )}

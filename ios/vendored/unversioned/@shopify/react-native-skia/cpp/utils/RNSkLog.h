@@ -54,24 +54,24 @@ public:
 #endif
     va_end(args);
   }
-  
+
   static void logToJavascriptConsole(jsi::Runtime& runtime, const std::string& message) {
     auto console = RNSkLogger::getJavascriptConsole(runtime).asObject(runtime);
     auto log = console.getPropertyAsFunction(runtime, "log");
     log.call(runtime, jsi::String::createFromUtf8(runtime, message));
   }
-  
+
   static void warnToJavascriptConsole(jsi::Runtime& runtime, const std::string& message) {
     auto console = RNSkLogger::getJavascriptConsole(runtime).asObject(runtime);
     auto warn = console.getPropertyAsFunction(runtime, "warn");
     warn.call(runtime, jsi::String::createFromUtf8(runtime, message));
   }
-  
+
 private:
   static jsi::Value getJavascriptConsole(jsi::Runtime& runtime) {
     auto console = runtime.global().getProperty(runtime, "console");
     if(console.isUndefined() || console.isNull()) {
-      jsi::detail::throwJSError(runtime, "Could not find console object.");
+      throw jsi::JSError(runtime, "Could not find console object.");
       return jsi::Value::undefined();
     }
     return console;

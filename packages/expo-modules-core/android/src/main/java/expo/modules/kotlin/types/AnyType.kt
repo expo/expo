@@ -1,5 +1,6 @@
 package expo.modules.kotlin.types
 
+import expo.modules.kotlin.jni.ExpectedType
 import kotlin.reflect.KType
 
 fun KType.toAnyType(): AnyType = AnyType(this)
@@ -11,5 +12,5 @@ class AnyType(val kType: KType) {
 
   fun convert(value: Any?): Any? = converter.convert(value)
 
-  fun getCppRequiredTypes(): Int = converter.getCppRequiredTypes().fold(0) { acc, current -> acc or current.value }
+  fun getCppRequiredTypes(): ExpectedType = converter.getCppRequiredTypes()
 }

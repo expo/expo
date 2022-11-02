@@ -42,7 +42,8 @@ export function printBundleSizes(bundles: Partial<Record<Platform, BundleOutput>
 
 export function createFilesTable(files: [string, string | Uint8Array][]): string {
   const tableData = files.map((item, index) => {
-    const fileBranch = index === 0 ? '┌' : index === files.length - 1 ? '└' : '├';
+    const fileBranch =
+      index === 0 ? (files.length > 1 ? '┌' : '─') : index === files.length - 1 ? '└' : '├';
 
     return [`${fileBranch} ${item[0]}`, prettyBytes(Buffer.byteLength(item[1], 'utf8'))];
   });

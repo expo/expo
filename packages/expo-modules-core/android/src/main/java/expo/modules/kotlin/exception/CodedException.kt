@@ -3,6 +3,7 @@ package expo.modules.kotlin.exception
 import com.facebook.react.bridge.ReadableType
 import expo.modules.core.interfaces.DoNotStrip
 import java.util.*
+import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
@@ -121,6 +122,15 @@ internal class FunctionCallException(
   cause,
 )
 
+internal class PropSetException(
+  propName: String,
+  viewType: KClass<*>,
+  cause: CodedException
+) : DecoratedException(
+  message = "Cannot set prop '$propName' on view '$viewType'",
+  cause,
+)
+
 internal class ArgumentCastException(
   argDesiredType: KType,
   argIndex: Int,
@@ -149,15 +159,29 @@ internal class RecordCastException(
   cause
 )
 
-internal class CollectionElementCastException(
+internal class CollectionElementCastException private constructor(
   collectionType: KType,
   elementType: KType,
-  providedType: ReadableType,
+  providedType: String,
   cause: CodedException
 ) : DecoratedException(
-  message = "Cannot cast '${providedType.name}' to '$elementType' required by the collection of type: '$collectionType'.",
+  message = "Cannot cast '$providedType' to '$elementType' required by the collection of type: '$collectionType'.",
   cause
-)
+) {
+  constructor(
+    collectionType: KType,
+    elementType: KType,
+    providedType: ReadableType,
+    cause: CodedException
+  ) : this(collectionType, elementType, providedType.name, cause)
+
+  constructor(
+    collectionType: KType,
+    elementType: KType,
+    providedType: KClass<*>,
+    cause: CodedException
+  ) : this(collectionType, elementType, providedType.toString(), cause)
+}
 
 @DoNotStrip
 class JavaScriptEvaluateException(
@@ -169,3 +193,8 @@ class JavaScriptEvaluateException(
   $jsStack
   """.trimIndent()
 )
+
+@PublishedApi
+internal class UnsupportedClass(
+  clazz: KClass<*>,
+) : CodedException(message = "Unsupported type: '$clazz'")

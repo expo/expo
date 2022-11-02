@@ -1,10 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import UIKit
-import ExpoModulesCore
+import React
 
 @objc(EXBlurView)
-public class BlurView: ExpoView {
+public class BlurView: RCTView {
   private var blurEffectView: BlurEffectView
 
   override init(frame: CGRect) {

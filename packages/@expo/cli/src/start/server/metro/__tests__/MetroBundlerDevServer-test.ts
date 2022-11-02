@@ -1,8 +1,9 @@
 import { vol } from 'memfs';
 
+import { logEventAsync } from '../../../../utils/analytics/rudderstackClient';
 import { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
-import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
+import { MetroBundlerDevServer, getDeepLinkHandler } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
 
 jest.mock('@expo/config', () => ({
@@ -22,6 +23,8 @@ jest.mock('../instantiateMetro', () => ({
   })),
 }));
 jest.mock('../../../../log');
+jest.mock('../../../../utils/analytics/getDevClientProperties', () => jest.fn(() => ({})));
+jest.mock('../../../../utils/analytics/rudderstackClient');
 
 beforeEach(() => {
   vol.reset();
@@ -45,9 +48,9 @@ describe('startAsync', () => {
     expect(devServer.getInstance()).toEqual({
       location: {
         host: 'localhost',
-        port: 19000,
+        port: expect.any(Number),
         protocol: 'http',
-        url: 'http://localhost:19000',
+        url: expect.stringMatching(/http:\/\/localhost:\d+/),
       },
       middleware: {
         use: expect.any(Function),
@@ -59,5 +62,21 @@ describe('startAsync', () => {
     });
 
     expect(instantiateMetroAsync).toHaveBeenCalled();
+  });
+});
+
+describe('onDeepLink', () => {
+  it(`logs an event if runtime is custom`, async () => {
+    const handler = getDeepLinkHandler('/');
+    await handler({ runtime: 'custom', platform: 'ios' });
+    expect(logEventAsync).toHaveBeenCalledWith('dev client start command', {
+      status: 'started',
+    });
+  });
+
+  it(`does not log an event if runtime is expo`, async () => {
+    const handler = getDeepLinkHandler('/');
+    await handler({ runtime: 'expo', platform: 'ios' });
+    expect(logEventAsync).not.toHaveBeenCalled();
   });
 });

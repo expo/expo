@@ -3,6 +3,7 @@ package expo.modules.updates.logging
 import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
 import org.json.JSONArray
+import org.json.JSONException
 import org.json.JSONObject
 
 /**
@@ -39,19 +40,23 @@ data class UpdatesLogEntry(
   }
 
   companion object {
-    fun create(json: String): UpdatesLogEntry {
-      val jsonObject = JSONObject(json)
-      return UpdatesLogEntry(
-        jsonObject.require("timestamp"),
-        jsonObject.require("message"),
-        jsonObject.require("code"),
-        jsonObject.require("level"),
-        jsonObject.getNullable("updateId"),
-        jsonObject.getNullable("assetId"),
-        jsonObject.getNullable<JSONArray>("stacktrace")?.let { jsonArray ->
-          List(jsonArray.length()) { i -> jsonArray.getString(i) }
-        }
-      )
+    fun create(json: String): UpdatesLogEntry? {
+      return try {
+        val jsonObject = JSONObject(json)
+        UpdatesLogEntry(
+          jsonObject.require("timestamp"),
+          jsonObject.require("message"),
+          jsonObject.require("code"),
+          jsonObject.require("level"),
+          jsonObject.getNullable("updateId"),
+          jsonObject.getNullable("assetId"),
+          jsonObject.getNullable<JSONArray>("stacktrace")?.let { jsonArray ->
+            List(jsonArray.length()) { i -> jsonArray.getString(i) }
+          }
+        )
+      } catch (e: JSONException) {
+        null
+      }
     }
   }
 }
