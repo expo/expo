@@ -204,6 +204,8 @@ Package-specific changes not released in any SDK will be added here just before 
   - Added missing permissions requester. ([#19633](https://github.com/expo/expo/pull/19633) by [@lukmccall](https://github.com/lukmccall))
 - **`expo-device`**
   - Fixed `<bluetooth_name> is only readable to apps with targetSdkVersion lower than or equal to: 31` error when the `targetSdkVersion` is set to 33. ([#19666](https://github.com/expo/expo/pull/19666) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+- **`expo-haptics`**
+  - Fixed rare crash on iOS when using Feedback Generator's API not on the main thread. ([#19819](https://github.com/expo/expo/pull/19819) by [@AntonGolikov](https://github.com/AntonGolikov))
 - **`expo-image-picker`**
   - Fix images taken with `launchCameraAsync` being translated incorrectly on some camera orientations. ([#19185](https://github.com/expo/expo/pull/19185) by [@jacobjaffe](https://github.com/JacobJaffe) and [@reececox](https://github.com/reececox)) ([#19185](https://github.com/expo/expo/pull/19185) by [@JacobJaffe](https://github.com/JacobJaffe), [@reececox](https://github.com/reececox))
   - Fix error where `launchImageLibraryAsync()` saved the photo to a global cache directory that was inaccessible in Expo Go. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
