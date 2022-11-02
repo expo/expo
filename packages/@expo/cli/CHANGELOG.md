@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix Expo Go download loading bar.
+- Fix Expo Go download loading bar. ([#19817](https://github.com/expo/expo/pull/19817) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
