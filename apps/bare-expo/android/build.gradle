@@ -61,7 +61,7 @@ ext {
 allprojects {
     // [Custom]
     configurations.all {
-        if (findProperty("reactNativeNightly") == "true") {
+        if (findProperty("buildReactNativeFromSource") == "true") {
             resolutionStrategy {
                 dependencySubstitution {
                     substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
