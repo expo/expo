@@ -363,9 +363,9 @@ def extractReactNativeAAR = { buildType ->
     downloadReactNativeNightlyAAR(buildType, reactProperties.getProperty("VERSION_NAME"), downloadFile)
     rnAAR = downloadFile
   } else {
-    def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
+    def rnAARs = fileTree(REACT_NATIVE_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
     if (rnAARs.isEmpty()) {
-      rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*.aar" }
+      rnAARs = fileTree(REACT_NATIVE_DIR).matching { include "**/react-native/**/*.aar" }
     }
     if (rnAARs.any()) {
       // node_modules/react-native has a .aar, extract headers
