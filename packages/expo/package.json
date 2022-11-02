@@ -22,6 +22,7 @@
     "AppEntry.js",
     "Expo.podspec",
     "bundledNativeModules.json",
+    "disable-missing-native-module-errors.js",
     "expo-module.config.json",
     "metro-config.js",
     "config.js",
