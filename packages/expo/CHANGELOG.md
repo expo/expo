@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 47.0.0-beta.8 — 2022-11-02
