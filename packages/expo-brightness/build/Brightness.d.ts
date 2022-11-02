@@ -63,12 +63,17 @@ export declare function getSystemBrightnessAsync(): Promise<number>;
  */
 export declare function setSystemBrightnessAsync(brightnessValue: number): Promise<void>;
 /**
+ * @deprecated Use [`restoreSystemBrightnessAsync`](#brightnessrestoresystembrightnessasync) method instead.
+ * @platform android
+ */
+export declare function useSystemBrightnessAsync(): Promise<void>;
+/**
  * Resets the brightness setting of the current activity to use the system-wide
  * brightness value rather than overriding it.
  * @return A `Promise` that fulfils when the setting has been successfully changed.
  * @platform android
  */
-export declare function useSystemBrightnessAsync(): Promise<void>;
+export declare function restoreSystemBrightnessAsync(): Promise<void>;
 /**
  * Returns a boolean specifying whether or not the current activity is using the
  * system-wide brightness value.
