@@ -14,7 +14,7 @@
 
 ### 💡 Others
 
-- Fix ngrok error message format.
+- Fix ngrok error message format. ([#19822](https://github.com/expo/expo/pull/19822) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.4.5 — 2022-10-30
 
