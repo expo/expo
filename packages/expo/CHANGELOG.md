@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 47.0.0-beta.8 — 2022-11-02
+
+### 🐛 Bug fixes
+
 - Fixed build errors when testing on React Native nightly builds. ([#19369](https://github.com/expo/expo/pull/19369) by [@kudo](https://github.com/kudo))
 - Fixed missing _disable-missing-native-module-errors.js_ in the package. ([#19815](https://github.com/expo/expo/pull/19815) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 47.0.0-beta.7 — 2022-10-30
 
