@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve `metadata.json` file path absolutely for `npx expo export`.
+
 ### 💡 Others
 
 ## 0.4.5 — 2022-10-30
