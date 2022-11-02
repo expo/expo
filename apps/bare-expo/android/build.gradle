@@ -97,6 +97,12 @@ allprojects {
                 excludeGroup "com.facebook.react"
             }
         }
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            content {
+                includeGroup "com.facebook.react"
+            }
+        }
         maven { url 'https://jitpack.io' }
     }
 }

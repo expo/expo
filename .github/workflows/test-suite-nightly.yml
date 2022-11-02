@@ -82,7 +82,6 @@ jobs:
         working-directory: apps/bare-expo
       - name: 🤖 Build Android project for Detox
         run: |
-          pushd android && ./gradlew :ReactAndroid:hermes-engine:assembleDebug && popd
           yarn android:detox:build:release
         working-directory: apps/bare-expo
         env:
