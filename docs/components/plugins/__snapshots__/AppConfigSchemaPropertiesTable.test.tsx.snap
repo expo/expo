@@ -4,7 +4,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div>
     <div
-      class="css-8h8p3u-AppConfigProperty"
+      class="css-1lzbq05-AppConfigProperty"
     >
       <div
         class=" css-19f55nd-PDIV"
@@ -121,7 +121,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div />
     </div>
     <div
-      class="css-8h8p3u-AppConfigProperty"
+      class="css-1lzbq05-AppConfigProperty"
     >
       <div
         class=" css-19f55nd-PDIV"
@@ -281,7 +281,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </details>
       <div>
         <div
-          class="css-8h8p3u-AppConfigProperty"
+          class="css-1lzbq05-AppConfigProperty"
         >
           <div
             class=" css-19f55nd-PDIV"
@@ -346,7 +346,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="inline css-1esaweg-AppConfigProperty"
+              class="css-1c83t10-AppConfigProperty"
             >
               androidNavigationBar
               .
@@ -406,7 +406,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </details>
           <div>
             <div
-              class="css-8h8p3u-AppConfigProperty"
+              class="css-1lzbq05-AppConfigProperty"
             >
               <div
                 class=" css-19f55nd-PDIV"
@@ -471,7 +471,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                  • Path:
                  
                 <code
-                  class="inline css-1esaweg-AppConfigProperty"
+                  class="css-1c83t10-AppConfigProperty"
                 >
                   androidNavigationBar.visible
                   .
@@ -490,7 +490,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
         </div>
         <div
-          class="css-8h8p3u-AppConfigProperty"
+          class="css-1lzbq05-AppConfigProperty"
         >
           <div
             class=" css-19f55nd-PDIV"
@@ -555,7 +555,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="inline css-1esaweg-AppConfigProperty"
+              class="css-1c83t10-AppConfigProperty"
             >
               androidNavigationBar
               .
@@ -587,7 +587,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </div>
     <div
-      class="css-8h8p3u-AppConfigProperty"
+      class="css-1lzbq05-AppConfigProperty"
     >
       <div
         class=" css-19f55nd-PDIV"
@@ -740,7 +740,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </blockquote>
       <div>
         <div
-          class="css-8h8p3u-AppConfigProperty"
+          class="css-1lzbq05-AppConfigProperty"
         >
           <div
             class=" css-19f55nd-PDIV"
@@ -805,7 +805,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="inline css-1esaweg-AppConfigProperty"
+              class="css-1c83t10-AppConfigProperty"
             >
               intentFilters
               .
@@ -822,7 +822,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           <div />
         </div>
         <div
-          class="css-8h8p3u-AppConfigProperty"
+          class="css-1lzbq05-AppConfigProperty"
         >
           <div
             class=" css-19f55nd-PDIV"
@@ -887,7 +887,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
              • Path:
              
             <code
-              class="inline css-1esaweg-AppConfigProperty"
+              class="css-1c83t10-AppConfigProperty"
             >
               intentFilters
               .
@@ -897,7 +897,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           <br />
           <div>
             <div
-              class="css-8h8p3u-AppConfigProperty"
+              class="css-1lzbq05-AppConfigProperty"
             >
               <div
                 class=" css-19f55nd-PDIV"
@@ -962,7 +962,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                  • Path:
                  
                 <code
-                  class="inline css-1esaweg-AppConfigProperty"
+                  class="css-1c83t10-AppConfigProperty"
                 >
                   intentFilters.data
                   .

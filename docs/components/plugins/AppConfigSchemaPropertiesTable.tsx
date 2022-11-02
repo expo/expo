@@ -163,16 +163,16 @@ const AppConfigProperty = ({
   subproperties,
   parent,
 }: FormattedProperty & { nestingLevel: number }) => (
-  <APIBox css={[boxStyle, nestedBoxStyle]}>
+  <APIBox css={boxStyle}>
     <PropertyName name={name} nestingLevel={nestingLevel} />
     <CALLOUT theme="secondary">
       Type: <InlineCode>{type || 'undefined'}</InlineCode>
       {nestingLevel > 0 && (
         <>
           &emsp;&bull;&emsp;Path:{' '}
-          <InlineCode css={secondaryCodeLineStyle}>
+          <code css={secondaryCodeLineStyle}>
             {parent}.{name}
-          </InlineCode>
+          </code>
         </>
       )}
     </CALLOUT>
@@ -203,12 +203,6 @@ const AppConfigProperty = ({
 );
 
 const boxStyle = css({
-  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
-    paddingTop: spacing[4],
-  },
-});
-
-const nestedBoxStyle = css({
   boxShadow: 'none',
   marginBottom: 0,
   borderRadius: 0,
@@ -225,11 +219,17 @@ const nestedBoxStyle = css({
     marginBottom: spacing[4],
     borderBottomWidth: 1,
   },
+
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    paddingTop: spacing[4],
+  },
 });
 
 const secondaryCodeLineStyle = css({
+  fontFamily: typography.fontStacks.mono,
   color: theme.text.secondary,
-  background: 'none',
+  padding: `0 ${spacing[1]}px`,
+  wordBreak: 'break-word',
 });
 
 export default AppConfigSchemaPropertiesTable;
