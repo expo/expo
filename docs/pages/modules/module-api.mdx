@@ -161,7 +161,7 @@ async function getMessageAsync() {
 `AsyncFunction` with suspendable body can't receive `Promise` as an argument. It uses a suspension mechanism to execute asynchronous calls.
 The function is immediately resolved with the returned value of the provided suspendable block or rejected if it throws an exception. The function can receive up to 8 arguments.
 
-By default, suspend functions are dispatched on the module's coroutine scope. Moreover, every other suspendable function called from the body block are run on the same scope.
+By default, suspend functions are dispatched on the module's coroutine scope. Moreover, every other suspendable function called from the body block is run within the same scope.
 This scope's lifecycle is bound to the module's lifecycle - all unfinished suspend functions will be canceled when the module is deallocated.
 
 ```kotlin Kotlin
