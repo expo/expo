@@ -20,7 +20,7 @@ class ReaUiImplementationProvider extends UIImplementationProvider {
       ViewManagerRegistry viewManagerRegistry,
       EventDispatcher eventDispatcher,
       int minTimeLeftInFrameForNonBatchedOperationMs) {
-    return new ReanimatedUIImplementation(
+    return new com.facebook.react.uimanager.ReanimatedUIImplementation(
         reactContext,
         viewManagerRegistry,
         eventDispatcher,

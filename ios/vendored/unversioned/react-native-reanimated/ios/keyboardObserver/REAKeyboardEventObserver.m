@@ -1,5 +1,5 @@
-#import "REAKeyboardEventObserver.h"
 #import <Foundation/Foundation.h>
+#import <RNReanimated/REAKeyboardEventObserver.h>
 #import <React/RCTDefines.h>
 #import <React/RCTUIManager.h>
 
