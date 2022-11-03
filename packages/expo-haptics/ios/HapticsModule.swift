@@ -8,19 +8,22 @@ public class HapticsModule: Module {
       let generator = UINotificationFeedbackGenerator()
       generator.prepare()
       generator.notificationOccurred(notificationType.toFeedbackType())
-    }.runOnQueue(.main)
+    }
+    .runOnQueue(.main)
 
     AsyncFunction("impactAsync") { (style: ImpactStyle) in
       let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
       generator.prepare()
       generator.impactOccurred()
-    }.runOnQueue(.main)
+    }
+    .runOnQueue(.main)
 
     AsyncFunction("selectionAsync") {
       let generator = UISelectionFeedbackGenerator()
       generator.prepare()
       generator.selectionChanged()
-    }.runOnQueue(.main)
+    }
+    .runOnQueue(.main)
   }
 
   enum NotificationType: String, EnumArgument {
