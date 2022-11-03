@@ -4,7 +4,7 @@ Provides access to the system's UI for selecting images and videos from the phon
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/imagepicker.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/imagepicker.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/imagepicker/)
 
 # Installation in managed Expo projects

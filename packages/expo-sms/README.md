@@ -4,7 +4,7 @@ Provides access to the system's UI/app for sending SMS messages.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/sms.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/sms.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/sms/)
 
 # Installation in managed Expo projects

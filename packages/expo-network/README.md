@@ -6,7 +6,7 @@ See [<ModuleName> docs](https://docs.expo.dev/versions/latest/sdk/<module-docs-n
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/network.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/network.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/network/)
 
 # Installation in managed Expo projects

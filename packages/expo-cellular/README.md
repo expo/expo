@@ -4,7 +4,7 @@ Information about the user’s cellular service provider, such as its unique ide
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/cellular.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/cellular.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/cellular/)
 
 # Installation in managed Expo projects

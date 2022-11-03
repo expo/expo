@@ -4,7 +4,7 @@ Allows you to manage the orientation of your app's interface.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/screen-orientation.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/screen-orientation.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/screen-orientation/)
 
 # Installation in managed Expo projects

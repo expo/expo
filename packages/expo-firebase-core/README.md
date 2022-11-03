@@ -6,7 +6,7 @@ this module to get safe access to the native Firebase App.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/firebase-core.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/firebase-core.mdx)
 
 # Installation in managed Expo projects
 
