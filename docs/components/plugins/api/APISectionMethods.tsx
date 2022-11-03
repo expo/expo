@@ -19,7 +19,6 @@ import {
   CommentTextBlock,
   getMethodName,
   getTagNamesList,
-  listParams,
   mdComponents,
   renderParams,
   resolveTypeName,
