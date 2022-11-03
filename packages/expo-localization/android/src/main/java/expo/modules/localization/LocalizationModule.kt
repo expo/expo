@@ -1,7 +1,6 @@
 package expo.modules.localization
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.icu.util.LocaleData
 import android.icu.util.ULocale
 import android.os.Build.VERSION

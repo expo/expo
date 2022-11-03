@@ -1,7 +1,6 @@
 package host.exp.exponent.utils
 
 import android.content.Context
-import android.content.SharedPreferences
 import expo.modules.manifests.core.Manifest
 
 // must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
