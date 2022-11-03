@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crashes when running on react-native-v8 runtime. ([#19843](https://github.com/expo/expo/pull/19843) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 47.0.0-beta.8 — 2022-11-02
