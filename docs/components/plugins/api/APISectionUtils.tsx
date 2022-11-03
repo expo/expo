@@ -488,9 +488,9 @@ export const getTagNamesList = (comment?: CommentData) =>
 
 export const getMethodName = (
   method: MethodDefinitionData,
-  apiName: string | undefined,
-  name: string | undefined,
-  parameters: MethodParamData[] | undefined
+  apiName?: string,
+  name?: string,
+  parameters?: MethodParamData[]
 ) => {
   const isProperty = method.kind === TypeDocKind.Property && !parameters?.length;
   const methodName = ((apiName && `${apiName}.`) ?? '') + (method.name || name);
