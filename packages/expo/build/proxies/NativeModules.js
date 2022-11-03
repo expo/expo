@@ -55,8 +55,8 @@ export function createProxyForNativeModules(NativeModules) {
         return NativeModules;
     }
     return new Proxy(NativeModules, {
-        get(target, prop, receiver) {
-            const value = Reflect.get(target, prop, receiver);
+        get(target, prop) {
+            const value = target[prop];
             if (enabled &&
                 typeof prop !== 'symbol' &&
                 (value === null || value === undefined) &&
