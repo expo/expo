@@ -14,7 +14,8 @@ export default function Suites({ suites, done, numFailed, results }) {
 
   const scrollToEnd = React.useMemo(
     () => () => {
-      if (ref.current) ref.current.scrollToEnd({ animated: false });
+      if (ref.current && ref.current.props.data.length > 0)
+        ref.current.scrollToEnd({ animated: false });
     },
     [ref]
   );
