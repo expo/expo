@@ -5,6 +5,16 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = createJsInspectorMiddleware;
 
+function _chalk() {
+  const data = _interopRequireDefault(require("chalk"));
+
+  _chalk = function () {
+    return data;
+  };
+
+  return data;
+}
+
 function _net() {
   const data = _interopRequireDefault(require("net"));
 
@@ -66,6 +76,7 @@ function createJsInspectorMiddleware() {
 
     if (!app) {
       res.writeHead(404).end('Unable to find inspector target from metro-inspector-proxy');
+      console.warn(_chalk().default.yellow('No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine.'));
       return;
     }
 

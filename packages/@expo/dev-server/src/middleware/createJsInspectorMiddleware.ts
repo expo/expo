@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import type { NextHandleFunction } from 'connect';
 import type { IncomingMessage, ServerResponse } from 'http';
 import net from 'net';
@@ -18,6 +19,11 @@ export default function createJsInspectorMiddleware(): NextHandleFunction {
     const app = await queryInspectorAppAsync(origin, applicationId);
     if (!app) {
       res.writeHead(404).end('Unable to find inspector target from metro-inspector-proxy');
+      console.warn(
+        chalk.yellow(
+          'No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine.'
+        )
+      );
       return;
     }
 
