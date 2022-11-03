@@ -55,8 +55,8 @@ export function createProxyForNativeModules(NativeModules) {
         return NativeModules;
     }
     return new Proxy(NativeModules, {
-        get(target, prop, receiver) {
-            const value = Reflect.get(target, prop, receiver);
+        get(target, prop) {
+            const value = target[prop];
             if (enabled &&
                 typeof prop !== 'symbol' &&
                 (value === null || value === undefined) &&
@@ -69,10 +69,10 @@ export function createProxyForNativeModules(NativeModules) {
                     target.NativeUnimoduleProxy?.modulesConstants.ExponentConstants?.executionEnvironment ===
                         ExecutionEnvironment.StoreClient;
                 if (isRunningInStoreClient) {
-                    throw new Error(createErrorMessageForStoreClient(prop));
+                    console.warn(createErrorMessageForStoreClient(prop));
                 }
                 else if (target.EXDevLauncher) {
-                    throw new Error(createErrorMessageForDevelopmentBuild(prop));
+                    console.warn(createErrorMessageForDevelopmentBuild(prop));
                 }
             }
             return value;
