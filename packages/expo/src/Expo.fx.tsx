@@ -7,7 +7,7 @@ import 'expo-asset';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import * as Font from 'expo-font';
 import { NativeModulesProxy, Platform } from 'expo-modules-core';
-import ReactNative, { StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import { createErrorHandler } from './errors/ExpoErrorManager';
 
