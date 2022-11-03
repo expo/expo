@@ -23,7 +23,7 @@ The following `Activity` lifecycle callbacks are currently supported:
 - `onCreate`
 - `onResume`
 - `onPause`
-- `onDestrory`
+- `onDestroy`
 - `onNewIntent`
 - `onBackPressed`
 
