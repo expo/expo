@@ -2,8 +2,7 @@
 #import <ABI47_0_0RNReanimated/ABI47_0_0REAModule.h>
 #import <ABI47_0_0RNReanimated/ABI47_0_0REANodesManager.h>
 #import <ABI47_0_0RNReanimated/ABI47_0_0REATransitionManager.h>
-
-#import "SingleInstanceChecker.h"
+#import <ABI47_0_0RNReanimated/SingleInstanceChecker.h>
 
 using namespace ABI47_0_0reanimated;
 
@@ -15,6 +14,7 @@ typedef void (^AnimatedOperation)(ABI47_0_0REANodesManager *nodesManager);
 #ifdef DEBUG
   SingleInstanceChecker<ABI47_0_0REAModule> singleInstanceChecker_;
 #endif
+  bool hasListeners;
 }
 
 ABI47_0_0RCT_EXPORT_MODULE(ReanimatedModule);
@@ -193,6 +193,21 @@ ABI47_0_0RCT_EXPORT_METHOD(triggerRender)
 {
   // Events can be dispatched from any queue
   [_nodesManager dispatchEvent:event];
+}
+
+- (void)startObserving {
+    hasListeners = YES;
+}
+
+- (void)stopObserving {
+    hasListeners = NO;
+}
+
+- (void)sendEventWithName:(NSString *)eventName body:(id)body
+{
+    if (hasListeners) {
+        [super sendEventWithName:eventName body:body];
+    }
 }
 
 @end

@@ -204,7 +204,10 @@ class Video extends React.Component {
             this.props.onFullscreenUpdate(event.nativeEvent);
         }
     };
-    _renderPoster = () => this.props.usePoster && this.state.showPoster ? (React.createElement(Image, { style: [_STYLES.poster, this.props.posterStyle], source: this.props.posterSource })) : null;
+    _renderPoster = () => {
+        const PosterComponent = this.props.PosterComponent ?? Image;
+        return this.props.usePoster && this.state.showPoster ? (React.createElement(PosterComponent, { style: [_STYLES.poster, this.props.posterStyle], source: this.props.posterSource })) : null;
+    };
     render() {
         const source = getNativeSourceFromSource(this.props.source) || undefined;
         let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;

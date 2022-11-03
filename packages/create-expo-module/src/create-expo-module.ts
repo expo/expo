@@ -4,17 +4,26 @@ import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import fs from 'fs-extra';
+import { boolish } from 'getenv';
 import path from 'path';
 import prompts from 'prompts';
 
 import { createExampleApp } from './createExampleApp';
 import { installDependencies } from './packageManager';
 import { getSlugPrompt, getSubstitutionDataPrompts } from './prompts';
-import { resolvePackageManager } from './resolvePackageManager';
+import {
+  formatRunCommand,
+  PackageManagerName,
+  resolvePackageManager,
+} from './resolvePackageManager';
 import { CommandOptions, SubstitutionData } from './types';
 import { newStep } from './utils';
 
+const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
+
+// Opt in to using beta versions
+const EXPO_BETA = boolish('EXPO_BETA', false);
 
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
@@ -22,6 +31,9 @@ const CWD = process.env.INIT_CWD || process.cwd();
 // Ignore some paths. Especially `package.json` as it is rendered
 // from `$package.json` file instead of the original one.
 const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
+
+// Url to the documentation on Expo Modules
+const DOCS_URL = 'https://docs.expo.dev/modules';
 
 /**
  * The main function of the command.
@@ -84,6 +96,8 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   console.log();
   console.log('✅ Successfully created Expo module');
+
+  printFurtherInstructions(targetDir, packageManager, options.example);
 }
 
 /**
@@ -116,6 +130,7 @@ async function getFilesAsync(root: string, dir: string | null = null): Promise<s
  * Asks NPM registry for the url to the tarball.
  */
 async function getNpmTarballUrl(packageName: string, version: string = 'latest'): Promise<string> {
+  debug(`Using module template ${chalk.bold(packageName)}@${chalk.bold(version)}`);
   const { stdout } = await spawnAsync('npm', ['view', `${packageName}@${version}`, 'dist.tarball']);
   return stdout.trim();
 }
@@ -125,7 +140,10 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
  */
 async function downloadPackageAsync(targetDir: string): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
-    const tarballUrl = await getNpmTarballUrl('expo-module-template');
+    const tarballUrl = await getNpmTarballUrl(
+      'expo-module-template',
+      EXPO_BETA ? 'next' : 'latest'
+    );
 
     await downloadTarball({
       url: tarballUrl,
@@ -235,6 +253,31 @@ async function confirmTargetDirAsync(targetDir: string): Promise<void> {
   if (!shouldContinue) {
     process.exit(0);
   }
+}
+
+/**
+ * Prints how the user can follow up once the script finishes creating the module.
+ */
+function printFurtherInstructions(
+  targetDir: string,
+  packageManager: PackageManagerName,
+  includesExample: boolean
+) {
+  if (includesExample) {
+    const commands = [
+      `cd ${path.relative(CWD, targetDir)}`,
+      formatRunCommand(packageManager, 'open:ios'),
+      formatRunCommand(packageManager, 'open:android'),
+    ];
+
+    console.log();
+    console.log(
+      'To start developing your module, navigate to the directory and open iOS and Android projects of the example app'
+    );
+    commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
+    console.log();
+  }
+  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
 }
 
 const program = new Command();

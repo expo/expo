@@ -1,6 +1,6 @@
 import com.android.Version
 import org.apache.tools.ant.filters.ReplaceTokens
-
+import groovy.json.JsonSlurper
 import java.nio.file.Paths
 
 /**
@@ -43,12 +43,10 @@ def safeExtGet(prop, fallback) {
 }
 
 def safeAppExtGet(prop, fallback) {
-    def appProject = null
-    try {
-        appProject = project(":app")
-    } catch(Exception e) {
+    if (findProject(':app') == null) {
         return fallback
     }
+    def appProject = project(':app')
     appProject?.ext?.has(prop) ? appProject.ext.get(prop) : fallback
 }
 
@@ -150,7 +148,7 @@ def findReanimatedInstancesForPath(String path) {
     }.files
 }
 
-def assertNoMultipleInstances() {
+def checkNoMultipleInstances() {
     // Assert there are no multiple installations of Reanimated
     Set<File> files
     if (projectDir.path.contains(rootDir.parent)) {
@@ -167,14 +165,22 @@ def assertNoMultipleInstances() {
         String parsedLocation = files.stream().map({
             File file -> "- " + file.toString().replace("/package.json", "")
         }).collect().join("\n")
-        String exceptionMessage = "\nMultiple versions of Reanimated were detected. Only one " +
-            "instance of react-native-reanimated can be installed in a project. You need to " +
-            "resolve the conflict manually. Check out the documentation: " +
+        String exceptionMessage = "\n[react-native-reanimated] Multiple versions of Reanimated " +
+            "were detected. Only one instance of react-native-reanimated can be installed in a " +
+            "project. You need to resolve the conflict manually. Check out the documentation: " +
             "https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/" +
             "troubleshooting#multiple-versions-of-reanimated-were-detected \n\nConflict " +
             "between: \n" + parsedLocation + "\n";
         throw new Exception(exceptionMessage)
     }
+}
+
+def getReanimatedVersion() {
+    def inputFile = file(projectDir.path + '/../package.json')
+    def json = new JsonSlurper().parseText(inputFile.text)
+    String reanimatedVersion = json.version
+    def (major, minor, patch) = reanimatedVersion.tokenize('.')
+    return major.toInteger()
 }
 
 boolean CLIENT_SIDE_BUILD = resolveClientSideBuild()
@@ -195,6 +201,7 @@ def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 def FBJNI_VERSION = "0.3.0"
 def REANIMATED_PACKAGE_BUILD = System.getenv("REANIMATED_PACKAGE_BUILD")
+def REANIMATED_MAJOR_VERSION = 2
 
 // We download various C++ open-source dependencies into downloads.
 // We then copy both the downloaded code and our custom makefiles and headers into third-party-ndk.
@@ -527,27 +534,57 @@ android {
     sourceSets.main {
         java {
             if (isNewArchitectureEnabled()) {
-                srcDirs += [
-                        "src/fabric/java",
-                ]
+                srcDirs += "src/fabric/java"
             } else {
-                srcDirs += [
-                        "src/paper/java",
-                ]
+                srcDirs += "src/paper/java"
+            }
+
+            // messageQueueThread
+            if (REANIMATED_MAJOR_VERSION > 2) {
+                if (REACT_NATIVE_MINOR_VERSION <= 67) {
+                    srcDirs += "src/reactNativeVersionPatch/messageQueueThread/67"
+                } else {
+                    srcDirs += "src/reactNativeVersionPatch/messageQueueThread/latest"
+                }
+            }
+
+            // UIImplementation
+            if (REACT_NATIVE_MINOR_VERSION <= 64) {
+                srcDirs += "src/reactNativeVersionPatch/UIImplementation/64"
+            } else {
+                srcDirs += "src/reactNativeVersionPatch/UIImplementation/latest"
+            }
+
+            // nativeHierarchyManager
+            if (REACT_NATIVE_MINOR_VERSION <= 62) {
+                srcDirs += "src/reactNativeVersionPatch/nativeHierarchyManager/62"
+            } else {
+                srcDirs += "src/reactNativeVersionPatch/nativeHierarchyManager/latest"
             }
         }
     }
 }
 
-def assertionTask = task assertNoMultipleInstancesTask {
+def assertNoMultipleInstances = task assertNoMultipleInstancesTask {
     onlyIf { shouldAssertNoMultipleInstances() && CLIENT_SIDE_BUILD }
     doFirst {
-        assertNoMultipleInstances()
+        checkNoMultipleInstances()
+    }
+}
+
+def assertNoReanimated2WithNewArchitecture = task assertNoReanimated2WithNewArchitectureTask {
+    onlyIf { isNewArchitectureEnabled() && REANIMATED_MAJOR_VERSION == 2 }
+    doFirst {
+        throw new Exception(
+            "\n[react-native-reanimated] Reanimated 2.x does not support Fabric. " +
+            "Please upgrade to 3.x to use Reanimated with the New Architecture. " +
+            "For details, see https://blog.swmansion.com/announcing-reanimated-3-16167428c5f7"
+        )
     }
 }
 
 tasks.preBuild {
-    dependsOn assertionTask
+    dependsOn assertNoMultipleInstances, assertNoReanimated2WithNewArchitecture
 }
 
 task cleanCmakeCache() {
@@ -562,21 +599,7 @@ task printVersions {
     println "Gradle: ${project.gradle.gradleVersion}"
 }
 
-task Log {
-    println("building Reanimated2")
-}
-
-task applyJavaPatches(type: Copy) {
-    def patchDirectory = file("${projectDir}/rnVersionPatch/${REACT_NATIVE_MINOR_VERSION}")
-    if (patchDirectory.exists()) {
-        from ("${patchDirectory}") {
-            include "**/*.java"
-        }
-        into ("${projectDir}/src/main/java/com/swmansion/reanimated")
-    }
-}
-
-task createNativeDepsDirectories(dependsOn: applyJavaPatches) {
+task createNativeDepsDirectories() {
     downloadsDir.mkdirs()
     thirdPartyNdkDir.mkdirs()
 }
@@ -970,8 +993,13 @@ task prepareThirdPartyNdkHeaders(dependsOn:[
 ) {}
 
 def nativeBuildDependsOn(dependsOnTask) {
-    def buildTasks = tasks.findAll({ task ->
-        !task.name.contains("Clean") && (task.name.contains("externalNative") || task.name.contains("CMake")) })
+    def buildTasks = tasks.findAll({ task -> (
+        !task.name.contains("Clean")
+        && (task.name.contains("externalNative")
+            || task.name.contains("CMake")
+            || task.name.contains("generateJsonModel")
+        )
+    ) })
     buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
 }
 

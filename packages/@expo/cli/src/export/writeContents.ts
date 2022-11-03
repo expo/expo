@@ -119,7 +119,9 @@ export async function writeMetadataJsonAsync({
     bundles,
     fileNames,
   });
-  await fs.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify(contents));
+  const metadataPath = path.join(outputDir, 'metadata.json');
+  debug(`Writing metadata.json to ${metadataPath}`);
+  await fs.writeFile(metadataPath, JSON.stringify(contents));
   return contents;
 }
 

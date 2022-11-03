@@ -80,6 +80,7 @@ const general = [
     makePage('workflow/using-libraries.mdx'),
     makePage('workflow/logging.mdx'),
     makePage('workflow/development-mode.mdx'),
+    makePage('workflow/prebuild.mdx'),
     makePage('workflow/ios-simulator.mdx'),
     makePage('workflow/android-studio-emulator.mdx'),
     makePage('workflow/run-on-device.mdx'),
