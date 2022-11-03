@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Showing warnings for missing native modules rather than throwing errors. ([#19845](https://github.com/expo/expo/pull/19845) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 47.0.0-beta.8 — 2022-11-02
