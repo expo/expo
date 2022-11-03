@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.0.0 — 2022-11-03
+
+_This version does not introduce any user-facing changes._
+
 ## 0.12.0 — 2022-10-25
 
 ### 🎉 New features
