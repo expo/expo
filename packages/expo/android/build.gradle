@@ -19,16 +19,15 @@ def getRNVersion() {
       .text
       .trim()
 
-  def version = safeExtGet("reactNativeVersion", nodeModulesVersion)
+  def version = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: safeExtGet("reactNativeVersion", nodeModulesVersion)
   def coreVersion = version.split("-")[0]
   def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
 
-  def versionNumber = versionToNumber(major, minor, patch)
-  if (versionNumber == versionToNumber(0, 0, 0)) {
-    // react-native nightly build published as `0.0.0-20221002-2027-2319f75c8` form, but its semantic is latest
-    return versionToNumber(9999, 9999, 9999)
-  }
-  return versionNumber
+  return versionToNumber(
+      major,
+      minor,
+      patch
+  )
 }
 
 ensureDependeciesWereEvaluated(project)
@@ -121,10 +120,12 @@ android {
         srcDirs += new File(project.buildDir, generatedFilesSrcDir)
 
         def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 69, 0)) {
+        if (rnVersion >= versionToNumber(0, 71, 0)) {
           srcDirs += "src/reactNativeHostWrapper"
+        } else if (rnVersion >= versionToNumber(0, 69, 0)) {
+          srcDirs += "src/reactNativeHostWrapper69"
         } else if (rnVersion >= versionToNumber(0, 67, 0)) {
-          srcDirs += "src/reactNativeHostWrapper68"
+          srcDirs += "src/reactNativeHostWrapper67"
         } else {
           srcDirs += "src/reactNativeHostWrapper64"
         }

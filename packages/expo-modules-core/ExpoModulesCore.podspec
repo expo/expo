@@ -1,6 +1,19 @@
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+
+reactNativeVersion = '0.0.0'
+begin
+  reactNativeVersion = `node --print "require('react-native/package.json').version"`
+rescue
+  reactNativeVersion = '0.0.0'
+end
+if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+  reactNativeVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+end
+
+REACT_NATIVE_MINOR_VERSION = reactNativeVersion.split('.')[1].to_i
+
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 fabric_compiler_flags = '-DRN_FABRIC_ENABLED'
 folly_version = '2021.07.22.00'
@@ -26,18 +39,19 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
-    'HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
+    'HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"${PODS_ROOT}/Headers/Public/React-hermes\" \"${PODS_ROOT}/Headers/Public/hermes-engine\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
     'OTHER_SWIFT_FLAGS' => "$(inherited) #{fabric_enabled ? fabric_compiler_flags : ''}"
   }
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
   }
+  s.compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_MINOR_VERSION=#{REACT_NATIVE_MINOR_VERSION}"
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
 
   if fabric_enabled
-    s.compiler_flags = folly_compiler_flags + ' ' + fabric_compiler_flags
+    s.compiler_flags = s.compiler_flags + ' ' + fabric_compiler_flags
 
     s.dependency 'React-RCTFabric'
     s.dependency 'RCT-Folly', folly_version
