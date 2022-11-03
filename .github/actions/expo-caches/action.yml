@@ -85,7 +85,7 @@ runs:
   steps:
     - name: 🔍️ Get yarn cache directory path
       id: yarn-cache-dir-path
-      run: echo "::set-output name=dir::$(yarn cache dir)"
+      run: echo "dir=$(yarn cache dir)" >> $GITHUB_OUTPUT
       shell: bash
     - name: ♻️ Restore workspace node modules
       if: inputs.yarn-workspace == 'true'
@@ -190,7 +190,7 @@ runs:
     - name: 🔍️ Get cache key of Git LFS files
       if: inputs.git-lfs == 'true'
       id: git-lfs
-      run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
+      run: echo "sha256=$(git lfs ls-files | openssl dgst -sha256)" >> $GITHUB_OUTPUT
       shell: bash
     - name: ♻️ Restore Git LFS cache
       uses: actions/cache@v2
@@ -212,7 +212,11 @@ runs:
       run: |
         CURRENT_VERSION=$(test -f android/prebuiltHermes/.hermesversion && cat android/prebuiltHermes/.hermesversion) || true
         TARGET_VERSION=$(test -f react-native-lab/react-native/sdks/.hermesversion && cat react-native-lab/react-native/sdks/.hermesversion) || true
-        if [[ $CURRENT_VERSION == $TARGET_VERSION ]]; then echo '::set-output name=cache-hit::true'; else echo '::set-output name=cache-hit::false'; fi
+        if [[ $CURRENT_VERSION == $TARGET_VERSION ]]; then
+          echo "cache-hit=true" >> $GITHUB_OUTPUT
+        else
+          echo "cache-hit=false" >> $GITHUB_OUTPUT
+        fi
     - name: 🛠 Rebuild hermes-engine AAR when cache missed
       if: inputs.hermes-engine-aar == 'true' && inputs.rebuild-hermes-engine-aar-if-needed == 'true' && steps.cache-hermes-engine-aar.outputs.cache-hit != 'true'
       shell: bash

@@ -54,7 +54,7 @@ jobs:
       # # Get Expo link for the comment
       # - name: Get expo link
       #   id: expo
-      #   run: echo "::set-output name=path::@community/native-component-list?release-channel=pr-${{ github.event.number }}"
+      #   run: echo "path=@community/native-component-list?release-channel=pr-${{ github.event.number }}" >> $GITHUB_OUTPUT
       # Build the Expo website
       - name: Build Website
         working-directory: ./apps/native-component-list
