@@ -69,14 +69,14 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 
 ### Troubleshooting
 
-> **warning** Get `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine.` when opening the debugger.
+> **warning** `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine.` when opening the debugger.
 
-- Make sure you [setup Hermes in the `jsEngine` field](#setup).
+- Make sure you [set up Hermes in the `jsEngine` field](#setup).
 - If your app is built by `eas build`, `npx expo run:android` or `npx expo run:ios`, make sure it is debug build.
 - Internally, the app will establish a WebSocket connection, make sure your app is connected to the development server.
 
-  - You could try to reload the app by pressing <kbd>r</kbd> in the Expo CLI Terminal UI.
-  - You could test the debugging availability by the command: `curl http://127.0.0.1:19000/json/list` (adjust the `127.0.0.1:19000` to match your dev server URL). The HTTP response should not be an empty array but something like this:
+  - Try to reload the app by pressing <kbd>r</kbd> in the Expo CLI Terminal UI.
+  - Test debugging availability by running the command: `curl http://127.0.0.1:19000/json/list` (adjust the `127.0.0.1:19000` to match your dev server URL). The HTTP response should not be an empty array, but rather something like this:
 
   ```json
   [
@@ -103,6 +103,8 @@ Alternatively, you can use the JavaScript inspector from the following tools:
   ]
   ```
 
-### Can I use Remote Debugging on Hermes?
+### Can I use Remote Debugging with Hermes?
 
-A limitation with [Remote Debugging](/workflow/glossary-of-terms/#remote-debugging) is that it does not work with modules built on top of [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91). For example, if your app uses [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2, [Remote Debugging will not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations). Hermes supports [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/v8/) to debug JavaScript in place and makes it possible to debug your app even when using JSI modules, so Remote Debugging is not available when using Hermes.
+One of the many limitations of [remote debugging](/workflow/glossary-of-terms/#remote-debugging) is that it does not work with modules built on top of [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91). For example, if your app uses [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2 or higher, [remote debugging will not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations). 
+
+Hermes supports [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/v8/) to debug JavaScript in place by connecting to the running engine on the device. This enables you to debug your app even when using JSI modules. This debugging technique is superior to remote debugging and replaces it for apps using Hermes.
