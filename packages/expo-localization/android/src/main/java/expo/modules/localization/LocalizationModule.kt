@@ -44,7 +44,7 @@ class LocalizationModule : Module() {
     }
 
     OnCreate {
-      appContext.let {
+      appContext?.reactContext?.let {
         setRTLFromStringResources(it)
       }
     }
