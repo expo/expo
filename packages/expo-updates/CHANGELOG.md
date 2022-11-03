@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed another _app.manifest_ occasionally missing from build outputs on Android. ([#19809](https://github.com/expo/expo/pull/19809) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.15.4 — 2022-11-03
+
+### 🐛 Bug fixes
+
+- Fixed another _app.manifest_ occasionally missing from build outputs on Android. ([#19809](https://github.com/expo/expo/pull/19809) by [@kudo](https://github.com/kudo))
 
 ## 0.15.3 — 2022-10-30
 

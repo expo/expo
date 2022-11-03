@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 9.2.2 — 2022-11-03
+
+_This version does not introduce any user-facing changes._
+
 ## 9.2.1 — 2022-10-06
 
 ### ⚠️ Notices
