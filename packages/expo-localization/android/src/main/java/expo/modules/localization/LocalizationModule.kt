@@ -44,7 +44,9 @@ class LocalizationModule : Module() {
     }
 
     OnCreate {
-      if (appContext.reactContext != null) setRTLFromStringResources(appContext.reactContext!!)
+      appContext.let {
+        setRTLFromStringResources(it)
+      }
     }
   }
 
@@ -53,10 +55,13 @@ class LocalizationModule : Module() {
     // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
     val supportsRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_supportsRTL)
     if (supportsRTL != "true" && supportsRTL != "false") return
-    val editor: SharedPreferences.Editor =
-      context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit()
-    editor.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
-    editor.apply()
+    context
+      .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+      .edit()
+      .also {
+        it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
+        it.apply()
+      }
   }
 
   // TODO: Bacon: add set language

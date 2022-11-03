@@ -13,10 +13,13 @@ class ExperienceRTLManager {
     fun setSupportsRTL(context: Context, allowRTL: Boolean) {
       // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
       // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
-      val editor: SharedPreferences.Editor =
-        context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE).edit()
-      editor.putBoolean(KEY_FOR_PREFS_ALLOWRTL, allowRTL)
-      editor.apply()
+      context
+        .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+        .edit()
+        .also {
+          it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, allowRTL)
+          it.apply()
+        }
     }
 
     fun setSupportsRTLFromManifest(context: Context, manifest: Manifest) {
