@@ -86,7 +86,7 @@
     "unimodules-sensors-interface": "6.1.0",
     "unimodules-task-manager-interface": "7.0.1",
     "expo-clipboard": "4.0.0",
-    "expo-modules-core": "0.13.2"
+    "expo-modules-core": "1.0.0"
   },
   "46.0.0": {
     "@unimodules/core": "7.1.1",
