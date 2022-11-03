@@ -7431,8 +7431,7 @@ This can be used to quickly create specific permission hooks in every module.
           <code
             class="inline css-1pk617c-InlineCode"
           >
-            BarCodeScanner.
-            getPermissionsAsync()
+            BarCodeScanner.getPermissionsAsync()
           </code>
         </span>
         <span
@@ -7611,8 +7610,7 @@ This can be used to quickly create specific permission hooks in every module.
           <code
             class="inline css-1pk617c-InlineCode"
           >
-            BarCodeScanner.
-            requestPermissionsAsync()
+            BarCodeScanner.requestPermissionsAsync()
           </code>
         </span>
         <span
@@ -7809,8 +7807,7 @@ This can be used to quickly create specific permission hooks in every module.
           <code
             class="inline css-1pk617c-InlineCode"
           >
-            BarCodeScanner.
-            scanFromURLAsync(url, barCodeTypes)
+            BarCodeScanner.scanFromURLAsync(url, barCodeTypes)
           </code>
         </span>
         <span
