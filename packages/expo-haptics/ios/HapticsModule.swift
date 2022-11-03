@@ -5,28 +5,22 @@ public class HapticsModule: Module {
     Name("ExpoHaptics")
 
     AsyncFunction("notificationAsync") { (notificationType: NotificationType) in
-      DispatchQueue.main.async {
-        let generator = UINotificationFeedbackGenerator()
-        generator.prepare()
-        generator.notificationOccurred(notificationType.toFeedbackType())
-      }
-    }
+      let generator = UINotificationFeedbackGenerator()
+      generator.prepare()
+      generator.notificationOccurred(notificationType.toFeedbackType())
+    }.runOnQueue(.main)
 
     AsyncFunction("impactAsync") { (style: ImpactStyle) in
-      DispatchQueue.main.async {
-        let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
-        generator.prepare()
-        generator.impactOccurred()
-      }
-    }
+      let generator = UIImpactFeedbackGenerator(style: style.toFeedbackStyle())
+      generator.prepare()
+      generator.impactOccurred()
+    }.runOnQueue(.main)
 
     AsyncFunction("selectionAsync") {
-      DispatchQueue.main.async {
-        let generator = UISelectionFeedbackGenerator()
-        generator.prepare()
-        generator.selectionChanged()
-      }
-    }
+      let generator = UISelectionFeedbackGenerator()
+      generator.prepare()
+      generator.selectionChanged()
+    }.runOnQueue(.main)
   }
 
   enum NotificationType: String, EnumArgument {
