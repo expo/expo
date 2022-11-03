@@ -192,12 +192,18 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
 }
 
 def getRNVersion() {
-  def versionNumber = getNodeModulesPackageVersion("react-native", "reactNativeVersion")
-  if (versionNumber == versionToNumber(0, 0, 0)) {
-    // react-native nightly build published as `0.0.0-20221002-2027-2319f75c8` form, but its semantic is latest
-    return versionToNumber(9999, 9999, 9999)
+  if (System.getenv("REACT_NATIVE_OVERRIDE_VERSION")) {
+    def version = System.getenv("REACT_NATIVE_OVERRIDE_VERSION")
+    def coreVersion = version.split("-")[0]
+    def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+    return versionToNumber(
+        major,
+        minor,
+        patch
+    )
   }
-  return versionNumber
+
+  return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }
 
 def getExpoPackageVersion() {

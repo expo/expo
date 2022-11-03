@@ -13,11 +13,7 @@ version = '2.0.0'
 def reactNativeFilePath = ["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()
 def inputFile = new File(reactNativeFilePath)
 def json = new JsonSlurper().parseText(inputFile.text)
-def reactNativeVersion = json.version as String
-if (reactNativeVersion.startsWith('0.0.0-')) {
-  // react-native nightly build published as `0.0.0-20221002-2027-2319f75c8` form, but its semantic is latest
-  reactNativeVersion = '9999.9999.9999'
-}
+def reactNativeVersion = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: json.version as String
 def (major, minor, patch) = reactNativeVersion.tokenize('.')
 
 def engine = "jsc"

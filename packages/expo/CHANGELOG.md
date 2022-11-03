@@ -10,6 +10,7 @@
 
 - Showing warnings for missing native modules rather than throwing errors. ([#19845](https://github.com/expo/expo/pull/19845) by [@kudo](https://github.com/kudo))
 - Fixed crashes when running on react-native-v8 runtime. ([#19843](https://github.com/expo/expo/pull/19843) by [@kudo](https://github.com/kudo))
+- Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

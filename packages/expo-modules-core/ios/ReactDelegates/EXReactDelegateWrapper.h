@@ -18,6 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
                                moduleName:(NSString *)moduleName
                         initialProperties:(nullable NSDictionary *)initialProperties;
 
+- (RCTRootView *)createRootViewWithBridge:(RCTBridge *)bridge
+                               moduleName:(NSString *)moduleName
+                        initialProperties:(nullable NSDictionary *)initialProperties
+                            fabricEnabled:(BOOL)fabricEnabled;
+
 - (UIViewController *)createRootViewController;
 
 @end

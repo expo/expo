@@ -11,4 +11,9 @@ class ReactNativeHostWrapper(
   override fun getRedBoxHandler(): RedBoxHandler? {
     return invokeDelegateMethod("getRedBoxHandler")
   }
+
+  @Suppress("DEPRECATION")
+  override fun getUIImplementationProvider(): com.facebook.react.uimanager.UIImplementationProvider {
+    return invokeDelegateMethod("getUIImplementationProvider")
+  }
 }

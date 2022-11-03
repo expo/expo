@@ -1,6 +1,8 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
+
+#import <ExpoModulesCore/EXAppDefines.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper+Private.h>
 
 @interface EXReactDelegateWrapper()
@@ -29,7 +31,18 @@
                                moduleName:(NSString *)moduleName
                         initialProperties:(nullable NSDictionary *)initialProperties
 {
-  return [_expoReactDelegate createRootViewWithBridge:bridge moduleName:moduleName initialProperties:initialProperties];
+  return [_expoReactDelegate createRootViewWithBridge:bridge
+                                           moduleName:moduleName
+                                    initialProperties:initialProperties
+                                        fabricEnabled:EXAppDefines.APP_NEW_ARCH_ENABLED];
+}
+
+- (RCTRootView *)createRootViewWithBridge:(RCTBridge *)bridge
+                               moduleName:(NSString *)moduleName
+                        initialProperties:(nullable NSDictionary *)initialProperties
+                            fabricEnabled:(BOOL)fabricEnabled
+{
+  return [_expoReactDelegate createRootViewWithBridge:bridge moduleName:moduleName initialProperties:initialProperties fabricEnabled:fabricEnabled];
 }
 
 - (UIViewController *)createRootViewController
