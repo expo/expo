@@ -1,0 +1,1 @@
+Fix crashes on older SDK versions
