@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix Expo Go download loading bar. ([#19817](https://github.com/expo/expo/pull/19817) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.4.6 — 2022-11-02
