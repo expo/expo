@@ -5,6 +5,7 @@ title: Native Modules
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { APIBox } from '~/components/plugins/APIBox';
 import { PlatformTags } from '~/ui/components/Tag';
+import { APIMethod } from '~/components/plugins/api/APISectionMethods';
 
 > **warning** Expo Modules APIs are in beta and subject to breaking changes.
 
@@ -232,8 +233,7 @@ Enables the module to be used as a native view. Definition components that are a
 
 #### Arguments
 
-- **viewType** — The class of the native view that will be rendered.
-- **definition**: `() -> ViewDefinition` — A builder of the view definition.
+- **viewType** — The class of the native view that will be rendered. Note: On Android, the provided class must inherit from the [`ExpoView`](#expoview), on iOS it's optional. See [`Extending ExpoView`](#extending--expoview).
 
 <CodeBlocksTable>
 
@@ -511,6 +511,105 @@ The implementation for three Either types is currently provided out of the box, 
 - `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` — A container for one of four types.
 
 > Either types are available as of SDK 47.
+
+</APIBox>
+
+## Native Classes
+
+<APIBox header="Module">
+
+A base class for a native module.
+
+#### Properties
+
+<APIMethod
+  name="appContext"
+  comment="Provides access to the [`AppContext`](#appcontext)."
+  returnTypeName="AppContext"
+  isProperty={true}
+  isReturnTypeReference={true}
+/>
+
+#### Methods
+
+<APIMethod
+  name="sendEvent"
+  comment="Sends an event with a given name and a payload to JavaScript. See [`Sending events`](#sending-events)"
+  returnTypeName="void"
+  parameters={[
+    {
+      name: 'eventName',
+      comment: 'The name of the JavaScript event',
+      typeName: 'string',
+    },
+    {
+      name: 'payload',
+      comment: 'The event payload',
+      typeName: 'Android: Map<String, Any?> | Bundle\niOS: [String: Any?]',
+    },
+  ]}
+/>
+
+</APIBox>
+
+<APIBox header="AppContext">
+
+The app context is an interface to a single Expo app.
+
+</APIBox>
+
+<APIBox header="ExpoView">
+
+A base class that should be used by all exported views.
+
+On iOS, `ExpoView` extends the `RCTView` which handles some styles (e.g. borders) and accessibility.
+
+#### Properties
+
+<APIMethod
+  name="appContext"
+  comment="Provides access to the [`AppContext`](#appcontext)."
+  returnTypeName="AppContext"
+  isProperty={true}
+  isReturnTypeReference={true}
+/>
+
+<hr />
+
+#### Extending `ExpoView`
+
+To export your view using the [`View`](#view) component, your custom class must inherit from the `ExpoView`. By doing that you will get access to the [`AppContext`](#appcontext) object. It's the only way of communicating with other modules and the JavaScript runtime. Also, you can't change constructor parameters, becuase provided view will be initialized by `expo-modules-core`.
+
+<CodeBlocksTable>
+
+```swift
+class LinearGradientView: ExpoView {}
+
+public class LinearGradientModule: Module {
+  public func definition() -> ModuleDefinition {
+    View(LinearGradientView.self) {
+      // ...
+    }
+  }
+}
+```
+
+```kotlin
+class LinearGradientView(
+  context: Context,
+  appContext: AppContext,
+) : ExpoView(context, appContext)
+
+class LinearGradientModule : Module() {
+  override fun definition() = ModuleDefinition {
+    View(LinearGradientView::class) {
+      // ...
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
 
 </APIBox>
 

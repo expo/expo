@@ -13,6 +13,7 @@ import { LI, UL, OL } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 import {
   CommentData,
+  MethodDefinitionData,
   MethodParamData,
   MethodSignatureData,
   PropData,
@@ -484,6 +485,21 @@ export const getTagNamesList = (comment?: CommentData) =>
     ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
+
+export const getMethodName = (
+  method: MethodDefinitionData,
+  apiName?: string,
+  name?: string,
+  parameters?: MethodParamData[]
+) => {
+  const isProperty = method.kind === TypeDocKind.Property && !parameters?.length;
+  const methodName = ((apiName && `${apiName}.`) ?? '') + (method.name || name);
+  if (!isProperty) {
+    return `${methodName}(${parameters ? listParams(parameters) : ''})`;
+  }
+
+  return methodName;
+};
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
