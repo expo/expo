@@ -3,8 +3,8 @@ title: Native Modules
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
-import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
+import { PlatformTags } from '~/ui/components/Tag';
 
 > **warning** Expo Modules APIs are in beta and subject to breaking changes.
 
@@ -149,6 +149,26 @@ const MyModule = requireNativeModule('MyModule');
 
 async function getMessageAsync() {
   return await MyModule.asyncFunction('bar');
+}
+```
+
+<hr />
+
+#### Kotlin coroutines <PlatformTags prefix="" platforms={['android']} />
+
+`AsyncFunction` can receive a suspendable body on Android. However, it has to be passed in the infix notation after the `Coroutine` block. You can read more about suspendable functions and coroutines on [coroutine overview](https://kotlinlang.org/docs/coroutines-overview.html).
+
+`AsyncFunction` with suspendable body can't receive `Promise` as an argument. It uses a suspension mechanism to execute asynchronous calls.
+The function is immediately resolved with the returned value of the provided suspendable block or rejected if it throws an exception. The function can receive up to 8 arguments.
+
+By default, suspend functions are dispatched on the module's coroutine scope. Moreover, every other suspendable function called from the body block is run within the same scope.
+This scope's lifecycle is bound to the module's lifecycle - all unfinished suspend functions will be canceled when the module is deallocated.
+
+```kotlin Kotlin
+AsyncFunction("suspendFunction") Coroutine { message: String ->
+  launch {
+    return@Coroutine message
+  }
 }
 ```
 
