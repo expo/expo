@@ -7,8 +7,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       class="css-1lzbq05-AppConfigProperty"
     >
       <div
-        class=" css-19f55nd-PDIV"
-        data-text="true"
+        class="css-1xvbpdy-PDIVHEADER"
+        data-heading="true"
       >
         <a
           class="css-ah3byb"
@@ -59,6 +59,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
       <p
         class="css-6kj7vp-TextComponent"
+        data-text="true"
       >
         Type: 
         <code
@@ -124,8 +125,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       class="css-1lzbq05-AppConfigProperty"
     >
       <div
-        class=" css-19f55nd-PDIV"
-        data-text="true"
+        class="css-1xvbpdy-PDIVHEADER"
+        data-heading="true"
       >
         <a
           class="css-ah3byb"
@@ -176,6 +177,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
       <p
         class="css-6kj7vp-TextComponent"
+        data-text="true"
       >
         Type: 
         <code
@@ -284,8 +286,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1lzbq05-AppConfigProperty"
         >
           <div
-            class=" css-19f55nd-PDIV"
-            data-text="true"
+            class="css-1xvbpdy-PDIVHEADER"
+            data-heading="true"
           >
             <a
               class="css-ah3byb"
@@ -336,6 +338,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
           <p
             class="css-6kj7vp-TextComponent"
+            data-text="true"
           >
             Type: 
             <code
@@ -409,8 +412,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1lzbq05-AppConfigProperty"
             >
               <div
-                class=" css-19f55nd-PDIV"
-                data-text="true"
+                class="css-1xvbpdy-PDIVHEADER"
+                data-heading="true"
               >
                 <a
                   class="css-ah3byb"
@@ -461,6 +464,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </div>
               <p
                 class="css-6kj7vp-TextComponent"
+                data-text="true"
               >
                 Type: 
                 <code
@@ -493,8 +497,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1lzbq05-AppConfigProperty"
         >
           <div
-            class=" css-19f55nd-PDIV"
-            data-text="true"
+            class="css-1xvbpdy-PDIVHEADER"
+            data-heading="true"
           >
             <a
               class="css-ah3byb"
@@ -545,6 +549,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
           <p
             class="css-6kj7vp-TextComponent"
+            data-text="true"
           >
             Type: 
             <code
@@ -590,8 +595,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       class="css-1lzbq05-AppConfigProperty"
     >
       <div
-        class=" css-19f55nd-PDIV"
-        data-text="true"
+        class="css-1xvbpdy-PDIVHEADER"
+        data-heading="true"
       >
         <a
           class="css-ah3byb"
@@ -642,6 +647,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
       <p
         class="css-6kj7vp-TextComponent"
+        data-text="true"
       >
         Type: 
         <code
@@ -743,8 +749,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1lzbq05-AppConfigProperty"
         >
           <div
-            class=" css-19f55nd-PDIV"
-            data-text="true"
+            class="css-1xvbpdy-PDIVHEADER"
+            data-heading="true"
           >
             <a
               class="css-ah3byb"
@@ -795,6 +801,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
           <p
             class="css-6kj7vp-TextComponent"
+            data-text="true"
           >
             Type: 
             <code
@@ -825,8 +832,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1lzbq05-AppConfigProperty"
         >
           <div
-            class=" css-19f55nd-PDIV"
-            data-text="true"
+            class="css-1xvbpdy-PDIVHEADER"
+            data-heading="true"
           >
             <a
               class="css-ah3byb"
@@ -877,6 +884,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </div>
           <p
             class="css-6kj7vp-TextComponent"
+            data-text="true"
           >
             Type: 
             <code
@@ -900,8 +908,8 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1lzbq05-AppConfigProperty"
             >
               <div
-                class=" css-19f55nd-PDIV"
-                data-text="true"
+                class="css-1xvbpdy-PDIVHEADER"
+                data-heading="true"
               >
                 <a
                   class="css-ah3byb"
@@ -952,6 +960,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </div>
               <p
                 class="css-6kj7vp-TextComponent"
+                data-text="true"
               >
                 Type: 
                 <code

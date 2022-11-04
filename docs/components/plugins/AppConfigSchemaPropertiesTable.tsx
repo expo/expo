@@ -6,7 +6,7 @@ import { InlineCode } from '../base/code';
 
 import { createPermalinkedComponent } from '~/common/create-permalinked-component';
 import { HeadingType } from '~/common/headingManager';
-import { PDIV } from '~/components/base/paragraph';
+import { PDIVHEADER } from '~/components/base/paragraph';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -53,13 +53,13 @@ type AppConfigSchemaProps = {
   schema: Record<string, Property>;
 };
 
-const Anchor = createPermalinkedComponent(PDIV, {
+const Anchor = createPermalinkedComponent(PDIVHEADER, {
   baseNestingLevel: 3,
   sidebarType: HeadingType.InlineCode,
 });
 
 const PropertyName = ({ name, nestingLevel }: { name: string; nestingLevel: number }) => (
-  <Anchor level={nestingLevel} data-testid={name}>
+  <Anchor level={nestingLevel} data-testid={name} data-heading="true">
     <InlineCode css={typography.fontSizes[16]}>{name}</InlineCode>
   </Anchor>
 );
@@ -165,7 +165,7 @@ const AppConfigProperty = ({
 }: FormattedProperty & { nestingLevel: number }) => (
   <APIBox css={boxStyle}>
     <PropertyName name={name} nestingLevel={nestingLevel} />
-    <CALLOUT theme="secondary">
+    <CALLOUT theme="secondary" data-text="true">
       Type: <InlineCode>{type || 'undefined'}</InlineCode>
       {nestingLevel > 0 && (
         <>
