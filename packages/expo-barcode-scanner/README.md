@@ -4,7 +4,7 @@ Allows scanning variety of supported barcodes both as standalone module and as e
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/bar-code-scanner.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/bar-code-scanner.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/)
 
 # Installation in managed Expo projects

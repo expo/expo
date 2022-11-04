@@ -61,7 +61,7 @@ ext {
 allprojects {
     // [Custom]
     configurations.all {
-        if (findProperty("reactNativeNightly") == "true") {
+        if (findProperty("buildReactNativeFromSource") == "true") {
             resolutionStrategy {
                 dependencySubstitution {
                     substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
@@ -95,6 +95,12 @@ allprojects {
             // older versions over there.
             content {
                 excludeGroup "com.facebook.react"
+            }
+        }
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            content {
+                includeGroup "com.facebook.react"
             }
         }
         maven { url 'https://jitpack.io' }
