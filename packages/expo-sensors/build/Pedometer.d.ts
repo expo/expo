@@ -5,6 +5,9 @@ export declare type PedometerResult = {
      */
     steps: number;
 };
+/**
+ * Callback function providing event result as an argument.
+ */
 export declare type PedometerUpdateCallback = (result: PedometerResult) => void;
 /**
  * Subscribe to pedometer updates.
@@ -31,7 +34,13 @@ export declare function getStepCountAsync(start: Date, end: Date): Promise<Pedom
  * available on this device.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
+/**
+ * Checks user's permissions for accessing pedometer.
+ */
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
+/**
+ * Asks the user to grant permissions for accessing pedometer.
+ */
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export { Subscription, PermissionResponse, PermissionStatus, PermissionExpiration };
 //# sourceMappingURL=Pedometer.d.ts.map

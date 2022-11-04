@@ -1,7 +1,7 @@
 import { PermissionStatus, EventEmitter, Platform, } from 'expo-modules-core';
 /**
  * A base class for subscribable sensors. The events emitted by this class are measurements
- * specified by the parameter type `M`.
+ * specified by the parameter type `Measurement`.
  */
 export default class DeviceSensor {
     _nativeModule;
