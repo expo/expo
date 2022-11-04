@@ -59,6 +59,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-in-app-purchases': ['InAppPurchases.ts'],
   'expo-intent-launcher': ['IntentLauncher.ts'],
   'expo-keep-awake': ['index.ts'],
+  'expo-light-sensor': [['LightSensor.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-linking': ['Linking.ts'],
   'expo-linear-gradient': ['LinearGradient.tsx'],
   'expo-local-authentication': ['LocalAuthentication.ts'],
