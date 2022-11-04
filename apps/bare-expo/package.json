@@ -128,7 +128,7 @@
     "@types/react-native": "~0.69.1",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-preset-expo": "~9.2.0",
-    "detox": "^19.4.1",
+    "detox": "^19.12.6",
     "expo-module-scripts": "^3.0.0",
     "expo-yarn-workspaces": "^2.0.0",
     "jest-expo": "~47.0.0",

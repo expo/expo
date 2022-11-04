@@ -8,9 +8,19 @@
 
 ### 🐛 Bug fixes
 
-- Fixed build errors when testing on React Native nightly builds. ([#19369](https://github.com/expo/expo/pull/19369) by [@kudo](https://github.com/kudo))
+- Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 1.0.0 — 2022-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.4 — 2022-11-02
+
+### 🐛 Bug fixes
+
+- Fixed build errors when testing on React Native nightly builds. ([#19369](https://github.com/expo/expo/pull/19369) by [@kudo](https://github.com/kudo))
 
 ## 0.13.3 — 2022-10-30
 
