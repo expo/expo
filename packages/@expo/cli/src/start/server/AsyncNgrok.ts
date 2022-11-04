@@ -167,7 +167,7 @@ export class AsyncNgrok {
           if (status === 'closed') {
             Log.error(
               chalk.red(
-                'Ngrok tunnel connection has been closed. This is often related to intermittent connection problems with the ngrok servers. Restart the dev server to try connecting to Ngrok again.'
+                'Tunnel connection has been closed. This is often related to intermittent connection problems with the Ngrok servers. Restart the dev server to try connecting to Ngrok again.'
               )
             );
           } else if (status === 'connected') {
