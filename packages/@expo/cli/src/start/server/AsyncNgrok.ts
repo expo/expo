@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import crypto from 'crypto';
 import * as path from 'path';
 import slugify from 'slugify';
@@ -165,10 +166,9 @@ export class AsyncNgrok {
         onStatusChange(status) {
           if (status === 'closed') {
             Log.error(
-              'We noticed your tunnel is having issues. ' +
-                'This may be due to intermittent problems with ngrok. ' +
-                'If you have trouble connecting to your app, try to restart the project, ' +
-                'or switch the host to `lan`.'
+              chalk.red(
+                'Tunnel connection has been closed. This is often related to intermittent connection problems with the Ngrok servers. Restart the dev server to try connecting to Ngrok again.'
+              )
             );
           } else if (status === 'connected') {
             Log.log('Tunnel connected.');
