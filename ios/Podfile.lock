@@ -4529,7 +4529,7 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
   ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
   ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
-  ExpoModulesCore: 2c45953bd5d43420956714fcc074285d73415b3a
+  ExpoModulesCore: 137a16fd1f4a27e80ce58231022537a7bbe69fba
   ExpoModulesTestCore: fe0a7344268158f254dadc9ac947b2c66bb19fed
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
   ExpoStoreReview: ff6d631f2949eb7e4b2d14146ef6af25a16d770d
