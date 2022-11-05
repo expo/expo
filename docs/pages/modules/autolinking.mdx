@@ -6,9 +6,9 @@ import { Terminal } from '~/ui/components/Snippet';
 import { APIBox } from '~/components/plugins/APIBox';
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 
-Usually, when you're developing a native mobile app and want to install a 3rd-party library, you're asked to add the dependency to the manifest files of your package managers (**build.gradle** on Android, **Podfile** for CocoaPods on iOS, **Package.swift** for SwiftPM on iOS).
-In Expo and React Native in general, you already need to do that with your **package.json** file by installing the package from [npm](https://www.npmjs.com) registry. Since most of the React Native libraries come with some native (platform-specific) code,
-installing a library would require configuring even up to three different package managers!
+Usually, when you're developing a native mobile app and want to install a third-party library, you're asked to add the dependency to the manifest files of your package managers (**build.gradle** on Android, **Podfile** for CocoaPods on iOS, **Package.swift** for SwiftPM on iOS).
+In Expo and React Native, you already do that with your **package.json** file by installing the package from the [npm](https://www.npmjs.com) registry. Since most of the React Native libraries come with some native (platform-specific) code,
+installing a library will require configuring even up to three different package managers!
 
 Expo Autolinking is a mechanism that automates this process and narrows down the library installation process to the minimum — usually just installing the package from `npm` and re-running `pod install`.
 The core implementation can be found in the [`expo-modules-autolinking`](https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking) package and is divided into three parts:
@@ -16,18 +16,17 @@ The core implementation can be found in the [`expo-modules-autolinking`](https:/
 - code that integrates with the Gradle build system for Android platform
 - Ruby script that integrates with CocoaPods for iOS platform
 
-## CLI Commands
+## CLI commands
 
 <APIBox>
 
 ### `search`
 
-Searching is the first phase of resolving the Expo modules installed in the project. Its implementation is common for all platforms and is intended to
-just find which modules should be taken as Expo modules and figure out which version is of the highest precedence (in case of duplicates).
+Searching is the first phase of resolving the Expo modules installed in the project. Its implementation is common for all platforms. It intends to find which modules should be taken as Expo modules and figure out which version is of the highest precedence (in case of duplicates).
 
-<Terminal cmd={['npx expo-modules-autolinking search']} />
+<Terminal cmd={['$ npx expo-modules-autolinking search']} />
 
-Returns an object in JSON format with modules that have been found as dependencies:
+The above command returns an object in JSON format with modules that have been found as dependencies:
 
 ```json
 {
@@ -50,12 +49,12 @@ Returns an object in JSON format with modules that have been found as dependenci
 
 ### `resolve`
 
-Resolving is the second phase that is based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details,
+Resolving is the second phase based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details,
 such as the path to the podspec or **build.gradle** files and module classes to link.
 
-<Terminal cmd={['npx expo-modules-autolinking resolve --platform <ios|android>']} />
+<Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <ios|android>']} />
 
-For example, with `--platform ios` option it returns an object in JSON format with an array of modules and resolved details for iOS platform:
+For example, with the `--platform ios` option it returns an object in JSON format with an array of modules and resolved details for the iOS platform:
 
 ```json
 {
@@ -87,7 +86,7 @@ For example, with `--platform ios` option it returns an object in JSON format wi
 
 Verifies the search results by checking whether there are no multiple revisions (duplicates) of the same package, otherwise an appropriate warning is shown.
 
-<Terminal cmd={['npx expo-modules-autolinking verify']} />
+<Terminal cmd={['$ npx expo-modules-autolinking verify']} />
 
 </APIBox>
 
@@ -118,7 +117,7 @@ Useful when your project has a custom structure or you want to link local packag
 
 When used with the CLI, you can pass the search paths as command arguments like this:
 
-<Terminal cmd={['npx expo-modules-autolinking search ../../packages']} />
+<Terminal cmd={['$ npx expo-modules-autolinking search ../../packages']} />
 
 </APIBox>
 <APIBox>
@@ -127,7 +126,7 @@ When used with the CLI, you can pass the search paths as command arguments like 
 
 A list of package names to exclude from autolinking. These packages will not be autolinked even if they are found in the search paths.
 For example, you may want not to link some packages that you don't use on the specific platform to reduce the binary size.
-The following config in **package.json** would exclude `expo-random` from autolinking on Android:
+The following config in **package.json** will exclude `expo-random` from autolinking on Android:
 
 ```json package.json
 {
@@ -181,7 +180,7 @@ use_expo_modules!({
 
 ### How to set up the autolinking in my app?
 
-All projects created with `npx create-expo-app` command are already configured to use Expo Autolinking. If your project was created using different tools,
+All projects created with the `npx create-expo-app` command are already configured to use Expo Autolinking. If your project was created using different tools,
 please refer to [Installing Expo modules](/bare/installing-expo-modules) to make sure your project includes all necessary changes.
 
 ### What do I need to have in my module to make it autolinkable?
