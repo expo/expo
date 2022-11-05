@@ -119,7 +119,10 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
 
       // Conditionally remap `react-native` to `react-native-web`
       if (platform && platform in extraNodeModules) {
-        context.extraNodeModules = extraNodeModules[platform];
+        context.extraNodeModules = {
+          ...extraNodeModules[platform],
+          ...context.extraNodeModules,
+        };
       }
 
       const mainFields = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE
