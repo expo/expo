@@ -6,8 +6,6 @@ PODS:
   - EXAV (13.0.1):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
-  - EXBlur (12.0.1):
-    - ExpoModulesCore
   - EXCamera (13.0.0):
     - ExpoModulesCore
   - EXConstants (14.0.2):
@@ -17,6 +15,8 @@ PODS:
   - EXFont (11.0.1):
     - ExpoModulesCore
   - Expo (47.0.1):
+    - ExpoModulesCore
+  - ExpoBlur (12.0.1):
     - ExpoModulesCore
   - ExpoKeepAwake (11.0.1):
     - ExpoModulesCore
@@ -670,12 +670,12 @@ DEPENDENCIES:
   - DoubleConversion (from `../../../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
-  - EXBlur (from `../../../packages/expo-blur/ios`)
   - EXCamera (from `../../../packages/expo-camera/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXFileSystem (from `../../../packages/expo-file-system/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - Expo (from `../../../packages/expo`)
+  - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
@@ -735,8 +735,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-application/ios"
   EXAV:
     :path: "../../../packages/expo-av/ios"
-  EXBlur:
-    :path: "../../../packages/expo-blur/ios"
   EXCamera:
     :path: "../../../packages/expo-camera/ios"
   EXConstants:
@@ -747,6 +745,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-font/ios"
   Expo:
     :path: "../../../packages/expo"
+  ExpoBlur:
+    :path: "../../../packages/expo-blur/ios"
   ExpoKeepAwake:
     :path: "../../../packages/expo-keep-awake/ios"
   ExpoLinearGradient:
@@ -833,12 +833,12 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
   EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
-  EXBlur: d87af64a1b4ae264059983bf54baca72be2cbc7d
   EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
   EXConstants: 3c86653c422dd77e40d10cbbabb3025003977415
   EXFileSystem: ed61548927905e157b95b3b49bd83a26ff24e1ce
   EXFont: 319606bfe48c33b5b5063fb0994afdc496befe80
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
+  ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
   ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
   ExpoModulesCore: acaecea3545503433c4ce834cec5cccbcf15fc68

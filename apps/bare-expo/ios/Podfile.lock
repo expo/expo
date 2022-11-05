@@ -18,8 +18,6 @@ PODS:
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBlur (12.0.1):
-    - ExpoModulesCore
   - EXBrightness (11.0.1):
     - ExpoModulesCore
   - EXCalendar (11.0.1):
@@ -159,6 +157,8 @@ PODS:
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
   - ExpoBattery (7.0.0):
+    - ExpoModulesCore
+  - ExpoBlur (12.0.1):
     - ExpoModulesCore
   - ExpoCellular (5.0.1):
     - ExpoModulesCore
@@ -765,7 +765,6 @@ DEPENDENCIES:
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../../../packages/expo-barcode-scanner/ios`)
-  - EXBlur (from `../../../packages/expo-blur/ios`)
   - EXBrightness (from `../../../packages/expo-brightness/ios`)
   - EXCalendar (from `../../../packages/expo-calendar/ios`)
   - EXCamera (from `../../../packages/expo-camera/ios`)
@@ -798,6 +797,7 @@ DEPENDENCIES:
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
+  - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
@@ -935,9 +935,6 @@ EXTERNAL SOURCES:
   EXBarCodeScanner:
     inhibit_warnings: false
     :path: "../../../packages/expo-barcode-scanner/ios"
-  EXBlur:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-blur/ios"
   EXBrightness:
     inhibit_warnings: false
     :path: "../../../packages/expo-brightness/ios"
@@ -1027,6 +1024,9 @@ EXTERNAL SOURCES:
   ExpoBattery:
     inhibit_warnings: false
     :path: "../../../packages/expo-battery/ios"
+  ExpoBlur:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-blur/ios"
   ExpoCellular:
     inhibit_warnings: false
     :path: "../../../packages/expo-cellular/ios"
@@ -1231,7 +1231,6 @@ SPEC CHECKSUMS:
   EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
   EXBarCodeScanner: 25f8a6a43c817a94afe54d07a1b9fe25550ea0fe
-  EXBlur: d87af64a1b4ae264059983bf54baca72be2cbc7d
   EXBrightness: 1725afacfdaeb4724bb949c44384cff0ef0d7d18
   EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
   EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
@@ -1262,6 +1261,7 @@ SPEC CHECKSUMS:
   expo-dev-menu: 2542485cf601d1e17cf98a72262ac802a2fce198
   expo-dev-menu-interface: 45581093393dacd51ce5e7f641cf9ed5064a2e3f
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
+  ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
   ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
