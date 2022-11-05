@@ -88,6 +88,9 @@ dependencies {
   api "androidx.core:core:1.0.0"
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+
+  //noinspection GradleDynamicVersion
+  implementation 'com.facebook.react:react-native:+'
 }
 repositories {
   mavenCentral()

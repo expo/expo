@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Do not load the application JS if it's already loading on Android. ([#19873](https://github.com/expo/expo/pull/19873) by [@mdmitry01](https://github.com/mdmitry01))
+
 ### 💡 Others
 
 ## 11.0.1 — 2022-10-28

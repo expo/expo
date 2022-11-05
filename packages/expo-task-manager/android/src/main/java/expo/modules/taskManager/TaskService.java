@@ -37,6 +37,10 @@ import expo.modules.taskManager.exceptions.TaskNotFoundException;
 import expo.modules.taskManager.exceptions.TaskRegisteringFailedException;
 import expo.modules.taskManager.repository.TasksAndEventsRepository;
 
+import com.facebook.react.ReactApplication;
+import com.facebook.react.ReactInstanceManager;
+import com.facebook.react.common.LifecycleState;
+
 import static expo.modules.taskManager.Utils.getConsumerVersion;
 import static expo.modules.taskManager.Utils.jsonToMap;
 import static expo.modules.taskManager.Utils.unversionedClassForClass;
@@ -407,6 +411,17 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
       mTasksAndEventsRepository.putEvents(appScopeKey, new ArrayList<>());
     }
     mTasksAndEventsRepository.putEventForAppScopeKey(appScopeKey, body);
+
+    Context context = mContextRef.get();
+    if (context != null && context.getApplicationContext() instanceof ReactApplication) {
+      ReactApplication reactApplication = (ReactApplication) context.getApplicationContext();
+      ReactInstanceManager reactInstanceManager = reactApplication.getReactNativeHost().getReactInstanceManager();
+      // Do not load the application JS in the background if a ReactRootView is attached to the ReactInstanceManager
+      // because at this point, the application JS is already loading.
+      if (reactInstanceManager.getLifecycleState() != LifecycleState.BEFORE_CREATE) {
+        return;
+      }
+    }
 
     try {
       getAppLoader().loadApp(mContextRef.get(), new HeadlessAppLoader.Params(appScopeKey, task.getAppUrl()), () -> {
