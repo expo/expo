@@ -170,21 +170,14 @@ describe(getRuntimeVersion, () => {
     ).toBe(`${version}(${buildNumber})`);
   });
   it('works if the runtimeVersion is an appVersion policy', () => {
-    const version = '1.100';
+    const version = '1';
     const buildNumber = '2';
-    const versionCode = 2;
     expect(
       getRuntimeVersion(
         { version, runtimeVersion: { policy: 'appVersion' }, ios: { buildNumber } },
         'ios'
       )
     ).toBe(version);
-    expect(
-      getRuntimeVersion(
-        { version, runtimeVersion: { policy: 'appVersion' }, android: { versionCode } },
-        'android'
-      )
-    ).toBe(`string:${version}`);
   });
   it('returns null if no runtime version is supplied', () => {
     expect(getRuntimeVersion({}, 'ios')).toEqual(null);

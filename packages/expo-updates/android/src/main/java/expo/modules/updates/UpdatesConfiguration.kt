@@ -47,7 +47,7 @@ class UpdatesConfiguration private constructor (
     ),
     updateUrl = overrideMap?.readValueCheckingType<Uri>(UPDATES_CONFIGURATION_UPDATE_URL_KEY) ?: context?.getMetadataValue<String>("expo.modules.updates.EXPO_UPDATE_URL")?.let { Uri.parse(it) },
     sdkVersion = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_SDK_VERSION_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_SDK_VERSION"),
-    runtimeVersion = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY) ?: context?.getMetadataValue<Any>("expo.modules.updates.EXPO_RUNTIME_VERSION")?.toString()?.replaceFirst("^string:".toRegex(), ""),
+    runtimeVersion = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY) ?: UpdatesConfiguration.getRuntimeVersion(context),
     releaseChannel = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_RELEASE_CHANNEL_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_RELEASE_CHANNEL") ?: UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE,
     launchWaitMs = overrideMap?.readValueCheckingType<Int>(UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_KEY) ?: context?.getMetadataValue("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS") ?: UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE,
     checkOnLaunch = overrideMap?.readValueCheckingType<String>(UPDATES_CONFIGURATION_CHECK_ON_LAUNCH_KEY)?.let {
@@ -115,6 +115,25 @@ class UpdatesConfiguration private constructor (
 
     private const val UPDATES_CONFIGURATION_RELEASE_CHANNEL_DEFAULT_VALUE = "default"
     private const val UPDATES_CONFIGURATION_LAUNCH_WAIT_MS_DEFAULT_VALUE = 0
+
+    private fun getRuntimeVersion(context: Context?): String? {
+      return when (context) {
+        null -> null
+        else -> {
+          // Try to find the version in strings.xml
+          val packageName = context.packageName
+          val resourceId = context.resources.getIdentifier("runtime_version", "string", packageName)
+          if (resourceId != 0) {
+            // Found in strings.xml
+            context.getString(resourceId)
+          } else {
+            // Get the version from AndroidManifest.xml (legacy code)
+            context.getMetadataValue<Any>("expo.modules.updates.EXPO_RUNTIME_VERSION")?.toString()
+              ?.replaceFirst("^string:".toRegex(), "")
+          }
+        }
+      }
+    }
   }
 }
 

@@ -1,8 +1,11 @@
+import { ExpoConfig } from '@expo/config-types';
+import { run } from 'envinfo';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { ConfigPlugin } from '../Plugin.types';
-import { withAndroidManifest } from '../plugins/android-plugins';
+import { createStringsXmlPlugin, withAndroidManifest } from '../plugins/android-plugins';
+import { withPlugins } from '../plugins/withPlugins';
 import {
   ExpoConfigUpdates,
   getExpoUpdatesPackageVersion,
@@ -23,6 +26,8 @@ import {
   getMainApplicationOrThrow,
   removeMetaDataItemFromMainApplication,
 } from './Manifest';
+import { buildResourceItem, ResourceXML } from './Resources';
+import { removeStringItem, setStringItem } from './Strings';
 
 const CREATE_MANIFEST_ANDROID_PATH = 'expo-updates/scripts/create-manifest-android.gradle';
 
@@ -43,6 +48,16 @@ export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
   config,
   { expoUsername }
 ) => {
+  return withPlugins(config, [
+    [withUpdatesManifest, { expoUsername }],
+    withRuntimeVersionResource,
+  ]);
+};
+
+const withUpdatesManifest: ConfigPlugin<{ expoUsername: string | null }> = (
+  config,
+  { expoUsername }
+) => {
   return withAndroidManifest(config, (config) => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = getExpoUpdatesPackageVersion(projectRoot);
@@ -56,6 +71,19 @@ export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
     return config;
   });
 };
+
+const withRuntimeVersionResource = createStringsXmlPlugin(applyRuntimeVersionFromConfig, 'withRuntimeVersionResource');
+
+function applyRuntimeVersionFromConfig(
+  config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
+  stringsJSON: ResourceXML
+): ResourceXML {
+  const runtimeVersion = getRuntimeVersionNullable(config, "android");
+  if (runtimeVersion) {
+    return setStringItem([buildResourceItem({ name: 'runtime_version', value: runtimeVersion })], stringsJSON);
+  }
+  return removeStringItem('app_name', stringsJSON);
+}
 
 export function setUpdatesConfig(
   projectRoot: string,
@@ -129,7 +157,7 @@ export function setVersionsConfig(
   const sdkVersion = getSDKVersion(config);
   if (runtimeVersion) {
     removeMetaDataItemFromMainApplication(mainApplication, Config.SDK_VERSION);
-    addMetaDataItemToMainApplication(mainApplication, Config.RUNTIME_VERSION, runtimeVersion);
+    addMetaDataItemToMainApplication(mainApplication, Config.RUNTIME_VERSION, '@string/runtime_version', 'resource');
   } else if (sdkVersion) {
     /**
      * runtime version maybe null in projects using classic updates. In that

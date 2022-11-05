@@ -44,6 +44,16 @@ function _androidPlugins() {
   return data;
 }
 
+function _withPlugins() {
+  const data = require("../plugins/withPlugins");
+
+  _withPlugins = function () {
+    return data;
+  };
+
+  return data;
+}
+
 function _Updates() {
   const data = require("../utils/Updates");
 
@@ -58,6 +68,26 @@ function _Manifest() {
   const data = require("./Manifest");
 
   _Manifest = function () {
+    return data;
+  };
+
+  return data;
+}
+
+function _Resources() {
+  const data = require("./Resources");
+
+  _Resources = function () {
+    return data;
+  };
+
+  return data;
+}
+
+function _Strings() {
+  const data = require("./Strings");
+
+  _Strings = function () {
     return data;
   };
 
@@ -86,6 +116,16 @@ exports.Config = Config;
 const withUpdates = (config, {
   expoUsername
 }) => {
+  return (0, _withPlugins().withPlugins)(config, [[withUpdatesManifest, {
+    expoUsername
+  }], withRuntimeVersionResource]);
+};
+
+exports.withUpdates = withUpdates;
+
+const withUpdatesManifest = (config, {
+  expoUsername
+}) => {
   return (0, _androidPlugins().withAndroidManifest)(config, config => {
     const projectRoot = config.modRequest.projectRoot;
     const expoUpdatesPackageVersion = (0, _Updates().getExpoUpdatesPackageVersion)(projectRoot);
@@ -94,7 +134,20 @@ const withUpdates = (config, {
   });
 };
 
-exports.withUpdates = withUpdates;
+const withRuntimeVersionResource = (0, _androidPlugins().createStringsXmlPlugin)(applyRuntimeVersionFromConfig, 'withRuntimeVersionResource');
+
+function applyRuntimeVersionFromConfig(config, stringsJSON) {
+  const runtimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, "android");
+
+  if (runtimeVersion) {
+    return (0, _Strings().setStringItem)([(0, _Resources().buildResourceItem)({
+      name: 'runtime_version',
+      value: runtimeVersion
+    })], stringsJSON);
+  }
+
+  return (0, _Strings().removeStringItem)('app_name', stringsJSON);
+}
 
 function setUpdatesConfig(projectRoot, config, androidManifest, username, expoUpdatesPackageVersion) {
   const mainApplication = (0, _Manifest().getMainApplicationOrThrow)(androidManifest);
@@ -140,7 +193,7 @@ function setVersionsConfig(config, androidManifest) {
 
   if (runtimeVersion) {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.SDK_VERSION);
-    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.RUNTIME_VERSION, runtimeVersion);
+    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.RUNTIME_VERSION, '@string/runtime_version', 'resource');
   } else if (sdkVersion) {
     /**
      * runtime version maybe null in projects using classic updates. In that

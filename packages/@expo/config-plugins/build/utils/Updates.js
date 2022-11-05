@@ -119,12 +119,10 @@ function getUpdateUrl(config, username) {
   return `https://exp.host/@${user}/${config.slug}`;
 }
 
-function getAppVersion(config, platform) {
+function getAppVersion(config) {
   var _config$version;
 
-  const version = (_config$version = config.version) !== null && _config$version !== void 0 ? _config$version : '1.0.0';
-  const prefix = platform === 'android' ? 'string:' : '';
-  return `${prefix}${version}`;
+  return (_config$version = config.version) !== null && _config$version !== void 0 ? _config$version : '1.0.0';
 }
 
 function getNativeVersion(config, platform) {
@@ -210,7 +208,7 @@ function getRuntimeVersion(config, platform) {
   if (typeof runtimeVersion === 'string') {
     return runtimeVersion;
   } else if (runtimeVersion.policy === 'appVersion') {
-    return getAppVersion(config, platform);
+    return getAppVersion(config);
   } else if (runtimeVersion.policy === 'nativeVersion') {
     return getNativeVersion(config, platform);
   } else if (runtimeVersion.policy === 'sdkVersion') {
