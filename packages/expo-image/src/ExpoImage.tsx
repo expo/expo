@@ -1,20 +1,14 @@
+import { requireNativeModule, requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
-import {
-  Image,
-  requireNativeComponent,
-  NativeModules,
-  StyleSheet,
-  Platform,
-  processColor,
-} from 'react-native';
+import { Image, StyleSheet, Platform, processColor } from 'react-native';
 
 import { ImageProps } from './Image';
 
 type NativeExpoImageProps = ImageProps;
 
-const NativeExpoImage = requireNativeComponent<NativeExpoImageProps>('ExpoImage');
+const NativeExpoImage = requireNativeViewManager<NativeExpoImageProps>('ExpoImage');
 
-const ExpoImageModule = NativeModules.ExpoImageModule;
+const ExpoImageModule = requireNativeModule('ExpoImage');
 
 export { ExpoImageModule };
 
