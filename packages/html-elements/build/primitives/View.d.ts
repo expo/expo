@@ -110,7 +110,7 @@ export interface WebViewStyle {
     /** @platform web */
     willChange?: string;
 }
-export declare type ViewStyle = NativeViewStyle & WebViewStyle;
+export declare type ViewStyle = Omit<NativeViewStyle, 'position'> & WebViewStyle;
 export declare type WebViewProps = {
     style?: StyleProp<ViewStyle>;
     accessibilityRole?: 'list' | 'listitem' | 'complementary' | 'contentinfo' | 'region' | 'navigation' | 'main' | 'article' | 'banner' | AccessibilityRole;
