@@ -10,6 +10,7 @@
 
 - Fix Expo Go download loading bar. ([#19817](https://github.com/expo/expo/pull/19817) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix `resolver.extraNodeModules` not working when running metro for web platform ([#19874](https://github.com/expo/expo/pull/19874) by [@c4605](https://github.com/bolasblack))
+- Fix `resolver.resolveRequest` not working when running metro for web platform ([#19874](https://github.com/expo/expo/pull/19874) by [@c4605](https://github.com/bolasblack))
 
 ### 💡 Others
 

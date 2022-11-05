@@ -66,9 +66,16 @@ function withCustomResolvers(
       ...config.resolver,
       resolveRequest(...args: Parameters<import('metro-resolver').CustomResolver>) {
         for (const resolver of resolvers) {
-          const resolution = resolver(...args);
-          if (resolution) {
-            return resolution;
+          try {
+            const resolution = resolver(...args);
+            if (resolution) {
+              return resolution;
+            }
+          } catch (err) {
+            // Ignore the `FailedToResolveNameError` error, let the rest resolvers try to handle it
+            if (!(err instanceof Error && err.constructor.name === 'FailedToResolveNameError')) {
+              throw err;
+            }
           }
         }
         return originalResolveRequest(...args);
