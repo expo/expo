@@ -1,6 +1,6 @@
 import * as osascript from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
-import { ChildProcess, spawn } from 'child_process';
+import { spawn, type ChildProcess } from 'child_process';
 import { sync as globSync } from 'glob';
 import open from 'open';
 import os from 'os';
