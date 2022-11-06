@@ -9,6 +9,8 @@ Monorepos, or _"monolithic repositories"_, are single repositories containing mu
 
 > **warning** Monorepos are not for everyone. It requires in-depth knowledge of the used tooling, adds more complexity, and often requires specific tooling configuration. You can get far with just a single repository.
 
+> **warning** We "officially" only support Yarn v1 monorepos. While it's possible to use Yarn v2+, npm, or even pnpm, every different package manager (and additional tool) has its own issues that you would need to fix. Because React Native is simply not compatible with plug and play setups, we won't be able to officially support that.
+
 <Collapsible summary="Using SDK older than 43?">
 
 Setting up a monorepo was difficult before SDK 43. You had to implement your tooling or use [expo-yarn-workspaces](https://github.com/expo/expo/tree/main/packages/expo-yarn-workspaces). The yarn workspaces package symlinks all required dependencies back to the app **node_modules** folder. Although this works for most apps, it has some flaws. For example, it doesn't work well with multiple versions of the same package.
