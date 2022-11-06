@@ -26,20 +26,9 @@ Then, we need to add/update **package.json** to include:
 }
 ```
 
-Now let's add `react-test-renderer` to our project. Pick a version that is compatible with the React version used by your project. For example, if you use React 17.x then you should install `react-test-renderer@17`:
-
-<Terminal
-  cmd={[
-    '# Using yarn',
-    '$ yarn add react-test-renderer@17 --dev',
-    '# Using npm',
-    '$ npm i react-test-renderer@17 --save-dev',
-  ]}
-/>
-
 That's it! Now we can start writing Jest tests!
 
-> **Note**: [react-native-testing-library](https://github.com/callstack/react-native-testing-library) is a library built on top of react-test-renderer that could be helpful in your workflow, but we won't cover it in this guide.
+> [react-native-testing-library](https://github.com/callstack/react-native-testing-library) is built on top of `react-test-renderer` that could be helpful in your workflow, but we won't cover it in this guide.
 
 ## Jest Configuration
 
@@ -124,7 +113,7 @@ The above additions let Jest know to collect coverage of all **_.js & .jsx_** fi
 
 Now run the test again, you should see **/coverage** in your app directory! Find the **index.html** file within and double click to open it up in a browser. Not only do we have reporting in our CLI, we also have an HTML version of our code coverage, pretty cool stuff!
 
-> **Standards Note**: You can do what you want, but usually we wouldn't upload this html reporting to git; so add `coverage/\*\*/*` as a line in `.gitignore` to prevent this directory from being tracked.
+> You can do what you want, but usually we wouldn't upload this html reporting to git; so add `coverage/**/*` as a line in `.gitignore` to prevent this directory from being tracked.
 
 ## Structure your Tests
 
@@ -181,7 +170,7 @@ This is optional, but wanted to talk about different Jest test flows. Currently 
 "scripts": {
   ...
   // active development of tests, watch files for changes and re-runs all tests
-  "test": "jest --watch --coverage=false --changedSince=origin/master",
+  "test": "jest --watch --coverage=false --changedSince=origin/main",
 
   // debug, console.logs and only re-runs the file that was changed
   "testDebug": "jest -o --watch --coverage=false",

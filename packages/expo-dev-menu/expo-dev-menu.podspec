@@ -10,6 +10,10 @@ rescue
   reactVersion = '0.66.0'
 end
 
+if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+  reactVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+end
+
 splitedReactVersion = reactVersion.split('.')
 rnVersion = splitedReactVersion[1]
 rnPatchVersion = splitedReactVersion[2]

@@ -121,8 +121,6 @@ yarn add -D gh-pages
 
 Add the following to your **package.json**:
 
-> In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
-
 ```js
 /* package.json */
 {
@@ -133,6 +131,8 @@ Add the following to your **package.json**:
     }
 }
 ```
+
+> In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
 
 Finally deploy with:
 
@@ -187,8 +187,7 @@ Here are the formal instructions for deploying to GitHub Pages:
    }
    ```
 
-   > In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
-   > `predeploy` is automatically run before `deploy`.
+   > In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`. `predeploy` is automatically run before `deploy`.
 
 5. **Generate a _production build_ of your app, and deploy it to GitHub Pages.** (2 minutes)
 

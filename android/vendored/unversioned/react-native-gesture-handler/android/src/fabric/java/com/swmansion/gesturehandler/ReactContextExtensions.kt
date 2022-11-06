@@ -7,6 +7,6 @@ import com.facebook.react.uimanager.common.UIManagerType
 import com.facebook.react.uimanager.events.Event
 
 fun ReactContext.dispatchEvent(event: Event<*>) {
-    val fabricUIManager = UIManagerHelper.getUIManager(this, UIManagerType.FABRIC) as FabricUIManager
-    fabricUIManager.eventDispatcher.dispatchEvent(event)
+  val fabricUIManager = UIManagerHelper.getUIManager(this, UIManagerType.FABRIC) as FabricUIManager
+  fabricUIManager.eventDispatcher.dispatchEvent(event)
 }

@@ -8,7 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 13.0.1 — 2022-10-30
+
+### 🎉 New features
+
+- Added `PosterComponent` prop to `Video` component. ([#19625](https://github.com/expo/expo/pull/19625) by [@youedd](https://github.com/youedd)
+
+## 13.0.0 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
 
 ## 13.0.0-beta.1 — 2022-10-06
 

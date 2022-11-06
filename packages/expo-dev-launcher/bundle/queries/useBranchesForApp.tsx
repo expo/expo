@@ -7,7 +7,6 @@ import { useInfiniteQuery } from 'react-query';
 
 import { apiClient } from '../apiClient';
 import { Toasts } from '../components/Toasts';
-import { useBuildInfo } from '../providers/BuildInfoProvider';
 import { queryClient, useQueryOptions } from '../providers/QueryProvider';
 import { useToastStack } from '../providers/ToastStackProvider';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';

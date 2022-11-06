@@ -1,6 +1,7 @@
 {
   "name": "expo-docs",
   "version": "46.0.0",
+  "betaVersion": "47.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -17,7 +18,7 @@
     "lint-links": "remark -u validate-links ./pages",
     "watch": "tsc --noEmit -w",
     "test": "yarn generate-static-resoures && node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.js",
+    "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.cjs",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js"
   },
@@ -34,7 +35,7 @@
     "fs-extra": "^10.1.0",
     "github-slugger": "^1.3.0",
     "lodash": "^4.17.21",
-    "next": "^12.3.1",
+    "next": "^13.0.1",
     "nprogress": "0.2.0",
     "path-browserify": "^1.0.1",
     "prism-react-renderer": "1.0.2",
@@ -74,7 +75,7 @@
     "case-police": "^0.5.6",
     "danger": "^11.1.1",
     "eslint": "^8.20.0",
-    "eslint-config-next": "^12.3.1",
+    "eslint-config-next": "^13.0.0",
     "eslint-config-universe": "^11.1.0",
     "eslint-plugin-lodash": "^7.4.0",
     "eslint-plugin-testing-library": "^5.6.3",

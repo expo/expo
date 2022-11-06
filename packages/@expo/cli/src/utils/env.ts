@@ -110,12 +110,38 @@ class Env {
   }
 
   /**
+   * **Experimental** - Disable using `exp.direct` as the hostname for
+   * `--tunnel` connections. This enables **https://** forwarding which
+   * can be used to test universal links on iOS.
+   *
+   * This may cause issues with `expo-linking` and Expo Go.
+   *
+   * Select the exact subdomain by passing a string value that is not one of: `true`, `false`, `1`, `0`.
+   */
+  get EXPO_TUNNEL_SUBDOMAIN(): string | boolean {
+    const subdomain = string('EXPO_TUNNEL_SUBDOMAIN', '');
+    if (['0', 'false', ''].includes(subdomain)) {
+      return false;
+    } else if (['1', 'true'].includes(subdomain)) {
+      return true;
+    }
+    return subdomain;
+  }
+
+  /**
    * Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project `metro.config.js` for all platforms.
    *
    * By default, Expo CLI will use `['browser', 'module', 'main']` (default for Webpack) for web and the user-defined main fields for other platforms.
    */
   get EXPO_METRO_NO_MAIN_FIELD_OVERRIDE(): boolean {
     return boolish('EXPO_METRO_NO_MAIN_FIELD_OVERRIDE', false);
+  }
+
+  /**
+   * HTTP/HTTPS proxy to connect to for network requests. Configures [https-proxy-agent](https://www.npmjs.com/package/https-proxy-agent).
+   */
+  get HTTP_PROXY(): string {
+    return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
 }
 

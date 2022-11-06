@@ -1,9 +1,7 @@
-import type { Subscription } from 'expo-modules-core';
-import DeviceSensor, { Listener } from './DeviceSensor';
+import type { Listener, Subscription } from './DeviceSensor';
+import DeviceSensor from './DeviceSensor';
 /**
  * The altitude data returned from the native sensors.
- * @platform android
- * @platform ios
  */
 export declare type BarometerMeasurement = {
     /**
@@ -27,7 +25,7 @@ export declare class BarometerSensor extends DeviceSensor<BarometerMeasurement> 
      * Check the availability of the device barometer. Requires at least Android 2.3 (API Level 9) and iOS 8.
      * @return A promise that resolves to a `boolean` denoting the availability of the sensor.
      */
-    isAvailableAsync: () => Promise<boolean>;
+    isAvailableAsync(): Promise<boolean>;
     /**
      * Subscribe for updates to the barometer.
      * @param listener A callback that is invoked when a barometer update is available. When invoked, the listener is provided with a single argument that is `BarometerMeasurement`.
@@ -40,7 +38,7 @@ export declare class BarometerSensor extends DeviceSensor<BarometerMeasurement> 
      * ```
      * @return A subscription that you can call `remove()` on when you would like to unsubscribe the listener.
      */
-    addListener: (listener: Listener<BarometerMeasurement>) => Subscription;
+    addListener(listener: Listener<BarometerMeasurement>): Subscription;
 }
 declare const _default: BarometerSensor;
 export default _default;

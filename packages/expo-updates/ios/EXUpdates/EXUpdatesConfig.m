@@ -54,6 +54,17 @@ NSString * const EXUpdatesConfigCheckOnLaunchValueWifiOnly = @"WIFI_ONLY";
 NSString * const EXUpdatesConfigCheckOnLaunchValueErrorRecoveryOnly = @"ERROR_RECOVERY_ONLY";
 NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
 
+/**
+ * Holds global, immutable configuration values for updates, as well as doing some rudimentary
+ * validation.
+ *
+ * In most apps, these configuration values are baked into the build, and this class functions as a
+ * utility for reading and memoizing the values.
+ *
+ * In development clients (including Expo Go) where this configuration is intended to be dynamic at
+ * runtime and updates from multiple scopes can potentially be opened, multiple instances of this
+ * class may be created over the lifetime of the app, but only one should be active at a time.
+ */
 @implementation EXUpdatesConfig
 
 - (instancetype)init

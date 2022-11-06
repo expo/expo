@@ -65,3 +65,13 @@ export function reportWebVitals({ id, name, label, value }: NextWebVitalsMetric)
     anonymize_ip: true,
   });
 }
+
+export function reportPageVote({ status }: { status: boolean }) {
+  window?.gtag?.('event', status ? 'page_vote_up' : 'page_vote_down', {
+    event_category: 'Page vote',
+    value: window?.location.pathname,
+    // Use a non-interaction event to avoid affecting bounce rate.
+    non_interaction: true,
+    anonymize_ip: true,
+  });
+}

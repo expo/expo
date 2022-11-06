@@ -104,7 +104,6 @@ const STYLES_CENTER = css`
 const STYLES_SCROLL_CONTAINER = css`
   height: 100%;
   width: 100%;
-  padding-bottom: 24px;
   overflow-y: scroll;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;

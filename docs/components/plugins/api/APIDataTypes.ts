@@ -118,6 +118,7 @@ export type InterfaceDefinitionData = {
 
 export type ClassDefinitionData = InterfaceDefinitionData & {
   type?: TypeDefinitionData;
+  isSensor: boolean;
 };
 
 // Methods section

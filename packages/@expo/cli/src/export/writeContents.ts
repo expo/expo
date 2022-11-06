@@ -1,11 +1,13 @@
 import { Platform } from '@expo/config';
-import { BundleOutput } from '@expo/dev-server';
 import crypto from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 
 import { createMetadataJson } from './createMetadataJson';
+import { BundleOutput } from './fork-bundleAsync';
 import { Asset } from './saveAssets';
+
+const debug = require('debug')('expo:export:write') as typeof console.log;
 
 /**
  * @param props.platform native platform for the bundle
@@ -50,6 +52,14 @@ export async function writeBundlesAsync({
   return { hashes, fileNames };
 }
 
+type SourceMapWriteResult = {
+  platform: string;
+  fileName: string;
+  hash: string;
+  map: string;
+  comment: string;
+};
+
 export async function writeSourceMapsAsync({
   bundles,
   hashes,
@@ -63,30 +73,37 @@ export async function writeSourceMapsAsync({
   hashes?: Record<string, string>;
   fileNames?: Record<string, string>;
   outputDir: string;
-}) {
-  return Promise.all(
-    Object.entries(bundles).map(async ([platform, bundle]) => {
-      const sourceMap = bundle.hermesSourcemap ?? bundle.map;
-      const hash =
-        hashes?.[platform] ?? createBundleHash(bundle.hermesBytecodeBundle ?? bundle.code);
-      const mapName = `${platform}-${hash}.map`;
-      await fs.writeFile(path.join(outputDir, mapName), sourceMap);
+}): Promise<SourceMapWriteResult[]> {
+  return (
+    await Promise.all(
+      Object.entries(bundles).map(async ([platform, bundle]) => {
+        const sourceMap = bundle.hermesSourcemap ?? bundle.map;
+        if (!sourceMap) {
+          debug(`Skip writing sourcemap (platform: ${platform})`);
+          return null;
+        }
 
-      const jsBundleFileName = fileNames?.[platform] ?? createBundleFileName({ platform, hash });
-      const jsPath = path.join(outputDir, jsBundleFileName);
+        const hash =
+          hashes?.[platform] ?? createBundleHash(bundle.hermesBytecodeBundle ?? bundle.code);
+        const mapName = `${platform}-${hash}.map`;
+        await fs.writeFile(path.join(outputDir, mapName), sourceMap);
 
-      // Add correct mapping to sourcemap paths
-      const mappingComment = `\n//# sourceMappingURL=${mapName}`;
-      await fs.appendFile(jsPath, mappingComment);
-      return {
-        platform,
-        fileName: mapName,
-        hash,
-        map: sourceMap,
-        comment: mappingComment,
-      };
-    })
-  );
+        const jsBundleFileName = fileNames?.[platform] ?? createBundleFileName({ platform, hash });
+        const jsPath = path.join(outputDir, jsBundleFileName);
+
+        // Add correct mapping to sourcemap paths
+        const mappingComment = `\n//# sourceMappingURL=${mapName}`;
+        await fs.appendFile(jsPath, mappingComment);
+        return {
+          platform,
+          fileName: mapName,
+          hash,
+          map: sourceMap,
+          comment: mappingComment,
+        };
+      })
+    )
+  ).filter(Boolean) as SourceMapWriteResult[];
 }
 
 export async function writeMetadataJsonAsync({
@@ -102,7 +119,9 @@ export async function writeMetadataJsonAsync({
     bundles,
     fileNames,
   });
-  await fs.writeFile(path.join(outputDir, 'metadata.json'), JSON.stringify(contents));
+  const metadataPath = path.join(outputDir, 'metadata.json');
+  debug(`Writing metadata.json to ${metadataPath}`);
+  await fs.writeFile(metadataPath, JSON.stringify(contents));
   return contents;
 }
 

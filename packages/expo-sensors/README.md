@@ -4,7 +4,7 @@ Provides access to a hardware device's accelerometer, gyroscope, magnetometer, a
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/sensors.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/sensors.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/sensors/)
 
 # Installation in managed Expo projects

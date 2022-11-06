@@ -2,7 +2,7 @@
 title: Light and Dark modes
 ---
 
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 
 Regardless of whether you are personally on team light or team dark, it's becoming increasingly common for apps to support these two color schemes. This guide explains how you can do that.
@@ -29,7 +29,7 @@ Example **app.json** configuration:
 }
 ```
 
-In EAS Build and custom development builds you'll need to install the native module `expo-system-ui` otherwise the `userInterfaceStyle` property will be ignored. Running `expo config --type introspect` will warn if the project is misconfigured:
+In EAS Build and development builds you'll need to install the native module `expo-system-ui` otherwise the `userInterfaceStyle` property will be ignored. Running `expo config --type introspect` will warn if the project is misconfigured:
 
 ```
 » android: userInterfaceStyle: Install expo-system-ui in your project to enable this feature.

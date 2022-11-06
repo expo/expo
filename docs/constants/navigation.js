@@ -80,6 +80,7 @@ const general = [
     makePage('workflow/using-libraries.mdx'),
     makePage('workflow/logging.mdx'),
     makePage('workflow/development-mode.mdx'),
+    makePage('workflow/prebuild.mdx'),
     makePage('workflow/ios-simulator.mdx'),
     makePage('workflow/android-studio-emulator.mdx'),
     makePage('workflow/run-on-device.mdx'),
@@ -114,7 +115,6 @@ const general = [
   ]),
   makeSection('Integrations', [
     makePage('guides/using-firebase.mdx'),
-    makePage('guides/setup-native-firebase.mdx'),
     makePage('guides/using-sentry.mdx'),
     makePage('guides/using-bugsnag.mdx'),
     makePage('guides/using-clojurescript.mdx'),
@@ -123,6 +123,7 @@ const general = [
     makePage('guides/using-nextjs.mdx'),
     makePage('guides/typescript.mdx'),
     makePage('guides/using-flipper.mdx'),
+    makePage('guides/using-analytics.mdx'),
   ]),
   makeSection('Assorted guides', [
     makePage('guides/routing-and-navigation.mdx'),
@@ -287,6 +288,7 @@ const eas = [
         makePage('eas-update/runtime-versions.mdx'),
         makePage('eas-update/environment-variables.mdx'),
         makePage('eas-update/expo-dev-client.mdx'),
+        makePage('eas-update/code-signing.mdx'),
         makePage('eas-update/known-issues.mdx'),
         makePage('eas-update/rollouts.mdx'),
         makePage('eas-update/faq.mdx'),

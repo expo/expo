@@ -4,11 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 5.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed `<bluetooth_name> is only readable to apps with targetSdkVersion lower than or equal to: 31` error when the `targetSdkVersion` is set to 33. ([#19666](https://github.com/expo/expo/pull/19666) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

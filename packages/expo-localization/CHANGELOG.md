@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
 - Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
@@ -12,11 +22,11 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build error for setting `compileSdkVersion` to 33. ([#19518](https://github.com/expo/expo/pull/19518) by [@kudo](https://github.com/kudo))
+
 ### ⚠️ Notices
 
 - Deprecated existing constants API while keeping backwards compatibility. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))
-
-### 💡 Others
 
 ## 13.1.0 — 2022-07-07
 

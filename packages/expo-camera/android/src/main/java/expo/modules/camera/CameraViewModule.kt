@@ -1,7 +1,6 @@
 package expo.modules.camera
 
 import android.Manifest
-import android.content.Context
 import com.google.android.cameraview.AspectRatio
 import com.google.android.cameraview.Size
 import expo.modules.camera.tasks.ResolveTakenPictureAsyncTask
@@ -14,6 +13,7 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import java.io.File
 
 class CameraViewModule : Module() {
   override fun definition() = ModuleDefinition {
@@ -68,7 +68,6 @@ class CameraViewModule : Module() {
     }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("takePicture") { options: PictureOptions, viewTag: Int, promise: Promise ->
-      val cacheDirectory = reactContext.cacheDir
       val view = findView(viewTag)
 
       if (!EmulatorUtilities.isRunningOnEmulator()) {
@@ -88,7 +87,6 @@ class CameraViewModule : Module() {
         throw Exceptions.MissingPermissions(Manifest.permission.RECORD_AUDIO)
       }
 
-      val cacheDirectory = reactContext.cacheDir
       val view = findView(viewTag)
 
       if (!view.cameraView.isCameraOpened) {
@@ -251,8 +249,8 @@ class CameraViewModule : Module() {
     }
   }
 
-  private val reactContext: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory
 
   private val permissionsManager: Permissions
     get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()

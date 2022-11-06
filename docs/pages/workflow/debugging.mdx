@@ -34,7 +34,7 @@ You can perform full native debugging with Xcode and Android Studio by generatin
 
 #### Xcode
 
-> **Note**: This is only available for macOS users.
+> This is only available for macOS users.
 
 1. Generate the native code for your project with: `npx expo prebuild -p ios`
    1. You can delete the `/ios` folder when you're done to ensure your project remains managed by Expo CLI. Keeping the folder and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries (Bare Workflow).
@@ -57,7 +57,7 @@ When you're done, simply delete the native folder with `rm -rf android` to conti
 
 Errors or bugs in your production app can be much harder to solve, mainly because you have less context around the error (i.e. where, how, and why did the error occur?). **The best first step in addressing a production error is to reproduce it locally.** Once you reproduce an error locally, you can follow the [development debugging process](#development-errors) to isolate and address the root cause.
 
-> **Hint**: sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `npx expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production JavaScript bundles.
+> **Hint**: Sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `npx expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production JavaScript bundles.
 
 Using an automated error logging system like [Sentry](../guides/using-sentry.mdx) is a huge help in identifying, tracking, and resolving JavaScript errors in your production app. This will give you a good sense of how many people are running into an error, and how often.
 

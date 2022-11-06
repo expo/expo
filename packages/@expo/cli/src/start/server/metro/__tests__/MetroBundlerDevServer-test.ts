@@ -48,9 +48,9 @@ describe('startAsync', () => {
     expect(devServer.getInstance()).toEqual({
       location: {
         host: 'localhost',
-        port: 19000,
+        port: expect.any(Number),
         protocol: 'http',
-        url: 'http://localhost:19000',
+        url: expect.stringMatching(/http:\/\/localhost:\d+/),
       },
       middleware: {
         use: expect.any(Function),

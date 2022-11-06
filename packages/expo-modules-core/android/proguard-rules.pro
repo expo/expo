@@ -11,3 +11,10 @@
 -keepclassmembers class * {
   @expo.modules.core.interfaces.DoNotStrip *;
 }
+
+-keep class * implements expo.modules.kotlin.records.Record {
+  *;
+}
+-keepclassmembers enum * implements expo.modules.kotlin.types.Enumerable {
+  *; 
+}

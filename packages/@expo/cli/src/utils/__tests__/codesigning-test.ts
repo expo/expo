@@ -44,18 +44,18 @@ beforeEach(() => {
 
 describe(getCodeSigningInfoAsync, () => {
   it('returns null when no expo-expect-signature header is requested', async () => {
-    await expect(getCodeSigningInfoAsync({} as any, null, null)).resolves.toBeNull();
+    await expect(getCodeSigningInfoAsync({} as any, null, undefined)).resolves.toBeNull();
   });
 
   it('throws when expo-expect-signature header has invalid format', async () => {
-    await expect(getCodeSigningInfoAsync({} as any, 'hello', null)).rejects.toThrowError(
+    await expect(getCodeSigningInfoAsync({} as any, 'hello', undefined)).rejects.toThrowError(
       'keyid not present in expo-expect-signature header'
     );
-    await expect(getCodeSigningInfoAsync({} as any, 'keyid=1', null)).rejects.toThrowError(
+    await expect(getCodeSigningInfoAsync({} as any, 'keyid=1', undefined)).rejects.toThrowError(
       'Invalid value for keyid in expo-expect-signature header: 1'
     );
     await expect(
-      getCodeSigningInfoAsync({} as any, 'keyid="hello", alg=1', null)
+      getCodeSigningInfoAsync({} as any, 'keyid="hello", alg=1', undefined)
     ).rejects.toThrowError('Invalid value for alg in expo-expect-signature header');
   });
 
@@ -141,7 +141,7 @@ describe(getCodeSigningInfoAsync, () => {
   describe('expo-go keyid requested', () => {
     it('throws', async () => {
       await expect(
-        getCodeSigningInfoAsync({} as any, 'keyid="expo-go"', null)
+        getCodeSigningInfoAsync({} as any, 'keyid="expo-go"', undefined)
       ).rejects.toThrowError(
         'Invalid certificate requested: cannot sign with embedded keyid=expo-go key'
       );
@@ -245,6 +245,7 @@ describe(signManifestString, () => {
   it('generates signature', () => {
     expect(
       signManifestString('hello', {
+        keyId: 'test',
         certificateChainForResponse: [],
         certificateForPrivateKey: mockSelfSigned.certificate,
         privateKey: mockSelfSigned.privateKey,
@@ -254,6 +255,7 @@ describe(signManifestString, () => {
   it('validates generated signature against certificate', () => {
     expect(() =>
       signManifestString('hello', {
+        keyId: 'test',
         certificateChainForResponse: [],
         certificateForPrivateKey: '',
         privateKey: mockSelfSigned.privateKey,
