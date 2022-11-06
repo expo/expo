@@ -1,11 +1,5 @@
 import ExpoModulesCore
 
-internal class FileSystemNotFoundException: Exception {
-  override var reason: String {
-    "FileSystem module not found, make sure 'expo-file-system' is linked correctly"
-  }
-}
-
 internal class FileSystemReadPermissionException: GenericException<String> {
   override var reason: String {
     "File '\(param)' is not readable"

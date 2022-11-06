@@ -10,14 +10,14 @@ public class VideoThumbnailsModule: Module {
     AsyncFunction("getThumbnail", getVideoThumbnail).runOnQueue(.main)
   }
 
-  internal func getVideoThumbnail(sourceFilename: URL, options: VideoThumbnailsOptions, promise: Promise) {
+  internal func getVideoThumbnail(sourceFilename: URL, options: VideoThumbnailsOptions) throws -> [String: Any] {
     if sourceFilename.isFileURL {
       guard let fileSystem = self.appContext?.fileSystem else {
-        return promise.reject(FileSystemNotFoundException())
+        throw Exceptions.FileSystemModuleNotFound()
       }
 
       guard fileSystem.permissions(forURI: sourceFilename).contains(.read) else {
-        return promise.reject(FileSystemReadPermissionException(sourceFilename.absoluteString))
+        throw FileSystemReadPermissionException(sourceFilename.absoluteString)
       }
     }
 
@@ -29,20 +29,15 @@ public class VideoThumbnailsModule: Module {
     generator.requestedTimeToleranceAfter = CMTime.zero
 
     let time = CMTimeMake(value: options.time, timescale: 1000)
+    let imgRef = try generator.copyCGImage(at: time, actualTime: nil)
+    let thumbnail = UIImage.init(cgImage: imgRef)
+    let savedImageUrl = try saveImage(image: thumbnail, quality: options.quality)
 
-    do {
-      let imgRef = try generator.copyCGImage(at: time, actualTime: nil)
-      let thumbnail = UIImage.init(cgImage: imgRef)
-      let savedImageUrl = try saveImage(image: thumbnail, quality: options.quality)
-
-      promise.resolve([
-        "uri": savedImageUrl.absoluteString,
-        "width": thumbnail.size.width,
-        "height": thumbnail.size.height
-      ])
-    } catch {
-      promise.reject(error)
-    }
+    return [
+      "uri": savedImageUrl.absoluteString,
+      "width": thumbnail.size.width,
+      "height": thumbnail.size.height
+    ]
   }
 
   /**
