@@ -840,7 +840,7 @@ For managed users, we can expose this functionality (safely!) via an Expo config
 `expo-custom/app.plugin.js`
 
 ```js
-const { AndroidConfig, withStringsXml } = require('expo/config-plugin');
+const { AndroidConfig, withStringsXml } = require('expo/config-plugins');
 
 function withCustom(config, value) {
   return withStringsXml(config, config => {
