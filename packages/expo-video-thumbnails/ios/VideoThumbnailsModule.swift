@@ -45,7 +45,7 @@ public class VideoThumbnailsModule: Module {
   */
   internal func saveImage(image: UIImage, quality: Double) throws -> URL {
     guard let fileSystem = self.appContext?.fileSystem else {
-      throw FileSystemNotFoundException()
+      throw Exceptions.FileSystemModuleNotFound()
     }
 
     let directory = URL(fileURLWithPath: fileSystem.cachesDirectory).appendingPathComponent("VideoThumbnails")
