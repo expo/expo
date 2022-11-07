@@ -7,16 +7,6 @@ exports.INTERNAL_CALLSITES_REGEX = exports.EXPO_DEBUG = void 0;
 exports.getDefaultConfig = getDefaultConfig;
 exports.loadAsync = loadAsync;
 
-function _config() {
-  const data = require("@expo/config");
-
-  _config = function () {
-    return data;
-  };
-
-  return data;
-}
-
 function _paths() {
   const data = require("@expo/config/paths");
 
@@ -137,13 +127,6 @@ function isUrl(value) {
   }
 }
 
-function readIsLegacyImportsEnabled(projectRoot) {
-  const config = (0, _config().getConfig)(projectRoot, {
-    skipSDKVersionRequirement: true
-  });
-  return (0, _config().isLegacyImportsEnabled)(config.exp);
-}
-
 function getProjectBabelConfigFile(projectRoot) {
   return _resolveFrom().default.silent(projectRoot, './babel.config.js') || _resolveFrom().default.silent(projectRoot, './.babelrc') || _resolveFrom().default.silent(projectRoot, './.babelrc.js');
 }
@@ -190,50 +173,12 @@ function getDefaultConfig(projectRoot, options = {}) {
   } catch {// noop -- falls back to a hardcoded value.
   }
 
-  const isLegacy = readIsLegacyImportsEnabled(projectRoot); // Deprecated -- SDK 41 --
-
-  if (options.target) {
-    if (!isLegacy) {
-      console.warn(_chalk().default.yellow(`The target option is deprecated. Learn more: http://expo.fyi/expo-extension-migration`));
-      delete options.target;
-    }
-  } else if (process.env.EXPO_TARGET) {
-    console.error('EXPO_TARGET is deprecated. Learn more: http://expo.fyi/expo-extension-migration');
-
-    if (isLegacy) {
-      // EXPO_TARGET is used by @expo/metro-config to determine the target when getDefaultConfig is
-      // called from metro.config.js.
-      // @ts-ignore
-      options.target = process.env.EXPO_TARGET;
-    }
-  } else if (isLegacy) {
-    // Fall back to guessing based on the project structure in legacy mode.
-    options.target = (0, _config().getDefaultTarget)(projectRoot);
-  }
-
-  if (!options.target) {
-    // Default to bare -- no .expo extension.
-    options.target = 'bare';
-  } // End deprecated -- SDK 41 --
-
-
-  const {
-    target
-  } = options;
-
-  if (!(target === 'managed' || target === 'bare')) {
-    throw new Error(`Invalid target: '${target}'. Debug info: \n${JSON.stringify({
-      'options.target': options.target,
-      default: (0, _config().getDefaultTarget)(projectRoot)
-    }, null, 2)}`);
-  }
-
   const sourceExtsConfig = {
     isTS: true,
     isReact: true,
     isModern: false
   };
-  const sourceExts = target === 'bare' ? (0, _paths().getBareExtensions)([], sourceExtsConfig) : (0, _paths().getManagedExtensions)([], sourceExtsConfig);
+  const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
 
   if (isExotic) {
     // Add support for cjs (without platform extensions).
@@ -262,8 +207,6 @@ function getDefaultConfig(projectRoot, options = {}) {
       console.log(`- Version: ${require('../package.json').version}`);
     } catch {}
 
-    console.log(`- Bundler target: ${target}`);
-    console.log(`- Legacy: ${isLegacy}`);
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Babel config: ${babelConfigPath || 'babel-preset-expo (default)'}`);
@@ -346,12 +289,9 @@ function getDefaultConfig(projectRoot, options = {}) {
 
 async function loadAsync(projectRoot, {
   reporter,
-  target,
   ...metroOptions
 } = {}) {
-  let defaultConfig = getDefaultConfig(projectRoot, {
-    target
-  });
+  let defaultConfig = getDefaultConfig(projectRoot);
 
   if (reporter) {
     defaultConfig = { ...defaultConfig,

@@ -6,24 +6,14 @@ Object.defineProperty(exports, "__esModule", {
 var _exportNames = {
   getConfig: true,
   getPackageJson: true,
-  readConfigJson: true,
   getConfigFilePaths: true,
-  findConfigFile: true,
-  configFilename: true,
-  readExpRcAsync: true,
-  resetCustomConfigPaths: true,
-  setCustomConfigPath: true,
   modifyConfigAsync: true,
-  writeConfigJsonAsync: true,
   getWebOutputPath: true,
   getNameFromConfig: true,
   getDefaultTarget: true,
   getProjectConfigDescription: true,
-  getProjectConfigDescriptionWithPaths: true,
-  isLegacyImportsEnabled: true
+  getProjectConfigDescriptionWithPaths: true
 };
-exports.configFilename = configFilename;
-exports.findConfigFile = findConfigFile;
 exports.getConfig = getConfig;
 exports.getConfigFilePaths = getConfigFilePaths;
 exports.getDefaultTarget = getDefaultTarget;
@@ -32,18 +22,7 @@ exports.getPackageJson = getPackageJson;
 exports.getProjectConfigDescription = getProjectConfigDescription;
 exports.getProjectConfigDescriptionWithPaths = getProjectConfigDescriptionWithPaths;
 exports.getWebOutputPath = getWebOutputPath;
-Object.defineProperty(exports, "isLegacyImportsEnabled", {
-  enumerable: true,
-  get: function () {
-    return _isLegacyImportsEnabled().isLegacyImportsEnabled;
-  }
-});
 exports.modifyConfigAsync = modifyConfigAsync;
-exports.readConfigJson = readConfigJson;
-exports.readExpRcAsync = readExpRcAsync;
-exports.resetCustomConfigPaths = resetCustomConfigPaths;
-exports.setCustomConfigPath = setCustomConfigPath;
-exports.writeConfigJsonAsync = writeConfigJsonAsync;
 
 function _jsonFile() {
   const data = _interopRequireDefault(require("@expo/json-file"));
@@ -115,30 +94,20 @@ function _slugify() {
   return data;
 }
 
-function _Errors() {
-  const data = require("./Errors");
-
-  _Errors = function () {
-    return data;
-  };
-
-  return data;
-}
-
-function _Project() {
-  const data = require("./Project");
-
-  _Project = function () {
-    return data;
-  };
-
-  return data;
-}
-
 function _getConfig() {
   const data = require("./getConfig");
 
   _getConfig = function () {
+    return data;
+  };
+
+  return data;
+}
+
+function _getExpoSDKVersion() {
+  const data = require("./getExpoSDKVersion");
+
+  _getExpoSDKVersion = function () {
     return data;
   };
 
@@ -198,16 +167,6 @@ Object.keys(_Config).forEach(function (key) {
     }
   });
 });
-
-function _isLegacyImportsEnabled() {
-  const data = require("./isLegacyImportsEnabled");
-
-  _isLegacyImportsEnabled = function () {
-    return data;
-  };
-
-  return data;
-}
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -322,6 +281,7 @@ function getConfig(projectRoot, options = {}) {
     if (options.isPublicConfig) {
       var _configWithDefaultVal, _configWithDefaultVal2, _configWithDefaultVal3, _configWithDefaultVal4;
 
+      // TODD(EvanBacon): Drop plugins array after it's been resolved.
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;
 
@@ -391,52 +351,6 @@ function getPackageJsonAndPath(projectRoot) {
   const packageJsonPath = (0, _resolvePackageJson().getRootPackageJsonPath)(projectRoot);
   return [_jsonFile().default.read(packageJsonPath), packageJsonPath];
 }
-
-function readConfigJson(projectRoot, skipValidation = false, skipSDKVersionRequirement = false) {
-  const paths = getConfigFilePaths(projectRoot);
-  const rawStaticConfig = paths.staticConfigPath ? (0, _getConfig().getStaticConfig)(paths.staticConfigPath) : null;
-
-  const getConfigName = () => {
-    if (paths.staticConfigPath) return ` \`${_path().default.basename(paths.staticConfigPath)}\``;
-    return '';
-  };
-
-  let outputRootConfig = rawStaticConfig;
-
-  if (outputRootConfig === null || typeof outputRootConfig !== 'object') {
-    if (skipValidation) {
-      outputRootConfig = {
-        expo: {}
-      };
-    } else {
-      throw new (_Errors().ConfigError)(`Project at path ${_path().default.resolve(projectRoot)} does not contain a valid Expo config${getConfigName()}`, 'NOT_OBJECT');
-    }
-  }
-
-  let exp = outputRootConfig.expo;
-
-  if (exp === null || typeof exp !== 'object') {
-    throw new (_Errors().ConfigError)(`Property 'expo' in${getConfigName()} for project at path ${_path().default.resolve(projectRoot)} is not an object. Please make sure${getConfigName()} includes a managed Expo app config like this: ${APP_JSON_EXAMPLE}`, 'NO_EXPO');
-  }
-
-  exp = { ...exp
-  };
-  const [pkg, packageJsonPath] = getPackageJsonAndPath(projectRoot);
-  return { ...ensureConfigHasDefaultValues({
-      projectRoot,
-      exp,
-      pkg,
-      skipSDKVersionRequirement,
-      paths,
-      packageJsonPath
-    }),
-    mods: null,
-    dynamicConfigObjectType: null,
-    rootConfig: { ...outputRootConfig
-    },
-    ...paths
-  };
-}
 /**
  * Get the static and dynamic config paths for a project. Also accounts for custom paths.
  *
@@ -445,35 +359,9 @@ function readConfigJson(projectRoot, skipValidation = false, skipSDKVersionRequi
 
 
 function getConfigFilePaths(projectRoot) {
-  const customPaths = getCustomConfigFilePaths(projectRoot);
-
-  if (customPaths) {
-    return customPaths;
-  }
-
   return {
     dynamicConfigPath: getDynamicConfigFilePath(projectRoot),
     staticConfigPath: getStaticConfigFilePath(projectRoot)
-  };
-}
-
-function getCustomConfigFilePaths(projectRoot) {
-  if (!customConfigPaths[projectRoot]) {
-    return null;
-  } // If the user picks a custom config path, we will only use that and skip searching for a secondary config.
-
-
-  if (isDynamicFilePath(customConfigPaths[projectRoot])) {
-    return {
-      dynamicConfigPath: customConfigPaths[projectRoot],
-      staticConfigPath: null
-    };
-  } // Anything that's not js or ts will be treated as json.
-
-
-  return {
-    staticConfigPath: customConfigPaths[projectRoot],
-    dynamicConfigPath: null
   };
 }
 
@@ -499,61 +387,6 @@ function getStaticConfigFilePath(projectRoot) {
   }
 
   return null;
-} // TODO: This should account for dynamic configs
-
-
-function findConfigFile(projectRoot) {
-  let configPath; // Check for a custom config path first.
-
-  if (customConfigPaths[projectRoot]) {
-    configPath = customConfigPaths[projectRoot]; // We shouldn't verify if the file exists because
-    // the user manually specified that this path should be used.
-
-    return {
-      configPath,
-      configName: _path().default.basename(configPath),
-      configNamespace: 'expo'
-    };
-  } else {
-    // app.config.json takes higher priority over app.json
-    configPath = _path().default.join(projectRoot, 'app.config.json');
-
-    if (!_fs().default.existsSync(configPath)) {
-      configPath = _path().default.join(projectRoot, 'app.json');
-    }
-  }
-
-  return {
-    configPath,
-    configName: _path().default.basename(configPath),
-    configNamespace: 'expo'
-  };
-} // TODO: deprecate
-
-
-function configFilename(projectRoot) {
-  return findConfigFile(projectRoot).configName;
-}
-
-async function readExpRcAsync(projectRoot) {
-  const expRcPath = _path().default.join(projectRoot, '.exprc');
-
-  return await _jsonFile().default.readAsync(expRcPath, {
-    json5: true,
-    cantReadFileDefault: {}
-  });
-}
-
-const customConfigPaths = {};
-
-function resetCustomConfigPaths() {
-  for (const key of Object.keys(customConfigPaths)) {
-    delete customConfigPaths[key];
-  }
-}
-
-function setCustomConfigPath(projectRoot, configPath) {
-  customConfigPaths[projectRoot] = configPath;
 }
 /**
  * Attempt to modify an Expo project config.
@@ -626,14 +459,6 @@ async function modifyConfigAsync(projectRoot, modifications, readOptions = {}, w
   };
 }
 
-const APP_JSON_EXAMPLE = JSON.stringify({
-  expo: {
-    name: 'My app',
-    slug: 'my-app',
-    sdkVersion: '...'
-  }
-});
-
 function ensureConfigHasDefaultValues({
   projectRoot,
   exp,
@@ -679,7 +504,7 @@ function ensureConfigHasDefaultValues({
   let sdkVersion;
 
   try {
-    sdkVersion = (0, _Project().getExpoSDKVersion)(projectRoot, expWithDefaults);
+    sdkVersion = (0, _getExpoSDKVersion().getExpoSDKVersion)(projectRoot, expWithDefaults);
   } catch (error) {
     if (!skipSDKVersionRequirement) throw error;
   }
@@ -696,38 +521,6 @@ function ensureConfigHasDefaultValues({
       platforms
     },
     pkg: pkgWithDefaults
-  };
-}
-
-async function writeConfigJsonAsync(projectRoot, options) {
-  const paths = getConfigFilePaths(projectRoot);
-  let {
-    exp,
-    pkg,
-    rootConfig,
-    dynamicConfigObjectType
-  } = readConfigJson(projectRoot);
-  exp = { ...rootConfig.expo,
-    ...options
-  };
-  rootConfig = { ...rootConfig,
-    expo: exp
-  };
-
-  if (paths.staticConfigPath) {
-    await _jsonFile().default.writeAsync(paths.staticConfigPath, rootConfig, {
-      json5: false
-    });
-  } else {
-    console.log('Failed to write to config: ', options);
-  }
-
-  return {
-    exp,
-    pkg,
-    rootConfig,
-    dynamicConfigObjectType,
-    ...paths
   };
 }
 
@@ -774,7 +567,7 @@ function getDefaultTarget(projectRoot, exp) {
 }
 
 function isBareWorkflowProject(projectRoot) {
-  const [pkg] = getPackageJsonAndPath(projectRoot);
+  const [pkg] = getPackageJsonAndPath(projectRoot); // TODO: Drop this
 
   if (pkg.dependencies && pkg.dependencies.expokit) {
     return false;
@@ -799,16 +592,6 @@ function isBareWorkflowProject(projectRoot) {
   }
 
   return false;
-}
-/**
- * true if the file is .js or .ts
- *
- * @param filePath
- */
-
-
-function isDynamicFilePath(filePath) {
-  return !!filePath.match(/\.[j|t]s$/);
 }
 /**
  * Return a useful name describing the project config.

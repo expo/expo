@@ -41,16 +41,16 @@ Object.keys(_Config2).forEach(function (key) {
   });
 });
 
-var _Project = require("./Project");
+var _getExpoSDKVersion = require("./getExpoSDKVersion");
 
-Object.keys(_Project).forEach(function (key) {
+Object.keys(_getExpoSDKVersion).forEach(function (key) {
   if (key === "default" || key === "__esModule") return;
   if (Object.prototype.hasOwnProperty.call(_exportNames, key)) return;
-  if (key in exports && exports[key] === _Project[key]) return;
+  if (key in exports && exports[key] === _getExpoSDKVersion[key]) return;
   Object.defineProperty(exports, key, {
     enumerable: true,
     get: function () {
-      return _Project[key];
+      return _getExpoSDKVersion[key];
     }
   });
 });
