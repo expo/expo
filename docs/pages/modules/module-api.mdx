@@ -178,6 +178,8 @@ AsyncFunction("suspendFunction") Coroutine { message: String ->
 
 Defines event names that the module can send to JavaScript.
 
+> **Note**: This component can be used inside of the [`View`](#view) block to define callback names. See [`View callbacks`](#view-callbacks)
+
 <CodeBlocksTable>
 
 ```swift
@@ -703,6 +705,89 @@ export function addClipboardListener(listener: (event) => void): Subscription {
   return emitter.addListener('onClipboardChanged', listener);
 }
 ```
+
+</APIBox>
+
+<APIBox header="View callbacks">
+
+Some events are connected to a certain view. For example, the touch event should be sent only to the underlying JavaScript view which was pressed. In that case, you can't use `sendEvent` described in [`Sending events`](#sending-events). The `expo-modules-core` introduces a view callbacks mechanism to handle view-bound events.
+
+To use it, in the view definition, you need to provide the event names that the view can send using the [Events](#events) definition component. After that, you need to declare a property of type `EventDispatcher` in your view class. The name of the declared property has to be the same as the name exported in the `Events` component. Later, you can call it as a function and pass a payload of type `[String: Any?]` on iOS and `Map<String, Any?>` on Android.
+
+> **Note**: On Android, it's possible to specify the payload type. In case of types that don't convert into objects, the payload will be encapsulated and stored under the `payload` key: `{payload: <provided value>}`.
+
+<CodeBlocksTable>
+
+```swift
+class CameraViewModule: Module {
+  public func definition() -> ModuleDefinition {
+    View(CamerView.self) {
+      Events(
+        "onCameraReady"
+      )
+
+      // ...
+    }
+  }
+}
+
+class CameraView: ExpoView {
+  let onCameraReady = EventDispatcher()
+
+  func callOnCameraReady() {
+    onCameraReady([
+      "message": "Camera was mounted"
+    ]);
+  }
+}
+```
+
+```kotlin
+class CameraViewModule : Module() {
+  override fun definition() = ModuleDefinition {
+    View(ExpoCameraView::class) {
+      Events(
+        "onCameraReady"
+      )
+
+      // ...
+    }
+  }
+}
+
+class CameraView(
+  context: Context,
+  appContext: AppContext
+) : ExpoView(context, appContext) {
+  val onCameraReady by EventDispatcher()
+
+  fun callOnCameraReady() {
+    onCameraReady(mapOf(
+      "message" to "Camera was mounted"
+    ));
+  }
+}
+```
+
+</CodeBlocksTable>
+
+To subscribe to these events in JavaScript/TypeScript, you need to pass a function to the native view as shown:
+
+```ts TypeScript
+import { requireNativeViewManager } from 'expo-modules-core';
+
+const CameraView = requireNativeViewManager('CameraView');
+
+export default function MainView() {
+  const onCameraReady = event => {
+    console.log(event.nativeEvent);
+  };
+
+  return <CameraView onCameraReady={onCameraReady} />;
+}
+```
+
+Provided payload is available under the `nativeEvent` key.
 
 </APIBox>
 
