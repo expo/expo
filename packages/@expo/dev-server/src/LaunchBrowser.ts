@@ -139,10 +139,8 @@ class BrowserImplMacOS implements BrowserImpl, BrowserInstance {
   }
 
   async close(): Promise<void> {
-    if (this._process != null) {
-      this._process.kill();
-      this._process = undefined;
-    }
+    this._process?.kill();
+    this._process = undefined;
   }
 }
 
@@ -263,12 +261,8 @@ class BrowserImplLinux implements BrowserImpl, BrowserInstance {
   }
 
   async close(): Promise<void> {
-    if (this._process != null) {
-      this._process.kill();
-      this._process = undefined;
-    }
-    if (this._appId != null) {
-      this._appId = undefined;
-    }
+    this._process?.kill();
+    this._process = undefined;
+    this._appId = undefined;
   }
 }

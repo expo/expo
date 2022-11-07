@@ -49,10 +49,10 @@ async function openJsInspector(app) {
 }
 
 async function closeJsInspector() {
-  if (openingBrowserInstance != null) {
-    await openingBrowserInstance.close();
-    openingBrowserInstance = null;
-  }
+  var _openingBrowserInstan;
+
+  await ((_openingBrowserInstan = openingBrowserInstance) === null || _openingBrowserInstan === void 0 ? void 0 : _openingBrowserInstan.close());
+  openingBrowserInstance = null;
 }
 
 async function queryInspectorAppAsync(metroServerOrigin, appId) {

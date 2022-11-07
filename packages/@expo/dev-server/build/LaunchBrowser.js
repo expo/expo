@@ -205,11 +205,10 @@ class BrowserImplMacOS {
   }
 
   async close() {
-    if (this._process != null) {
-      this._process.kill();
+    var _this$_process;
 
-      this._process = undefined;
-    }
+    (_this$_process = this._process) === null || _this$_process === void 0 ? void 0 : _this$_process.kill();
+    this._process = undefined;
   }
 
 }
@@ -346,15 +345,11 @@ class BrowserImplLinux {
   }
 
   async close() {
-    if (this._process != null) {
-      this._process.kill();
+    var _this$_process2;
 
-      this._process = undefined;
-    }
-
-    if (this._appId != null) {
-      this._appId = undefined;
-    }
+    (_this$_process2 = this._process) === null || _this$_process2 === void 0 ? void 0 : _this$_process2.kill();
+    this._process = undefined;
+    this._appId = undefined;
   }
 
 }

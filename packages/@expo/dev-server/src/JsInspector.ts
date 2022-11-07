@@ -32,10 +32,8 @@ export async function openJsInspector(app: MetroInspectorProxyApp) {
 }
 
 export async function closeJsInspector() {
-  if (openingBrowserInstance != null) {
-    await openingBrowserInstance.close();
-    openingBrowserInstance = null;
-  }
+  await openingBrowserInstance?.close();
+  openingBrowserInstance = null;
 }
 
 export async function queryInspectorAppAsync(
