@@ -14,10 +14,9 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4ClassRunner::class)
 class UpdatesConfigurationInstrumentationTest {
   @Test
-  fun test_runtimeVersion_stripsPrefix() {
+  fun test_runtimeVersion_value() {
     val testPackageName = "test"
     val testRuntimeVersion = "3.14"
-
     val context = mockk<Context> {
       every { packageName } returns testPackageName
       every { packageManager } returns mockk {
@@ -25,33 +24,48 @@ class UpdatesConfigurationInstrumentationTest {
           metaData = Bundle().apply {
             putString(
               "expo.modules.updates.EXPO_RUNTIME_VERSION",
-              String.format("string:%s", testRuntimeVersion)
+              "value:$testRuntimeVersion"
             )
           }
         }
       }
+      every { resources } returns mockk {
+        // String is in strings.xml but with the wrong name
+        every { getIdentifier("expo_runtime_version", "string", "test") } returns 0
+        every { getString(1) } returns "resource:$testRuntimeVersion"
+      }
     }
+
     val config = UpdatesConfiguration(context, null)
-    Assert.assertEquals(config.runtimeVersion, testRuntimeVersion)
+    // String not found in strings.xml, so use value found in manifest
+    Assert.assertEquals(config.runtimeVersion, "value:$testRuntimeVersion")
   }
 
   @Test
-  fun test_runtimeVersion_worksWithoutPrefix() {
+  fun test_runtimeVersion_resource() {
     val testPackageName = "test"
     val testRuntimeVersion = "3.14"
-
     val context = mockk<Context> {
       every { packageName } returns testPackageName
       every { packageManager } returns mockk {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle().apply {
-            putString("expo.modules.updates.EXPO_RUNTIME_VERSION", testRuntimeVersion)
+            putString(
+              "expo.modules.updates.EXPO_RUNTIME_VERSION",
+              "@string/expo_runtime_version"
+            )
           }
         }
       }
+      every { resources } returns mockk {
+        every { getIdentifier("expo_runtime_version", "string", "test") } returns 1
+        every { getString(1) } returns "resource:$testRuntimeVersion"
+      }
     }
+
     val config = UpdatesConfiguration(context, null)
-    Assert.assertEquals(config.runtimeVersion, testRuntimeVersion)
+    // Expect runtime version in strings.xml to be used
+    Assert.assertEquals(config.runtimeVersion, "resource:$testRuntimeVersion")
   }
 
   @Test
@@ -63,6 +77,10 @@ class UpdatesConfigurationInstrumentationTest {
         every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
           metaData = Bundle()
         }
+      }
+      every { resources } returns mockk {
+        every { getIdentifier("expo_runtime_version", "string", "test") } returns 1
+        every { getString(1) } returns "1.0"
       }
     }
 
@@ -90,6 +108,10 @@ class UpdatesConfigurationInstrumentationTest {
             putBoolean("expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN", true)
           }
         }
+      }
+      every { resources } returns mockk {
+        every { getIdentifier("expo_runtime_version", "string", "test") } returns 1
+        every { getString(1) } returns "1.0"
       }
     }
 
