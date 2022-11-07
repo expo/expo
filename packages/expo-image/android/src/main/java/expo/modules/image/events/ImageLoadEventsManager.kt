@@ -60,15 +60,17 @@ class ImageLoadEventsManager(
     val bitmapFactoryOptions = mBitmapFactoryOptions ?: return
     val expoImageViewWrapper = expoImageViewWrapper.get() ?: return
 
-    expoImageViewWrapper.onLoad(ImageLoadEvent(
-      cacheType = ImageCacheType.fromNativeValue(dataSource).enumValue,
-      source = ImageSource(
-        url = model.toString(),
-        width = bitmapFactoryOptions.outWidth,
-        height = bitmapFactoryOptions.outHeight,
-        mediaType = bitmapFactoryOptions.outMimeType
+    expoImageViewWrapper.onLoad(
+      ImageLoadEvent(
+        cacheType = ImageCacheType.fromNativeValue(dataSource).enumValue,
+        source = ImageSource(
+          url = model.toString(),
+          width = bitmapFactoryOptions.outWidth,
+          height = bitmapFactoryOptions.outHeight,
+          mediaType = bitmapFactoryOptions.outMimeType
+        )
       )
-    ))
+    )
   }
 
   override fun onLoadCleared(placeholder: Drawable?) = Unit // do nothing

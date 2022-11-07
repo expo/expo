@@ -8,18 +8,18 @@ data class ImageSource(
   @Field val width: Int,
   @Field val height: Int,
   @Field val mediaType: String?
-): Record
+) : Record
 
 data class ImageLoadEvent(
   @Field val cacheType: Int,
   @Field val source: ImageSource
-): Record
+) : Record
 
 data class ImageProgressEvent(
   @Field val loaded: Int,
   @Field val total: Int
-): Record
+) : Record
 
 data class ImageErrorEvent(
   @Field val error: String
-): Record
+) : Record
