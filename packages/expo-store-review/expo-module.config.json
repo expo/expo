@@ -3,5 +3,8 @@
   "platforms": ["ios", "android"],
   "ios": {
     "modules": ["StoreReviewModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.storereview.StoreReviewModule"]
   }
 }
