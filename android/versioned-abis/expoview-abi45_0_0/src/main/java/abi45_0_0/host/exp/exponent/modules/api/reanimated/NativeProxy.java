@@ -116,7 +116,7 @@ public class NativeProxy {
     try {
       Class<NativeModule> gestureHandlerModuleClass =
           (Class<NativeModule>)
-              Class.forName("com.swmansion.gesturehandler.react.RNGestureHandlerModule");
+              Class.forName("abi45_0_0.com.swmansion.gesturehandler.react.RNGestureHandlerModule");
       tempHandlerStateManager =
           (GestureHandlerStateManager) context.getNativeModule(gestureHandlerModuleClass);
     } catch (ClassCastException | ClassNotFoundException e) {
