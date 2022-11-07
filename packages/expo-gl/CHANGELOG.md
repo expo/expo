@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Migrated iOS codebase to Swift and the new Expo modules API. ([#19859](https://github.com/expo/expo/pull/19859) by [@tsapeta](https://github.com/tsapeta))
+- Migrated the view manager to the new Expo modules API and thus added support for Fabric. ([#19859](https://github.com/expo/expo/pull/19859) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
