@@ -2,16 +2,37 @@
 title: Overview
 ---
 
-import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { GeneralIcon, AndroidIcon, AppleIcon, SettingsIcon } from '@expo/styleguide';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 > **warning** Expo Modules APIs are in beta and subject to breaking changes.
 
 Expo provides a set of APIs and utilities to improve the process of developing native modules for Expo and React Native and expand your app capabilities.
 
-- [Native Modules](./module-api.mdx) - Create native modules using Swift and Kotlin.
-- [Android Lifecycle Listeners](./android-lifecycle-listeners.mdx) - Hook into Android Activity and Application lifecycle events.
-- [iOS AppDelegate Subscribers](./appdelegate-subscribers.mdx) — Respond to iOS AppDelegate events.
-- [Module Config](./module-config.mdx) — Configure and opt in to features.
+<BoxLink
+  title="Native Modules"
+  description="Create native modules using Swift and Kotlin."
+  href="./module-api"
+  Icon={GeneralIcon}
+/>
+<BoxLink
+  title="Android Lifecycle Listeners"
+  description="Hook into Android Activity and Application lifecycle events."
+  href="./android-lifecycle-listeners"
+  Icon={AndroidIcon}
+/>
+<BoxLink
+  title="iOS AppDelegate Subscribers"
+  description="Respond to iOS AppDelegate events."
+  href="./appdelegate-subscribers"
+  Icon={AppleIcon}
+/>
+<BoxLink
+  title="Module Config"
+  description="Configure and opt in to features."
+  href="./module-config"
+  Icon={SettingsIcon}
+/>
 
 ## Design considerations
 
@@ -48,3 +69,11 @@ As we all, React Native developers, use high-level JavaScript on a daily basis, 
 Moreover, including C++ code in the library has a negative impact on build times, especially on Android, and can be more difficult to debug.
 
 We took these into account when designing the Expo Modules API with the goal in mind to make it renderer-agnostic, so that the module doesn't need to know whether the app is run on the new architecture or not, significantly reducing the cost for library developers.
+
+## Next steps
+
+<BoxLink
+  title="Get Started"
+  description="Learn how to create a new Expo module or setup existing library as an Expo module."
+  href="./get-started"
+/>
