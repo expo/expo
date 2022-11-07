@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXGL/EXGLObject.h>
+#import <ExpoGL/EXGLObject.h>
 
 @implementation EXGLObject
 
