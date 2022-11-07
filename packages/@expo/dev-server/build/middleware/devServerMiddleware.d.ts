@@ -1,5 +1,4 @@
 /// <reference types="expo__bunyan" />
-/// <reference types="ws" />
 import Log from '@expo/bunyan';
 /**
  * Extends the default `createDevServerMiddleware` and adds some Expo CLI-specific dev middleware

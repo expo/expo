@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 
-import { launchBrowserAsync, type BrowserInstance } from './LaunchBrowser';
+import { launchBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
 
 export interface MetroInspectorProxyApp {
   description: string;
@@ -13,7 +13,7 @@ export interface MetroInspectorProxyApp {
   webSocketDebuggerUrl: string;
 }
 
-let openingBrowserInstance: BrowserInstance | null = null;
+let openingBrowserInstance: LaunchBrowserInstance | null = null;
 
 export async function openJsInspector(app: MetroInspectorProxyApp) {
   // To update devtoolsFrontendRev, find the full commit hash in the url:
