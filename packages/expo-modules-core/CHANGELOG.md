@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Exposed coroutines related packages on Android. ([#19896](https://github.com/expo/expo/pull/19896) by [@lukmccall](https://github.com/lukmccall))
+
 ## 1.0.0 — 2022-11-03
 
 _This version does not introduce any user-facing changes._
