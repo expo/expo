@@ -705,6 +705,8 @@ PODS:
     - React-Core
   - RNDateTimePicker (6.5.2):
     - React-Core
+  - RNFlashList (1.3.1):
+    - React-Core
   - RNGestureHandler (2.8.0):
     - React-Core
   - RNReanimated (2.12.0):
@@ -876,6 +878,7 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../../../node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/@react-native-community/datetimepicker`)"
+  - "RNFlashList (from `../../../node_modules/@shopify/flash-list`)"
   - RNGestureHandler (from `../../../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNScreens (from `../../../node_modules/react-native-screens`)
@@ -1206,6 +1209,8 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/@react-native-picker/picker"
   RNDateTimePicker:
     :path: "../../../node_modules/@react-native-community/datetimepicker"
+  RNFlashList:
+    :path: "../../../node_modules/@shopify/flash-list"
   RNGestureHandler:
     :path: "../../../node_modules/react-native-gesture-handler"
   RNReanimated:
@@ -1359,6 +1364,7 @@ SPEC CHECKSUMS:
   RNCMaskedView: bc0170f389056201c82a55e242e5d90070e18e5a
   RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
   RNDateTimePicker: 3f32aa2247836c12618d346113e5e82ea60ddd9c
+  RNFlashList: 18d906a373da5ff16776e5013df9495d826edc7e
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNReanimated: 95fde05503235f14cd4a0cf526ffbad3d54af688
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
