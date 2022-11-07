@@ -4,6 +4,8 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { getMainApplication, readAndroidManifestAsync } from '../Manifest';
+import { readResourcesXMLAsync } from '../Resources';
+import { format } from '../../utils/XML';
 import * as Updates from '../Updates';
 
 const fixturesPath = path.resolve(__dirname, 'fixtures');
@@ -154,6 +156,46 @@ describe('Android Updates config', () => {
         contents
       );
       expect(newContents).toMatchSnapshot();
+    });
+  });
+
+  describe('Runtime version written to strings.xml', () => {
+    const sampleStringsXML = `
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<resources>
+</resources>`;
+
+    beforeAll(async () => {
+      const directoryJSON = {
+        './android/app/src/main/res/values/strings.xml': sampleStringsXML,
+      };
+      vol.fromJSON(directoryJSON, '/app');
+    });
+
+    it('Write and clear runtime version', async () => {
+      const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
+      let stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
+      const config = {
+        runtimeVersion: '1.10'
+      };
+      Updates.applyRuntimeVersionFromConfig(
+        config,
+        stringsJSON
+      );
+      expect(format(stringsJSON)).toEqual('<resources>\n  <string name="runtime_version">1.10</string>\n</resources>')
+
+      const config2 = {
+        sdkVersion: '1.10'
+      };
+      Updates.applyRuntimeVersionFromConfig(
+        config2,
+        stringsJSON
+      );
+      expect(format(stringsJSON)).toEqual('<resources/>');
+    })
+
+    afterAll(async () => {
+      vol.reset();
     });
   });
 });

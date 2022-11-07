@@ -74,7 +74,7 @@ const withUpdatesManifest: ConfigPlugin<{ expoUsername: string | null }> = (
 
 const withRuntimeVersionResource = createStringsXmlPlugin(applyRuntimeVersionFromConfig, 'withRuntimeVersionResource');
 
-function applyRuntimeVersionFromConfig(
+export function applyRuntimeVersionFromConfig(
   config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
   stringsJSON: ResourceXML
 ): ResourceXML {
@@ -82,7 +82,7 @@ function applyRuntimeVersionFromConfig(
   if (runtimeVersion) {
     return setStringItem([buildResourceItem({ name: 'runtime_version', value: runtimeVersion })], stringsJSON);
   }
-  return removeStringItem('app_name', stringsJSON);
+  return removeStringItem('runtime_version', stringsJSON);
 }
 
 export function setUpdatesConfig(

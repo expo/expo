@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.Config = void 0;
+exports.applyRuntimeVersionFromConfig = applyRuntimeVersionFromConfig;
 exports.areVersionsSynced = areVersionsSynced;
 exports.ensureBuildGradleContainsConfigurationScript = ensureBuildGradleContainsConfigurationScript;
 exports.formatApplyLineForBuildGradle = formatApplyLineForBuildGradle;
@@ -146,7 +147,7 @@ function applyRuntimeVersionFromConfig(config, stringsJSON) {
     })], stringsJSON);
   }
 
-  return (0, _Strings().removeStringItem)('app_name', stringsJSON);
+  return (0, _Strings().removeStringItem)('runtime_version', stringsJSON);
 }
 
 function setUpdatesConfig(projectRoot, config, androidManifest, username, expoUpdatesPackageVersion) {
