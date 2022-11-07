@@ -1,8 +1,8 @@
 PODS:
   - boost (1.76.0)
-  - CocoaLumberjack (3.8.0):
-    - CocoaLumberjack/Core (= 3.8.0)
-  - CocoaLumberjack/Core (3.8.0)
+  - CocoaLumberjack (3.7.4):
+    - CocoaLumberjack/Core (= 3.7.4)
+  - CocoaLumberjack/Core (3.7.4)
   - DoubleConversion (1.1.6)
   - EASClient (0.4.1):
     - ExpoModulesCore
@@ -385,8 +385,8 @@ PODS:
   - nanopb/encode (2.30909.0)
   - Nimble (9.2.1)
   - PromisesObjC (2.1.1)
-  - Protobuf (3.21.9)
-  - Quick (6.0.0)
+  - Protobuf (3.21.7)
+  - Quick (5.0.1)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -741,9 +741,9 @@ PODS:
     - React-Core
   - RNSVG (13.4.0):
     - React-Core
-  - SDWebImage (5.13.5):
-    - SDWebImage/Core (= 5.13.5)
-  - SDWebImage/Core (5.13.5)
+  - SDWebImage (5.13.4):
+    - SDWebImage/Core (= 5.13.4)
+  - SDWebImage/Core (5.13.4)
   - SDWebImageSVGKitPlugin (1.3.0):
     - SDWebImage/Core (~> 5.10)
     - SVGKit (>= 2.1)
@@ -1224,7 +1224,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
-  CocoaLumberjack: 78abfb691154e2a9df8ded4350d504ee19d90732
+  CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 19efe9e8ef9b3917c5f3dcb3ed82319de4d8c0bd
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
@@ -1319,8 +1319,8 @@ SPEC CHECKSUMS:
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   Nimble: d954d0accfd082f2225e62d71008440493e318f4
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
-  Protobuf: 02524ec14183fe08fb259741659e79683788158b
-  Quick: 4d5ab9e81f0a632cbf9bc4f3069b55e5eeb175df
+  Protobuf: f4128517d7a42302e106cc3afe614ee3a7513e94
+  Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
   RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
   RCTRequired: 49a2c4d4215580d8b24ed538ae01b6de20b43a76
   RCTTypeSafety: 55d538399fe8b51e5cd862e2ec2f9b135b07e783
@@ -1364,7 +1364,7 @@ SPEC CHECKSUMS:
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
-  SDWebImage: 23d714cd599354ee7906dbae26dff89b421c4370
+  SDWebImage: e5cc87bf736e60f49592f307bdf9e157189298a3
   SDWebImageSVGKitPlugin: 8797e1c9b9baf80bd50d28e673e16a12359af1c9
   SVGKit: 652cdf7bef8bec8564d04a8511d3ab50c7595fac
   UMAppLoader: 354d71d2d2ce8d6c19fb13d72b9c8209b18a8c56
