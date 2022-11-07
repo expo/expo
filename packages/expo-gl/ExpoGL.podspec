@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name            = 'EXGL'
+  s.name            = 'ExpoGL'
   s.version         = package['version']
   s.summary         = package['description']
   s.description     = package['description']
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
 
   s.dependency 'ExpoModulesCore'
-  s.dependency 'React-jsi'
+  s.dependency 'ReactCommon/turbomodule/core'
 
   s.compiler_flags = '-x objective-c++ -std=c++1z'
   s.pod_target_xcconfig = {
@@ -26,6 +26,8 @@ Pod::Spec.new do |s|
     s.source_files = "ios/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
-    s.source_files = "ios/**/*.{h,m,mm}", "common/**/*.{h,cpp,def}"
+    s.source_files = "ios/**/*.{h,m,mm,swift}", "common/**/*.{h,cpp,def}"
   end
+
+  s.public_header_files = ['ios/**/*.h', 'common/EXGLNativeApi.h']
 end

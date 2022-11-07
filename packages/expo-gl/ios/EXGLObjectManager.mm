@@ -4,10 +4,10 @@
 #import <ExpoModulesCore/EXUIManager.h>
 #import <ExpoModulesCore/EXCameraInterface.h>
 
-#import <EXGL/EXGLObjectManager.h>
-#import <EXGL/EXGLObject.h>
-#import <EXGL/EXGLView.h>
-#import <EXGL/EXGLCameraObject.h>
+#import <ExpoGL/EXGLObjectManager.h>
+#import <ExpoGL/EXGLObject.h>
+#import <ExpoGL/EXGLView.h>
+#import <ExpoGL/EXGLCameraObject.h>
 
 @interface EXGLObjectManager ()
 

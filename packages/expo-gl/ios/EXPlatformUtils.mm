@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#include <EXGL/EXPlatformUtils.h>
+#include <ExpoGL/EXPlatformUtils.h>
 
 namespace expo {
 namespace gl_cpp {

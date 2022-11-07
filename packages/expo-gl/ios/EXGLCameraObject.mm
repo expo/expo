@@ -7,8 +7,8 @@
 
 #import <ExpoModulesCore/EXCameraInterface.h>
 
-#import <EXGL/EXGLCameraObject.h>
-#import <EXGL/EXGLContext.h>
+#import <ExpoGL/EXGLCameraObject.h>
+#import <ExpoGL/EXGLContext.h>
 
 @interface EXGLCameraObject () <AVCaptureVideoDataOutputSampleBufferDelegate>
 

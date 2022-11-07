@@ -2,8 +2,8 @@
 
 #import <ExpoModulesCore/EXCameraInterface.h>
 
-#import <EXGL/EXGLContext.h>
-#import <EXGL/EXGLObject.h>
+#import <ExpoGL/EXGLContext.h>
+#import <ExpoGL/EXGLObject.h>
 
 @interface EXGLCameraObject : EXGLObject
 

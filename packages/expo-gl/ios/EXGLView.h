@@ -1,14 +1,14 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXGL/EXGLNativeApi.h>
-#import <EXGL/EXGLContext.h>
+#import <ExpoGL/EXGLNativeApi.h>
+#import <ExpoGL/EXGLContext.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
+#import <ExpoModulesCore/EXLegacyExpoViewProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXGLView : UIView <EXGLContextDelegate>
+@interface EXGLView : UIView <EXGLContextDelegate, EXLegacyExpoViewProtocol>
 
-- (instancetype)initWithModuleRegistry:(EXModuleRegistry *)moduleRegistry;
 - (EXGLContextId)exglCtxId;
 
 // AR
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)maybeStopARSession;
 
 @property (nonatomic, copy, nullable) EXDirectEventBlock onSurfaceCreate;
-@property (nonatomic, assign) NSNumber *msaaSamples;
+@property (nonatomic, assign) NSInteger msaaSamples;
 
 // "protected"
 @property (nonatomic, strong, nullable) EXGLContext *glContext;
