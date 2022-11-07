@@ -8,7 +8,7 @@ type NativeExpoImageProps = ImageProps;
 
 const NativeExpoImage = requireNativeViewManager('ExpoImage') as React.FC<NativeExpoImageProps>;
 
-const ExpoImageModule = requireNativeModule('ExpoImageModule');
+const ExpoImageModule = requireNativeModule('ExpoImage');
 
 export { ExpoImageModule };
 

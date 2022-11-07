@@ -3,7 +3,7 @@ package expo.modules.image.records
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
-data class Source(
+data class ImageSource(
   @Field val url: String,
   @Field val width: Int,
   @Field val height: Int,
@@ -12,7 +12,7 @@ data class Source(
 
 data class ImageLoadEvent(
   @Field val cacheType: Int,
-  @Field val source: Source
+  @Field val source: ImageSource
 ): Record
 
 data class ImageProgressEvent(

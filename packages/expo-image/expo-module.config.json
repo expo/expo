@@ -4,6 +4,6 @@
     "modules": ["ImageModule"]
   },
   "android": {
-    "modules": ["expo.modules.image.ExpoImageModule", "expo.modules.image.ExpoImageViewManager"]
+    "modules": ["expo.modules.image.ExpoImageModule"]
   }
 }

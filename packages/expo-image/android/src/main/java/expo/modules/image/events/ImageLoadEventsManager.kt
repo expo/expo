@@ -14,7 +14,7 @@ import expo.modules.image.enums.ImageCacheType
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
-import expo.modules.image.records.Source
+import expo.modules.image.records.ImageSource
 import java.lang.ref.WeakReference
 
 class ImageLoadEventsManager(
@@ -62,7 +62,7 @@ class ImageLoadEventsManager(
 
     expoImageViewWrapper.onLoad(ImageLoadEvent(
       cacheType = ImageCacheType.fromNativeValue(dataSource).enumValue,
-      source = Source(
+      source = ImageSource(
         url = model.toString(),
         width = bitmapFactoryOptions.outWidth,
         height = bitmapFactoryOptions.outHeight,
