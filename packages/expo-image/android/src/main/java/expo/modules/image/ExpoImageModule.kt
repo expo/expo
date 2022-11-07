@@ -3,50 +3,48 @@ package expo.modules.image
 import android.util.Log
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
-import com.facebook.react.bridge.Promise
-import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.bridge.ReactContextBaseJavaModule
-import com.facebook.react.bridge.ReactMethod
+import expo.modules.core.errors.ModuleDestroyedException
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-import java.lang.Exception
-import java.lang.IllegalStateException
-import java.util.concurrent.CancellationException
 
-class ExpoImageModule(val context: ReactApplicationContext) : ReactContextBaseJavaModule(context) {
+class ExpoImageModule : Module() {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
-  override fun getName() = "ExpoImageModule"
 
-  @ReactMethod
-  fun prefetch(url: String, promise: Promise) {
-    moduleCoroutineScope.launch {
-      try {
-        val glideUrl = GlideUrl(url)
-        val result = Glide.with(context)
+  override fun definition() = ModuleDefinition {
+    Name("ExpoImageModule")
+
+    AsyncFunction("prefetch") { url: String, promise: Promise ->
+      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+      moduleCoroutineScope.launch {
+        try {
+          val glideUrl = GlideUrl(url)
+          val result = Glide.with(context)
             .download(glideUrl)
             .submit()
             .awaitGet()
-        if (result != null) {
-          promise.resolve(null)
-        } else {
-          promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: ${url}.")
+          if (result != null) {
+            promise.resolve(null)
+          } else {
+            promise.reject(ImagePrefetchFailure("cannot download $url"))
+          }
+        } catch (e: Exception) {
+          promise.reject(ImagePrefetchFailure(e.message ?: e.toString()))
         }
-      } catch (e: Exception) {
-        promise.reject("ERR_IMAGE_PREFETCH_FAILURE", "Failed to prefetch the image: ${e.message}", e)
       }
     }
-  }
 
-  override fun onCatalystInstanceDestroy() {
-    try {
-      // TODO: Use [expo.modules.core.errors.ModuleDestroyedException] when migrated to Expo Module
-      moduleCoroutineScope.cancel(CancellationException("ExpoImage module is destroyed. Cancelling all jobs."))
-    } catch (e: IllegalStateException) {
-      Log.w("ExpoImageModule", "No coroutines to cancel")
+    OnDestroy {
+      try {
+        moduleCoroutineScope.cancel(ModuleDestroyedException())
+      } catch (e: IllegalStateException) {
+        Log.w("ExpoImageModule", "No coroutines to cancel")
+      }
     }
-
-    super.onCatalystInstanceDestroy()
   }
 }
