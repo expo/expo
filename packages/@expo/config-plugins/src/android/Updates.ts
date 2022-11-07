@@ -46,10 +46,7 @@ export const withUpdates: ConfigPlugin<{ expoUsername: string | null }> = (
   config,
   { expoUsername }
 ) => {
-  return withPlugins(config, [
-    [withUpdatesManifest, { expoUsername }],
-    withRuntimeVersionResource,
-  ]);
+  return withPlugins(config, [[withUpdatesManifest, { expoUsername }], withRuntimeVersionResource]);
 };
 
 const withUpdatesManifest: ConfigPlugin<{ expoUsername: string | null }> = (
@@ -70,15 +67,21 @@ const withUpdatesManifest: ConfigPlugin<{ expoUsername: string | null }> = (
   });
 };
 
-const withRuntimeVersionResource = createStringsXmlPlugin(applyRuntimeVersionFromConfig, 'withRuntimeVersionResource');
+const withRuntimeVersionResource = createStringsXmlPlugin(
+  applyRuntimeVersionFromConfig,
+  'withRuntimeVersionResource'
+);
 
 export function applyRuntimeVersionFromConfig(
   config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>,
   stringsJSON: ResourceXML
 ): ResourceXML {
-  const runtimeVersion = getRuntimeVersionNullable(config, "android");
+  const runtimeVersion = getRuntimeVersionNullable(config, 'android');
   if (runtimeVersion) {
-    return setStringItem([buildResourceItem({ name: 'expo_runtime_version', value: runtimeVersion })], stringsJSON);
+    return setStringItem(
+      [buildResourceItem({ name: 'expo_runtime_version', value: runtimeVersion })],
+      stringsJSON
+    );
   }
   return removeStringItem('expo_runtime_version', stringsJSON);
 }
@@ -155,7 +158,12 @@ export function setVersionsConfig(
   const sdkVersion = getSDKVersion(config);
   if (runtimeVersion) {
     removeMetaDataItemFromMainApplication(mainApplication, Config.SDK_VERSION);
-    addMetaDataItemToMainApplication(mainApplication, Config.RUNTIME_VERSION, '@string/runtime_version', 'resource');
+    addMetaDataItemToMainApplication(
+      mainApplication,
+      Config.RUNTIME_VERSION,
+      '@string/expo_runtime_version',
+      'resource'
+    );
   } else if (sdkVersion) {
     /**
      * runtime version maybe null in projects using classic updates. In that

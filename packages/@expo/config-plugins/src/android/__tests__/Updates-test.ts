@@ -105,6 +105,12 @@ describe('Android Updates config', () => {
     expect(codeSigningMetadata[0].$['android:value']).toMatch(
       '{"alg":"rsa-v1_5-sha256","keyid":"test"}'
     );
+
+    // For this config, runtime version should not be defined, so check that it does not appear in the manifest
+    const runtimeVersion = mainApplication['meta-data']?.filter(
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
+    );
+    expect(runtimeVersion).toHaveLength(0);
   });
 
   describe(Updates.ensureBuildGradleContainsConfigurationScript, () => {
@@ -159,7 +165,7 @@ describe('Android Updates config', () => {
     });
   });
 
-  describe('Runtime version written to strings.xml', () => {
+  describe('Runtime version tests', () => {
     const sampleStringsXML = `
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <resources>
@@ -172,27 +178,59 @@ describe('Android Updates config', () => {
       vol.fromJSON(directoryJSON, '/app');
     });
 
-    it('Write and clear runtime version', async () => {
+    it('Correct metadata written to Android manifest with appVersion policy', async () => {
+      vol.fromJSON({
+        '/blah/react-native-AndroidManifest.xml': fsReal.readFileSync(sampleManifestPath, 'utf-8'),
+        '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
+      });
+
+      let androidManifestJson = await readAndroidManifestAsync(
+        '/blah/react-native-AndroidManifest.xml'
+      );
+      const config: ExpoConfig = {
+        name: 'foo',
+        version: '37.0.0',
+        slug: 'my-app',
+        owner: 'owner',
+        runtimeVersion: {
+          policy: 'appVersion',
+        },
+      };
+      androidManifestJson = Updates.setUpdatesConfig(
+        '/app',
+        config,
+        androidManifestJson,
+        'user',
+        '0.11.0'
+      );
+      const mainApplication = getMainApplication(androidManifestJson);
+
+      const runtimeVersion = mainApplication['meta-data']?.filter(
+        (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
+      );
+      expect(runtimeVersion).toHaveLength(1);
+      expect(runtimeVersion && runtimeVersion[0].$['android:resource']).toMatch(
+        '@string/expo_runtime_version'
+      );
+    });
+
+    it('Write and clear runtime version in strings resource', async () => {
       const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
       let stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
       const config = {
-        runtimeVersion: '1.10'
+        runtimeVersion: '1.10',
       };
-      Updates.applyRuntimeVersionFromConfig(
-        config,
-        stringsJSON
+      Updates.applyRuntimeVersionFromConfig(config, stringsJSON);
+      expect(format(stringsJSON)).toEqual(
+        '<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>'
       );
-      expect(format(stringsJSON)).toEqual('<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>')
 
       const config2 = {
-        sdkVersion: '1.10'
+        sdkVersion: '1.10',
       };
-      Updates.applyRuntimeVersionFromConfig(
-        config2,
-        stringsJSON
-      );
+      Updates.applyRuntimeVersionFromConfig(config2, stringsJSON);
       expect(format(stringsJSON)).toEqual('<resources/>');
-    })
+    });
 
     afterAll(async () => {
       vol.reset();

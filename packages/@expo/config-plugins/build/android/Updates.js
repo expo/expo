@@ -138,7 +138,7 @@ const withUpdatesManifest = (config, {
 const withRuntimeVersionResource = (0, _androidPlugins().createStringsXmlPlugin)(applyRuntimeVersionFromConfig, 'withRuntimeVersionResource');
 
 function applyRuntimeVersionFromConfig(config, stringsJSON) {
-  const runtimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, "android");
+  const runtimeVersion = (0, _Updates().getRuntimeVersionNullable)(config, 'android');
 
   if (runtimeVersion) {
     return (0, _Strings().setStringItem)([(0, _Resources().buildResourceItem)({
@@ -194,7 +194,7 @@ function setVersionsConfig(config, androidManifest) {
 
   if (runtimeVersion) {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.SDK_VERSION);
-    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.RUNTIME_VERSION, '@string/runtime_version', 'resource');
+    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.RUNTIME_VERSION, '@string/expo_runtime_version', 'resource');
   } else if (sdkVersion) {
     /**
      * runtime version maybe null in projects using classic updates. In that
