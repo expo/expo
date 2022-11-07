@@ -1,10 +1,6 @@
-import * as osascript from '@expo/osascript';
-import { ChildProcess, spawn } from 'child_process';
-import { sync as globSync } from 'glob';
 import fetch from 'node-fetch';
-import open from 'open';
-import os from 'os';
-import path from 'path';
+
+import { launchBrowserAsync, type LaunchBrowserInstance } from './LaunchBrowser';
 
 export interface MetroInspectorProxyApp {
   description: string;
@@ -17,28 +13,27 @@ export interface MetroInspectorProxyApp {
   webSocketDebuggerUrl: string;
 }
 
-let openingChildProcess: ChildProcess | null = null;
+let openingBrowserInstance: LaunchBrowserInstance | null = null;
 
-export function openJsInspector(app: MetroInspectorProxyApp) {
+export async function openJsInspector(app: MetroInspectorProxyApp) {
   // To update devtoolsFrontendRev, find the full commit hash in the url:
   // https://chromium.googlesource.com/chromium/src.git/+log/refs/tags/{CHROME_VERSION}/chrome/VERSION
   //
   // 1. Replace {CHROME_VERSION} with the target chrome version
   // 2. Click the first log item in the webpage
   // 3. The full commit hash is the desired revision
-  const devtoolsFrontendRev = 'e3cd97fc771b893b7fd1879196d1215b622c2bed'; // Chrome 90.0.4430.212
+  const devtoolsFrontendRev = 'd9568d04d7dd79269c5a655d7ada69650c5a8336'; // Chrome 100.0.4896.75
 
   const urlBase = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsFrontendRev}/inspector.html`;
   const ws = app.webSocketDebuggerUrl.replace(/^ws:\/\//, '');
   const url = `${urlBase}?panel=sources&v8only=true&ws=${encodeURIComponent(ws)}`;
-  launchChromiumAsync(url);
+  await closeJsInspector();
+  openingBrowserInstance = await launchBrowserAsync(url);
 }
 
-export function closeJsInspector() {
-  if (openingChildProcess != null) {
-    openingChildProcess.kill();
-    openingChildProcess = null;
-  }
+export async function closeJsInspector() {
+  await openingBrowserInstance?.close();
+  openingBrowserInstance = null;
 }
 
 export async function queryInspectorAppAsync(
@@ -78,61 +73,4 @@ function transformApps(apps: MetroInspectorProxyApp[]): MetroInspectorProxyApp[]
     }
     return app;
   });
-}
-
-async function launchChromiumAsync(url: string): Promise<void> {
-  // For dev-client connecting metro in LAN, the request to fetch sourcemaps may be blocked by Chromium
-  // with insecure-content (https page send xhr for http resource).
-  // Adding `--allow-running-insecure-content` to overcome this limitation
-  // without users manually allow insecure-content in site settings.
-  // However, if there is existing chromium browser process, the argument will not take effect.
-  // We also pass a `--user-data-dir=` as temporary profile and force chromium to create new browser process.
-  const tmpDir = require('temp-dir');
-  const tempProfileDir = path.join(tmpDir, 'expo-inspector');
-  const launchArgs = [
-    `--app=${url}`,
-    '--allow-running-insecure-content',
-    `--user-data-dir=${tempProfileDir}`,
-    '--no-first-run',
-    '--no-default-browser-check',
-  ];
-
-  const supportedChromiums = [open.apps.chrome, open.apps.edge];
-  for (const chromium of supportedChromiums) {
-    try {
-      await launchAppAsync(chromium, launchArgs);
-      return;
-    } catch {}
-  }
-
-  throw new Error(
-    'Unable to find a browser on the host to open the inspector. Supported browsers: Google Chrome, Microsoft Edge'
-  );
-}
-
-async function launchAppAsync(
-  appName: string | readonly string[],
-  launchArgs: string[]
-): Promise<void> {
-  if (os.platform() === 'darwin' && !Array.isArray(appName)) {
-    const appDirectory = await osascript.execAsync(
-      `POSIX path of (path to application "${appName}")`
-    );
-    const appPath = globSync('Contents/MacOS/*', { cwd: appDirectory.trim(), absolute: true })?.[0];
-    if (!appPath) {
-      throw new Error(`Cannot find application path from ${appDirectory}Contents/MacOS`);
-    }
-    closeJsInspector();
-    openingChildProcess = spawn(appPath, launchArgs, { stdio: 'ignore' });
-    return;
-  }
-
-  const result = await open.openApp(appName, {
-    arguments: launchArgs,
-    newInstance: true,
-    wait: true,
-  });
-  if (result.exitCode !== 0) {
-    throw new Error(`Cannot find application: ${appName}`);
-  }
 }

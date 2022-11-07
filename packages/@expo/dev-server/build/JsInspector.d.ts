@@ -8,7 +8,7 @@ export interface MetroInspectorProxyApp {
     vm: 'Hermes' | "don't use";
     webSocketDebuggerUrl: string;
 }
-export declare function openJsInspector(app: MetroInspectorProxyApp): void;
-export declare function closeJsInspector(): void;
+export declare function openJsInspector(app: MetroInspectorProxyApp): Promise<void>;
+export declare function closeJsInspector(): Promise<void>;
 export declare function queryInspectorAppAsync(metroServerOrigin: string, appId: string): Promise<MetroInspectorProxyApp | null>;
 export declare function queryAllInspectorAppsAsync(metroServerOrigin: string): Promise<MetroInspectorProxyApp[]>;
