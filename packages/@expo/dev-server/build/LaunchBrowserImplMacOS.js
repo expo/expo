@@ -1,72 +1,125 @@
 "use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
 });
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const osascript = __importStar(require("@expo/osascript"));
-const child_process_1 = require("child_process");
-const glob_1 = require("glob");
-const path_1 = __importDefault(require("path"));
-const LaunchBrowser_types_1 = require("./LaunchBrowser.types");
+exports.default = void 0;
+
+function osascript() {
+  const data = _interopRequireWildcard(require("@expo/osascript"));
+
+  osascript = function () {
+    return data;
+  };
+
+  return data;
+}
+
+function _child_process() {
+  const data = require("child_process");
+
+  _child_process = function () {
+    return data;
+  };
+
+  return data;
+}
+
+function _glob() {
+  const data = require("glob");
+
+  _glob = function () {
+    return data;
+  };
+
+  return data;
+}
+
+function _path() {
+  const data = _interopRequireDefault(require("path"));
+
+  _path = function () {
+    return data;
+  };
+
+  return data;
+}
+
+function _LaunchBrowser() {
+  const data = require("./LaunchBrowser.types");
+
+  _LaunchBrowser = function () {
+    return data;
+  };
+
+  return data;
+}
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
 /**
  * Browser implementation for macOS
  */
 class LaunchBrowserImplMacOS {
-    constructor() {
-        this.MAP = {
-            [LaunchBrowser_types_1.LaunchBrowserTypes.CHROME]: 'google chrome',
-            [LaunchBrowser_types_1.LaunchBrowserTypes.EDGE]: 'microsoft edge',
-        };
+  constructor() {
+    _defineProperty(this, "_process", void 0);
+
+    _defineProperty(this, "MAP", {
+      [_LaunchBrowser().LaunchBrowserTypes.CHROME]: 'google chrome',
+      [_LaunchBrowser().LaunchBrowserTypes.EDGE]: 'microsoft edge'
+    });
+  }
+
+  async isSupportedBrowser(browserType) {
+    let result = false;
+
+    try {
+      await osascript().execAsync(`id of application "${this.MAP[browserType]}"`);
+      result = true;
+    } catch {
+      result = false;
     }
-    async isSupportedBrowser(browserType) {
-        let result = false;
-        try {
-            await osascript.execAsync(`id of application "${this.MAP[browserType]}"`);
-            result = true;
-        }
-        catch {
-            result = false;
-        }
-        return result;
+
+    return result;
+  }
+
+  async createTempBrowserDir(baseDirName) {
+    return _path().default.join(require('temp-dir'), baseDirName);
+  }
+
+  async launchAsync(browserType, args) {
+    var _globSync;
+
+    const appDirectory = await osascript().execAsync(`POSIX path of (path to application "${this.MAP[browserType]}")`);
+    const appPath = (_globSync = (0, _glob().sync)('Contents/MacOS/*', {
+      cwd: appDirectory.trim(),
+      absolute: true
+    })) === null || _globSync === void 0 ? void 0 : _globSync[0];
+
+    if (!appPath) {
+      throw new Error(`Cannot find application path from ${appDirectory}Contents/MacOS`);
     }
-    async createTempBrowserDir(baseDirName) {
-        return path_1.default.join(require('temp-dir'), baseDirName);
-    }
-    async launchAsync(browserType, args) {
-        const appDirectory = await osascript.execAsync(`POSIX path of (path to application "${this.MAP[browserType]}")`);
-        const appPath = (0, glob_1.sync)('Contents/MacOS/*', { cwd: appDirectory.trim(), absolute: true })?.[0];
-        if (!appPath) {
-            throw new Error(`Cannot find application path from ${appDirectory}Contents/MacOS`);
-        }
-        this._process = (0, child_process_1.spawn)(appPath, args, { stdio: 'ignore' });
-        return this;
-    }
-    async close() {
-        this._process?.kill();
-        this._process = undefined;
-    }
+
+    this._process = (0, _child_process().spawn)(appPath, args, {
+      stdio: 'ignore'
+    });
+    return this;
+  }
+
+  async close() {
+    var _this$_process;
+
+    (_this$_process = this._process) === null || _this$_process === void 0 ? void 0 : _this$_process.kill();
+    this._process = undefined;
+  }
+
 }
+
 exports.default = LaunchBrowserImplMacOS;
+//# sourceMappingURL=LaunchBrowserImplMacOS.js.map
