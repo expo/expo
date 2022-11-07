@@ -71,6 +71,14 @@ internal class IncompatibleArgTypeException(
   cause = cause
 )
 
+internal class EnumNoSuchValueException(
+  enumType: KClass<Enum<*>>,
+  enumConstants: Array<out Enum<*>>,
+  value: Any?
+) : CodedException(
+  message = "'$value' is not present in ${enumType.simpleName} enum, it must be one of: ${enumConstants.joinToString(separator = ", ") { "'${it.name}'" }}"
+)
+
 internal class MissingTypeConverter(
   forType: KType
 ) : CodedException(
