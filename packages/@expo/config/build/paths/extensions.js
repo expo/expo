@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.getBareExtensions = getBareExtensions;
 exports.getExtensions = getExtensions;
 exports.getLanguageExtensionsInOrder = getLanguageExtensionsInOrder;
-exports.getManagedExtensions = getManagedExtensions;
 
 function _assert() {
   const data = _interopRequireDefault(require("assert"));
@@ -60,18 +59,6 @@ function getLanguageExtensionsInOrder({
   }
 
   return extensions;
-}
-
-function getManagedExtensions(platforms, languageOptions = {
-  isTS: true,
-  isModern: true,
-  isReact: true
-}) {
-  const fileExtensions = getExtensions(platforms, getLanguageExtensionsInOrder(languageOptions), ['expo']); // Always add these last
-
-  _addMiscellaneousExtensions(platforms, fileExtensions);
-
-  return fileExtensions;
 }
 
 function getBareExtensions(platforms, languageOptions = {
