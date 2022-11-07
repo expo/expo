@@ -47,6 +47,7 @@ import host.exp.exponent.storage.ExponentDBObject
 import host.exp.exponent.utils.AsyncCondition
 import host.exp.exponent.utils.AsyncCondition.AsyncConditionListener
 import host.exp.exponent.utils.ExperienceActivityUtils
+import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.ExpoActivityIds
 import host.exp.expoview.Exponent
 import host.exp.expoview.Exponent.StartReactInstanceDelegate
@@ -407,6 +408,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       )
       showOrReconfigureManagedAppSplashScreen(optimisticManifest)
       setLoadingProgressStatusIfEnabled()
+      ExperienceRTLManager.setSupportsRTLFromManifest(this, optimisticManifest)
     }
   }
 
@@ -507,6 +509,8 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
 
     BranchManager.handleLink(this, intentUri, detachSdkVersion)
+
+    ExperienceRTLManager.setSupportsRTLFromManifest(this, manifest)
 
     runOnUiThread {
       if (!isInForeground) {

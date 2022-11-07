@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Locked `layoutDirection` to LTR to prevent incorrect rendering when used together with a RTL enabled app. ([#19634](https://github.com/expo/expo/pull/19634) by [@aleqsio](https://github.com/aleqsio))
+
 ## 2.0.0 — 2022-10-27
 
 ### 🛠 Breaking changes
