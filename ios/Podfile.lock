@@ -1970,8 +1970,6 @@ PODS:
     - ExpoModulesCore
     - ZXingObjC/OneD
     - ZXingObjC/PDF417
-  - EXBlur (12.0.1):
-    - ExpoModulesCore
   - EXBranch (6.0.1):
     - Branch (= 0.35.0)
     - ExpoModulesCore
@@ -2038,6 +2036,8 @@ PODS:
     - ExpoModulesCore
   - ExpoBattery (7.0.0):
     - ExpoModulesCore
+  - ExpoBlur (12.0.1):
+    - ExpoModulesCore
   - ExpoCellular (5.0.1):
     - ExpoModulesCore
   - ExpoClipboard (4.0.1):
@@ -2080,6 +2080,8 @@ PODS:
   - ExpoSystemUI (2.0.1):
     - ExpoModulesCore
   - ExpoTrackingTransparency (3.0.1):
+    - ExpoModulesCore
+  - ExpoVideoThumbnails (7.0.0):
     - ExpoModulesCore
   - ExpoWebBrowser (12.0.0):
     - ExpoModulesCore
@@ -2128,8 +2130,6 @@ PODS:
     - OCMockito (~> 6.0)
     - React-Core
   - EXUpdatesInterface (0.8.1)
-  - EXVideoThumbnails (7.0.0):
-    - ExpoModulesCore
   - FacebookSDK/CoreKit (9.2.0):
     - FBSDKCoreKit (~> 9.2.0)
   - FacebookSDK/LoginKit (9.2.0):
@@ -3092,7 +3092,6 @@ DEPENDENCIES:
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
-  - EXBlur (from `../packages/expo-blur/ios`)
   - EXBranch (from `../packages/expo-branch/ios`)
   - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
@@ -3121,6 +3120,7 @@ DEPENDENCIES:
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo`)
   - ExpoBattery (from `../packages/expo-battery/ios`)
+  - ExpoBlur (from `../packages/expo-blur/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../packages/expo-clipboard/ios`)
@@ -3139,6 +3139,7 @@ DEPENDENCIES:
   - ExpoStoreReview (from `../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
+  - ExpoVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
   - EXPrint (from `../packages/expo-print/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
@@ -3156,7 +3157,6 @@ DEPENDENCIES:
   - EXUpdates (from `../packages/expo-updates/ios`)
   - EXUpdates/Tests (from `../packages/expo-updates/ios`)
   - EXUpdatesInterface (from `../packages/expo-updates-interface/ios`)
-  - EXVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - FBLazyVector (from `../react-native-lab/react-native/Libraries/FBLazyVector`)
   - FBReactNativeSpec (from `../react-native-lab/react-native/React/FBReactNativeSpec`)
   - FirebaseCore
@@ -3934,8 +3934,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-background-fetch/ios"
   EXBarCodeScanner:
     :path: "../packages/expo-barcode-scanner/ios"
-  EXBlur:
-    :path: "../packages/expo-blur/ios"
   EXBranch:
     :path: "../packages/expo-branch/ios"
   EXBrightness:
@@ -3988,6 +3986,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo"
   ExpoBattery:
     :path: "../packages/expo-battery/ios"
+  ExpoBlur:
+    :path: "../packages/expo-blur/ios"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
   ExpoClipboard:
@@ -4020,6 +4020,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-system-ui/ios"
   ExpoTrackingTransparency:
     :path: "../packages/expo-tracking-transparency/ios"
+  ExpoVideoThumbnails:
+    :path: "../packages/expo-video-thumbnails/ios"
   ExpoWebBrowser:
     :path: "../packages/expo-web-browser/ios"
   EXPrint:
@@ -4050,8 +4052,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-updates/ios"
   EXUpdatesInterface:
     :path: "../packages/expo-updates-interface/ios"
-  EXVideoThumbnails:
-    :path: "../packages/expo-video-thumbnails/ios"
   FBLazyVector:
     :path: "../react-native-lab/react-native/Libraries/FBLazyVector"
   FBReactNativeSpec:
@@ -4492,7 +4492,6 @@ SPEC CHECKSUMS:
   EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
   EXBarCodeScanner: 25f8a6a43c817a94afe54d07a1b9fe25550ea0fe
-  EXBlur: d87af64a1b4ae264059983bf54baca72be2cbc7d
   EXBranch: 7d74f6ff30a1efc45827517654dcc1508fe925f7
   EXBrightness: 1725afacfdaeb4724bb949c44384cff0ef0d7d18
   EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
@@ -4519,6 +4518,7 @@ SPEC CHECKSUMS:
   EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
+  ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
   ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
@@ -4529,12 +4529,13 @@ SPEC CHECKSUMS:
   ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
   ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
   ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
-  ExpoModulesCore: 137a16fd1f4a27e80ce58231022537a7bbe69fba
+  ExpoModulesCore: e47e5d3e3f8fbc03b6c41cfc1d54421381201dd5
   ExpoModulesTestCore: fe0a7344268158f254dadc9ac947b2c66bb19fed
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
   ExpoStoreReview: ff6d631f2949eb7e4b2d14146ef6af25a16d770d
   ExpoSystemUI: c844dec5e49e677bcd6bfe15cc305b02127b1124
   ExpoTrackingTransparency: 8d02327d4414009f03a43e6b2dbad52265996936
+  ExpoVideoThumbnails: 73bded4379da9a3581d611ec618abb837dd2d347
   ExpoWebBrowser: 073e50f16669d498fb49063b9b7fe780b24f7fda
   EXPrint: d0c207c654fcfefcbfca061998593a023014f84b
   EXScreenCapture: d9f1ec31042dfef109290d06c2b4789b7444d16d
@@ -4550,7 +4551,6 @@ SPEC CHECKSUMS:
   EXTaskManager: 0afcc6fd813dec5dee98aa5ec4f22c2a840dd4a7
   EXUpdates: 078c1ceeb13daa09884104e1a98cdd2896682b7a
   EXUpdatesInterface: bffd1ead18f0bab04fa784ca159c115607b8a23c
-  EXVideoThumbnails: 8b3e48f3716679dd0cbf949217a31eab5c555799
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
   FBAudienceNetwork: cfe55330dcc4e9a1df083c34a346ca7f8e32951e
   FBLazyVector: 8a28262f61fbe40c04ce8677b8d835d97c18f1b3

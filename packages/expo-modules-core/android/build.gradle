@@ -286,7 +286,11 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "org.jetbrains.kotlin:kotlin-reflect:${getKotlinVersion()}"
   implementation 'androidx.annotation:annotation:1.3.0'
-  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
+
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
+  api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
+  api "androidx.core:core-ktx:1.6.0"
+
   /**
    * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.
    * Unfortunately until https://github.com/facebook/react-native/pull/33072 is released React Native uses "androidx.appcompat:appcompat:1.0.2".

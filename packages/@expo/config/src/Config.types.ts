@@ -140,7 +140,6 @@ export enum ProjectPrivacy {
   UNLISTED = 'unlisted',
 }
 
-export type ExpRc = { [key: string]: any };
 export type Platform = 'android' | 'ios' | 'web';
 export type ProjectTarget = 'managed' | 'bare';
 

@@ -1,6 +1,7 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.exception.EnumNoSuchValueException
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.logger
@@ -73,9 +74,8 @@ class EnumTypeConverter(
     stringRepresentation: String,
     enumConstants: Array<out Enum<*>>
   ): Enum<*> {
-    return requireNotNull(
-      enumConstants.find { it.name == stringRepresentation }
-    ) { "Couldn't convert '$stringRepresentation' to ${enumClass.simpleName}" }
+    return enumConstants.find { it.name == stringRepresentation }
+      ?: throw EnumNoSuchValueException(enumClass, enumConstants, stringRepresentation)
   }
 
   /**
