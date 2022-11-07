@@ -182,7 +182,7 @@ describe('Android Updates config', () => {
         config,
         stringsJSON
       );
-      expect(format(stringsJSON)).toEqual('<resources>\n  <string name="runtime_version">1.10</string>\n</resources>')
+      expect(format(stringsJSON)).toEqual('<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>')
 
       const config2 = {
         sdkVersion: '1.10'

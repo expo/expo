@@ -142,12 +142,12 @@ function applyRuntimeVersionFromConfig(config, stringsJSON) {
 
   if (runtimeVersion) {
     return (0, _Strings().setStringItem)([(0, _Resources().buildResourceItem)({
-      name: 'runtime_version',
+      name: 'expo_runtime_version',
       value: runtimeVersion
     })], stringsJSON);
   }
 
-  return (0, _Strings().removeStringItem)('runtime_version', stringsJSON);
+  return (0, _Strings().removeStringItem)('expo_runtime_version', stringsJSON);
 }
 
 function setUpdatesConfig(projectRoot, config, androidManifest, username, expoUpdatesPackageVersion) {

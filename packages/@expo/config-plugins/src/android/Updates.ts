@@ -1,5 +1,3 @@
-import { ExpoConfig } from '@expo/config-types';
-import { run } from 'envinfo';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -80,9 +78,9 @@ export function applyRuntimeVersionFromConfig(
 ): ResourceXML {
   const runtimeVersion = getRuntimeVersionNullable(config, "android");
   if (runtimeVersion) {
-    return setStringItem([buildResourceItem({ name: 'runtime_version', value: runtimeVersion })], stringsJSON);
+    return setStringItem([buildResourceItem({ name: 'expo_runtime_version', value: runtimeVersion })], stringsJSON);
   }
-  return removeStringItem('runtime_version', stringsJSON);
+  return removeStringItem('expo_runtime_version', stringsJSON);
 }
 
 export function setUpdatesConfig(

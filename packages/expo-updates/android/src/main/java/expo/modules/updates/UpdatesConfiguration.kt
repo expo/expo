@@ -122,7 +122,7 @@ class UpdatesConfiguration private constructor (
         else -> {
           // Try to find the version in strings.xml
           val packageName = context.packageName
-          val resourceId = context.resources.getIdentifier("runtime_version", "string", packageName)
+          val resourceId = context.resources.getIdentifier("expo_runtime_version", "string", packageName)
           if (resourceId != 0) {
             // Found in strings.xml
             context.getString(resourceId)
