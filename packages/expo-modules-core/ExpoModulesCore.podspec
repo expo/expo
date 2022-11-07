@@ -33,13 +33,11 @@ Pod::Spec.new do |s|
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
   }
 
-  compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_MINOR_VERSION=#{REACT_NATIVE_MINOR_VERSION}"
-
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
 
   if fabric_enabled
-    compiler_flags << ' ' << fabric_compiler_flags
+    s.compiler_flags = folly_compiler_flags + ' ' + fabric_compiler_flags
 
     s.dependency 'React-RCTFabric'
     s.dependency 'RCT-Folly', folly_version
@@ -57,9 +55,8 @@ Pod::Spec.new do |s|
     exclude_files.append('ios/Fabric/')
     exclude_files.append('common/cpp/fabric/')
   end
-
   s.exclude_files = exclude_files
-  s.compiler_flags = compiler_flags
+
   s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|
