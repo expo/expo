@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Drop support for `.expo.*` extensions (deprecated in SDK 41).
+- Drop support for `.expo.*` extensions (deprecated in SDK 41). ([#19910](https://github.com/expo/expo/pull/19910) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
