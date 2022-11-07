@@ -1,14 +1,140 @@
 ---
-title: Creating a native module
+title: Creating your first native module
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
+import { Terminal } from '~/ui/components/Snippet';
 
+In this tutorial we are going to build a module that stores the user's preferred app theme - either dark, light, or system. We'll use [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults) on iOS and [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences) on Android. It is possible to implement web support using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), but we'll leave that as an exercise for the reader.
 
-In this tutorial we are going to build a module that reads information about the device and application from native and exposes it to JavaScript.
+## 1. Initialize a new module
 
-- application id and bundle identifier
-- native version and build version
-- any other ideas?
+First, we'll create a new module. On this page we will use the name `expo-settings` / `ExpoSettings`. You can name it whatever you like, just adjust the instructions accordingly:
+
+<Terminal cmd={['$ npx create-expo-module expo-settings']} />
+
+> **Tip**: Since you aren't going to actually ship this library, you can hit <kbd>return</kbd> for all of the prompts to accept the default values.
+
+## 2. Set up our workspace
+
+Now let's clean up the default module a little bit so we have more of a clean slate and delete the view module that we won't use in this guide.
+
+<Terminal
+  cmdCopy="cd expo-settings && rm ios/ExpoSettingsView.swift && rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt && rm src/ExpoSettingsView.tsx src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts src/ExpoSettings.types.ts"
+  cmd={[
+    '$ cd expo-settings',
+    '$ rm ios/ExpoSettingsView.swift',
+    '$ rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt',
+    '$ rm src/ExpoSettingsView.tsx src/ExpoSettings.types.ts',
+    '$ rm src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts',
+  ]}
+/>
+
+Find the following files and replace them with the provided minimal boilerplate:
+
+```swift ios/ExpoSettingsModule.swift
+import ExpoModulesCore
+
+public class ExpoSettingsModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoSettings")
+  }
+}
+```
+
+```kotlin android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt
+package expo.modules.settings
+
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+
+class ExpoSettingsModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoSettings")
+  }
+}
+```
+
+```js src/ExpoSettings.ts
+import ExpoSettings from './ExpoSettingsModule';
+export { ExpoSettings };
+```
+
+```swift
+import ExpoModulesCore
+
+public class ExpoSettingsModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoSettings")
+
+    Events("onChangeTheme")
+
+    Function("setTheme") { (value: Theme) -> Void in
+      setValue("theme", value:value.rawValue)
+      sendEvent("onChangeTheme", [
+        "theme": value.rawValue
+      ])
+    }
+
+    Function("getTheme") { () -> String? in
+      getValue("theme") ?? Theme.system.rawValue
+    }
+  }
+
+  enum Theme: String, Enumerable {
+    case light
+    case dark
+    case system
+  }
+}
+
+private func setValue(_ key: String, value: String) -> Void {
+  UserDefaults.standard.set(value, forKey:key)
+}
+
+private func getValue(_ key: String) -> String? {
+  UserDefaults.standard.string(forKey: key)
+}
+```
+
+```kotlin
+package expo.modules.settings
+
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.core.os.bundleOf
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.types.Enumerable
+
+class ExpoSettingsModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoSettings")
+
+    Events("onChangeTheme")
+
+    Function("setTheme") { theme: Theme ->
+      getPreferences().edit().putString("theme", theme.value).commit()
+      this@ExpoSettingsModule.sendEvent("onChangeTheme", bundleOf("theme" to theme.value))
+    }
+    Function("getTheme") {
+      return@Function getPreferences().getString("theme", Theme.SYSTEM.value)
+    }
+  }
+
+  private val context
+  get() = requireNotNull(appContext.reactContext)
+
+  private fun getPreferences(): SharedPreferences {
+    return context.getSharedPreferences(context.packageName + ".settings", Context.MODE_PRIVATE)
+  }
+}
+
+enum class Theme(val value: String) : Enumerable {
+  LIGHT("light"),
+  DARK("dark"),
+  SYSTEM("system")
+}
+```
