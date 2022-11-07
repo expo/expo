@@ -4,8 +4,6 @@ import ExpoBarometer from './ExpoBarometer';
 
 /**
  * The altitude data returned from the native sensors.
- * @platform android
- * @platform ios
  */
 export type BarometerMeasurement = {
   /**

@@ -4,7 +4,7 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/calendar.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/calendar.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/calendar/)
 
 # Installation in managed Expo projects

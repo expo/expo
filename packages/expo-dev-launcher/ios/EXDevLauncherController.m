@@ -2,7 +2,6 @@
 #import <React/RCTRootView.h>
 #import <React/RCTDevLoadingViewSetEnabled.h>
 #import <React/RCTDevMenu.h>
-#import <React/RCTAsyncLocalStorage.h>
 #import <React/RCTDevSettings.h>
 #import <React/RCTRootContentView.h>
 #import <React/RCTAppearance.h>
@@ -89,7 +88,6 @@
   NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules:bridge addReanimated2:FALSE] mutableCopy];
   
   [modules addObject:[RCTDevMenu new]];
-  [modules addObject:[RCTAsyncLocalStorage new]];
 #ifndef EX_DEV_LAUNCHER_URL
   [modules addObject:[EXDevLauncherRCTDevSettings new]];
 #endif

@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
@@ -27,6 +26,14 @@ export type APISectionClassesProps = {
   data: GeneratedData[];
 };
 
+const classNamesMap: Record<string, string> = {
+  AccelerometerSensor: 'Accelerometer',
+  BarometerSensor: 'Barometer',
+  DeviceMotionSensor: 'DeviceMotion',
+  GyroscopeSensor: 'Gyroscope',
+  MagnetometerSensor: 'Magnetometer',
+} as const;
+
 const isProp = (child: PropData) =>
   child.kind === TypeDocKind.Property &&
   !child.overwrites &&
@@ -39,24 +46,35 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   !child.name.startsWith('_') &&
   !child?.implementationOf;
 
-const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
-  const { name, comment, type, extendedTypes, children, implementedTypes } = clx;
-  const Header = exposeInSidebar ? H2Nested : H4;
+const remapClass = (clx: ClassDefinitionData) => {
+  clx.isSensor = clx.name.endsWith('Sensor');
+  clx.name = classNamesMap[clx.name] ?? clx.name;
 
-  const isSensorClass = name.endsWith('Sensor');
-  const className = isSensorClass ? name.replace('Sensor', '') : name;
+  if (clx.isSensor && clx.extendedTypes) {
+    clx.extendedTypes = clx.extendedTypes.map(type => ({
+      ...type,
+      name: type.name === 'default' ? 'DeviceSensor' : type.name,
+    }));
+  }
+
+  return clx;
+};
+
+const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
+  const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
+  const Header = exposeInSidebar ? H2Nested : H4;
 
   const properties = children?.filter(isProp);
   const methods = children
-    ?.filter(child => isMethod(child, isSensorClass))
+    ?.filter(child => isMethod(child, isSensor))
     .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
   const returnComment = getTagData('returns', comment);
 
   return (
-    <div key={`class-definition-${className}`} css={STYLES_APIBOX}>
+    <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <InlineCode>{className}</InlineCode>
+        <InlineCode>{name}</InlineCode>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <P>
@@ -65,16 +83,11 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
           {extendedTypes?.length && (
             <>
               <span> extends </span>
-              {extendedTypes.map(extendedType => {
-                if (isSensorClass && extendedType.name === 'default') {
-                  extendedType.name = 'DeviceSensor';
-                }
-                return (
-                  <InlineCode key={`extends-${extendedType.name}`}>
-                    {resolveTypeName(extendedType)}
-                  </InlineCode>
-                );
-              })}
+              {extendedTypes.map(extendedType => (
+                <InlineCode key={`extends-${extendedType.name}`}>
+                  {resolveTypeName(extendedType)}
+                </InlineCode>
+              ))}
             </>
           )}
           {implementedTypes?.length && (
@@ -101,7 +114,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       {properties?.length ? (
         <>
           <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{className} Properties</Header>
+            <Header>{name} Properties</Header>
           </div>
           <div>
             {properties.map(property =>
@@ -113,7 +126,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       {methods?.length && (
         <>
           <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{className} Methods</Header>
+            <Header>{name} Methods</Header>
           </div>
           {methods.map(method => renderMethod(method, { exposeInSidebar }))}
         </>
@@ -128,7 +141,7 @@ const APISectionClasses = ({ data }: APISectionClassesProps) => {
     return (
       <>
         <H2>Classes</H2>
-        {data.map(cls => renderClass(cls, exposeInSidebar))}
+        {data.map(clx => renderClass(remapClass(clx), exposeInSidebar))}
       </>
     );
   }
