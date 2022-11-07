@@ -20,8 +20,7 @@ public class LocalizationModule: Module {
       return Self.getCalendars()
     }
     OnCreate {
-      let enableRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL")
-      if let enableRTL = enableRTL as? Bool {
+      if let enableRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool {
         self.setSupportsRTL(enableRTL)
       }
     }

@@ -19,7 +19,7 @@
 ### 🎉 New features
 
 - Added two new synchronous functions: `getLocales` and `getCalendars`. ([#19019](https://github.com/expo/expo/pull/19019) by [@aleqsio](https://github.com/aleqsio))
-- Added a `supportRTL` manifest flag for enabling RTL on suitable locales. ([#19634](https://github.com/expo/expo/pull/19634) by [@aleqsio](https://github.com/aleqsio))
+- Added a `supportsRTL` manifest flag for enabling RTL on suitable locales. ([#19634](https://github.com/expo/expo/pull/19634) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
