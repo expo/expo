@@ -8,7 +8,7 @@ import {
 const pkg = require('expo-localization/package.json');
 
 const withExpoLocalization: ConfigPlugin = (config) => {
-  if (config.extra?.supportsRTL === undefined) return config;
+  if (config.extra?.supportsRTL == null) return config;
   if (!config.ios) config.ios = {};
   if (!config.ios.infoPlist) config.ios.infoPlist = {};
   config.ios.infoPlist.ExpoLocalization_supportsRTL = config.extra?.supportsRTL || false;
