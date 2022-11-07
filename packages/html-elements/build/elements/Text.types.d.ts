@@ -14,5 +14,9 @@ export declare type LinkProps = React.PropsWithChildren<TextProps & {
     href?: string;
     /** @platform web */
     target?: string;
+    /** @platform web */
+    rel?: string;
+    /** @platform web */
+    download?: boolean | string;
 }>;
 //# sourceMappingURL=Text.types.d.ts.map

@@ -146,7 +146,7 @@ export async function exportAppAsync(
   }
 
   // Generate a `metadata.json` and the export is complete.
-  await writeMetadataJsonAsync({ outputDir, bundles, fileNames });
+  await writeMetadataJsonAsync({ outputDir: outputPath, bundles, fileNames });
 }
 
 /**

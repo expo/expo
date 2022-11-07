@@ -53,7 +53,7 @@ class ManifestException : ExponentException {
                   "This project uses SDK " + sdkVersionRequired + " , but this version of Expo Go only supports the following SDKs: " + Constants.SDK_VERSIONS_LIST.joinToString() + ". To load the project, it must be updated to a supported SDK version or an older version of Expo Go must be used."
               }
               "NO_SDK_VERSION_SPECIFIED" -> {
-                formattedMessage = "Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): " + Constants.SDK_VERSIONS_LIST.joinToString() + ". A custom development build must be used to load other runtimes."
+                formattedMessage = "Incompatible SDK version or no SDK version specified. This version of Expo Go only supports the following SDKs (runtimes): " + Constants.SDK_VERSIONS_LIST.joinToString() + ". A development build must be used to load other runtimes."
               }
               "EXPERIENCE_SDK_VERSION_TOO_NEW" ->
                 formattedMessage =

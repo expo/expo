@@ -3,8 +3,9 @@ title: Native Modules
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
-import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
+import { PlatformTags } from '~/ui/components/Tag';
+import { APIMethod } from '~/components/plugins/api/APISectionMethods';
 
 > **warning** Expo Modules APIs are in beta and subject to breaking changes.
 
@@ -152,10 +153,32 @@ async function getMessageAsync() {
 }
 ```
 
+<hr />
+
+#### Kotlin coroutines <PlatformTags prefix="" platforms={['android']} />
+
+`AsyncFunction` can receive a suspendable body on Android. However, it has to be passed in the infix notation after the `Coroutine` block. You can read more about suspendable functions and coroutines on [coroutine overview](https://kotlinlang.org/docs/coroutines-overview.html).
+
+`AsyncFunction` with suspendable body can't receive `Promise` as an argument. It uses a suspension mechanism to execute asynchronous calls.
+The function is immediately resolved with the returned value of the provided suspendable block or rejected if it throws an exception. The function can receive up to 8 arguments.
+
+By default, suspend functions are dispatched on the module's coroutine scope. Moreover, every other suspendable function called from the body block is run within the same scope.
+This scope's lifecycle is bound to the module's lifecycle - all unfinished suspend functions will be canceled when the module is deallocated.
+
+```kotlin Kotlin
+AsyncFunction("suspendFunction") Coroutine { message: String ->
+  launch {
+    return@Coroutine message
+  }
+}
+```
+
 </APIBox>
 <APIBox header="Events">
 
 Defines event names that the module can send to JavaScript.
+
+> **Note**: This component can be used inside of the [`View`](#view) block to define callback names. See [`View callbacks`](#view-callbacks)
 
 <CodeBlocksTable>
 
@@ -212,8 +235,7 @@ Enables the module to be used as a native view. Definition components that are a
 
 #### Arguments
 
-- **viewType** — The class of the native view that will be rendered.
-- **definition**: `() -> ViewDefinition` — A builder of the view definition.
+- **viewType** — The class of the native view that will be rendered. Note: On Android, the provided class must inherit from the [`ExpoView`](#expoview), on iOS it's optional. See [`Extending ExpoView`](#extending--expoview).
 
 <CodeBlocksTable>
 
@@ -494,6 +516,105 @@ The implementation for three Either types is currently provided out of the box, 
 
 </APIBox>
 
+## Native Classes
+
+<APIBox header="Module">
+
+A base class for a native module.
+
+#### Properties
+
+<APIMethod
+  name="appContext"
+  comment="Provides access to the [`AppContext`](#appcontext)."
+  returnTypeName="AppContext"
+  isProperty={true}
+  isReturnTypeReference={true}
+/>
+
+#### Methods
+
+<APIMethod
+  name="sendEvent"
+  comment="Sends an event with a given name and a payload to JavaScript. See [`Sending events`](#sending-events)"
+  returnTypeName="void"
+  parameters={[
+    {
+      name: 'eventName',
+      comment: 'The name of the JavaScript event',
+      typeName: 'string',
+    },
+    {
+      name: 'payload',
+      comment: 'The event payload',
+      typeName: 'Android: Map<String, Any?> | Bundle\niOS: [String: Any?]',
+    },
+  ]}
+/>
+
+</APIBox>
+
+<APIBox header="AppContext">
+
+The app context is an interface to a single Expo app.
+
+</APIBox>
+
+<APIBox header="ExpoView">
+
+A base class that should be used by all exported views.
+
+On iOS, `ExpoView` extends the `RCTView` which handles some styles (e.g. borders) and accessibility.
+
+#### Properties
+
+<APIMethod
+  name="appContext"
+  comment="Provides access to the [`AppContext`](#appcontext)."
+  returnTypeName="AppContext"
+  isProperty={true}
+  isReturnTypeReference={true}
+/>
+
+<hr />
+
+#### Extending `ExpoView`
+
+To export your view using the [`View`](#view) component, your custom class must inherit from the `ExpoView`. By doing that you will get access to the [`AppContext`](#appcontext) object. It's the only way of communicating with other modules and the JavaScript runtime. Also, you can't change constructor parameters, becuase provided view will be initialized by `expo-modules-core`.
+
+<CodeBlocksTable>
+
+```swift
+class LinearGradientView: ExpoView {}
+
+public class LinearGradientModule: Module {
+  public func definition() -> ModuleDefinition {
+    View(LinearGradientView.self) {
+      // ...
+    }
+  }
+}
+```
+
+```kotlin
+class LinearGradientView(
+  context: Context,
+  appContext: AppContext,
+) : ExpoView(context, appContext)
+
+class LinearGradientModule : Module() {
+  override fun definition() = ModuleDefinition {
+    View(LinearGradientView::class) {
+      // ...
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+</APIBox>
+
 ## Guides
 
 <APIBox header="Sending events">
@@ -587,6 +708,89 @@ export function addClipboardListener(listener: (event) => void): Subscription {
 
 </APIBox>
 
+<APIBox header="View callbacks">
+
+Some events are connected to a certain view. For example, the touch event should be sent only to the underlying JavaScript view which was pressed. In that case, you can't use `sendEvent` described in [`Sending events`](#sending-events). The `expo-modules-core` introduces a view callbacks mechanism to handle view-bound events.
+
+To use it, in the view definition, you need to provide the event names that the view can send using the [Events](#events) definition component. After that, you need to declare a property of type `EventDispatcher` in your view class. The name of the declared property has to be the same as the name exported in the `Events` component. Later, you can call it as a function and pass a payload of type `[String: Any?]` on iOS and `Map<String, Any?>` on Android.
+
+> **Note**: On Android, it's possible to specify the payload type. In case of types that don't convert into objects, the payload will be encapsulated and stored under the `payload` key: `{payload: <provided value>}`.
+
+<CodeBlocksTable>
+
+```swift
+class CameraViewModule: Module {
+  public func definition() -> ModuleDefinition {
+    View(CamerView.self) {
+      Events(
+        "onCameraReady"
+      )
+
+      // ...
+    }
+  }
+}
+
+class CameraView: ExpoView {
+  let onCameraReady = EventDispatcher()
+
+  func callOnCameraReady() {
+    onCameraReady([
+      "message": "Camera was mounted"
+    ]);
+  }
+}
+```
+
+```kotlin
+class CameraViewModule : Module() {
+  override fun definition() = ModuleDefinition {
+    View(ExpoCameraView::class) {
+      Events(
+        "onCameraReady"
+      )
+
+      // ...
+    }
+  }
+}
+
+class CameraView(
+  context: Context,
+  appContext: AppContext
+) : ExpoView(context, appContext) {
+  val onCameraReady by EventDispatcher()
+
+  fun callOnCameraReady() {
+    onCameraReady(mapOf(
+      "message" to "Camera was mounted"
+    ));
+  }
+}
+```
+
+</CodeBlocksTable>
+
+To subscribe to these events in JavaScript/TypeScript, you need to pass a function to the native view as shown:
+
+```ts TypeScript
+import { requireNativeViewManager } from 'expo-modules-core';
+
+const CameraView = requireNativeViewManager('CameraView');
+
+export default function MainView() {
+  const onCameraReady = event => {
+    console.log(event.nativeEvent);
+  };
+
+  return <CameraView onCameraReady={onCameraReady} />;
+}
+```
+
+Provided payload is available under the `nativeEvent` key.
+
+</APIBox>
+
 ## Examples
 
 <CodeBlocksTable>
@@ -630,4 +834,5 @@ For more examples from real modules, you can refer to Expo modules that already 
 - `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization))
 - `expo-store-review` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-store-review/ios))
 - `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI))
+- `expo-video-thumbnails` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios))
 - `expo-web-browser` ([Swift](https://github.com/expo/expo/blob/main/packages/expo-web-browser/ios), [Kotlin](https://github.com/expo/expo/blob/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser))

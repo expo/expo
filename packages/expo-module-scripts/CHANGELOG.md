@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.0.3 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
+
 ## 3.0.2 — 2022-10-30
 
 ### 💡 Others

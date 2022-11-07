@@ -21,7 +21,7 @@ For bare React Native projects, ensure that you have the [native `expo` package]
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide][contributing].
 
-[docs-main]: https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/system-ui.md
+[docs-main]: https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/system-ui.mdx
 [docs-stable]: https://docs.expo.dev/versions/latest/sdk/system-ui/
 [contributing]: https://github.com/expo/expo#contributing
 [expo-modules]: https://docs.expo.dev/bare/installing-expo-modules/

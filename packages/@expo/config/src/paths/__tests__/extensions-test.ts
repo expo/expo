@@ -1,26 +1,30 @@
-import { getExtensions, getLanguageExtensionsInOrder, getManagedExtensions } from '../extensions';
+import { getExtensions, getBareExtensions, getLanguageExtensionsInOrder } from '../extensions';
 
-describe('getExtensions', () => {
+describe(getExtensions, () => {
   it(`enforces \`string[]\``, async () => {
+    // @ts-expect-error: test invalid input
     expect(() => getExtensions('web')).toThrow(`string[]`);
+    // @ts-expect-error: test invalid input
     expect(() => getExtensions([], 'js')).toThrow(`string[]`);
+    // @ts-expect-error: test invalid input
     expect(() => getExtensions([], [], 'expo')).toThrow(`string[]`);
+    // @ts-expect-error: test invalid input
     expect(() => getExtensions([], null, [])).toThrow(`string[]`);
   });
 });
 
-describe('getManagedExtensions', () => {
+describe(getBareExtensions, () => {
   it(`creates extensions for web`, async () => {
-    expect(getManagedExtensions(['web'])).toMatchSnapshot();
+    expect(getBareExtensions(['web'])).toMatchSnapshot();
   });
 
   it(`creates extensions for iOS`, async () => {
-    expect(getManagedExtensions(['ios', 'native'])).toMatchSnapshot();
+    expect(getBareExtensions(['ios', 'native'])).toMatchSnapshot();
   });
 });
 
 // Enforce that all extensions are returned in the correct order, this is very important!
-describe('getLanguageExtensionsInOrder', () => {
+describe(getLanguageExtensionsInOrder, () => {
   // Return only support for the bare minimum
   it(`JS only`, async () => {
     expect(

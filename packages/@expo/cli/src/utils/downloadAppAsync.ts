@@ -6,7 +6,6 @@ import { promisify } from 'util';
 
 import { createCachedFetch, fetchAsync } from '../api/rest/client';
 import { FetchLike, ProgressCallback } from '../api/rest/client.types';
-import { wrapFetchWithProgress } from '../api/rest/wrapFetchWithProgress';
 import { ensureDirectoryAsync } from './dir';
 import { CommandError } from './errors';
 import { extractAsync } from './tar';
@@ -40,7 +39,7 @@ async function downloadAsync({
   }
 
   debug(`Downloading ${url} to ${outputPath}`);
-  const res = await wrapFetchWithProgress(fetchInstance)(url, {
+  const res = await fetchInstance(url, {
     timeout: TIMER_DURATION,
     onProgress,
   });

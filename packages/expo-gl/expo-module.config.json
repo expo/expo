@@ -1,0 +1,8 @@
+{
+  "name": "expo-gl",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "podspecPath": "./ExpoGL.podspec",
+    "modules": ["GLViewModule"]
+  }
+}
