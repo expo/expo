@@ -1,7 +1,8 @@
+import { requireNativeModule, requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
-import { Image, requireNativeComponent, NativeModules, StyleSheet, Platform, processColor, } from 'react-native';
-const NativeExpoImage = requireNativeComponent('ExpoImage');
-const ExpoImageModule = NativeModules.ExpoImageModule;
+import { Image, StyleSheet, Platform, processColor } from 'react-native';
+const NativeExpoImage = requireNativeViewManager('ExpoImage');
+const ExpoImageModule = requireNativeModule('ExpoImage');
 export { ExpoImageModule };
 export default function ExpoImage({ source, style, defaultSource, loadingIndicatorSource, ...props }) {
     const resolvedSource = Image.resolveAssetSource(source ?? {});
