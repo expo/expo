@@ -17,6 +17,12 @@ export interface LaunchBrowserImpl {
      */
     isSupportedBrowser: (browserType: LaunchBrowserTypes) => Promise<boolean>;
     /**
+     * Create temp directory for browser profile
+     *
+     * @param baseDirName The base directory name for the created directory
+     */
+    createTempBrowserDir: (baseDirName: string) => Promise<string>;
+    /**
      * Launch the browser
      */
     launchAsync: (browserType: LaunchBrowserTypes, args: string[]) => Promise<LaunchBrowserInstance>;

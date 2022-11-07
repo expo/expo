@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import { type ChildProcess } from 'child_process';
 import open from 'open';
+import path from 'path';
 
 import {
   LaunchBrowserTypes,
@@ -54,6 +55,10 @@ export default class LaunchBrowserImplLinux implements LaunchBrowserImpl, Launch
       result = false;
     }
     return result;
+  }
+
+  async createTempBrowserDir(baseDirName: string) {
+    return path.join(require('temp-dir'), baseDirName);
   }
 
   async launchAsync(

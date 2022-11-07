@@ -1,6 +1,7 @@
 import * as osascript from '@expo/osascript';
 import { spawn, type ChildProcess } from 'child_process';
 import { sync as globSync } from 'glob';
+import path from 'path';
 
 import {
   LaunchBrowserTypes,
@@ -28,6 +29,10 @@ export default class LaunchBrowserImplMacOS implements LaunchBrowserImpl, Launch
       result = false;
     }
     return result;
+  }
+
+  async createTempBrowserDir(baseDirName: string) {
+    return path.join(require('temp-dir'), baseDirName);
   }
 
   async launchAsync(

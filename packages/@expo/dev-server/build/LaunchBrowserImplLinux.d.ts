@@ -14,6 +14,7 @@ export default class LaunchBrowserImplLinux implements LaunchBrowserImpl, Launch
      */
     private getAppId;
     isSupportedBrowser(browserType: LaunchBrowserTypes): Promise<boolean>;
+    createTempBrowserDir(baseDirName: string): Promise<string>;
     launchAsync(browserType: LaunchBrowserTypes, args: string[]): Promise<LaunchBrowserInstance>;
     close(): Promise<void>;
 }

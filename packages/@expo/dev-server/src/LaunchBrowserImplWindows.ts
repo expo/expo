@@ -1,11 +1,14 @@
 import spawnAsync from '@expo/spawn-async';
 import open from 'open';
+import path from 'path';
 
 import {
   LaunchBrowserTypes,
   type LaunchBrowserImpl,
   type LaunchBrowserInstance,
 } from './LaunchBrowser.types';
+
+const IS_WSL = require('is-wsl') && !require('is-docker')();
 
 /**
  * Browser implementation for Windows and WSL
@@ -39,6 +42,19 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
       result = false;
     }
     return result;
+  }
+
+  async createTempBrowserDir(baseDirName: string) {
+    let tmpDir;
+    if (IS_WSL) {
+      // On WSL, the browser is actually launched in host, the `temp-dir` returns the linux /tmp path where host browsers cannot reach into.
+      // We should get the temp path through the `$TEMP` windows environment variable.
+      tmpDir = (await spawnAsync('powershell.exe', ['-c', 'echo "$Env:TEMP"'])).stdout.trim();
+      return `${tmpDir}\\${baseDirName}`;
+    } else {
+      tmpDir = require('temp-dir');
+      return path.join(tmpDir, baseDirName);
+    }
   }
 
   async launchAsync(

@@ -17,6 +17,7 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
         };
     };
     isSupportedBrowser(browserType: LaunchBrowserTypes): Promise<boolean>;
+    createTempBrowserDir(baseDirName: string): Promise<string>;
     launchAsync(browserType: LaunchBrowserTypes, args: string[]): Promise<LaunchBrowserInstance>;
     close(): Promise<void>;
 }

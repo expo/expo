@@ -22,10 +22,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const osascript = __importStar(require("@expo/osascript"));
 const child_process_1 = require("child_process");
 const glob_1 = require("glob");
+const path_1 = __importDefault(require("path"));
 const LaunchBrowser_types_1 = require("./LaunchBrowser.types");
 /**
  * Browser implementation for macOS
@@ -47,6 +51,9 @@ class LaunchBrowserImplMacOS {
             result = false;
         }
         return result;
+    }
+    async createTempBrowserDir(baseDirName) {
+        return path_1.default.join(require('temp-dir'), baseDirName);
     }
     async launchAsync(browserType, args) {
         const appDirectory = await osascript.execAsync(`POSIX path of (path to application "${this.MAP[browserType]}")`);

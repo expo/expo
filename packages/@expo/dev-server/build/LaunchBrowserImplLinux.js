@@ -5,6 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const open_1 = __importDefault(require("open"));
+const path_1 = __importDefault(require("path"));
 const LaunchBrowser_types_1 = require("./LaunchBrowser.types");
 /**
  * Browser implementation for Linux
@@ -47,6 +48,9 @@ class LaunchBrowserImplLinux {
             result = false;
         }
         return result;
+    }
+    async createTempBrowserDir(baseDirName) {
+        return path_1.default.join(require('temp-dir'), baseDirName);
     }
     async launchAsync(browserType, args) {
         const appId = await this.getAppId(browserType);

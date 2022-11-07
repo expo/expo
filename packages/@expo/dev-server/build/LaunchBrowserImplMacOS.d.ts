@@ -9,6 +9,7 @@ export default class LaunchBrowserImplMacOS implements LaunchBrowserImpl, Launch
         1: string;
     };
     isSupportedBrowser(browserType: LaunchBrowserTypes): Promise<boolean>;
+    createTempBrowserDir(baseDirName: string): Promise<string>;
     launchAsync(browserType: LaunchBrowserTypes, args: string[]): Promise<LaunchBrowserInstance>;
     close(): Promise<void>;
 }
