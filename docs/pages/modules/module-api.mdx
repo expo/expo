@@ -157,7 +157,7 @@ async function getMessageAsync() {
 
 Defines event names that the module can send to JavaScript.
 
-> Note: This component can be used inside of the [`View`](#view) block to define callback names. See [`View callbacks`](#view-callbacks)
+> **Note**: This component can be used inside of the [`View`](#view) block to define callback names. See [`View callbacks`](#view-callbacks)
 
 <CodeBlocksTable>
 
@@ -593,9 +593,9 @@ export function addClipboardListener(listener: (event) => void): Subscription {
 
 Some events are connected to a certain view. For example, the touch event should be sent only to the underlying JavaScript view which was pressed. In that case, you can't use `sendEvent` described in [`Sending events`](#sending-events). The `expo-modules-core` introduces a view callbacks mechanism to handle view-bound events.
 
-To use it, in the view definition, you need to provide the event names that the view can send using the [Events](#events) definition component. After that, you need to declare a property of type `EventDispatcher` in your view class. The name of the declared property has to be the same as the name exported in the `Events` component. Later, you can just call it as a function and pass a payload of type `[String: Any?]` on iOS and `Map<String, Any?>` on Android.
+To use it, in the view definition, you need to provide the event names that the view can send using the [Events](#events) definition component. After that, you need to declare a property of type `EventDispatcher` in your view class. The name of the declared property has to be the same as the name exported in the `Events` component. Later, you can call it as a function and pass a payload of type `[String: Any?]` on iOS and `Map<String, Any?>` on Android.
 
-> Note: On Android, it's possible to specify the payload type. In case of types that don't convert into objects, the payload will be encapsulated and stored under the `payload` key: `{payload: <provided value>}`.
+> **Note**: On Android, it's possible to specify the payload type. In case of types that don't convert into objects, the payload will be encapsulated and stored under the `payload` key: `{payload: <provided value>}`.
 
 <CodeBlocksTable>
 
