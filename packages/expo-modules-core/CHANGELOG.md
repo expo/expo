@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Exposed coroutines related packages on Android.
+
 ## 1.0.0 — 2022-11-03
 
 _This version does not introduce any user-facing changes._
