@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Drop support for `.expo.*` extensions (deprecated in SDK 41).
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
