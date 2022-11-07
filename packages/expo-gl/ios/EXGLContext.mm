@@ -1,7 +1,7 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXGL/EXGLContext.h>
-#import <EXGL/EXGLObjectManager.h>
+#import <ExpoGL/EXGLContext.h>
+#import <ExpoGL/EXGLObjectManager.h>
 
 #import <ExpoModulesCore/EXUtilities.h>
 #import <ExpoModulesCore/EXUIManager.h>

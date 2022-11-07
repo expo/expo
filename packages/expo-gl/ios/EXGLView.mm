@@ -1,8 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXUtilities.h>
-#import <EXGL/EXGLView.h>
-#import <EXGL/EXGLContext.h>
+#import <ExpoGL/EXGLView.h>
+#import <ExpoGL/EXGLContext.h>
 
 #include <OpenGLES/ES2/glext.h>
 #include <OpenGLES/ES3/gl.h>
@@ -188,7 +188,7 @@
     glGenRenderbuffers(1, &self->_msaaRenderbuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, self->_msaaFramebuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, self->_msaaRenderbuffer);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, self.msaaSamples.intValue, GL_RGBA8,
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, self.msaaSamples, GL_RGBA8,
                                      self->_layerWidth, self->_layerHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                               GL_RENDERBUFFER, self->_msaaRenderbuffer);
@@ -198,7 +198,7 @@
     // Set up new depth+stencil renderbuffer
     glGenRenderbuffers(1, &self->_viewDepthStencilbuffer);
     glBindRenderbuffer(GL_RENDERBUFFER, self->_viewDepthStencilbuffer);
-    glRenderbufferStorageMultisample(GL_RENDERBUFFER, self.msaaSamples.intValue, GL_DEPTH24_STENCIL8,
+    glRenderbufferStorageMultisample(GL_RENDERBUFFER, self.msaaSamples, GL_DEPTH24_STENCIL8,
                                      self->_layerWidth, self->_layerHeight);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                               GL_RENDERBUFFER, self->_viewDepthStencilbuffer);
