@@ -1,5 +1,5 @@
 ---
-title: Localizing Expo applications
+title: Localization
 ---
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
@@ -13,7 +13,7 @@ If you want your app to be easy to use for users that speak different languages 
 Localizing an app makes it adapt to the locale of the user's device. The app will show translations and currencies that the user knows and understands. Numbers, lists and more will format in a way that the user is used to.
 
 ## Getting the user's language
-Use the [`expo-localization`](expo-localization) module to get the user's current language.
+Use the [`expo-localization`](../versions/latest/sdk/localization) module to get the user's current language.
 
 <Terminal cmd={['$ npx expo install expo-localization']} />
 
@@ -29,7 +29,7 @@ On new iOS and Android versions, app language can be set per app, so you usually
 
 Sometimes, it makes sense to build UI to allow the user to set other localization preferences on a per-app basis. As a general rule you should allow the user to change:
  - Localized units if your app makes at least a moderate use of them (such as metric/imperial measurements, currency, temperature and more)
- - Other preferences if there's no API to get the default value on platforms you want to support (check [`expo-localization`](expo-localization) API documentation for details)
+ - Other preferences if there's no API to get the default value on platforms you want to support (check [`expo-localization`](../versions/latest/sdk/localization) API documentation for details)
 
 ## Translating an app
 
@@ -190,6 +190,7 @@ To enable it in your application, install `expo-localization` and add the follow
         "supportsRTL": true
     },
     "plugins": ["expo-localization"],
+	}
 }
 ```
 
