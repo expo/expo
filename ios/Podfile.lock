@@ -2304,7 +2304,7 @@ PODS:
     - AppAuth/Core (~> 1.6)
     - GTMSessionFetcher/Core (< 3.0, >= 1.5)
   - GTMSessionFetcher/Core (1.7.2)
-  - hermes-engine (0.70.4)
+  - hermes-engine (0.70.5)
   - JKBigInteger (0.0.6)
   - libevent (2.1.12)
   - lottie-ios (3.4.4)
@@ -4577,7 +4577,7 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMAppAuth: 0ff230db599948a9ad7470ca667337803b3fc4dd
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
-  hermes-engine: 3623325e0d0676a45fbc544d72c57dd79fce7446
+  hermes-engine: 7fe5fc6ef707b7fdcb161b63898ec500e285653d
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
