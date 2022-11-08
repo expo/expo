@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix web assets not loading in Metro for web on Windows.
+- Fix web assets not loading in Metro for web on Windows. ([#19935](https://github.com/expo/expo/pull/19935) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix Hermes debugger `TypeError: Only HTTP(S) protocols are supported` error when starting server with `--dev-client` parameter. ([#19919](https://github.com/expo/expo/pull/19919) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
