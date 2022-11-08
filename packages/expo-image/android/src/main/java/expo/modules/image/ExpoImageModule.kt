@@ -103,10 +103,10 @@ class ExpoImageModule : Module() {
         ViewProps.BORDER_BOTTOM_WIDTH to Spacing.BOTTOM,
         ViewProps.BORDER_START_WIDTH to Spacing.START,
         ViewProps.BORDER_END_WIDTH to Spacing.END
-      ) { view: ExpoImageViewWrapper, location: Int, width: Float? ->
+      ) { view: ExpoImageViewWrapper, index: Int, width: Float? ->
         val pixelWidth = makeYogaUndefinedIfNegative(width ?: YogaConstants.UNDEFINED)
           .ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-        view.setBorderWidth(location, pixelWidth)
+        view.setBorderWidth(index, pixelWidth)
       }
 
       PropGroup(
@@ -117,10 +117,10 @@ class ExpoImageModule : Module() {
         ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
         ViewProps.BORDER_START_COLOR to Spacing.START,
         ViewProps.BORDER_END_COLOR to Spacing.END
-      ) { view: ExpoImageViewWrapper, location: Int, color: Int? ->
+      ) { view: ExpoImageViewWrapper, index: Int, color: Int? ->
         val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
         val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.setBorderColor(location, rgbComponent, alphaComponent)
+        view.setBorderColor(index, rgbComponent, alphaComponent)
       }
 
       Prop("borderStyle") { view: ExpoImageViewWrapper, borderStyle: String? ->
@@ -150,6 +150,7 @@ class ExpoImageModule : Module() {
   }
 }
 
+// TODO(@lukmccall): Remove when the same functionality will be defined by the expo-modules-core in SDK 48
 private inline fun <reified T: View, reified PropType, reified CustomValueType> ViewDefinitionBuilder<T>.PropGroup(
   vararg props: Pair<String, CustomValueType>,
   noinline body: (view: T, value: CustomValueType, prop: PropType) -> Unit
