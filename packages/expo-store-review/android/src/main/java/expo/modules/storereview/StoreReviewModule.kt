@@ -7,13 +7,14 @@ import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
 class StoreReviewModule : Module() {
   private val context: Context
-    get() = requireNotNull(appContext.reactContext) { "React Application Context is null" }
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private val currentActivity
     get() = appContext.activityProvider?.currentActivity
@@ -22,17 +23,13 @@ class StoreReviewModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoStoreReview")
 
-    AsyncFunction("isAvailableAsync") { promise: Promise ->
-      isAvailableAsync(promise)
+    AsyncFunction("isAvailableAsync") {
+      return@AsyncFunction Build.VERSION.SDK_INT >= 21 && isPlayStoreInstalled()
     }
 
     AsyncFunction("requestReview") { promise: Promise ->
       requestReview(promise)
-    }.runOnQueue(Queues.MAIN)
-  }
-
-  private fun isAvailableAsync(promise: Promise) {
-    promise.resolve(Build.VERSION.SDK_INT >= 21 && isPlayStoreInstalled())
+    }
   }
 
   private fun requestReview(promise: Promise) {
