@@ -39,6 +39,12 @@ class JavaScriptModuleObject(val name: String) {
 
   external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
 
+  /**
+   * Register event emitter.
+   * Currently only add stub `addListener` and `removeListeners` functions to bypass react-native `NativeEventEmitter` check.
+   */
+  external fun registerEventEmitter()
+
   @Throws(Throwable::class)
   protected fun finalize() {
     mHybridData.resetNative()

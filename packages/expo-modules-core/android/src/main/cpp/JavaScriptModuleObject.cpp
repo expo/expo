@@ -38,6 +38,8 @@ void JavaScriptModuleObject::registerNatives() {
                                     JavaScriptModuleObject::registerAsyncFunction),
                    makeNativeMethod("registerProperty",
                                     JavaScriptModuleObject::registerProperty),
+                   makeNativeMethod("registerEventEmitter",
+                                    JavaScriptModuleObject::registerEventEmitter),
                  });
 }
 
@@ -136,6 +138,10 @@ void JavaScriptModuleObject::registerProperty(
   properties.insert({cName, std::move(functions)});
 }
 
+void JavaScriptModuleObject::registerEventEmitter() {
+  hasEventEmitter = true;
+}
+
 JavaScriptModuleObject::HostObject::HostObject(
   JavaScriptModuleObject *jsModule) : jsModule(jsModule) {}
 
@@ -149,6 +155,7 @@ JavaScriptModuleObject::HostObject::~HostObject() {
   jsModule->methodsMetadata.clear();
   jsModule->constants.clear();
   jsModule->properties.clear();
+  jsModule->hasEventEmitter = false;
   jsModule->longLivedObjectCollection_->clear();
 }
 
@@ -169,11 +176,19 @@ jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
   }
 
   auto metadataRecord = jsModule->methodsMetadata.find(cName);
-  if (metadataRecord == jsModule->methodsMetadata.end()) {
-    return jsi::Value::undefined();
+  if (metadataRecord != jsModule->methodsMetadata.end()) {
+    auto &metadata = metadataRecord->second;
+    return jsi::Value(runtime, *metadata.toJSFunction(runtime, jsModule->jsiInteropModuleRegistry));
   }
-  auto &metadata = metadataRecord->second;
-  return jsi::Value(runtime, *metadata.toJSFunction(runtime, jsModule->jsiInteropModuleRegistry));
+
+  if (jsModule->hasEventEmitter && (cName == "addListener" || cName == "removeListeners")) {
+    // Fix the `NativeEventEmitter` warnings on Android.
+    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.
+    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.
+    return runtime.global().getPropertyAsFunction(runtime, "Function");
+  }
+
+  return jsi::Value::undefined();
 }
 
 void JavaScriptModuleObject::HostObject::set(
@@ -229,11 +244,20 @@ std::vector<jsi::PropNameID> JavaScriptModuleObject::HostObject::getPropertyName
     }
   );
 
+  if (jsModule->hasEventEmitter) {
+    // Fix the `NativeEventEmitter` warnings on Android.
+    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.
+    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.
+    result.push_back(jsi::PropNameID::forUtf8(rt, "addListener"));
+    result.push_back(jsi::PropNameID::forUtf8(rt, "removeListeners"));
+  }
+
   return result;
 }
 
 JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
-  : javaPart_(jni::make_global(jThis)) {
+  : javaPart_(jni::make_global(jThis))
+  , hasEventEmitter(false) {
   longLivedObjectCollection_ = std::make_shared<react::LongLivedObjectCollection>();
 }
 

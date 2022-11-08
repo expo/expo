@@ -41,24 +41,6 @@ export class EventEmitter {
           ...args
         );
     }
-    // Fix the `NativeEventEmitter` warnings on Android.
-    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.
-    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.
-    if (Platform.OS === 'android') {
-      Object.defineProperties(nativeModule, {
-        addListener: {
-          value: () => {},
-          writable: true,
-          enumerable: true,
-        },
-        removeListeners: {
-          value: () => {},
-          writable: true,
-          enumerable: true,
-        },
-      });
-    }
-
     this._nativeModule = nativeModule;
     this._eventEmitter = new NativeEventEmitter(nativeModule as any);
   }
