@@ -133,7 +133,7 @@ You can compile your app locally with the `run` commands:
 
 **Highlights**
 
-- Build directly on connected devices with no global side-effects using the `--device` flag. Supports locked devices, letting you retry instantly instead of needing to rebuild.
+- Build directly on connected devices with no global side effects using the `--device` flag. Supports locked devices, letting you retry instantly instead of needing to rebuild.
 - Automatically codesign iOS apps for development from the CLI without having to open Xcode.
 - Smart log parsing show you warnings and errors from your project source code, unlike Xcode which surfaces hundreds of benign warnings from your node modules.
 - Fatal errors causing your app to crash will be surfaced to the terminal preventing the need to reproduce in Xcode.
@@ -146,7 +146,7 @@ Building locally is useful for developing native modules and [debugging complex 
 
 If your project does not have the corresponding native directories, the `npx expo prebuild` command will run once to generate the respective directory before building.
 
-For example, if your project does not have a root `ios/` directory, then `npx expo run:ios` will first run `npx expo prebuild -p ios` before compiling your app. Learn more about about this process in the [Expo Prebuild](/workflow/prebuild) doc.
+For example, if your project does not have a root `ios/` directory, then `npx expo run:ios` will first run `npx expo prebuild -p ios` before compiling your app. Learn more about this process in the [Expo Prebuild](/workflow/prebuild) doc.
 
 **Cross-Platform Arguments**
 
