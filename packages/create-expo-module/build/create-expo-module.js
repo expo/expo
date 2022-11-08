@@ -135,7 +135,7 @@ async function createModuleFromTemplate(templatePath, targetPath, data) {
         const renderedRelativePath = ejs_1.default.render(file.replace(/^\$/, ''), data, {
             openDelimiter: '{',
             closeDelimiter: '}',
-            escape: (value) => value.replace('.', path_1.default.sep),
+            escape: (value) => value.replace(/\./g, path_1.default.sep),
         });
         const fromPath = path_1.default.join(templatePath, file);
         const toPath = path_1.default.join(targetPath, renderedRelativePath);
