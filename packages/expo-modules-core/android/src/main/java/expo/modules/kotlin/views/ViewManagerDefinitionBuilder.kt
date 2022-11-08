@@ -69,46 +69,46 @@ class ViewManagerDefinitionBuilder {
   /**
    * Creates a view prop group that defines its name and setter.
    */
-  inline fun <reified ViewType : View, reified PropType> Prop(
+  inline fun <reified ViewType : View, reified PropType> PropGroup(
     vararg names: String,
-    noinline body: (name: String, view: ViewType, prop: PropType) -> Unit
+    noinline body: (view: ViewType, name: String, prop: PropType) -> Unit
   ) {
     for (name in names) {
       props[name] = ConcreteViewProp<ViewType, PropType>(
         name,
         typeOf<PropType>().toAnyType()
-      ) { view, prop -> body(name, view, prop) }
+      ) { view, prop -> body(view, name, prop) }
     }
   }
 
   /**
    * Creates a view prop group that defines its name and setter with the custom mapping.
    */
-  inline fun <reified ViewType : View, reified PropType, reified CustomValue> Prop(
+  inline fun <reified ViewType : View, reified PropType, reified CustomValue> PropGroup(
     vararg propInfo: Pair<String, CustomValue>,
-    noinline body: (value: CustomValue, view: ViewType, prop: PropType) -> Unit
+    noinline body: (view: ViewType, value: CustomValue, prop: PropType) -> Unit
   ) {
     for ((name, value) in propInfo) {
       props[name] = ConcreteViewProp<ViewType, PropType>(
         name,
         typeOf<PropType>().toAnyType()
-      ) { view, prop -> body(value, view, prop) }
+      ) { view, prop -> body(view, value, prop) }
     }
   }
 
   /**
    * Creates a view prop group that defines its name and setter with the index mapping.
    */
-  @JvmName("PropGroup")
-  inline fun <reified ViewType : View, reified PropType> Prop(
+  @JvmName("PropGroupIndexed")
+  inline fun <reified ViewType : View, reified PropType> PropGroup(
     vararg names: String,
-    noinline body: (value: Int, view: ViewType, prop: PropType) -> Unit
+    noinline body: (view: ViewType, value: Int, prop: PropType) -> Unit
   ) {
     names.forEachIndexed { index, name ->
       props[name] = ConcreteViewProp<ViewType, PropType>(
         name,
         typeOf<PropType>().toAnyType()
-      ) { view, prop -> body(index, view, prop) }
+      ) { view, prop -> body(view, index, prop) }
     }
   }
 
