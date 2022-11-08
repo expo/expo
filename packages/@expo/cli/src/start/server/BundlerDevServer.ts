@@ -362,6 +362,17 @@ export abstract class BundlerDevServer {
     return location.url ?? null;
   }
 
+  /** Get the base URL for JS inspector */
+  public getJsInspectorBaseUrl(): string {
+    if (this.name !== 'metro') {
+      throw new CommandError(
+        'DEV_SERVER',
+        `Cannot get the JS inspector base url - bundler[${this.name}]`
+      );
+    }
+    return this.getUrlCreator().constructUrl({ scheme: 'http' });
+  }
+
   /** Get the tunnel URL from ngrok. */
   public getTunnelUrl(): string | null {
     return this.ngrok?.getActiveUrl() ?? null;
