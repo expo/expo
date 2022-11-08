@@ -116,6 +116,7 @@
     "@types/cacache": "^15.0.1",
     "@types/debug": "^4.1.7",
     "@types/form-data": "^2.2.0",
+    "@types/getenv": "^1.0.0",
     "@types/js-yaml": "^3.12.2",
     "@types/metro": "~0.66.1",
     "@types/metro-core": "~0.66.0",
