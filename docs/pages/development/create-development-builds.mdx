@@ -166,48 +166,6 @@ You can now install the it on an iOS simulator:
 
 </Tabs>
 
-## Build locally with Android Studio and Xcode
-
-If you are comfortable setting up or have access to Android, Xcode, and related dependencies, you can build and distribute your project the same as any other Android or iOS app. You will still need to [install `expo-dev-client`](#install-expo-dev-client) in your project.
-
-The [`npx expo run` commands](/workflow/expo-cli/#compiling) will create a new build, install it on your emulator/simulator or device, and start running it.
-
-<Tabs tabs={["For Android", "For iOS (macOS Only)"]}>
-
-<Tab>
-
-To build and run on an emulator:
-
-<Terminal cmd={['$ npx expo run:android']} />
-
-To build and run on a connected device:
-
-<Terminal cmd={['$ npx expo run:android -d']} />
-
-</Tab>
-<Tab>
-
-To build and run on a simulator:
-
-<Terminal cmd={['$ npx expo run:ios']} />
-
-To build and run on a connected device:
-
-<Terminal cmd={['$ npx expo run:ios -d']} />
-
-</Tab>
-
-</Tabs>
-
-Running the above commands generates native source code in their corresponding **android/** and **ios/** directories.
-
-We do not recommend modifying these directories directly, especially when creating a development build with EAS Build. However, you can use this method when you:
-
-- Want to debug the native code directly
-- You are managing your own native projects
-
-For more information, see [Prebuild](/workflow/prebuild/).
-
 ## Next
 
 <BoxLink
