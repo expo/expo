@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android `NullPointerException` in `FrameLayout.onMeasure()` when running on new architecture mode with expo-dev-client. ([#19931](https://github.com/expo/expo/pull/19931) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.17.4 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fixed Android `NullPointerException` in `FrameLayout.onMeasure()` when running on new architecture mode with expo-dev-client. ([#19931](https://github.com/expo/expo/pull/19931) by [@kudo](https://github.com/kudo))
 
 ## 0.17.3 — 2022-10-30
 
