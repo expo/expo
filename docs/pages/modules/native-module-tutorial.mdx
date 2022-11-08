@@ -313,7 +313,7 @@ import * as React from 'react';
 import { Button, Text, View } from 'react-native';
 
 export default function App() {
-  const [theme, setTheme] = React.useState<string>Settings.getTheme();
+  const [theme, setTheme] = React.useState<string>(Settings.getTheme());
 
   React.useEffect(() => {
     const subscription = Settings.addThemeListener(({ theme: newTheme }) => {
