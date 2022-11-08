@@ -9,6 +9,13 @@
 ### 🐛 Bug fixes
 
 - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 1.0.1 - 2022-11-07
+
+### 🐛 Bug fixes
+
 - Added a list of the acceptable enum values to the conversion error on Android. ([#19895](https://github.com/expo/expo/pull/19895) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
