@@ -9,7 +9,7 @@ import { APIMethod } from '~/components/plugins/api/APISectionMethods';
 
 > **warning** Expo Modules APIs are in beta and subject to breaking changes.
 
-The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primities that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy to use and convenient API that is consistent across platforms where possible.
+The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy to use and convenient API that is consistent across platforms where possible.
 
 ## Definition Components
 
@@ -676,7 +676,7 @@ On iOS, `ExpoView` extends the `RCTView` which handles some styles (e.g. borders
 
 #### Extending `ExpoView`
 
-To export your view using the [`View`](#view) component, your custom class must inherit from the `ExpoView`. By doing that you will get access to the [`AppContext`](#appcontext) object. It's the only way of communicating with other modules and the JavaScript runtime. Also, you can't change constructor parameters, becuase provided view will be initialized by `expo-modules-core`.
+To export your view using the [`View`](#view) component, your custom class must inherit from the `ExpoView`. By doing that you will get access to the [`AppContext`](#appcontext) object. It's the only way of communicating with other modules and the JavaScript runtime. Also, you can't change constructor parameters, because provided view will be initialized by `expo-modules-core`.
 
 <CodeBlocksTable>
 
