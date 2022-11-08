@@ -1,6 +1,7 @@
 package expo.modules.image
 
 import android.util.Log
+import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.facebook.react.bridge.ReadableMap
@@ -14,48 +15,11 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.views.ViewDefinitionBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-
-private val borderRadiusToIndex = mapOf(
-  ViewProps.BORDER_RADIUS to 0,
-  ViewProps.BORDER_TOP_LEFT_RADIUS to 1,
-  ViewProps.BORDER_TOP_RIGHT_RADIUS to 2,
-  ViewProps.BORDER_BOTTOM_RIGHT_RADIUS to 3,
-  ViewProps.BORDER_BOTTOM_LEFT_RADIUS to 4,
-  ViewProps.BORDER_TOP_START_RADIUS to 5,
-  ViewProps.BORDER_TOP_END_RADIUS to 6,
-  ViewProps.BORDER_BOTTOM_START_RADIUS to 7,
-  ViewProps.BORDER_BOTTOM_END_RADIUS to 8
-)
-
-private val borderWidthToBorderLocations = mapOf(
-  ViewProps.BORDER_WIDTH to Spacing.ALL,
-  ViewProps.BORDER_LEFT_WIDTH to Spacing.LEFT,
-  ViewProps.BORDER_RIGHT_WIDTH to Spacing.RIGHT,
-  ViewProps.BORDER_TOP_WIDTH to Spacing.TOP,
-  ViewProps.BORDER_BOTTOM_WIDTH to Spacing.BOTTOM,
-  ViewProps.BORDER_START_WIDTH to Spacing.START,
-  ViewProps.BORDER_END_WIDTH to Spacing.END
-)
-
-private val borderColorToBorderLocations = mapOf(
-  ViewProps.BORDER_COLOR to Spacing.ALL,
-  ViewProps.BORDER_LEFT_COLOR to Spacing.LEFT,
-  ViewProps.BORDER_RIGHT_COLOR to Spacing.RIGHT,
-  ViewProps.BORDER_TOP_COLOR to Spacing.TOP,
-  ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
-  ViewProps.BORDER_START_COLOR to Spacing.START,
-  ViewProps.BORDER_END_COLOR to Spacing.END
-)
-
-private fun getBorderRadiusIndex(border: String) = borderRadiusToIndex[border]!!
-
-private fun getBorderLocationFromBorderWidth(borderWidth: String) = borderWidthToBorderLocations[borderWidth]!!
-
-private fun getBorderLocationFromBorderColor(borderColor: String) = borderColorToBorderLocations[borderColor]!!
 
 class ExpoImageModule : Module() {
   private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
@@ -116,96 +80,47 @@ class ExpoImageModule : Module() {
         view.fadeDuration = fadeDuration
       }
 
-      Prop(ViewProps.BORDER_RADIUS) { view: ExpoImageViewWrapper, borderRadius: Float? ->
-        setBorderRadius(view, ViewProps.BORDER_RADIUS, borderRadius)
+      PropGroup(
+        ViewProps.BORDER_RADIUS to 0,
+        ViewProps.BORDER_TOP_LEFT_RADIUS to 1,
+        ViewProps.BORDER_TOP_RIGHT_RADIUS to 2,
+        ViewProps.BORDER_BOTTOM_RIGHT_RADIUS to 3,
+        ViewProps.BORDER_BOTTOM_LEFT_RADIUS to 4,
+        ViewProps.BORDER_TOP_START_RADIUS to 5,
+        ViewProps.BORDER_TOP_END_RADIUS to 6,
+        ViewProps.BORDER_BOTTOM_START_RADIUS to 7,
+        ViewProps.BORDER_BOTTOM_END_RADIUS to 8
+      ) { view: ExpoImageViewWrapper, index: Int, borderRadius: Float? ->
+        val radius = makeYogaUndefinedIfNegative(borderRadius ?: YogaConstants.UNDEFINED)
+        view.setBorderRadius(index, radius)
       }
 
-      Prop(ViewProps.BORDER_TOP_LEFT_RADIUS) { view: ExpoImageViewWrapper, borderRadius: Float? ->
-        setBorderRadius(view, ViewProps.BORDER_TOP_LEFT_RADIUS, borderRadius)
+      PropGroup(
+        ViewProps.BORDER_WIDTH to Spacing.ALL,
+        ViewProps.BORDER_LEFT_WIDTH to Spacing.LEFT,
+        ViewProps.BORDER_RIGHT_WIDTH to Spacing.RIGHT,
+        ViewProps.BORDER_TOP_WIDTH to Spacing.TOP,
+        ViewProps.BORDER_BOTTOM_WIDTH to Spacing.BOTTOM,
+        ViewProps.BORDER_START_WIDTH to Spacing.START,
+        ViewProps.BORDER_END_WIDTH to Spacing.END
+      ) { view: ExpoImageViewWrapper, index: Int, width: Float? ->
+        val pixelWidth = makeYogaUndefinedIfNegative(width ?: YogaConstants.UNDEFINED)
+          .ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
+        view.setBorderWidth(index, pixelWidth)
       }
 
-      Prop(ViewProps.BORDER_TOP_RIGHT_RADIUS) { view: ExpoImageViewWrapper, borderRadius: Float? ->
-        setBorderRadius(view, ViewProps.BORDER_TOP_RIGHT_RADIUS, borderRadius)
-      }
-
-      Prop(ViewProps.BORDER_BOTTOM_RIGHT_RADIUS) { view: ExpoImageViewWrapper, borderRadius: Float? ->
-        setBorderRadius(view, ViewProps.BORDER_BOTTOM_RIGHT_RADIUS, borderRadius)
-      }
-
-      Prop(ViewProps.BORDER_BOTTOM_LEFT_RADIUS) { view: ExpoImageViewWrapper, borderRadius: Float? ->
-        setBorderRadius(view, ViewProps.BORDER_BOTTOM_LEFT_RADIUS, borderRadius)
-      }
-
-      Prop(ViewProps.BORDER_TOP_START_RADIUS) { view: ExpoImageViewWrapper, borderRadius: Float? ->
-        setBorderRadius(view, ViewProps.BORDER_TOP_START_RADIUS, borderRadius)
-      }
-
-      Prop(ViewProps.BORDER_TOP_END_RADIUS) { view: ExpoImageViewWrapper, borderRadius: Float? ->
-        setBorderRadius(view, ViewProps.BORDER_TOP_END_RADIUS, borderRadius)
-      }
-
-      Prop(ViewProps.BORDER_BOTTOM_START_RADIUS) { view: ExpoImageViewWrapper, borderRadius: Float? ->
-        setBorderRadius(view, ViewProps.BORDER_BOTTOM_START_RADIUS, borderRadius)
-      }
-
-      Prop(ViewProps.BORDER_BOTTOM_END_RADIUS) { view: ExpoImageViewWrapper, borderRadius: Float? ->
-        setBorderRadius(view, ViewProps.BORDER_BOTTOM_END_RADIUS, borderRadius)
-      }
-
-      Prop(ViewProps.BORDER_WIDTH) { view: ExpoImageViewWrapper, width: Float? ->
-        setBorderWidth(view, ViewProps.BORDER_WIDTH, width)
-      }
-
-      Prop(ViewProps.BORDER_LEFT_WIDTH) { view: ExpoImageViewWrapper, width: Float? ->
-        setBorderWidth(view, ViewProps.BORDER_LEFT_WIDTH, width)
-      }
-
-      Prop(ViewProps.BORDER_RIGHT_WIDTH) { view: ExpoImageViewWrapper, width: Float? ->
-        setBorderWidth(view, ViewProps.BORDER_RIGHT_WIDTH, width)
-      }
-
-      Prop(ViewProps.BORDER_TOP_WIDTH) { view: ExpoImageViewWrapper, width: Float? ->
-        setBorderWidth(view, ViewProps.BORDER_TOP_WIDTH, width)
-      }
-
-      Prop(ViewProps.BORDER_BOTTOM_WIDTH) { view: ExpoImageViewWrapper, width: Float? ->
-        setBorderWidth(view, ViewProps.BORDER_BOTTOM_WIDTH, width)
-      }
-
-      Prop(ViewProps.BORDER_START_WIDTH) { view: ExpoImageViewWrapper, width: Float? ->
-        setBorderWidth(view, ViewProps.BORDER_START_WIDTH, width)
-      }
-
-      Prop(ViewProps.BORDER_END_WIDTH) { view: ExpoImageViewWrapper, width: Float? ->
-        setBorderWidth(view, ViewProps.BORDER_END_WIDTH, width)
-      }
-
-      Prop(ViewProps.BORDER_COLOR) { view: ExpoImageViewWrapper, color: Int? ->
-        setBorderColor(view, ViewProps.BORDER_COLOR, color)
-      }
-
-      Prop(ViewProps.BORDER_LEFT_COLOR) { view: ExpoImageViewWrapper, color: Int? ->
-        setBorderColor(view, ViewProps.BORDER_LEFT_COLOR, color)
-      }
-
-      Prop(ViewProps.BORDER_RIGHT_COLOR) { view: ExpoImageViewWrapper, color: Int? ->
-        setBorderColor(view, ViewProps.BORDER_RIGHT_COLOR, color)
-      }
-
-      Prop(ViewProps.BORDER_TOP_COLOR) { view: ExpoImageViewWrapper, color: Int? ->
-        setBorderColor(view, ViewProps.BORDER_TOP_COLOR, color)
-      }
-
-      Prop(ViewProps.BORDER_BOTTOM_COLOR) { view: ExpoImageViewWrapper, color: Int? ->
-        setBorderColor(view, ViewProps.BORDER_BOTTOM_COLOR, color)
-      }
-
-      Prop(ViewProps.BORDER_START_COLOR) { view: ExpoImageViewWrapper, color: Int? ->
-        setBorderColor(view, ViewProps.BORDER_START_COLOR, color)
-      }
-
-      Prop(ViewProps.BORDER_END_COLOR) { view: ExpoImageViewWrapper, color: Int? ->
-        setBorderColor(view, ViewProps.BORDER_END_COLOR, color)
+      PropGroup(
+        ViewProps.BORDER_COLOR to Spacing.ALL,
+        ViewProps.BORDER_LEFT_COLOR to Spacing.LEFT,
+        ViewProps.BORDER_RIGHT_COLOR to Spacing.RIGHT,
+        ViewProps.BORDER_TOP_COLOR to Spacing.TOP,
+        ViewProps.BORDER_BOTTOM_COLOR to Spacing.BOTTOM,
+        ViewProps.BORDER_START_COLOR to Spacing.START,
+        ViewProps.BORDER_END_COLOR to Spacing.END
+      ) { view: ExpoImageViewWrapper, index: Int, color: Int? ->
+        val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
+        val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
+        view.setBorderColor(index, rgbComponent, alphaComponent)
       }
 
       Prop("borderStyle") { view: ExpoImageViewWrapper, borderStyle: String? ->
@@ -233,24 +148,14 @@ class ExpoImageModule : Module() {
       }
     }
   }
+}
 
-  private fun setBorderRadius(view: ExpoImageViewWrapper, border: String, borderRadius: Float?) {
-    val index = getBorderRadiusIndex(border)
-    val radius = makeYogaUndefinedIfNegative(borderRadius ?: YogaConstants.UNDEFINED)
-    view.setBorderRadius(index, radius)
-  }
-
-  private fun setBorderWidth(view: ExpoImageViewWrapper, borderWidth: String, width: Float?) {
-    val location = getBorderLocationFromBorderWidth(borderWidth)
-    val pixelWidth = makeYogaUndefinedIfNegative(width ?: YogaConstants.UNDEFINED)
-      .ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-    view.setBorderWidth(location, pixelWidth)
-  }
-
-  private fun setBorderColor(view: ExpoImageViewWrapper, borderColor: String, color: Int?) {
-    val location = getBorderLocationFromBorderColor(borderColor)
-    val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
-    val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-    view.setBorderColor(location, rgbComponent, alphaComponent)
+// TODO(@lukmccall): Remove when the same functionality will be defined by the expo-modules-core in SDK 48
+private inline fun <reified T : View, reified PropType, reified CustomValueType> ViewDefinitionBuilder<T>.PropGroup(
+  vararg props: Pair<String, CustomValueType>,
+  noinline body: (view: T, value: CustomValueType, prop: PropType) -> Unit
+) {
+  for ((name, value) in props) {
+    Prop<T, PropType>(name) { view, prop -> body(view, value, prop) }
   }
 }
