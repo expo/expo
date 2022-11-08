@@ -25,7 +25,14 @@ const EXPO_BETA = (0, getenv_1.boolish)('EXPO_BETA', false);
 const CWD = process.env.INIT_CWD || process.cwd();
 // Ignore some paths. Especially `package.json` as it is rendered
 // from `$package.json` file instead of the original one.
-const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
+const IGNORES_PATHS = [
+    '.DS_Store',
+    'build',
+    'node_modules',
+    'package.json',
+    '.npmignore',
+    '.gitignore',
+];
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
 /**
