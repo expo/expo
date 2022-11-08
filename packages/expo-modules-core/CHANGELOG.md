@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.0.2 — 2022-11-08
+
+### 💡 Others
+
 - Rephrased the message of `ArgumentCastException` to use ordinal numbers. ([#19912](https://github.com/expo/expo/pull/19912) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.0.1 - 2022-11-07

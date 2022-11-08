@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix Hermes debugger `TypeError: Only HTTP(S) protocols are supported` error when starting server with `--dev-client` parameter. ([#19919](https://github.com/expo/expo/pull/19919) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.4.8 — 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fix Hermes debugger `TypeError: Only HTTP(S) protocols are supported` error when starting server with `--dev-client` parameter. ([#19919](https://github.com/expo/expo/pull/19919) by [@kudo](https://github.com/kudo))
 
 ## 0.4.7 — 2022-11-07
 
