@@ -22,11 +22,11 @@ First, we'll create a new module. On this page we will use the name `expo-settin
 Now let's clean up the default module a little bit so we have more of a clean slate and delete the view module that we won't use in this guide.
 
 <Terminal
-  cmdCopy="cd expo-settings && rm ios/ExpoSettingsView.swift && rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt && rm src/ExpoSettingsView.tsx src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts src/ExpoSettings.types.ts"
+  cmdCopy="cd expo-settings && rm ios/ExpoSettingsView.swift && rm android/src/main/java/expo/modules.settings/ExpoSettingsView.kt && rm src/ExpoSettingsView.tsx src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts src/ExpoSettings.types.ts"
   cmd={[
     '$ cd expo-settings',
     '$ rm ios/ExpoSettingsView.swift',
-    '$ rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt',
+    '$ rm android/src/main/java/expo/modules.settings/ExpoSettingsView.kt',
     '$ rm src/ExpoSettingsView.tsx src/ExpoSettings.types.ts',
     '$ rm src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts',
   ]}
@@ -40,11 +40,15 @@ import ExpoModulesCore
 public class ExpoSettingsModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSettings")
+
+    Function("getTheme") { () -> String in
+      "system"
+    }
   }
 }
 ```
 
-```kotlin android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt
+```kotlin android/src/main/java/expo/modules.settings/ExpoSettingsModule.kt
 package expo.modules.settings
 
 import expo.modules.kotlin.modules.Module
@@ -53,74 +57,110 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class ExpoSettingsModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSettings")
+
+    Function("getTheme") {
+      return@Function "system"
+    }
   }
 }
 ```
 
 ```js src/ExpoSettings.ts
-import ExpoSettings from './ExpoSettingsModule';
-export { ExpoSettings };
+import ExpoSettingsModule from './ExpoSettingsModule';
+
+export function getTheme(): string {
+  return ExpoSettingsModule.getTheme();
+}
 ```
 
-```swift
+```js example/App.tsx
+import * as Settings from 'expo-settings';
+import { Text, View } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Theme: {Settings.getTheme()}</Text>
+    </View>
+  );
+}
+```
+
+## 3. Run the example project
+
+Now let's run the example project to make sure everything is working. We'll need to start the TypeScript compiler to watch for changes and rebuild the module JavaScript, and separately in another terminal window we'll compile and run the example app.
+
+<Terminal
+  cmdCopy="npm run build"
+  cmd={[
+    '# Run this in the root of the project to start the TypeScript compiler',
+    '$ npm run build',
+  ]}
+/>
+
+<Terminal
+  cmdCopy="cd example && npx expo run:ios"
+  cmd={[
+    '$ cd example',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
+    '# Run the example app on Android',
+    '$ npx expo run:android',
+  ]}
+/>
+
+We should now see the text "system" in the center of the screen when we launch the example app. The value `"system"` is the result of synchronously calling the `getTheme()` function in the native module. We'll change this value in the next step.
+
+## 4. Get, set, and persist the theme preference value
+
+### iOS native module
+
+To read the value on iOS, we can look for a `UserDefaults` string under the key `"theme"`, and fall back to `"system"` if there isn't any.
+
+To set the value, we can use `UserDefaults`'s `set(_:forKey:)` method. We'll make our `setTheme` function accept a value of type `String`.
+
+```swift ios/ExpoSettingsModule.swift
 import ExpoModulesCore
 
 public class ExpoSettingsModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoSettings")
 
-    Events("onChangeTheme")
-
-    Function("setTheme") { (value: Theme) -> Void in
-      setValue("theme", value:value.rawValue)
-      sendEvent("onChangeTheme", [
-        "theme": value.rawValue
-      ])
+    Function("setTheme") { (theme: String) -> Void in
+      UserDefaults.standard.set(theme, forKey:"theme")
     }
 
-    Function("getTheme") { () -> String? in
-      getValue("theme") ?? Theme.system.rawValue
+    Function("getTheme") { () -> String in
+      UserDefaults.standard.string(forKey: "theme") ?? "system"
     }
   }
-
-  enum Theme: String, Enumerable {
-    case light
-    case dark
-    case system
-  }
-}
-
-private func setValue(_ key: String, value: String) -> Void {
-  UserDefaults.standard.set(value, forKey:key)
-}
-
-private func getValue(_ key: String) -> String? {
-  UserDefaults.standard.string(forKey: key)
 }
 ```
 
-```kotlin
+### Android native module
+
+To read the value, we can look for a `SharedPreferences` string under the key `"theme"`, and fall back to `"system"` if there isn't any. We can get the `SharedPreferences` instance from the `reactContext` (a React Native [ContextWrapper](https://developer.android.com/reference/android/content/ContextWrapper)) using `getSharedPreferences()`.
+
+To set the value, we can use `SharedPreferences`'s `edit()` method to get an `Editor` instance, and then use `putString()` to set the value. We'll make our `setTheme` function accept a value of type `String`.
+
+```kotlin android/src/main/java/expo/modules.settings/ExpoSettingsModule.kt
 package expo.modules.settings
 
 import android.content.Context
 import android.content.SharedPreferences
-import androidx.core.os.bundleOf
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import expo.modules.kotlin.types.Enumerable
 
 class ExpoSettingsModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoSettings")
 
-    Events("onChangeTheme")
-
-    Function("setTheme") { theme: Theme ->
-      getPreferences().edit().putString("theme", theme.value).commit()
-      this@ExpoSettingsModule.sendEvent("onChangeTheme", bundleOf("theme" to theme.value))
+    Function("setTheme") { theme: String ->
+      getPreferences().edit().putString("theme", theme).commit()
     }
+
     Function("getTheme") {
-      return@Function getPreferences().getString("theme", Theme.SYSTEM.value)
+      return@Function getPreferences().getString("theme", "system")
     }
   }
 
@@ -131,10 +171,132 @@ class ExpoSettingsModule : Module() {
     return context.getSharedPreferences(context.packageName + ".settings", Context.MODE_PRIVATE)
   }
 }
+```
 
-enum class Theme(val value: String) : Enumerable {
-  LIGHT("light"),
-  DARK("dark"),
-  SYSTEM("system")
+### TypeScript module
+
+Now we can call our native modules from TypeScript.
+
+```js src/ExpoSettings.ts
+import ExpoSettingsModule from './ExpoSettingsModule';
+
+export function getTheme(): string {
+  return ExpoSettingsModule.getTheme();
+}
+
+export function setTheme(theme: string): void {
+  return ExpoSettingsModule.setTheme(theme);
+}
+```
+
+### Example app
+
+We can now use the `Settings` API in our example app.
+
+```js example/App.tsx
+import * as Settings from 'expo-settings';
+import { Button, Text, View } from 'react-native';
+
+export default function App() {
+  const theme = Settings.getTheme();
+  // Toggle between dark and light theme
+  const nextTheme = theme === 'dark' ? 'light' : 'dark';
+
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Theme: {Settings.getTheme()}</Text>
+      <Button title={`Set theme to ${nextTheme}`} onPress={() => Settings.setTheme(nextTheme)} />
+    </View>
+  );
+}
+```
+
+When we re-build and run the app, we'll see the "system" them is still set. When we press the button, nothing happens. When you reload the app, you'll see the theme has changed. This is because we're never fetching the new theme value and re-rendering the app. We'll fix this in the next step.
+
+## 5. Listen for changes to the theme value
+
+### iOS native module
+
+```swift ios/ExpoSettingsModule.swift
+import ExpoModulesCore
+
+public class ExpoSettingsModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoSettings")
+
+    Events("onChangeTheme")
+    
+    Function("setTheme") { (theme: String) -> Void in
+      UserDefaults.standard.set(theme, forKey:"theme")
+      sendEvent("onChangeTheme", [
+        "theme": theme
+      ])
+    }
+
+    Function("getTheme") { () -> String in
+      UserDefaults.standard.string(forKey: "theme") ?? "system"
+    }
+  }
+}
+```
+
+### Android native module
+
+```kotlin android/src/main/java/expo/modules.settings/ExpoSettingsModule.kt
+package expo.modules.settings
+
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.core.os.bundleOf
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+
+class ExpoSettingsModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoSettings")
+
+    Events("onChangeTheme")
+
+    Function("setTheme") { theme: String ->
+      getPreferences().edit().putString("theme", theme).commit()
+      this@ExpoSettingsModule.sendEvent("onChangeTheme", bundleOf("theme" to theme))
+    }
+
+    Function("getTheme") {
+      return@Function getPreferences().getString("theme", "system")
+    }
+  }
+
+  private val context
+  get() = requireNotNull(appContext.reactContext)
+
+  private fun getPreferences(): SharedPreferences {
+    return context.getSharedPreferences(context.packageName + ".settings", Context.MODE_PRIVATE)
+  }
+}
+```
+
+### TypeScript module
+
+```js
+import { EventEmitter, Subscription } from 'expo-modules-core';
+import ExpoSettingsModule from './ExpoSettingsModule';
+
+const emitter = new EventEmitter(ExpoSettingsModule);
+
+export type ThemeChangeEvent = {
+  theme: string;
+}
+
+export function addThemeListener(listener: (event: ThemeChangeEvent) => void): Subscription {
+  return emitter.addListener<ThemeChangeEvent>('onChangeTheme', listener);
+}
+
+export function getTheme(): string {
+  return ExpoSettingsModule.getTheme();
+}
+
+export function setTheme(theme: string): void {
+  return ExpoSettingsModule.setTheme(theme);
 }
 ```
