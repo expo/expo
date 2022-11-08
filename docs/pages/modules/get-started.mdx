@@ -7,13 +7,13 @@ import { Terminal } from '~/ui/components/Snippet';
 
 There are two ways to get started with the Expo Module API: you can either initialize a new module from scratch or add the Expo Module API to an existing module. This guide will walk you through creating a new module from scratch, and the ["Integrating in an existing library" guide](/modules/existing-library) covers the latter case.
 
-## Creating a new module
+## 1. Creating a new module
 
 To create a new Expo module from scratch, run the `create-expo-module` script as shown below. The script will ask you a few questions and then generate the native Expo module along with the example app for iOS and Android that uses your new module.
 
 <Terminal cmd={[`$ npx create-expo-module my-module`]} />
 
-## Running the example project
+## 2. Running the example project
 
 > **Note:** If you're using Windows, you can open the example project by opening the `android` and/or `ios` directory in Android Studio and Xcode respectively,
 
@@ -23,7 +23,7 @@ Navigate to the module directory and then open the iOS and/or Android example pr
 
 Now, you can run the example project on your device or simulator/emulator. When the project compiles and runs, you will see "Hello world! 👋" on the screen.
 
-## Making a change
+## 3. Making a change
 
 ### iOS
 
