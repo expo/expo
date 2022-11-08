@@ -22,11 +22,11 @@ First, we'll create a new module. On this page we will use the name `expo-settin
 Now let's clean up the default module a little bit so we have more of a clean slate and delete the view module that we won't use in this guide.
 
 <Terminal
-  cmdCopy="cd expo-settings && rm ios/ExpoSettingsView.swift && rm android/src/main/java/expo/modules.settings/ExpoSettingsView.kt && rm src/ExpoSettingsView.tsx src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts src/ExpoSettings.types.ts"
+  cmdCopy="cd expo-settings && rm ios/ExpoSettingsView.swift && rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt && rm src/ExpoSettingsView.tsx src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts src/ExpoSettings.types.ts"
   cmd={[
     '$ cd expo-settings',
     '$ rm ios/ExpoSettingsView.swift',
-    '$ rm android/src/main/java/expo/modules.settings/ExpoSettingsView.kt',
+    '$ rm android/src/main/java/expo/modules/settings/ExpoSettingsView.kt',
     '$ rm src/ExpoSettingsView.tsx src/ExpoSettings.types.ts',
     '$ rm src/ExpoSettingsView.web.tsx src/ExpoSettingsModule.web.ts',
   ]}
@@ -48,7 +48,7 @@ public class ExpoSettingsModule: Module {
 }
 ```
 
-```kotlin android/src/main/java/expo/modules.settings/ExpoSettingsModule.kt
+```kotlin android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt
 package expo.modules.settings
 
 import expo.modules.kotlin.modules.Module
@@ -143,7 +143,7 @@ To read the value, we can look for a `SharedPreferences` string under the key `"
 
 To set the value, we can use `SharedPreferences`'s `edit()` method to get an `Editor` instance, and then use `putString()` to set the value. We'll make our `setTheme` function accept a value of type `String`.
 
-```kotlin android/src/main/java/expo/modules.settings/ExpoSettingsModule.kt
+```kotlin android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt
 package expo.modules.settings
 
 import android.content.Context
@@ -246,7 +246,7 @@ public class ExpoSettingsModule: Module {
 
 Events payloads are represented as [`Bundle`](https://developer.android.com/reference/android/os/Bundle.html) instances on Android, which we can create using the [`bundleOf`](<https://developer.android.com/reference/kotlin/androidx/core/os/package-summary#bundleOf(kotlin.Array)>) function.
 
-```kotlin android/src/main/java/expo/modules.settings/ExpoSettingsModule.kt
+```kotlin android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt
 package expo.modules.settings
 
 import android.content.Context
@@ -372,7 +372,7 @@ public class ExpoSettingsModule: Module {
 
 ### Android native module
 
-```kotlin android/src/main/java/expo/modules.settings/ExpoSettingsModule.kt
+```kotlin android/src/main/java/expo/modules/settings/ExpoSettingsModule.kt
 package expo.modules.settings
 
 import android.content.Context
