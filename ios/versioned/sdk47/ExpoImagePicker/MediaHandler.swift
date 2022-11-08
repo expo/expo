@@ -186,6 +186,7 @@ internal struct MediaHandler {
       let fileName = asset?.value(forKey: "filename") as? String
       let fileSize = getFileSize(from: targetUrl)
       let videoInfo = AssetInfo(assetId: asset?.localIdentifier,
+                                type: "video",
                                 uri: targetUrl.absoluteString,
                                 width: dimensions.width,
                                 height: dimensions.height,
@@ -269,6 +270,7 @@ internal struct MediaHandler {
     let fileSize = getFileSize(from: videoUrl)
 
     let result = AssetInfo(assetId: assetId,
+                           type: "video",
                            uri: videoUrl.absoluteString,
                            width: size.width,
                            height: size.height,
