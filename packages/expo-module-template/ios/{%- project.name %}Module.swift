@@ -40,4 +40,5 @@ public class <%- project.name %>Module: Module {
         print(prop)
       }
     }
+  }
 }
