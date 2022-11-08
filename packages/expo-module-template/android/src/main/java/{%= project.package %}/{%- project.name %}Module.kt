@@ -35,15 +35,9 @@ class <%- project.name %>Module : Module() {
       ))
     }
 
-    // Enables the module to be used as a view manager. The view manager definition is built from
-    // the definition components used in the closure passed to viewManager.
-    // Definition components that are accepted as part of the view manager definition: `View`, `Prop`.
-    ViewManager {
-      // Defines the factory creating a native view when the module is used as a view.
-      View { context -> 
-        <%- project.name %>View(context, appContext)
-      }
-
+    // Enables the module to be used as a native view. Definition components that are accepted as part of
+    // the view definition: Prop, Events.
+    View(<%- project.name %>View::class) {
       // Defines a setter for the `name` prop.
       Prop("name") { view: <%- project.name %>View, prop: String ->
         println(prop)
