@@ -118,6 +118,7 @@ export const APIMethod = ({
   isReturnTypeReference = false,
   exposeInSidebar = false,
   parameters = [],
+  platforms = [],
 }: {
   exposeInSidebar?: boolean;
   name: string;
@@ -125,6 +126,7 @@ export const APIMethod = ({
   returnTypeName: string;
   isProperty: boolean;
   isReturnTypeReference: boolean;
+  platforms: ('Android' | 'iOS' | 'Web')[];
   parameters: {
     name: string;
     comment?: string;
@@ -148,6 +150,10 @@ export const APIMethod = ({
           parameters: parsedParameters,
           comment: {
             text: comment,
+            tags: platforms.map(text => ({
+              tag: 'platform',
+              text,
+            })),
           },
           type: { name: returnTypeName, type: isReturnTypeReference ? 'reference' : 'literal' },
         },

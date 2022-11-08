@@ -194,6 +194,7 @@ const general = [
     makePage('modules/android-lifecycle-listeners.mdx'),
     makePage('modules/appdelegate-subscribers.mdx'),
     makePage('modules/module-config.mdx'),
+    makePage('modules/autolinking.mdx'),
   ]),
   makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
   makeSection('Technical specs', [

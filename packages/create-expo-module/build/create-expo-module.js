@@ -51,6 +51,18 @@ async function main(target, options) {
         await createModuleFromTemplate(packagePath, targetDir, data);
         step.succeed('Created the module from template files');
     });
+    await (0, utils_1.newStep)('Creating an empty Git repository', async (step) => {
+        try {
+            await (0, spawn_async_1.default)('git', ['init'], {
+                cwd: targetDir,
+                stdio: 'ignore',
+            });
+            step.succeed('Created an empty Git repository');
+        }
+        catch (e) {
+            step.fail(e.toString());
+        }
+    });
     await (0, utils_1.newStep)('Installing module dependencies', async (step) => {
         await (0, packageManager_1.installDependencies)(packageManager, targetDir);
         step.succeed('Installed module dependencies');
@@ -135,7 +147,7 @@ async function createModuleFromTemplate(templatePath, targetPath, data) {
         const renderedRelativePath = ejs_1.default.render(file.replace(/^\$/, ''), data, {
             openDelimiter: '{',
             closeDelimiter: '}',
-            escape: (value) => value.replace('.', path_1.default.sep),
+            escape: (value) => value.replace(/\./g, path_1.default.sep),
         });
         const fromPath = path_1.default.join(templatePath, file);
         const toPath = path_1.default.join(targetPath, renderedRelativePath);
