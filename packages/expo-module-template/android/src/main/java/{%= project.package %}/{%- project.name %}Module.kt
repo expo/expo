@@ -41,7 +41,7 @@ class <%- project.name %>Module : Module() {
     ViewManager {
       // Defines the factory creating a native view when the module is used as a view.
       View { context -> 
-        <%- project.name %>View(context) 
+        <%- project.name %>View(context, appContext)
       }
 
       // Defines a setter for the `name` prop.
