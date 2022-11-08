@@ -150,9 +150,9 @@ export const APIMethod = ({
           parameters: parsedParameters,
           comment: {
             text: comment,
-            tags: platforms.map(x => ({
+            tags: platforms.map(text => ({
               tag: 'platform',
-              text: x,
+              text,
             })),
           },
           type: { name: returnTypeName, type: isReturnTypeReference ? 'reference' : 'literal' },
