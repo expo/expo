@@ -1346,7 +1346,7 @@ PODS:
     - ABI47_0_0ExpoModulesCore
   - ABI47_0_0EXPermissions (14.0.0):
     - ABI47_0_0ExpoModulesCore
-  - ABI47_0_0Expo (47.0.0-beta.1):
+  - ABI47_0_0Expo (47.0.2):
     - ABI47_0_0ExpoModulesCore
   - ABI47_0_0ExpoBattery (7.0.0):
     - ABI47_0_0ExpoModulesCore
@@ -4398,7 +4398,7 @@ SPEC CHECKSUMS:
   ABI47_0_0EXNetwork: fa0e9b57e693b4ddc748178515f65c4f69d8a346
   ABI47_0_0EXNotifications: 405a87e62ecbfce678f2dd473981de10b56ab955
   ABI47_0_0EXPermissions: 65f3026812c4b75769de0895af1eb4fa764181ff
-  ABI47_0_0Expo: b4a25da1079b13535c5957b16692a051067d09cb
+  ABI47_0_0Expo: dabe37e52b9d11ae0808fbca5bea60be0eccc26e
   ABI47_0_0ExpoBattery: f350a894f3e162216978702c192221bd7ecfac5f
   ABI47_0_0ExpoCellular: 5ee2a1d60a39da7844ebbd66665c93c1deed3632
   ABI47_0_0ExpoClipboard: dac248f70ebf9a4eb812081720e7b7ecfab4cf1d
