@@ -16,6 +16,7 @@ import 'tippy.js/dist/tippy.css';
 Sentry.init({
   dsn: 'https://1a2f5c8cec574bcea3971b74f91504d6@o30871.ingest.sentry.io/1526800',
   beforeSend: preprocessSentryError,
+  environment: process.env.NODE_ENV === 'development' ? 'development' : 'production',
 });
 
 const rootMarkdownComponents = {
