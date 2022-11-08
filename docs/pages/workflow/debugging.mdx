@@ -50,7 +50,7 @@ When you're done, simply delete the native folder with `rm -rf ios` to continue 
 1. Generate the native code for your project with: `npx expo prebuild -p android`
    1. You can delete the `/android` folder when you're done to ensure your project remains managed by Expo CLI. Keeping the folder and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries (Bare Workflow).
 2. Open the project in Android Studio: `open -a /Applications/Android\ Studio.app ./android`
-3. Build the app from Android Studio and connect the debugger. Refer to the [Google docs for more information](https://developer.android.com/studio/debug#startdebug).
+3. Build the app from Android Studio and connect the debugger. Refer to the [Google documentation for more information](https://developer.android.com/studio/debug#startdebug).
 
 When you're done, simply delete the native folder with `rm -rf android` to continue having your code managed by Expo.
 
@@ -64,7 +64,7 @@ Using an automated error logging system like [Sentry](../guides/using-sentry.mdx
 
 ### My production app is crashing
 
-This can be a really frustrating scenario, since it gives you very little information to go off of on first glance. It's important now to reproduce the issue, and, even if you can't do that, to find any related crash reports.
+This can be a really frustrating scenario, since it gives you very little information to go off of at first glance. It's important now to reproduce the issue, and, even if you can't do that, to find any related crash reports.
 
 - Reproduce the crash (either using your production app, or the Expo Go app)
 - **Find an associated JavaScript crash report**: Check your JavaScript error reporting service (such as Sentry).
@@ -207,11 +207,11 @@ React DevTools can also be paired with remote debugging, allowing you to inspect
 
 ### Remote debugging with Chrome Developer Tools
 
-You can debug React Native apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc, as you would when debugging a web app.
+You can debug React Native apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc., as you would when debugging a web app.
 
 - To ensure the best debugging experience, first, change your host type to `npx expo start --lan` or `npx expo start --localhost`. If you use `npx expo start --tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable.
 
-- If you are using `npx expo start --lan`, make sure your device is on the same wifi network as your development machine. This may not work on some public networks. `npx expo start --localhost` will not work for iOS unless you are in the simulator, and it only works on Android if your device is connected to your machine via USB.
+- If you are using `npx expo start --lan`, make sure your device is on the same Wi-Fi network as your development machine. This may not work on some public networks. `npx expo start --localhost` will not work for iOS unless you are in the simulator, and it only works on Android if your device is connected to your machine via USB.
 
 - Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
 

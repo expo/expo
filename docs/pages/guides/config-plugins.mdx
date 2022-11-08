@@ -749,7 +749,7 @@ interface StaticObject {
 
 Static properties are required because the Expo config must be serializable to JSON for use as the app manifest. Static properties can also enable tooling that generates JSON schema type checking for autocomplete and IntelliSense.
 
-If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`][#expo-install] or [vscode expo][vscode-expo] work better. Remember that every property you add increases complexity, making it harder to change in the future and increase the amount of features you'll need to test. Good default values are preferred over mandatory configuration when feasible.
+If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [vscode expo][vscode-expo] work better. Remember that every property you add increases complexity, making it harder to change in the future and increase the amount of features you'll need to test. Good default values are preferred over mandatory configuration when feasible.
 
 ### Configuring Android App Startup
 

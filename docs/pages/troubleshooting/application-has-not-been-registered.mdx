@@ -29,7 +29,7 @@ If you're in this situation, the error message you're seeing is a [red herring](
 
 Look at your logs prior to this error message to see what may have caused it. A frequent cause is multiple versions of a native module dependency that registers itself as a view &mdash; for example [this StackOverflow thread](https://stackoverflow.com/questions/67543844/invariant-violation-main-has-not-been-registered-while-running-react-native-a/67550379) where the poster has multiple versions of `react-native-safe-area-context` in their dependencies.
 
-### Your app root component may not registered
+### Your app root component may not be registered
 
 Another possibility is that there is a mismatch between the `AppKey` being provided to [`AppRegistry.registerComponent`](https://reactnative.dev/docs/appregistry#registercomponent), and the `AppKey` being registered on the native iOS or Android side.
 
