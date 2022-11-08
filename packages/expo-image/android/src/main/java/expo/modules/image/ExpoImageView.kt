@@ -18,7 +18,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
-import expo.modules.image.drawing.BorderDrawable
+import com.facebook.react.views.view.ReactViewBackgroundDrawable
 import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ImageResizeMode
 import expo.modules.image.events.ImageLoadEventsManager
@@ -111,7 +111,7 @@ class ExpoImageView(
   private var loadedSource: GlideUrl? = null
 
   private val borderDrawable = lazy {
-    BorderDrawable(context).apply {
+    ReactViewBackgroundDrawable(context).apply {
       callback = this@ExpoImageView
 
       outlineProvider.borderRadiiConfig
@@ -299,7 +299,7 @@ class ExpoImageView(
     if (borderDrawable.isInitialized()) {
       borderDrawable.value.apply {
         val layoutDirection = if (I18nUtil.getInstance().isRTL(context)) LAYOUT_DIRECTION_RTL else LAYOUT_DIRECTION_LTR
-        setResolvedLayoutDirection(layoutDirection)
+        resolvedLayoutDirection = layoutDirection
         setBounds(0, 0, width, height)
         draw(canvas)
       }
