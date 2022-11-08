@@ -90,6 +90,8 @@ repositories {
 dependencies {
   def GLIDE_VERSION = "4.12.0"
 
+  implementation project(':expo-modules-core')
+
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'  // From node_modules
 

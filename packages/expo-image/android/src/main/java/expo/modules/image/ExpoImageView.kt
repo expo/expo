@@ -1,30 +1,37 @@
 package expo.modules.image
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.PorterDuff
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
-import android.net.Uri
 import androidx.appcompat.widget.AppCompatImageView
+import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.integration.webp.decoder.WebpDrawable
 import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation
 import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.resource.bitmap.FitCenter
 import com.bumptech.glide.request.RequestOptions
-import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
-import com.facebook.react.uimanager.events.RCTEventEmitter
 import expo.modules.image.drawing.BorderDrawable
 import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ImageResizeMode
 import expo.modules.image.events.ImageLoadEventsManager
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
+import expo.modules.image.records.ImageErrorEvent
+import expo.modules.image.records.ImageLoadEvent
+import expo.modules.image.records.ImageProgressEvent
+import expo.modules.image.svg.SVGSoftwareLayerSetter
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ExpoView
 import jp.wasabeef.glide.transformations.BlurTransformation
+import java.lang.ref.WeakReference
 
 private const val SOURCE_URI_KEY = "uri"
 private const val SOURCE_WIDTH_KEY = "width"
@@ -32,12 +39,72 @@ private const val SOURCE_HEIGHT_KEY = "height"
 private const val SOURCE_SCALE_KEY = "scale"
 
 @SuppressLint("ViewConstructor")
+class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
+  internal val onLoadStart by EventDispatcher<Unit>()
+  internal val onProgress by EventDispatcher<ImageProgressEvent>()
+  internal val onError by EventDispatcher<ImageErrorEvent>()
+  internal val onLoad by EventDispatcher<ImageLoadEvent>()
+
+  private val imageView = ExpoImageView(
+    appContext.reactContext?.applicationContext!!,
+    getOrCreateRequestManager(appContext),
+    ImageLoadEventsManager(
+      WeakReference(this)
+    )
+  ).apply {
+    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    addView(this)
+  }
+
+  var sourceMap by imageView::sourceMap
+  var resizeMode by imageView::resizeMode
+  var blurRadius by imageView::blurRadius
+  var fadeDuration by imageView::fadeDuration
+  var defaultSourceMap by imageView::defaultSourceMap
+
+  fun setBorderStyle(borderStyle: String?) = imageView.setBorderStyle(borderStyle)
+  fun setTintColor(color: Int?) = imageView.setTintColor(color)
+  fun onAfterUpdateTransaction() = imageView.onAfterUpdateTransaction()
+  fun onDrop() = imageView.onDrop()
+  fun setBorderRadius(index: Int, radius: Float) = imageView.setBorderRadius(index, radius)
+  fun setBorderWidth(location: Int, width: Float) = imageView.setBorderWidth(location, width)
+  fun setBorderColor(location: Int, rgbComponent: Float, alphaComponent: Float) = imageView.setBorderColor(location, rgbComponent, alphaComponent)
+
+  companion object {
+    private var requestManager: RequestManager? = null
+    private var appContextRef: WeakReference<AppContext?> = WeakReference(null)
+
+    fun getOrCreateRequestManager(appContext: AppContext): RequestManager = synchronized(Companion) {
+      val cachedRequestManager = requestManager
+        ?: return createNewRequestManager(appContext).also {
+          requestManager = it
+          appContextRef = WeakReference(appContext)
+        }
+
+      // Request manager was created using different app context
+      if (appContextRef.get() != appContext) {
+        return createNewRequestManager(appContext).also {
+          requestManager = it
+          appContextRef = WeakReference(appContext)
+        }
+      }
+
+      return cachedRequestManager
+    }
+
+    private fun createNewRequestManager(appContext: AppContext): RequestManager =
+      Glide.with(requireNotNull(appContext.reactContext)).addDefaultRequestListener(SVGSoftwareLayerSetter())
+  }
+}
+
+@SuppressLint("ViewConstructor")
 class ExpoImageView(
-  context: ReactContext,
+  context: Context,
   private val requestManager: RequestManager,
-  private val progressInterceptor: OkHttpClientProgressInterceptor
+  private val eventsManager: ImageLoadEventsManager
 ) : AppCompatImageView(context) {
-  private val eventEmitter = context.getJSModule(RCTEventEmitter::class.java)
+  private val progressInterceptor = OkHttpClientProgressInterceptor
+
   private val outlineProvider = OutlineProvider(context)
 
   private var propsChanged = false
@@ -138,7 +205,6 @@ class ExpoImageView(
       loadedSource = sourceToLoad
       val options = createOptionsFromSourceMap(sourceMap)
       val propOptions = createPropOptions()
-      val eventsManager = ImageLoadEventsManager(id, eventEmitter)
       progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
       eventsManager.onLoadStarted()
       requestManager

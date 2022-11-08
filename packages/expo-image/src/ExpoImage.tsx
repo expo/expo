@@ -1,4 +1,4 @@
-import { requireNativeModule, requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeViewManager, requireNativeModule } from 'expo-modules-core';
 import React from 'react';
 import { Image, StyleSheet, Platform, processColor } from 'react-native';
 
@@ -6,7 +6,7 @@ import { ImageProps } from './Image';
 
 type NativeExpoImageProps = ImageProps;
 
-const NativeExpoImage = requireNativeViewManager<NativeExpoImageProps>('ExpoImage');
+const NativeExpoImage = requireNativeViewManager('ExpoImage') as React.FC<NativeExpoImageProps>;
 
 const ExpoImageModule = requireNativeModule('ExpoImage');
 
@@ -78,12 +78,38 @@ export default function ExpoImage({
     }
   }
 
+  const tintColor = processColor(resolvedStyle.tintColor);
+
+  const borderColor = processColor(resolvedStyle.borderColor);
+  // @ts-ignore
+  const borderStartColor = processColor(resolvedStyle.borderStartColor);
+  // @ts-ignore
+  const borderEndColor = processColor(resolvedStyle.borderEndColor);
+  // @ts-ignore
+  const borderLeftColor = processColor(resolvedStyle.borderLeftColor);
+  // @ts-ignore
+  const borderRightColor = processColor(resolvedStyle.borderRightColor);
+  // @ts-ignore
+  const borderTopColor = processColor(resolvedStyle.borderTopColor);
+  // @ts-ignore
+  const borderBottomColor = processColor(resolvedStyle.borderBottomColor);
+
   return (
     <NativeExpoImage
       {...props}
+      {...resolvedStyle}
       source={resolvedSource}
       style={resolvedStyle}
       defaultSource={resolvedPlaceholder}
+      // @ts-ignore
+      tintColor={tintColor}
+      borderColor={borderColor}
+      borderLeftColor={borderLeftColor}
+      borderRightColor={borderRightColor}
+      borderTopColor={borderTopColor}
+      borderBottomColor={borderBottomColor}
+      borderStartColor={borderStartColor}
+      borderEndColor={borderEndColor}
     />
   );
 }

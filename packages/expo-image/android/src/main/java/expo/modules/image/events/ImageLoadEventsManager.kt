@@ -9,23 +9,36 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.bumptech.glide.request.transition.Transition
 import com.facebook.react.modules.network.ProgressListener
-import com.facebook.react.uimanager.events.Event
-import com.facebook.react.uimanager.events.RCTEventEmitter
+import expo.modules.image.ExpoImageViewWrapper
+import expo.modules.image.enums.ImageCacheType
+import expo.modules.image.records.ImageErrorEvent
+import expo.modules.image.records.ImageLoadEvent
+import expo.modules.image.records.ImageProgressEvent
+import expo.modules.image.records.ImageSource
+import java.lang.ref.WeakReference
 
-class ImageLoadEventsManager(private val mViewId: Int, private val mEventEmitter: RCTEventEmitter?) : CustomTarget<BitmapFactory.Options?>(), RequestListener<Drawable?>, ProgressListener {
+class ImageLoadEventsManager(
+  private val expoImageViewWrapper: WeakReference<ExpoImageViewWrapper>,
+) : CustomTarget<BitmapFactory.Options?>(), RequestListener<Drawable?>, ProgressListener {
   private var mBitmapFactoryOptions: BitmapFactory.Options? = null
   private var mDataSource: DataSource? = null
   private var mModel: Any? = null
+
   fun onLoadStarted() {
-    dispatch(ImageLoadStartEvent(mViewId))
+    expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
   }
 
   override fun onProgress(bytesWritten: Long, contentLength: Long, done: Boolean) {
-    dispatch(ImageProgressEvent(mViewId, bytesWritten, contentLength, done))
+    expoImageViewWrapper.get()?.onProgress?.invoke(
+      ImageProgressEvent(
+        loaded = bytesWritten.toInt(),
+        total = contentLength.toInt()
+      )
+    )
   }
 
   override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Drawable?>, isFirstResource: Boolean): Boolean {
-    dispatch(ImageErrorEvent(mViewId, e))
+    expoImageViewWrapper.get()?.onError?.invoke(ImageErrorEvent(e.toString()))
     return false
   }
 
@@ -42,16 +55,23 @@ class ImageLoadEventsManager(private val mViewId: Int, private val mEventEmitter
   }
 
   private fun onResourceReady() {
-    if (mModel != null && mDataSource != null && mBitmapFactoryOptions != null) {
-      dispatch(ImageLoadEvent(mViewId, mModel!!, mDataSource!!, mBitmapFactoryOptions!!))
-    }
+    val model = mModel ?: return
+    val dataSource = mDataSource ?: return
+    val bitmapFactoryOptions = mBitmapFactoryOptions ?: return
+    val expoImageViewWrapper = expoImageViewWrapper.get() ?: return
+
+    expoImageViewWrapper.onLoad(
+      ImageLoadEvent(
+        cacheType = ImageCacheType.fromNativeValue(dataSource).enumValue,
+        source = ImageSource(
+          url = model.toString(),
+          width = bitmapFactoryOptions.outWidth,
+          height = bitmapFactoryOptions.outHeight,
+          mediaType = bitmapFactoryOptions.outMimeType
+        )
+      )
+    )
   }
 
   override fun onLoadCleared(placeholder: Drawable?) = Unit // do nothing
-
-  private fun dispatch(event: Event<*>) {
-    if (mEventEmitter != null) {
-      event.dispatch(mEventEmitter)
-    }
-  }
 }
