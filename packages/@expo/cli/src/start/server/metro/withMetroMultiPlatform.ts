@@ -6,7 +6,7 @@
  */
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
-import { ResolutionContext } from 'metro-resolver';
+import { ResolutionContext, Resolution } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -75,6 +75,10 @@ function withCustomResolvers(
       },
     },
   };
+}
+
+function normalizeSlashes(p: string) {
+  return p.replace(/\\/g, '/');
 }
 
 /**
@@ -149,12 +153,7 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
 
       // Replace the web resolver with the original one.
       // This is basically an alias for web-only.
-      if (
-        platform === 'web' &&
-        result?.type === 'sourceFile' &&
-        typeof result?.filePath === 'string' &&
-        result.filePath.endsWith('react-native-web/dist/modules/AssetRegistry/index.js')
-      ) {
+      if (shouldAliasAssetRegistryForWeb(platform, result)) {
         // @ts-expect-error: `readonly` for some reason.
         result.filePath = assetRegistryPath;
       }
@@ -162,6 +161,21 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
       return result;
     },
   ]);
+}
+
+/** @returns `true` if the incoming resolution should be swapped on web. */
+export function shouldAliasAssetRegistryForWeb(
+  platform: string | null,
+  result: Resolution
+): boolean {
+  return (
+    platform === 'web' &&
+    result?.type === 'sourceFile' &&
+    typeof result?.filePath === 'string' &&
+    normalizeSlashes(result.filePath).endsWith(
+      'react-native-web/dist/modules/AssetRegistry/index.js'
+    )
+  );
 }
 
 /** Add support for `react-native-web` and the Web platform. */
