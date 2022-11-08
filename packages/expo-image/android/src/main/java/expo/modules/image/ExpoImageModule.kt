@@ -151,11 +151,11 @@ class ExpoImageModule : Module() {
 }
 
 // TODO(@lukmccall): Remove when the same functionality will be defined by the expo-modules-core in SDK 48
-private inline fun <reified T: View, reified PropType, reified CustomValueType> ViewDefinitionBuilder<T>.PropGroup(
+private inline fun <reified T : View, reified PropType, reified CustomValueType> ViewDefinitionBuilder<T>.PropGroup(
   vararg props: Pair<String, CustomValueType>,
   noinline body: (view: T, value: CustomValueType, prop: PropType) -> Unit
 ) {
   for ((name, value) in props) {
-    Prop<T, PropType>(name) { view, prop -> body(view, value, prop)}
+    Prop<T, PropType>(name) { view, prop -> body(view, value, prop) }
   }
 }
