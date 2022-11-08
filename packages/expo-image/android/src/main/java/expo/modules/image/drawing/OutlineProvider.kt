@@ -117,16 +117,19 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
     }
     mConvexPath.reset()
     mConvexPath.addRoundRect(
-      mBounds, floatArrayOf(
-      mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
-      mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
-      mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
-      mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
-      mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
-      mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
-      mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal],
-      mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal]
-    ), Path.Direction.CW)
+      mBounds,
+      floatArrayOf(
+        mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
+        mCornerRadii[CornerRadius.TOP_LEFT.ordinal],
+        mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
+        mCornerRadii[CornerRadius.TOP_RIGHT.ordinal],
+        mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
+        mCornerRadii[CornerRadius.BOTTOM_RIGHT.ordinal],
+        mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal],
+        mCornerRadii[CornerRadius.BOTTOM_LEFT.ordinal]
+      ),
+      Path.Direction.CW
+    )
     mConvexPathInvalidated = false
   }
 
@@ -161,7 +164,8 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
     if (mBounds.left != left.toFloat() ||
       mBounds.top != top.toFloat() ||
       mBounds.right != right.toFloat() ||
-      mBounds.bottom != bottom.toFloat()) {
+      mBounds.bottom != bottom.toFloat()
+    ) {
       mBounds[left.toFloat(), top.toFloat(), right.toFloat()] = bottom.toFloat()
       mCornerRadiiInvalidated = true
     }
