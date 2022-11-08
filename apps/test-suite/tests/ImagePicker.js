@@ -11,28 +11,25 @@ export const name = 'ImagePicker';
 export async function test({ it, beforeAll, expect, jasmine, describe, afterAll }) {
   function testMediaObjectShape(shape, type) {
     expect(shape).toBeDefined();
-    expect(typeof shape.cancelled).toBe('boolean');
 
-    if (!shape.cancelled) {
-      expect(typeof shape.uri).toBe('string');
-      expect(typeof shape.width).toBe('number');
-      expect(typeof shape.height).toBe('number');
-      expect(typeof shape.type).toBe('string');
+    expect(typeof shape.uri).toBe('string');
+    expect(typeof shape.width).toBe('number');
+    expect(typeof shape.height).toBe('number');
+    expect(typeof shape.type).toBe('string');
 
-      expect(shape.uri).not.toBe('');
-      expect(shape.width).toBeGreaterThan(0);
-      expect(shape.height).toBeGreaterThan(0);
+    expect(shape.uri).not.toBe('');
+    expect(shape.width).toBeGreaterThan(0);
+    expect(shape.height).toBeGreaterThan(0);
 
-      expect(typeof shape.type).toBe('string');
+    expect(typeof shape.type).toBe('string');
 
-      if (type) {
-        expect(shape.type).toBe(type);
-      }
+    if (type) {
+      expect(shape.type).toBe(type);
+    }
 
-      if (shape.type === 'video') {
-        expect(typeof shape.duration).toBe('number');
-        expect(shape.duration).toBeGreaterThan(0);
-      }
+    if (shape.type === 'video') {
+      expect(typeof shape.duration).toBe('number');
+      expect(shape.duration).toBeGreaterThan(0);
     }
   }
   function testResultShape(result, type) {
@@ -141,8 +138,8 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
           testResultShape(result, 'video');
 
           for (const video of result.assets) {
-            expect(video.width).toBeLessThanOrEqual(640);
-            expect(video.height).toBeLessThanOrEqual(480);
+            expect(Math.max(video.width, video.height)).toBeLessThanOrEqual(640);
+            expect(Math.min(video.width, video.height)).toBeLessThanOrEqual(480);
           }
         });
       }
