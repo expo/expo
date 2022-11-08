@@ -63,7 +63,7 @@ The UI that shows up in the process is referred to as the **Terminal UI**. It co
 | <kbd>Shift</kbd> + <kbd>A</kbd> | Select an Android device or emulator to open.                                                                                                                                            |
 | <kbd>I</kbd>                    | Open the project in Expo Go on iOS.                                                                                                                                                      |
 | <kbd>Shift</kbd> + <kbd>I</kbd> | Select an iOS Simulator to open.                                                                                                                                                         |
-| <kbd>W</kbd>                    | Open the project in a web browser. This may require Webpack to be installed in your project.                                                                                             |
+| <kbd>W</kbd>                    | Open the project in a web browser. This may require webpack to be installed in your project.                                                                                             |
 | <kbd>R</kbd>                    | Reload the app on any connected device.                                                                                                                                                  |
 | <kbd>M</kbd>                    | Open the dev menu on any connected native device (web not supported).                                                                                                                    |
 | <kbd>Shift</kbd> + <kbd>M</kbd> | Choose more commands to trigger on connected devices.<br/>This includes toggling the performance monitor, opening the element inspector, reloading the device, and opening the dev menu. |
@@ -78,7 +78,7 @@ By default, the project is served over a LAN connection. You can change this beh
 
 Other available options are:
 
-- `--port`: Port to start the dev server on (does not apply to Webpack or [tunnel URLs](#tunneling)). Default: **19000**.
+- `--port`: Port to start the dev server on (does not apply to webpack or [tunnel URLs](#tunneling)). Default: **19000**.
 - `--https`: Start the dev server using a secure origin. This is currently only supported on web.
 
 You can force the URL to be any value with the `EXPO_PACKAGER_PROXY_URL` environment variable. For example:
@@ -220,11 +220,11 @@ The following options are provided:
 - `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
 - `-c, --clear`: Clear the bundler cache before exporting.
 
-### Exporting with Webpack
+### Exporting with webpack
 
-> Webpack is only supported for the Web platform.
+> webpack is only supported for the Web platform.
 
-You can export the JavaScript and assets for your web app using Webpack by running the following:
+You can export the JavaScript and assets for your web app using webpack by running the following:
 
 <Terminal cmd={['$ npx expo export:web']} />
 
@@ -340,7 +340,7 @@ Sometimes you may want to customize a project file that would otherwise be gener
 From here, you can choose to generate basic project files like:
 
 - `babel.config.js` -- The Babel configuration. This is required to be present if you plan to use tooling other than Expo CLI to bundle your project.
-- `webpack.config.js` -- The default Webpack config for web development.
+- `webpack.config.js` -- The default webpack config for web development.
 - `metro.config.js` -- The default Metro config for universal development. This is required for usage with `npx react-native`.
 
 ## Environment Variables
@@ -361,7 +361,7 @@ From here, you can choose to generate basic project files like:
 - `EXPO_EDITOR` (**string**) an Expo-specific version of the `EDITOR` variable which takes higher priority when defined.
 - `EXPO_IMAGE_UTILS_NO_SHARP` (**boolean**) disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.
 - `EXPO_TUNNEL_SUBDOMAIN` (**boolean**) __Experimental__ Disable using `exp.direct` as the hostname for `--tunnel` connections. This enables **https://** forwarding which can be used to test universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`.
-- `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` (**boolean**) force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for Webpack, for the web and the user-defined main fields for other platforms.
+- `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` (**boolean**) force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.
 
 ## Telemetry
 
