@@ -236,6 +236,7 @@ Enables the module to be used as a native view. Definition components that are a
 #### Arguments
 
 - **viewType** — The class of the native view that will be rendered. Note: On Android, the provided class must inherit from the [`ExpoView`](#expoview), on iOS it's optional. See [`Extending ExpoView`](#extending--expoview).
+- **definition**: `() -> ViewDefinition` — A builder of the view definition.
 
 <CodeBlocksTable>
 
@@ -557,6 +558,101 @@ A base class for a native module.
 <APIBox header="AppContext">
 
 The app context is an interface to a single Expo app.
+
+#### Properties
+
+<APIMethod
+  name="constants"
+  comment="Provides access to app's constants from legacy module registry."
+  returnTypeName="Android: ConstantsInterface? iOS: EXConstantsInterface?"
+  isProperty={true}
+/>
+
+<APIMethod
+  name="permissions"
+  comment="Provides access to the permissions manager from legacy module registry."
+  returnTypeName="Android: Permissions? iOS: EXPermissionsInterface?"
+  isProperty={true}
+/>
+
+<APIMethod
+  name="imageLoader"
+  comment="Provides access to the image loader from the legacy module registry."
+  returnTypeName="Android: ImageLoaderInterface? iOS: EXImageLoaderInterface?"
+  isProperty={true}
+/>
+
+<APIMethod
+  name="barcodeScanner"
+  comment="Provides access to the bar code scanner manager from the legacy module registry."
+  returnTypeName="ImageLoaderInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="camera"
+  comment="Provides access to the camera view manager from the legacy module registry."
+  returnTypeName="CameraViewInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="font"
+  comment="Provides access to the font manager from the legacy module registry."
+  returnTypeName="FontManagerInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="sensor"
+  comment="Provides access to the sensor manager from the legacy module registry."
+  returnTypeName="SensorServiceInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="taskManager"
+  comment="Provides access to the task manager from the legacy module registry."
+  returnTypeName="TaskManagerInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="activityProvider"
+  comment="Provides access to the activity provider from the legacy module registry."
+  returnTypeName="ActivityProvider?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="reactContext"
+  comment="Provides access to the react application context."
+  returnTypeName="Context?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="hasActiveReactInstance"
+  comment="Checks if there is an not-null, alive react native instance."
+  returnTypeName="Boolean"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="utilities"
+  comment="Provides access to the utilities from legacy module registry."
+  returnTypeName="EXUtilitiesInterface?"
+  isProperty={true}
+  platforms={['iOS']}
+/>
 
 </APIBox>
 
