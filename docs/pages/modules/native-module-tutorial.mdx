@@ -225,7 +225,7 @@ public class ExpoSettingsModule: Module {
     Name("ExpoSettings")
 
     Events("onChangeTheme")
-    
+
     Function("setTheme") { (theme: String) -> Void in
       UserDefaults.standard.set(theme, forKey:"theme")
       sendEvent("onChangeTheme", [
@@ -285,11 +285,11 @@ import ExpoSettingsModule from './ExpoSettingsModule';
 const emitter = new EventEmitter(ExpoSettingsModule);
 
 export type ThemeChangeEvent = {
-  theme: string;
-}
+  theme: string,
+};
 
 export function addThemeListener(listener: (event: ThemeChangeEvent) => void): Subscription {
-  return emitter.addListener<ThemeChangeEvent>('onChangeTheme', listener);
+  return emitter.addListener < ThemeChangeEvent > ('onChangeTheme', listener);
 }
 
 export function getTheme(): string {
@@ -300,3 +300,40 @@ export function setTheme(theme: string): void {
   return ExpoSettingsModule.setTheme(theme);
 }
 ```
+
+### Example app
+
+```js
+import * as Settings from "expo-settings";
+import * as React from "react";
+import { Button, Text, View } from "react-native";
+
+export default function App() {
+  const [theme, setTheme] = React.useState<string>(Settings.getTheme());
+
+  React.useEffect(() => {
+    const subscription = Settings.addThemeListener(({ theme: newTheme }) => {
+      setTheme(newTheme);
+    });
+
+    return () => subscription.remove();
+  }, [setTheme]);
+
+  // Toggle between dark and light theme
+  const nextTheme = theme === "dark" ? "light" : "dark";
+
+  return (
+    <View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
+      <Text>Theme: {Settings.getTheme()}</Text>
+      <Button
+        title={`Set theme to ${nextTheme}`}
+        onPress={() => Settings.setTheme(nextTheme)}
+      />
+    </View>
+  );
+}
+```
+
+### 5. Improve type safety
+
+todo: add enum, show error screen
