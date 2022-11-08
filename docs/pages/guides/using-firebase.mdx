@@ -1,12 +1,15 @@
 ---
 title: Using Firebase
+maxHeadingDepth: 4
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Step } from '~/ui/components/Step';
 
-[Firebase](https://firebase.google.com/) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as realtime database, cloud storage, authentication, crash reporting, analytics, and so on. It is built on Google's infrastructure and scales automatically.
+[Firebase](https://firebase.google.com/) is a Backend-as-a-Service (BaaS) app development platform that provides hosted backend services such as realtime database, cloud storage, authentication, crash reporting, analytics, and so on.
+It is built on Google's infrastructure and scales automatically.
 
 There are two different ways you can use Firebase in your projects:
 
@@ -21,7 +24,8 @@ Before proceeding, make sure that you have created a new Firebase project or hav
 
 ## Using Firebase JS SDK
 
-The [Firebase JS SDK](https://firebase.google.com/docs/web/setup) is a JavaScript library that allows you to interact with Firebase services in your project. It supports services such as [Authentication](https://firebase.google.com/docs/auth), [Firestore](https://firebase.google.com/docs/firestore), [Realtime Database](https://firebase.google.com/docs/database), and [Storage](https://firebase.google.com/docs/storage) in a React Native app.
+The [Firebase JS SDK](https://firebase.google.com/docs/web/setup) is a JavaScript library that allows you to interact with Firebase services in your project.
+It supports services such as [Authentication](https://firebase.google.com/docs/auth), [Firestore](https://firebase.google.com/docs/firestore), [Realtime Database](https://firebase.google.com/docs/database), and [Storage](https://firebase.google.com/docs/storage) in a React Native app.
 
 ### When to use Firebase JS SDK
 
@@ -37,17 +41,20 @@ Firebase JS SDK does not support all services for mobile apps. Some of these ser
 
 ### Install and initialize Firebase JS SDK
 
-The following sub-sections use `firebase@9.x.x`. **As of SDK 43**, the Expo SDK no longer enforces or recommends any specific version of Firebase to use in your app.
+The following sub-sections use `firebase@9.x.x`. Expo SDK do not enforce or recommend any specific version of Firebase to use in your app.
 
 If you are using an older version of the firebase library in your project, you may have to adapt the code examples to match the version that you are using with the help of the [Firebase JS SDK documentation](https://github.com/firebase/firebase-js-sdk).
 
-#### Step 1: Install the SDK
+<Step label="1">
+#### Install the SDK
 
 After you have created your [Expo project](/get-started/create-a-new-app/), you can install the Firebase JS SDK using the following command:
 
 <Terminal cmd={['$ npx expo install firebase']} />
+</Step>
 
-#### Step 2: Initialize the SDK in your project
+<Step label="2">
+#### Initialize the SDK in your project
 
 To initialize the Firebase instance in your Expo project, you must create a config object and pass it to the `initializeApp()` method imported from the `firebase/app` module.
 
@@ -59,11 +66,11 @@ After you have the API key and other identifiers, you can paste the following co
 import { initializeApp } from 'firebase/app';
 
 // Optionally import the services that you want to use
-//import {...} from "firebase/auth";
-//import {...} from "firebase/database";
-//import {...} from "firebase/firestore";
-//import {...} from "firebase/functions";
-//import {...} from "firebase/storage";
+// import {...} from "firebase/auth";
+// import {...} from "firebase/database";
+// import {...} from "firebase/firestore";
+// import {...} from "firebase/functions";
+// import {...} from "firebase/storage";
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -85,8 +92,10 @@ const app = initializeApp(firebaseConfig);
 You do not have to install other plugins or configurations to use Firebase JS SDK.
 
 Firebase version 9 provides a modular API. You can directly import any service you want to use from the `firebase` package. For example, if you want to use an authentication service in your project, you can import the `auth` module from the `firebase/auth` package.
+</Step>
 
-#### Step 3: Configure Metro
+<Step label="3">
+#### Configure Metro
 
 > **info** If you are using Firebase version `9.7.x` and above, you need to add the following configuration to a **metro.config.js** file to make sure that the Firebase JS SDK is bundled correctly.
 
@@ -100,12 +109,15 @@ Then, update the file with the following configuration:
 
 ```js metro.config.js
 const { getDefaultConfig } = require('@expo/metro-config');
+
 const defaultConfig = getDefaultConfig(__dirname);
 defaultConfig.resolver.assetExts.push('cjs');
+
 module.exports = defaultConfig;
 ```
+</Step>
 
-### Next
+### Next steps
 
 <BoxLink
   title="Authentication"
@@ -151,13 +163,15 @@ module.exports = defaultConfig;
 
 ## Using React Native Firebase
 
-[React Native Firebase](https://rnfirebase.io/) provides access to native code by wrapping the native SDKs for Android and iOS into a JavaScript API. Each Firebase service is available as a module that can be added as a dependency to your project. For example, the `auth` module provides access to the Firebase Authentication service.
+[React Native Firebase](https://rnfirebase.io/) provides access to native code by wrapping the native SDKs for Android and iOS into a JavaScript API.
+Each Firebase service is available as a module that can be added as a dependency to your project. For example, the `auth` module provides access to the Firebase Authentication service.
 
 ### When to use React Native Firebase
 
 You can consider using React Native Firebase when:
 
-- Your app requires access to Firebase services not supported by the Firebase JS SDK, such as [Dynamic Links](https://rnfirebase.io/dynamic-links/usage), [Crashlytics](https://rnfirebase.io/crashlytics/usage), and so on. For more information on the additional capabilities offered by the native SDK's, see [React Native Firebase documentation](https://rnfirebase.io/faqs-and-tips#why-react-native-firebase-over-firebase-js-sdk).
+- Your app requires access to Firebase services not supported by the Firebase JS SDK, such as [Dynamic Links](https://rnfirebase.io/dynamic-links/usage), [Crashlytics](https://rnfirebase.io/crashlytics/usage), and so on.
+  For more information on the additional capabilities offered by the native SDK's, see [React Native Firebase documentation](https://rnfirebase.io/faqs-and-tips#why-react-native-firebase-over-firebase-js-sdk).
 - You want to use native SDKs in your app.
 - You have a bare React Native app with React Native Firebase already configured but are migrating to use Expo SDK.
 - You want to use [Firebase Analytics](https://rnfirebase.io/analytics/usage) in your app.
@@ -174,27 +188,35 @@ React Native Firebase requires [custom native code and cannot be used with Expo 
 
 ### Install and initialize React Native Firebase
 
-#### Step 1: Install expo-dev-client
+<Step label="1">
+#### Install expo-dev-client
 
-Since React Native Firebase requires custom native code, you need to install the `expo-dev-client` library in your project. It also allows configuring any native code required by React Native Firebase using [Config plugins](/guides/config-plugins/) without writing native code yourself.
+Since React Native Firebase requires custom native code, you need to install the `expo-dev-client` library in your project.
+It also allows configuring any native code required by React Native Firebase using [Config plugins](/guides/config-plugins/) without writing native code yourself.
 
 To install [`expo-dev-client`](/development/getting-started/#installing--expo-dev-client--in-your-project), run the following command in your project:
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
+</Step>
 
-#### Step 2: Install React Native Firebase
+<Step label="2">
+#### Install React Native Firebase
 
-To use React Native Firebase, it is necessary to install the `@react-native-firebase/app` module. This module provides the core functionality for all other modules. It also adds custom native code in your project using a config plugin. You can install it using the following command:
+To use React Native Firebase, it is necessary to install the `@react-native-firebase/app` module. This module provides the core functionality for all other modules.
+It also adds custom native code in your project using a config plugin. You can install it using the following command:
 
 <Terminal cmd={['$ npx expo install @react-native-firebase/app']} />
 
 **At this point, you must follow the instructions from [React Native Firebase documentation](https://rnfirebase.io/#managed-workflow)** as it covers all the steps required to configure your project with the library.
 
 Once you have configured the React Native Firebase library in your project, come back to this guide to learn how to run your project in the next step.
+</Step>
 
-#### Step 3: Run the project
+<Step label="3">
+#### Run the project
 
-If you are using **[EAS Build](/build/introduction/), you can create and install a development build** on your devices. You do not need to run the project locally before creating a development build. For more information on creating a development build, see the section on [installing a development build](/development/getting-started/#creating-and-installing-your-first-development-build).
+If you are using **[EAS Build](/build/introduction/), you can create and install a development build** on your devices. You do not need to run the project locally before creating a development build.
+For more information on creating a development build, see the section on [installing a development build](/development/getting-started/#creating-and-installing-your-first-development-build).
 
 <Collapsible summary="Run project locally?">
 
@@ -203,11 +225,13 @@ If you want to run the project locally:
 - You need both Android Studio and Xcode installed and configured on your computer.
 - Then, you can run the project using `npx expo run:android` or `npx expo run:ios` command.
 
-If a particular React Native Firebase module requires custom native configuration steps, you must add it as a `plugin` to [Expo config file](/workflow/configuration/). Then, to run the project locally, you will have to run the `npx expo prebuild --clean` command to apply the native changes before the `npx expo run` commands.
+If a particular React Native Firebase module requires custom native configuration steps, you must add it as a `plugin` to [Expo config file](/workflow/configuration/).
+Then, to run the project locally, you will have to run the `npx expo prebuild --clean` command to apply the native changes before the `npx expo run` commands.
 
 </Collapsible>
+</Step>
 
-### Next
+### Next steps
 
 After configuring React Native Firebase library, you can use any module it provides in your Expo project.
 
