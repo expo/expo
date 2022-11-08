@@ -27,7 +27,7 @@ Initially, when the app loads for the first time and the permission status is ne
 Add the following code snippet inside the `<App>` component:
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 /* @info Import expo-media-library. */import * as MediaLibrary from 'expo-media-library';/* @end */
 
 // ...rest of the code remains same
@@ -53,7 +53,7 @@ To allow the user to take a screenshot within the app, we'll use [`react-native-
 
 Let's import it into **App.js** file:
 
-```js App.js
+```jsx App.js
 import { captureRef } from 'react-native-view-shot';
 ```
 
@@ -64,7 +64,7 @@ The `react-native-view-shot` library provides a method called `captureRef()` tha
 To capture a `<View>`, wrap the `<ImageViewer>` and `<EmojiSticker>` components inside a `<View>` and then pass a reference to it. Using the `useRef()` hook from React, let's create an `imageRef` variable inside `<App>`.
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 import { useState, /* @info Import the useRef hook from React. */useRef/* @end */ } from 'react';
 
 export default function App() {
@@ -120,7 +120,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```js
+```jsx
 export default function App() {
   /* @info Replace the comment with the code to capture the screenshot and save the image. */
   const onSaveImageAsync = async () => {

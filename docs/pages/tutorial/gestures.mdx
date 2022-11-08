@@ -29,7 +29,7 @@ Next, also install `@babel/plugin-proposal-export-namespace-from`, which is requ
 Then, add Reanimated's Babel plugin to **babel.config.js**:
 
 {/* prettier-ignore */}
-```js babel.config.js
+```jsx babel.config.js
 module.exports = function (api) {
   api.cache(true);
   return {
@@ -55,7 +55,7 @@ To get gesture interactions to work in the app, we'll render `<GestureHandlerRoo
 To accomplish this, replace the root level `<View>` component in the **App.js** with `<GestureHandlerRootView>`.
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 /* @info Import GestureHandlerRootView from react-native-gesture-handler-library. */import { GestureHandlerRootView } from "react-native-gesture-handler"; /* @end */
 
 export default function App() {
@@ -71,13 +71,13 @@ export default function App() {
 
 Open the **EmojiSticker.js** file in the **components** directory. Inside it, import `Animated` from the `react-native-reanimated` library to create animated components.
 
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 import Animated from 'react-native-reanimated';
 ```
 
 To make a double tap gesture work, we will apply animations to the `<Image>` component by passing it as an argument to the `Animated.createAnimatedComponent()` method.
 
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 // after import statements, add the following line
 
 const AnimatedImage = Animated.createAnimatedComponent(Image);
@@ -88,7 +88,7 @@ The `createAnimatedComponent()` can wrap any component. It looks at the `style` 
 Replace the `<Image>` component with `<AnimatedImage>`.
 
 {/* prettier-ignore */}
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 export default function EmojiSticker({ imageSize, stickerSource }) {
   return (
     <View style={{ top: -350 }}>
@@ -108,7 +108,7 @@ React Native Gesture Handler allows us to add behavior when it detects touch inp
 
 In the **EmojiSticker.js** file, import `TapGestureHandler` from `react-native-gesture-handler` and the hooks below from `react-native-reanimated`. These hooks will animate the style on the `<AnimatedImage>` component for the sticker when the tap gesture is recognized.
 
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 import { TapGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
@@ -120,7 +120,7 @@ import Animated, {
 
 Inside the `<EmojiSticker>` component, create a reference called `scaleImage` using the `useSharedValue()` hook. It will take the value of `imageSize` as its initial value.
 
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 const scaleImage = useSharedValue(imageSize);
 ```
 
@@ -128,7 +128,7 @@ Creating a shared value using the `useSharedValue()` hook has many advantages. I
 
 Create the following function in the `<EmojiSticker>` component:
 
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 const onDoubleTap = useAnimatedGestureHandler({
   onActive: () => {
     if (scaleImage.value) {
@@ -142,7 +142,7 @@ To animate the transition, let's use a spring-based animation. This will make it
 
 The `useAnimatedStyle()` hook from `react-native-reanimated` is used to create a style object that will be applied to the sticker image. It will update styles using the shared values when the animation happens. In this case, we are scaling the size of the image, which is done by manipulating the `width` and `height` properties. The initial values of these properties are set to `imageSize`. Create an `imageStyle` variable and add it to the `EmojiSticker` component:
 
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 const imageStyle = useAnimatedStyle(() => {
   return {
     width: withSpring(scaleImage.value),
@@ -175,7 +175,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```js
+```jsx
 export default function EmojiSticker({ imageSize, stickerSource }) {
   // ...rest of the code remains same
   return (
@@ -209,14 +209,14 @@ A pan gesture allows recognizing a dragging gesture and tracking its movement. W
 In the **EmojiSticker.js**, import `PanGestureHandler` from the `react-native-gesture-handler` library.
 
 {/* prettier-ignore */}
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 import { /* @info */ PanGestureHandler,/* @end */ TapGestureHandler} from "react-native-gesture-handler";
 ```
 
 Create an `<AnimatedView>` component using the `Animated.createAnimatedComponent()` method. Then use it to wrap the `<TapGestureHandler>` component by replacing the `<View>` component.
 
 {/* prettier-ignore */}
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 // ...rest of the code remains same
 /* @info */ const AnimatedView = Animated.createAnimatedComponent(View); /* @end */
 
@@ -235,7 +235,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 
 Now, create two new shared values: `translateX` and `translateY`.
 
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 export default function EmojiSticker({ imageSize, stickerSource }) {
   const translateX = useSharedValue(0);
   const translateY = useSharedValue(0);
@@ -256,7 +256,7 @@ In the previous step, we triggered the `onActive()` callback for the tap gesture
 Create an `onDrag()` method to handle the pan gesture.
 
 {/* prettier-ignore */}
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 const onDrag = useAnimatedGestureHandler({
   onStart: (event, context) => {
     context.translateX = translateX.value;
@@ -274,7 +274,7 @@ Both the `onStart` and `onActive` methods accept `event` and `context` as parame
 Next, use the `useAnimatedStyle()` hook to return an array of transforms.For the `<AnimatedView>` component, we need to set the `transform` property to the `translateX` and `translateY` values. This will change the sticker's position when the gesture is active.
 
 {/* prettier-ignore */}
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 const containerStyle = useAnimatedStyle(() => {
   return {
     transform: [
@@ -313,7 +313,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```js
+```jsx
 export default function EmojiSticker({ imageSize, stickerSource }) {
   // rest of the code
 

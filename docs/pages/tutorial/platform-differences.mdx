@@ -22,7 +22,7 @@ After installing it, make sure to restart the development server and press <kbd>
 
 To use it, let's import it into **App.js**:
 
-```js App.js
+```jsx App.js
 import domtoimage from 'dom-to-image';
 ```
 
@@ -33,7 +33,7 @@ React Native provides a `Platform` module that gives us access to information ab
 Import the `Platform` module in **App.js**:
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 import { StyleSheet, View, /* @info Import the Platform module from react-native. */ Platform /* @end */ } from 'react-native';
 ```
 
@@ -61,7 +61,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```js
+```jsx
 const onSaveImageAsync = async () => {
   /* @info Add the if condition here to check whether the current platform is web or not. */ if (Platform.OS !== 'web') { /* @end */
     try {

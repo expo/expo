@@ -29,7 +29,7 @@ We can use the button with the primary theme we created in the previous chapter 
 In **App.js**, import the `expo-image-picker` library and create a `pickImageAsync()` function inside the `App` component:
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 // ...rest of the import statements remain unchanged
 /* @info Import the ImagePicker. */ import * as ImagePicker from 'expo-image-picker'; /* @end */
 
@@ -67,7 +67,7 @@ Let's learn what the above code does.
 When the primary button gets pressed, we need to call the `pickImageAsync()` function. To call it, update the `onPress` property of the `<Button>` component in **components/Button.js**:
 
 {/* prettier-ignore */}
-```js Button.js
+```jsx Button.js
 export default function Button({ label,  theme, /* @info Pass this prop to trigger the handler method from the parent component. */ onPress/* @end */}) {
   // ...rest of the code remains same
   if (theme === "primary") {
@@ -87,7 +87,7 @@ export default function Button({ label,  theme, /* @info Pass this prop to trigg
 In **App.js**, add the `pickImageAsync()` function to the `onPress` prop on the first `<Button>`.
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 export default function App() {
   // ...rest of the code remains same
 
@@ -135,7 +135,7 @@ Modify the **App.js** file in the following steps:
 - Then, pass the `selectedImage` as a prop to the `ImageViewer` component.
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 /* @info Import useState hook from React. */ import { useState } from 'react'; /* @end */
 // ...rest of the import statements remain unchanged
 
@@ -189,7 +189,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```js
+```jsx
 export default function ImageViewer({ placeholderImageSource, /* @info Pass the selectedImage prop.*/selectedImage/* @end */ }) {
   /* @info If the selected image is not null, show the image from the device, otherwise, show the placeholder image. */
   const imageSource = selectedImage !== null 

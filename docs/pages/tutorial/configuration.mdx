@@ -16,19 +16,19 @@ The <LinkBase href="/versions/latest/sdk/status-bar/" openInNewTab>`expo-status-
 
 The `<StatusBar>` component is already imported in the **App.js**:
 
-```js App.js
+```jsx App.js
 import { StatusBar } from 'expo-status-bar';
 ```
 
 It's also mounted in the `<App>` component.
 
-```js App.js
+```jsx App.js
 <StatusBar style="auto" />
 ```
 
 Currently, the `style` value is `auto`. It means that the status bar will automatically pick the text color based on the app's color scheme. However, we do not have different color schemes in the tutorial app. There is only one active color scheme, which has a dark background. To make the status bar light, change the `style` value to `light`.
 
-```js App.js
+```jsx App.js
 <StatusBar style="light" />
 ```
 
@@ -66,7 +66,7 @@ Start by running the following command:
 
 Next, add the following code in **App.js** to delay hiding the splash screen for five seconds.
 
-```js App.js
+```jsx App.js
 import * as SplashScreen from 'expo-splash-screen';
 
 SplashScreen.preventAutoHideAsync();

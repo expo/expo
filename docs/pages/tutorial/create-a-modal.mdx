@@ -20,7 +20,7 @@ Declare a state variable called `showAppOptions` in **App.js**. We'll use this v
 This variable is a boolean. When the app screen loads, we'll set it to `false` so that the options are not shown before picking an image.
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 export default function App() {
   /* @info Create a state variable inside the App component. */const [showAppOptions, setShowAppOptions] = useState(false); /* @end */
   // ...rest of the code remains same
@@ -32,7 +32,7 @@ The value of this variable will be set to `true` when the user picks an image fr
 Next, modify the `pickImageAsync()` function to set the value of `showAppOptions` to `true` after the user picks an image.
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 const pickImageAsync = async () => {
   // ...rest of the code remains same
 
@@ -49,7 +49,7 @@ const pickImageAsync = async () => {
 Then, update the button with no theme by adding an `onPress` prop with the following value:
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 <Button label="Use this photo" /* @info Update the onPress prop.*/ onPress={() => setShowOptions(true)} /* @end */ />
 ```
 
@@ -63,7 +63,7 @@ Now, we can remove the `alert` on the `<Button>` component and update the `onPre
 Next, update **App.js** to conditionally render the `<Button>` component based on the value of `showAppOptions`. Also, move the buttons in the conditional operator block.
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 export default function App() {
   // ...
   return (
@@ -102,7 +102,7 @@ It contains a parent `<View>` with three buttons aligned in a row. The button in
 
 Inside the **components** directory, create a new file called **CircleButton.js** with the following code:
 
-```js CircleButton.js
+```jsx CircleButton.js
 import { View, Pressable, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -144,7 +144,7 @@ The other two buttons also use `<MaterialIcons>` to display vertically aligned t
 - `label`: the text label displayed on the button.
 - `onPress`: the function called when the button is pressed.
 
-```js IconButton.js
+```jsx IconButton.js
 import { Pressable, StyleSheet, Text } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -184,7 +184,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```js
+```jsx
 // ... rest of the import statements
 import CircleButton from './components/CircleButton';
 import IconButton from './components/IconButton';
@@ -263,7 +263,7 @@ The modal allows the user to choose an emoji from a list of available emoji. Cre
 - `children`: used later to display a list of emoji.
 
 {/* prettier-ignore */}
-```js EmojiPicker.js
+```jsx EmojiPicker.js
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -295,7 +295,7 @@ Let's learn what the above code does.
 The next step is to add the corresponding styles for the `<EmojiPicker>` component:
 
 {/* prettier-ignore */}
-```js EmojiPicker.js
+```jsx EmojiPicker.js
 const styles = StyleSheet.create({
   modalContent: {
     height: '25%',
@@ -352,7 +352,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```js
+```jsx
 // ...rest of the import statements remain same
 /* @info import the EmojiPicker component.*/ import EmojiPicker from "./components/EmojiPicker"; /* @end */
 
@@ -427,7 +427,7 @@ Let's implement a horizontal list of emoji in the modal's content. We'll use is 
 Create a file named **EmojiList.js** file in the **components** directory and add the following code:
 
 {/* prettier-ignore */}
-```js EmojiList.js
+```jsx EmojiList.js
 import { useState } from 'react';
 import { StyleSheet, FlatList, Image, Platform, Pressable } from 'react-native';
 
@@ -488,7 +488,7 @@ The `horizontal` prop renders the list horizontally instead of vertically. The `
 Now, modify the `App` component. Import the `<EmojiList>` component and replace the comments where the `<EmojiPicker>` component is used with the following code snippet:
 
 {/* prettier-ignore */}
-```js App.js
+```jsx App.js
 //...rest of the import statements remain same
 /* @info Import the EmojiList component.*/ import EmojiList from './components/EmojiList';/* @end */
 
@@ -525,7 +525,7 @@ Now we'll put the emoji sticker on the image.
 
 Start by creating a new file in the **components** directory and call it **EmojiSticker.js**. Then, add the following code:
 
-```js EmojiSticker.js
+```jsx EmojiSticker.js
 import { View, Image } from 'react-native';
 
 export default function EmojiSticker({ imageSize, stickerSource }) {
@@ -570,7 +570,7 @@ files={{
 }}>
 
 {/* prettier-ignore */}
-```js
+```jsx
 // ...rest of the import statements
 import EmojiSticker from './components/EmojiSticker';
 
