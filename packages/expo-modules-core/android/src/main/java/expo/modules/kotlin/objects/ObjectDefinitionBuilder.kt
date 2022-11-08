@@ -253,6 +253,12 @@ open class ObjectDefinitionBuilder {
    */
   fun Events(vararg events: String) {
     eventsDefinition = EventsDefinition(events)
+
+    // Register stub functions to bypass react-native `NativeEventEmitter` warnings
+    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `addListener` method.
+    // WARN  `new NativeEventEmitter()` was called with a non-null argument without the required `removeListeners` method.
+    Function("addListener") { }
+    Function("removeListeners") { }
   }
 
   /**

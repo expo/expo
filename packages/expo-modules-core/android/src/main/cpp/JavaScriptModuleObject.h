@@ -91,12 +91,6 @@ public:
   );
 
   /**
-   * Registers event emitter
-   * Currently only add stub `addListener` and `removeListeners` functions to bypass react-native `NativeEventEmitter` check.
-   */
-  void registerEventEmitter();
-
-  /**
    * An inner class of the `JavaScriptModuleObject` that is exported to the JS.
    * It's an additional communication layer between JS and Kotlin.
    * So the high-level view on accessing the exported function will look like this:
@@ -152,13 +146,9 @@ private:
   std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
 
   /**
-   * True if the module has event emitter registered
-   */
-  bool hasEventEmitter;
-
-  /**
    * The `LongLivedObjectCollection` to hold `LongLivedObject` (callbacks or promises) for this module.
    */
   std::shared_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
+
 };
 } // namespace expo

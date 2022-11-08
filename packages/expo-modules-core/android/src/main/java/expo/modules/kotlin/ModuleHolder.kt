@@ -28,10 +28,6 @@ class ModuleHolder(val module: Module) {
         val convertedConstants = Arguments.makeNativeMap(constants)
         exportConstants(convertedConstants)
 
-        if (definition.eventsDefinition != null) {
-          registerEventEmitter()
-        }
-
         definition
           .functions
           .forEach { function ->
