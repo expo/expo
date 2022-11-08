@@ -161,7 +161,7 @@ Here are a few ways people claim to have solved this problem, maybe one of these
 Go read the Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This the single most reliable source of information on this problem. To help you grasp what they're suggesting:
 
 - Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
-- **Bare React Native apps** must [manually enable the **Push Notifications** capability](/build-reference/ios-capabilities#manual-setup). If you have trouble setting this up, refer to [this StackOverflow answer](https://stackoverflow.com/a/10791240/1123156). You may also want to try to debug this even further by logging persistent connection debug information as outlined by [this StackOverflow answer](https://stackoverflow.com/a/8036052/1123156).
+- **Bare React Native apps** must [manually enable the **Push Notifications** capability](/build-reference/ios-capabilities#manual-setup). If you have trouble setting this up, refer to [this Stack Overflow answer](https://stackoverflow.com/a/10791240/1123156). You may also want to try to debug this even further by logging persistent connection debug information as outlined by [this Stack Overflow answer](https://stackoverflow.com/a/8036052/1123156).
 
 </Collapsible>
 
@@ -174,19 +174,19 @@ Go read the Apple's [Technical Note on troubleshooting push notifications](https
 
 <Collapsible summary="Disable network sharing on your device">
 
-You may need to disable network sharing as this may impact the registration as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59156989/1123156).
+You may need to disable network sharing as this may impact the registration as suggested by [this Stack Overflow answer](https://stackoverflow.com/a/59156989/1123156).
 
 </Collapsible>
 
 <Collapsible summary="Restart your device">
 
-If you just changed the APNS servers where the app should be registering (by installing a TestFlight build over an Xcode build on the same device) you may need to restart your device as suggested by [this StackOverflow answer](https://stackoverflow.com/a/59864028/1123156).
+If you just changed the APNS servers where the app should be registering (by installing a TestFlight build over an Xcode build on the same device) you may need to restart your device as suggested by [this Stack Overflow answer](https://stackoverflow.com/a/59864028/1123156).
 
 </Collapsible>
 
 <Collapsible summary="Setup your device with a SIM card">
 
-If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this StackOverflow answer](https://stackoverflow.com/a/19432504/1123156).
+If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this Stack Overflow answer](https://stackoverflow.com/a/19432504/1123156).
 
 </Collapsible>
 

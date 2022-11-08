@@ -115,7 +115,7 @@ This will show you an interactive breakdown of what makes up your JavaScript bun
 
 > **info** Metro web support is an experimental feature and only works with the [local Expo CLI](https://blog.expo.dev/new-versioned-expo-cli-cf6e10632656) and Expo SDK 46 or newer.
 
-By default, Expo CLI uses Webpack as the bundler on web platforms, this is because Metro historically did not support web. Using different bundlers across platforms leads to some critical divergence in how your app works across platforms. Features like Fast Refresh which work on native don't work on web, and important production functionality like assets are treated differently across bundlers.
+By default, Expo CLI uses webpack as the bundler on web platforms, this is because Metro historically did not support web. Using different bundlers across platforms leads to some critical divergence in how your app works across platforms. Features like Fast Refresh which work on native don't work on web, and important production functionality like assets are treated differently across bundlers.
 
 By utilizing Metro across all platforms you can have a more universal development experience. You also get to utilize shared cached chunks across platforms meaning faster iteration speed when working across platforms. Project upgrades can also be easier since there are less dependencies (`webpack`, `webpack-dev-server`) you need to update between versions.
 
@@ -123,11 +123,11 @@ All Metro web features should be universal (bundling, static files, assets) maki
 
 Learn once, bundle everywhere!
 
-### Expo Webpack vs. Expo Metro
+### Expo webpack vs. Expo Metro
 
-Universal Expo Metro is designed to be fully universal, meaning any web bundling features should also work on native too. Because of this we make some breaking changes between the two bundler implementations, carefully check the difference if you're moving from Webpack to Metro.
+Universal Expo Metro is designed to be fully universal, meaning any web bundling features should also work on native too. Because of this we make some breaking changes between the two bundler implementations, carefully check the difference if you're moving from webpack to Metro.
 
-| Feature          | Metro                            | Webpack                |
+| Feature          | Metro                            | webpack                |
 |------------------|----------------------------------|------------------------|
 | Start command    | `npx expo start`                 | `npx expo start`       |
 | Bundle command   | `npx expo export`                | `npx expo export:web`  |
@@ -197,9 +197,9 @@ You can deploy the website using any popular web host, follow any of the guides 
 
 #### Static Files
 
-Expo's Metro implementation supports hosting static files from the dev server by putting them in the root `public/` folder, this is akin to many other web frameworks. In Expo Webpack we default to using the `web/` folder.
+Expo's Metro implementation supports hosting static files from the dev server by putting them in the root **public/** directory, this is akin to many other web frameworks. In Expo webpack, we default to using the **web/** directory.
 
-When exporting with `npx expo export` we copy the contents of the `public/` folder into the `dist/` folder, meaning your app can expect to fetch these assets relative to the host URL.
+When exporting with `npx expo export`, we copy the contents of the **public/** directory into the **dist/** directory, meaning your app can expect to fetch these assets relative to the host URL.
 
 The most common example of this is the `public/favicon.ico` which is used by websites to render the tab icon.
 
