@@ -8,7 +8,6 @@ import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
