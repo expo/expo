@@ -62,10 +62,7 @@ export class DevServerManagerActions {
 
   async openJsInspectorAsync() {
     Log.log('Opening JavaScript inspector in the browser...');
-    const metroServerOrigin = this.devServerManager
-      .getDefaultDevServer()
-      .getNativeRuntimeUrl()
-      ?.replace(/^exp:\/\//, 'http://');
+    const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
     assert(metroServerOrigin, 'Metro dev server is not running');
     const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
     if (!apps.length) {
