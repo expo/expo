@@ -10,11 +10,11 @@ Usually, when you're developing a native mobile app and want to install a third-
 In Expo and React Native, you already do that with your **package.json** file by installing the package from the [npm](https://www.npmjs.com) registry. Since most of the React Native libraries come with some native (platform-specific) code,
 installing a library will require configuring even up to three different package managers!
 
-Expo Autolinking is a mechanism that automates this process and narrows down the library installation process to the minimum — usually just installing the package from `npm` and re-running `pod install`.
+Expo Autolinking is a mechanism that automates this process and reduces the library installation process to the minimum — usually just installing the package from `npm` and re-running `pod install`.
 The core implementation can be found in the [`expo-modules-autolinking`](https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking) package and is divided into three parts:
-- common JavaScript CLI tool with the module resolution algorithm
-- code that integrates with the Gradle build system for Android platform
-- Ruby script that integrates with CocoaPods for iOS platform
+1. common JavaScript CLI tool with the module resolution algorithm
+2. code that integrates with the Gradle build system for Android platform
+3. Ruby script that integrates with CocoaPods for iOS platform
 
 ## CLI commands
 
@@ -22,7 +22,7 @@ The core implementation can be found in the [`expo-modules-autolinking`](https:/
 
 ### `search`
 
-Searching is the first phase of resolving the Expo modules installed in the project. Its implementation is common for all platforms. It intends to find which modules should be taken as Expo modules and figure out which version is of the highest precedence (in case of duplicates).
+Searching is the first phase of resolving the Expo modules installed in a project. Its implementation is shared between all platforms. It finds all modules marked as Expo modules and determines which version is of the highest precedence (in case of duplicates).
 
 <Terminal cmd={['$ npx expo-modules-autolinking search']} />
 
@@ -49,8 +49,7 @@ The above command returns an object in JSON format with modules that have been f
 
 ### `resolve`
 
-Resolving is the second phase based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details,
-such as the path to the podspec or **build.gradle** files and module classes to link.
+Resolving is the second phase based on the results from the `search` command. It resolves each search result to an object with more (platform-specific) details, such as the path to the podspec or **build.gradle** files and module classes to link.
 
 <Terminal cmd={['$ npx expo-modules-autolinking resolve --platform <ios|android>']} />
 
@@ -84,7 +83,7 @@ For example, with the `--platform ios` option it returns an object in JSON forma
 
 ### `verify`
 
-Verifies the search results by checking whether there are no multiple revisions (duplicates) of the same package, otherwise an appropriate warning is shown.
+Verifies the search results by checking whether there are no duplicate packages, otherwise an appropriate warning is shown.
 
 <Terminal cmd={['$ npx expo-modules-autolinking verify']} />
 
@@ -102,7 +101,7 @@ The behavior of the module resolution can be customized using some configuration
 ### `searchPaths`
 
 A list of paths relative to the app's root directory where the autolinking script should search for Expo modules.
-It defaults to a list of all **node_modules** folders found when traversing up through your monorepo starting from the app's root directory.
+It defaults to a list of all **node_modules** folders found when traversing up through a monorepo, starting from the app's root directory.
 Useful when your project has a custom structure or you want to link local packages from folders different than **node_modules**.
 
 ```json package.json
@@ -145,7 +144,7 @@ The following config in **package.json** will exclude `expo-random` from autolin
 
 ### `flags`
 
-CocoaPods flags to pass to each autolinked pod. `inhibit_warnings` is probably the only one you may want to use to inhibit Xcode warnings produced when compiling the autolinked modules.
+CocoaPods flags to pass to each autolinked pod. `inhibit_warnings` is likely the only flag most developers want to use, to inhibit Xcode warnings produced when compiling the autolinked modules.
 You can refer to the [CocoaPods Podfile documentation](https://guides.cocoapods.org/syntax/podfile.html#pod) for available flags.
 
 <CodeBlocksTable tabs={['Podfile', 'package.json']}>
@@ -176,12 +175,11 @@ use_expo_modules!({
 
 </APIBox>
 
-## FAQ
+## Common questions
 
 ### How to set up the autolinking in my app?
 
-All projects created with the `npx create-expo-app` command are already configured to use Expo Autolinking. If your project was created using different tools,
-please refer to [Installing Expo modules](/bare/installing-expo-modules) to make sure your project includes all necessary changes.
+All projects created with the `npx create-expo-app` command are already configured to use Expo Autolinking. If your project was created using different tools, please refer to [Installing Expo modules](/bare/installing-expo-modules) to make sure your project includes all necessary changes.
 
 ### What do I need to have in my module to make it autolinkable?
 
@@ -190,6 +188,7 @@ It's also necessary to include supported platforms in the `platforms` array — 
 
 ### How is it different from React Native autolinking?
 
-Expo Autolinking comes in with built-in support for monorepos, Yarn workspaces and transitive dependencies.
-It's also significantly faster, even though the module resolution algorithm is more complex in order to be more reliable and match the Node's module resolution.
-Expo module resolution is also capable of detecting the duplicates which is a common issue in monorepos. Last but not least, it integrates well with all the features offered by Expo Modules APIs.
+- Expo Autolinking comes in with built-in support for monorepos, Yarn workspaces and transitive dependencies.
+- It's also significantly faster, even though the module resolution algorithm is more complex in order to be more reliable and match the Node's module resolution.
+- Expo module resolution is also capable of detecting the duplicates which is a common issue in monorepos.
+- Last but not least, it integrates well with all the features offered by Expo Modules APIs.
