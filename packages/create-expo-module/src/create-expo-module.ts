@@ -65,6 +65,18 @@ async function main(target: string | undefined, options: CommandOptions) {
     step.succeed('Created the module from template files');
   });
 
+  await newStep('Creating an empty Git repository', async (step) => {
+    try {
+      await spawnAsync('git', ['init'], {
+        cwd: targetDir,
+        stdio: 'ignore',
+      });
+      step.succeed('Created an empty Git repository');
+    } catch (e: any) {
+      step.fail(e.toString());
+    }
+  });
+
   await newStep('Installing module dependencies', async (step) => {
     await installDependencies(packageManager, targetDir);
     step.succeed('Installed module dependencies');
