@@ -3,9 +3,9 @@ import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
+import { format } from '../../utils/XML';
 import { getMainApplication, readAndroidManifestAsync } from '../Manifest';
 import { readResourcesXMLAsync } from '../Resources';
-import { format } from '../../utils/XML';
 import * as Updates from '../Updates';
 
 const fixturesPath = path.resolve(__dirname, 'fixtures');
@@ -216,7 +216,7 @@ describe('Android Updates config', () => {
 
     it('Write and clear runtime version in strings resource', async () => {
       const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
-      let stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
+      const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
       const config = {
         runtimeVersion: '1.10',
       };
