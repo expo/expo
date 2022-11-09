@@ -236,7 +236,7 @@ export class HomeScreenView extends React.Component<Props, State> {
       const api = new APIV2Client();
 
       const [projects, graphQLResponse] = await Promise.all([
-        api.sendAuthenticatedApiV2Request<DevSession[]>('development-sessions', {
+        api.sendOptionallyAuthenticatedApiV2Request<DevSession[]>('development-sessions', {
           method: 'GET',
           searchParams: {
             deviceId: getSnackId(),
