@@ -3,7 +3,7 @@
  * - yarn run remove-version 38 -> removes all the pages and files related to the SDK 38
  */
 
-const fs = require('fs-extra');
+import fs from 'fs-extra';
 
 const version = process.argv[2];
 
