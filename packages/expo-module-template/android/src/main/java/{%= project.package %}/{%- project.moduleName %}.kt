@@ -3,7 +3,7 @@ package <%- project.package %>
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
-class <%- project.name %>Module : Module() {
+class <%- project.moduleName %> : Module() {
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
   // See https://docs.expo.dev/modules/module-api for more details about available components.
@@ -37,9 +37,9 @@ class <%- project.name %>Module : Module() {
 
     // Enables the module to be used as a native view. Definition components that are accepted as part of
     // the view definition: Prop, Events.
-    View(<%- project.name %>View::class) {
+    View(<%- project.viewName %>::class) {
       // Defines a setter for the `name` prop.
-      Prop("name") { view: <%- project.name %>View, prop: String ->
+      Prop("name") { view: <%- project.viewName %>, prop: String ->
         println(prop)
       }
     }
