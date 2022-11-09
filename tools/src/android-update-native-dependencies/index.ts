@@ -47,6 +47,7 @@ export interface Options {
   revision: Revision;
   list: boolean;
   clearCache: boolean;
+  platform: string;
 }
 
 export default async function androidUpdateNativeDependencies(options: Options) {

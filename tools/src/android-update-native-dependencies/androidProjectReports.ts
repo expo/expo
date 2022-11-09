@@ -73,14 +73,14 @@ async function executeGradleTask(
 ): Promise<SpawnResult> {
   const gradleWrapperCommand = await determineGradleWrapperCommand(androidProjectDir);
   
-  const gradleInitScriptCommand = ` --init-script=${path.join(
+  const gradleInitScriptCommand = `--init-script=${path.join(
     __dirname,
     '../../src/android-update-native-dependencies',
     'initScript.gradle'
   )}`;
   const gradleCommandArguments = [
-    gradleInitScriptCommand,
     'dependencyUpdates',
+    gradleInitScriptCommand,
     '-DoutputFormatter=json',
     `-DoutputDir=build/dependencyUpdates`,
     `-Drevision=${gradleTaskOptions.revision}`,
@@ -88,7 +88,7 @@ async function executeGradleTask(
   const spinner = ora({
     spinner: 'dots',
     text: `Executing gradle command ${chalk.yellow(
-      `${gradleWrapperCommand}${gradleCommandArguments.join(' ')}`
+      `${gradleWrapperCommand} ${gradleCommandArguments.join(' ')}`
     )}. This might take a while.`,
   });
 
