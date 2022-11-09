@@ -24,7 +24,7 @@ export const dpiValues: dpiMap = {
   xxhdpi: { folderName: 'mipmap-xxhdpi', scale: 3 },
   xxxhdpi: { folderName: 'mipmap-xxxhdpi', scale: 4 },
 };
-const BASELINE_PIXEL_SIZE = 48;
+const BASELINE_PIXEL_SIZE = 108;
 export const ANDROID_RES_PATH = 'android/app/src/main/res/';
 const MIPMAP_ANYDPI_V26 = 'mipmap-anydpi-v26';
 const ICON_BACKGROUND = 'iconBackground';

@@ -91,7 +91,7 @@ const dpiValues = {
   }
 };
 exports.dpiValues = dpiValues;
-const BASELINE_PIXEL_SIZE = 48;
+const BASELINE_PIXEL_SIZE = 108;
 const ANDROID_RES_PATH = 'android/app/src/main/res/';
 exports.ANDROID_RES_PATH = ANDROID_RES_PATH;
 const MIPMAP_ANYDPI_V26 = 'mipmap-anydpi-v26';
