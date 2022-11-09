@@ -2,8 +2,8 @@
   "name": "<%- project.slug %>",
   "version": "<%- project.version %>",
   "description": "<%- project.description %>",
-  "main": "build/<%- project.name %>.js",
-  "types": "build/<%- project.name %>.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
