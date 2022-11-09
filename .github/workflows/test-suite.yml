@@ -62,14 +62,14 @@ jobs:
           author_name: Test Suite (Web)
 
   ios:
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 13.2.1
-        run: sudo xcode-select --switch /Applications/Xcode_13.2.1.app
+      - name: 🔨 Switch to Xcode 14.1
+        run: sudo xcode-select --switch /Applications/Xcode_14.1.app
       - name: 🍺 Install required tools
         run: |
           brew tap wix/brew
@@ -134,7 +134,7 @@ jobs:
           author_name: Test Suite (iOS)
 
   android:
-    runs-on: macos-11
+    runs-on: macos-12
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
