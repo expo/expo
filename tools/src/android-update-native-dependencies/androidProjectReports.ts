@@ -24,7 +24,7 @@ export interface GradleTaskOptions {
 }
 
 function flatSingle<T>(arr: T[][]) {
-  return ([] as T[]).concat(...arr);
+  return arr.flatMap((it) => it);
 }
 
 function generateReportCacheFilePath(dateTimestamp: Date, gradleTaskOptions: GradleTaskOptions) {
@@ -70,9 +70,9 @@ async function determineGradleWrapperCommand(androidProjectDir: string): Promise
 async function executeGradleTask(
   androidProjectDir: string,
   gradleTaskOptions: GradleTaskOptions
-): Promise<SpawnResult> {
+): Promise<SpawnResult | undefined> {
   const gradleWrapperCommand = await determineGradleWrapperCommand(androidProjectDir);
-  
+
   const gradleInitScriptCommand = `--init-script=${path.join(
     __dirname,
     '../../src/android-update-native-dependencies',
@@ -93,14 +93,20 @@ async function executeGradleTask(
   });
 
   spinner.start();
-  const result = await spawnAsync(gradleWrapperCommand, gradleCommandArguments, {
-    cwd: androidProjectDir,
-  });
-  spinner.succeed();
-  if (result.status !== 0) {
-    logger.error('Gradle process failed with an error.', result.stderr);
+  try {
+    const result = await spawnAsync(gradleWrapperCommand, gradleCommandArguments, {
+      cwd: androidProjectDir,
+    });
+    if (result.status !== 0) {
+      throw result.stderr;
+    }
+    spinner.succeed();
+    return result;
+  } catch (error) {
+    logger.error('Gradle process failed with an error.', error);
+    spinner.fail();
   }
-  return result;
+  return undefined;
 }
 
 /**

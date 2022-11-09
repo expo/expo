@@ -43,7 +43,7 @@ export interface GradleDependency {
   /**
    * string of format: `${group}:${name}`
    */
-  fullName: string;
+  fullName: `${string}:${string}`;
   availableVersion: string | null;
   currentVersion: string;
   projectUrl: string | null;

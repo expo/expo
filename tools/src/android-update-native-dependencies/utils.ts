@@ -2,8 +2,8 @@ import chalk from 'chalk';
 import semver from 'semver';
 import terminalLink from 'terminal-link';
 
-import * as Directories from '../Directories';
-import dependenciesChangelogs from './dependenciesChangelogs.json';
+import { EXPOTOOLS_DIR } from '../Constants';
+import dependenciesChangelogs from '../data/androidDependenciesChangelogs.json';
 
 export function getChangelogLink(dependency: string, fallbackLink: string | null) {
   const link = dependenciesChangelogs[dependency] ?? fallbackLink;
@@ -12,7 +12,7 @@ export function getChangelogLink(dependency: string, fallbackLink: string | null
       chalk.whiteBright(
         `Hey developer! Add CHANGELOG URL address for this dependency in ${terminalLink(
           'dependenciesChangelogs.json',
-          `file://${Directories.getExpotoolsDir()}/src/android-update-native-dependencies/dependenciesChangelogs.json`
+          `file://${EXPOTOOLS_DIR}/src/android-update-native-dependencies/dependenciesChangelogs.json`
         )}!`
       )
   );

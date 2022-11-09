@@ -1,10 +1,10 @@
 import * as Changelogs from '../Changelogs';
-import dependenciesChangelogs from './dependenciesChangelogs.json';
+import dependenciesChangelogs from '../data/androidDependenciesChangelogs.json';
 import { AndroidProjectDependenciesUpdates } from './types';
 
-function maybeWrapInChangelogLink(string: string, dependencyName: string) {
+function maybeWrapInChangelogLink(text: string, dependencyName: string) {
   const changelog = dependenciesChangelogs[dependencyName];
-  return changelog ? `[${string}](${changelog})` : string;
+  return changelog ? `[${text}](${changelog})` : text;
 }
 
 export async function addChangelogEntries(
@@ -21,17 +21,13 @@ export async function addChangelogEntries(
           Changelogs.UNPUBLISHED_VERSION_NAME,
           Changelogs.ChangeType.LIBRARY_UPGRADES,
           null,
-          [
-            `Updated Android native dependenc${updates.length > 1 ? 'ies' : 'y'}:${updates
-              .map(
-                (update) =>
-                  `\n  - ${maybeWrapInChangelogLink(
-                    `\`${update.fullName}:${update.oldVersion}\` ➡️ \`${update.newVersion}\``,
-                    update.fullName
-                  )}`
-              )
-              .join(',')}`,
-          ]
+          updates.map(
+            (update) =>
+              `Updated Android native dependency: ${maybeWrapInChangelogLink(
+                `\`${update.fullName}:${update.oldVersion}\` ➡️ \`${update.newVersion}\``,
+                update.fullName
+              )}`
+          )
         );
 
         await changelog.saveAsync();

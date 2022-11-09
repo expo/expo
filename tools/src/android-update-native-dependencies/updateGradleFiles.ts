@@ -3,7 +3,7 @@ import { readFile, writeFile } from 'fs-extra';
 import * as path from 'path';
 import terminalLink from 'terminal-link';
 
-import * as Directories from '../Directories';
+import { EXPO_DIR } from '../Constants';
 import logger from '../Logger';
 import { AndroidProjectDependenciesUpdates } from './types';
 import { addColorBasedOnSemverDiff, calculateSemverDiff } from './utils';
@@ -129,14 +129,12 @@ export async function updateGradleDependencies(
     }
 
     logger.log(
-      `\n📈 updating ${chalk.blue(
-        updates.report.projectName
-      )} native dependencies in file: ${terminalLink(
-        chalk.italic.grey(
-          path.relative(Directories.getExpoRepositoryRootDir(), updates.report.gradleFilePath)
-        ),
+      `\n📈 Updating %s native dependencies in file: %s`,
+      chalk.blue(updates.report.projectName),
+      terminalLink(
+        chalk.italic.grey(path.relative(EXPO_DIR, updates.report.gradleFilePath)),
         updates.report.gradleFilePath
-      )}`
+      )
     );
 
     let buildFile = buildFiles[updates.report.gradleFilePath];

@@ -11,6 +11,24 @@ import {
 } from './types';
 import { addColorBasedOnSemverDiff, calculateSemverDiff, getChangelogLink } from './utils';
 
+function generateAndroidProjectsSelectionChoice({
+  projectName,
+  gradleReport: { outdated, exceeded, unresolved },
+}: AndroidProjectReport) {
+  const name = `${projectName}${
+    outdated.length > 0 ? ` ${chalk.yellow(`(${outdated.length} ⚠️ )`)}` : ''
+  }${
+    exceeded.length > 0 || unresolved.length > 0
+      ? ` ${chalk.red(`(${exceeded.length + unresolved.length} ❗️)`)}`
+      : ''
+  }`;
+  return {
+    name,
+    value: projectName,
+    checked: outdated.length > 0 || exceeded.length > 0 || unresolved.length > 0,
+  };
+}
+
 export async function promptForAndroidProjectsSelection(
   reports: AndroidProjectReport[]
 ): Promise<AndroidProjectReport[]> {
@@ -23,17 +41,7 @@ export async function promptForAndroidProjectsSelection(
       )} shows how many dependencies are outdated. ${chalk.red(
         '(<number> ❗️)'
       )} shows other problems with respective project's dependencies.`,
-      choices: reports.map(({ projectName, gradleReport: { outdated, exceeded, unresolved } }) => ({
-        name: `${projectName}${
-          outdated.length > 0 ? ` ${chalk.yellow(`(${outdated.length} ⚠️ )`)}` : ''
-        }${
-          exceeded.length > 0 || unresolved.length > 0
-            ? ` ${chalk.red(`(${exceeded.length + unresolved.length} ❗️)`)}`
-            : ''
-        }`,
-        value: projectName,
-        checked: outdated.length > 0 || exceeded.length > 0 || unresolved.length > 0,
-      })),
+      choices: reports.map(generateAndroidProjectsSelectionChoice),
       pageSize: Math.min(reports.length, (process.stdout.rows || 100) - 2),
     },
   ]);
@@ -89,7 +97,7 @@ async function promptForDependenciesUpdatesSelection(
     result.push(...(await promptForDependenciesVersions(report.gradleReport.exceeded)));
   }
   if (report.gradleReport.unresolved.length > 0) {
-    logger.log(`💥 ${chalk.red('failed to resolve')} these dependencies:`);
+    logger.log(`💥 ${chalk.red('Failed to resolve')} these dependencies:`);
     result.push(...(await promptForDependenciesVersions(report.gradleReport.unresolved)));
   }
 
@@ -101,9 +109,9 @@ export async function promptForNativeDependenciesUpdates(
 ): Promise<AndroidProjectDependenciesUpdates[]> {
   const selectedDependenciesUpdates: AndroidProjectDependenciesUpdates[] = [];
   logger.log(
-    `${chalk.white.bold(
+    chalk.white.bold(
       '\nProvide new native dependencies versions for each project. Check their changes in respective CHANGELOGs. To skip dependency provide no value.'
-    )}`
+    )
   );
   for (const report of reports) {
     const updates = await promptForDependenciesUpdatesSelection(report);
