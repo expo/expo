@@ -12,7 +12,6 @@ import com.facebook.react.uimanager.FloatUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.yoga.YogaConstants
 import expo.modules.image.ifYogaUndefinedUse
-import java.util.*
 
 class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
   enum class BorderRadiusConfig {
@@ -25,14 +24,13 @@ class OutlineProvider(private val mContext: Context) : ViewOutlineProvider() {
 
   private var mLayoutDirection = View.LAYOUT_DIRECTION_LTR
   private val mBounds = RectF()
-  val borderRadiiConfig = FloatArray(9)
+  val borderRadiiConfig = FloatArray(9) { YogaConstants.UNDEFINED }
   private val mCornerRadii = FloatArray(4)
   private var mCornerRadiiInvalidated = true
   private val mConvexPath = Path()
   private var mConvexPathInvalidated = true
 
   init {
-    Arrays.fill(borderRadiiConfig, YogaConstants.UNDEFINED)
     updateCornerRadiiIfNeeded()
   }
 

@@ -10,7 +10,15 @@ import java.io.InputStream
 
 @GlideModule
 class InputStreamBitmapOptionsDecoderGlideModule : LibraryGlideModule() {
-  override fun registerComponents(context: Context, glide: Glide, registry: Registry) {
-    registry.append(InputStream::class.java, BitmapFactory.Options::class.java, InputStreamBitmapFactoryOptionsDecoder())
+  override fun registerComponents(
+    context: Context,
+    glide: Glide,
+    registry: Registry
+  ) {
+    registry.append(
+      InputStream::class.java,
+      BitmapFactory.Options::class.java,
+      InputStreamBitmapFactoryOptionsDecoder()
+    )
   }
 }

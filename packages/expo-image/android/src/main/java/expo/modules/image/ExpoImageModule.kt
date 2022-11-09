@@ -4,13 +4,13 @@ import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
-import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.image.enums.ImageResizeMode
+import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -63,21 +63,20 @@ class ExpoImageModule : Module() {
         "onLoad"
       )
 
-      Prop("source") { view: ExpoImageViewWrapper, sourceMap: ReadableMap? ->
-        view.sourceMap = sourceMap
+      Prop("source") { view: ExpoImageViewWrapper, sourceMap: SourceMap? ->
+        view.imageView.sourceMap = sourceMap
       }
 
-      Prop("resizeMode") { view: ExpoImageViewWrapper, stringValue: String ->
-        val resizeMode = ImageResizeMode.fromStringValue(stringValue)
-        view.resizeMode = resizeMode
+      Prop("resizeMode") { view: ExpoImageViewWrapper, resizeMode: ImageResizeMode ->
+        view.imageView.resizeMode = resizeMode
       }
 
       Prop("blurRadius") { view: ExpoImageViewWrapper, blurRadius: Int ->
-        view.blurRadius = blurRadius
+        view.imageView.blurRadius = blurRadius
       }
 
       Prop("fadeDuration") { view: ExpoImageViewWrapper, fadeDuration: Int ->
-        view.fadeDuration = fadeDuration
+        view.imageView.fadeDuration = fadeDuration
       }
 
       PropGroup(
@@ -92,7 +91,7 @@ class ExpoImageModule : Module() {
         ViewProps.BORDER_BOTTOM_END_RADIUS to 8
       ) { view: ExpoImageViewWrapper, index: Int, borderRadius: Float? ->
         val radius = makeYogaUndefinedIfNegative(borderRadius ?: YogaConstants.UNDEFINED)
-        view.setBorderRadius(index, radius)
+        view.imageView.setBorderRadius(index, radius)
       }
 
       PropGroup(
@@ -106,7 +105,7 @@ class ExpoImageModule : Module() {
       ) { view: ExpoImageViewWrapper, index: Int, width: Float? ->
         val pixelWidth = makeYogaUndefinedIfNegative(width ?: YogaConstants.UNDEFINED)
           .ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-        view.setBorderWidth(index, pixelWidth)
+        view.imageView.setBorderWidth(index, pixelWidth)
       }
 
       PropGroup(
@@ -120,31 +119,31 @@ class ExpoImageModule : Module() {
       ) { view: ExpoImageViewWrapper, index: Int, color: Int? ->
         val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
         val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.setBorderColor(index, rgbComponent, alphaComponent)
+        view.imageView.setBorderColor(index, rgbComponent, alphaComponent)
       }
 
       Prop("borderStyle") { view: ExpoImageViewWrapper, borderStyle: String? ->
-        view.setBorderStyle(borderStyle)
+        view.imageView.setBorderStyle(borderStyle)
       }
 
       Prop("tintColor") { view: ExpoImageViewWrapper, color: Int? ->
-        view.setTintColor(color)
+        view.imageView.setTintColor(color)
       }
 
-      Prop("defaultSource") { view: ExpoImageViewWrapper, defaultSource: ReadableMap? ->
-        view.defaultSourceMap = defaultSource
+      Prop("defaultSource") { view: ExpoImageViewWrapper, defaultSource: SourceMap? ->
+        view.imageView.defaultSourceMap = defaultSource
       }
 
       Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean ->
-        view.isFocusable = accessible
+        view.imageView.isFocusable = accessible
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->
-        view.onAfterUpdateTransaction()
+        view.imageView.onAfterUpdateTransaction()
       }
 
       OnViewDestroys { view: ExpoImageViewWrapper ->
-        view.onDrop()
+        view.imageView.onDrop()
       }
     }
   }
