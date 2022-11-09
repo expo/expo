@@ -65,7 +65,7 @@ class ExpoSettingsModule : Module() {
 }
 ```
 
-```typescript src/ExpoSettings.ts
+```typescript src/index.ts
 import ExpoSettingsModule from './ExpoSettingsModule';
 
 export function getTheme(): string {
@@ -73,7 +73,7 @@ export function getTheme(): string {
 }
 ```
 
-```js example/App.tsx
+```typescript example/App.tsx
 import * as Settings from 'expo-settings';
 import { Text, View } from 'react-native';
 
@@ -109,7 +109,7 @@ Now let's run the example project to make sure everything is working. We'll need
   ]}
 />
 
-We should now see the text "system" in the center of the screen when we launch the example app. The value `"system"` is the result of synchronously calling the `getTheme()` function in the native module. We'll change this value in the next step.
+We should now see the text "Theme: system" in the center of the screen when we launch the example app. The value `"system"` is the result of synchronously calling the `getTheme()` function in the native module. We'll change this value in the next step.
 
 ## 4. Get, set, and persist the theme preference value
 
@@ -177,7 +177,7 @@ class ExpoSettingsModule : Module() {
 
 Now we can call our native modules from TypeScript.
 
-```js src/ExpoSettings.ts
+```typescript src/index.ts
 import ExpoSettingsModule from './ExpoSettingsModule';
 
 export function getTheme(): string {
@@ -193,7 +193,7 @@ export function setTheme(theme: string): void {
 
 We can now use the `Settings` API in our example app.
 
-```js example/App.tsx
+```typescript example/App.tsx
 import * as Settings from 'expo-settings';
 import { Button, Text, View } from 'react-native';
 
@@ -282,7 +282,7 @@ class ExpoSettingsModule : Module() {
 
 ### TypeScript module
 
-```typescript src/ExpoSettings.ts
+```typescript src/index.ts
 import { EventEmitter, Subscription } from 'expo-modules-core';
 import ExpoSettingsModule from './ExpoSettingsModule';
 
@@ -307,7 +307,7 @@ export function setTheme(theme: string): void {
 
 ### Example app
 
-```typescript src/ExpoSettings.ts
+```typescript example/App.tsx
 import * as Settings from 'expo-settings';
 import * as React from 'react';
 import { Button, Text, View } from 'react-native';
@@ -414,23 +414,21 @@ enum class Theme(val value: String) : Enumerable {
 
 ### TypeScript module
 
-```typescript src/ExpoSettings.ts
-import { EventEmitter, Subscription } from "expo-modules-core";
+```typescript src/index.ts
+import { EventEmitter, Subscription } from 'expo-modules-core';
 
-import ExpoSettingsModule from "./ExpoSettingsModule";
+import ExpoSettingsModule from './ExpoSettingsModule';
 
 const emitter = new EventEmitter(ExpoSettingsModule);
 
-export type Theme = "light" | "dark" | "system";
+export type Theme = 'light' | 'dark' | 'system';
 
 export type ThemeChangeEvent = {
   theme: Theme;
 };
 
-export function addThemeListener(
-  listener: (event: ThemeChangeEvent) => void
-): Subscription {
-  return emitter.addListener<ThemeChangeEvent>("onChangeTheme", listener);
+export function addThemeListener(listener: (event: ThemeChangeEvent) => void): Subscription {
+  return emitter.addListener<ThemeChangeEvent>('onChangeTheme', listener);
 }
 
 export function getTheme(): Theme {
