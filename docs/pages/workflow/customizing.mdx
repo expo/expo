@@ -6,13 +6,13 @@ import { Terminal } from '~/ui/components/Snippet';
 
 The Expo Go app is a great tool to get started — it exists to help developers quickly get projects off the ground, to experiment with ideas (such as on [Snack](https://snack.expo.dev/)) and share their work with minimal friction. Expo Go makes this possible by including a feature-rich native runtime made up of every module in the [Expo SDK](/versions/latest/), so all you need to do to use a module is install the package and reload your app.
 
-The tradeoff is that Expo Go does not allow you to add custom native code, you can only use native modules built into the Expo SDK. There are many great libraries available outside of the Expo SDK, and you may even want to build your own native library. You can leverage these libraries with "development builds", or by using prebuild to generate the native projects, or both. You can also continue using [EAS Build](/build/introduction) to release your app, no changes are required.
+The tradeoff is that Expo Go does not allow you to add custom native code, you can only use native modules built into the Expo SDK. There are many great libraries available outside of the Expo SDK, and you may even want to build your own native library. You can leverage these libraries with development builds, or by using prebuild to generate the native projects, or both. You can also continue using [EAS Build](/build/introduction) to release your app, no changes are required.
 
 ## Adding custom native code with development builds
 
-To make use of third party libraries with custom native code and continue with the same developer experience of Expo Go, you can migrate to using ["development builds"](/development/introduction). Development builds are like your own personal version of Expo Go — they include the native runtime that powers your app, and you control what is included in that native runtime by adding or removing packages in your **package.json**. Development builds allow you to continue to build your app in JavaScript while taking advantage of the full ecosystem of native packages available for Expo and React Native projects.
+To make use of third party libraries with custom native code and continue with the same developer experience of Expo Go, you can migrate to using [development builds](/development/introduction). Development builds are like your own personal version of Expo Go — they include the native runtime that powers your app, and you control what is included in that native runtime by adding or removing packages in your **package.json**. Development builds allow you to continue to build your app in JavaScript while taking advantage of the full ecosystem of native packages available for Expo and React Native projects.
 
-Learn how to start using custom native code in your app by switching from Expo Go to development builds in the ["Getting Started" guide for development builds](/development/getting-started).
+Learn how to start using custom native code in your app by switching from Expo Go to development builds in the [Getting Started guide for development builds](/development/getting-started).
 
 ## Generate native projects with prebuild
 
@@ -60,7 +60,6 @@ When you're ready to ship your app, you can [build it with EAS Build](/build/int
   cmd={['# Install the CLI', '$ npm i -g eas-cli', '', '# Build your app!', '$ eas build -p all']}
   cmdCopy="npm i -g eas-cli && eas build -p all"
 />
-
 
 ## Creating native modules
 
