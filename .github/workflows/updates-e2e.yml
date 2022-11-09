@@ -50,8 +50,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - name: 🔨 Switch to Xcode 13.2.1
-        run: sudo xcode-select --switch /Applications/Xcode_13.2.1.app
+      - name: 🔨 Switch to Xcode 14.0
+        run: sudo xcode-select --switch /Applications/Xcode_14.0.app
       - name: 🔨 Use JDK 11
         uses: actions/setup-java@v3
         with:
