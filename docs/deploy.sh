@@ -103,7 +103,8 @@ redirects[guides/adhoc-builds]=archived/adhoc-builds/
 # clients is now development
 redirects[clients/distribution-for-ios]=development/build/
 redirects[clients/distribution-for-android]=development/build/
-redirects[clients/compatibility]=development/compatibility/
+redirects[clients/compatibility]=development/introduction/
+redirects[development/compatibility]=development/introduction/
 redirects[clients/development-workflows]=development/development-workflows/
 redirects[clients/eas-build]=development/eas-build/
 redirects[clients/extending-the-dev-menu]=development/extending-the-dev-menu/
