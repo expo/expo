@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
-const config_plugins_1 = require("expo/config-plugins");
+exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidFlipper = exports.withAndroidBuildProperties = void 0;
+const config_plugins_1 = require("@expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const fileContentsUtils_1 = require("./fileContentsUtils");
@@ -54,7 +54,39 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'android.enableProguardInReleaseBuilds',
         propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
     },
+    {
+        propName: 'android.flipper',
+        propValueGetter: (config) => typeof config.android?.flipper === 'string' ? config.android.flipper : undefined,
+    },
 ], 'withAndroidBuildProperties');
+const withAndroidFlipper = (config, props) => {
+    const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
+    const FLIPPER_FALLBACK = '0.125.0';
+    // when not set, or set to enabled, make no changes
+    if (props.android?.flipper === undefined || props.android.flipper === 'enabled') {
+        return config;
+    }
+    return (0, config_plugins_1.withGradleProperties)(config, (c) => {
+        // check for flipper version in package. If set, use that
+        let existing;
+        const found = c.modResults.filter((item) => item.type === 'property' && item.key === ANDROID_FLIPPER_KEY)?.[0];
+        if (found && found.type === 'property') {
+            existing = found.value;
+        }
+        // strip flipper key and re-add based on setting
+        c.modResults = c.modResults.filter((item) => !(item.type === 'property' && item.key === ANDROID_FLIPPER_KEY));
+        // if disabled, do not re-add
+        if (props.android?.flipper !== 'disabled') {
+            c.modResults.push({
+                type: 'property',
+                key: ANDROID_FLIPPER_KEY,
+                value: (props.android?.flipper ?? existing ?? FLIPPER_FALLBACK),
+            });
+        }
+        return c;
+    });
+};
+exports.withAndroidFlipper = withAndroidFlipper;
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
  */

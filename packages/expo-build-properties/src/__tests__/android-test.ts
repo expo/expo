@@ -1,4 +1,10 @@
-import { updateAndroidProguardRules } from '../android';
+import { ExpoConfig } from '@expo/config-types';
+
+import { updateAndroidProguardRules, withAndroidFlipper } from '../android';
+
+type ExpoConfigWithMods = ExpoConfig & {
+  mods?: Record<'ios' | 'android', Record<string, unknown[]>>;
+};
 
 describe(updateAndroidProguardRules, () => {
   it('should append new rules', () => {
@@ -64,5 +70,40 @@ describe(updateAndroidProguardRules, () => {
       -printmapping mapping.txt
       # @generated end expo-build-properties"
     `);
+  });
+});
+
+describe(withAndroidFlipper, () => {
+  it('should do nothing by default or if set to enabled', async () => {
+    const expoConfig: ExpoConfig = {
+      name: 'withAndroidFlipper',
+      slug: 'withAndroidFlipper',
+    };
+
+    withAndroidFlipper(expoConfig, {});
+    expect((expoConfig as ExpoConfigWithMods)?.mods?.android).toBeUndefined();
+
+    withAndroidFlipper(expoConfig, {
+      android: {
+        flipper: 'enabled',
+      },
+    });
+    expect((expoConfig as ExpoConfigWithMods)?.mods?.android).toBeUndefined();
+  });
+
+  it('should update the flipper version if requested', async () => {
+    const expoConfig: ExpoConfig = {
+      name: 'withAndroidFlipper',
+      slug: 'withAndroidFlipper',
+    };
+    const pluginConfig = {
+      android: {
+        flipper: '0.999.0',
+      },
+    };
+    withAndroidFlipper(expoConfig, pluginConfig);
+    expect((expoConfig as ExpoConfigWithMods)?.mods?.android?.gradleProperties).toBeInstanceOf(
+      Function
+    );
   });
 });

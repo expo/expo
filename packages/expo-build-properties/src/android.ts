@@ -1,4 +1,10 @@
-import { AndroidConfig, ConfigPlugin, History, withDangerousMod } from 'expo/config-plugins';
+import {
+  AndroidConfig,
+  ConfigPlugin,
+  History,
+  withDangerousMod,
+  withGradleProperties,
+} from '@expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
@@ -53,9 +59,52 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propName: 'android.enableProguardInReleaseBuilds',
       propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
     },
+    {
+      propName: 'android.flipper',
+      propValueGetter: (config) =>
+        typeof config.android?.flipper === 'string' ? config.android.flipper : undefined,
+    },
   ],
   'withAndroidBuildProperties'
 );
+
+export const withAndroidFlipper: ConfigPlugin<PluginConfigType> = (config, props) => {
+  const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
+  const FLIPPER_FALLBACK = '0.125.0';
+
+  // when not set, or set to enabled, make no changes
+  if (props.android?.flipper === undefined || props.android.flipper === 'enabled') {
+    return config;
+  }
+
+  return withGradleProperties(config, (c) => {
+    // check for flipper version in package. If set, use that
+    let existing: string | undefined;
+
+    const found = c.modResults.filter(
+      (item) => item.type === 'property' && item.key === ANDROID_FLIPPER_KEY
+    )?.[0];
+    if (found && found.type === 'property') {
+      existing = found.value;
+    }
+
+    // strip flipper key and re-add based on setting
+    c.modResults = c.modResults.filter(
+      (item) => !(item.type === 'property' && item.key === ANDROID_FLIPPER_KEY)
+    );
+
+    // if disabled, do not re-add
+    if (props.android?.flipper !== 'disabled') {
+      c.modResults.push({
+        type: 'property',
+        key: ANDROID_FLIPPER_KEY,
+        value: (props.android?.flipper ?? existing ?? FLIPPER_FALLBACK) as string,
+      });
+    }
+
+    return c;
+  });
+};
 
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`

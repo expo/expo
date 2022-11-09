@@ -14,6 +14,11 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
       propName: 'ios.useFrameworks',
       propValueGetter: (config) => config.ios?.useFrameworks,
     },
+    {
+      propName: 'ios.flipper',
+      propValueGetter: (config) =>
+        typeof config.ios?.flipper === 'string' ? config.ios.flipper : undefined,
+    },
   ],
   'withIosBuildProperties'
 );

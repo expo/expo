@@ -57,6 +57,14 @@ export interface PluginConfigTypeAndroid {
 
   /** AGP [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions) */
   packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
+
+  /**
+   * Enable [Flipper](https://fbflipper.com/) when running your app on Android.
+   * Setting `enabled` enables the default version of flipper, while setting
+   * a semver string will enable a specific version of Flipper you've declared in your
+   * package.json. On Android, Flipper cannot be disabled.
+   */
+  flipper?: 'enabled' | 'disabled' | Omit<string, 'enabled' | 'disabled'>;
 }
 
 /**
@@ -75,8 +83,23 @@ export interface PluginConfigTypeIos {
    */
   deploymentTarget?: string;
 
-  /** Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang) in `Podfile` */
+  /**
+   * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang) in `Podfile`
+   *
+   * Note: You cannot use `useFrameworks` and `flipper` at the same time
+   */
   useFrameworks?: 'static' | 'dynamic';
+
+  /**
+   * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
+   * Debug mode. Setting `enabeld` enables the default version of flipper, while
+   * setting a semver string will enable a specific version of Flipper you've
+   * declared in your package.json. The default for this configuration is `disabled`.
+   *
+   * Note: You cannot use `flipper` at the same time as `useFrameworks`, and
+   * doing so will generate an error.
+   */
+  flipper?: 'enabled' | 'disabled' | Omit<string, 'enabled' | 'disabled'>;
 }
 
 /**
@@ -112,6 +135,15 @@ const schema: JSONSchemaType<PluginConfigType> = {
         enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
 
+        flipper: {
+          type: 'string',
+          nullable: true,
+          oneOf: [
+            { type: 'string', enum: ['enabled'] },
+            { type: 'string', pattern: '\\d+\\.\\d+.\\d+', nullable: true },
+          ],
+        },
+
         packagingOptions: {
           type: 'object',
           properties: {
@@ -131,6 +163,15 @@ const schema: JSONSchemaType<PluginConfigType> = {
         newArchEnabled: { type: 'boolean', nullable: true },
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
+
+        flipper: {
+          type: 'string',
+          nullable: true,
+          oneOf: [
+            { type: 'string', enum: ['enabled', 'disabled'] },
+            { type: 'string', pattern: '\\d+\\.\\d+.\\d+', nullable: true },
+          ],
+        },
       },
       nullable: true,
     },
@@ -202,5 +243,12 @@ export function validateConfig(config: any): PluginConfigType {
   }
 
   maybeThrowInvalidVersions(config);
+
+  // explicitly block using use_frameworks and flipper in iOS
+  // https://github.com/facebook/flipper/issues/2414
+  if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
+    throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
+  }
+
   return config;
 }

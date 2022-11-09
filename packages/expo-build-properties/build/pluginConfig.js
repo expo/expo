@@ -35,6 +35,14 @@ const schema = {
                 kotlinVersion: { type: 'string', nullable: true },
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
+                flipper: {
+                    type: 'string',
+                    nullable: true,
+                    oneOf: [
+                        { type: 'string', enum: ['enabled'] },
+                        { type: 'string', pattern: '\\d+\\.\\d+.\\d+', nullable: true },
+                    ],
+                },
                 packagingOptions: {
                     type: 'object',
                     properties: {
@@ -54,6 +62,14 @@ const schema = {
                 newArchEnabled: { type: 'boolean', nullable: true },
                 deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
                 useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
+                flipper: {
+                    type: 'string',
+                    nullable: true,
+                    oneOf: [
+                        { type: 'string', enum: ['enabled', 'disabled'] },
+                        { type: 'string', pattern: '\\d+\\.\\d+.\\d+', nullable: true },
+                    ],
+                },
             },
             nullable: true,
         },
@@ -117,6 +133,11 @@ function validateConfig(config) {
         throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
     }
     maybeThrowInvalidVersions(config);
+    // explicitly block using use_frameworks and flipper in iOS
+    // https://github.com/facebook/flipper/issues/2414
+    if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
+        throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
+    }
     return config;
 }
 exports.validateConfig = validateConfig;

@@ -22,6 +22,16 @@ target 'HelloWorld' do
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
+  # Flipper support in expo via build properties plugin
+  expo_flipper = FlipperConfiguration.disabled
+  if ENV['FLIPPER_DISABLE'] != "1" && ENV['NO_FLIPPER'] != "1" && defined?(podfile_properties['ios.flipper']) then
+    if podfile_properties['ios.flipper'] == 'enabled' then
+      expo_flipper = FlipperConfiguration.enabled
+    elsif podfile_properties['ios.flipper'] != 'enabled' then
+      expo_flipper = FlipperConfiguration.enabled(["Debug"], { 'Flipper' => podfile_properties['ios.flipper'] })
+    end
+  end
+
   # Flags change depending on the env values.
   flags = get_default_flags()
 
@@ -31,10 +41,8 @@ target 'HelloWorld' do
     :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/..",
-    #
-    # Uncomment to opt-in to using Flipper
     # Note that if you have use_frameworks! enabled, Flipper will not work
-    # :flipper_configuration => flipper_config,
+    :flipper_configuration => expo_flipper
   )
 
   post_install do |installer|
