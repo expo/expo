@@ -38,7 +38,7 @@ concurrency:
 
 jobs:
   build:
-    runs-on: macos-11
+    runs-on: macos-12
     timeout-minutes: 60
     steps:
       - name: 👀 Checkout

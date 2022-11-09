@@ -36,7 +36,7 @@ jobs:
   # (2022-05): we run both iOS and Android tests in a single job in order to avoid taking up 2 macOS
   # runners each time this workflow runs
   build:
-    runs-on: macos-11
+    runs-on: macos-12
     timeout-minutes: 120
     env:
       UPDATES_PORT: 4747

@@ -34,7 +34,7 @@ concurrency:
 
 jobs:
   test:
-    runs-on: macos-11
+    runs-on: macos-12
     timeout-minutes: 120
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
