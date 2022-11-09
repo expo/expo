@@ -79,7 +79,7 @@ export class HomeScreenView extends React.Component<Props, State> {
 
     // @evanbacon: Without this setTimeout, the state doesn't update correctly and the "Recently in Development" items don't load for 10 seconds.
     setTimeout(() => {
-      if (this.props.isAuthenticated) this._startPollingForProjects();
+      this._startPollingForProjects();
     }, 1);
 
     // NOTE(brentvatne): if we add QR code button to the menu again, we'll need to
@@ -187,10 +187,6 @@ export class HomeScreenView extends React.Component<Props, State> {
       this._fetchProjectsAsync();
     }
 
-    if (!prevProps.isAuthenticated && this.props.isAuthenticated) {
-      this._startPollingForProjects();
-    }
-
     if (prevProps.isAuthenticated && !this.props.isAuthenticated) {
       // Remove all projects except Snack, because they are tied to device id
       // Fix this lint warning when converting to hooks
@@ -198,8 +194,6 @@ export class HomeScreenView extends React.Component<Props, State> {
       this.setState(({ projects }) => ({
         projects: projects.filter((p) => p.source === 'snack'),
       }));
-
-      this._stopPollingForProjects();
     }
   }
 
@@ -221,6 +215,8 @@ export class HomeScreenView extends React.Component<Props, State> {
     this.props.dispatch(HistoryActions.clearHistory());
   };
 
+  // NOTE(juwan): We should poll regardless of authentication state so that we can support the Snack
+  // device ID flow
   private _startPollingForProjects = async () => {
     await this._fetchProjectsAsync();
     this._projectPolling = setInterval(this._fetchProjectsAsync, PROJECT_UPDATE_INTERVAL);
@@ -234,8 +230,6 @@ export class HomeScreenView extends React.Component<Props, State> {
   };
 
   private _fetchProjectsAsync = async () => {
-    if (!this.props.isAuthenticated) return;
-
     const { accountName } = this.props;
 
     try {
