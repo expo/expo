@@ -3,7 +3,7 @@
   "compilerOptions": {
     "strict": true,
     "paths": {
-      "<%- project.slug %>": ["../src/<%- project.name %>"],
+      "<%- project.slug %>": ["../src/index"],
       "<%- project.slug %>/*": ["../src/*"]
     }
   }

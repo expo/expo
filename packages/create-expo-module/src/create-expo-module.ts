@@ -175,6 +175,13 @@ async function downloadPackageAsync(targetDir: string): Promise<string> {
   });
 }
 
+function handleSuffix(name: string, suffix: string): string {
+  if (name.endsWith(suffix)) {
+    return name;
+  }
+  return `${name}${suffix}`;
+}
+
 /**
  * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
@@ -240,6 +247,8 @@ async function askForSubstitutionDataAsync(slug: string): Promise<SubstitutionDa
       version: '0.1.0',
       description,
       package: projectPackage,
+      moduleName: handleSuffix(name, 'Module'),
+      viewName: handleSuffix(name, 'View'),
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',

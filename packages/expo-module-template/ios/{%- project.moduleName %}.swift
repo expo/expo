@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-public class <%- project.name %>Module: Module {
+public class <%- project.moduleName %>: Module {
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
   // See https://docs.expo.dev/modules/module-api for more details about available components.
@@ -34,9 +34,9 @@ public class <%- project.name %>Module: Module {
 
     // Enables the module to be used as a native view. Definition components that are accepted as part of the
     // view definition: Prop, Events.
-    View(<%- project.name %>View.self) {
+    View(<%- project.viewName %>.self) {
       // Defines a setter for the `name` prop.
-      Prop("name") { (view: <%- project.name %>View, prop: String) in
+      Prop("name") { (view: <%- project.viewName %>, prop: String) in
         print(prop)
       }
     }
