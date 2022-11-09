@@ -88,14 +88,14 @@ repositories {
 }
 
 dependencies {
-  def GLIDE_VERSION = "4.12.0"
+  def GLIDE_VERSION = "4.13.2"
 
   implementation project(':expo-modules-core')
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'  // From node_modules
 
-  implementation "com.github.zjupure:webpdecoder:2.0.${GLIDE_VERSION}"
+  implementation "com.github.zjupure:webpdecoder:2.1.${GLIDE_VERSION}"
   api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
   kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   api 'com.caverock:androidsvg-aar:1.4'
