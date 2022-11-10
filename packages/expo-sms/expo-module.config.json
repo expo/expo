@@ -1,6 +1,6 @@
 {
   "name": "expo-sms",
-  "platforms": ["android", "web"],
+  "platforms": ["android"],
   "android": {
     "modules": ["expo.modules.sms.SMSModule"]
   }
