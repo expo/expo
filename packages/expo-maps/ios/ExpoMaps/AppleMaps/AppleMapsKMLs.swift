@@ -1,4 +1,5 @@
 import MapKit
+import ExpoModulesCore
 
 class AppleMapsKMLs: NSObject, XMLParserDelegate, KMLs {
   private let mapView: MKMapView
@@ -19,67 +20,61 @@ class AppleMapsKMLs: NSObject, XMLParserDelegate, KMLs {
     self.polygons = polygons
   }
 
-  func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String: String] = [:]) {
+  func parser(
+    _ parser: XMLParser,
+    didStartElement elementName: String,
+    namespaceURI: String?,
+    qualifiedName qName: String?,
+    attributes attributeDict: [String: String] = [:]
+  ) {
     currentString = ""
     var element: KMLTag?
 
     switch elementName {
     case KMLTagName.style:
       element = KMLStyleElement()
-      break
     case KMLTagName.cascadingStyle:
       element = KMLCascadingStyleElement()
-      break
     case KMLTagName.styleMap:
       element = KMLStyleMapElement()
-      break
     case KMLTagName.pair:
       element = KMLStylePairElement()
-      break
     case KMLTagName.polyStyle:
       element = KMLPolyStyleElement()
-      break
     case KMLTagName.lineStyle:
       element = KMLLineStyleElement()
-      break
     case KMLTagName.iconStyle:
       element = KMLIconStyleElement()
-      break
     case KMLTagName.document:
       element = KMLDocumentElement()
-      break
     case KMLTagName.folder:
       element = KMLFolderElement()
-      break
     case KMLTagName.placemark:
       element = KMLPlacemarkElement()
-      break
     case KMLTagName.point:
       element = KMLPointElement()
-      break
     case KMLTagName.multiGeometry:
       element = KMLMultiGeometryElement()
-      break
     case KMLTagName.lineString:
       element = KMLLineElement()
-      break
     case KMLTagName.linearRing:
       element = KMLLinearRingElement()
-      break
     case KMLTagName.polygon:
       element = KMLPolygonElement()
-      break
     case KMLTagName.outerBoundary:
       element = KMLOuterBoundaryElement()
-      break
     case KMLTagName.kml:
       element = KMLElement()
-      break
     default:
       break
     }
 
-    element?.handleOnStartTag(attributeDict: attributeDict, openedKMLTags: &openedKMLTags, kmlStyleElements: &kmlStyleElements, kmlGeometryElements: &kmlGeometryElements)
+    element?.handleOnStartTag(
+      attributeDict: attributeDict,
+      openedKMLTags: &openedKMLTags,
+      kmlStyleElements: &kmlStyleElements,
+      kmlGeometryElements: &kmlGeometryElements
+    )
   }
 
   func parser(_ parser: XMLParser, foundCharacters string: String) {
@@ -90,14 +85,46 @@ class AppleMapsKMLs: NSObject, XMLParserDelegate, KMLs {
     let lastElement = openedKMLTags.last
 
     switch elementName {
-    case KMLTagName.style, KMLTagName.cascadingStyle, KMLTagName.styleMap, KMLTagName.pair, KMLTagName.polyStyle, KMLTagName.lineStyle, KMLTagName.iconStyle, KMLTagName.iconStyle, KMLTagName.placemark, KMLTagName.folder, KMLTagName.document, KMLTagName.point, KMLTagName.multiGeometry, KMLTagName.lineString, KMLTagName.linearRing, KMLTagName.outerBoundary, KMLTagName.polygon, KMLTagName.kml:
+    case KMLTagName.style,
+      KMLTagName.cascadingStyle,
+      KMLTagName.styleMap,
+      KMLTagName.pair,
+      KMLTagName.polyStyle,
+      KMLTagName.lineStyle,
+      KMLTagName.iconStyle,
+      KMLTagName.placemark,
+      KMLTagName.folder,
+      KMLTagName.document,
+      KMLTagName.point,
+      KMLTagName.multiGeometry,
+      KMLTagName.lineString,
+      KMLTagName.linearRing,
+      KMLTagName.outerBoundary,
+      KMLTagName.polygon,
+      KMLTagName.kml:
       if elementName == lastElement?.tagName {
-        lastElement?.handleOnEndTag(elementName: elementName, tagContent: currentString, openedKMLTags: &openedKMLTags, kmlStyleElements: &kmlStyleElements, kmlGeometryElements: &kmlGeometryElements)
+        lastElement?.handleOnEndTag(
+          elementName: elementName,
+          tagContent: currentString,
+          openedKMLTags: &openedKMLTags,
+          kmlStyleElements: &kmlStyleElements,
+          kmlGeometryElements: &kmlGeometryElements
+        )
       }
-      break
-    case KMLTagName.color, KMLTagName.width, KMLTagName.key, KMLTagName.styleUrl, KMLTagName.coordinates, KMLTagName.name:
-      lastElement?.handleContent(elementName: elementName, tagContent: currentString, contentAttributeDict: [:], openedKMLTags: &openedKMLTags, kmlStyleElements: &kmlStyleElements, kmlGeometryElements: &kmlGeometryElements)
-      break
+    case KMLTagName.color,
+      KMLTagName.width,
+      KMLTagName.key,
+      KMLTagName.styleUrl,
+      KMLTagName.coordinates,
+      KMLTagName.name:
+      lastElement?.handleContent(
+        elementName: elementName,
+        tagContent: currentString,
+        contentAttributeDict: [:],
+        openedKMLTags: &openedKMLTags,
+        kmlStyleElements: &kmlStyleElements,
+        kmlGeometryElements: &kmlGeometryElements
+      )
     default:
       break
     }
@@ -124,31 +151,50 @@ class AppleMapsKMLs: NSObject, XMLParserDelegate, KMLs {
   private func drawMarkers() {
     let kmlPoints: [KMLPointElement] = kmlGeometryElements.filter { element in
       element.tagName == KMLTagName.point
-    } as! [KMLPointElement]
+    } as? [KMLPointElement] ?? []
 
     let markerObjects: [MarkerObject] = kmlPoints.map { point in
       let markerStyle = extractStyle(styleElement: kmlStyleElements[point.styleId ?? ""], lookingFor: KMLTagName.iconStyle) as? KMLIconStyleElement
 
       let color = UIColor.init(hexString: markerStyle?.color ?? "")
 
-      return MarkerObject(latitude: point.coordinate.latitude, longitude: point.coordinate.longitude, markerTitle: point.title, markerSnippet: nil, icon: nil, color: color, draggable: false, anchorU: nil, anchorV: nil, opacity: 1)
+      return MarkerObject(
+        latitude: point.coordinate.latitude,
+        longitude: point.coordinate.longitude,
+        markerTitle: Field(wrappedValue: point.title),
+        markerSnippet: Field(),
+        icon: Field(),
+        color: Field(wrappedValue: color),
+        draggable: false,
+        anchorU: Field(),
+        anchorV: Field(),
+        opacity: 1
+      )
     }
 
     markers.setKMLMarkers(markerObjects: markerObjects)
   }
 
   private func drawPolylines() {
-    let kmlLines: [KMLLineElement] = kmlGeometryElements.filter { element in
-      element.tagName == KMLTagName.lineString
-    } as! [KMLLineElement]
+    let lines = kmlGeometryElements.first { $0.tagName == KMLTagName.lineString }
+    guard let kmlLines = lines as? [KMLLineElement] else {
+      return
+    }
 
-    let polylineObjects: [PolylineObject] = kmlLines.map { line in
+    let polylineObjects = kmlLines.map { line in
       let polylineStyle = extractStyle(styleElement: kmlStyleElements[line.styleId ?? ""], lookingFor: KMLTagName.lineStyle) as? KMLLineStyleElement
 
       let points = line.coordinates.map { coordinate in Point(latitude: coordinate.latitude, longitude: coordinate.longitude) }
       let color = UIColor.init(hexString: polylineStyle?.color ?? "")
 
-      return PolylineObject(points: points, color: color, width: polylineStyle?.width, pattern: nil, jointType: nil, capType: nil)
+      return PolylineObject(
+        points: points,
+        color: Field(wrappedValue: color),
+        width: Field(wrappedValue: polylineStyle?.width),
+        pattern: Field(),
+        jointType: Field(),
+        capType: Field()
+      )
     }
 
     polylines.setKMLPolylines(polylineObjects: polylineObjects)
@@ -157,7 +203,7 @@ class AppleMapsKMLs: NSObject, XMLParserDelegate, KMLs {
   private func drawPolygons() {
     let kmlPolygons: [KMLPolygonElement] = kmlGeometryElements.filter { element in
       element.tagName == KMLTagName.polygon
-    } as! [KMLPolygonElement]
+    } as? [KMLPolygonElement] ?? []
 
     let polygonObjects: [PolygonObject] = kmlPolygons.map { polygon in
       let polygonStyle = extractStyle(styleElement: kmlStyleElements[polygon.styleId ?? ""], lookingFor: KMLTagName.polyStyle) as? KMLPolyStyleElement
@@ -176,7 +222,14 @@ class AppleMapsKMLs: NSObject, XMLParserDelegate, KMLs {
         fillColor = UIColor.init(hexString: polygonStyle!.color!)
       }
 
-      return PolygonObject(points: points, fillColor: fillColor, strokeColor: outlineColor, strokeWidth: width, strokePattern: nil, jointType: nil)
+      return PolygonObject(
+        points: points,
+        fillColor: Field(wrappedValue: fillColor),
+        strokeColor: Field(wrappedValue: outlineColor),
+        strokeWidth: Field(wrappedValue: width),
+        strokePattern: Field(),
+        jointType: Field()
+      )
     }
 
     polygons.setKMLPolygons(polygonObjects: polygonObjects)
@@ -185,7 +238,9 @@ class AppleMapsKMLs: NSObject, XMLParserDelegate, KMLs {
   private func extractStyle(styleElement: KMLTag?, lookingFor: String) -> KMLTag? {
     switch styleElement {
     case is KMLStyleElement:
-      let styleElement = styleElement as! KMLStyleElement
+      guard let styleElement = styleElement as? KMLStyleElement else {
+        return nil
+      }
       switch lookingFor {
       case KMLTagName.iconStyle:
         return styleElement.iconStyle
@@ -196,12 +251,12 @@ class AppleMapsKMLs: NSObject, XMLParserDelegate, KMLs {
       default:
         return nil
       }
-    case is KMLCascadingStyleElement:
-      return extractStyle(styleElement: (styleElement as! KMLCascadingStyleElement).styleElement, lookingFor: lookingFor)
-    case is KMLStylePairElement:
-      return extractStyle(styleElement: (styleElement as! KMLStylePairElement).styleElement, lookingFor: lookingFor)
-    case is KMLStyleMapElement:
-      return extractStyle(styleElement: (styleElement as! KMLStyleMapElement).styleElement, lookingFor: lookingFor)
+    case let cascading as KMLCascadingStyleElement:
+      return extractStyle(styleElement: cascading.styleElement, lookingFor: lookingFor)
+    case let stylePair as KMLStylePairElement:
+      return extractStyle(styleElement: stylePair.styleElement, lookingFor: lookingFor)
+    case let styleMap as KMLStyleMapElement:
+      return extractStyle(styleElement: styleMap.styleElement, lookingFor: lookingFor)
     default:
       return nil
     }

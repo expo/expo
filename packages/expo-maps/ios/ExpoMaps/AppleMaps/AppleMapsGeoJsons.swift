@@ -13,7 +13,9 @@ class AppleMapsGeoJsons: GeoJsons {
     deleteGeoJsons()
     if #available(iOS 13.0, *) {
       for geoJsonObject in geoJsonObjects {
+        // swiftlint:disable force_cast force_try
         let appleMapsObjects = try! MKGeoJSONDecoder().decode(geoJsonObject.geoJsonString.data(using: .utf8)!) as! [MKGeoJSONFeature]
+        // swiftlint:enable force_cast force_try
 
         for object in appleMapsObjects {
           let geometry = object.geometry.first
@@ -30,7 +32,12 @@ class AppleMapsGeoJsons: GeoJsons {
             overlays.append(expoPolyline)
           }
           if let marker = geometry as? MKPointAnnotation {
-            let expoMarker = ExpoMKColorAnnotation(coordinate: CLLocationCoordinate2D(latitude: marker.coordinate.latitude, longitude: marker.coordinate.longitude))
+            let expoMarker = ExpoMKColorAnnotation(
+              coordinate: CLLocationCoordinate2D(
+                latitude: marker.coordinate.latitude,
+                longitude: marker.coordinate.longitude
+              )
+            )
             applyMarkerDefaultStyle(marker: expoMarker, defaultStyle: geoJsonObject.defaultStyle)
             mapView.addAnnotation(expoMarker)
             annotations.append(expoMarker)

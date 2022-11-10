@@ -1,12 +1,32 @@
+// swiftlint:disable file_length
+// swiftlint:disable function_parameter_count
 protocol KMLTag {
   var tagName: String { get }
   var styleId: String? { get }
 
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag])
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  )
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag])
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  )
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag])
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  )
 
   func updateStyleWithParentStyleId(styleId: String)
 
@@ -14,7 +34,14 @@ protocol KMLTag {
 }
 
 extension KMLTag {
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) { }
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) { }
 
   func updateStyleWithParentStyleId(styleId: String) { }
 
@@ -25,11 +52,22 @@ class KMLElement: KMLTag {
   private(set) var tagName: String = KMLTagName.kml
   private(set) var styleId: String?
 
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     mapStylePairs(kmlStyleElements: &kmlStyleElements)
   }
 }
@@ -39,29 +77,38 @@ class KMLPolyStyleElement: KMLTag {
   var styleId: String?
   var color: String?
 
-  init() {
-    styleId = nil
-    color = nil
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if let id = attributeDict["id"] {
       styleId = id
     }
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
-    switch elementName {
-    case KMLTagName.color:
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
+    if elementName == KMLTagName.color {
       color = tagContent
-      break
-    default:
-      break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if styleId != nil {
       kmlStyleElements[styleId!] = self
     }
@@ -75,35 +122,45 @@ class KMLLineStyleElement: KMLTag {
   private(set) var tagName: String = KMLTagName.lineStyle
   var styleId: String?
   var color: String?
-  var width: Float
+  var width: Float = 1
 
-  init() {
-    styleId = nil
-    color = nil
-    width = 1
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if let id = attributeDict["id"] {
       styleId = id
     }
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     switch elementName {
     case KMLTagName.color:
       color = tagContent
-      break
     case KMLTagName.width:
       width = Float(tagContent) ?? 1
-      break
     default:
       break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if styleId != nil {
       kmlStyleElements[styleId!] = self
     }
@@ -118,29 +175,38 @@ class KMLIconStyleElement: KMLTag {
   var styleId: String?
   var color: String?
 
-  init() {
-    styleId = nil
-    color = nil
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if let id = attributeDict["id"] {
       styleId = id
     }
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
-    switch elementName {
-    case KMLTagName.color:
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
+    if elementName == KMLTagName.color {
       color = tagContent
-      break
-    default:
-      break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if styleId != nil {
       kmlStyleElements[styleId!] = self
     }
@@ -157,21 +223,25 @@ class KMLStyleElement: KMLTag {
   var lineStyle: KMLLineStyleElement?
   var iconStyle: KMLIconStyleElement?
 
-  init() {
-    styleId = nil
-    polyStyle = nil
-    lineStyle = nil
-    iconStyle = nil
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if let id = attributeDict["id"] {
       styleId = id
     }
     openedKMLTags.append(self)
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if styleId != nil {
       kmlStyleElements[styleId!] = self
     }
@@ -186,19 +256,25 @@ class KMLCascadingStyleElement: KMLTag {
   var styleId: String?
   var styleElement: KMLStyleElement?
 
-  init() {
-    styleId = nil
-    styleElement = nil
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if let id = attributeDict["kml:id"] {
       styleId = id
     }
     openedKMLTags.append(self)
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if styleId != nil {
       kmlStyleElements[styleId!] = self
     }
@@ -211,19 +287,25 @@ class KMLStyleMapElement: KMLTag {
   var styleId: String?
   var styleElement: KMLTag?
 
-  init() {
-    styleId = nil
-    styleElement = nil
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if let id = attributeDict["id"] {
       styleId = id
     }
     openedKMLTags.append(self)
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if styleId != nil {
       kmlStyleElements[styleId!] = self
     }
@@ -236,33 +318,44 @@ class KMLStylePairElement: KMLTag {
   private(set) var styleId: String?
   private(set) var referencedStyleId: String?
   var styleElement: KMLTag?
-  var isNormal: Bool
+  var isNormal: Bool = true
 
-  init() {
-    styleElement = nil
-    isNormal = true
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     switch elementName {
     case KMLTagName.key:
       isNormal = (tagContent == "normal")
-      break
     case KMLTagName.styleUrl:
       var trimmedTagContent = tagContent
       trimmedTagContent.removeFirst()
       referencedStyleId = trimmedTagContent
-      break
     default:
       break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     if isNormal {
       let penultimateStyleElement = openedKMLTags.penultimate()
       (penultimateStyleElement as? KMLStyleMapElement)?.styleElement = self
@@ -281,29 +374,38 @@ enum KMLTagType {
 class KMLDocumentElement: KMLTag {
   private(set) var tagName: String = KMLTagName.document
   var styleId: String?
-  var featureElements: [KMLTag]
+  var featureElements: [KMLTag] = []
 
-  init() {
-    styleId = nil
-    featureElements = []
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
-    switch elementName {
-    case KMLTagName.styleUrl:
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
+    if elementName == KMLTagName.styleUrl {
       styleId = tagContent
       styleId?.removeFirst()
-      break
-    default:
-      break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     updateChildrenStyle()
     openedKMLTags.removeLast()
   }
@@ -332,30 +434,41 @@ class KMLPlacemarkElement: KMLTag {
   var geometryElement: KMLTag?
   var title: String?
 
-  init() {
-    styleId = nil
-    geometryElement = nil
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     switch elementName {
     case KMLTagName.styleUrl:
       styleId = tagContent
       styleId?.removeFirst()
-      break
     case KMLTagName.name:
       title = tagContent
-      break
     default:
       break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     extractGeometryElementsAndAppendTitle(kmlGeometry: geometryElement, kmlGeometryElements: &kmlGeometryElements, title: title)
 
     let penultimateContentElement = openedKMLTags.penultimate()
@@ -383,29 +496,38 @@ class KMLPlacemarkElement: KMLTag {
 class KMLFolderElement: KMLTag {
   private(set) var tagName: String = KMLTagName.folder
   var styleId: String?
-  var featureElements: [KMLTag]
+  var featureElements: [KMLTag] = []
 
-  init() {
-    styleId = nil
-    featureElements = []
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
-    switch elementName {
-    case KMLTagName.styleUrl:
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
+    if elementName == KMLTagName.styleUrl {
       styleId = tagContent
       styleId?.removeFirst()
-      break
-    default:
-      break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     let penultimateContentElement = openedKMLTags.penultimate()
     (penultimateContentElement as? KMLFolderElement)?.featureElements.append(self)
     (penultimateContentElement as? KMLDocumentElement)?.featureElements.append(self)
@@ -435,29 +557,38 @@ class KMLFolderElement: KMLTag {
 class KMLMultiGeometryElement: KMLTag {
   private(set) var tagName: String = KMLTagName.multiGeometry
   var styleId: String?
-  var geometryElements: [KMLTag]
+  var geometryElements: [KMLTag] = []
 
-  init() {
-    styleId = nil
-    geometryElements = []
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
-    switch elementName {
-    case KMLTagName.styleUrl:
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
+    if elementName == KMLTagName.styleUrl {
       styleId = tagContent
       styleId?.removeFirst()
-      break
-    default:
-      break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     let penultimateContentElement = openedKMLTags.penultimate()
     (penultimateContentElement as? KMLMultiGeometryElement)?.geometryElements.append(self)
     (penultimateContentElement as? KMLPlacemarkElement)?.geometryElement = self
@@ -487,17 +618,24 @@ class KMLMultiGeometryElement: KMLTag {
 class KMLOuterBoundaryElement: KMLTag {
   private(set) var tagName: String = KMLTagName.outerBoundary
   private(set) var styleId: String?
-  var coordinates: [Coordinate]
+  var coordinates: [Coordinate] = []
 
-  init() {
-    coordinates = []
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     let penultimateContentElement = openedKMLTags.penultimate()
     (penultimateContentElement as? KMLPolygonElement)?.coordinates = coordinates
 
@@ -508,27 +646,37 @@ class KMLOuterBoundaryElement: KMLTag {
 class KMLLinearRingElement: KMLTag {
   private(set) var tagName: String = KMLTagName.linearRing
   private(set) var styleId: String?
-  var coordinates: [Coordinate]
+  var coordinates: [Coordinate] = []
 
-  init() {
-    coordinates = []
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
-    switch elementName {
-    case KMLTagName.coordinates:
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
+    if elementName == KMLTagName.coordinates {
       coordinates = extractCoordinates(stringValue: tagContent)
-      break
-    default:
-      break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     let penultimateContentElement = openedKMLTags.penultimate()
     (penultimateContentElement as? KMLOuterBoundaryElement)?.coordinates = coordinates
 
@@ -544,29 +692,38 @@ struct Coordinate {
 class KMLPolygonElement: KMLTag {
   private(set) var tagName: String = KMLTagName.polygon
   var styleId: String?
-  var coordinates: [Coordinate]
+  var coordinates: [Coordinate] = []
 
-  init() {
-    styleId = nil
-    coordinates = []
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
-    switch elementName {
-    case KMLTagName.styleUrl:
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
+    if elementName == KMLTagName.styleUrl {
       styleId = tagContent
       styleId?.removeFirst()
-      break
-    default:
-      break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     let penultimateContentElement = openedKMLTags.penultimate()
     (penultimateContentElement as? KMLMultiGeometryElement)?.geometryElements.append(self)
     (penultimateContentElement as? KMLPlacemarkElement)?.geometryElement = self
@@ -584,32 +741,43 @@ class KMLPolygonElement: KMLTag {
 class KMLLineElement: KMLTag {
   private(set) var tagName: String = KMLTagName.lineString
   var styleId: String?
-  var coordinates: [Coordinate]
+  var coordinates: [Coordinate] = []
 
-  init() {
-    styleId = nil
-    coordinates = []
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     switch elementName {
     case KMLTagName.coordinates:
       coordinates = extractCoordinates(stringValue: tagContent)
-      break
     case KMLTagName.styleUrl:
       styleId = tagContent
       styleId?.removeFirst()
-      break
     default:
       break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     let penultimateContentElement = openedKMLTags.penultimate()
     (penultimateContentElement as? KMLMultiGeometryElement)?.geometryElements.append(self)
     (penultimateContentElement as? KMLPlacemarkElement)?.geometryElement = self
@@ -627,34 +795,44 @@ class KMLLineElement: KMLTag {
 class KMLPointElement: KMLTag {
   private(set) var tagName: String = KMLTagName.point
   var styleId: String?
-  var coordinate: Coordinate
+  var coordinate = Coordinate(longitude: 0, latitude: 0)
   var title: String?
 
-  init() {
-    styleId = nil
-    coordinate = Coordinate(longitude: 0, latitude: 0)
-    title = nil
-  }
-
-  func handleOnStartTag(attributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnStartTag(
+    attributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     openedKMLTags.append(self)
   }
 
-  func handleContent(elementName: String, tagContent: String, contentAttributeDict: [String: String], openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleContent(
+    elementName: String,
+    tagContent: String,
+    contentAttributeDict: [String: String],
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     switch elementName {
     case KMLTagName.coordinates:
       coordinate = extractCoordinates(stringValue: tagContent).first ?? Coordinate(longitude: 0, latitude: 0)
-      break
     case KMLTagName.styleUrl:
       styleId = tagContent
       styleId?.removeFirst()
-      break
     default:
       break
     }
   }
 
-  func handleOnEndTag(elementName: String, tagContent: String, openedKMLTags: inout [KMLTag], kmlStyleElements: inout [String: KMLTag], kmlGeometryElements: inout [KMLTag]) {
+  func handleOnEndTag(
+    elementName: String,
+    tagContent: String,
+    openedKMLTags: inout [KMLTag],
+    kmlStyleElements: inout [String: KMLTag],
+    kmlGeometryElements: inout [KMLTag]
+  ) {
     let penultimateContentElement = openedKMLTags.penultimate()
     (penultimateContentElement as? KMLMultiGeometryElement)?.geometryElements.append(self)
     (penultimateContentElement as? KMLPlacemarkElement)?.geometryElement = self
@@ -676,11 +854,11 @@ private func extractGeometryElementsAndAppendTitle(kmlGeometry: KMLTag?, kmlGeom
     while !currentGeometryElements.isEmpty {
       let currentGeometryElement = currentGeometryElements.first
 
-      if currentGeometryElement is KMLMultiGeometryElement {
-        currentGeometryElements.append(contentsOf: (currentGeometryElement as! KMLMultiGeometryElement).geometryElements)
-      } else if currentGeometryElement is KMLPointElement {
-        (currentGeometryElement as! KMLPointElement).title = title
-        kmlGeometryElements.append(currentGeometryElement!)
+      if let multiElement = currentGeometryElement as? KMLMultiGeometryElement {
+        currentGeometryElements.append(contentsOf: (multiElement).geometryElements)
+      } else if let point = currentGeometryElement as? KMLPointElement {
+        point.title = title
+        kmlGeometryElements.append(point)
       } else {
         kmlGeometryElements.append(currentGeometryElement!)
       }
@@ -704,12 +882,12 @@ private func extractCoordinates(stringValue: String) -> [Coordinate] {
 
 private func mapStylePairs(kmlStyleElements: inout [String: KMLTag]) {
   kmlStyleElements.values.forEach { kmlStyleElement in
-    if kmlStyleElement is KMLStyleMapElement {
-      let kmlStyleElement = kmlStyleElement as! KMLStyleMapElement
-      let childStyleElement = kmlStyleElement.styleElement as? KMLStylePairElement
-      if let referencedStyleId = childStyleElement?.referencedStyleId {
-        childStyleElement?.styleElement = kmlStyleElements[referencedStyleId]
-      }
+    guard let kmlStyleElement = kmlStyleElement as? KMLStyleMapElement else {
+      return
+    }
+    let childStyleElement = kmlStyleElement.styleElement as? KMLStylePairElement
+    if let referencedStyleId = childStyleElement?.referencedStyleId {
+      childStyleElement?.styleElement = kmlStyleElements[referencedStyleId]
     }
   }
 }

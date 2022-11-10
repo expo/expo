@@ -17,8 +17,8 @@ class GoogleMapsCameraAnimations {
     )
 
     if let delta = cameraMove.latLngDelta {
-      let latitudeDelta = delta["latitudeDelta"] as! Double
-      let longitudeDelta = delta["longitudeDelta"] as! Double
+      let latitudeDelta = delta.latitudeDelta
+      let longitudeDelta = delta.longitudeDelta
       let x1 = target.latitude - latitudeDelta / 2
       let y1 = target.longitude - longitudeDelta / 2
       let topLeft = CLLocationCoordinate2D(latitude: x1 + latitudeDelta, longitude: y1)

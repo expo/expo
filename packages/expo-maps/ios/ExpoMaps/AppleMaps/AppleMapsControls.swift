@@ -32,10 +32,14 @@ class AppleMapsControls: Controls {
       mapView.addSubview(myLocationButton)
 
       NSLayoutConstraint.activate([
-          myLocationButton.topAnchor.constraint(equalTo: mapView.topAnchor,
-constant: 100),
-          myLocationButton.trailingAnchor.constraint(equalTo:
-mapView.trailingAnchor, constant: -10)
+          myLocationButton.topAnchor.constraint(
+            equalTo: mapView.topAnchor,
+            constant: 100
+          ),
+          myLocationButton.trailingAnchor.constraint(
+            equalTo: mapView.trailingAnchor,
+            constant: -10
+          )
       ])
     }
  }

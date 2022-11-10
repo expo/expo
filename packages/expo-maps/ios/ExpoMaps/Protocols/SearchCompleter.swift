@@ -1,6 +1,6 @@
 protocol SearchCompleter {
-  associatedtype T
+  associatedtype CompletionsType
   func autoComplete(searchQueryFragment: String)
   func getSearchCompletions() -> [String]
-  func mapSearchCompletions(completions: [T]) -> [String]
+  func mapSearchCompletions(completions: [CompletionsType]) -> [String]
 }

@@ -190,7 +190,12 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
 #endif
   }
 
-  func mapView(_ mapView: MKMapView, annotationView view: MKAnnotationView, didChange newState: MKAnnotationView.DragState, fromOldState oldState: MKAnnotationView.DragState) {
+  func mapView(
+    _ mapView: MKMapView,
+    annotationView view: MKAnnotationView,
+    didChange newState: MKAnnotationView.DragState,
+    fromOldState oldState: MKAnnotationView.DragState
+  ) {
     if let annotation = view.annotation as? ExpoMKAnnotation {
       switch newState {
       case .starting:
@@ -210,6 +215,7 @@ class AppleMapsDelegate: NSObject, MKMapViewDelegate {
     appleMapsView?.onLocationChange(UserLocationRecord(location: userLocation).toDictionary())
   }
 
+  // swiftlint:disable block_based_kvo
   override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
     if keyPath == "center" {
       if let view = object as? MKAnnotationView {

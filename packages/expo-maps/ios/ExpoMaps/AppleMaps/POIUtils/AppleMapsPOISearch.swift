@@ -28,13 +28,18 @@ class AppleMapsPOISearch {
   }
 
   private func search() {
-    localSearch?.start { [unowned self] response, error in
+    localSearch?.start { [weak self] response, error in
+      guard let strongSelf = self else {
+        return
+      }
+
       guard error == nil else {
           print("MKLocalSearch search start resulted in an error")
           return
       }
-      searchResultRegion = response?.boundingRegion
-      places = response?.mapItems
+
+      strongSelf.searchResultRegion = response?.boundingRegion
+      strongSelf.places = response?.mapItems
     }
   }
 }
@@ -88,7 +93,10 @@ extension AppleMapsPOISearch {
   }
 
   private func getMarkersToDisplay() -> [MarkerObject] {
-    guard let places = places else { return [] }
+    guard let places = places else {
+      return []
+    }
+
     let annotations = places.compactMap { item -> MarkerObject? in
       let marker = MarkerObject()
       marker.latitude = item.placemark.coordinate.latitude

@@ -68,7 +68,12 @@ public final class GoogleMapsView: UIView, ExpoMapView {
 
 #if HAS_GOOGLE_UTILS
     googleMapsClusterManagerDelegate = GoogleMapsClusterManagerDelegate(googleMapsMarkersManager: googleMapsMarkersManager)
-    clusters = GoogleMapsClusters(mapView: mapView, googleMapsMarkersManager: googleMapsMarkersManager, googleMapsClusterManagerDelegate: googleMapsClusterManagerDelegate, googleMapsViewDelegate: googleMapsViewDelegate)
+    clusters = GoogleMapsClusters(
+      mapView: mapView,
+      googleMapsMarkersManager: googleMapsMarkersManager,
+      googleMapsClusterManagerDelegate: googleMapsClusterManagerDelegate,
+      googleMapsViewDelegate: googleMapsViewDelegate
+    )
     kmls = GoogleMapsKMLs(mapView: mapView)
     geojsons = GoogleMapsGeoJsons(mapView: mapView)
     overlays = GoogleMapsOverlays(mapView: mapView)
@@ -90,8 +95,10 @@ public final class GoogleMapsView: UIView, ExpoMapView {
 
   // Allows the double tap to work
 
-  public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
-                                _ otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+  public func gestureRecognizer(
+    _ gestureRecognizer: UIGestureRecognizer,
+    _ otherGestureRecognizer: UIGestureRecognizer
+  ) -> Bool {
     true
   }
 
@@ -163,7 +170,7 @@ public final class GoogleMapsView: UIView, ExpoMapView {
   }
 
   func setMapStyle(jsonStyleString: String) {
-    if jsonStyleString.count != 0 {
+    if !jsonStyleString.isEmpty {
       do {
         mapView.mapStyle = try GMSMapStyle(jsonString: jsonStyleString)
       } catch {

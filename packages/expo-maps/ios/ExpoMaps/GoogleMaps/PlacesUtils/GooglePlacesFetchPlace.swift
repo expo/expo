@@ -54,7 +54,10 @@ extension GooglePlacesFetchPlace {
   }
 
   private func getMarkerToDisplay() -> MarkerObject? {
-    guard let place = fetchedPlace else { return nil }
+    guard let place = fetchedPlace else {
+      return nil
+    }
+
     let marker = MarkerObject()
     marker.latitude = place.coordinate.latitude
     marker.longitude = place.coordinate.longitude

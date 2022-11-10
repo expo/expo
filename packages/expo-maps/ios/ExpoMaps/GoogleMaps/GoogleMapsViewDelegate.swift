@@ -113,6 +113,7 @@ class GoogleMapsViewDelegate: NSObject, GMSMapViewDelegate {
     expoMapView?.onPoiClick(PointOfInterestRecord(placeId: placeId, name: name, location: location).toDictionary())
   }
 
+  // swiftlint:disable block_based_kvo
   override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
     if keyPath == "myLocation" {
       if let mapView = object as? GMSMapView {

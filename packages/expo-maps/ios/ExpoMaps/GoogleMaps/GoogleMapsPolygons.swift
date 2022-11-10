@@ -79,12 +79,10 @@ class GoogleMapsPolygons: Polygons {
   }
 
   func updateStrokePatterns() {
-    for polyline in edges {
-      if polyline.pattern != nil {
-        polyline.spans = strokePatternToStyles(
-          path: polyline.path!, strokePattern: polyline.pattern!, color: polyline.strokeColor,
-          width: Float(polyline.strokeWidth))
-      }
+    for polyline in edges where polyline.pattern != nil {
+      polyline.spans = strokePatternToStyles(
+        path: polyline.path!, strokePattern: polyline.pattern!, color: polyline.strokeColor,
+        width: Float(polyline.strokeWidth))
     }
   }
 }

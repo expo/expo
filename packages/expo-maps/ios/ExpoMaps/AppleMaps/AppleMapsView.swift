@@ -76,8 +76,10 @@ public final class AppleMapsView: UIView, ExpoMapView, UIGestureRecognizerDelega
 
   // Allows the double tap to work
 
-  public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer,
-                                _ otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+  public func gestureRecognizer(
+    _ gestureRecognizer: UIGestureRecognizer,
+    _ otherGestureRecognizer: UIGestureRecognizer
+  ) -> Bool {
     true
   }
 

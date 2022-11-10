@@ -9,7 +9,12 @@ class GoogleMapsClusters: Clusters {
   private let googleMapsClusterManagerDelegate: GoogleMapsClusterManagerDelegate
   private let googleMapsViewDelegate: GoogleMapsViewDelegate
 
-  init(mapView: GMSMapView, googleMapsMarkersManager: GoogleMapsMarkersManager, googleMapsClusterManagerDelegate: GoogleMapsClusterManagerDelegate, googleMapsViewDelegate: GoogleMapsViewDelegate) {
+  init(
+    mapView: GMSMapView,
+    googleMapsMarkersManager: GoogleMapsMarkersManager,
+    googleMapsClusterManagerDelegate: GoogleMapsClusterManagerDelegate,
+    googleMapsViewDelegate: GoogleMapsViewDelegate
+  ) {
     self.mapView = mapView
     self.googleMapsMarkersManager = googleMapsMarkersManager
     self.googleMapsClusterManagerDelegate = googleMapsClusterManagerDelegate

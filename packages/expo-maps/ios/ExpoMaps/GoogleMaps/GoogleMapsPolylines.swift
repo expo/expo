@@ -59,12 +59,10 @@ class GoogleMapsPolylines: Polylines {
   }
 
   func updateStrokePatterns() {
-    for polyline in polylines {
-      if polyline.pattern != nil {
-        polyline.spans = strokePatternToStyles(
-          path: polyline.path!, strokePattern: polyline.pattern!, color: polyline.strokeColor,
-          width: Float(polyline.strokeWidth))
-      }
+    for polyline in polylines where polyline.pattern != nil {
+      polyline.spans = strokePatternToStyles(
+        path: polyline.path!, strokePattern: polyline.pattern!, color: polyline.strokeColor,
+        width: Float(polyline.strokeWidth))
     }
   }
 }

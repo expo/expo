@@ -87,31 +87,29 @@ extension AppleMapsPOI {
   }
 
   private func mapToMKPOICategories(category: POICategoryType) -> MKPointOfInterestCategory {
-    var mappedCategory: MKPointOfInterestCategory
     switch category {
-      case .airport:
-        mappedCategory = .airport
-      case .atm:
-        mappedCategory = .atm
-      case .bank:
-        mappedCategory = .bank
-      case .beach:
-        mappedCategory = .beach
-      case .cafe:
-        mappedCategory = .cafe
-      case .hospital:
-        mappedCategory = .hospital
-      case .hotel:
-        mappedCategory = .hotel
-      case .museum:
-        mappedCategory = .museum
-      case .pharmacy:
-        mappedCategory = .pharmacy
-      case .store:
-        mappedCategory = .store
-      case .zoo:
-        mappedCategory = .zoo
+    case .airport:
+      return .airport
+    case .atm:
+      return  .atm
+    case .bank:
+      return .bank
+    case .beach:
+      return .beach
+    case .cafe:
+      return .cafe
+    case .hospital:
+      return .hospital
+    case .hotel:
+      return .hotel
+    case .museum:
+      return .museum
+    case .pharmacy:
+      return .pharmacy
+    case .store:
+      return .store
+    case .zoo:
+      return .zoo
     }
-    return mappedCategory
   }
 }
