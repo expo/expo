@@ -48,6 +48,8 @@ sidebar_title: Using FCM
 
    > Firebase will create an API key in the Google Cloud Platform console with a name like `Android key (auto created by Firebase)`. **This is not always the same key as the one found in `google-services.json`. Always confirm your key and associated restrictions in the Google Cloud Platform console.**
 
+   > Firebase projects with multiple Android apps might contain duplicated data under the `client` array in the downloaded `google-services.json`. This can cause issues when the app is fetching the push notification token. **Make sure to only have one client object with the correct keys and metadata in `google-services.json`**.
+
 6. Finally, make a new build of your app by running `eas build --platform android` (or `expo build:android` if you're using the classic build system).
 
 ### Bare projects
