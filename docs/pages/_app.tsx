@@ -20,6 +20,9 @@ Sentry.init({
   dsn: 'https://1a2f5c8cec574bcea3971b74f91504d6@o30871.ingest.sentry.io/1526800',
   beforeSend: preprocessSentryError,
   environment: isDev ? 'development' : 'production',
+  denyUrls: isDev
+    ? undefined
+    : [/https:\/\/docs-expo-dev\.translate\.goog/, /https:\/\/translated\.turbopages\.org/],
   integrations: [new BrowserTracing()],
   tracesSampleRate: 1.0,
 });
