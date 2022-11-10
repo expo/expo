@@ -116,6 +116,11 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           ),
           replaceWith: `$1<${prefix}reacthermes/${prefix}HermesExecutorFactory.h>`,
         },
+        {
+          paths: '**/*.{h,mm}',
+          find: new RegExp(`${prefix}(REACT_NATIVE_MINOR_VERSION)`, 'g'),
+          replaceWith: '$1',
+        },
       ],
     },
     'react-native-gesture-handler': {

@@ -120,7 +120,7 @@ export interface WebViewStyle {
   willChange?: string;
 }
 
-export type ViewStyle = NativeViewStyle & WebViewStyle;
+export type ViewStyle = Omit<NativeViewStyle, 'position'> & WebViewStyle;
 
 export type WebViewProps = {
   style?: StyleProp<ViewStyle>;

@@ -1,7 +1,6 @@
 // Copyright 2021-present 650 Industries (Expo). All rights reserved.
 
-import { getConfig, getDefaultTarget, isLegacyImportsEnabled, ProjectTarget } from '@expo/config';
-import { getBareExtensions, getManagedExtensions } from '@expo/config/paths';
+import { getBareExtensions } from '@expo/config/paths';
 import chalk from 'chalk';
 import { boolish } from 'getenv';
 import { Reporter } from 'metro';
@@ -64,13 +63,7 @@ function isUrl(value: string): boolean {
 }
 
 export interface DefaultConfigOptions {
-  target?: ProjectTarget;
   mode?: 'exotic';
-}
-
-function readIsLegacyImportsEnabled(projectRoot: string): boolean {
-  const config = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-  return isLegacyImportsEnabled(config.exp);
 }
 
 function getProjectBabelConfigFile(projectRoot: string): string | undefined {
@@ -131,56 +124,8 @@ export function getDefaultConfig(
     // noop -- falls back to a hardcoded value.
   }
 
-  const isLegacy = readIsLegacyImportsEnabled(projectRoot);
-  // Deprecated -- SDK 41 --
-  if (options.target) {
-    if (!isLegacy) {
-      console.warn(
-        chalk.yellow(
-          `The target option is deprecated. Learn more: http://expo.fyi/expo-extension-migration`
-        )
-      );
-      delete options.target;
-    }
-  } else if (process.env.EXPO_TARGET) {
-    console.error(
-      'EXPO_TARGET is deprecated. Learn more: http://expo.fyi/expo-extension-migration'
-    );
-    if (isLegacy) {
-      // EXPO_TARGET is used by @expo/metro-config to determine the target when getDefaultConfig is
-      // called from metro.config.js.
-      // @ts-ignore
-      options.target = process.env.EXPO_TARGET;
-    }
-  } else if (isLegacy) {
-    // Fall back to guessing based on the project structure in legacy mode.
-    options.target = getDefaultTarget(projectRoot);
-  }
-
-  if (!options.target) {
-    // Default to bare -- no .expo extension.
-    options.target = 'bare';
-  }
-  // End deprecated -- SDK 41 --
-
-  const { target } = options;
-  if (!(target === 'managed' || target === 'bare')) {
-    throw new Error(
-      `Invalid target: '${target}'. Debug info: \n${JSON.stringify(
-        {
-          'options.target': options.target,
-          default: getDefaultTarget(projectRoot),
-        },
-        null,
-        2
-      )}`
-    );
-  }
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
-  const sourceExts =
-    target === 'bare'
-      ? getBareExtensions([], sourceExtsConfig)
-      : getManagedExtensions([], sourceExtsConfig);
+  const sourceExts = getBareExtensions([], sourceExtsConfig);
 
   if (isExotic) {
     // Add support for cjs (without platform extensions).
@@ -208,8 +153,6 @@ export function getDefaultConfig(
     try {
       console.log(`- Version: ${require('../package.json').version}`);
     } catch {}
-    console.log(`- Bundler target: ${target}`);
-    console.log(`- Legacy: ${isLegacy}`);
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Babel config: ${babelConfigPath || 'babel-preset-expo (default)'}`);
@@ -304,14 +247,13 @@ export interface LoadOptions {
   port?: number;
   reporter?: Reporter;
   resetCache?: boolean;
-  target?: ProjectTarget;
 }
 
 export async function loadAsync(
   projectRoot: string,
-  { reporter, target, ...metroOptions }: LoadOptions = {}
+  { reporter, ...metroOptions }: LoadOptions = {}
 ): Promise<MetroConfig.ConfigT> {
-  let defaultConfig = getDefaultConfig(projectRoot, { target });
+  let defaultConfig = getDefaultConfig(projectRoot);
   if (reporter) {
     defaultConfig = { ...defaultConfig, reporter };
   }

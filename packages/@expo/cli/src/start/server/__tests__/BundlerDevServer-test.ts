@@ -351,3 +351,23 @@ describe('_startTunnelAsync', () => {
     expect(await server._startTunnelAsync()).toEqual(null);
   });
 });
+
+describe('getJsInspectorBaseUrl', () => {
+  it('should return http based url', async () => {
+    const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
+    await devServer.startAsync({ location: {} });
+    expect(devServer.getJsInspectorBaseUrl()).toBe('http://100.100.1.100:3000');
+  });
+
+  it('should return tunnel url', async () => {
+    const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
+    await devServer.startAsync({ location: { hostType: 'tunnel' } });
+    expect(devServer.getJsInspectorBaseUrl()).toBe('http://exp.tunnel.dev:80');
+  });
+
+  it('should throw error for unsupported bundler', async () => {
+    const devServer = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await devServer.startAsync({ location: {} });
+    expect(() => devServer.getJsInspectorBaseUrl()).toThrow();
+  });
+});

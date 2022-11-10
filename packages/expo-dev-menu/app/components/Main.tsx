@@ -18,10 +18,8 @@ import {
   StatusIndicator,
   Image,
   scale,
-  SettingsFilledIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Platform } from 'react-native';
 import { Switch } from 'react-native-gesture-handler';
 
 import { useAppInfo } from '../hooks/useAppInfo';

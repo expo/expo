@@ -4,9 +4,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRootViewBackgroundColor = exports.setRootViewBackgroundColor = exports.withIosRootViewBackgroundColor = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
 // @ts-ignore: uses flow
 const normalize_color_1 = __importDefault(require("@react-native/normalize-color"));
+const config_plugins_1 = require("expo/config-plugins");
 // Maps to the template AppDelegate.m
 const BACKGROUND_COLOR_KEY = 'RCTRootViewBackgroundColor';
 const debug = require('debug')('expo:system-ui:plugin:ios');

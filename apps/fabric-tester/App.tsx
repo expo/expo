@@ -13,6 +13,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 
 function randomColor() {
@@ -31,7 +32,7 @@ export default class App extends React.PureComponent {
           </Text>
 
           <LinearGradientExample />
-          {/* <BlueExample /> */}
+          {Platform.OS === 'ios' && <BlurExample />}
           <VideoExample />
           <CameraExample />
         </ScrollView>
@@ -61,13 +62,13 @@ export function LinearGradientExample() {
   );
 }
 
-export function BlueExample() {
-  const uri = 'https://s3.amazonaws.com/exp-icon-assets/ExpoEmptyManifest_192.png';
-  const text = 'Hello, my container is blurring contents underneath!';
+export function BlurExample() {
+  const uri = 'https://source.unsplash.com/random';
+  const text = "Hello, I'm blurring contents underneath!";
 
   return (
     <View style={[styles.exampleContainer, styles.blurExample]}>
-      <Image style={[StyleSheet.absoluteFill, styles.image]} source={{ uri }} />
+      <Image style={styles.blurImage} source={{ uri }} />
       <BlurView intensity={100} style={styles.blurContainer}>
         <Text style={styles.text}>{text}</Text>
       </BlurView>
@@ -190,15 +191,11 @@ const styles = StyleSheet.create({
     height: 200,
   },
   blurExample: {
-    height: 640,
-    marginTop: 64,
-    flexDirection: 'column',
-    alignSelf: 'stretch',
+    height: 200,
   },
-  image: {
-    width: '100%',
-    height: '100%',
+  blurImage: {
     resizeMode: 'cover',
+    ...StyleSheet.absoluteFillObject,
   },
   blurContainer: {
     flex: 1,

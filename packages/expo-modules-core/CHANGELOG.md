@@ -4,6 +4,63 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 1.0.2 - 2022-11-08
+
+### 💡 Others
+
+- Rephrased the message of `ArgumentCastException` to use ordinal numbers. ([#19912](https://github.com/expo/expo/pull/19912) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.0.1 - 2022-11-07
+
+### 🐛 Bug fixes
+
+- Added a list of the acceptable enum values to the conversion error on Android. ([#19895](https://github.com/expo/expo/pull/19895) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `new NativeEventEmitter() was called with a non-null argument without the required addListener method.` warnings on Android with JSC. ([#19920](https://github.com/expo/expo/pull/19920) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Exposed coroutines related packages on Android. ([#19896](https://github.com/expo/expo/pull/19896) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.0.0 — 2022-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.4 — 2022-11-02
+
+### 🐛 Bug fixes
+
+- Fixed build errors when testing on React Native nightly builds. ([#19369](https://github.com/expo/expo/pull/19369) by [@kudo](https://github.com/kudo))
+
+## 0.13.3 — 2022-10-30
+
+### 🎉 New features
+
+- Added `AppContext.hasActiveReactInstance` on Android. ([#19723](https://github.com/expo/expo/pull/19723) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.13.2 — 2022-10-28
+
+### 🐛 Bug fixes
+
+- Fixed `new NativeEventEmitter() was called with a non-null argument without the required addListener method.` warnings on Android. ([#19704](https://github.com/expo/expo/pull/19704) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+
+## 0.13.1 — 2022-10-27
+
+### 🐛 Bug fixes
+
+- Fixed `~CallbackWrapper()` dangling pointer crashes when reloading the app on Android. ([#19699](https://github.com/expo/expo/pull/19699) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+
+## 0.13.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
 - Convertible enums must inherit from `expo.modules.kotlin.types.Enumerable` on Android. ([#19551](https://github.com/expo/expo/pull/19551) by [@lukmccall](https://github.com/lukmccall))
 - `AppContext.currentActivity` is not longer returning `AppCompatActivity`, but an instance of `android.app.Activity` class. ([#19573](https://github.com/expo/expo/pull/19573) by [@lukmccall](https://github.com/lukmccall))
 

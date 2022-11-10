@@ -28,6 +28,10 @@ public final class ImageModule: Module {
       Prop("transition") { (view, transition: ImageTransition?) in
         view.transition = transition
       }
+
+      OnViewDidUpdateProps { view in
+        view.reload()
+      }
     }
 
     Function("clearMemoryCache") {

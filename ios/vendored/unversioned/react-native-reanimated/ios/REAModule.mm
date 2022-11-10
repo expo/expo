@@ -2,8 +2,7 @@
 #import <RNReanimated/REAModule.h>
 #import <RNReanimated/REANodesManager.h>
 #import <RNReanimated/REATransitionManager.h>
-
-#import "SingleInstanceChecker.h"
+#import <RNReanimated/SingleInstanceChecker.h>
 
 using namespace reanimated;
 
@@ -15,14 +14,17 @@ typedef void (^AnimatedOperation)(REANodesManager *nodesManager);
 #ifdef DEBUG
   SingleInstanceChecker<REAModule> singleInstanceChecker_;
 #endif
+  bool hasListeners;
 }
 
 RCT_EXPORT_MODULE(ReanimatedModule);
 
+#ifdef RCT_NEW_ARCH_ENABLED
 + (BOOL)requiresMainQueueSetup
 {
   return YES;
 }
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (void)invalidate
 {
@@ -191,6 +193,21 @@ RCT_EXPORT_METHOD(triggerRender)
 {
   // Events can be dispatched from any queue
   [_nodesManager dispatchEvent:event];
+}
+
+- (void)startObserving {
+    hasListeners = YES;
+}
+
+- (void)stopObserving {
+    hasListeners = NO;
+}
+
+- (void)sendEventWithName:(NSString *)eventName body:(id)body
+{
+    if (hasListeners) {
+        [super sendEventWithName:eventName body:body];
+    }
 }
 
 @end

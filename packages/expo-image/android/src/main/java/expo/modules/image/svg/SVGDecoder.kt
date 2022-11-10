@@ -25,10 +25,10 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
     return try {
       val svg: SVG = SVG.getFromInputStream(source)
       if (width != SIZE_ORIGINAL) {
-        svg.documentWidth = width.toFloat();
+        svg.documentWidth = width.toFloat()
       }
       if (height != SIZE_ORIGINAL) {
-        svg.documentHeight = height.toFloat();
+        svg.documentHeight = height.toFloat()
       }
       SimpleResource(svg)
     } catch (ex: SVGParseException) {

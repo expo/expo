@@ -4,18 +4,33 @@
 
 ### 🛠 Breaking changes
 
-- [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+- Locked `layoutDirection` to LTR to prevent incorrect rendering when used together with a RTL enabled app. ([#19634](https://github.com/expo/expo/pull/19634) by [@aleqsio](https://github.com/aleqsio))
+
+## 2.0.1 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fixed build errors when testing on React Native nightly builds. ([#19369](https://github.com/expo/expo/pull/19369) by [@kudo](https://github.com/kudo), [#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+- Fixed Android `java.lang.AssertionError: TurboModules are enabled, but mTurboModuleRegistry hasn't been set.` error when running on new architecture mode. ([#19931](https://github.com/expo/expo/pull/19931) by [@kudo](https://github.com/kudo))
+
+## 2.0.0 — 2022-10-27
+
+### 🛠 Breaking changes
+
+- [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ### ⚠️ Notices
 
 - Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
+- Moved to React Navigation v6, required for React Native 0.70.x. ([#19675](https://github.com/expo/expo/pull/19675) by [@douglowder](https://github.com/douglowder))
+
 ## 1.3.1 — 2022-10-11
 
 ### 🐛 Bug fixes

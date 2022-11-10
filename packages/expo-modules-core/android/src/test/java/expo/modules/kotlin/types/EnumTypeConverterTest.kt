@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.DynamicFromObject
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.EnumNoSuchValueException
 import org.junit.Test
 
 class EnumTypeConverterTest {
@@ -51,5 +52,13 @@ class EnumTypeConverterTest {
     Truth.assertThat(converter.convert(v1)).isSameInstanceAs(EnumWithString.VALUE1)
     Truth.assertThat(converter.convert(v2)).isSameInstanceAs(EnumWithString.VALUE2)
     Truth.assertThat(converter.convert(v3)).isSameInstanceAs(EnumWithString.VALUE3)
+  }
+
+  @Test(expected = EnumNoSuchValueException::class)
+  fun `should throw when value is invalid`() {
+    val value = DynamicFromObject("INVALID")
+    val converter = obtainTypeConverter<EnumWithoutParameter>()
+
+    converter.convert(value)
   }
 }

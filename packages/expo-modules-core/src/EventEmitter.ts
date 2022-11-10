@@ -41,7 +41,6 @@ export class EventEmitter {
           ...args
         );
     }
-
     this._nativeModule = nativeModule;
     this._eventEmitter = new NativeEventEmitter(nativeModule as any);
   }

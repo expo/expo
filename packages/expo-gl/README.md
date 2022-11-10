@@ -4,7 +4,7 @@ Provides GLView that acts as OpenGL ES render target and gives GL context object
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/gl-view.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/gl-view.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/gl-view/)
 
 # Installation in managed Expo projects
