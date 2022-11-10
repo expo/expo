@@ -16,7 +16,7 @@ A performant interface for rendering sectioned lists, supporting the most handy 
 - Pull to Refresh.
 - Scroll loading.
 
-If you don't need section support and want a simpler interface, use [`<FlatList>`](flatlist.md).
+If you don't need section support and want a simpler interface, use [`<FlatList>`](flatlist.mdx).
 
 ## Example
 
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
 export default App;
 ```
 
-This is a convenience wrapper around [`<VirtualizedList>`](virtualizedlist.md), and thus inherits its props (as well as those of [`<ScrollView>`](scrollview.md)) that aren't explicitly listed here, along with the following caveats:
+This is a convenience wrapper around [`<VirtualizedList>`](virtualizedlist.mdx), and thus inherits its props (as well as those of [`<ScrollView>`](scrollview.mdx)) that aren't explicitly listed here, along with the following caveats:
 
 - Internal state is not preserved when content scrolls out of the render window. Make sure all your data is captured in the item data or external stores like Flux, Redux, or Relay.
 - This is a `PureComponent` which means that it will not re-render if `props` remain shallow-equal. Make sure that everything your `renderItem` function depends on is passed as a prop (e.g. `extraData`) that is not `===` after updates, otherwise your UI may not update on changes. This includes the `data` prop and parent component state.
@@ -126,7 +126,7 @@ The render function will be passed an object with the following keys:
 
 ### `sections`
 
-**Required** The actual data to render, akin to the `data` prop in [`FlatList`](flatlist.md).
+**Required** The actual data to render, akin to the `data` prop in [`FlatList`](flatlist.mdx).
 
 | Type                                        |
 | ------------------------------------------- |
@@ -250,7 +250,7 @@ Called when the viewability of rows changes, as defined by the `viewabilityConfi
 
 | Type                                                                                                                                   |
 |----------------------------------------------------------------------------------------------------------------------------------------|
-| (callback: &lbrace; changed: array of [ViewToken](viewtoken.md)s, viewableItems: array of [ViewToken](viewtoken.md)s &rbrace;) => void |
+| (callback: &lbrace; changed: array of [ViewToken](viewtoken.mdx)s, viewableItems: array of [ViewToken](viewtoken.mdx)s &rbrace;) => void |
 
 ---
 

@@ -13,7 +13,7 @@ It provides a predictable wrapper of the responder handlers provided by the [ges
 onPanResponderMove: (event, gestureState) => {};
 ```
 
-A native event is a synthetic touch event with form of [PressEvent](pressevent.md).
+A native event is a synthetic touch event with form of [PressEvent](pressevent.mdx).
 
 A `gestureState` object has the following:
 
@@ -154,7 +154,7 @@ static create(config)
 | --------------------- | ------ | ----------- |
 | config **(Required)** | object | Refer below |
 
-The `config` object provides enhanced versions of all of the responder callbacks that provide not only the [`PressEvent`](pressevent.md), but also the `PanResponder` gesture state, by replacing the word `Responder` with `PanResponder` in each of the typical `onResponder*` callbacks. For example, the `config` object would look like:
+The `config` object provides enhanced versions of all of the responder callbacks that provide not only the [`PressEvent`](pressevent.mdx), but also the `PanResponder` gesture state, by replacing the word `Responder` with `PanResponder` in each of the typical `onResponder*` callbacks. For example, the `config` object would look like:
 
 - `onMoveShouldSetPanResponder: (e, gestureState) => {...}`
 - `onMoveShouldSetPanResponderCapture: (e, gestureState) => {...}`

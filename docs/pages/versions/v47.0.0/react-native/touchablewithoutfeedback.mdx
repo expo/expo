@@ -3,7 +3,7 @@ id: touchablewithoutfeedback
 title: TouchableWithoutFeedback
 ---
 
-> If you're looking for a more extensive and future-proof way to handle touch-based input, check out the [Pressable](pressable.md) API.
+> If you're looking for a more extensive and future-proof way to handle touch-based input, check out the [Pressable](pressable.mdx) API.
 
 Do not use unless you have a very good reason. All elements that respond to press should have a visual feedback when touched.
 
@@ -255,7 +255,7 @@ This defines how far your touch can start away from the button. This is added to
 
 | Type                      | Required |
 | ------------------------- | -------- |
-| [Rect](rect.md) or number | No       |
+| [Rect](rect.mdx) or number | No       |
 
 ### `onBlur`
 
@@ -283,7 +283,7 @@ Invoked on mount and on layout changes.
 
 | Type                                    | Required |
 | --------------------------------------- | -------- |
-| ([LayoutEvent](layoutevent.md)) => void | No       |
+| ([LayoutEvent](layoutevent.mdx)) => void | No       |
 
 ---
 
@@ -299,7 +299,7 @@ Called if the time after `onPressIn` lasts longer than 370 milliseconds. This ti
 
 ### `onPress`
 
-Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock). The first function argument is an event in form of [PressEvent](pressevent.md).
+Called when the touch is released, but not if cancelled (e.g. by a scroll that steals the responder lock). The first function argument is an event in form of [PressEvent](pressevent.mdx).
 
 | Type     | Required |
 | -------- | -------- |
@@ -309,7 +309,7 @@ Called when the touch is released, but not if cancelled (e.g. by a scroll that s
 
 ### `onPressIn`
 
-Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests. The first function argument is an event in form of [PressEvent](pressevent.md).
+Called as soon as the touchable element is pressed and invoked even before onPress. This can be useful when making network requests. The first function argument is an event in form of [PressEvent](pressevent.mdx).
 
 | Type     | Required |
 | -------- | -------- |
@@ -319,7 +319,7 @@ Called as soon as the touchable element is pressed and invoked even before onPre
 
 ### `onPressOut`
 
-Called as soon as the touch is released even before onPress. The first function argument is an event in form of [PressEvent](pressevent.md).
+Called as soon as the touch is released even before onPress. The first function argument is an event in form of [PressEvent](pressevent.mdx).
 
 | Type     | Required |
 | -------- | -------- |
@@ -333,7 +333,7 @@ When the scroll view is disabled, this defines how far your touch may move off o
 
 | Type                      | Required |
 | ------------------------- | -------- |
-| [Rect](rect.md) or number | No       |
+| [Rect](rect.mdx) or number | No       |
 
 ---
 
