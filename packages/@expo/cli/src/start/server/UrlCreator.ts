@@ -2,7 +2,6 @@ import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
-import { env } from '../../utils/env';
 import { getIpAddress } from '../../utils/ip';
 
 const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
@@ -154,17 +153,12 @@ function getDefaultHostname(options: Pick<CreateURLOptions, 'hostname'>) {
 
 function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>): string {
   assert(hostname, 'hostname cannot be inferred.');
-  // Android HMR breaks without this port 80.
-  // This is because Android React Native WebSocket implementation is not spec compliant and fails without a port:
-  // `E unknown:ReactNative: java.lang.IllegalArgumentException: Invalid URL port: "-1"`
-  // Invoked first in `metro-runtime/src/modules/HMRClient.js`
-  const validPort = env.EXPO_NO_DEFAULT_PORT ? port : port || '80';
   const validProtocol = protocol ? `${protocol}://` : '';
 
-  let url = `${validProtocol}${hostname}`;
+  const url = `${validProtocol}${hostname}`;
 
-  if (validPort) {
-    url += `:${validPort}`;
+  if (port) {
+    return url + `:${port}`;
   }
 
   return url;
