@@ -1,0 +1,7 @@
+{
+  "name": "expo-",
+  "platforms": ["ios", "android", "web"],
+  "android": {
+    "modules": ["expo.modules.constants.ConstantsModule"]
+  }
+}
