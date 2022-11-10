@@ -50,7 +50,7 @@ class AppleMapsPolygons: Polygons {
     if polygonObject.strokePattern != nil {
       polygon.strokePattern = strokePatternToLineDashPatternPolygon(
         pattern: polygonObject.strokePattern, width: polygon.strokeWidth)
-      if polygonObject.strokeWidth == nil {polygon.strokeWidth = 1.0}
+      if polygonObject.strokeWidth == nil { polygon.strokeWidth = 1.0 }
     }
     polygon.jointType = jointToCGLineJoin(polygonObject.jointType)
 

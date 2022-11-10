@@ -21,8 +21,8 @@ class GoogleMapsHeatmaps: Heatmaps {
           startPoints: gradient.locations.map({ NSNumber(value: $0) }),
           colorMapSize: 256)
       }
-      if let radius = heatmapObject.radius {heatmap.radius = radius}
-      if let opacity = heatmapObject.opacity {heatmap.opacity = opacity}
+      if let radius = heatmapObject.radius { heatmap.radius = radius }
+      if let opacity = heatmapObject.opacity { heatmap.opacity = opacity }
       heatmap.weightedData = heatmapObject.points.map({
         GMUWeightedLatLng(
           coordinate: CLLocationCoordinate2D(latitude: $0.latitude, longitude: $0.longitude),

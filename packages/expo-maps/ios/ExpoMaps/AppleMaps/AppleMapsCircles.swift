@@ -16,9 +16,9 @@ class AppleMapsCircles: Circles {
           latitude: circleObject.center.latitude, longitude: circleObject.center.longitude),
         radius: circleObject.radius
       )
-      if circleObject.fillColor != nil {circle.fillColor = circleObject.fillColor!}
-      if circleObject.strokeColor != nil {circle.strokeColor = circleObject.strokeColor!}
-      if circleObject.strokeWidth != nil {circle.strokeWidth = circleObject.strokeWidth!}
+      if circleObject.fillColor != nil { circle.fillColor = circleObject.fillColor! }
+      if circleObject.strokeColor != nil { circle.strokeColor = circleObject.strokeColor! }
+      if circleObject.strokeWidth != nil { circle.strokeWidth = circleObject.strokeWidth! }
       mapView.addOverlay(circle)
       circles.append(circle)
     }
