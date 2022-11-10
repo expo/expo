@@ -91,13 +91,13 @@ Running [EAS Build](/build/introduction) locally will use [iOS capabilities sign
   ]}
 />
 
-## API
-
 ## Using with expo-file-system
 
 When using `expo-document-picker` with [`expo-file-system`](/versions/latest/sdk/filesystem/), it's not always possible for the file system to read the file immediately after the `expo-document-picker` picks it.
 
 To allow the `expo-file-system` to read the file immediately after it is picked, you'll need to ensure that the [`copyToCacheDirectory`](#documentpickeroptions) option is set to `true`.
+
+## API
 
 ```js
 import * as DocumentPicker from 'expo-document-picker';
