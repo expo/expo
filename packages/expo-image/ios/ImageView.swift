@@ -9,16 +9,11 @@ public final class ImageView: ExpoView {
   let sdImageView = SDAnimatedImageView(frame: .zero)
   let imageManager = SDWebImageManager()
 
-  var source: ImageSource? {
-    didSet {
-      loadFromSource(source)
-    }
-  }
+  var source: ImageSource?
 
   var resizeMode: ImageResizeMode = .cover {
     didSet {
       sdImageView.contentMode = resizeMode.toContentMode()
-      loadFromSource(source)
     }
   }
 
@@ -49,7 +44,7 @@ public final class ImageView: ExpoView {
 
   // MARK: - Implementation
 
-  func loadFromSource(_ source: ImageSource?) {
+  func reload() {
     guard let source = source else {
       renderImage(nil)
       return
