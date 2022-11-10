@@ -30,7 +30,14 @@ const CWD = process.env.INIT_CWD || process.cwd();
 
 // Ignore some paths. Especially `package.json` as it is rendered
 // from `$package.json` file instead of the original one.
-const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
+const IGNORES_PATHS = [
+  '.DS_Store',
+  'build',
+  'node_modules',
+  'package.json',
+  '.npmignore',
+  '.gitignore',
+];
 
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
@@ -168,6 +175,13 @@ async function downloadPackageAsync(targetDir: string): Promise<string> {
   });
 }
 
+function handleSuffix(name: string, suffix: string): string {
+  if (name.endsWith(suffix)) {
+    return name;
+  }
+  return `${name}${suffix}`;
+}
+
 /**
  * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
@@ -233,6 +247,8 @@ async function askForSubstitutionDataAsync(slug: string): Promise<SubstitutionDa
       version: '0.1.0',
       description,
       package: projectPackage,
+      moduleName: handleSuffix(name, 'Module'),
+      viewName: handleSuffix(name, 'View'),
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',

@@ -1,7 +1,6 @@
 {
   "name": "expo-docs",
-  "version": "46.0.0",
-  "betaVersion": "47.0.0",
+  "version": "47.0.0",
   "private": true,
   "type": "module",
   "scripts": {
@@ -30,7 +29,8 @@
     "@mdx-js/mdx": "^2.1.3",
     "@mdx-js/react": "^2.1.3",
     "@reach/tabs": "^0.17.0",
-    "@sentry/browser": "^5.6.1",
+    "@sentry/react": "^7.18.0",
+    "@sentry/tracing": "^7.18.0",
     "front-matter": "^4.0.2",
     "fs-extra": "^10.1.0",
     "github-slugger": "^1.3.0",

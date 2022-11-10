@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix incorrect asset type for videos on iOS. ([#19932](https://github.com/expo/expo/pull/19932) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 14.0.1 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fix incorrect asset type for videos on iOS. ([#19932](https://github.com/expo/expo/pull/19932) by [@tsapeta](https://github.com/tsapeta))
 
 ## 14.0.0 — 2022-10-25
 
