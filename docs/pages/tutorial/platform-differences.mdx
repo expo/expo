@@ -2,84 +2,106 @@
 title: Handling platform differences
 ---
 
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline, Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
-import { Terminal } from '~/ui/components/Snippet';
+import { LinkBase } from '~/ui/components/Text';
 
-In the perfect world we want to write code to perform our task just once and have it run the same on every platform. Even on the web, where this is an explicit design goal, it's often necessary to consider differences between web browsers.
+Android, iOS, and the web have different capabilities. In our case, Android and iOS both are able to capture a screenshot with the `react-native-view-shot` library, however web browsers cannot.
 
-Expo tools try to handle smoothing over these differences between iOS, Android, web (and different web browsers) for you, but it isn't always possible. There are two important differences between how the iOS and Android share APIs work and how the Web Share API works.
+In this chapter, let's learn how to make an exception for web browsers to get the same functionality on all platforms.
 
-1. It isn't always available on web.
-2. We can't share local file URIs on web.
+## Step 1: Install and import dom-to-image
 
-> It's actually technically possible in the latest versions of Chrome for Android to share files, but it's very new and not yet supported by `expo-sharing`, so we will ignore that here for now.
+To capture a screenshot on the web and save it as an image , we'll use a third-party library called <LinkBase href="https://github.com/tsayen/dom-to-image#readme" openInNewTab>dom-to-image</LinkBase>. It allows taking a screenshot of any DOM node and turning it into a vector (SVG) or raster (PNG or JPEG) image.
 
-## A workaround for sharing on web
+Stop the development server and run the following command to install the library:
 
-We are going to work around spotty support for the Web Share API and the lack of support for sharing files from our device by uploading the file to some web service and then letting the users copy the URL.
+<Terminal cmd={['$ npm install dom-to-image']} />
 
-To install a library to handle uploading the file for us run:
+After installing it, make sure to restart the development server and press <kbd>w</kbd> in the terminal.
 
-<Terminal cmd={['$ npx expo install anonymous-files']} />
+To use it, let's import it into **App.js**:
 
-Then make these changes to your app:
+```jsx App.js
+import domtoimage from 'dom-to-image';
+```
 
-<SnackInline label="Sharing web workaround" templateId="tutorial/sharing-web-workaround" dependencies={['expo-image-picker', 'expo-sharing', 'anonymous-files']} defaultPlatform="web">
+## Step 2: Add platform-specific code
+
+React Native provides a `Platform` module that gives us access to information about the platform on which the app is currently running. e can use it to implement platform-specific behavior.
+
+Import the `Platform` module in **App.js**:
 
 {/* prettier-ignore */}
-```js
-import React from 'react';
-import { Image, /* @info Import Platform, you can order imports however you like, here we did it alphabetically. */Platform,/* @end */ StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import * as ImagePicker from 'expo-image-picker';
-import * as Sharing from 'expo-sharing';
-/* @info Import our newly installed package, it exports a function called uploadToAnonymousFilesAsync */
-import uploadToAnonymousFilesAsync from 'anonymous-files'; /* @end */
+```jsx App.js
+import { StyleSheet, View, /* @info Import the Platform module from react-native. */ Platform /* @end */ } from 'react-native';
+```
 
+Inside the `onSaveImageAsync()` function in the `<App>` component, we'll use `Platform.OS` to check whether the platform is `'web'`. If it is not `'web'`, we'll run the logic added previously to take and save the screenshot. If it is `'web'`, we'll use the `domtoimage.toJpeg()` method to convert and capture the current `<View>` as a JPEG image.
 
-export default function App() {
-  const [selectedImage, setSelectedImage] = React.useState(null);
+<SnackInline
+label="Take a screenshot"
+templateId="tutorial/08-run-on-web/App"
+dependencies={['expo-image-picker', '@expo/vector-icons/FontAwesome', '@expo/vector-icons', 'expo-status-bar', '@expo/vector-icons/MaterialIcons', 'react-native-gesture-handler', 'react-native-reanimated', 'react-native-view-shot', 'expo-media-library', 'dom-to-image@2.6.0']}
+files={{
+  'assets/images/background-image.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/503001f14bb7b8fe48a4e318ad07e910',
+  'assets/images/emoji1.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/be9751678c0b3f9c6bf55f60de815d30',
+  'assets/images/emoji2.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/7c0d14b79e134d528c5e0801699d6ccf',
+  'assets/images/emoji3.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/d713e2de164764c2ab3db0ab4e40c577',
+  'assets/images/emoji4.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ac2163b98a973cb50bfb716cc4438f9a',
+  'assets/images/emoji5.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/9cc0e2ff664bae3af766b9750331c3ad',
+  'assets/images/emoji6.png': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/ce614cf0928157b3f7daa3cb8e7bd486',
+  'components/ImageViewer.js': 'tutorial/02-image-picker/ImageViewer.js',
+  'components/Button.js': 'tutorial/03-button-options/Button.js',
+  'components/CircleButton.js': 'tutorial/03-button-options/CircleButton.js',
+  'components/IconButton.js': 'tutorial/03-button-options/IconButton.js',
+  'components/EmojiPicker.js': 'tutorial/04-modal/EmojiPicker.js',
+  'components/EmojiList.js': 'tutorial/05-emoji-list/EmojiList.js',
+  'components/EmojiSticker.js': 'tutorial/06-gestures/CompleteEmojiSticker.js',
+}}>
 
-  let openImagePickerAsync = async () => {
-    let permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-    if (permissionResult.granted === false) {
-      alert('Permission to access camera roll is required!');
-      return;
+{/* prettier-ignore */}
+```jsx
+const onSaveImageAsync = async () => {
+  /* @info Add the if condition here to check whether the current platform is web or not. */ if (Platform.OS !== 'web') { /* @end */
+    try {
+      const localUri = await captureRef(imageRef, {
+        height: 440,
+        quality: 1,
+      });
+      await MediaLibrary.saveToLibraryAsync(localUri);
+      if (localUri) {
+        alert('Saved!');
+      }
+    } catch (e) {
+      console.log(e);
     }
-
-    let pickerResult = await ImagePicker.launchImageLibraryAsync();
-    if (pickerResult.cancelled === true) {
-      return;
-    }
-
-    /* @info When the platform OS (operating system) is web, upload the file and set the remoteUri */
-    if (Platform.OS === 'web') {
-      let remoteUri = await uploadToAnonymousFilesAsync(pickerResult.uri);
-      setSelectedImage({ localUri: pickerResult.uri, remoteUri });
-    } else {
-      setSelectedImage({ localUri: pickerResult.uri, remoteUri: null });
-    } /* @end */
-
-  };
-
-  let openShareDialogAsync = async () => {
-    if (!(await Sharing.isAvailableAsync())) {
-      /* @info Give the user a link to the website that the file is uploaded to */
-      alert(`The image is available for sharing at: ${selectedImage.remoteUri}`);/* @end */
-
-      return;
-    }
-
-    Sharing.shareAsync(/* @info Use the remoteUri if set, otherwise the localUri */selectedImage.remoteUri || selectedImage.localUri/* @end */);
-  };
-
-  /* the rest of the app is unchanged */
-}
+  } /* @info Add an else condition to run the logic when the current platform is the web. */else {
+    domtoimage
+      .toJpeg(imageRef.current, {
+          quality: 0.95,
+          width: 320,
+          height: 440,
+        })
+      .then(dataUrl => {
+        let link = document.createElement('a');
+        link.download = 'sticker-smash.jpeg';
+        link.href = dataUrl;
+        link.click();
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  } /* @end */
+};
 ```
 
 </SnackInline>
 
+On running the app in a web browser, we can now save a screenshot:
+
+<Video file="tutorial/web.mp4" />
+
 ## Up next
 
-Our app does everything we set out for it to do, so it's time to shift our focus towards the purely aesthetic. In the next step of this tutorial we will [customize our app icon and splash screen](../tutorial/configuration.mdx).
+The app does everything we set out for it to do, so it's time to shift our focus towards the purely aesthetic. In the next chapter, we will [customize the app's status bar, splash screen, and app icon](/tutorial/configuration.md).
