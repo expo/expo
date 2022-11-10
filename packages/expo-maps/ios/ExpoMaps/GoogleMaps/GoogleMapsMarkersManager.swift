@@ -5,12 +5,12 @@ import GoogleMapsUtils
 #endif
 
 class GoogleMapsMarkersManager {
-  private var markersMap: [GMSMarker: String?] = [:]
+  private var markersMap: [GMSMarker: String] = [:]
 #if HAS_GOOGLE_UTILS
-  private var clustersMap: [GMUClusterManager: String?] = [:]
+  private var clustersMap: [GMUClusterManager: String] = [:]
 #endif
 
-  private var clustersItemsMap: [GMSMarker: String?] = [:]
+  private var clustersItemsMap: [GMSMarker: String] = [:]
 
   func clearMarkers() {
     for marker in markersMap.keys {
@@ -20,6 +20,10 @@ class GoogleMapsMarkersManager {
   }
 
   func appendMarker(marker: GMSMarker, id: String?) {
+    guard let id = id else {
+      markersMap.removeValue(forKey: marker)
+      return
+    }
     markersMap[marker] = id
   }
 
@@ -42,10 +46,18 @@ class GoogleMapsMarkersManager {
   }
 
   func appendCluster(cluster: GMUClusterManager, id: String?) {
+    guard let id = id else {
+      clustersMap.removeValue(forKey: cluster)
+      return
+    }
     clustersMap[cluster] = id
   }
 
   func appendClusterItem(clusterItem: GMSMarker, id: String?) {
+    guard let id = id else {
+      clustersItemsMap.removeValue(forKey: clusterItem)
+      return
+    }
     clustersItemsMap[clusterItem] = id
   }
 

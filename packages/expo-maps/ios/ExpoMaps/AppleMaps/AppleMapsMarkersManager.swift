@@ -1,9 +1,12 @@
 class AppleMapsMarkersManager {
-  private var markersMap: [ExpoMKAnnotation: String?] = [:]
-  private var clustersItemsMap: [ExpoMKAnnotation: String?] = [:]
+  private var markersMap: [ExpoMKAnnotation: String] = [:]
+  private var clustersItemsMap: [ExpoMKAnnotation: String] = [:]
 
   func appendMarker(marker: ExpoMKAnnotation) {
-    markersMap[marker] = marker.id
+    guard let markerId = marker.id else {
+      return
+    }
+    markersMap[marker] = markerId
   }
 
   func clearMarkers() {
@@ -19,7 +22,10 @@ class AppleMapsMarkersManager {
   }
 
   func appendClustersItem(clusterItem: ExpoMKAnnotation) {
-    clustersItemsMap[clusterItem] = clusterItem.id
+    guard let clusterId = clusterItem.id else {
+      return
+    }
+    clustersItemsMap[clusterItem] = clusterId
   }
 
   func clearClustersItems() {
