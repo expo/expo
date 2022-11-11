@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { darkTheme, spacing } from '@expo/styleguide';
-import React from 'react';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
@@ -24,7 +23,7 @@ export const Terminal = ({
   includeMargin = true,
   title = 'Terminal',
 }: TerminalProps) => (
-  <Snippet style={wrapperStyle} includeMargin={includeMargin}>
+  <Snippet css={wrapperStyle} includeMargin={includeMargin}>
     <SnippetHeader alwaysDark title={title}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
@@ -109,6 +108,7 @@ const unselectableStyle = css`
 `;
 
 const codeStyle = css`
+  white-space: pre;
   display: inline-block;
   line-height: 140%;
   background-color: transparent;

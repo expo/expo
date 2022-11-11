@@ -50,6 +50,10 @@ const NSInteger EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError = 1048
 
 @end
 
+/**
+ * Utility class that holds all the logic for downloading data and files, such as update manifests
+ * and assets, using NSURLSession.
+ */
 @implementation EXUpdatesFileDownloader
 
 - (instancetype)initWithUpdatesConfig:(EXUpdatesConfig *)updatesConfig
@@ -484,7 +488,7 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
     if (error) {
       NSString *message = [EXUpdatesCodeSigningErrorUtils messageForError:error.code];
       NSString *errorMessage = [NSString stringWithFormat:@"Downloaded manifest signature is invalid: %@", message];
-      [self->_logger error:errorMessage code:EXUpdatesErrorCodeUpdateHasInvalidSignature];
+      [self->_logger error:errorMessage code:EXUpdatesErrorCodeUpdateCodeSigningError];
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
                                  userInfo:@{NSLocalizedDescriptionKey: errorMessage}] );
@@ -493,7 +497,7 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
 
     if (signatureValidationResult.validationResult == EXUpdatesValidationResultInvalid) {
       NSString *errorMessage = @"Manifest download was successful, but signature was incorrect";
-      [self->_logger error:errorMessage code:EXUpdatesErrorCodeUpdateHasInvalidSignature];
+      [self->_logger error:errorMessage code:EXUpdatesErrorCodeUpdateCodeSigningError];
       errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                      code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
                                  userInfo:@{NSLocalizedDescriptionKey: errorMessage }]);
@@ -522,7 +526,7 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
                                   userInfo:@{NSLocalizedDescriptionKey: [@"Failed to parse manifest: " stringByAppendingString:exception.reason] }];
         }
         if (error) {
-          [self->_logger error:error.userInfo[NSLocalizedDescriptionKey] code:EXUpdatesErrorCodeUpdateHasInvalidSignature];
+          [self->_logger error:error.userInfo[NSLocalizedDescriptionKey] code:EXUpdatesErrorCodeUpdateCodeSigningError];
           errorBlock(error);
           return;
         }
@@ -530,13 +534,16 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
         EXManifestsManifest *manifestForProjectInformation = update.manifest;
         if (![expoProjectInformation.projectId isEqualToString:manifestForProjectInformation.easProjectId] ||
             ![expoProjectInformation.scopeKey isEqualToString:manifestForProjectInformation.scopeKey]) {
+          NSString *errorMessage = @"Invalid certificate for manifest project ID or scope key";
+          [self->_logger error:errorMessage code:EXUpdatesErrorCodeUpdateCodeSigningError];
           errorBlock([NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                          code:EXUpdatesFileDownloaderErrorCodeCodeSigningSignatureError
-                                     userInfo:@{NSLocalizedDescriptionKey: @"Invalid certificate for manifest project ID or scope key"}]);
+                                     userInfo:@{NSLocalizedDescriptionKey: errorMessage}]);
           return;
         }
       }
 
+      [self->_logger info:@"Update code signature verified successfully"];
       mutableManifest[@"isVerified"] = @YES;
     }
   }
@@ -563,7 +570,7 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
   }
 
   if (error) {
-    [self->_logger error:error.userInfo[NSLocalizedDescriptionKey] code:EXUpdatesErrorCodeUpdateHasInvalidSignature];
+    [self->_logger error:error.userInfo[NSLocalizedDescriptionKey] code:EXUpdatesErrorCodeUpdateFailedToLoad];
     errorBlock(error);
     return;
   }
@@ -572,7 +579,7 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
     NSError *error = [NSError errorWithDomain:EXUpdatesFileDownloaderErrorDomain
                                          code:EXUpdatesFileDownloaderErrorCodeMismatchedManifestFiltersError
                                      userInfo:@{NSLocalizedDescriptionKey: @"Downloaded manifest is invalid; provides filters that do not match its content"}];
-    [self->_logger error:error.userInfo[NSLocalizedDescriptionKey] code:EXUpdatesErrorCodeUpdateHasInvalidSignature];
+    [self->_logger error:error.userInfo[NSLocalizedDescriptionKey] code:EXUpdatesErrorCodeUpdateFailedToLoad];
     errorBlock(error);
   } else {
     successBlock(update);

@@ -14,7 +14,7 @@ const tableRowStyle = css({
   '&:nth-of-type(2n)': {
     backgroundColor: theme.background.secondary,
 
-    'blockquote, summary': {
+    summary: {
       backgroundColor: theme.background.tertiary,
     },
   },

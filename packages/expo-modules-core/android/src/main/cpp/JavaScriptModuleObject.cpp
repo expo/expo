@@ -72,6 +72,7 @@ void JavaScriptModuleObject::registerSyncFunction(
 
   methodsMetadata.try_emplace(
     cName,
+    longLivedObjectCollection_,
     cName,
     args,
     false,
@@ -90,6 +91,7 @@ void JavaScriptModuleObject::registerAsyncFunction(
 
   methodsMetadata.try_emplace(
     cName,
+    longLivedObjectCollection_,
     cName,
     args,
     true,
@@ -107,6 +109,7 @@ void JavaScriptModuleObject::registerProperty(
   auto cName = name->toStdString();
 
   auto getterMetadata = MethodMetadata(
+    longLivedObjectCollection_,
     cName,
     0,
     false,
@@ -117,6 +120,7 @@ void JavaScriptModuleObject::registerProperty(
   auto types = std::vector<std::unique_ptr<AnyType>>();
   types.push_back(std::make_unique<AnyType>(jni::make_local(expectedArgType)));
   auto setterMetadata = MethodMetadata(
+    longLivedObjectCollection_,
     cName,
     1,
     false,
@@ -134,6 +138,19 @@ void JavaScriptModuleObject::registerProperty(
 
 JavaScriptModuleObject::HostObject::HostObject(
   JavaScriptModuleObject *jsModule) : jsModule(jsModule) {}
+
+/**
+ * Clears all the JSI references held by the `JavaScriptModuleObject`.
+ */
+JavaScriptModuleObject::HostObject::~HostObject() {
+  if (jsModule->jsiObject != nullptr) {
+    jsModule->jsiObject.reset();
+  }
+  jsModule->methodsMetadata.clear();
+  jsModule->constants.clear();
+  jsModule->properties.clear();
+  jsModule->longLivedObjectCollection_->clear();
+}
 
 jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
                                                    const jsi::PropNameID &name) {
@@ -214,4 +231,10 @@ std::vector<jsi::PropNameID> JavaScriptModuleObject::HostObject::getPropertyName
 
   return result;
 }
+
+JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
+  : javaPart_(jni::make_global(jThis)) {
+  longLivedObjectCollection_ = std::make_shared<react::LongLivedObjectCollection>();
+}
+
 } // namespace expo

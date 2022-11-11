@@ -6,13 +6,33 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.0.0 — 2022-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.12.0 — 2022-10-25
+
+### 🎉 New features
+
+- Automatically use modular headers for pod dependencies when the package has Swift modules to link. ([#19443](https://github.com/expo/expo/pull/19443) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Bump `@tsconfig/node` to match other Expo Modules packages development setup. ([#19671](https://github.com/expo/expo/pull/19671) by [@Simek](https://github.com/Simek))
+
+## 0.11.0 — 2022-10-06
+
+### 🎉 New features
+
 - Added `includeTests` option to `use_expo_modules!` to include test specs from autolinked modules. ([#18496](https://github.com/expo/expo/pull/18496) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Fixed node executable resolution errors on iOS when `pod install` is executed from package.json `scripts`. ([#18580](https://github.com/expo/expo/pull/18580) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 0.10.1 — 2022-07-25
 

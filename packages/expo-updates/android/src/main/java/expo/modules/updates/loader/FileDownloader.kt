@@ -29,8 +29,12 @@ import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.*
 import java.security.cert.CertificateException
 
-open class FileDownloader(context: Context) {
-  private val client = OkHttpClient.Builder().cache(getCache(context)).build()
+/**
+ * Utility class that holds all the logic for downloading data and files, such as update manifests
+ * and assets, using an instance of [OkHttpClient].
+ */
+open class FileDownloader(context: Context, private val client: OkHttpClient) {
+  constructor(context: Context) : this(context, OkHttpClient.Builder().cache(getCache(context)).build())
   private val logger = UpdatesLogger(context)
 
   interface FileDownloadCallback {
@@ -251,7 +255,7 @@ open class FileDownloader(context: Context) {
             override fun onCompleted(isValid: Boolean) {
               if (isValid) {
                 try {
-                  checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, true, configuration, callback)
+                  checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, true, configuration, logger, callback)
                 } catch (e: Exception) {
                   callback.onFailure("Failed to parse manifest data", e)
                 }
@@ -267,7 +271,7 @@ open class FileDownloader(context: Context) {
           }
         )
       } else {
-        checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, false, configuration, callback)
+        checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, false, configuration, logger, callback)
       }
     } catch (e: Exception) {
       val message = "Failed to parse manifest data: ${e.localizedMessage}"
@@ -406,6 +410,7 @@ open class FileDownloader(context: Context) {
       certificateChainFromManifestResponse: String?,
       isVerified: Boolean,
       configuration: UpdatesConfiguration,
+      logger: UpdatesLogger,
       callback: ManifestDownloadCallback
     ) {
       if (configuration.expectsSignedManifest) {
@@ -444,10 +449,12 @@ open class FileDownloader(context: Context) {
               }
             }
 
+            logger.info("Update code signature verified successfully")
             preManifest.put("isVerified", true)
           }
         }
       } catch (e: Exception) {
+        logger.error(e.message!!, UpdatesErrorCode.UpdateCodeSigningError)
         callback.onFailure(e.message!!, e)
         return
       }

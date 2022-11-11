@@ -2,6 +2,7 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import expo.modules.kotlin.exception.NullArgumentException
+import expo.modules.kotlin.exception.UnsupportedClass
 import expo.modules.kotlin.jni.ExpectedType
 
 /**
@@ -17,7 +18,7 @@ abstract class TypeConverter<Type : Any>(
   /**
    * Tries to convert from [Any]? (can be also [Dynamic]) to the desired type.
    */
-  fun convert(value: Any?): Type? {
+  open fun convert(value: Any?): Type? {
     if (value == null || value is Dynamic && value.isNull) {
       if (isOptional) {
         return null
@@ -40,6 +41,13 @@ abstract class TypeConverter<Type : Any>(
    * This value tells us which one we should choose.
    */
   abstract fun getCppRequiredTypes(): ExpectedType
+
+  /**
+   * Checks if the current converter is a trivial one.
+   * In that context, a trivial converter indicates a converter that in JSI implementation does nothing.
+   * It should be true for most classes.
+   */
+  open fun isTrivial(): Boolean = true
 }
 
 /**
@@ -57,4 +65,17 @@ abstract class DynamicAwareTypeConverters<T : Any>(isOptional: Boolean) : TypeCo
 
   abstract fun convertFromDynamic(value: Dynamic): T
   abstract fun convertFromAny(value: Any): T
+}
+
+inline fun <reified T : Any> createTrivialTypeConverter(
+  isOptional: Boolean,
+  cppRequireType: ExpectedType,
+  crossinline dynamicFallback: (Dynamic) -> T = { throw UnsupportedClass(T::class) }
+): TypeConverter<T> {
+  return object : DynamicAwareTypeConverters<T>(isOptional) {
+    override fun convertFromDynamic(value: Dynamic): T = dynamicFallback(value)
+    override fun getCppRequiredTypes(): ExpectedType = cppRequireType
+    @Suppress("UNCHECKED_CAST")
+    override fun convertFromAny(value: Any): T = value as T
+  }
 }

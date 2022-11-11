@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 3.4.1)
 project(expo-modules-core)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
-set(CMAKE_ANDROID_STL_TYPE c++_shared)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
@@ -18,6 +17,7 @@ set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
 set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
 file(GLOB sources_android_types "${SRC_DIR}/main/cpp/types/*.cpp")
+file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/javaclasses/*.cpp")
 file(GLOB common_sources "${COMMON_DIR}/*.cpp")
 
 # shared
@@ -38,6 +38,7 @@ add_library(
         ${common_sources}
         ${sources_android}
         ${sources_android_types}
+        ${sources_android_javaclasses}
 )
 
 if(IS_NEW_ARCHITECTURE_ENABLED)
@@ -84,7 +85,7 @@ if(${UNIT_TEST})
         PATHS ${HERMES_SO_DIR}
         NO_CMAKE_FIND_ROOT_PATH
     )
-    set(JSEXECUTOR_INCLUDE "${HERMES_HEADER_DIR}")
+    set(JSEXECUTOR_INCLUDE ${HERMES_HEADER_DIR} ${HERMES_HEADER_DIR}/API ${HERMES_HEADER_DIR}/public)
   else()
     find_library(
         JSEXECUTOR_LIB
@@ -109,6 +110,7 @@ target_include_directories(
         "${REACT_NATIVE_DIR}/React/Base"
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react"
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
         "${REACT_NATIVE_DIR}/ReactCommon"
         "${REACT_NATIVE_DIR}/ReactCommon/react/nativemodule/core"

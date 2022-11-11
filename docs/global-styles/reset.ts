@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
 
 export const globalReset = css`
   html,
@@ -103,27 +102,5 @@ export const globalReset = css`
   nav,
   section {
     display: block;
-  }
-
-  img {
-    max-width: 768px;
-    width: 100%;
-  }
-
-  a {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    color: ${theme.link.default};
-  }
-
-  body {
-    ${typography.body.paragraph}
-    font-family: ${typography.fontFaces.regular};
-    text-rendering: optimizeLegibility;
-    line-height: 1;
-  }
-
-  ::selection {
-    background-color: ${theme.highlight.accent};
-    color: ${theme.text.default};
   }
 `;

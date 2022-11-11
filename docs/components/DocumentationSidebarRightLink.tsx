@@ -158,7 +158,7 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
           {tags && tags.length ? (
             <div css={STYLES_TAG_CONTAINER}>
               {tags.map(tag => (
-                <Tag name={tag} type="toc" />
+                <Tag name={tag} type="toc" key={`${displayTitle}-${tag}`} />
               ))}
             </div>
           ) : undefined}

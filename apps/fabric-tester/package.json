@@ -1,0 +1,27 @@
+{
+  "name": "fabric-tester",
+  "version": "1.0.0",
+  "scripts": {
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "expo": "~47.0.0-alpha.1",
+    "expo-av": "~13.0.0-beta.1",
+    "expo-blur": "~12.0.0",
+    "expo-camera": "~13.0.0-beta.1",
+    "expo-linear-gradient": "~12.0.0-beta.1",
+    "expo-splash-screen": "~0.17.0",
+    "react": "18.1.0",
+    "react-dom": "18.0.0",
+    "react-native": "0.70.5",
+    "react-native-web": "~0.18.9"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.18.6"
+  },
+  "private": true
+}

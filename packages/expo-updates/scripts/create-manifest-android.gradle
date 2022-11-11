@@ -95,10 +95,8 @@ def setupClosure = {
       enabled(currentBundleTask.enabled)
     }
 
-    Task dependentTask = appProject.tasks.findByPath("process${targetName}Resources");
-    if (dependentTask != null) {
-      dependentTask.dependsOn currentAssetsCopyTask
-    }
+    appProject.tasks.findByName("merge${targetName}Resources")?.dependsOn(currentAssetsCopyTask)
+    appProject.tasks.findByName("compress${targetName}Assets")?.dependsOn(currentAssetsCopyTask)
   }
 }
 

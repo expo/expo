@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, spacing } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
@@ -29,24 +29,8 @@ export const APISectionDeprecationNote = ({ comment }: Props) => {
 };
 
 const deprecationNoticeStyle = css({
-  marginTop: spacing[4],
-
-  code: {
-    backgroundColor: theme.palette.yellow['000'],
-    borderColor: theme.palette.yellow[300],
-  },
-
-  '[data-expo-theme="dark"] & code': {
-    backgroundColor: theme.palette.yellow[100],
-    borderColor: theme.palette.yellow[200],
-  },
-
   'table &': {
     marginTop: 0,
     marginBottom: spacing[3],
-
-    span: {
-      fontSize: '90%',
-    },
   },
 });

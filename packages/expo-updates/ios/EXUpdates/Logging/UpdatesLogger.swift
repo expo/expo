@@ -12,7 +12,7 @@ import ExpoModulesCore
 public class UpdatesLogger: NSObject {
   public static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
 
-  private let logger = ExpoModulesCore.Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, options: [.logToOS, .logToFile])
+  private let logger = Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, options: [.logToOS, .logToFile])
 
   // MARK: - Public logging functions
 
@@ -153,7 +153,7 @@ public class UpdatesLogger: NSObject {
   public func logEntryString(
     message: String,
     code: UpdatesErrorCode = .none,
-    level: ExpoModulesCore.LogType = .trace,
+    level: LogType = .trace,
     updateId: String?,
     assetId: String?
   ) -> String {

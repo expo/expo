@@ -1,0 +1,243 @@
+import groovy.json.JsonSlurper
+import java.nio.file.Paths
+
+buildscript {
+    def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
+
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+        mavenCentral()
+        google()
+    }
+
+    dependencies {
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath("com.android.tools.build:gradle:7.2.1")
+        classpath("com.diffplug.spotless:spotless-plugin-gradle:6.7.2")
+    }
+}
+
+def isNewArchitectureEnabled() {
+    // To opt-in for the New Architecture, you can either:
+    // - Set `newArchEnabled` to true inside the `gradle.properties` file
+    // - Invoke gradle with `-newArchEnabled=true`
+    // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
+    return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
+static def findNodeModulePath(baseDir, packageName) {
+    def basePath = baseDir.toPath().normalize()
+    // Node's module resolution algorithm searches up to the root directory,
+    // after which the base path will be null
+    while (basePath) {
+        def candidatePath = Paths.get(basePath.toString(), "node_modules", packageName)
+        if (candidatePath.toFile().exists()) {
+            return candidatePath.toString()
+        }
+        basePath = basePath.getParent()
+    }
+    return null
+}
+
+def findNodeModulePath(packageName) {
+    // Don't start in the project dir, as its path ends with node_modules/react-native-gesture-handler/android
+    // we want to go two levels up, so we end up in the first_node modules and eventually
+    // search upwards if the package is not found there
+    return findNodeModulePath(projectDir.toPath().parent.parent.toFile(), packageName)
+}
+
+if (isNewArchitectureEnabled()) {
+    apply plugin: 'com.facebook.react'
+}
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+
+if (project == rootProject) {
+    apply from: "spotless.gradle"
+}
+
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+// Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
+def shouldUseCommonInterfaceFromReanimated() {
+    return true
+
+    def reanimated = rootProject.subprojects.find { it.name == 'vendored_sdk47_react-native-reanimated' }
+    if (reanimated != null) {
+        def inputFile = new File(reanimated.projectDir, '../package.json')
+        def json = new JsonSlurper().parseText(inputFile.text)
+        def reanimatedVersion = json.version as String
+        def (major, minor, patch) = reanimatedVersion.tokenize('.')
+        return (Integer.parseInt(major) == 2 && Integer.parseInt(minor) >= 3) || Integer.parseInt(major) == 3
+    } else {
+        return false
+    }
+}
+
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
+def shouldAssertNoMultipleInstances() {
+  if (rootProject.hasProperty("disableMultipleInstancesCheck")) {
+    return rootProject.property("disableMultipleInstancesCheck") != "true"
+  } else {
+    return true
+  }
+}
+
+def noMultipleInstancesAssertion() {
+    Set<File> files = fileTree(rootDir.parent) {
+        include "node_modules/**/react-native-gesture-handler/package.json"
+        exclude "**/.yarn/**"
+    }.files
+
+    if (files.size() > 1) {
+        String parsedLocation = files.stream().map({ File file -> "- " + file.toString().replace("/package.json", "") }).collect().join("\n")
+        String exceptionMessage = "\n[Gesture Handler] Multiple instances of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-instances-of-gesture-handler-were-detected \n\nConflict between: \n" + parsedLocation + "\n";
+        throw new Exception(exceptionMessage);
+    }
+}
+
+def REACT_NATIVE_DIR = findNodeModulePath("react-native")
+
+def assertionTask = task assertNoMultipleInstances {
+    onlyIf { shouldAssertNoMultipleInstances() }
+    doFirst {
+        noMultipleInstancesAssertion()
+    }
+}
+
+tasks.preBuild {
+    dependsOn assertionTask
+}
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion safeExtGet("compileSdkVersion", 28)
+
+    // Used to override the NDK path/version on internal CI or by allowing
+    // users to customize the NDK path/version from their root project (e.g. for M1 support)
+    if (rootProject.hasProperty("ndkPath")) {
+        ndkPath rootProject.ext.ndkPath
+    }
+    if (rootProject.hasProperty("ndkVersion")) {
+        ndkVersion rootProject.ext.ndkVersion
+    }
+
+    defaultConfig {
+        minSdkVersion safeExtGet('minSdkVersion', 16)
+        targetSdkVersion safeExtGet('targetSdkVersion', 28)
+        versionCode 1
+        versionName "1.0"
+        buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        if (isNewArchitectureEnabled()) {
+            var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
+            externalNativeBuild {
+                cmake {
+                    cppFlags "-O2 -frtti -fexceptions -Wall -Wno-unused-variable -fstack-protector-all"
+                    arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
+                        "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+                        "-DANDROID_STL=c++_shared"
+                    abiFilters (*reactNativeArchitectures())
+                }
+            }
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    if (isNewArchitectureEnabled()) {
+        externalNativeBuild {
+            cmake {
+                path "src/main/jni/CMakeLists.txt"
+            }
+        }
+    }
+
+    packagingOptions {
+        // For some reason gradle only complains about the duplicated version of libreact_render libraries
+        // while there are more libraries copied in intermediates folder of the lib build directory, we exclude
+        // only the ones that make the build fail (ideally we should only include libgesturehandler but we
+        // are only allowed to specify exclude patterns)
+        exclude "**/libreact_render*.so"
+    }
+
+    sourceSets.main {
+        java {
+            // Include "common/" only when it's not provided by Reanimated to mitigate
+            // multiple definitions of the same class preventing build
+            if (shouldUseCommonInterfaceFromReanimated()) {
+                srcDirs += 'reanimated/src/main/java'
+            } else {
+                srcDirs += 'common/src/main/java'
+                srcDirs += 'noreanimated/src/main/java'
+            }
+
+            if (isNewArchitectureEnabled()) {
+                srcDirs += 'src/fabric/java'
+            } else {
+                // this folder also includes files from codegen so the library can compile with
+                // codegen turned off
+                srcDirs += 'src/paper/java'
+            }
+        }
+    }
+}
+
+def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlinVersion'])
+
+dependencies {
+    //noinspection GradleDynamicVersion
+    if (isNewArchitectureEnabled()) {
+        implementation project(':ReactAndroid')
+    } else {
+        implementation 'host.exp:reactandroid-abi47_0_0:1.0.0'
+    compileOnly 'com.facebook.fbjni:fbjni:+'
+    compileOnly 'com.facebook.yoga:proguard-annotations:+'
+    compileOnly 'com.facebook.soloader:soloader:+'
+    compileOnly 'androidx.annotation:annotation:+'
+    compileOnly 'com.google.code.findbugs:jsr305:+'
+    compileOnly 'androidx.appcompat:appcompat:+'
+
+    }
+
+    if (shouldUseCommonInterfaceFromReanimated()) {
+        // Include Reanimated as dependency to load the common interface
+        implementation (rootProject.subprojects.find { it.name == 'vendored_sdk47_react-native-reanimated' }) {
+            exclude group:'com.facebook.fbjni' // resolves "Duplicate class com.facebook.jni.CppException"
+        }
+    }
+
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation "androidx.core:core-ktx:1.6.0"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+if (isNewArchitectureEnabled()) {
+    // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
+    tasks.whenTaskAdded { task ->
+        if (task.name.contains("configureCMakeDebug")) {
+            rootProject.getTasksByName("packageReactNdkDebugLibs", true).forEach {
+                task.dependsOn(it)
+            }
+        }
+        // We want to add a dependency for both configureCMakeRelease and configureCMakeRelWithDebInfo
+        if (task.name.contains("configureCMakeRel")) {
+            rootProject.getTasksByName("packageReactNdkReleaseLibs", true).forEach {
+                task.dependsOn(it)
+            }
+        }
+    }
+}

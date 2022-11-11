@@ -4,12 +4,12 @@ buildscript {
   ext {
     minSdkVersion = 21
     targetSdkVersion = 31
-    compileSdkVersion = 31
+    compileSdkVersion = 33
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '31.0.0'
     kotlinVersion = '1.6.10'
-    gradlePluginVersion = '7.1.1'
+    gradlePluginVersion = '7.2.1'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
@@ -52,6 +52,9 @@ allprojects {
     }
     // For old expoviews to work
     maven {
+      url "$rootDir/versioned-abis/expoview-abi47_0_0/maven"
+    }
+    maven {
       url "$rootDir/versioned-abis/expoview-abi46_0_0/maven"
     }
     maven {
@@ -81,9 +84,7 @@ allprojects {
       dirs 'libs'
       // dirs project(':expoview').file('libs')
     }
-    // Using www.jitpack.io instead of plain jitpack.io due to
-    // https://github.com/jitpack/jitpack.io/issues/4002
-    maven { url "https://www.jitpack.io" }
+    maven { url "https://jitpack.io" }
 
     // Want this last so that we never end up with a stale cache
     mavenLocal()

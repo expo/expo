@@ -1,10 +1,9 @@
 import { css } from '@emotion/react';
-import { theme, spacing } from '@expo/styleguide';
+import { theme, spacing, breakpoints } from '@expo/styleguide';
 import React from 'react';
 
 import { SidebarGroup, SidebarSection, VersionSelector } from './index';
 
-import * as Constants from '~/constants/theme';
 import { NavigationType, NavigationRoute } from '~/types/common';
 
 const STYLES_SIDEBAR = css`
@@ -13,7 +12,7 @@ const STYLES_SIDEBAR = css`
   position: relative;
   background-color: ${theme.background.default};
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     width: 100%;
   }
 `;
@@ -28,7 +27,7 @@ const STYLES_SIDEBAR_FADE = css`
   z-index: 10;
   pointer-events: none;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     display: none;
   }
 `;

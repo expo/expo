@@ -10,14 +10,20 @@ rescue
   reactVersion = '0.66.0'
 end
 
-rnVersion = reactVersion.split('.')[1]
+if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+  reactVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+end
+
+splitedReactVersion = reactVersion.split('.')
+rnVersion = splitedReactVersion[1]
+rnPatchVersion = splitedReactVersion[2]
 
 folly_prefix = ""
 if rnVersion.to_i >= 64
   folly_prefix = "RCT-"
 end
 
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=' + rnVersion
+folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=' + rnVersion + ' -DRNPATCHVERSION=' + rnPatchVersion
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2021.04.26.00'
 boost_compiler_flags = '-Wno-documentation'
@@ -36,7 +42,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '12.0'
+  s.platform       = :ios, '13.0'
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -158,7 +164,7 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
-    test_spec.platform = :ios, '12.0'
+    test_spec.platform = :ios, '13.0'
   end
 
   s.test_spec 'UITests' do |test_spec|
@@ -166,7 +172,7 @@ Pod::Spec.new do |s|
     test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'React'
-    test_spec.platform = :ios, '12.0'
+    test_spec.platform = :ios, '13.0'
   end
 
   s.default_subspec = 'Main'

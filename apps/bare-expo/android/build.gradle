@@ -1,12 +1,11 @@
 import groovy.json.JsonSlurper
-import org.apache.tools.ant.taskdefs.condition.Os
 
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     ext {
         buildToolsVersion = "31.0.0"
-        gradlePluginVersion = '7.1.1'
+        gradlePluginVersion = '7.2.1'
         minSdkVersion = 21
         compileSdkVersion = 31
         targetSdkVersion = 31
@@ -62,7 +61,16 @@ ext {
 allprojects {
     // [Custom]
     configurations.all {
-        resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
+        if (findProperty("buildReactNativeFromSource") == "true") {
+            resolutionStrategy {
+                dependencySubstitution {
+                    substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+                    substitute module("com.facebook.react:react-native:${reactNativeVersion}") with project(":ReactAndroid")
+                }
+            }
+        } else {
+            resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"
+        }
     }
 
     repositories {
@@ -87,6 +95,12 @@ allprojects {
             // older versions over there.
             content {
                 excludeGroup "com.facebook.react"
+            }
+        }
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            content {
+                includeGroup "com.facebook.react"
             }
         }
         maven { url 'https://jitpack.io' }

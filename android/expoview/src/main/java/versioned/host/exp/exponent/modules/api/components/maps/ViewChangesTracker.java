@@ -8,10 +8,10 @@ import java.util.LinkedList;
 public class ViewChangesTracker {
 
   private static ViewChangesTracker instance;
-  private Handler handler;
-  private LinkedList<AirMapMarker> markers = new LinkedList<>();
+  private final Handler handler;
+  private final LinkedList<AirMapMarker> markers = new LinkedList<>();
   private boolean hasScheduledFrame = false;
-  private Runnable updateRunnable;
+  private final Runnable updateRunnable;
   private final long fps = 40;
 
   private ViewChangesTracker() {
@@ -56,7 +56,7 @@ public class ViewChangesTracker {
     return markers.contains(marker);
   }
 
-  private LinkedList<AirMapMarker> markersToRemove = new LinkedList<>();
+  private final LinkedList<AirMapMarker> markersToRemove = new LinkedList<>();
 
   public void update() {
     for (AirMapMarker marker : markers) {

@@ -64,7 +64,7 @@ const Stack = createStackNavigator();
 const SwitchStack = createStackNavigator();
 
 const ExampleApp = () => (
-  <SwitchStack.Navigator initialRouteName="Main" headerMode="none">
+  <SwitchStack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
     <SwitchStack.Screen name="Main">
       {() => (
         <Stack.Navigator>

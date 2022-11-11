@@ -24,7 +24,7 @@ export function App({
   registeredCallbacks,
 }: DevMenuInitialProps) {
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ flex: 1, direction: 'ltr' }}>
       <AppProviders appInfo={appInfo} devSettings={devSettings} menuPreferences={menuPreferences}>
         <LoadInitialData loader={<Splash />}>
           <Main registeredCallbacks={registeredCallbacks} />

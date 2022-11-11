@@ -32,10 +32,15 @@ public:
   /**
    * Obtains a converter for an expected type.
    */
-  std::shared_ptr<FrontendConverter> obtainConverter(jni::local_ref<ExpectedType> expectedType);
-
+  std::shared_ptr<FrontendConverter> obtainConverter(
+    jni::local_ref<jni::JavaClass<ExpectedType>::javaobject> expectedType
+  );
 private:
   FrontendConverterProvider() = default;
+
+  std::shared_ptr<FrontendConverter> obtainConverterForSingleType(
+    jni::local_ref<jni::JavaClass<SingleType>::javaobject> expectedType
+  );
 
   std::unordered_map<CppType, std::shared_ptr<FrontendConverter>> simpleConverters;
 };

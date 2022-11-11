@@ -14,16 +14,12 @@ on:
       - tools/**
       - packages/**
       - yarn.lock
-      # Ignore Expo CLI for now...
-      - '!packages/@expo/cli/**'
   pull_request:
     paths:
       - .github/workflows/sdk.yml
       - tools/**
       - packages/**
       - yarn.lock
-      # Ignore Expo CLI for now...
-      - '!packages/@expo/cli/**'
   schedule:
     - cron: 0 14 * * *
 

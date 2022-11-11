@@ -29,6 +29,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.experimental.and
 
+/**
+ * Miscellaneous helper functions that are used by multiple classes in the library.
+ */
 object UpdatesUtils {
   private val TAG = UpdatesUtils::class.java.simpleName
 

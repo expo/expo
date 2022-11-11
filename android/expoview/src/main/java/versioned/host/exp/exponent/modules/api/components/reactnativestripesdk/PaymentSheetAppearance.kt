@@ -2,6 +2,7 @@ package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 
 import android.graphics.Color
 import android.os.Bundle
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.PaymentSheetAppearanceException
 import com.stripe.android.paymentsheet.PaymentSheet
 
 fun PaymentSheetFragment.buildPaymentSheetAppearance(userParams: Bundle?): PaymentSheet.Appearance {

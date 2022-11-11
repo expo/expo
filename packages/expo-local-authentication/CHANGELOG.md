@@ -10,6 +10,23 @@
 
 ### 💡 Others
 
+## 13.0.2 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
 - Updated docs link. ([#18972](https://github.com/expo/expo/pull/18972) by [@EvanBacon](https://github.com/EvanBacon))
 - Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
 
@@ -153,3 +170,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Added estimate of supported authentication types for Android. ([#8431](https://github.com/expo/expo/pull/8431) by [@bycedric](https://github.com/bycedric))
+
+### 💡 Others
+
+- Removed `console.warn` from the `authenticateAsync` function, preventing running it every time the user cancels authentication or authentication fails. ([#19803](https://github.com/expo/expo/pull/19803) by [@GustavoMont](https://github.com/GustavoMont))

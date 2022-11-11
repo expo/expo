@@ -1,32 +1,29 @@
-import { ChildProcess } from 'child_process';
 import fetch from 'node-fetch';
-import open from 'open';
 
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
   queryInspectorAppAsync,
 } from '../JsInspector';
+import { launchBrowserAsync } from '../LaunchBrowser';
 import { METRO_INSPECTOR_RESPONSE_FIXTURE } from '../__tests__/fixtures/metroInspectorResponse';
 
 jest.mock('fs-extra');
 jest.mock('node-fetch');
-jest.mock('open');
 jest.mock('rimraf');
-jest.mock('temp-dir', () => '/tmp');
+
+jest.mock('../LaunchBrowser');
 
 const { Response } = jest.requireActual('node-fetch');
 
 describe(openJsInspector, () => {
   it('should open browser for PUT request with given app', async () => {
-    const mockOpen = open.openApp as jest.MockedFunction<typeof open.openApp>;
-    mockOpen.mockImplementation((): Promise<ChildProcess> => {
-      const result: Partial<ChildProcess> = { exitCode: 0 };
-      return Promise.resolve(result as ChildProcess);
-    });
-
+    const mockLaunchBrowserAsync = launchBrowserAsync as jest.MockedFunction<
+      typeof launchBrowserAsync
+    >;
     const app = METRO_INSPECTOR_RESPONSE_FIXTURE[0];
-    openJsInspector(app);
+    await openJsInspector(app);
+    expect(mockLaunchBrowserAsync).toHaveBeenCalled();
   });
 });
 

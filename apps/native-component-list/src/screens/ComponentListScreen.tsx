@@ -16,7 +16,7 @@ import {
 } from 'react-native';
 import { useSafeArea } from 'react-native-safe-area-context';
 
-interface ListElement {
+export interface ListElement {
   name: string;
   route?: string;
   isAvailable?: boolean;
@@ -25,6 +25,7 @@ interface ListElement {
 interface Props {
   apis: ListElement[];
   renderItemRight?: (props: ListElement) => React.ReactNode;
+  sort?: boolean;
 }
 
 function LinkButton({
@@ -99,6 +100,9 @@ export default function ComponentListScreen(props: Props) {
   const keyExtractor = React.useCallback((item: ListElement) => item.name, []);
 
   const sortedApis = React.useMemo(() => {
+    if (props.sort === false) {
+      return props.apis;
+    }
     return props.apis.sort((a, b) => {
       if (a.isAvailable !== b.isAvailable) {
         if (a.isAvailable) {

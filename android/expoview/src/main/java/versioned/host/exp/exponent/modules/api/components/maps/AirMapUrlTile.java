@@ -87,7 +87,7 @@ public class AirMapUrlTile extends AirMapFeature {
   public void setFlipY(boolean flipY) {
     this.flipY = flipY;
     if (tileProvider != null) {
-      tileProvider.setFlipY((boolean)flipY);
+      tileProvider.setFlipY(flipY);
     }
     if (tileOverlay != null) {
       tileOverlay.clearTileCache();
@@ -97,7 +97,7 @@ public class AirMapUrlTile extends AirMapFeature {
   public void setDoubleTileSize(boolean doubleTileSize) {
     this.doubleTileSize = doubleTileSize;
     if (tileProvider != null) {
-      tileProvider.setDoubleTileSize((boolean)doubleTileSize);
+      tileProvider.setDoubleTileSize(doubleTileSize);
     }
     setCustomTileProviderMode();
     if (tileOverlay != null) {
@@ -149,7 +149,7 @@ public class AirMapUrlTile extends AirMapFeature {
   public void setOfflineMode(boolean offlineMode) {
     this.offlineMode = offlineMode;
     if (tileProvider != null) {
-      tileProvider.setOfflineMode((boolean)offlineMode);
+      tileProvider.setOfflineMode(offlineMode);
     }
     if (tileOverlay != null) {
       tileOverlay.clearTileCache();

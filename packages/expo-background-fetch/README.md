@@ -4,7 +4,7 @@ Expo universal module for BackgroundFetch API
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/background-fetch.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/background-fetch.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/background-fetch/)
 
 # Installation in managed Expo projects
