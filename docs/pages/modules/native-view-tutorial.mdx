@@ -1,0 +1,130 @@
+---
+title: "Tutorial: Creating a native view"
+sidebar_title: Creating a native view
+---
+
+import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
+import { PlatformTag } from '~/ui/components/Tag';
+import { APIBox } from '~/components/plugins/APIBox';
+import { Terminal } from '~/ui/components/Snippet';
+
+In this tutorial we are going to build a module with a native view that will render a WebView. We will be using the [WebView](https://developer.android.com/reference/android/webkit/WebView) component for Android and [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview) for iOS.  It is possible to implement web support using [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), but we'll leave that as an exercise for the reader.
+
+## 1. Initialize a new module
+
+First, we'll create a new module. On this page we will use the name `expo-web-view` / `ExpoWebView`. You can name it whatever you like, just adjust the instructions accordingly:
+
+<Terminal cmd={['$ npx create-expo-module expo-web-view']} />
+
+> **Tip**: Since you aren't going to actually ship this library, you can hit <kbd>return</kbd> for all of the prompts to accept the default values.
+
+## 2. Set up our workspace
+
+Now let's clean up the default module a little bit so we have more of a clean slate and delete the code that we won't use in this guide.
+
+<Terminal
+  cmdCopy="cd expo-web-view && rm src/ExpoWebView.types.ts src/ExpoWebView.web.tsx src/ExpoWebViewModule.ts src/ExpoWebViewModule.web.ts"
+  cmd={[
+    '$ cd expo-web-view',
+    '$ rm src/ExpoWebView.types.ts src/ExpoWebViewModule.ts',
+    '$ rm src/ExpoWebView.web.tsx src/ExpoWebViewModule.web.ts',
+  ]}
+/>
+
+Find the following files and replace them with the provided minimal boilerplate:
+
+```swift ios/ExpoWebView.swift
+import ExpoModulesCore
+
+public class ExpoWebViewModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoWebView")
+
+    View(ExpoWebView.self) {}
+  }
+}
+```
+
+```kotlin android/src/main/java/expo/modules/webview/ExpoWebViewModule.kt
+package expo.modules.webview
+
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+
+class ExpoWebViewModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoWebView")
+
+    View(ExpoWebView::class) {}
+  }
+}
+```
+
+```typescript src/index.ts
+export { default as WebView, Props as WebViewProps } from "./ExpoWebView";
+```
+
+```typescript src/ExpoWebView.tsx
+import { ViewProps } from "react-native";
+import { requireNativeViewManager } from "expo-modules-core";
+import * as React from "react";
+
+export type Props = ViewProps;
+
+const NativeView: React.ComponentType<Props> =
+  requireNativeViewManager("ExpoWebView");
+
+export default function ExpoWebView(props: Props) {
+  return <NativeView {...props} />;
+}
+```
+
+```typescript example/App.tsx
+import { WebView } from "expo-web-view";
+
+export default function App() {
+  return (
+    <WebView style={{ flex: 1 }} />
+  );
+}
+```
+
+## 3. Run the example project
+
+Now let's run the example project to make sure everything is working. We'll need to start the TypeScript compiler to watch for changes and rebuild the module JavaScript, and separately in another terminal window we'll compile and run the example app.
+
+<Terminal
+  cmdCopy="npm run build"
+  cmd={[
+    '# Run this in the root of the project to start the TypeScript compiler',
+    '$ npm run build',
+  ]}
+/>
+
+<Terminal
+  cmdCopy="cd example && npx expo run:ios"
+  cmd={[
+    '$ cd example',
+    '# Run the example app on iOS',
+    '$ npx expo run:ios',
+    '# Run the example app on Android',
+    '$ npx expo run:android',
+  ]}
+/>
+
+We should now see... a blank white screen. That's because we haven't implemented the native view yet. Let's do that now.
+
+## 4. 
+
+```typescript example/App.tsx
+import { View } from "react-native";
+import { WebView } from "expo-web-view";
+
+export default function App() {
+  return (
+    <View style={{ flex: 1 }}>
+      <WebView style={{ flex: 1 }} />
+    </View>
+  );
+}
+```
