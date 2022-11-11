@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExponentConstants;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExponentConstants');
 //# sourceMappingURL=ExponentConstants.js.map
