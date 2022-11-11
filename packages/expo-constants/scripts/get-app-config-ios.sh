@@ -3,7 +3,7 @@
 set -eo pipefail
 
 DEST="$CONFIGURATION_BUILD_DIR"
-RESOURCE_BUNDLE_NAME="ExpoConstants.bundle"
+RESOURCE_BUNDLE_NAME="EXConstants.bundle"
 EXPO_CONSTANTS_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
 # For classic main project build phases integration, will be no-op to prevent duplicated app.config creation.
