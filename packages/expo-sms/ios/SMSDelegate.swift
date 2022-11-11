@@ -19,8 +19,10 @@ class SMSDelegate: NSObject, MFMessageComposeViewControllerDelegate {
         self.handler = handler
     }
 
-    func messageComposeViewController(_ controller: MFMessageComposeViewController,
-                                      didFinishWith result: MessageComposeResult) {
+    func messageComposeViewController(
+        _ controller: MFMessageComposeViewController,
+        didFinishWith result: MessageComposeResult
+    ) {
         var resolveData = [String: String]()
         var rejectMessage = ""
 

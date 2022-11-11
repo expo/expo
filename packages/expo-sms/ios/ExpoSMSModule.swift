@@ -72,7 +72,8 @@ public class ExpoSMSModule: Module, SMSResultHandler {
 
                 do {
                     let data = try Data(contentsOf: url, options: .mappedIfSafe)
-                    let attached = messageComposeViewController.addAttachmentData(data,
+                    let attached = messageComposeViewController.addAttachmentData(
+                                                                            data,
                                                                             typeIdentifier: attachment.mimeType,
                                                                             filename: attachment.filename)
                     if !attached {
