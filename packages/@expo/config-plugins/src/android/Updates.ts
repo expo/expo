@@ -161,8 +161,7 @@ export function setVersionsConfig(
     addMetaDataItemToMainApplication(
       mainApplication,
       Config.RUNTIME_VERSION,
-      '@string/expo_runtime_version',
-      'resource'
+      '@string/expo_runtime_version'
     );
   } else if (sdkVersion) {
     /**

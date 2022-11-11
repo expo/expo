@@ -209,7 +209,7 @@ describe('Android Updates config', () => {
         (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
       );
       expect(runtimeVersion).toHaveLength(1);
-      expect(runtimeVersion && runtimeVersion[0].$['android:resource']).toMatch(
+      expect(runtimeVersion && runtimeVersion[0].$['android:value']).toMatch(
         '@string/expo_runtime_version'
       );
     });
