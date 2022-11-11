@@ -1,4 +1,4 @@
-import { by, device, element, expect as detoxExpect, waitFor } from 'detox';
+import { by, device, element, expect, waitFor } from 'detox';
 
 import { sleepAsync } from './Utils';
 import { expectResults } from './utils/report';
@@ -46,7 +46,7 @@ describe('test-suite', () => {
         const launchWaitingTime = platform === 'ios' ? 1000 : 5000;
         await sleepAsync(launchWaitingTime);
 
-        await detoxExpect(element(by.id('test_suite_container'))).toExist();
+        await expect(element(by.id('test_suite_container'))).toExist();
         try {
           await waitFor(element(by.id('test_suite_text_results')))
             .toExist()
@@ -65,7 +65,7 @@ describe('test-suite', () => {
           });
         } else {
           // Platforms do no support `getAttributes()`, using text matching instead
-          await detoxExpect(element(by.id('test_suite_text_results'))).toHaveText(
+          await expect(element(by.id('test_suite_text_results'))).toHaveText(
             'Complete: 0 tests failed.'
           );
         }
