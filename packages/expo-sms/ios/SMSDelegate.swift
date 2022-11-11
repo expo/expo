@@ -19,7 +19,8 @@ class SMSDelegate: NSObject, MFMessageComposeViewControllerDelegate {
         self.handler = handler
     }
 
-    func messageComposeViewController(_ controller: MFMessageComposeViewController, didFinishWith result: MessageComposeResult) {
+    func messageComposeViewController(_ controller: MFMessageComposeViewController,
+                                      didFinishWith result: MessageComposeResult) {
         var resolveData = [String: String]()
         var rejectMessage = ""
 
@@ -29,7 +30,10 @@ class SMSDelegate: NSObject, MFMessageComposeViewControllerDelegate {
         case .sent:
             resolveData["result"] = "sent"
         case .failed:
-            rejectMessage = "User's attempt to save or send an SMS was unsuccessful. This can occur when the device loses connection to Wifi or Cellular."
+            rejectMessage = """
+                User's attempt to save or send an SMS was unsuccessful.
+                This can occur when the device loses connection to Wifi or Cellular.
+            """
         default:
             rejectMessage = "SMS message sending failed with unknown error"
         }
