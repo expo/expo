@@ -1,51 +1,44 @@
-//
-//  SMSDelegate.swift
-//  ExpoSMS
-//
-//  Created by Alan Hughes on 11/11/2022.
-//
-
 import MessageUI
 
 protocol SMSResultHandler {
-    func onSuccess(_ data: [String: String])
-    func onFailure(_ error: String)
+  func onSuccess(_ data: [String: String])
+  func onFailure(_ error: String)
 }
 
 class SMSDelegate: NSObject, MFMessageComposeViewControllerDelegate {
-    private let handler: SMSResultHandler
+  private let handler: SMSResultHandler
 
-    init(handler: SMSResultHandler) {
-        self.handler = handler
-    }
+  init(handler: SMSResultHandler) {
+    self.handler = handler
+  }
 
-    func messageComposeViewController(
-        _ controller: MFMessageComposeViewController,
-        didFinishWith result: MessageComposeResult
-    ) {
-        var resolveData = [String: String]()
-        var rejectMessage = ""
+  func messageComposeViewController(
+    _ controller: MFMessageComposeViewController,
+    didFinishWith result: MessageComposeResult
+  ) {
+    var resolveData = [String: String]()
+    var rejectMessage = ""
 
-        switch result {
-        case .cancelled:
-            resolveData["result"] = "cancelled"
-        case .sent:
-            resolveData["result"] = "sent"
-        case .failed:
-            rejectMessage = """
+    switch result {
+    case .cancelled:
+      resolveData["result"] = "cancelled"
+    case .sent:
+      resolveData["result"] = "sent"
+    case .failed:
+      rejectMessage = """
                 User's attempt to save or send an SMS was unsuccessful.
                 This can occur when the device loses connection to Wifi or Cellular.
             """
-        default:
-            rejectMessage = "SMS message sending failed with unknown error"
-        }
-
-        controller.dismiss(animated: true) {
-            if !rejectMessage.isEmpty {
-                self.handler.onFailure(rejectMessage)
-            } else {
-                self.handler.onSuccess(resolveData)
-            }
-        }
+    default:
+      rejectMessage = "SMS message sending failed with unknown error"
     }
+
+    controller.dismiss(animated: true) {
+      if !rejectMessage.isEmpty {
+        self.handler.onFailure(rejectMessage)
+      } else {
+        self.handler.onSuccess(resolveData)
+      }
+    }
+  }
 }
