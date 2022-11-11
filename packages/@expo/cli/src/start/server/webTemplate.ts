@@ -1,9 +1,11 @@
-import { ExpoConfig, getConfig, getNameFromConfig } from '@expo/config';
+import { ExpoConfig, getConfig, getNameFromConfig, Platform } from '@expo/config';
 import fs from 'fs';
 import path from 'path';
 
 import { TEMPLATES } from '../../customize/templates';
 import { env } from '../../utils/env';
+
+type PlatformScripts = Partial<Record<Platform, string[]>>;
 
 /**
  * Create a static HTML for SPA styled websites.
@@ -15,7 +17,7 @@ export async function createTemplateHtmlFromExpoConfigAsync(
     scripts,
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
   }: {
-    scripts: string[];
+    scripts: PlatformScripts;
     exp?: ExpoConfig;
   }
 ) {
@@ -62,7 +64,7 @@ export async function createTemplateHtmlAsync(
     title,
     themeColor,
   }: {
-    scripts: string[];
+    scripts: PlatformScripts;
     description?: string;
     langIsoCode: string;
     title: string;
@@ -74,10 +76,28 @@ export async function createTemplateHtmlAsync(
 
   contents = contents.replace('%LANG_ISO_CODE%', langIsoCode);
   contents = contents.replace('%WEB_TITLE%', title);
-  contents = contents.replace(
-    '</body>',
-    scripts.map((url) => `<script src="${url}"></script>`).join('') + '</body>'
-  );
+
+  const scriptTags: string[] = [];
+
+  Object.entries(scripts).forEach(([platform, scripts]) => {
+    if (platform === 'web') {
+      scripts.forEach((script) => {
+        scriptTags.push(`<script data-platform="${platform}" src="${script}"></script>`);
+      });
+    } else {
+      scripts.forEach((script) => {
+        scriptTags.push(
+          // NOTE(EvanBacon): type="application/expo+javascript" forces the web browser to skip
+          // loading the script. Native code loading libraries can look for and handle these scripts.
+          `<script data-platform="${platform}" src="${script}" type="application/expo+javascript"></script>`
+        );
+      });
+    }
+  });
+
+  if (scriptTags.length) {
+    contents = contents.replace('</body>', scriptTags.join('\n') + '</body>');
+  }
 
   if (themeColor) {
     contents = addMeta(contents, `name="theme-color" content="${themeColor}"`);

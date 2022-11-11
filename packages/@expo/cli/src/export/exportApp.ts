@@ -96,7 +96,10 @@ export async function exportAppAsync(
     await fs.promises.writeFile(
       path.join(outputPath, 'index.html'),
       await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-        scripts: [`/bundles/${fileNames.web}`],
+        scripts: Object.entries(fileNames).reduce(
+          (prev, [platform, bundle]) => ({ ...prev, [platform]: [`/bundles/${bundle}`] }),
+          {}
+        ),
       })
     );
 
