@@ -5,8 +5,8 @@
 #include <sys/utsname.h>
 
 #import <ExpoModulesCore/EXUtilities.h>
-#import <EXConstants/EXConstantsService.h>
-#import <EXConstants/EXConstantsInstallationIdProvider.h>
+#import <EXConstantsService.h>
+#import <EXConstantsInstallationIdProvider.h>
 
 NSString * const EXConstantsExecutionEnvironmentBare = @"bare";
 NSString * const EXConstantsExecutionEnvironmentStandalone = @"standalone";
