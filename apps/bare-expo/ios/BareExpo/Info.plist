@@ -40,10 +40,6 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>FacebookAppID</key>
-	<string>1696089354000816</string>
-	<key>FacebookDisplayName</key>
-	<string>Expo APIs</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>fbapi</string>

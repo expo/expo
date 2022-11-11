@@ -28,12 +28,10 @@ public class ExpoSMSModule: Module, SMSResultHandler {
   private func sendSMSAsync(addresses: [String], message: String, options: SmsOptions, promise: Promise) throws {
     if !MFMessageComposeViewController.canSendText() {
       throw SmsUnavailableException()
-      return
     }
 
     if smsContext != nil {
       throw SmsPendingException()
-      return
     }
 
     let smsDelegate = SMSDelegate(handler: self)
