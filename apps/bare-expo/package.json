@@ -41,7 +41,9 @@
         "expo-ads-admob",
         "expo-apple-authentication",
         "expo-updates",
-        "expo-module-template"
+        "expo-module-template",
+        "expo-firebase-analytics",
+        "expo-firebase-core"
       ],
       "ios": {
         "flags": {

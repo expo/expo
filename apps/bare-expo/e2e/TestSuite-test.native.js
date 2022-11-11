@@ -23,8 +23,6 @@ const TESTS = [
   'Random',
   'Permissions',
   'KeepAwake',
-  'FirebaseCore',
-  'FirebaseAnalytics',
   // 'Audio',
   'HTML',
 ];
