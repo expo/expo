@@ -3,7 +3,7 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 
 Pod::Spec.new do |s|
-  s.name           = 'EXConstants'
+  s.name           = 'ExpoConstants'
   s.version        = package['version']
   s.summary        = package['description']
   s.description    = package['description']
@@ -38,7 +38,7 @@ Pod::Spec.new do |s|
   # Generate EXConstants.bundle without existing resources
   # `get-app-config-ios.sh` will generate app.config in EXConstants.bundle
   s.resource_bundles = {
-    'EXConstants' => []
+    'ExpoConstants' => []
   }
 
 end
