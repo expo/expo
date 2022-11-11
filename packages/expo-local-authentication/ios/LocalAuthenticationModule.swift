@@ -14,105 +14,105 @@ public class LocalAuthenticationModule: Module {
       return isAvailable
     }
 
-      AsyncFunction("isEnrolledAsync") { () -> Bool in
-        let context = LAContext()
-        var error: NSError?
-        let isSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
-        let isEnrolled: Bool = isSupported && error == nil
+    AsyncFunction("isEnrolledAsync") { () -> Bool in
+      let context = LAContext()
+      var error: NSError?
+      let isSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
+      let isEnrolled: Bool = isSupported && error == nil
 
-        return isEnrolled
+      return isEnrolled
+    }
+
+    AsyncFunction("supportedAuthenticationTypesAsync") { () -> [Int] in
+      var supportedAuthenticationTypes: [Int] = []
+
+      if isTouchIdDevice() {
+        supportedAuthenticationTypes.append(AuthenticationType.fingerprint.rawValue)
       }
 
-      AsyncFunction("supportedAuthenticationTypesAsync") { () -> [Int] in
-        var supportedAuthenticationTypes: [Int] = []
-
-        if isTouchIdDevice() {
-          supportedAuthenticationTypes.append(AuthenticationType.fingerprint.rawValue)
-        }
-
-        if isFaceIdDevice() {
-          supportedAuthenticationTypes.append(AuthenticationType.facialRecognition.rawValue)
-        }
-
-        return supportedAuthenticationTypes
+      if isFaceIdDevice() {
+        supportedAuthenticationTypes.append(AuthenticationType.facialRecognition.rawValue)
       }
 
-      AsyncFunction("getEnrolledLevelAsync") { () -> Int in
-        let context = LAContext()
-        var error: NSError?
+      return supportedAuthenticationTypes
+    }
 
-        var level: Int = SecurityLevel.none.rawValue
+    AsyncFunction("getEnrolledLevelAsync") { () -> Int in
+      let context = LAContext()
+      var error: NSError?
 
-        let isAuthenticationSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: &error)
-        if isAuthenticationSupported && error == nil {
-          level = SecurityLevel.secret.rawValue
-        }
+      var level: Int = SecurityLevel.none.rawValue
 
-        let isBiometricsSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
-
-        if isBiometricsSupported && error == nil {
-          level = SecurityLevel.biometric.rawValue
-        }
-
-        return level
+      let isAuthenticationSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthentication, error: &error)
+      if isAuthenticationSupported && error == nil {
+        level = SecurityLevel.secret.rawValue
       }
 
-      AsyncFunction("authenticateAsync") { (options: LocalAuthenticationOptions, promise: Promise) -> Void in
-        var warningMessage: NSString?
-        var reason = options.promptMessage
-        var cancelLabel = options.cancelLabel
-        var fallbackLabel = options.fallbackLabel
-        var disableDeviceFallback = options.disableDeviceFallback
+      let isBiometricsSupported: Bool = context.canEvaluatePolicy(LAPolicy.deviceOwnerAuthenticationWithBiometrics, error: &error)
 
-        if isFaceIdDevice() {
-          let usageDescription = Bundle.main.object(forInfoDictionaryKey: "NSFaceIDUsageDescription")
+      if isBiometricsSupported && error == nil {
+        level = SecurityLevel.biometric.rawValue
+      }
 
-          if usageDescription != nil {
-            warningMessage = "FaceID is available but has not been configured. To enable FaceID, provide `NSFaceIDUsageDescription`."
-          }
+      return level
+    }
+
+    AsyncFunction("authenticateAsync") { (options: LocalAuthenticationOptions, promise: Promise) -> Void in
+      var warningMessage: NSString?
+      var reason = options.promptMessage
+      var cancelLabel = options.cancelLabel
+      var fallbackLabel = options.fallbackLabel
+      var disableDeviceFallback = options.disableDeviceFallback
+
+      if isFaceIdDevice() {
+        let usageDescription = Bundle.main.object(forInfoDictionaryKey: "NSFaceIDUsageDescription")
+
+        if usageDescription != nil {
+          warningMessage = "FaceID is available but has not been configured. To enable FaceID, provide `NSFaceIDUsageDescription`."
         }
+      }
 
-        let context = LAContext()
+      let context = LAContext()
 
-        if fallbackLabel != nil {
-          context.localizedFallbackTitle = fallbackLabel
-        }
+      if fallbackLabel != nil {
+        context.localizedFallbackTitle = fallbackLabel
+      }
 
-        if cancelLabel != nil {
-          context.localizedCancelTitle = cancelLabel
-        }
+      if cancelLabel != nil {
+        context.localizedCancelTitle = cancelLabel
+      }
 
-        context.interactionNotAllowed = false
+      context.interactionNotAllowed = false
 
-        let policyForAuth: LAPolicy = disableDeviceFallback ? LAPolicy.deviceOwnerAuthenticationWithBiometrics : LAPolicy.deviceOwnerAuthentication
+      let policyForAuth: LAPolicy = disableDeviceFallback ? LAPolicy.deviceOwnerAuthenticationWithBiometrics : LAPolicy.deviceOwnerAuthentication
 
-        if disableDeviceFallback {
-          if warningMessage != nil {
-            // If the warning message is set (NSFaceIDUsageDescription is not configured) then we can't use
-            // authentication with biometrics — it would crash, so let's just resolve with no success.
-            // We could reject, but we already resolve even if there are any errors, so sadly we would need to introduce a breaking change.
-            return promise.resolve([
-              "success": false,
-              "error": "missing_usage_description",
-              "warning": warningMessage
-            ])
-          }
-        }
-
-        context.evaluatePolicy(policyForAuth, localizedReason: reason ?? "") { success, error in
-          var err: String?
-
-          if let error = error as? NSError {
-            err = convertErrorCode(error: error)
-          }
-
+      if disableDeviceFallback {
+        if warningMessage != nil {
+          // If the warning message is set (NSFaceIDUsageDescription is not configured) then we can't use
+          // authentication with biometrics — it would crash, so let's just resolve with no success.
+          // We could reject, but we already resolve even if there are any errors, so sadly we would need to introduce a breaking change.
           return promise.resolve([
-            "success": success,
-            "error": err,
+            "success": false,
+            "error": "missing_usage_description",
             "warning": warningMessage
           ])
         }
       }
+
+      context.evaluatePolicy(policyForAuth, localizedReason: reason ?? "") { success, error in
+        var err: String?
+
+        if let error = error as? NSError {
+          err = convertErrorCode(error: error)
+        }
+
+        return promise.resolve([
+          "success": success,
+          "error": err,
+          "warning": warningMessage
+        ])
+      }
+    }
   }
 }
 
