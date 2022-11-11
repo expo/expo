@@ -48,6 +48,7 @@ EX_EXPORT_MODULE(ExpoUpdates);
   if (!_updatesService.isStarted) {
     return @{
       @"isEnabled": @(NO),
+      @"isEmbeddedLaunch": @(NO),
       @"isMissingRuntimeVersion": isMissingRuntimeVersion,
       @"releaseChannel": releaseChannel,
       @"runtimeVersion": runtimeVersion,
@@ -58,6 +59,7 @@ EX_EXPORT_MODULE(ExpoUpdates);
   if (!launchedUpdate) {
     return @{
       @"isEnabled": @(NO),
+      @"isEmbeddedLaunch": @(NO),
       @"isMissingRuntimeVersion": isMissingRuntimeVersion,
       @"releaseChannel": releaseChannel,
       @"runtimeVersion": runtimeVersion,
@@ -69,6 +71,7 @@ EX_EXPORT_MODULE(ExpoUpdates);
   
   return @{
     @"isEnabled": @(YES),
+    @"isEmbeddedLaunch": @(_updatesService.isEmbeddedLaunch),
     @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
     @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
     @"manifest": launchedUpdate.manifest.rawManifestJSON ?: @{},

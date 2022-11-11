@@ -70,6 +70,14 @@ EX_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.isUsingEmbeddedAssets;
 }
 
+- (BOOL)isEmbeddedLaunch
+{
+  return ([self embeddedUpdate] != nil &&
+          [self launchedUpdate] != nil &&
+          [[self embeddedUpdate].updateId.UUIDString isEqualToString:[self launchedUpdate].updateId.UUIDString]
+          );
+}
+
 - (BOOL)isStarted
 {
   return EXUpdatesAppController.sharedInstance.isStarted;
