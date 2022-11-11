@@ -57,8 +57,6 @@ PODS:
   - EXInAppPurchases (14.0.0):
     - ExpoModulesCore
   - EXJSONUtils (0.4.0)
-  - EXLocalAuthentication (13.0.2):
-    - ExpoModulesCore
   - EXLocation (15.0.1):
     - ExpoModulesCore
   - EXManifests (0.4.0):
@@ -182,6 +180,8 @@ PODS:
   - ExpoKeepAwake (11.0.1):
     - ExpoModulesCore
   - ExpoLinearGradient (12.0.1):
+    - ExpoModulesCore
+  - ExpoLocalAuthentication (13.0.2):
     - ExpoModulesCore
   - ExpoLocalization (14.0.0):
     - ExpoModulesCore
@@ -783,7 +783,6 @@ DEPENDENCIES:
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
-  - EXLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - EXLocation (from `../../../packages/expo-location/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
   - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
@@ -809,6 +808,7 @@ DEPENDENCIES:
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
+  - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
@@ -986,9 +986,6 @@ EXTERNAL SOURCES:
   EXJSONUtils:
     inhibit_warnings: false
     :path: "../../../packages/expo-json-utils/ios"
-  EXLocalAuthentication:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-local-authentication/ios"
   EXLocation:
     inhibit_warnings: false
     :path: "../../../packages/expo-location/ios"
@@ -1057,6 +1054,9 @@ EXTERNAL SOURCES:
   ExpoLinearGradient:
     inhibit_warnings: false
     :path: "../../../packages/expo-linear-gradient/ios"
+  ExpoLocalAuthentication:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-local-authentication/ios"
   ExpoLocalization:
     inhibit_warnings: false
     :path: "../../../packages/expo-localization/ios"
@@ -1252,7 +1252,6 @@ SPEC CHECKSUMS:
   EXImageLoader: 84b65e6bd9d3345d6fbb3ab936a546c54496a64d
   EXInAppPurchases: b88582167dde6a7da6253c5f2b7a56edf24d76e1
   EXJSONUtils: 09aef2c1fba1a116ca8c73a2c8299aac00d96b43
-  EXLocalAuthentication: 78cc5a00b13745b41d16d189ab332b61a01299f9
   EXLocation: ea8c1a5b5b3c3ac47f1f3a7cfd54d311ec920a37
   EXManifests: 347f49430b63444579aa013f0ad057d16b8d1cc8
   EXMediaLibrary: 458ae40e652df90ad46d38a5c588b05d59401d3c
@@ -1276,6 +1275,7 @@ SPEC CHECKSUMS:
   ExpoImagePicker: 735000e53b06c327a4e8b1146f06a8765be244c3
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
   ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
+  ExpoLocalAuthentication: b33ed1e2e572c6e2a09a081b1aef4fe22cdff706
   ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
   ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
   ExpoModulesCore: e47e5d3e3f8fbc03b6c41cfc1d54421381201dd5
