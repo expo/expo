@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package expo.modules.constants
 
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -14,9 +13,8 @@ class ConstantsModule : Module() {
       return@Constants appContext.constants?.constants ?: emptyMap()
     }
 
-    AsyncFunction("getWebViewUserAgentAsync") { promise: Promise ->
-      val userAgent = System.getProperty("http.agent")
-      promise.resolve(userAgent)
+    AsyncFunction("getWebViewUserAgentAsync") {
+      return@AsyncFunction System.getProperty("http.agent")
     }
   }
 }
