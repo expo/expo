@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the list of platform keys in expo-module.config.json
+
 ### 💡 Others
 
 ## 14.0.2 — 2022-10-30
