@@ -43,7 +43,7 @@ open class UpdatesService(protected var context: Context) : InternalModule, Upda
   override val isEmergencyLaunch: Boolean
     get() = UpdatesController.instance.isEmergencyLaunch
   override val isEmbeddedLaunch: Boolean
-    get() = launchedUpdate != null && embeddedUpdate != null && launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
+    get() = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
   override val isUsingEmbeddedAssets: Boolean
     get() = UpdatesController.instance.isUsingEmbeddedAssets
 
