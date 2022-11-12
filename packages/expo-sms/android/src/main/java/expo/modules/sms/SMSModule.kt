@@ -40,46 +40,50 @@ class SMSModule : Module(), LifecycleEventListener {
     }
 
     AsyncFunction("sendSMSAsync") { addresses: ArrayList<String>, message: String, options: Map<String, Any?>?, promise: Promise ->
-      val attachments = options?.get(OPTIONS_ATTACHMENTS_KEY) as? List<*>
-
-      // ACTION_SEND causes a weird flicker on Android 10 devices if the messaging app is not already
-      // open in the background, but it seems to be the only intent type that works for including
-      // attachments, so we use it if there are attachments and fall back to ACTION_SENDTO otherwise.
-      val smsIntent = if (attachments?.isNotEmpty() == true) {
-        Intent(Intent.ACTION_SEND).apply {
-          type = "text/plain"
-          putExtra("address", addresses.joinToString(separator = ";"))
-          val attachment = attachments[0] as? Map<String?, String?>
-          putExtra(Intent.EXTRA_STREAM, Uri.parse(getAttachment(attachment, "uri")))
-          type = getAttachment(attachment, "mimeType")
-          addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        }
-      } else {
-        Intent(Intent.ACTION_SENDTO).apply {
-          data = Uri.parse("smsto:" + addresses.joinToString(separator = ";"))
-        }
-      }
-
-      val defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(context)
-
-      if (defaultSMSPackage != null) {
-        smsIntent.setPackage(defaultSMSPackage)
-      } else {
-        promise.reject(SMSNoSMSAppException())
-        return@AsyncFunction
-      }
-      smsIntent.putExtra("exit_on_sent", true)
-      smsIntent.putExtra("compose_mode", true)
-      smsIntent.putExtra("sms_body", message)
-      mPendingPromise = promise
-      currentActivity.startActivity(smsIntent)
-
-      mSMSComposerOpened = true
+      sendSMSAsync(addresses, message, options, promise)
     }
 
-    AsyncFunction("isAvailableAsync") { promise: Promise ->
-      promise.resolve(context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
+    AsyncFunction("isAvailableAsync") {
+      return@AsyncFunction context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
     }
+  }
+
+  private fun sendSMSAsync(addresses: ArrayList<String>, message: String, options: Map<String, Any?>?, promise: Promise) {
+    val attachments = options?.get(OPTIONS_ATTACHMENTS_KEY) as? List<*>
+
+    // ACTION_SEND causes a weird flicker on Android 10 devices if the messaging app is not already
+    // open in the background, but it seems to be the only intent type that works for including
+    // attachments, so we use it if there are attachments and fall back to ACTION_SENDTO otherwise.
+    val smsIntent = if (attachments?.isNotEmpty() == true) {
+      Intent(Intent.ACTION_SEND).apply {
+        type = "text/plain"
+        putExtra("address", addresses.joinToString(separator = ";"))
+        val attachment = attachments[0] as? Map<String?, String?>
+        putExtra(Intent.EXTRA_STREAM, Uri.parse(getAttachment(attachment, "uri")))
+        type = getAttachment(attachment, "mimeType")
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      }
+    } else {
+      Intent(Intent.ACTION_SENDTO).apply {
+        data = Uri.parse("smsto:" + addresses.joinToString(separator = ";"))
+      }
+    }
+
+    val defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(context)
+    defaultSMSPackage?.let {
+      smsIntent.setPackage(it)
+    } ?: throw SMSNoSMSAppException()
+    
+    smsIntent.apply {
+      putExtra("exit_on_sent", true)
+      putExtra("compose_mode", true)
+      putExtra("sms_body", message)
+    }
+
+    mPendingPromise = promise
+    currentActivity.startActivity(smsIntent)
+
+    mSMSComposerOpened = true
   }
 
   private fun getAttachment(attachment: Map<String?, String?>?, key: String): String? {
