@@ -20,12 +20,12 @@ public class ExpoSMSModule: Module, SMSResultHandler {
       return MFMessageComposeViewController.canSendText()
     }
 
-    AsyncFunction("sendSMSAsync") {(addresses: [String], message: String, options: SmsOptions, promise: Promise) in
+    AsyncFunction("sendSMSAsync") {(addresses: [String], message: String, options: SMSOptions, promise: Promise) in
       try sendSMSAsync(addresses: addresses, message: message, options: options, promise: promise)
     }.runOnQueue(.main)
   }
 
-  private func sendSMSAsync(addresses: [String], message: String, options: SmsOptions, promise: Promise) throws {
+  private func sendSMSAsync(addresses: [String], message: String, options: SMSOptions, promise: Promise) throws {
     if !MFMessageComposeViewController.canSendText() {
       throw SMSUnavailableException()
     }

@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-struct SmsOptions: Record {
+struct SMSOptions: Record {
   @Field var attachments: [SmsAttachment]
 }
 
