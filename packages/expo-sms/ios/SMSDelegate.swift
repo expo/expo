@@ -27,7 +27,7 @@ class SMSDelegate: NSObject, MFMessageComposeViewControllerDelegate {
     case .failed:
       rejectMessage = """
                 User's attempt to save or send an SMS was unsuccessful.
-                This can occur when the device loses connection to Wifi or Cellular.
+                This can occur when the device loses connection to Wifi or Cellular
             """
     default:
       rejectMessage = "SMS message sending failed with unknown error"
