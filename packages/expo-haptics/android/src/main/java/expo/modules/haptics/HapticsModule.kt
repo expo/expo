@@ -17,40 +17,30 @@ import expo.modules.kotlin.modules.ModuleDefinition
 class HapticsModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-  private val mVibrator get() = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+  private val vibrator
+    get() = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
   override fun definition() = ModuleDefinition {
     Name("ExpoHaptics")
 
-    AsyncFunction("notificationAsync") { type: String, promise: Promise ->
-      try {
-        vibrate(HapticsNotificationType.fromString(type))
-        promise.resolve(null)
-      } catch (e: HapticsInvalidArgumentException) {
-        throw HapticsInvalidArgumentException(e.message)
-      }
+    AsyncFunction("notificationAsync") { type: String ->
+      vibrate(HapticsNotificationType.fromString(type))
     }
 
-    AsyncFunction("selectionAsync") { promise: Promise ->
+    AsyncFunction("selectionAsync") {
       vibrate(HapticsSelectionType)
-      promise.resolve(null)
     }
 
-    AsyncFunction("impactAsync") { style: String, promise: Promise ->
-      try {
-        vibrate(HapticsImpactType.fromString(style))
-        promise.resolve(null)
-      } catch (e: HapticsInvalidArgumentException) {
-        throw HapticsInvalidArgumentException(e.message)
-      }
+    AsyncFunction("impactAsync") { style: String ->
+      vibrate(HapticsImpactType.fromString(style))
     }
   }
 
   private fun vibrate(type: HapticsVibrationType) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      mVibrator.vibrate(VibrationEffect.createWaveform(type.timings, type.amplitudes, -1))
+      vibrator.vibrate(VibrationEffect.createWaveform(type.timings, type.amplitudes, -1))
     } else {
-      mVibrator.vibrate(type.oldSDKPattern, -1)
+      vibrator.vibrate(type.oldSDKPattern, -1)
     }
   }
 }
