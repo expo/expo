@@ -39,7 +39,7 @@ class SMSModule : Module(), LifecycleEventListener {
       uiManager?.unregisterLifecycleEventListener(this@SMSModule)
     }
 
-    AsyncFunction("sendSMSAsync") { addresses: ArrayList<String>, message: String, options: Map<String, Any?>?, promise: Promise ->
+    AsyncFunction("sendSMSAsync") { addresses: ArrayList<String>, message: String, options: SMSOptions?, promise: Promise ->
       sendSMSAsync(addresses, message, options, promise)
     }
 
@@ -48,8 +48,8 @@ class SMSModule : Module(), LifecycleEventListener {
     }
   }
 
-  private fun sendSMSAsync(addresses: ArrayList<String>, message: String, options: Map<String, Any?>?, promise: Promise) {
-    val attachments = options?.get(OPTIONS_ATTACHMENTS_KEY) as? List<*>
+  private fun sendSMSAsync(addresses: ArrayList<String>, message: String, options: SMSOptions?, promise: Promise) {
+    val attachments = options?.attachments
 
     // ACTION_SEND causes a weird flicker on Android 10 devices if the messaging app is not already
     // open in the background, but it seems to be the only intent type that works for including
@@ -58,9 +58,9 @@ class SMSModule : Module(), LifecycleEventListener {
       Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra("address", addresses.joinToString(separator = ";"))
-        val attachment = attachments[0] as? Map<String?, String?>
-        putExtra(Intent.EXTRA_STREAM, Uri.parse(getAttachment(attachment, "uri")))
-        type = getAttachment(attachment, "mimeType")
+        val attachment = attachments[0]
+        putExtra(Intent.EXTRA_STREAM, Uri.parse(attachment.uri))
+        type = attachment.mimeType
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
       }
     } else {
@@ -73,7 +73,7 @@ class SMSModule : Module(), LifecycleEventListener {
     defaultSMSPackage?.let {
       smsIntent.setPackage(it)
     } ?: throw SMSNoSMSAppException()
-    
+
     smsIntent.apply {
       putExtra("exit_on_sent", true)
       putExtra("compose_mode", true)
@@ -84,10 +84,6 @@ class SMSModule : Module(), LifecycleEventListener {
     currentActivity.startActivity(smsIntent)
 
     mSMSComposerOpened = true
-  }
-
-  private fun getAttachment(attachment: Map<String?, String?>?, key: String): String? {
-    return attachment?.get(key)
   }
 
   override fun onHostResume() {
