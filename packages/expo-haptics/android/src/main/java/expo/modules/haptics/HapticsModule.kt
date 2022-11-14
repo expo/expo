@@ -5,11 +5,9 @@ import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
 import expo.modules.haptics.arguments.HapticsImpactType
-import expo.modules.haptics.arguments.HapticsInvalidArgumentException
 import expo.modules.haptics.arguments.HapticsNotificationType
 import expo.modules.haptics.arguments.HapticsSelectionType
 import expo.modules.haptics.arguments.HapticsVibrationType
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
