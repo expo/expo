@@ -25,6 +25,7 @@ interface UpdatesInterface {
   val fileDownloader: FileDownloader
 
   val isEmergencyLaunch: Boolean
+  val isEmbeddedLaunch: Boolean
   val isUsingEmbeddedAssets: Boolean
   fun canRelaunch(): Boolean
   val embeddedUpdate: UpdateEntity?

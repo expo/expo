@@ -60,6 +60,7 @@ class UpdatesModule(
       val updatesServiceLocal: UpdatesInterface? = updatesService
       if (updatesServiceLocal != null) {
         constants["isEmergencyLaunch"] = updatesServiceLocal.isEmergencyLaunch
+        constants["isEmbeddedLaunch"] = updatesServiceLocal.isEmbeddedLaunch
         constants["isMissingRuntimeVersion"] =
           updatesServiceLocal.configuration.isMissingRuntimeVersion
         constants["isEnabled"] = updatesServiceLocal.configuration.isEnabled

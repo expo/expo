@@ -39,6 +39,11 @@ export const localAssets = ExpoUpdates.localAssets ?? {};
  * can use this constant to provide special behavior for this rare case.
  */
 export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
+/**
+ * This will be true if the currently running update is the one embedded in the build,
+ * and not one downloaded from the updates server.
+ */
+export const isEmbeddedLaunch = ExpoUpdates.isEmbeddedLaunch || false;
 // @docsMissing
 /**
  * @hidden
