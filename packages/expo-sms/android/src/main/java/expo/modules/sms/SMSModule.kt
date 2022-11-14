@@ -31,7 +31,7 @@ class SMSModule : Module(), LifecycleEventListener {
       uiManager?.registerLifecycleEventListener(this@SMSModule)
     }
 
-    AsyncFunction("sendSMSAsync") { addresses: List<String>, message: String, options: SMSOptions?, promise: Promise ->
+    AsyncFunction("sendSMSAsync") { addresses: List<String>, message: String, options: SMSOptions, promise: Promise ->
       sendSMSAsync(addresses, message, options, promise)
     }
 
@@ -45,17 +45,15 @@ class SMSModule : Module(), LifecycleEventListener {
     }
   }
 
-  private fun sendSMSAsync(addresses: List<String>, message: String, options: SMSOptions?, promise: Promise) {
-    val attachments = options?.attachments ?: emptyList()
-
+  private fun sendSMSAsync(addresses: List<String>, message: String, options: SMSOptions, promise: Promise) {
     // ACTION_SEND causes a weird flicker on Android 10 devices if the messaging app is not already
     // open in the background, but it seems to be the only intent type that works for including
     // attachments, so we use it if there are attachments and fall back to ACTION_SENDTO otherwise.
-    val smsIntent = if (attachments.isNotEmpty()) {
+    val smsIntent = if (options.attachments.isNotEmpty()) {
       Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra("address", addresses.joinToString(separator = ";"))
-        val attachment = attachments[0]
+        val attachment = options.attachments[0]
         putExtra(Intent.EXTRA_STREAM, Uri.parse(attachment.uri))
         type = attachment.mimeType
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)

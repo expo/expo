@@ -4,7 +4,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
 data class SMSOptions(
-  @Field val attachments: List<SMSAttachment>
+  @Field val attachments: List<SMSAttachment> = emptyList()
 ) : Record
 
 data class SMSAttachment(
