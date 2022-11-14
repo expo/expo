@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed failed resolution of 'java.nio.file.Path' on Android.
+
 ### 💡 Others
 
 ## 1.0.2 — 2022-11-08
