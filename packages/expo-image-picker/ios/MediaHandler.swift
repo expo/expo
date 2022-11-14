@@ -516,10 +516,11 @@ private struct ImageUtils {
     return exif
   }
 
-  static func processGifData(inputData: Data?,
-                             compressionQuality quality: Double?,
-                             initialMetadata: [String: Any]?,
-                             cropRect: CGRect? = nil
+  static func processGifData(
+    inputData: Data?,
+    compressionQuality quality: Double?,
+    initialMetadata: [String: Any]?,
+    cropRect: CGRect? = nil
   ) throws -> Data? {
     // for uncropped, maximum quality image we can just pass through the raw data
     if cropRect == nil,
