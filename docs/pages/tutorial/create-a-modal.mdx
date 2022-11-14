@@ -50,14 +50,14 @@ Then, update the button with no theme by adding an `onPress` prop with the follo
 
 {/* prettier-ignore */}
 ```jsx App.js
-<Button label="Use this photo" /* @info Update the onPress prop.*/ onPress={() => setShowOptions(true)} /* @end */ />
+<Button label="Use this photo" /* @info Update the onPress prop.*/ onPress={() => setShowAppOptions(true)} /* @end */ />
 ```
 
 Now, we can remove the `alert` on the `<Button>` component and update the `onPress` prop when rendering the second button in **Button.js**:
 
 {/* prettier-ignore */}
 ```jsx Button.js
-<Pressable style={styles.button} /* @info Replace the alert() with the onPress.*/ onPress={onPress}/* @end */ >   
+<Pressable style={styles.button} /* @info Replace the alert() with the onPress.*/ onPress={onPress}/* @end */ >
 ```
 
 Next, update **App.js** to conditionally render the `<Button>` component based on the value of `showAppOptions`. Also, move the buttons in the conditional operator block.
@@ -68,17 +68,17 @@ export default function App() {
   // ...
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */ 
+      /* ...rest of the code remains same */
       /* @info Based on the value of showAppOptions, the buttons will be displayed. Also, move the existing buttons in the conditional operator block. */
       {showAppOptions ? (
         <View />
-      /* @end */  
+      /* @end */
       /* @info */) : ( /* @end */
         <View style={styles.footerContainer}>
           <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
           <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
         </View>
-      /* @info */)}/* @end */   
+      /* @info */)}/* @end */
       <StatusBar style="auto" />
     </View>
   );
@@ -208,7 +208,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* ...rest of the code remains same */
-      {showAppOptions ? (        
+      {showAppOptions ? (
         /* @info Replace empty View component with this snippet to display App option buttons. */
         <View style={styles.optionsContainer}>
           <View style={styles.optionsRow}>
@@ -276,7 +276,7 @@ export default function EmojiPicker({ isVisible, children, onClose }) {
           <Pressable onPress={onClose}>
             <MaterialIcons name="close" color="#fff" size={22} />
           </Pressable>
-        </View>        
+        </View>
         {children}
       </View>
     </Modal>
@@ -397,13 +397,13 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      /* ...rest of the code remains same */      
+      /* ...rest of the code remains same */
       /* @info Render the EmojiPicker component at the bottom of the App component, just before the StatusBar. */
       <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         {/* A list of emoji component will go here */}
       </EmojiPicker>
       /* @end */
-      <StatusBar style="auto" /> 
+      <StatusBar style="auto" />
     </View>
   );
 }
@@ -443,8 +443,8 @@ export default function EmojiList({ onSelect, onCloseModal }) {
 
   return (
     <FlatList
-      horizontal      
-      showsHorizontalScrollIndicator={Platform.OS === 'web' ? true : false}      
+      horizontal
+      showsHorizontalScrollIndicator={Platform.OS === 'web' ? true : false}
       data={emoji}
       contentContainerStyle={styles.listContainer}
       renderItem={({ item, index }) => {
@@ -506,7 +506,7 @@ export default function App() {
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
         /* @end */
       </EmojiPicker>
-      <StatusBar style="auto" /> 
+      <StatusBar style="auto" />
     </View>
   );
   )
@@ -582,7 +582,7 @@ export default function App() {
       <View style={styles.imageContainer}>
         <ImageViewer placeholderImageSource={PlaceholderImage} selectedImage={selectedImage} />
         /* @info */{pickedEmoji !== null ? <EmojiSticker imageSize={40} stickerSource={pickedEmoji} /> : null} /* @end */
-      </View>  
+      </View>
       /* ...rest of the code remains same*/
     </View>
   );
