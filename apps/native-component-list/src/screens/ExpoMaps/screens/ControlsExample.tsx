@@ -50,7 +50,7 @@ export default function ControlsExample() {
           value={showLevelPicker}
           onValueChange={() => setShowLevelPicker(!showLevelPicker)}
         />
-        {Platform.OS == 'android' && (
+        {Platform.OS === 'android' && (
           <SwitchContainer
             title="Show map toolbar"
             value={showMapToolbar}
