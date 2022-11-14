@@ -15,7 +15,7 @@ export const commandMenuStyles = css`
     width: 100vw;
     z-index: 200;
 
-    @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    @media screen and (max-width: ${breakpoints.medium}px) {
       display: none;
     }
   }
@@ -35,7 +35,7 @@ export const commandMenuStyles = css`
     border: 1px solid ${theme.border.default};
     z-index: 1001;
 
-    @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    @media screen and (max-width: ${breakpoints.medium}px) {
       min-height: 100vh;
       max-height: 100vh;
       width: 100vw;
@@ -121,7 +121,7 @@ export const commandMenuStyles = css`
     padding: 0 ${spacing[4]}px;
     margin: ${spacing[3]}px 0 0;
 
-    @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    @media screen and (max-width: ${breakpoints.medium}px) {
       height: calc(100vh - 50px - 50px - 20px);
       max-height: calc(100vh - 50px - 50px - 20px);
     }
@@ -168,11 +168,18 @@ export const searchIconStyle = css({
   position: 'absolute',
   top: 29,
   left: 29,
+  transition: 'opacity 0.2s ease-in-out',
 });
 
-export const loadingIconStyle = css({
+export const closeIconStyle = css({
   position: 'absolute',
-  top: 29,
-  right: 29,
-  transition: 'opacity 0.2s ease-in-out',
+  top: 25,
+  right: 25,
+  cursor: 'pointer',
+  padding: spacing[1],
+  borderRadius: borderRadius.small,
+
+  '&:hover': {
+    background: theme.background.tertiary,
+  },
 });

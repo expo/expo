@@ -118,3 +118,8 @@ export const isEASPath = (url: string) => {
   }
   return false;
 };
+
+export const isAppleDevice = () => {
+  // @ts-ignore
+  return /(Mac|iPhone|iPod|iPad)/i.test(navigator?.platform || navigator?.userAgentData?.platform);
+};

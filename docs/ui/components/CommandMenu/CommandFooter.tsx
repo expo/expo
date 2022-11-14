@@ -1,21 +1,22 @@
 import { css } from '@emotion/react';
-import { breakpoints, spacing, theme } from '@expo/styleguide';
+import { breakpoints, spacing, theme, typography } from '@expo/styleguide';
 
-import { footnoteStyle } from './Items/styles';
-
-import { FOOTNOTE, kbdStyle } from '~/ui/components/Text';
+import { FOOTNOTE, KBD } from '~/ui/components/Text';
 
 export const CommandFooter = () => (
   <div css={commandFooterStyle}>
     <FOOTNOTE css={[footnoteStyle, hideOnMobileStyle]}>
-      <kbd css={[kbdStyle, kbdIsolatedStyle]}>↵</kbd> to select
+      <KBD>↵</KBD>
+      <span>to select</span>
     </FOOTNOTE>
     <FOOTNOTE css={[footnoteStyle, hideOnMobileStyle]}>
-      <kbd css={[kbdStyle, kbdIsolatedStyle]}>↑</kbd>
-      <kbd css={[kbdStyle, kbdIsolatedStyle]}>↓</kbd> to navigate
+      <KBD>↑</KBD>
+      <KBD>↓</KBD>
+      <span>to navigate</span>
     </FOOTNOTE>
     <FOOTNOTE css={[footnoteStyle, hideOnMobileStyle]}>
-      <kbd css={[kbdStyle, kbdIsolatedStyle]}>esc</kbd> to close
+      <KBD>esc</KBD>
+      <span>to close</span>
     </FOOTNOTE>
     <FOOTNOTE css={[footnoteStyle, rightSectionStyle]}>
       <span>Search by</span>
@@ -32,20 +33,20 @@ const commandFooterStyle = css({
   alignItems: 'center',
 });
 
-const kbdIsolatedStyle = css({
-  border: `1px solid ${theme.border.default}`,
-  marginRight: spacing[1],
-  backgroundColor: theme.background.secondary,
+export const footnoteStyle = css({
+  ...typography.fontSizes[12],
+  color: theme.icon.secondary,
+  display: 'inline-flex',
+  gap: spacing[2],
+  alignItems: 'center',
 });
 
 const rightSectionStyle = css({
-  display: 'inline-flex',
   marginLeft: 'auto',
-  gap: spacing[2],
 });
 
 const hideOnMobileStyle = css({
-  [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
+  [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     display: 'none',
   },
 });

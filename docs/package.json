@@ -22,7 +22,6 @@
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js"
   },
   "dependencies": {
-    "@docsearch/react": "^3.2.1",
     "@emotion/react": "^11.10.4",
     "@expo/styleguide": "^4.3.0",
     "@mdx-js/loader": "^2.1.3",

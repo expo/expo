@@ -1,11 +1,12 @@
-import { WordMarkLogo, SearchIcon, theme, StatusWaitingIcon } from '@expo/styleguide';
+import { WordMarkLogo, SearchIcon, theme, StatusWaitingIcon, XIcon } from '@expo/styleguide';
 import { Command } from 'cmdk';
 import { useEffect, useState } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 
 import { CommandFooter } from './CommandFooter';
 import { RNDirectoryItem, RNDocsItem, ExpoDocsItem, ExpoItem } from './Items';
 import { entries } from './expoEntries';
-import { searchIconStyle, loadingIconStyle } from './styles';
+import { searchIconStyle, closeIconStyle } from './styles';
 import type { ExpoItemType, RNDirectoryItemType, AlgoliaItemType } from './types';
 import { getExpoResults, getDocsResults, getDirectoryResults, getItems } from './utils';
 
@@ -13,10 +14,11 @@ import { CALLOUT } from '~/ui/components/Text';
 
 type Props = {
   version: string;
+  open: boolean;
+  setOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-export const CommandMenu = ({ version }: Props) => {
-  const [open, setOpen] = useState(false);
+export const CommandMenu = ({ version, open, setOpen }: Props) => {
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState('');
   const [expoDocsItems, setExpoDocsItems] = useState<AlgoliaItemType[]>([]);
@@ -26,7 +28,7 @@ export const CommandMenu = ({ version }: Props) => {
 
   useEffect(() => {
     const keyDownListener = (e: KeyboardEvent) => {
-      if (e.key === 'j' && e.metaKey) {
+      if (e.key === 'k' && e.metaKey) {
         setOpen(open => !open);
       }
     };
@@ -58,11 +60,15 @@ export const CommandMenu = ({ version }: Props) => {
 
   return (
     <Command.Dialog open={open} onOpenChange={setOpen} label="Search Menu" shouldFilter={false}>
-      <SearchIcon color={theme.icon.secondary} css={searchIconStyle} />
+      <SearchIcon
+        color={theme.icon.secondary}
+        css={[searchIconStyle, { opacity: !loading ? 1 : 0 }]}
+      />
       <StatusWaitingIcon
         color={theme.palette.purple[300]}
-        css={[loadingIconStyle, { opacity: loading ? 1 : 0 }]}
+        css={[searchIconStyle, { opacity: loading ? 1 : 0 }]}
       />
+      <XIcon color={theme.icon.secondary} css={closeIconStyle} onClick={() => setOpen(false)} />
       <Command.Input value={query} onValueChange={setQuery} placeholder="search anything…" />
       <Command.List>
         {expoDocsItems.length > 0 && (
