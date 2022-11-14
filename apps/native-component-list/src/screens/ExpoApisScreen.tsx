@@ -38,7 +38,6 @@ const screens = [
   'DocumentPicker',
   'FaceDetector',
   'FileSystem',
-  'FirebaseRecaptcha',
   'Font',
   'Errors',
   'ExpoModules',

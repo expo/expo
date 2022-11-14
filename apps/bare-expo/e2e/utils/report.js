@@ -1,7 +1,8 @@
 import chalk from 'chalk';
+import jestExpect from 'expect';
 
 export function reportMagic({ testName, failed, results, failures }) {
-  const formatResults = results =>
+  const formatResults = (results) =>
     results &&
     results
       .replace(/---/g, chalk.cyan('---'))
@@ -20,7 +21,7 @@ export function reportMagic({ testName, failed, results, failures }) {
 
 export function expectResults({ testName, input }) {
   const { magic, failed, failures, results } = JSON.parse(input);
-  expect(results).toBeDefined();
+  jestExpect(results).toBeDefined();
 
   reportMagic({
     testName,
@@ -29,6 +30,6 @@ export function expectResults({ testName, input }) {
     failures,
   });
 
-  expect(magic).toBe('[TEST-SUITE-END]');
-  expect(failed).toBe(0);
+  jestExpect(magic).toBe('[TEST-SUITE-END]');
+  jestExpect(failed).toBe(0);
 }
