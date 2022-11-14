@@ -63,27 +63,17 @@ export const CommandMenu = ({ version }: Props) => {
         color={theme.palette.purple[300]}
         css={[loadingIconStyle, { opacity: loading ? 1 : 0 }]}
       />
-      <Command.Input value={query} onValueChange={setQuery} placeholder="search" />
+      <Command.Input value={query} onValueChange={setQuery} placeholder="search…" />
       <Command.List>
         {expoDocsItems.length > 0 && (
-          <Command.Group
-            heading={
-              <>
-                <WordMarkLogo width={46} /> documentation
-              </>
-            }>
+          <Command.Group heading={<ExpoHeading label="documentation" />}>
             {expoDocsItems.map(item => (
               <ExpoDocsItem item={item} onSelect={dismiss} />
             ))}
           </Command.Group>
         )}
         {expoItems.length > 0 && (
-          <Command.Group
-            heading={
-              <>
-                <WordMarkLogo width={46} /> dashboard
-              </>
-            }>
+          <Command.Group heading={<ExpoHeading label="dashboard" />}>
             {expoItems.map((item: ExpoItemType) => (
               <ExpoItem item={item} onSelect={dismiss} />
             ))}
@@ -113,3 +103,9 @@ export const CommandMenu = ({ version }: Props) => {
     </Command.Dialog>
   );
 };
+
+const ExpoHeading = ({ label }: { label: string }) => (
+  <>
+    <WordMarkLogo width={46} /> {label}
+  </>
+);

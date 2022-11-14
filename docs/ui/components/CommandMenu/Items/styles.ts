@@ -5,6 +5,7 @@ export const itemStyle = css({
   display: 'inline-flex',
   alignItems: 'center',
   gap: spacing[2.5],
+  wordBreak: 'break-word',
 });
 
 export const itemIconWrapperStyle = css({

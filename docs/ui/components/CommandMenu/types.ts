@@ -4,6 +4,7 @@ import type { ComponentType } from 'react';
 export type AlgoliaItemType = {
   url: string;
   objectID: string;
+  content: string | null;
   hierarchy: {
     lvl0?: string | null;
     lvl1?: string | null;
@@ -11,6 +12,7 @@ export type AlgoliaItemType = {
     lvl3?: string | null;
     lvl4?: string | null;
     lvl5?: string | null;
+    lvl6?: string | null;
   };
 };
 

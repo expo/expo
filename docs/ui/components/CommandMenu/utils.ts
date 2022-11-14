@@ -65,8 +65,6 @@ export const getHighlightHTML = (item: any, tag: string) => ({
   },
 });
 
-export const processAlgoliaResults = (data: any[]) => {};
-
 // note(simek): this code make sure that browser popup blocker
 // do not prevent opening links via key press (when it fires windows.open)
 export const openLink = (url: string, isExternal: boolean = false) => {

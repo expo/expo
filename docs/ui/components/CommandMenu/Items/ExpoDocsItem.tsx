@@ -27,6 +27,27 @@ const ItemIcon = ({ url }: { url: string }) => {
   return <GuideIcon />;
 };
 
+const getFootnotePrefix = (url: string) => {
+  if (url.includes('/versions/')) {
+    return 'API Reference';
+  } else if (isEASPath(url)) {
+    return 'Expo Application Services';
+  } else {
+    return 'Guides';
+  }
+};
+
+const ItemFootnotePrefix = ({ url, isNested = false }: { url: string; isNested?: boolean }) => {
+  return isNested ? (
+    <>
+      <span css={footnoteStyle}>{getFootnotePrefix(url)}</span>
+      <FootnoteArrowIcon />
+    </>
+  ) : (
+    <FOOTNOTE css={footnoteStyle}>{getFootnotePrefix(url)}</FOOTNOTE>
+  );
+};
+
 const transformUrl = (url: string) => {
   if (url.includes(LATEST_VERSION)) {
     url = url.replace(LATEST_VERSION, 'latest');
@@ -38,7 +59,7 @@ const transformUrl = (url: string) => {
 };
 
 export const ExpoDocsItem = ({ item, onSelect }: Props) => {
-  const { lvl0, lvl2, lvl3 } = item.hierarchy;
+  const { lvl0, lvl2, lvl3, lvl6 } = item.hierarchy;
   return (
     <Command.Item
       key={`hit-expodocs-${item.objectID}`}
@@ -52,10 +73,32 @@ export const ExpoDocsItem = ({ item, onSelect }: Props) => {
           <ItemIcon url={item.url} />
         </div>
         <div>
-          {lvl3 && (
+          {lvl6 && (
+            <>
+              <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl6')} />
+              <FOOTNOTE css={footnoteStyle}>
+                <ItemFootnotePrefix url={item.url} isNested />
+                <span {...getHighlightHTML(item, 'lvl0')} />
+                {lvl2 && (
+                  <>
+                    <FootnoteArrowIcon />
+                    <span {...getHighlightHTML(item, 'lvl2')} />
+                  </>
+                )}
+                {lvl3 && (
+                  <>
+                    <FootnoteArrowIcon />
+                    <span {...getHighlightHTML(item, 'lvl3')} />
+                  </>
+                )}
+              </FOOTNOTE>
+            </>
+          )}
+          {!lvl6 && lvl3 && (
             <>
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl3')} />
               <FOOTNOTE css={footnoteStyle}>
+                <ItemFootnotePrefix url={item.url} isNested />
                 <span {...getHighlightHTML(item, 'lvl0')} />
                 {lvl2 && (
                   <>
@@ -66,14 +109,20 @@ export const ExpoDocsItem = ({ item, onSelect }: Props) => {
               </FOOTNOTE>
             </>
           )}
-          {!lvl3 && lvl2 && (
+          {!lvl6 && !lvl3 && lvl2 && (
             <>
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl2')} />
-              <FOOTNOTE css={footnoteStyle} {...getHighlightHTML(item, 'lvl0')} />
+              <FOOTNOTE css={footnoteStyle}>
+                <ItemFootnotePrefix url={item.url} isNested />
+                <span {...getHighlightHTML(item, 'lvl0')} />
+              </FOOTNOTE>
             </>
           )}
-          {!lvl3 && !lvl2 && lvl0 && (
-            <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl0')} />
+          {!lvl6 && !lvl3 && !lvl2 && lvl0 && (
+            <>
+              <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl0')} />
+              <ItemFootnotePrefix url={item.url} />
+            </>
           )}
         </div>
       </div>
