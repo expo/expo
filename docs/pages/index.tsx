@@ -120,7 +120,7 @@ const Home = () => {
               <H2 css={css({ color: palette.primary['900'], zIndex: 1, position: 'relative' })}>
                 Create a universal Android, iOS,
                 <br />
-                and web photo sharing app
+                and web app
               </H2>
               <HomeButton
                 css={css({
@@ -128,7 +128,7 @@ const Home = () => {
                   color: button.primary.foreground,
                   height: 40,
                 })}
-                href="/tutorial/planning/"
+                href="/tutorial/introduction/"
                 iconRight={<ArrowRightIcon color={button.primary.foreground} />}>
                 Start Tutorial
               </HomeButton>

@@ -124,12 +124,13 @@ redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
 
 redirects[introduction/walkthrough]=tutorial/planning/
 
-# development builds
+# Development builds
 redirects[development/build]=development/create-development-builds/
 redirects[development/getting-started]=development/create-development-builds/
 redirects[development/troubleshooting]=development/introduction/
 redirects[development/upgrading]=development/introduction/
 redirects[development/extensions]=development/development-workflows/
+
 # Guides that have been deleted
 redirects[guides/using-gatsby]=guides/
 redirects[guides/testing-on-devices]=workflow/run-on-device
@@ -152,6 +153,21 @@ redirects[eas-update/bare-react-native]=bare/updating-your-app
 redirects[worfkflow/publishing]=archive/classic-updates/publishing
 redirects[classic/building-standalone-apps/]=archive/classic-updates/building-standalone-apps/
 redirects[classic/turtle-cli/]=archive/classic-updates/turtle-cli/
+
+# Old tutorial pages
+redirects[introduction/walkthrough]=tutorial/introduction/
+redirects[tutorial/planning]=tutorial/introduction/
+redirects[tutorial/sharing]=tutorial/introduction/
+redirects[tutorial/text]=tutorial/introduction/
+
+# Removed API reference docs
+redirects[versions/latest/sdk/facebook]=guides/authentication/
+redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
+redirects[versions/latest/sdk/videothumbnails]=versions/latest/sdk/video-thumbnails/
+redirects[versions/latest/sdk/appearance]=versions/latest/react-native/appearance/
+redirects[versions/latest/sdk/app-loading]=versions/latest/sdk/splash-screen/
+redirects[versions/latest/sdk/app-auth]=guides/authentication/
+redirects[versions/latest/sdk/google-sign-in]=guides/authentication/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
