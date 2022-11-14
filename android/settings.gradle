@@ -21,7 +21,8 @@ useExpoModules([
         'expo-dev-menu-interface',
         'expo-dev-menu',
         'expo-dev-launcher',
-        'expo-dev-client'
+        'expo-dev-client',
+        'expo-maps'
     ],
     searchPaths: [
       'enabled-modules'
@@ -67,7 +68,8 @@ useExpoModules([
         'expo-dev-menu-interface',
         'expo-dev-menu',
         'expo-dev-launcher',
-        'expo-dev-client'
+        'expo-dev-client',
+        'expo-maps'
     ]
 ])
 
