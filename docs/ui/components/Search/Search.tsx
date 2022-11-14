@@ -1,6 +1,8 @@
 import * as docsearch from '@docsearch/react';
 import { Global } from '@emotion/react';
-import * as React from 'react';
+
+import { CommandMenu } from '../CommandMenu';
+import { commandMenuStyles } from '../CommandMenu/styles';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
@@ -15,6 +17,8 @@ export const Search = () => {
   return (
     <>
       <Global styles={DocSearchStyles} />
+      <Global styles={commandMenuStyles} />
+      <CommandMenu version={version} />
       <docsearch.DocSearch
         appId="QEX7PB7D46"
         indexName="expo"
