@@ -126,6 +126,7 @@ internal struct MediaHandler {
         }
 
         let (imageData, fileExtension) = try ImageUtils.readDataAndFileExtension(image: image,
+                                                                                 rawData: rawData,
                                                                                  itemProvider: itemProvider,
                                                                                  options: self.options)
 
@@ -345,11 +346,16 @@ private struct ImageUtils {
       return (nil, ".bmp")
 
     case .some(let s) where s.contains("ext=GIF"):
+      // For old <= iOS 13 picker we try getting data from mediaInfo
+      var rawData: Data?
+      if let imgUrl = mediaInfo[.imageURL] as? URL {
+        rawData = try? Data(contentsOf: imgUrl)
+      }
+      let inputData = rawData ?? image.jpegData(compressionQuality: compressionQuality)
       let metadata = mediaInfo[.mediaMetadata] as? [String: Any]
       let gifData = try getGifDataFrom(image: image,
                                        compressionQuality: options.quality,
                                        initialMetadata: metadata)
-
       return (gifData, ".gif")
     default:
       let data = image.jpegData(compressionQuality: compressionQuality)
@@ -360,6 +366,7 @@ private struct ImageUtils {
   @available(iOS 14, *)
   static func readDataAndFileExtension(
     image: UIImage,
+    rawData: Data,
     itemProvider: NSItemProvider,
     options: ImagePickerOptions
   ) throws -> (imageData: Data?, fileExtension: String) {
@@ -371,7 +378,7 @@ private struct ImageUtils {
       let data = image.pngData()
       return (data, ".png")
     case UTType.gif.identifier:
-      let gifData = try getGifDataFrom(image: image,
+      let gifData = try processGifData(inputData: rawData,
                                        compressionQuality: options.quality,
                                        initialMetadata: nil)
       return (gifData, ".gif")
@@ -511,34 +518,43 @@ private struct ImageUtils {
   static func getGifDataFrom(image: UIImage,
                              compressionQuality quality: Double?,
                              initialMetadata: [String: Any]?) throws -> Data? {
-    guard let data = image.jpegData(compressionQuality: quality ?? DEFAULT_QUALITY) else {
-      throw FailedToReadImageDataException()
+    // for undefined or maximum quality we can just pass through the raw data
+    if quality == nil || quality == MAXIMUM_QUALITY {
+      return inputData
     }
-
+    
+    guard let sourceData = inputData,
+          let imageSource = CGImageSourceCreateWithData(sourceData as CFData, nil)
+    else {
+      throw FailedToReadImageException()
+    }
+    
+    let gifProperties = CGImageSourceCopyProperties(imageSource, nil) as? [String: Any]
+    let frameCount = CGImageSourceGetCount(imageSource)
+    
     let destinationData = NSMutableData()
-    guard let imageDestination = CGImageDestinationCreateWithData(destinationData, kUTTypeGIF, 1, nil),
-          let cgImage = image.cgImage
+    guard let imageDestination = CGImageDestinationCreateWithData(destinationData, kUTTypeGIF, frameCount, nil)
     else {
       throw FailedToCreateGifException()
     }
-
-    var metadata: [String: Any] = initialMetadata ?? [:]
-    if initialMetadata == nil,
-       let cgImageSource = CGImageSourceCreateWithData(data as CFData, nil),
-       let properties = CGImageSourceCopyPropertiesAtIndex(cgImageSource, 0, nil) as? [String: Any] {
-      metadata = properties
+    
+    let gifMetadata = gifProperties ?? initialMetadata
+    CGImageDestinationSetProperties(imageDestination, gifMetadata as CFDictionary?);
+    
+    for frameIndex in 0 ..< frameCount {
+      guard let cgImage = CGImageSourceCreateImageAtIndex(imageSource, frameIndex, nil),
+            var frameProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, frameIndex, nil) as? [String: Any]
+      else {
+        throw FailedToCreateGifException()
+      }
+      frameProperties[kCGImageDestinationLossyCompressionQuality as String] = quality
+      CGImageDestinationAddImage(imageDestination, cgImage, frameProperties as CFDictionary)
     }
-
-    if quality != nil {
-      metadata[kCGImageDestinationLossyCompressionQuality as String] = quality
-    }
-
-    CGImageDestinationAddImage(imageDestination, cgImage, metadata as CFDictionary)
-
+    
     if !CGImageDestinationFinalize(imageDestination) {
       throw FailedToExportGifException()
     }
-
+    
     return destinationData as Data
   }
 }
