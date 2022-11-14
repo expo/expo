@@ -362,7 +362,7 @@ describe('getJsInspectorBaseUrl', () => {
   it('should return tunnel url', async () => {
     const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
     await devServer.startAsync({ location: { hostType: 'tunnel' } });
-    expect(devServer.getJsInspectorBaseUrl()).toBe('http://exp.tunnel.dev:80');
+    expect(devServer.getJsInspectorBaseUrl()).toBe('http://exp.tunnel.dev');
   });
 
   it('should throw error for unsupported bundler', async () => {

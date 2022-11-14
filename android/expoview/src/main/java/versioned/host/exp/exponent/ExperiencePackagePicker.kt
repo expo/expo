@@ -25,7 +25,6 @@ import expo.modules.firebase.analytics.FirebaseAnalyticsPackage
 import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
-import expo.modules.haptics.HapticsPackage
 import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorPackage
 import expo.modules.imagepicker.ImagePickerModule
@@ -55,7 +54,6 @@ import expo.modules.sms.SMSPackage
 import expo.modules.speech.SpeechPackage
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.sqlite.SQLitePackage
-import expo.modules.storereview.StoreReviewPackage
 import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
@@ -82,7 +80,6 @@ object ExperiencePackagePicker : ModulesProvider {
     FirebaseAnalyticsPackage(),
     FontLoaderPackage(),
     GLPackage(),
-    HapticsPackage(),
     ImageLoaderPackage(),
     ImageManipulatorPackage(),
     IntentLauncherPackage(),
@@ -97,7 +94,6 @@ object ExperiencePackagePicker : ModulesProvider {
     PermissionsPackage(),
     PrintPackage(),
     SMSPackage(),
-    StoreReviewPackage(),
     SQLitePackage(),
     ScreenCapturePackage(),
     ScreenOrientationPackage(),

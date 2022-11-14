@@ -1,5 +1,6 @@
 ---
-title: Creating your first native module
+title: "Tutorial: Creating a native module"
+sidebar_title: Creating a native module
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
@@ -335,7 +336,7 @@ export default function App() {
 }
 ```
 
-## 5. Improve type safety with Enums
+## 6. Improve type safety with Enums
 
 It's easy for us to make a mistake when using the `Settings.setTheme()` API in its current form, because we can set the theme to any string value. We can improve the type safety of this API by using an enum to restrict the possible values to `system`, `light`, and `dark`.
 
@@ -455,3 +456,5 @@ We can see from the last line of the error message that `not-a-real-theme` is no
 ## Next steps
 
 Congratulations, you have created your first simple yet non-trivial Expo module for iOS and Android! Learn more about the API in the [Expo Module API reference](/modules/module-api/).
+
+If you enjoyed this tutorial and haven't done the native view tutorial, go to the ["Creating a native view" tutorial](/modules/native-view-tutorial/) next.
