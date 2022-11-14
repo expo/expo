@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+- Fixed failed resolution of 'java.nio.file.Path' on Android.
 
 ### 💡 Others
 

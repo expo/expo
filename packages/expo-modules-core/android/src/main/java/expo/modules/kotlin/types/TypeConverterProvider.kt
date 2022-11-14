@@ -145,7 +145,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       isOptional, ExpectedType(CppType.BOOLEAN)
     ) { it.asBoolean() }
 
-    return mapOf(
+    val converters = mapOf(
       Int::class.createType(nullable = isOptional) to intTypeConverter,
       java.lang.Integer::class.createType(nullable = isOptional) to intTypeConverter,
 
@@ -229,9 +229,16 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       URI::class.createType(nullable = isOptional) to JavaURITypeConverter(isOptional),
 
       File::class.createType(nullable = isOptional) to FileTypeConverter(isOptional),
-      Path::class.createType(nullable = isOptional) to PathTypeConverter(isOptional),
 
       Any::class.createType(nullable = isOptional) to AnyTypeConverter(isOptional),
     )
+
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+      return converters + mapOf(
+        Path::class.createType(nullable = isOptional) to PathTypeConverter(isOptional),
+      )
+    }
+
+    return converters
   }
 }
