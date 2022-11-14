@@ -180,6 +180,10 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.0.0):
     - ExpoModulesCore
+  - ExpoMaps (0.0.1):
+    - ExpoModulesCore
+    - GoogleMaps (= 7.1.0)
+    - GooglePlaces (= 7.1.0)
   - ExpoModulesCore (1.0.0):
     - React-Core
     - ReactCommon/turbomodule/core
@@ -236,11 +240,17 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30910.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleMaps (7.1.0):
+    - GoogleMaps/Maps (= 7.1.0)
+  - GoogleMaps/Base (7.1.0)
+  - GoogleMaps/Maps (7.1.0):
+    - GoogleMaps/Base
   - GoogleMLKit/FaceDetection (2.6.0):
     - GoogleMLKit/MLKitCore
     - MLKitFaceDetection (~> 1.5.0)
   - GoogleMLKit/MLKitCore (2.6.0):
     - MLKitCommon (~> 5.0.0)
+  - GooglePlaces (7.1.0)
   - GoogleToolboxForMac/DebugUtils (2.3.2):
     - GoogleToolboxForMac/Defines (= 2.3.2)
   - GoogleToolboxForMac/Defines (2.3.2)
@@ -715,6 +725,7 @@ DEPENDENCIES:
   - ExpoLocalAuthentication (from `../../../packages/expo-local-authentication/ios`)
   - ExpoLocalization (from `../../../packages/expo-localization/ios`)
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
+  - ExpoMaps (from `../../../packages/expo-maps/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoRandom (from `../../../packages/expo-random/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
@@ -794,7 +805,9 @@ SPEC REPOS:
     - CocoaLumberjack
     - fmt
     - GoogleDataTransport
+    - GoogleMaps
     - GoogleMLKit
+    - GooglePlaces
     - GoogleToolboxForMac
     - GoogleUtilities
     - GoogleUtilitiesComponents
@@ -952,6 +965,9 @@ EXTERNAL SOURCES:
   ExpoMailComposer:
     inhibit_warnings: false
     :path: "../../../packages/expo-mail-composer/ios"
+  ExpoMaps:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-maps/ios"
   ExpoModulesCore:
     inhibit_warnings: false
     :path: "../../../packages/expo-modules-core"
@@ -1165,6 +1181,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: b33ed1e2e572c6e2a09a081b1aef4fe22cdff706
   ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
   ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
+  ExpoMaps: da84a66611924dd53beaa2d2801cbd677758796a
   ExpoModulesCore: e47e5d3e3f8fbc03b6c41cfc1d54421381201dd5
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
   ExpoStoreReview: ff6d631f2949eb7e4b2d14146ef6af25a16d770d
@@ -1190,7 +1207,9 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
+  GoogleMaps: bc56ffb0324e345a2d91bac1a64a920f9c8f1b20
   GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95
+  GooglePlaces: 187946335ec3dc624de71c0a9ddcc712f19b0ee1
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUtilities: 1d20a6ad97ef46f67bbdec158ce00563a671ebb7
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
