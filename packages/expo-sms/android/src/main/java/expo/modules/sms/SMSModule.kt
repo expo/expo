@@ -13,15 +13,12 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
-private const val OPTIONS_ATTACHMENTS_KEY = "attachments"
-
 class SMSModule : Module(), LifecycleEventListener {
-  private var mPendingPromise: Promise? = null
-  private var mSMSComposerOpened = false
+  private var pendingPromise: Promise? = null
+  private var smsComposerOpened = false
 
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-
   private val currentActivity
     get() = appContext.activityProvider?.currentActivity
       ?: throw MissingCurrentActivityException()
@@ -34,27 +31,27 @@ class SMSModule : Module(), LifecycleEventListener {
       uiManager?.registerLifecycleEventListener(this@SMSModule)
     }
 
-    OnDestroy {
-      val uiManager = appContext.legacyModule<UIManager>()
-      uiManager?.unregisterLifecycleEventListener(this@SMSModule)
-    }
-
-    AsyncFunction("sendSMSAsync") { addresses: ArrayList<String>, message: String, options: SMSOptions?, promise: Promise ->
+    AsyncFunction("sendSMSAsync") { addresses: List<String>, message: String, options: SMSOptions?, promise: Promise ->
       sendSMSAsync(addresses, message, options, promise)
     }
 
     AsyncFunction("isAvailableAsync") {
       return@AsyncFunction context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY)
     }
+
+    OnDestroy {
+      val uiManager = appContext.legacyModule<UIManager>()
+      uiManager?.unregisterLifecycleEventListener(this@SMSModule)
+    }
   }
 
-  private fun sendSMSAsync(addresses: ArrayList<String>, message: String, options: SMSOptions?, promise: Promise) {
-    val attachments = options?.attachments
+  private fun sendSMSAsync(addresses: List<String>, message: String, options: SMSOptions?, promise: Promise) {
+    val attachments = options?.attachments ?: emptyList()
 
     // ACTION_SEND causes a weird flicker on Android 10 devices if the messaging app is not already
     // open in the background, but it seems to be the only intent type that works for including
     // attachments, so we use it if there are attachments and fall back to ACTION_SENDTO otherwise.
-    val smsIntent = if (attachments?.isNotEmpty() == true) {
+    val smsIntent = if (attachments.isNotEmpty()) {
       Intent(Intent.ACTION_SEND).apply {
         type = "text/plain"
         putExtra("address", addresses.joinToString(separator = ";"))
@@ -80,24 +77,23 @@ class SMSModule : Module(), LifecycleEventListener {
       putExtra("sms_body", message)
     }
 
-    mPendingPromise = promise
+    pendingPromise = promise
     currentActivity.startActivity(smsIntent)
-
-    mSMSComposerOpened = true
+    smsComposerOpened = true
   }
 
   override fun onHostResume() {
-    val promise = mPendingPromise
-    if (mSMSComposerOpened && promise != null) {
+    val promise = pendingPromise
+    if (smsComposerOpened && promise != null) {
       // the only way to check the status of the message is to query the device's SMS database
       // but this requires READ_SMS permission, which Google is heavily restricting beginning Jan 2019
       // so we just resolve with an unknown value
       promise.resolve(
         bundleOf(Pair("result", "unknown"))
       )
-      mPendingPromise = null
+      pendingPromise = null
     }
-    mSMSComposerOpened = false
+    smsComposerOpened = false
   }
 
   override fun onHostPause() = Unit
