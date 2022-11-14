@@ -3,7 +3,7 @@ import { Command } from 'cmdk';
 import type { AlgoliaItemType } from '../types';
 import { getHighlightHTML, openLink } from '../utils';
 import { ExternalLinkIcon, FootnoteArrowIcon, ReactIcon } from './icons';
-import { itemStyle, footnoteStyle } from './styles';
+import { itemStyle, footnoteStyle, itemIconWrapperStyle } from './styles';
 
 import { CALLOUT, FOOTNOTE } from '~/ui/components/Text';
 
@@ -23,7 +23,9 @@ export const RNDocsItem = ({ item, onSelect }: Props) => {
         onSelect && onSelect();
       }}>
       <div css={itemStyle}>
-        <ReactIcon />
+        <div css={itemIconWrapperStyle}>
+          <ReactIcon />
+        </div>
         {lvl4 && (
           <div>
             <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl4')} />

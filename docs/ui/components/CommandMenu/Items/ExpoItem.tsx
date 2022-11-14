@@ -1,4 +1,4 @@
-import { BuildIcon, theme } from '@expo/styleguide';
+import { BuildIcon, iconSize, theme } from '@expo/styleguide';
 import { Command } from 'cmdk';
 
 import { ExpoItemType } from '../types';
@@ -23,10 +23,8 @@ export const ExpoItem = ({ item, onSelect }: Props) => {
         onSelect && onSelect();
       }}>
       <div css={itemStyle}>
-        <Icon color={theme.icon.secondary} />
-        <div>
-          <CALLOUT weight="medium">{item.label}</CALLOUT>
-        </div>
+        <Icon color={theme.icon.secondary} width={iconSize.regular} />
+        <CALLOUT weight="medium">{item.label}</CALLOUT>
       </div>
     </Command.Item>
   );

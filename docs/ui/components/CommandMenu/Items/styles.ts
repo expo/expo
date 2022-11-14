@@ -7,6 +7,10 @@ export const itemStyle = css({
   gap: spacing[2.5],
 });
 
+export const itemIconWrapperStyle = css({
+  flexShrink: 0,
+});
+
 export const footnoteStyle = css({
   ...typography.fontSizes[12],
   color: theme.icon.secondary,

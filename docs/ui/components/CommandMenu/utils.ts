@@ -1,3 +1,15 @@
+import type { Dispatch, SetStateAction } from 'react';
+
+export const getItems = async (
+  query: string,
+  fetcher: (query: string, version?: string) => Promise<any>,
+  setter: Dispatch<SetStateAction<any[]>>,
+  version?: string
+) => {
+  const data = await fetcher(query, version).then(response => response.json());
+  setter(data?.hits || data?.libraries || []);
+};
+
 const getAlgoliaFetchParams = (
   query: string,
   appId: string,
@@ -84,6 +96,5 @@ export const isEASPath = (url: string) => {
       return true;
     }
   }
-
   return false;
 };

@@ -4,7 +4,7 @@ import { Command } from 'cmdk';
 import type { AlgoliaItemType } from '../types';
 import { getHighlightHTML, isEASPath, openLink } from '../utils';
 import { FootnoteArrowIcon, GuideIcon } from './icons';
-import { footnoteStyle, itemStyle } from './styles';
+import { footnoteStyle, itemIconWrapperStyle, itemStyle } from './styles';
 
 import versions from '~/public/static/constants/versions.json';
 import { CALLOUT, FOOTNOTE } from '~/ui/components/Text';
@@ -48,7 +48,9 @@ export const ExpoDocsItem = ({ item, onSelect }: Props) => {
         onSelect && onSelect();
       }}>
       <div css={itemStyle}>
-        <ItemIcon url={item.url} />
+        <div css={itemIconWrapperStyle}>
+          <ItemIcon url={item.url} />
+        </div>
         <div>
           {lvl3 && (
             <>

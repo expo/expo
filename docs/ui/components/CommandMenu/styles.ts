@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, shadows, borderRadius, spacing } from '@expo/styleguide';
+import { theme, shadows, borderRadius, spacing, breakpoints, typography } from '@expo/styleguide';
 
 export const commandMenuStyles = css`
   #__next[aria-hidden] {
@@ -14,6 +14,10 @@ export const commandMenuStyles = css`
     top: 0;
     width: 100vw;
     z-index: 200;
+
+    @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+      display: none;
+    }
   }
 
   [cmdk-root] {
@@ -30,6 +34,15 @@ export const commandMenuStyles = css`
     min-width: 680px;
     border: 1px solid ${theme.border.default};
     z-index: 1001;
+
+    @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+      min-height: 100vh;
+      max-height: 100vh;
+      width: 100vw;
+      min-width: 100vw;
+      top: 50%;
+      border-radius: 0;
+    }
   }
 
   [cmdk-input] {
@@ -38,12 +51,10 @@ export const commandMenuStyles = css`
     color: ${theme.text.default};
     flex: 1;
     font: inherit;
-    font-size: 1.2em;
     height: 100%;
     outline: none;
     padding: ${spacing[3]}px ${spacing[3]}px ${spacing[3]}px ${spacing[12]}px;
-    margin: ${spacing[4]}px;
-    margin-bottom: 0;
+    margin: ${spacing[4]}px ${spacing[4]}px 0;
     border: 1px solid ${theme.border.default};
     border-radius: ${borderRadius.medium}px;
     width: calc(100% - ${spacing[8]}px);
@@ -63,7 +74,7 @@ export const commandMenuStyles = css`
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 4px 12px;
+    padding: ${spacing[1]}px ${spacing[3]}px;
     color: ${theme.text.default};
     user-select: none;
     will-change: background, color;
@@ -97,14 +108,19 @@ export const commandMenuStyles = css`
   }
 
   [cmdk-list] {
-    height: calc(75vh - 50px - 50px - 24px);
-    max-height: calc(75vh - 50px - 50px - 24px);
+    height: calc(75vh - 50px - 50px - 20px);
+    max-height: calc(75vh - 50px - 50px - 20px);
     overflow: auto;
     overscroll-behavior: contain;
     border-top: 1px solid ${theme.border.default};
     border-bottom: 1px solid ${theme.border.default};
-    padding: 0 ${spacing[3]}px;
+    padding: 0 ${spacing[4]}px;
     margin: ${spacing[3]}px 0 0;
+
+    @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+      height: calc(100vh - 50px - 50px - 20px);
+      max-height: calc(100vh - 50px - 50px - 20px);
+    }
   }
 
   [cmdk-separator] {
@@ -115,23 +131,22 @@ export const commandMenuStyles = css`
   }
 
   [cmdk-group-heading] {
+    ${typography.fontSizes[12]};
     user-select: none;
-    font-size: 12px;
     color: ${theme.text.secondary};
-    padding: 20px 8px 12px;
+    padding: ${spacing[4]}px ${spacing[2]}px ${spacing[2]}px;
     display: flex;
     align-items: center;
+    gap: ${spacing[1]}px;
     margin: 0 2px;
   }
 
   [cmdk-empty] {
-    font-size: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 48px;
     white-space: pre-wrap;
-    color: var(--gray11);
+    padding: ${spacing[8]}px 0;
   }
 
   html[data-expo-theme='dark'] {
@@ -147,13 +162,13 @@ export const commandMenuStyles = css`
 
 export const searchIconStyle = css({
   position: 'absolute',
-  top: 31,
+  top: 29,
   left: 32,
 });
 
 export const loadingIconStyle = css({
   position: 'absolute',
-  top: 31,
+  top: 29,
   right: 32,
   transition: 'opacity 0.2s ease-in-out',
 });

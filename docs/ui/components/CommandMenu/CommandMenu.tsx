@@ -1,17 +1,15 @@
 import { WordMarkLogo, SearchIcon, theme, StatusWaitingIcon } from '@expo/styleguide';
 import { Command } from 'cmdk';
-import { Dispatch, useEffect, useState, SetStateAction } from 'react';
+import { useEffect, useState } from 'react';
 
 import { CommandFooter } from './CommandFooter';
 import { RNDirectoryItem, RNDocsItem, ExpoDocsItem, ExpoItem } from './Items';
 import { entries } from './Items/expoEntries';
-import { footnoteStyle } from './Items/styles';
 import { searchIconStyle, loadingIconStyle } from './styles';
-import type { ExpoItemType, RNDirectoryItemType } from './types';
-import { AlgoliaItemType } from './types';
-import { getExpoResults, getDocsResults, getDirectoryResults } from './utils';
+import type { ExpoItemType, RNDirectoryItemType, AlgoliaItemType } from './types';
+import { getExpoResults, getDocsResults, getDirectoryResults, getItems } from './utils';
 
-import { FOOTNOTE } from '~/ui/components/Text';
+import { CALLOUT } from '~/ui/components/Text';
 
 type Props = {
   version: string;
@@ -27,36 +25,18 @@ export const CommandMenu = ({ version }: Props) => {
   const [directoryItems, setDirectoryItems] = useState<RNDirectoryItemType[]>([]);
 
   useEffect(() => {
-    const down = (e: KeyboardEvent) => {
+    const keyDownListener = (e: KeyboardEvent) => {
       if (e.key === 'j' && e.metaKey) {
         setOpen(open => !open);
       }
     };
-
-    document.addEventListener('keydown', down);
-    return () => document.removeEventListener('keydown', down);
+    document.addEventListener('keydown', keyDownListener);
+    return () => document.removeEventListener('keydown', keyDownListener);
   }, []);
 
-  async function getItems(
-    fetcher: (query: string, version?: string) => Promise<any>,
-    setter: Dispatch<SetStateAction<any[]>>,
-    version?: string
-  ) {
-    const data = await fetcher(query, version).then(response => response.json());
-    setter(data?.hits || data?.libraries || []);
-  }
-
-  const getExpoDocsItems = async () => {
-    return getItems(getExpoResults, setExpoDocsItems, version);
-  };
-
-  const getRNDocsItems = async () => {
-    return getItems(getDocsResults, setRnDocsItems);
-  };
-
-  const getDirectoryItems = async () => {
-    return getItems(getDirectoryResults, setDirectoryItems);
-  };
+  const getExpoDocsItems = async () => getItems(query, getExpoResults, setExpoDocsItems, version);
+  const getRNDocsItems = async () => getItems(query, getDocsResults, setRnDocsItems);
+  const getDirectoryItems = async () => getItems(query, getDirectoryResults, setDirectoryItems);
 
   const getExpoItems = async () => {
     return setExpoItems(
@@ -64,16 +44,17 @@ export const CommandMenu = ({ version }: Props) => {
     );
   };
 
-  const getData = () => {
+  const dismiss = () => setOpen(false);
+
+  useEffect(() => {
     setLoading(true);
     Promise.all([getExpoDocsItems(), getRNDocsItems(), getDirectoryItems(), getExpoItems()]).then(
-      () => {
-        setLoading(false);
-      }
+      () => setLoading(false)
     );
-  };
+  }, [query]);
 
-  useEffect(getData, [query]);
+  const totalCount =
+    expoDocsItems.length + rnDocsItems.length + directoryItems.length + expoItems.length;
 
   return (
     <Command.Dialog open={open} onOpenChange={setOpen} label="Search Menu" shouldFilter={false}>
@@ -82,17 +63,17 @@ export const CommandMenu = ({ version }: Props) => {
         color={theme.palette.purple[300]}
         css={[loadingIconStyle, { opacity: loading ? 1 : 0 }]}
       />
-      <Command.Input value={query} onValueChange={setQuery} />
+      <Command.Input value={query} onValueChange={setQuery} placeholder="search" />
       <Command.List>
         {expoDocsItems.length > 0 && (
           <Command.Group
             heading={
               <>
-                <WordMarkLogo width={46} css={{ marginRight: 4 }} /> documentation
+                <WordMarkLogo width={46} /> documentation
               </>
             }>
             {expoDocsItems.map(item => (
-              <ExpoDocsItem item={item} onSelect={() => setOpen(false)} />
+              <ExpoDocsItem item={item} onSelect={dismiss} />
             ))}
           </Command.Group>
         )}
@@ -100,31 +81,31 @@ export const CommandMenu = ({ version }: Props) => {
           <Command.Group
             heading={
               <>
-                <WordMarkLogo width={46} css={{ marginRight: 4 }} /> dashboard
+                <WordMarkLogo width={46} /> dashboard
               </>
             }>
             {expoItems.map((item: ExpoItemType) => (
-              <ExpoItem item={item} onSelect={() => setOpen(false)} />
+              <ExpoItem item={item} onSelect={dismiss} />
             ))}
           </Command.Group>
         )}
         {rnDocsItems.length > 0 && (
           <Command.Group heading="React Native documentation">
             {rnDocsItems.map(item => (
-              <RNDocsItem item={item} onSelect={() => setOpen(false)} />
+              <RNDocsItem item={item} onSelect={dismiss} />
             ))}
           </Command.Group>
         )}
         {directoryItems.length > 0 && (
           <Command.Group heading="React Native directory">
             {directoryItems.map(item => (
-              <RNDirectoryItem item={item} onSelect={() => setOpen(false)} />
+              <RNDirectoryItem item={item} onSelect={dismiss} />
             ))}
           </Command.Group>
         )}
-        {expoDocsItems.length + rnDocsItems.length + directoryItems.length === 0 && (
+        {totalCount === 0 && (
           <Command.Empty>
-            <FOOTNOTE css={footnoteStyle}>No results found.</FOOTNOTE>
+            <CALLOUT theme="secondary">No results found.</CALLOUT>
           </Command.Empty>
         )}
       </Command.List>

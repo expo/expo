@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
+import { breakpoints, spacing, theme } from '@expo/styleguide';
 
 import { footnoteStyle } from './Items/styles';
 
@@ -7,14 +7,14 @@ import { FOOTNOTE, kbdStyle } from '~/ui/components/Text';
 
 export const CommandFooter = () => (
   <div css={commandFooterStyle}>
-    <FOOTNOTE css={footnoteStyle}>
+    <FOOTNOTE css={[footnoteStyle, hideOnMobileStyle]}>
       <kbd css={[kbdStyle, kbdIsolatedStyle]}>↵</kbd> to select
     </FOOTNOTE>
-    <FOOTNOTE css={footnoteStyle}>
+    <FOOTNOTE css={[footnoteStyle, hideOnMobileStyle]}>
       <kbd css={[kbdStyle, kbdIsolatedStyle]}>↑</kbd>
       <kbd css={[kbdStyle, kbdIsolatedStyle]}>↓</kbd> to navigate
     </FOOTNOTE>
-    <FOOTNOTE css={footnoteStyle}>
+    <FOOTNOTE css={[footnoteStyle, hideOnMobileStyle]}>
       <kbd css={[kbdStyle, kbdIsolatedStyle]}>esc</kbd> to close
     </FOOTNOTE>
     <FOOTNOTE css={[footnoteStyle, rightSectionStyle]}>
@@ -35,12 +35,19 @@ const commandFooterStyle = css({
 const kbdIsolatedStyle = css({
   border: `1px solid ${theme.border.default}`,
   marginRight: spacing[1],
+  backgroundColor: theme.background.secondary,
 });
 
 const rightSectionStyle = css({
   display: 'inline-flex',
   marginLeft: 'auto',
   gap: spacing[2],
+});
+
+const hideOnMobileStyle = css({
+  [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
+    display: 'none',
+  },
 });
 
 const AlgoliaLogo = () => (

@@ -9,6 +9,7 @@ import {
   UpdateIcon,
   CredentialIcon,
   SecretsIcon,
+  SnackLogo,
 } from '@expo/styleguide';
 
 export const entries = [
@@ -21,6 +22,11 @@ export const entries = [
     label: 'User Settings',
     url: 'https://expo.dev/settings',
     Icon: SettingsIcon,
+  },
+  {
+    label: 'Snacks',
+    url: 'https://expo.dev/accounts/[account]/snacks',
+    Icon: SnackLogo,
   },
   {
     label: 'Project Overview',
