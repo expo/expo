@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '1.0.2'
+version = '1.0.3'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -191,7 +191,7 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.0.2"
+    versionName "1.0.3"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"

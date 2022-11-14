@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- New API Updates.isEmbeddedLaunch. ([#20014](https://github.com/expo/expo/pull/20014) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.15.5 — 2022-11-14
+
+### 🎉 New features
+
+- New API Updates.isEmbeddedLaunch. ([#20014](https://github.com/expo/expo/pull/20014) by [@douglowder](https://github.com/douglowder))
 
 ## 0.15.4 — 2022-11-03
 
