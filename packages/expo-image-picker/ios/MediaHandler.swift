@@ -346,16 +346,17 @@ private struct ImageUtils {
       return (nil, ".bmp")
 
     case .some(let s) where s.contains("ext=GIF"):
-      // For old <= iOS 13 picker we try getting data from mediaInfo
       var rawData: Data?
       if let imgUrl = mediaInfo[.imageURL] as? URL {
-        rawData = try? Data(contentsOf: imgUrl)
+         rawData = try? Data(contentsOf: imgUrl)
       }
       let inputData = rawData ?? image.jpegData(compressionQuality: compressionQuality)
       let metadata = mediaInfo[.mediaMetadata] as? [String: Any]
-      let gifData = try getGifDataFrom(image: image,
+      let cropRect = mediaInfo[.cropRect] as? CGRect
+      let gifData = try processGifData(inputData: inputData,
                                        compressionQuality: options.quality,
-                                       initialMetadata: metadata)
+                                       initialMetadata: metadata,
+                                       cropRect: cropRect)
       return (gifData, ".gif")
     default:
       let data = image.jpegData(compressionQuality: compressionQuality)
@@ -515,20 +516,22 @@ private struct ImageUtils {
     return exif
   }
 
-  static func getGifDataFrom(image: UIImage,
+  static func processGifData(inputData: Data?,
                              compressionQuality quality: Double?,
-                             initialMetadata: [String: Any]?) throws -> Data? {
-    // for undefined or maximum quality we can just pass through the raw data
-    if quality == nil || quality == MAXIMUM_QUALITY {
+                             initialMetadata: [String: Any]?,
+                             cropRect: CGRect? = nil) throws -> Data? {
+    // for uncropped, maximum quality image we can just pass through the raw data
+    if cropRect == nil,
+       quality == nil || quality == MAXIMUM_QUALITY {
       return inputData
     }
-    
+
     guard let sourceData = inputData,
           let imageSource = CGImageSourceCreateWithData(sourceData as CFData, nil)
     else {
       throw FailedToReadImageException()
     }
-    
+
     let gifProperties = CGImageSourceCopyProperties(imageSource, nil) as? [String: Any]
     let frameCount = CGImageSourceGetCount(imageSource)
     
@@ -537,24 +540,28 @@ private struct ImageUtils {
     else {
       throw FailedToCreateGifException()
     }
-    
-    let gifMetadata = gifProperties ?? initialMetadata
+
+    let gifMetadata = initialMetadata ?? gifProperties
     CGImageDestinationSetProperties(imageDestination, gifMetadata as CFDictionary?);
     
     for frameIndex in 0 ..< frameCount {
-      guard let cgImage = CGImageSourceCreateImageAtIndex(imageSource, frameIndex, nil),
+      guard var cgImage = CGImageSourceCreateImageAtIndex(imageSource, frameIndex, nil),
             var frameProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, frameIndex, nil) as? [String: Any]
       else {
         throw FailedToCreateGifException()
       }
-      frameProperties[kCGImageDestinationLossyCompressionQuality as String] = quality
+      if cropRect != nil {
+        cgImage = cgImage.cropping(to: cropRect!)!
+      }
+      if quality != nil {
+        frameProperties[kCGImageDestinationLossyCompressionQuality as String] = quality
+      }
       CGImageDestinationAddImage(imageDestination, cgImage, frameProperties as CFDictionary)
     }
-    
+
     if !CGImageDestinationFinalize(imageDestination) {
       throw FailedToExportGifException()
     }
-    
     return destinationData as Data
   }
 }
