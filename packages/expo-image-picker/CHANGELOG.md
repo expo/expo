@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix support for animated GIFs on iOS.
+- Fix support for animated GIFs on iOS. ([#20034](https://github.com/expo/expo/pull/20034) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
