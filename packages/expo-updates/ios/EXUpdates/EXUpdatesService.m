@@ -72,10 +72,10 @@ EX_REGISTER_MODULE();
 
 - (BOOL)isEmbeddedLaunch
 {
-  return ([self embeddedUpdate] != nil &&
-          [self launchedUpdate] != nil &&
-          [[self embeddedUpdate].updateId.UUIDString isEqualToString:[self launchedUpdate].updateId.UUIDString]
-          );
+  // True if the embedded update and its ID are not nil, and match
+  // the ID of the launched update
+  return [[self embeddedUpdate] updateId] != nil &&
+  [[[self embeddedUpdate] updateId] isEqual:[[self launchedUpdate] updateId]];
 }
 
 - (BOOL)isStarted
