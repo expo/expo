@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix support for animated GIFs on iOS.
+
 ### 💡 Others
 
 ## 14.0.1 - 2022-11-08
