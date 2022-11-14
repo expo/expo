@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Migrated iOS codebase to use the new Expo modules API. ([#20002](https://github.com/expo/expo/pull/20002) by [@alanhughes](https://github.com/alanjhughes))
+- Migrated Android implementation to Expo Modules API. ([#19974](https://github.com/expo/expo/pull/19974) by [@alanhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 

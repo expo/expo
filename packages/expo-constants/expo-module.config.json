@@ -3,5 +3,8 @@
   "platforms": ["ios", "android", "web"],
   "ios": {
     "modules": ["ConstantsModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.constants.ConstantsModule"]
   }
 }
