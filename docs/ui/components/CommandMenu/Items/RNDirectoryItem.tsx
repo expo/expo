@@ -1,7 +1,7 @@
 import { GithubIcon, theme } from '@expo/styleguide';
 import { Command } from 'cmdk';
 
-import { RNDirectoryItemType } from '../types';
+import type { RNDirectoryItemType } from '../types';
 import { openLink } from '../utils';
 import { ExternalLinkIcon } from './icons';
 import { footnoteStyle, itemStyle } from './styles';

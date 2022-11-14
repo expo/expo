@@ -1,18 +1,28 @@
 import type { IconProps } from '@expo/styleguide';
 import type { ComponentType } from 'react';
 
+type AlgoliaHighlight = {
+  value: string;
+};
+
+export type AlgoliaItemHierarchy<T> = {
+  lvl0?: T | null;
+  lvl1?: T | null;
+  lvl2?: T | null;
+  lvl3?: T | null;
+  lvl4?: T | null;
+  lvl5?: T | null;
+  lvl6?: T | null;
+};
+
 export type AlgoliaItemType = {
   url: string;
   objectID: string;
   content: string | null;
-  hierarchy: {
-    lvl0?: string | null;
-    lvl1?: string | null;
-    lvl2?: string | null;
-    lvl3?: string | null;
-    lvl4?: string | null;
-    lvl5?: string | null;
-    lvl6?: string | null;
+  hierarchy: AlgoliaItemHierarchy<string>;
+  _highlightResult: {
+    content: AlgoliaHighlight | null;
+    hierarchy: AlgoliaItemHierarchy<AlgoliaHighlight>;
   };
 };
 

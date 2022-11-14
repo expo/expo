@@ -1,5 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 
+import type { AlgoliaItemHierarchy, AlgoliaItemType } from './types';
+
 export const getItems = async (
   query: string,
   fetcher: (query: string, version?: string) => Promise<any>,
@@ -59,9 +61,12 @@ export const getDirectoryResults = (query: string) => {
   return fetch(`https://reactnative.directory/api/libraries?search=${encodeURI(query)}&limit=5`);
 };
 
-export const getHighlightHTML = (item: any, tag: string) => ({
+export const getHighlightHTML = (
+  item: AlgoliaItemType,
+  tag: keyof AlgoliaItemHierarchy<string>
+) => ({
   dangerouslySetInnerHTML: {
-    __html: item._highlightResult.hierarchy[`${tag}`].value,
+    __html: item._highlightResult.hierarchy[`${tag}`]?.value || '',
   },
 });
 

@@ -1,7 +1,7 @@
 import { BuildIcon, iconSize, theme } from '@expo/styleguide';
 import { Command } from 'cmdk';
 
-import { ExpoItemType } from '../types';
+import type { ExpoItemType } from '../types';
 import { openLink } from '../utils';
 import { itemStyle } from './styles';
 

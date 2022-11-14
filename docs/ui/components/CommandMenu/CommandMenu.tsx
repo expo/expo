@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 import { CommandFooter } from './CommandFooter';
 import { RNDirectoryItem, RNDocsItem, ExpoDocsItem, ExpoItem } from './Items';
-import { entries } from './Items/expoEntries';
+import { entries } from './expoEntries';
 import { searchIconStyle, loadingIconStyle } from './styles';
 import type { ExpoItemType, RNDirectoryItemType, AlgoliaItemType } from './types';
 import { getExpoResults, getDocsResults, getDirectoryResults, getItems } from './utils';
