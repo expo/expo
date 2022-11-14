@@ -70,6 +70,14 @@ EX_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.isUsingEmbeddedAssets;
 }
 
+- (BOOL)isEmbeddedLaunch
+{
+  // True if the embedded update and its ID are not nil, and match
+  // the ID of the launched update
+  return [[self embeddedUpdate] updateId] != nil &&
+  [[[self embeddedUpdate] updateId] isEqual:[[self launchedUpdate] updateId]];
+}
+
 - (BOOL)isStarted
 {
   return EXUpdatesAppController.sharedInstance.isStarted;
