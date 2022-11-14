@@ -70,6 +70,23 @@ export const getHighlightHTML = (
   },
 });
 
+const trimContent = (content: string) => {
+  if (!content || !content.length) return '';
+
+  const trimStart = Math.max(content.indexOf('<mark>') - 36, 0);
+  const trimEnd = Math.min(content.indexOf('</mark>') + 36 + 6, content.length);
+
+  return `${trimStart !== 0 ? '…' : ''}${content.substring(trimStart, trimEnd).trim()}${
+    trimEnd !== content.length ? '…' : ''
+  }`;
+};
+
+export const getContentHighlightHTML = (item: AlgoliaItemType) => ({
+  dangerouslySetInnerHTML: {
+    __html: trimContent(item._highlightResult.content?.value || ''),
+  },
+});
+
 // note(simek): this code make sure that browser popup blocker
 // do not prevent opening links via key press (when it fires windows.open)
 export const openLink = (url: string, isExternal: boolean = false) => {

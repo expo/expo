@@ -4,8 +4,14 @@ import { spacing, theme, typography } from '@expo/styleguide';
 export const itemStyle = css({
   display: 'inline-flex',
   alignItems: 'center',
-  gap: spacing[2.5],
+  gap: spacing[3],
   wordBreak: 'break-word',
+});
+
+export const contentStyle = css({
+  mark: {
+    opacity: 0.75,
+  },
 });
 
 export const itemIconWrapperStyle = css({
@@ -19,4 +25,17 @@ export const footnoteStyle = css({
   mark: {
     opacity: 0.65,
   },
+});
+
+export const footerArrowStyle = css({
+  display: 'inline-block',
+  position: 'relative',
+  margin: `0 ${spacing[1]}px`,
+  top: 2,
+});
+
+export const externalLinkStyles = css({
+  alignSelf: 'center',
+  marginLeft: 'auto',
+  flexShrink: 0,
 });

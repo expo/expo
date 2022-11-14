@@ -1,32 +1,14 @@
-import { css } from '@emotion/react';
-import {
-  ArrowUpRightIcon,
-  ChevronRightIcon,
-  IconProps,
-  iconSize,
-  spacing,
-  theme,
-} from '@expo/styleguide';
+import { ArrowUpRightIcon, ChevronRightIcon, IconProps, iconSize, theme } from '@expo/styleguide';
+
+import { externalLinkStyles, footerArrowStyle } from './styles';
 
 export const FootnoteArrowIcon = () => (
   <ChevronRightIcon size={iconSize.micro} color={theme.icon.secondary} css={footerArrowStyle} />
 );
 
-const footerArrowStyle = css({
-  display: 'inline-block',
-  position: 'relative',
-  margin: `0 ${spacing[1]}px`,
-  top: 2,
-});
-
 export const ExternalLinkIcon = () => (
   <ArrowUpRightIcon color={theme.icon.secondary} css={externalLinkStyles} />
 );
-
-const externalLinkStyles = css({
-  alignSelf: 'center',
-  marginLeft: 'auto',
-});
 
 export const GuideIcon = ({ size = iconSize.regular, color = theme.icon.secondary }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="none">

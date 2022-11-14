@@ -2,9 +2,9 @@ import { DocsLogo, PlanEnterpriseIcon, iconSize, theme } from '@expo/styleguide'
 import { Command } from 'cmdk';
 
 import type { AlgoliaItemType } from '../types';
-import { getHighlightHTML, isEASPath, openLink } from '../utils';
+import { getContentHighlightHTML, getHighlightHTML, isEASPath, openLink } from '../utils';
 import { FootnoteArrowIcon, GuideIcon } from './icons';
-import { footnoteStyle, itemIconWrapperStyle, itemStyle } from './styles';
+import { contentStyle, footnoteStyle, itemIconWrapperStyle, itemStyle } from './styles';
 
 import versions from '~/public/static/constants/versions.json';
 import { CALLOUT, FOOTNOTE } from '~/ui/components/Text';
@@ -124,6 +124,7 @@ export const ExpoDocsItem = ({ item, onSelect }: Props) => {
               <ItemFootnotePrefix url={item.url} />
             </>
           )}
+          <FOOTNOTE theme="secondary" {...getContentHighlightHTML(item)} css={contentStyle} />
         </div>
       </div>
     </Command.Item>

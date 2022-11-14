@@ -63,7 +63,7 @@ export const CommandMenu = ({ version }: Props) => {
         color={theme.palette.purple[300]}
         css={[loadingIconStyle, { opacity: loading ? 1 : 0 }]}
       />
-      <Command.Input value={query} onValueChange={setQuery} placeholder="search…" />
+      <Command.Input value={query} onValueChange={setQuery} placeholder="search anything…" />
       <Command.List>
         {expoDocsItems.length > 0 && (
           <Command.Group heading={<ExpoHeading label="documentation" />}>

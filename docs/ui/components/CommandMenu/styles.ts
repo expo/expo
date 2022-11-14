@@ -53,7 +53,7 @@ export const commandMenuStyles = css`
     font: inherit;
     height: 100%;
     outline: none;
-    padding: ${spacing[3]}px ${spacing[3]}px ${spacing[3]}px ${spacing[12]}px;
+    padding: ${spacing[3]}px ${spacing[11]}px;
     margin: ${spacing[4]}px ${spacing[4]}px 0;
     border: 1px solid ${theme.border.default};
     border-radius: ${borderRadius.medium}px;
@@ -63,6 +63,10 @@ export const commandMenuStyles = css`
 
     &::placeholder {
       color: ${theme.icon.secondary};
+    }
+
+    &::selection {
+      color: ${theme.palette.white};
     }
   }
 
@@ -126,8 +130,8 @@ export const commandMenuStyles = css`
   [cmdk-separator] {
     height: 1px;
     width: 100%;
-    background: var(--gray5);
-    margin: 4px 0;
+    background: ${theme.border.default};
+    margin: ${spacing[1]} 0;
   }
 
   [cmdk-group-heading] {
@@ -163,12 +167,12 @@ export const commandMenuStyles = css`
 export const searchIconStyle = css({
   position: 'absolute',
   top: 29,
-  left: 32,
+  left: 29,
 });
 
 export const loadingIconStyle = css({
   position: 'absolute',
   top: 29,
-  right: 32,
+  right: 29,
   transition: 'opacity 0.2s ease-in-out',
 });
