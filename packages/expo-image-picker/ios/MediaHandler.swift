@@ -352,7 +352,7 @@ private struct ImageUtils {
       }
       let inputData = rawData ?? image.jpegData(compressionQuality: compressionQuality)
       let metadata = mediaInfo[.mediaMetadata] as? [String: Any]
-      let cropRect = mediaInfo[.cropRect] as? CGRect
+      let cropRect = options.allowsEditing ? mediaInfo[.cropRect] as? CGRect : nil
       let gifData = try processGifData(inputData: inputData,
                                        compressionQuality: options.quality,
                                        initialMetadata: metadata,
@@ -519,7 +519,8 @@ private struct ImageUtils {
   static func processGifData(inputData: Data?,
                              compressionQuality quality: Double?,
                              initialMetadata: [String: Any]?,
-                             cropRect: CGRect? = nil) throws -> Data? {
+                             cropRect: CGRect? = nil
+  ) throws -> Data? {
     // for uncropped, maximum quality image we can just pass through the raw data
     if cropRect == nil,
        quality == nil || quality == MAXIMUM_QUALITY {
@@ -534,7 +535,7 @@ private struct ImageUtils {
 
     let gifProperties = CGImageSourceCopyProperties(imageSource, nil) as? [String: Any]
     let frameCount = CGImageSourceGetCount(imageSource)
-    
+
     let destinationData = NSMutableData()
     guard let imageDestination = CGImageDestinationCreateWithData(destinationData, kUTTypeGIF, frameCount, nil)
     else {
@@ -542,8 +543,8 @@ private struct ImageUtils {
     }
 
     let gifMetadata = initialMetadata ?? gifProperties
-    CGImageDestinationSetProperties(imageDestination, gifMetadata as CFDictionary?);
-    
+    CGImageDestinationSetProperties(imageDestination, gifMetadata as CFDictionary?)
+
     for frameIndex in 0 ..< frameCount {
       guard var cgImage = CGImageSourceCreateImageAtIndex(imageSource, frameIndex, nil),
             var frameProperties = CGImageSourceCopyPropertiesAtIndex(imageSource, frameIndex, nil) as? [String: Any]
