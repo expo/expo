@@ -61,16 +61,48 @@ async function promptForDependenciesVersions(
       )}`
     );
     const semverDiff = calculateSemverDiff(dependency.currentVersion, dependency.availableVersion);
-    const { version } = await inquirer.prompt<{ version: string }>([
-      {
-        type: 'input',
-        name: 'version',
-        message: `${dependency.fullName}:${dependency.currentVersion} ➡️ `,
-        default: addColorBasedOnSemverDiff(dependency.availableVersion, semverDiff),
-        prefix: `  ${chalk.green('?')}`,
-      },
-    ]);
-    if (version !== '') {
+    let version = (
+      await inquirer.prompt<{ version: string | boolean }>([
+        {
+          type: 'list',
+          name: 'version',
+          message: `Choose version to update to:`,
+          choices: [
+            {
+              name: `Latest version – (${addColorBasedOnSemverDiff(
+                dependency.availableVersion,
+                semverDiff
+              )})`,
+              value: dependency.availableVersion,
+            },
+            {
+              name: `Don't update – (${dependency.currentVersion})`,
+              value: false,
+            },
+            {
+              name: `Different version – will ask in the next step`,
+              value: true,
+            },
+          ],
+          default: 0,
+          prefix: `  ${chalk.green('?')}`,
+        },
+      ])
+    ).version;
+    if (version === true) {
+      version = (
+        await inquirer.prompt<{ version: string }>([
+          {
+            type: 'input',
+            name: 'version',
+            message: `${dependency.fullName}:${dependency.currentVersion} ➡️ `,
+            default: addColorBasedOnSemverDiff(dependency.availableVersion, semverDiff),
+            prefix: `  ${chalk.green('?')}`,
+          },
+        ])
+      ).version;
+    }
+    if (version !== false) {
       updates.push({
         name: dependency.name,
         group: dependency.group,
