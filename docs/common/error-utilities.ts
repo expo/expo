@@ -160,6 +160,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
   '/introduction/running-in-the-browser/': '/guides/running-in-the-browser/',
+  '/guides/using-electron/':
+    'https://dev.to/evanbacon/making-desktop-apps-with-electron-react-native-and-expo-5e36',
 
   // Changes from redoing the getting started workflow, SDK35+
   '/workflow/up-and-running/': '/get-started/installation/',
@@ -169,8 +171,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/introduction/installation/': '/get-started/installation/',
   '/versions/latest/overview/': '/versions/latest/',
   '/versions/latest/introduction/installation/': '/get-started/installation/',
-  '/workflow/exploring-managed-workflow/': '/tutorial/planning/',
-  '/introduction/walkthrough/': '/tutorial/planning/',
+  '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
+  '/introduction/walkthrough/': '/tutorial/introduction/',
 
   // Move overview to index
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
@@ -245,6 +247,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
   '/bare/using-web/': '/workflow/web/',
   '/guides/running-in-the-browser/': '/workflow/web/',
+  '/bare/unimodules-full-list/': '/bare/hello-world/',
 
   // Consolidate distribution
   '/distribution/security/': '/app-signing/security/',
@@ -253,4 +256,21 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Deleted or removed guides
   '/guides/setup-native-firebase/': '/guides/using-firebase/',
+
+  // Redirects from old to new tutorial
+  '/tutorial/planning/': '/tutorial/introduction/',
+  '/tutorial/sharing/': '/tutorial/introduction/',
+  '/tutorial/text/': '/tutorial/introduction/',
+
+  // Redirects for removed API docs based on Sentry
+  '/versions/latest/sdk/facebook/': '/guides/authentication/',
+  '/versions/latest/sdk/taskmanager/': '/versions/latest/sdk/task-manager/',
+  '/versions/latest/sdk/videothumbnails/': '/versions/latest/sdk/video-thumbnails/',
+  '/versions/latest/sdk/appearance/': '/versions/latest/react-native/appearance/',
+  '/versions/latest/sdk/app-loading/': '/versions/latest/sdk/splash-screen/',
+  '/versions/latest/sdk/app-auth/': '/guides/authentication/',
+  '/versions/latest/sdk/google-sign-in/': '/guides/authentication/',
+  '/versions/latest/sdk/branch/':
+    'https://github.com/expo/config-plugins/tree/main/packages/react-native-branch',
+  '/versions/latest/sdk/appstate/': '/versions/latest/react-native/appstate/',
 };

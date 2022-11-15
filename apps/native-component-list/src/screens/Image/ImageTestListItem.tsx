@@ -1,11 +1,25 @@
-import ExpoImage from 'expo-image';
+import { Image, ImageProps } from 'expo-image';
 import * as React from 'react';
-import { Animated, Dimensions, StyleSheet, Text, View, Image as RNImage } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  ImageProps as RNImageProps,
+  StyleSheet,
+  Text,
+  View,
+  Image as RNImage,
+} from 'react-native';
 
 import { Colors } from '../../constants';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
-import { ImageTest } from './types';
+
+type ImageTest = {
+  name: string;
+  props: ImageProps | RNImageProps;
+  loadOnDemand?: boolean;
+  testInformation?: string;
+};
 
 type PropsType = {
   test: ImageTest;
@@ -24,7 +38,7 @@ export default function ImageTestListItem({ test, animValue }: PropsType) {
         <ImageTestView
           style={styles.image}
           imageProps={imageProps}
-          ImageComponent={ExpoImage}
+          ImageComponent={Image}
           loadOnDemand={test.loadOnDemand}
         />
         <View style={styles.spacer} />
