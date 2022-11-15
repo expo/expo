@@ -2,10 +2,10 @@ import type { Dispatch, SetStateAction } from 'react';
 
 import type { AlgoliaItemHierarchy, AlgoliaItemType } from './types';
 
-export const getItems = async (
+export const getItems = async <T>(
   query: string,
-  fetcher: (query: string, version?: string) => Promise<any>,
-  setter: Dispatch<SetStateAction<any[]>>,
+  fetcher: (query: string, version?: string) => Promise<Response>,
+  setter: Dispatch<SetStateAction<T[]>>,
   version?: string
 ) => {
   const data = await fetcher(query, version).then(response => response.json());
@@ -19,7 +19,7 @@ const getAlgoliaFetchParams = (
   indexName: string,
   hits: number,
   additionalParams: object = {}
-): [string, any] => [
+): [string, RequestInit] => [
   `https://${appId}-dsn.algolia.net/1/indexes/${indexName}/query`,
   {
     method: 'POST',
@@ -36,7 +36,7 @@ const getAlgoliaFetchParams = (
   },
 ];
 
-export const getExpoResults = (query: string, version?: string) => {
+export const getExpoDocsResults = (query: string, version?: string) => {
   return fetch(
     ...getAlgoliaFetchParams(query, 'QEX7PB7D46', '6652d26570e8628af4601e1d78ad456b', 'expo', 10, {
       facetFilters: [['version:none', `version:${version}`]],
@@ -44,7 +44,7 @@ export const getExpoResults = (query: string, version?: string) => {
   );
 };
 
-export const getDocsResults = (query: string) => {
+export const getRNDocsResults = (query: string) => {
   return fetch(
     ...getAlgoliaFetchParams(
       query,
