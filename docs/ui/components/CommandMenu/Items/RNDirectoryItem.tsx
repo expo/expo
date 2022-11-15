@@ -2,7 +2,7 @@ import { GithubIcon, theme } from '@expo/styleguide';
 import { Command } from 'cmdk';
 
 import type { RNDirectoryItemType } from '../types';
-import { openLink } from '../utils';
+import { addHighlight, openLink } from '../utils';
 import { ExternalLinkIcon } from './icons';
 import { footnoteStyle, itemStyle } from './styles';
 
@@ -10,12 +10,13 @@ import { CALLOUT, FOOTNOTE } from '~/ui/components/Text';
 
 type Props = {
   item: RNDirectoryItemType;
+  query: string;
   onSelect?: () => void;
 };
 
 const numberFormat = new Intl.NumberFormat();
 
-export const RNDirectoryItem = ({ item, onSelect }: Props) => {
+export const RNDirectoryItem = ({ item, onSelect, query }: Props) => {
   return (
     <Command.Item
       value={`rnd-${item.npmPkg}`}
@@ -26,7 +27,10 @@ export const RNDirectoryItem = ({ item, onSelect }: Props) => {
       <div css={itemStyle}>
         <GithubIcon color={theme.icon.secondary} />
         <div>
-          <CALLOUT weight="medium">{item.npmPkg}</CALLOUT>
+          <CALLOUT
+            weight="medium"
+            dangerouslySetInnerHTML={{ __html: addHighlight(item.npmPkg, query) }}
+          />
           <FOOTNOTE css={footnoteStyle}>
             {numberFormat.format(item.github.stats.stars)} stars ·{' '}
             {numberFormat.format(item.npm.downloads)} downloads

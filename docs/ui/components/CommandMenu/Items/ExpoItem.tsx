@@ -2,17 +2,18 @@ import { BuildIcon, iconSize, theme } from '@expo/styleguide';
 import { Command } from 'cmdk';
 
 import type { ExpoItemType } from '../types';
-import { openLink } from '../utils';
+import { addHighlight, openLink } from '../utils';
 import { itemStyle } from './styles';
 
 import { CALLOUT } from '~/ui/components/Text';
 
 type Props = {
   item: ExpoItemType;
+  query: string;
   onSelect?: () => void;
 };
 
-export const ExpoItem = ({ item, onSelect }: Props) => {
+export const ExpoItem = ({ item, onSelect, query }: Props) => {
   const Icon = item.Icon ?? BuildIcon;
   return (
     <Command.Item
@@ -23,7 +24,10 @@ export const ExpoItem = ({ item, onSelect }: Props) => {
       }}>
       <div css={itemStyle}>
         <Icon color={theme.icon.secondary} width={iconSize.regular} />
-        <CALLOUT weight="medium">{item.label}</CALLOUT>
+        <CALLOUT
+          weight="medium"
+          dangerouslySetInnerHTML={{ __html: addHighlight(item.label, query) }}
+        />
       </div>
     </Command.Item>
   );

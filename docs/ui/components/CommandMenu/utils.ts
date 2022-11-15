@@ -124,3 +124,18 @@ export const isAppleDevice = () => {
     navigator?.platform ?? navigator?.userAgentData?.platform ?? ''
   );
 };
+
+export const addHighlight = (content: string, query: string) => {
+  const highlightStart = content.toLowerCase().indexOf(query.toLowerCase());
+
+  if (highlightStart === -1) return content;
+
+  const highlightEnd = highlightStart + query.length;
+  return (
+    content.substring(0, highlightStart) +
+    '<mark>' +
+    content.substring(highlightStart, highlightEnd) +
+    '</mark>' +
+    content.substring(highlightEnd)
+  );
+};

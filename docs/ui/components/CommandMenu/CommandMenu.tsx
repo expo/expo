@@ -76,7 +76,7 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
         {expoItems.length > 0 && (
           <Command.Group heading={<ExpoHeading label="dashboard" />}>
             {expoItems.map((item: ExpoItemType) => (
-              <ExpoItem item={item} onSelect={dismiss} key={`hit-expo-${item.url}`} />
+              <ExpoItem item={item} onSelect={dismiss} key={`hit-expo-${item.url}`} query={query} />
             ))}
           </Command.Group>
         )}
@@ -90,7 +90,12 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
         {directoryItems.length > 0 && (
           <Command.Group heading="React Native directory">
             {directoryItems.map(item => (
-              <RNDirectoryItem item={item} onSelect={dismiss} key={`hit-rn-dir-${item.npmPkg}`} />
+              <RNDirectoryItem
+                item={item}
+                onSelect={dismiss}
+                key={`hit-rn-dir-${item.npmPkg}`}
+                query={query}
+              />
             ))}
           </Command.Group>
         )}
