@@ -16,7 +16,6 @@ export const ExpoItem = ({ item, onSelect }: Props) => {
   const Icon = item.Icon ?? BuildIcon;
   return (
     <Command.Item
-      key={`hit-expo-${item.url}`}
       value={`expo-${item.url}`}
       onSelect={() => {
         openLink(item.url);

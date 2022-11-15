@@ -16,7 +16,6 @@ export const RNDocsItem = ({ item, onSelect }: Props) => {
   const { lvl0, lvl1, lvl2, lvl3, lvl4 } = item.hierarchy;
   return (
     <Command.Item
-      key={`hit-rn-${item.objectID}`}
       value={`rn-${item.objectID}`}
       onSelect={() => {
         openLink(item.url, true);

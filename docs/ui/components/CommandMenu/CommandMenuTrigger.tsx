@@ -12,23 +12,32 @@ type Props = {
 };
 
 export const CommandMenuTrigger = ({ setOpen }: Props) => {
-  const [actionKey, setActionKey] = useState<string | null>(null);
+  const [isMac, setIsMac] = useState<boolean | null>(null);
 
   useEffect(() => {
-    if (typeof navigator !== 'undefined' && isAppleDevice()) {
-      setActionKey('⌘');
-    } else {
-      setActionKey('Ctrl');
-    }
+    setIsMac(typeof navigator !== 'undefined' && isAppleDevice());
   }, []);
+
+  useEffect(() => {
+    if (isMac !== null) {
+      const keyDownListener = (e: KeyboardEvent) => {
+        if (e.key === 'k' && (isMac ? e.metaKey : e.ctrlKey)) {
+          e.preventDefault();
+          setOpen(open => !open);
+        }
+      };
+      document.addEventListener('keydown', keyDownListener, false);
+      return () => document.removeEventListener('keydown', keyDownListener);
+    }
+  }, [isMac]);
 
   return (
     <Button theme="ghost" css={buttonStyle} onClick={() => setOpen(true)}>
       <SearchIcon size={iconSize.small} />
       <CALLOUT css={[labelStyle, hideOnMobileStyle]}>Search</CALLOUT>
-      {actionKey && (
+      {isMac !== null && (
         <div css={[keysWrapperStyle, hideOnMobileStyle]}>
-          <KBD>{actionKey}</KBD> <KBD>K</KBD>
+          <KBD>{isMac ? '⌘' : 'Ctrl'}</KBD> <KBD>K</KBD>
         </div>
       )}
     </Button>

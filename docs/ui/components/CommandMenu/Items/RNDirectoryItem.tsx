@@ -18,7 +18,6 @@ const numberFormat = new Intl.NumberFormat();
 export const RNDirectoryItem = ({ item, onSelect }: Props) => {
   return (
     <Command.Item
-      key={`hit-rnd-${item.npmPkg}`}
       value={`rnd-${item.npmPkg}`}
       onSelect={() => {
         openLink(item.githubUrl, true);

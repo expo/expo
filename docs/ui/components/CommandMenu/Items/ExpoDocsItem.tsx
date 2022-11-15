@@ -62,7 +62,6 @@ export const ExpoDocsItem = ({ item, onSelect }: Props) => {
   const { lvl0, lvl2, lvl3, lvl6 } = item.hierarchy;
   return (
     <Command.Item
-      key={`hit-expodocs-${item.objectID}`}
       value={`expodocs-${item.objectID}`}
       onSelect={() => {
         openLink(transformUrl(item.url));
