@@ -1,3 +1,5 @@
-import { ImageProps } from './Image';
-export default function ExpoImage({ source, ...props }: ImageProps): JSX.Element;
+export default function ExpoImage({ source, ...props }: {
+    [x: string]: any;
+    source: any;
+}): JSX.Element;
 //# sourceMappingURL=ExpoImage.web.d.ts.map

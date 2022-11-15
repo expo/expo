@@ -1,5 +1,5 @@
 import { FlashList, ListRenderItemInfo } from '@shopify/flash-list';
-import Image from 'expo-image';
+import { Image } from 'expo-image';
 import { StyleSheet, View } from 'react-native';
 
 const DATA: number[] = Array(1000).fill(0);
