@@ -66,30 +66,6 @@ EX_EXPORT_METHOD_AS(print,
 
     UIPrintInteractionController *printInteractionController = [self _makePrintInteractionControllerWithOptions:options];
 
-    if (printingData == nil) {
-      // Missing printing data.
-      // Let's check if someone wanted to use previous implementation for `html` option
-      // which uses print formatter instead of NSData instance.
-
-      NSString *htmlString = nil;
-      if ([options[@"useMarkupFormatter"] boolValue]) {
-        htmlString = options[@"html"];
-      } else if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
-        htmlString = options[@"markupFormatterIOS"];
-      } else {
-        reject(@"E_NOTHING_TO_PRINT", @"No data to print. You must specify `uri` or `html` option.", nil);
-        return;
-      }
-      if (htmlString != nil) {
-        UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:htmlString];
-        printInteractionController.printFormatter = formatter;
-      } else {
-        NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
-        reject(@"E_HTML_INVALID", message, EXErrorWithMessage(message));
-        return;
-      }
-    }
-
     printInteractionController.printingItem = printingData;
 
     NSString *printerURL;
@@ -303,12 +279,13 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
 
+  NSString *htmlString = options[@"html"] ?: @"";
+  CGSize paperSize = [self _paperSizeFromOptions:options];
+  UIEdgeInsets pageMargins = [self _pageMarginsFromOptions:options];
+
   if (options[@"html"] && ![options[@"useMarkupFormatter"] boolValue]) {
     __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
 
-    NSString *htmlString = options[@"html"] ?: @"";
-    CGSize paperSize = [self _paperSizeFromOptions:options];
-    UIEdgeInsets pageMargins = [self _pageMarginsFromOptions:options];
     [renderTask PDFWithHtml:htmlString pageSize:paperSize pageMargins:pageMargins completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
       if (pdfData != nil) {
         callback(pdfData, nil);
@@ -320,10 +297,30 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
       }
       renderTask = nil;
     }];
-    return;
+  } else {
+      if ([options[@"useMarkupFormatter"] boolValue]) {
+        htmlString = options[@"html"];
+            // check deprecated implementation
+      } else if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
+        htmlString = options[@"markupFormatterIOS"];
+      } else {
+        callback(nil, @{
+                        @"code": @"E_NOTHING_TO_PRINT",
+                        @"message": @"No data to print. You must specify `uri` or `html` option.",
+                        });
+        return;
+      }
+    [self pdfWithHtmlMarkupFormatter:htmlString pageSize:paperSize pageMargins:pageMargins completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
+      if (pdfData != nil) {
+        callback(pdfData, nil);
+      } else {
+        callback(nil, @{
+                        @"code": @"E_PRINT_PDF_NOT_RENDERED",
+                        @"message": @"Error occurred while printing HTML to PDF format.",
+                        });
+      }
+    }];
   }
-
-  callback(nil, nil);
 }
 
 - (UIPrintInfoOrientation)_getPrintOrientationFromOption:(NSString *)orientation
