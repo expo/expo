@@ -118,7 +118,6 @@ public class ModuleRegistryAdapter implements ReactPackage {
   ) {
     if (mModulesProxy != null && mModulesProxy.getReactContext() != reactContext) {
       mModulesProxy = null;
-      mWrapperDelegateHolders = null;
     }
     if (mModulesProxy == null) {
       ModuleRegistry registry = moduleRegistry != null ? moduleRegistry : mModuleRegistryProvider.get(reactContext);
