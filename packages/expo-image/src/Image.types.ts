@@ -90,7 +90,7 @@ export enum ImageResizeMode {
   CONTAIN = 'contain',
   /**
    * The image will be stretched to fill the entire frame of the view without clipping.
-   * This may change the aspect ratio of the image, distoring it.
+   * This may change the aspect ratio of the image, distorting it.
    *
    * @platform ios
    */
