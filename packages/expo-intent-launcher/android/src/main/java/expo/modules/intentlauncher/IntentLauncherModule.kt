@@ -67,6 +67,8 @@ class IntentLauncherModule(
       intent.component =
         if (params.containsKey(ATTR_PACKAGE_NAME)) ComponentName(params.getString(ATTR_PACKAGE_NAME), params.getString(ATTR_CLASS_NAME))
         else ComponentName(context, params.getString(ATTR_CLASS_NAME))
+    } else if (params.containsKey(ATTR_PACKAGE_NAME)) {
+      intent.setPackage(params.getString(ATTR_PACKAGE_NAME))
     }
 
     // `setData` and `setType` are exclusive, so we need to use `setDateAndType` in that case.

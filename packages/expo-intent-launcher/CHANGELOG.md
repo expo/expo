@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- The `packageName` option can now be used without specifying the `className` option. When the `className` option isn't provided, `packageName` will use [`Intent.setPackage`](https://developer.android.com/reference/android/content/Intent#setPackage(java.lang.String)) to limit the components an Intent can resolve to.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
