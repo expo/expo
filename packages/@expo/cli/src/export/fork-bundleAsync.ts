@@ -85,7 +85,7 @@ async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, p
 export async function bundleAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
-  options: MetroDevServerOptions,
+  { externals, ...options }: MetroDevServerOptions & { externals?: string[] },
   bundles: BundleOptions[]
 ): Promise<BundleOutput[]> {
   // Assert early so the user doesn't have to wait until bundling is complete to find out that
@@ -113,7 +113,7 @@ export async function bundleAsync(
 
   const bundlerPlatforms = getPlatformBundlers(exp);
 
-  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
+  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms, externals);
 
   const metroServer = await metro.runMetro(config, {
     watch: false,

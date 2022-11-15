@@ -87,7 +87,7 @@ function normalizeSlashes(p: string) {
  * - Alias `react-native` to `react-native-web` on web.
  * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  */
-export function withWebResolvers(config: ConfigT, projectRoot: string) {
+export function withWebResolvers(config: ConfigT, projectRoot: string, externals?: string[]) {
   // Get the `transformer.assetRegistryPath`
   // this needs to be unified since you can't dynamically
   // swap out the transformer based on platform.
@@ -105,7 +105,11 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {
     web: {
+      'react/jsx-runtime': require.resolve('./external-react_jsx-runtime'),
+      // // react: require.resolve('react'),
+      'react-dom': require.resolve('./external-react-dom'),
       'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
+      react: require.resolve('./external-react'),
     },
   };
 
@@ -121,6 +125,7 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       const context = { ...immutableContext } as ResolutionContext & { mainFields: string[] };
 
+      // console.log('context', context);
       // Conditionally remap `react-native` to `react-native-web`
       if (platform && platform in extraNodeModules) {
         context.extraNodeModules = extraNodeModules[platform];
@@ -138,6 +143,23 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
           preferNativePlatform: platform !== 'web',
           resolveRequest: undefined,
 
+          redirectModulePath: (modulePath: string) => {
+            for (const [lib, redirect] of Object.entries(context.extraNodeModules ?? {})) {
+              if (
+                modulePath === lib ||
+                modulePath.includes(`node_modules/${lib}/`) ||
+                modulePath.endsWith(`node_modules/${lib}`)
+              ) {
+                console.log('PUSH LOCAL:', modulePath, redirect);
+                return redirect;
+              }
+            }
+            // console.log('redirect:', modulePath);
+            // if (platform === 'web' && modulePath === assetRegistryPath) {
+            //   return '@react-native/assets/registry.js';
+            // }
+            return modulePath;
+          },
           // Passing `mainFields` directly won't be considered
           // we need to extend the `getPackageMainPath` directly to
           // use platform specific `mainFields`.
@@ -182,7 +204,8 @@ export function shouldAliasAssetRegistryForWeb(
 export async function withMetroMultiPlatformAsync(
   projectRoot: string,
   config: ConfigT,
-  platformBundlers: PlatformBundlers
+  platformBundlers: PlatformBundlers,
+  externals?: string[]
 ) {
   // Auto pick App entry: this is injected with Babel.
   process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
@@ -195,13 +218,14 @@ export async function withMetroMultiPlatformAsync(
     return config;
   }
 
-  return withMetroMultiPlatform(projectRoot, config, platformBundlers);
+  return withMetroMultiPlatform(projectRoot, config, platformBundlers, externals);
 }
 
 function withMetroMultiPlatform(
   projectRoot: string,
   config: ConfigT,
-  platformBundlers: PlatformBundlers
+  platformBundlers: PlatformBundlers,
+  externals?: string[]
 ) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(([, bundler]) => bundler === 'metro')
@@ -216,5 +240,11 @@ function withMetroMultiPlatform(
 
   config = withWebPolyfills(config);
 
-  return withWebResolvers(config, projectRoot);
+  config.watchFolders = [
+    ...config.watchFolders,
+    __dirname,
+    // path.join(require.resolve('react-dom/package.json'), '../..'),
+  ];
+  console.log('WATCH FOLDERS:', config.watchFolders);
+  return withWebResolvers(config, projectRoot, externals);
 }

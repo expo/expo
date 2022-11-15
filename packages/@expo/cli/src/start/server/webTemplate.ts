@@ -35,9 +35,10 @@ async function requireBundledComponent(projectRoot: string, filePath: string) {
     ]
   );
 
+  const processedCode = obj[0].code.replaceAll('mockRequire', 'require');
   console.log('obj', obj[0].code);
 
-  const res = requireString(`module.exports = (() => { ${obj[0].code}; return __r(0); })() `);
+  const res = requireString(`module.exports = (() => { ${processedCode}; return __r(0); })() `);
   const Component = interopDefault(res);
 
   return Component;
