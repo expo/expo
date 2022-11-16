@@ -51,7 +51,9 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   if (!useDevClient) {
     ExpoDevLauncherReactDelegateHandler.enableAutoSetup = NO;
-    ExpoDevMenuReactDelegateHandler.enableAutoSetup = NO;
+
+    // Uncomment to use the default dev-menu from react-native
+    // ExpoDevMenuReactDelegateHandler.enableAutoSetup = NO;
   }
 #endif
 
