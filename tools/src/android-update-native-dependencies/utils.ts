@@ -30,7 +30,7 @@ export function calculateSemverDiff(from: string, to: string | null): SemverDiff
   }
 }
 
-type SemverDiff =
+export type SemverDiff =
   | 'major'
   | 'premajor'
   | 'minor'

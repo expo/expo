@@ -17,17 +17,18 @@ export async function addChangelogEntries(
       .map(async ({ updates, report }) => {
         const changelog = Changelogs.loadFrom(report.changelogPath!);
 
+        const changelogEntries = updates.map(
+          (update) =>
+            `Updated Android native dependency: ${maybeWrapInChangelogLink(
+              `\`${update.fullName}:${update.oldVersion}\` ➡️ \`${update.newVersion}\``,
+              update.fullName
+            )}`
+        );
         await changelog.insertEntriesAsync(
           Changelogs.UNPUBLISHED_VERSION_NAME,
           Changelogs.ChangeType.LIBRARY_UPGRADES,
           null,
-          updates.map(
-            (update) =>
-              `Updated Android native dependency: ${maybeWrapInChangelogLink(
-                `\`${update.fullName}:${update.oldVersion}\` ➡️ \`${update.newVersion}\``,
-                update.fullName
-              )}`
-          )
+          changelogEntries
         );
 
         await changelog.saveAsync();

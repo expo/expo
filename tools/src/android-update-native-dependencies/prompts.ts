@@ -9,19 +9,19 @@ import {
   GradleDependency,
   GradleDependencyUpdate,
 } from './types';
-import { addColorBasedOnSemverDiff, calculateSemverDiff, getChangelogLink } from './utils';
+import { addColorBasedOnSemverDiff, calculateSemverDiff, getChangelogLink, SemverDiff } from './utils';
 
 function generateAndroidProjectsSelectionChoice({
   projectName,
   gradleReport: { outdated, exceeded, unresolved },
 }: AndroidProjectReport) {
-  const name = `${projectName}${
-    outdated.length > 0 ? ` ${chalk.yellow(`(${outdated.length} ⚠️ )`)}` : ''
-  }${
+  const deprecationMarking =
+    outdated.length > 0 ? ` ${chalk.yellow(`(${outdated.length} ⚠️ )`)}` : '';
+  const hasUnresolvedOrExceedeedMarking =
     exceeded.length > 0 || unresolved.length > 0
       ? ` ${chalk.red(`(${exceeded.length + unresolved.length} ❗️)`)}`
-      : ''
-  }`;
+      : '';
+  const name = `${projectName}${deprecationMarking}${hasUnresolvedOrExceedeedMarking}`;
   return {
     name,
     value: projectName,
@@ -53,7 +53,8 @@ async function promptForDependenciesVersions(
 ): Promise<GradleDependencyUpdate[]> {
   const updates: GradleDependencyUpdate[] = [];
 
-  for (const dependency of dependencies.sort((a, b) => a.fullName.localeCompare(b.fullName))) {
+  const sortedDependencies = dependencies.sort((a, b) => a.fullName.localeCompare(b.fullName));
+  for (const dependency of sortedDependencies) {
     logger.log(
       `  ▶︎ ${chalk.blueBright(dependency.fullName)} ${getChangelogLink(
         dependency.fullName,
@@ -61,47 +62,7 @@ async function promptForDependenciesVersions(
       )}`
     );
     const semverDiff = calculateSemverDiff(dependency.currentVersion, dependency.availableVersion);
-    let version = (
-      await inquirer.prompt<{ version: string | boolean }>([
-        {
-          type: 'list',
-          name: 'version',
-          message: `Choose version to update to:`,
-          choices: [
-            {
-              name: `Latest version – (${addColorBasedOnSemverDiff(
-                dependency.availableVersion,
-                semverDiff
-              )})`,
-              value: dependency.availableVersion,
-            },
-            {
-              name: `Don't update – (${dependency.currentVersion})`,
-              value: false,
-            },
-            {
-              name: `Different version – will ask in the next step`,
-              value: true,
-            },
-          ],
-          default: 0,
-          prefix: `  ${chalk.green('?')}`,
-        },
-      ])
-    ).version;
-    if (version === true) {
-      version = (
-        await inquirer.prompt<{ version: string }>([
-          {
-            type: 'input',
-            name: 'version',
-            message: `${dependency.fullName}:${dependency.currentVersion} ➡️ `,
-            default: addColorBasedOnSemverDiff(dependency.availableVersion, semverDiff),
-            prefix: `  ${chalk.green('?')}`,
-          },
-        ])
-      ).version;
-    }
+    let version = await promptForDependencyVersion(dependency, semverDiff);
     if (version !== false) {
       updates.push({
         name: dependency.name,
@@ -114,6 +75,51 @@ async function promptForDependenciesVersions(
   }
 
   return updates;
+}
+
+async function promptForDependencyVersion(dependency: GradleDependency, semverDiff: SemverDiff) {
+  let version = (
+    await inquirer.prompt<{ version: string | boolean; }>([
+      {
+        type: 'list',
+        name: 'version',
+        message: `Choose version to update to:`,
+        choices: [
+          {
+            name: `Latest version – (${addColorBasedOnSemverDiff(
+              dependency.availableVersion,
+              semverDiff
+            )})`,
+            value: dependency.availableVersion,
+          },
+          {
+            name: `Don't update – (${dependency.currentVersion})`,
+            value: false,
+          },
+          {
+            name: `Different version – will ask in the next step`,
+            value: true,
+          },
+        ],
+        default: 0,
+        prefix: `  ${chalk.green('?')}`,
+      },
+    ])
+  ).version;
+  if (version === true) {
+    version = (
+      await inquirer.prompt<{ version: string; }>([
+        {
+          type: 'input',
+          name: 'version',
+          message: `${dependency.fullName}:${dependency.currentVersion} ➡️ `,
+          default: addColorBasedOnSemverDiff(dependency.availableVersion, semverDiff),
+          prefix: `  ${chalk.green('?')}`,
+        },
+      ])
+    ).version;
+  }
+  return version;
 }
 
 async function promptForDependenciesUpdatesSelection(
