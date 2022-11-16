@@ -15,6 +15,8 @@
 #if DEBUG
 #import <EXDevLauncher/EXDevLauncherController.h>
 #import <EXDevLauncher-Swift.h>
+#import <EXDevMenuInterface-Swift.h>
+#import <EXDevMenu-Swift.h>
 #endif
 
 #if RCT_NEW_ARCH_ENABLED
@@ -49,6 +51,7 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
   if (!useDevClient) {
     ExpoDevLauncherReactDelegateHandler.enableAutoSetup = NO;
+    ExpoDevMenuReactDelegateHandler.enableAutoSetup = NO;
   }
 #endif
 
