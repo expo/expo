@@ -181,6 +181,9 @@ dependencies {
   // expo-application
   api 'com.android.installreferrer:installreferrer:1.0'
 
+  // expo-store-review
+  api 'com.google.android.play:core:1.8.0'
+
   //dbflow
   kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
   implementation "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
