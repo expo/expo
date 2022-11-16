@@ -67,7 +67,7 @@ async function promptForDependenciesVersions(
       )}`
     );
     const semverDiff = calculateSemverDiff(dependency.currentVersion, dependency.availableVersion);
-    let version = await promptForDependencyVersion(dependency, semverDiff);
+    const version = await promptForDependencyVersion(dependency, semverDiff);
     if (version !== false) {
       updates.push({
         name: dependency.name,
