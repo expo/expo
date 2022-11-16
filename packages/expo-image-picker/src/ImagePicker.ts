@@ -225,10 +225,12 @@ export async function launchCameraAsync(
  * Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be     called
  * immediately in a user interaction like a button press, otherwise the browser will block the
  * request without a warning.
- * **Animated GIFs support** If the selected image is an animated GIF, the result image will be an
- * animated GIF too if and only if `quality` is set to `undefined` and `allowsEditing` is set to `false`.
+ *
+ * **Animated GIFs support:** On Android, if the selected image is an animated GIF, the result image will be an
+ * animated GIF too if and only if `quality` is explicitly set to `1.0` and `allowsEditing` is set to `false`.
  * Otherwise compression and/or cropper will pick the first frame of the GIF and return it as the
- * result (on Android the result will be a PNG, on iOS — GIF).
+ * result (on Android the result will be a PNG). On iOS, both quality and cropping are supported.
+ *
  * > **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press).
  * Therefore, calling `launchImageLibraryAsync` in `componentDidMount`, for example, will **not**
  * work as intended. The `cancelled` event will not be returned in the browser due to platform
