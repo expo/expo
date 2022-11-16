@@ -373,5 +373,5 @@ export function signManifestString(
 ): string {
   const privateKey = convertPrivateKeyPEMToPrivateKey(codeSigningInfo.privateKey);
   const certificate = convertCertificatePEMToCertificate(codeSigningInfo.certificateForPrivateKey);
-  return signStringRSASHA256AndVerify(privateKey, certificate, stringifiedManifest);
+  return signStringRSASHA256AndVerify(privateKey, certificate, stringifiedManifest, 'utf8');
 }
