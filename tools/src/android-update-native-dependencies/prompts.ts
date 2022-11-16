@@ -9,7 +9,12 @@ import {
   GradleDependency,
   GradleDependencyUpdate,
 } from './types';
-import { addColorBasedOnSemverDiff, calculateSemverDiff, getChangelogLink, SemverDiff } from './utils';
+import {
+  addColorBasedOnSemverDiff,
+  calculateSemverDiff,
+  getChangelogLink,
+  SemverDiff,
+} from './utils';
 
 function generateAndroidProjectsSelectionChoice({
   projectName,
@@ -79,7 +84,7 @@ async function promptForDependenciesVersions(
 
 async function promptForDependencyVersion(dependency: GradleDependency, semverDiff: SemverDiff) {
   let version = (
-    await inquirer.prompt<{ version: string | boolean; }>([
+    await inquirer.prompt<{ version: string | boolean }>([
       {
         type: 'list',
         name: 'version',
@@ -108,7 +113,7 @@ async function promptForDependencyVersion(dependency: GradleDependency, semverDi
   ).version;
   if (version === true) {
     version = (
-      await inquirer.prompt<{ version: string; }>([
+      await inquirer.prompt<{ version: string }>([
         {
           type: 'input',
           name: 'version',
