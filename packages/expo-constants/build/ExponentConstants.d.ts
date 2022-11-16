@@ -1,3 +1,3 @@
-declare const _default: any;
-export default _default;
+declare let ExponentConstants: any;
+export default ExponentConstants;
 //# sourceMappingURL=ExponentConstants.d.ts.map
