@@ -106,7 +106,7 @@ const general = [
   makeSection('Development builds', [
     makePage('development/introduction.mdx'),
     makePage('development/create-development-builds.mdx'),
-    makePage('development/develop-your-project.mdx'),
+    makePage('development/use-development-builds.mdx'),
     makePage('development/installation.mdx'),
     makePage('development/development-workflows.mdx'),
   ]),
