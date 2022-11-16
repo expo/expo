@@ -94,30 +94,10 @@ EX_EXPORT_MODULE();
   return [permissions[EXStatusKey] isEqualToString:@"granted"];
 }
 
-- (void)askForPermissionUsingRequesterClass:(Class)requesterClass
-                                    resolve:(EXPromiseResolveBlock)onResult
-                                     reject:(EXPromiseRejectBlock)reject
-{
-  NSMutableDictionary *permission = [[self getPermissionUsingRequesterClass:requesterClass] mutableCopy];
-  
-  // permission type not found - reject immediately
-  if (permission == nil) {
-    return reject(@"E_PERMISSIONS_UNKNOWN", [NSString stringWithFormat:@"Unrecognized requester: %@", NSStringFromClass(requesterClass)], nil);
-  }
-  
-  BOOL isGranted = [EXPermissionsService statusForPermission:permission] == EXPermissionStatusGranted;
-  permission[@"granted"] = @(isGranted);
-  
-  if (isGranted) {
-    return onResult(permission);
-  }
-  
-  [self askForGlobalPermissionUsingRequesterClass:requesterClass withResolver:onResult withRejecter:reject];
-}
    
-- (void)askForGlobalPermissionUsingRequesterClass:(Class)requesterClass
-                                     withResolver:(EXPromiseResolveBlock)resolver
-                                     withRejecter:(EXPromiseRejectBlock)reject
+- (void)askForPermissionUsingRequesterClass:(Class)requesterClass
+                               resolve:(EXPromiseResolveBlock)onResult
+                               reject:(EXPromiseRejectBlock)reject
 {
   id<EXPermissionsRequester> requester = [self getPermissionRequesterForClass:requesterClass];
   if (requester == nil) {
@@ -125,7 +105,7 @@ EX_EXPORT_MODULE();
   }
   
   void (^permissionParser)(NSDictionary *) = ^(NSDictionary * permission){
-    resolver([EXPermissionsService parsePermissionFromRequester:permission]);
+    onResult([EXPermissionsService parsePermissionFromRequester:permission]);
   };
   
   [requester requestPermissionsWithResolver:permissionParser rejecter:reject];
