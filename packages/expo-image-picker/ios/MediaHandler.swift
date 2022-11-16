@@ -524,7 +524,7 @@ private struct ImageUtils {
   ) throws -> Data? {
     // for uncropped, maximum quality image we can just pass through the raw data
     if cropRect == nil,
-       quality == nil || quality >= MAXIMUM_QUALITY {
+       quality == nil || (quality ?? -1) >= MAXIMUM_QUALITY {
       return inputData
     }
 
