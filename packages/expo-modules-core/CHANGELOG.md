@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed views are not correctly initialized after reloading on Android. ([#20063](https://github.com/expo/expo/pull/20063) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.0.3 — 2022-11-14
