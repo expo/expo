@@ -1540,7 +1540,7 @@ PODS:
     - ABI47_0_0React-jsi (= 0.70.5)
     - ABI47_0_0ReactCommon/turbomodule/core (= 0.70.5)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI47_0_0hermes-engine (0.70.4)
+  - ABI47_0_0hermes-engine (0.70.5)
   - ABI47_0_0lottie-react-native (5.1.4):
     - ABI47_0_0React-Core
     - lottie-ios (~> 3.4.0)
@@ -4435,7 +4435,7 @@ SPEC CHECKSUMS:
   ABI47_0_0EXVideoThumbnails: cfd2fd09789eb41c37f188e0f39a0d0edcacc9aa
   ABI47_0_0FBLazyVector: 761bde821473acd8a47bedec032e1d295fab482e
   ABI47_0_0FBReactNativeSpec: 5d349a84f51ed6a4609f93c1b3f68b164177df96
-  ABI47_0_0hermes-engine: fcd2ccecde7447086996f7f2c6040f5d069f8faa
+  ABI47_0_0hermes-engine: 20816306637b21a4fa971ff99f9533714aecc493
   ABI47_0_0lottie-react-native: 907512cfdae64cca54a2a83029f1e37ed8864f93
   ABI47_0_0RCTRequired: b009c17cf653027b2c2610acf3eff3b19d5c7064
   ABI47_0_0RCTTypeSafety: 5af2d9b26ad604eba92feb06dc8701079dd9a8cd
