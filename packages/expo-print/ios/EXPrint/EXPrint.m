@@ -298,18 +298,18 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
       renderTask = nil;
     }];
   } else {
-      if ([options[@"useMarkupFormatter"] boolValue]) {
-        htmlString = options[@"html"];
-            // check deprecated implementation
-      } else if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
-        htmlString = options[@"markupFormatterIOS"];
-      } else {
-        callback(nil, @{
-                        @"code": @"E_NOTHING_TO_PRINT",
-                        @"message": @"No data to print. You must specify `uri` or `html` option.",
-                        });
-        return;
-      }
+    if ([options[@"useMarkupFormatter"] boolValue]) {
+      htmlString = options[@"html"];
+    // check deprecated implementation
+    } else if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
+      htmlString = options[@"markupFormatterIOS"];
+    } else {
+      callback(nil, @{
+                      @"code": @"E_NOTHING_TO_PRINT",
+                      @"message": @"No data to print. You must specify `uri` or `html` option.",
+                      });
+      return;
+    }
     [self pdfWithHtmlMarkupFormatter:htmlString pageSize:paperSize pageMargins:pageMargins completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
       if (pdfData != nil) {
         callback(pdfData, nil);
