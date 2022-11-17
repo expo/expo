@@ -1251,10 +1251,10 @@
     mv "~2"
     safe-json-stringify "~1"
 
-"@expo/code-signing-certificates@0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@expo/code-signing-certificates/-/code-signing-certificates-0.0.4.tgz#f12e110bacb4c64914bdf34bb90900b711cdadb9"
-  integrity sha512-BuAW9UN1+Dr3ocFNNiQ+C9MscYGrjQoL6l+qLXnPCQdFWglRyj24c+rJTOdZyoTeHCXubCkS1esKcadksSnvwg==
+"@expo/code-signing-certificates@0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@expo/code-signing-certificates/-/code-signing-certificates-0.0.5.tgz#a693ff684fb20c4725dade4b88a6a9f96b02496c"
+  integrity sha512-BNhXkY1bblxKZpltzAx98G2Egj9g1Q+JRcvR7E99DOj862FTCX+ZPsAUtPTr7aHxwtrL7+fL3r0JSmM9kBm+Bw==
   dependencies:
     node-forge "^1.2.1"
     nullthrows "^1.1.1"
