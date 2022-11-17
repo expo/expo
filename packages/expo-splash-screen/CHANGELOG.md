@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.` warning being displayed on iOS when app is started in background. ([#20064](https://github.com/expo/expo/pull/20064) by [@grigorigoldman](https://github.com/grigorigoldman))
+
 ### 💡 Others
 
 ## 0.17.4 - 2022-11-08
