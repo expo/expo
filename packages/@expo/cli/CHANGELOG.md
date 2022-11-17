@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Upgrade @expo/code-signing-certificates dependency. ([#20078](https://github.com/expo/expo/pull/20078) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.4.9 — 2022-11-14
