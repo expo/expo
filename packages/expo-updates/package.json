@@ -39,7 +39,7 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/code-signing-certificates": "0.0.2",
+    "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~7.0.2",
     "@expo/config-plugins": "~5.0.3",
     "@expo/metro-config": "~0.5.0",
