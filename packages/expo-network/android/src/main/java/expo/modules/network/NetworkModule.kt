@@ -32,34 +32,38 @@ class NetworkModule : Module() {
       val result = Bundle()
       val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
 
-      if (Build.VERSION.SDK_INT < 29) { // use getActiveNetworkInfo before api level 29
-        val netInfo = connectivityManager.activeNetworkInfo
-        val connectionType = getConnectionType(netInfo)
+      try {
+        if (Build.VERSION.SDK_INT < 29) { // use getActiveNetworkInfo before api level 29
+          val netInfo = connectivityManager.activeNetworkInfo
+          val connectionType = getConnectionType(netInfo)
 
-        result.apply {
-          putBoolean("isInternetReachable", netInfo!!.isConnected)
-          putString("type", connectionType.value)
-          putBoolean("isConnected", connectionType.isDefined)
-        }
+          result.apply {
+            putBoolean("isInternetReachable", netInfo!!.isConnected)
+            putString("type", connectionType.value)
+            putBoolean("isConnected", connectionType.isDefined)
+          }
 
-        promise.resolve(result)
-      } else {
-        val network = connectivityManager.activeNetwork
-        val isInternetReachable = network != null
-
-        val connectionType = if (isInternetReachable) {
-          val netCapabilities = connectivityManager.getNetworkCapabilities(network)
-          getConnectionType(netCapabilities)
+          promise.resolve(result)
         } else {
-          null
-        }
+          val network = connectivityManager.activeNetwork
+          val isInternetReachable = network != null
 
-        result.apply {
-          putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
-          putBoolean("isInternetReachable", isInternetReachable)
-          putBoolean("isConnected", connectionType != null && connectionType.isDefined)
+          val connectionType = if (isInternetReachable) {
+            val netCapabilities = connectivityManager.getNetworkCapabilities(network)
+            getConnectionType(netCapabilities)
+          } else {
+            null
+          }
+
+          result.apply {
+            putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
+            putBoolean("isInternetReachable", isInternetReachable)
+            putBoolean("isConnected", connectionType != null && connectionType.isDefined)
+          }
+          promise.resolve(result)
         }
-        promise.resolve(result)
+      } catch (e: Exception) {
+        throw NetworkAccessException()
       }
     }
 
@@ -93,7 +97,7 @@ class NetworkModule : Module() {
       manager.connectionInfo
     } catch (e: Exception) {
       Log.e(TAG, e.message ?: "Wi-Fi information could not be acquired")
-      throw e
+      throw NetworkWifiException()
     }
 
   private fun getConnectionType(netInfo: NetworkInfo?): NetworkStateType = when (netInfo?.type) {
