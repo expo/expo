@@ -122,8 +122,6 @@ redirects[eas-metadata]=eas/metadata/
 redirects[eas-metadata/introduction]=eas/metadata/
 redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
 
-redirects[introduction/walkthrough]=tutorial/planning/
-
 # Development builds
 redirects[development/build]=development/create-development-builds/
 redirects[development/getting-started]=development/create-development-builds/
