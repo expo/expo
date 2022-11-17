@@ -518,13 +518,13 @@ private struct ImageUtils {
 
   static func processGifData(
     inputData: Data?,
-    compressionQuality quality: Double?,
+    compressionQuality: Double?,
     initialMetadata: [String: Any]?,
     cropRect: CGRect? = nil
   ) throws -> Data? {
+    let quality = compressionQuality ?? MAXIMUM_QUALITY
     // for uncropped, maximum quality image we can just pass through the raw data
-    if cropRect == nil,
-       quality == nil || (quality ?? -1) >= MAXIMUM_QUALITY {
+    if cropRect == nil && quality >= MAXIMUM_QUALITY {
       return inputData
     }
 

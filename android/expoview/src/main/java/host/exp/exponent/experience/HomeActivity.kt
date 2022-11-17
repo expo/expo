@@ -20,7 +20,6 @@ import expo.modules.device.DevicePackage
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
-import expo.modules.haptics.HapticsPackage
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.medialibrary.MediaLibraryPackage
 import expo.modules.notifications.NotificationsPackage
@@ -155,8 +154,7 @@ open class HomeActivity : BaseExperienceActivity() {
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         DevicePackage(),
-        SplashScreenPackage(),
-        HapticsPackage()
+        SplashScreenPackage()
       )
     }
   }

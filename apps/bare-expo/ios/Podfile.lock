@@ -1164,8 +1164,8 @@ SPEC CHECKSUMS:
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
   expo-dev-client: d703087f68db9f3540a2346c077945976d8c97b6
   expo-dev-launcher: 4b79cc4ecc33f134a416db3f5368ce33c80bf874
-  expo-dev-menu: 619df634d9e3185cf36f3b2fb90bd2b7792df512
-  expo-dev-menu-interface: 45581093393dacd51ce5e7f641cf9ed5064a2e3f
+  expo-dev-menu: 16f22bb8125c5553786ba2cac43c17693c4c12db
+  expo-dev-menu-interface: c8ad2dc7bb9513c6668c0b0fdf2391727a3d19a7
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
   ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
@@ -1276,6 +1276,6 @@ SPEC CHECKSUMS:
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 2097068060fd7ae29d4a3df3aa49e160cae52113
+PODFILE CHECKSUM: cc6cd298daa75b0d8121133f69b048cac4b1a05b
 
 COCOAPODS: 1.11.2

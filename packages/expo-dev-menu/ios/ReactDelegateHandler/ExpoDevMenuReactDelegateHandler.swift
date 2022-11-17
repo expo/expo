@@ -3,13 +3,15 @@
 import React
 import ExpoModulesCore
 
+@objc
 public class ExpoDevMenuReactDelegateHandler: ExpoReactDelegateHandler {
-  public static var enableAutoSetup: Bool?
+  @objc
+  public static var enableAutoSetup: Bool = true
 
   private static var shouldEnableAutoSetup: Bool = {
     // if someone else has set this explicitly, use that value
-    if enableAutoSetup != nil {
-      return enableAutoSetup!
+    if !enableAutoSetup {
+      return false
     }
 
     if !EXAppDefines.APP_DEBUG {
