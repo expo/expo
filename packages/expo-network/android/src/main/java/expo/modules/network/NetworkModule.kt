@@ -25,6 +25,53 @@ class NetworkModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
+  override fun definition() = ModuleDefinition {
+    Name("ExpoNetwork")
+
+    AsyncFunction("getNetworkStateAsync") { promise: Promise ->
+      val result = Bundle()
+      val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+      if (Build.VERSION.SDK_INT < 29) { // use getActiveNetworkInfo before api level 29
+        val netInfo = connectivityManager.activeNetworkInfo
+        val connectionType = getConnectionType(netInfo)
+
+        result.apply {
+          putBoolean("isInternetReachable", netInfo!!.isConnected)
+          putString("type", connectionType.value)
+          putBoolean("isConnected", connectionType.isDefined)
+        }
+
+        promise.resolve(result)
+      } else {
+        val network = connectivityManager.activeNetwork
+        val isInternetReachable = network != null
+
+        val connectionType = if (isInternetReachable) {
+          val netCapabilities = connectivityManager.getNetworkCapabilities(network)
+          getConnectionType(netCapabilities)
+        } else {
+          null
+        }
+
+        result.apply {
+          putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
+          putBoolean("isInternetReachable", isInternetReachable)
+          putBoolean("isConnected", connectionType != null && connectionType.isDefined)
+        }
+        promise.resolve(result)
+      }
+    }
+
+    AsyncFunction("getIpAddressAsync") {
+      return@AsyncFunction rawIpToString(wifiInfo.ipAddress)
+    }
+
+    AsyncFunction("isAirplaneModeEnabledAsync") {
+      return@AsyncFunction Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
+    }
+  }
+
   enum class NetworkStateType(val value: String) {
     NONE("NONE"),
     UNKNOWN("UNKNOWN"),
@@ -38,57 +85,6 @@ class NetworkModule : Module() {
 
     val isDefined: Boolean
       get() = this.value != "NONE" && this.value != "UNKNOWN"
-  }
-
-  override fun definition() = ModuleDefinition {
-    Name("ExpoNetwork")
-
-    AsyncFunction("getNetworkStateAsync") { promise: Promise ->
-      val result = Bundle()
-      val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
-      try {
-        if (Build.VERSION.SDK_INT < 29) { // use getActiveNetworkInfo before api level 29
-          val netInfo = connectivityManager.activeNetworkInfo
-          val connectionType = getConnectionType(netInfo)
-
-          result.apply {
-            putBoolean("isInternetReachable", netInfo!!.isConnected)
-            putString("type", connectionType.value)
-            putBoolean("isConnected", connectionType.isDefined)
-          }
-
-          promise.resolve(result)
-        } else {
-          val network = connectivityManager.activeNetwork
-          val isInternetReachable = network != null
-
-          val connectionType = if (isInternetReachable) {
-            val netCapabilities = connectivityManager.getNetworkCapabilities(network)
-            getConnectionType(netCapabilities)
-          } else {
-            null
-          }
-
-          result.apply {
-            putString("type", connectionType?.value ?: NetworkStateType.NONE.value)
-            putBoolean("isInternetReachable", isInternetReachable)
-            putBoolean("isConnected", connectionType != null && connectionType.isDefined)
-          }
-          promise.resolve(result)
-        }
-      } catch (e: Exception) {
-        throw NetworkAccessException()
-      }
-    }
-
-    AsyncFunction("getIpAddressAsync") {
-      return@AsyncFunction rawIpToString(wifiInfo.ipAddress)
-    }
-
-    AsyncFunction("isAirplaneModeEnabledAsync") {
-      return@AsyncFunction Settings.Global.getInt(context.contentResolver, Settings.Global.AIRPLANE_MODE_ON, 0) != 0
-    }
   }
 
   private val wifiInfo: WifiInfo

@@ -2,6 +2,6 @@
   "name": "expo-network",
   "platforms": ["ios", "android", "web"],
   "android": {
-    "module": ["expo.modules.network.NetworkModule"]
+    "modules": ["expo.modules.network.NetworkModule"]
   }
 }
