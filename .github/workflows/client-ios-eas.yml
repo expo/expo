@@ -56,6 +56,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
