@@ -41,6 +41,13 @@ const schema = {
                         exclude: { type: 'array', items: { type: 'string' }, nullable: true },
                         merge: { type: 'array', items: { type: 'string' }, nullable: true },
                         doNotStrip: { type: 'array', items: { type: 'string' }, nullable: true },
+                        jniLibs: {
+                            type: 'object',
+                            properties: {
+                                useLegacyPackaging: { type: 'boolean', nullable: true },
+                            },
+                            nullable: true,
+                        },
                     },
                     nullable: true,
                 },

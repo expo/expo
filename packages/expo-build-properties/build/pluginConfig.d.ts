@@ -51,6 +51,12 @@ export interface PluginConfigTypeAndroidPackagingOptions {
     merge?: string[];
     /** Adds a doNotStrip pattern */
     doNotStrip?: string[];
+    /**
+     * fixes error when you bump minSdkVersion
+     */
+    jniLibs?: {
+        useLegacyPackaging?: boolean;
+    };
 }
 /**
  * @ignore

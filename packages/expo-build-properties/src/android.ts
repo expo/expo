@@ -50,6 +50,11 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propValueGetter: (config) => config.android?.packagingOptions?.doNotStrip?.join(','),
     },
     {
+      propName: 'android.packagingOptions.jniLibs.useLegacyPackaging',
+      propValueGetter: (config) =>
+        config.android?.packagingOptions?.jniLibs?.useLegacyPackaging?.toString(),
+    },
+    {
       propName: 'android.enableProguardInReleaseBuilds',
       propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
     },
