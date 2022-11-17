@@ -2,7 +2,8 @@ import { Command } from 'cmdk';
 
 import type { AlgoliaItemType } from '../types';
 import { getContentHighlightHTML, getHighlightHTML, openLink } from '../utils';
-import { ExternalLinkIcon, FootnoteArrowIcon, ReactIcon } from './icons';
+import { FootnoteSection } from './FootnoteSection';
+import { ExternalLinkIcon, ReactIcon } from './icons';
 import { itemStyle, contentStyle, footnoteStyle, itemIconWrapperStyle } from './styles';
 
 import { CALLOUT, FOOTNOTE } from '~/ui/components/Text';
@@ -31,20 +32,9 @@ export const RNDocsItem = ({ item, onSelect }: Props) => {
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl4')} />
               <FOOTNOTE css={footnoteStyle}>
                 <span {...getHighlightHTML(item, 'lvl0')} />
-                <FootnoteArrowIcon />
-                <span {...getHighlightHTML(item, 'lvl1')} />
-                {lvl2 && (
-                  <>
-                    <FootnoteArrowIcon />
-                    <span {...getHighlightHTML(item, 'lvl2')} />
-                  </>
-                )}
-                {lvl3 && (
-                  <>
-                    <FootnoteArrowIcon />
-                    <span {...getHighlightHTML(item, 'lvl3')} />
-                  </>
-                )}
+                <FootnoteSection item={item} levelKey="lvl1" />
+                <FootnoteSection item={item} levelKey="lvl2" />
+                <FootnoteSection item={item} levelKey="lvl3" />
               </FOOTNOTE>
             </>
           )}
@@ -53,14 +43,8 @@ export const RNDocsItem = ({ item, onSelect }: Props) => {
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl3')} />
               <FOOTNOTE css={footnoteStyle}>
                 <span {...getHighlightHTML(item, 'lvl0')} />
-                <FootnoteArrowIcon />
-                <span {...getHighlightHTML(item, 'lvl1')} />
-                {lvl2 && (
-                  <>
-                    <FootnoteArrowIcon />
-                    <span {...getHighlightHTML(item, 'lvl2')} />
-                  </>
-                )}
+                <FootnoteSection item={item} levelKey="lvl1" />
+                <FootnoteSection item={item} levelKey="lvl2" />
               </FOOTNOTE>
             </>
           )}
@@ -69,12 +53,7 @@ export const RNDocsItem = ({ item, onSelect }: Props) => {
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl2')} />
               <FOOTNOTE css={footnoteStyle}>
                 <span {...getHighlightHTML(item, 'lvl0')} />
-                {lvl1 && (
-                  <>
-                    <FootnoteArrowIcon />
-                    <span {...getHighlightHTML(item, 'lvl1')} />
-                  </>
-                )}
+                <FootnoteSection item={item} levelKey="lvl1" />
               </FOOTNOTE>
             </>
           )}

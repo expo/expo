@@ -3,6 +3,7 @@ import { Command } from 'cmdk';
 
 import type { AlgoliaItemType } from '../types';
 import { getContentHighlightHTML, getHighlightHTML, isEASPath, openLink } from '../utils';
+import { FootnoteSection } from './FootnoteSection';
 import { FootnoteArrowIcon, GuideIcon } from './icons';
 import { contentStyle, footnoteStyle, itemIconWrapperStyle, itemStyle } from './styles';
 
@@ -59,7 +60,7 @@ const transformUrl = (url: string) => {
 };
 
 export const ExpoDocsItem = ({ item, onSelect }: Props) => {
-  const { lvl0, lvl2, lvl3, lvl6 } = item.hierarchy;
+  const { lvl0, lvl2, lvl3, lvl4, lvl6 } = item.hierarchy;
   return (
     <Command.Item
       value={`expodocs-${item.objectID}`}
@@ -78,37 +79,34 @@ export const ExpoDocsItem = ({ item, onSelect }: Props) => {
               <FOOTNOTE css={footnoteStyle}>
                 <ItemFootnotePrefix url={item.url} isNested />
                 <span {...getHighlightHTML(item, 'lvl0')} />
-                {lvl2 && (
-                  <>
-                    <FootnoteArrowIcon />
-                    <span {...getHighlightHTML(item, 'lvl2')} />
-                  </>
-                )}
-                {lvl3 && (
-                  <>
-                    <FootnoteArrowIcon />
-                    <span {...getHighlightHTML(item, 'lvl3')} />
-                  </>
-                )}
+                <FootnoteSection item={item} levelKey="lvl2" />
+                <FootnoteSection item={item} levelKey="lvl3" />
+                <FootnoteSection item={item} levelKey="lvl4" />
               </FOOTNOTE>
             </>
           )}
-          {!lvl6 && lvl3 && (
+          {!lvl6 && lvl4 && (
+            <>
+              <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl4')} />
+              <FOOTNOTE css={footnoteStyle}>
+                <ItemFootnotePrefix url={item.url} isNested />
+                <span {...getHighlightHTML(item, 'lvl0')} />
+                <FootnoteSection item={item} levelKey="lvl2" />
+                <FootnoteSection item={item} levelKey="lvl3" />
+              </FOOTNOTE>
+            </>
+          )}
+          {!lvl6 && !lvl4 && lvl3 && (
             <>
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl3')} />
               <FOOTNOTE css={footnoteStyle}>
                 <ItemFootnotePrefix url={item.url} isNested />
                 <span {...getHighlightHTML(item, 'lvl0')} />
-                {lvl2 && (
-                  <>
-                    <FootnoteArrowIcon />
-                    <span {...getHighlightHTML(item, 'lvl2')} />
-                  </>
-                )}
+                <FootnoteSection item={item} levelKey="lvl2" />
               </FOOTNOTE>
             </>
           )}
-          {!lvl6 && !lvl3 && lvl2 && (
+          {!lvl6 && !lvl4 && !lvl3 && lvl2 && (
             <>
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl2')} />
               <FOOTNOTE css={footnoteStyle}>
@@ -117,7 +115,7 @@ export const ExpoDocsItem = ({ item, onSelect }: Props) => {
               </FOOTNOTE>
             </>
           )}
-          {!lvl6 && !lvl3 && !lvl2 && lvl0 && (
+          {!lvl6 && !lvl4 && !lvl3 && !lvl2 && lvl0 && (
             <>
               <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl0')} />
               <ItemFootnotePrefix url={item.url} />

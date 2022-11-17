@@ -18,6 +18,7 @@ export type AlgoliaItemHierarchy<T> = {
 export type AlgoliaItemType = {
   url: string;
   objectID: string;
+  anchor: string | null;
   content: string | null;
   hierarchy: AlgoliaItemHierarchy<string>;
   _highlightResult: {
