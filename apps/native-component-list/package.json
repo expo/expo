@@ -58,7 +58,7 @@
     "@shopify/react-native-skia": "0.1.157",
     "@use-expo/permissions": "^2.0.0",
     "date-format": "^2.0.0",
-    "deep-object-diff": "^1.1.0",
+    "deep-object-diff": "^1.1.9",
     "expo": "~47.0.0-alpha.1",
     "expo-2d-context": "^0.0.2",
     "expo-app-loading": "~2.1.0",
