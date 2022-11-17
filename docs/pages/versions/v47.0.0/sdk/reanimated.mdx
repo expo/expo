@@ -9,7 +9,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 `react-native-reanimated` provides an API that greatly simplifies the process of creating smooth, powerful, and maintainable animations.
 
-> **Reanimated uses React Native APIs that are incompatible with "Remote JS Debugging" for JavaScriptCore**. In order to use a debugger with your app with react-native-reanimated, you will need to use the [Hermes JavaScript engine](/guides/using-hermes.mdx) and the [JavaScript Inspector for Hermes](/guides/using-hermes.mdx#javascript-inspector-for-hermes).
+> **Reanimated uses React Native APIs that are incompatible with "Remote JS Debugging" for JavaScriptCore**. In order to use a debugger with your app with `react-native-reanimated`, you'll need to use the [Hermes JavaScript engine](/guides/using-hermes) and the [JavaScript Inspector for Hermes](/guides/using-hermes#javascript-inspector-for-hermes).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -17,7 +17,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <APIInstallSection href="https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/installation" />
 
-**In all cases,** after the installation completes, you must also add the Babel plugin to **babel.config.js**:
+After the installation completes, you must also add the Babel plugin to **babel.config.js**:
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -29,6 +29,12 @@ module.exports = function (api) {
 };
 ```
 
+After you add the Babel plugin, restart your development server and clear the bundler cache: `npx expo start --clear`.
+
+> If you load other Babel plugins, the Reanimated plugin has to be the last item in the plugins array.
+
+### Web support
+
 **For web,** you'll have to install the [`@babel/plugin-proposal-export-namespace-from`](https://babeljs.io/docs/en/babel-plugin-proposal-export-namespace-from#installation) Babel plugin and update the **babel.config.js**:
 
 {/* prettier-ignore */}
@@ -39,9 +45,7 @@ plugins: [
 ],
 ```
 
-After you add the Babel plugins, restart your development server and clear the bundler cache: `npx expo start --clear`.
-
-> Note: If you load other Babel plugins, the Reanimated plugin has to be the last item in the plugins array.
+After you add the Babel plugin, restart your development server and clear the bundler cache: `npx expo start --clear`.
 
 ## Usage
 
