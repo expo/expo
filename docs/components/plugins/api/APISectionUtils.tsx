@@ -29,7 +29,7 @@ import { A } from '~/ui/components/Text';
 const isDev = process.env.NODE_ENV === 'development';
 
 export enum TypeDocKind {
-  LegacyEnum = 4,
+  Namespace = 4,
   Enum = 8,
   Variable = 32,
   Function = 64,
@@ -38,6 +38,7 @@ export enum TypeDocKind {
   Property = 1024,
   Method = 2048,
   Parameter = 32768,
+  Accessor = 262144,
   TypeAlias = 4194304,
 }
 
@@ -155,6 +156,8 @@ const hardcodedTypeLinks: Record<string, string> = {
 
 const renderWithLink = (name: string, type?: string) => {
   const replacedName = replaceableTypes[name] ?? name;
+
+  if (name.includes('.')) return name;
 
   return nonLinkableTypes.includes(replacedName) ? (
     replacedName + (type === 'array' ? '[]' : '')
@@ -332,6 +335,8 @@ export const resolveTypeName = (
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
       return operator || 'undefined';
+    } else if (type === 'intrinsic') {
+      return name || 'undefined';
     } else if (value === null) {
       return 'null';
     }

@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Extract nested object definitions to the separate types, which adds: `DeletingOptions`, `InfoOptions`, `RelocatingOptions` and `MakeDirectoryOptions` types.
+- Simplify the way in which types are exported from the package.
+
 ## 15.1.1 — 2022-10-28
 
 _This version does not introduce any user-facing changes._
