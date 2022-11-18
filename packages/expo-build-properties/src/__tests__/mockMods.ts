@@ -25,7 +25,7 @@ export async function compileMockModWithResultsAsync<T, ConfigPluginProps>(
     modResults,
   }: {
     plugin: ConfigPlugin<ConfigPluginProps>;
-    pluginProps?: ConfigPluginProps;
+    pluginProps: ConfigPluginProps;
     mod: ConfigPlugin<Mod<T>>;
     modResults: T;
   }

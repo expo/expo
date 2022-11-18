@@ -1,3 +1,5 @@
+import assert from 'assert';
+
 import { updateAndroidProguardRules } from '../android';
 
 describe(updateAndroidProguardRules, () => {
@@ -13,6 +15,7 @@ describe(updateAndroidProguardRules, () => {
     const rules = '-printmapping mapping.txt';
     const results = updateAndroidProguardRules(contents, rules);
     expect(results).toContain(rules);
+    assert(results);
 
     const reentrantResults = updateAndroidProguardRules(results, rules);
     expect(reentrantResults).toBe(null);
@@ -23,6 +26,7 @@ describe(updateAndroidProguardRules, () => {
     const rules = '-printmapping mapping.txt';
     const results = updateAndroidProguardRules(contents, rules);
     expect(results).toContain(rules);
+    assert(results);
 
     const updatedRules = '-optimizationpasses 5';
     const updatedResults = updateAndroidProguardRules(results, updatedRules);
@@ -35,6 +39,7 @@ describe(updateAndroidProguardRules, () => {
     const rules = '-printmapping mapping.txt';
     const results = updateAndroidProguardRules(contents, rules);
     expect(results).toContain(rules);
+    assert(results);
 
     const updatedResults = updateAndroidProguardRules(results, null);
     expect(updatedResults).toEqual(contents);

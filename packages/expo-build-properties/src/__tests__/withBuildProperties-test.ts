@@ -1,3 +1,4 @@
+import { PropertiesItem } from '@expo/config-plugins/build/android/Properties';
 import { withGradleProperties } from '@expo/config-plugins/build/plugins/android-plugins';
 import { withPodfileProperties } from '@expo/config-plugins/build/plugins/ios-plugins';
 
@@ -36,7 +37,10 @@ describe(withBuildProperties, () => {
       ios: { useFrameworks: 'static' },
     };
 
-    const { modResults: androidModResults } = await compileMockModWithResultsAsync(
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      PropertiesItem[],
+      PluginConfigType
+    >(
       {},
       {
         plugin: withBuildProperties,
