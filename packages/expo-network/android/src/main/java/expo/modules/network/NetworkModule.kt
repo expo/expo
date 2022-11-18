@@ -63,7 +63,7 @@ class NetworkModule : Module() {
           promise.resolve(result)
         }
       } catch (e: Exception) {
-        throw NetworkAccessException()
+        throw NetworkAccessException(e)
       }
     }
 
@@ -97,7 +97,7 @@ class NetworkModule : Module() {
       manager.connectionInfo
     } catch (e: Exception) {
       Log.e(TAG, e.message ?: "Wi-Fi information could not be acquired")
-      throw NetworkWifiException()
+      throw NetworkWifiException(e)
     }
 
   private fun getConnectionType(netInfo: NetworkInfo?): NetworkStateType = when (netInfo?.type) {
