@@ -1,4 +1,4 @@
-import { AndroidConfig, ConfigPlugin, History, withDangerousMod } from '@expo/config-plugins';
+import { AndroidConfig, ConfigPlugin, History, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
