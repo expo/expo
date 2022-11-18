@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `extraProguardRules` be overwritten from multiple `withBuildProperties` execution.
+- Fixed `extraProguardRules` be overwritten from multiple `withBuildProperties` execution. ([#20106](https://github.com/expo/expo/pull/20106) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
