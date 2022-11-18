@@ -1,9 +1,9 @@
-import { AndroidConfig, ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
+import { AndroidConfig, ConfigPlugin, History, withDangerousMod } from '@expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
-import type { PluginConfigType } from './pluginConfig';
 import { appendContents, purgeContents } from './fileContentsUtils';
+import type { PluginConfigType } from './pluginConfig';
 
 const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 
@@ -82,6 +82,53 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
   ]);
 };
 
+export const withAndroidPurgeProguardRulesOnce: ConfigPlugin = (config) => {
+  return withDangerousMod(config, [
+    'android',
+    async (config) => {
+      const RUN_ONCE_NAME = 'expo-build-properties-android-purge-proguard-rules-once';
+
+      /**
+       * The `withRunOnce` plugin will delay this plugin's execution.
+       * To make sure this plugin executes before any `withAndroidProguardRules`.
+       * We use the `withRunOnce` internal History to do the check.
+       * Example:
+       * ```
+       * config = withBuildProperties(config as ExpoConfig, {
+       *   android: {
+       *     kotlinVersion: "1.6.10",
+       *   },
+       * });
+       * config = withBuildProperties(config as ExpoConfig, {
+       *   android: {
+       *     enableProguardInReleaseBuilds: true,
+       *     extraProguardRules: "-keep class com.mycompany.** { *; }",
+       *   },
+       * });
+       * ```
+       */
+      if (History.getHistoryItem(config, RUN_ONCE_NAME)) {
+        return config;
+      } else {
+        History.addHistoryItem(config, { name: RUN_ONCE_NAME });
+      }
+
+      const proguardRulesFile = path.join(
+        config.modRequest.platformProjectRoot,
+        'app',
+        'proguard-rules.pro'
+      );
+
+      const contents = await fs.promises.readFile(proguardRulesFile, 'utf8');
+      const newContents = updateAndroidProguardRules(contents, '', 'overwrite');
+      if (contents !== newContents) {
+        await fs.promises.writeFile(proguardRulesFile, newContents);
+      }
+      return config;
+    },
+  ]);
+};
+
 /**
  * Update `newProguardRules` to original `proguard-rules.pro` contents if needed
  *
@@ -103,6 +150,8 @@ export function updateAndroidProguardRules(
   if (updateMode === 'overwrite') {
     newContents = purgeContents(contents, options);
   }
-  newContents = appendContents(newContents, newProguardRules, options);
+  if (newProguardRules !== '') {
+    newContents = appendContents(newContents, newProguardRules, options);
+  }
   return newContents;
 }

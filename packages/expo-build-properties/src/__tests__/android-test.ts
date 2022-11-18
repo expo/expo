@@ -36,6 +36,23 @@ describe(updateAndroidProguardRules, () => {
     expect(updatedRules).toEqual(results);
   });
 
+  it('should leave the contents untouched when mode is `append` and rules is empty string', () => {
+    const contents = '# original rules\n';
+    const results = updateAndroidProguardRules(contents, '', 'append');
+    expect(results).toEqual(contents);
+  });
+
+  it('should purge the sectioned contents when mode is `overwrite` and rules is empty string', () => {
+    const contents = `\
+# original rules
+
+# @generated begin expo-build-properties - expo prebuild (DO NOT MODIFY)
+-printmapping mapping.txt
+# @generated end expo-build-properties`;
+    const results = updateAndroidProguardRules(contents, '', 'overwrite');
+    expect(results).toEqual('# original rules\n');
+  });
+
   it('demonstrate the updated contents', () => {
     const contents = '# original rules\n';
     const rules = '-printmapping mapping.txt';
