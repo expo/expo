@@ -105,13 +105,10 @@ const general = [
   ]),
   makeSection('Development builds', [
     makePage('development/introduction.mdx'),
-    makePage('development/getting-started.mdx'),
-    makePage('development/build.mdx'),
+    makePage('development/create-development-builds.mdx'),
+    makePage('development/use-development-builds.mdx'),
     makePage('development/installation.mdx'),
     makePage('development/development-workflows.mdx'),
-    makePage('development/extensions.mdx'),
-    makePage('development/upgrading.mdx'),
-    makePage('development/troubleshooting.mdx'),
   ]),
   makeSection('Expo Modules API', [
     makePage('modules/overview.mdx'),
