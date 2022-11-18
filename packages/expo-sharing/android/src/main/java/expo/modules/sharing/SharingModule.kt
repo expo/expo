@@ -7,7 +7,6 @@ import android.net.Uri
 import androidx.core.content.FileProvider
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.interfaces.filesystem.Permission
-import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -20,15 +19,10 @@ class SharingModule : Module() {
   private val currentActivity
     get() = appContext.currentActivity ?: throw MissingCurrentActivityException()
 
-  private var pendingPromise: Promise? = null
-
   override fun definition() = ModuleDefinition {
     Name("ExpoSharing")
 
-    AsyncFunction("shareAsync") { url: String?, params: SharingOptions?, promise: Promise ->
-      if (pendingPromise != null) {
-        throw SharingInProgressException()
-      }
+    AsyncFunction("shareAsync") { url: String?, params: SharingOptions ->
       try {
         val fileToShare = getLocalFileFoUrl(url)
         val contentUri = FileProvider.getUriForFile(
@@ -36,12 +30,12 @@ class SharingModule : Module() {
           context.applicationInfo.packageName + ".SharingFileProvider",
           fileToShare
         )
-        val mimeType = params?.mimeType
+        val mimeType = params.mimeType
           ?: URLConnection.guessContentTypeFromName(fileToShare.name)
           ?: "*/*"
         val intent = Intent.createChooser(
           createSharingIntent(contentUri, mimeType),
-          params?.dialogTitle
+          params.dialogTitle
         )
         val resInfoList = context.packageManager.queryIntentActivities(
           intent,
@@ -51,19 +45,11 @@ class SharingModule : Module() {
           val packageName = it.activityInfo.packageName
           context.grantUriPermission(packageName, contentUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        currentActivity.startActivityForResult(intent, REQUEST_CODE)
-        pendingPromise = promise
+        currentActivity.startActivity(intent)
       } catch (e: InvalidArgumentException) {
         throw SharingInvalidArgsException(e.message, e)
       } catch (e: Exception) {
         throw SharingFailedException("Failed to share the file: ${e.message}", e)
-      }
-    }
-
-    OnActivityResult { _, payload ->
-      if (payload.requestCode == REQUEST_CODE && pendingPromise != null) {
-        pendingPromise?.resolve(null)
-        pendingPromise = null
       }
     }
   }
@@ -97,8 +83,4 @@ class SharingModule : Module() {
       setTypeAndNormalize(mimeType)
       addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
-
-  companion object {
-    private const val REQUEST_CODE = 8524
-  }
 }
