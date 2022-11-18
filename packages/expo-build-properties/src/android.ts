@@ -1,13 +1,9 @@
 import { AndroidConfig, ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
-import {
-  mergeContents,
-  removeContents,
-  MergeResults,
-} from '@expo/config-plugins/build/utils/generateCode';
 import fs from 'fs';
 import path from 'path';
 
 import type { PluginConfigType } from './pluginConfig';
+import { appendContents, purgeContents } from './fileContentsUtils';
 
 const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
 
@@ -65,6 +61,7 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
     'android',
     async (config) => {
       const extraProguardRules = props.android?.extraProguardRules ?? null;
+      const extraProguardRulesMode = props.android?.extraProguardRulesMode ?? 'append';
       const proguardRulesFile = path.join(
         config.modRequest.platformProjectRoot,
         'app',
@@ -72,8 +69,12 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
       );
 
       const contents = await fs.promises.readFile(proguardRulesFile, 'utf8');
-      const newContents = updateAndroidProguardRules(contents, extraProguardRules);
-      if (newContents) {
+      const newContents = updateAndroidProguardRules(
+        contents,
+        extraProguardRules,
+        extraProguardRulesMode
+      );
+      if (contents !== newContents) {
         await fs.promises.writeFile(proguardRulesFile, newContents);
       }
       return config;
@@ -85,34 +86,23 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
  * Update `newProguardRules` to original `proguard-rules.pro` contents if needed
  *
  * @param contents the original `proguard-rules.pro` contents
- * @param newProguardRules new proguard rules to add. If the value is null, the generated proguard rules will be cleanup
- * @returns return string when results is updated or return null when nothing changed.
+ * @param newProguardRules new proguard rules to add. If the value is null, the returned value will be original `contents`.
+ * @returns return updated contents
  */
 export function updateAndroidProguardRules(
   contents: string,
-  newProguardRules: string | null
-): string | null {
-  const mergeTag = 'expo-build-properties';
-
-  let mergeResults: MergeResults;
-  if (newProguardRules) {
-    mergeResults = mergeContents({
-      tag: mergeTag,
-      src: contents,
-      newSrc: newProguardRules,
-      anchor: /^/,
-      offset: contents.length,
-      comment: '#',
-    });
-  } else {
-    mergeResults = removeContents({
-      tag: mergeTag,
-      src: contents,
-    });
+  newProguardRules: string | null,
+  updateMode: 'append' | 'overwrite'
+): string {
+  if (newProguardRules == null) {
+    return contents;
   }
 
-  if (mergeResults.didMerge || mergeResults.didClear) {
-    return mergeResults.contents;
+  const options = { tag: 'expo-build-properties', commentPrefix: '#' };
+  let newContents = contents;
+  if (updateMode === 'overwrite') {
+    newContents = purgeContents(contents, options);
   }
-  return null;
+  newContents = appendContents(newContents, newProguardRules, options);
+  return newContents;
 }
