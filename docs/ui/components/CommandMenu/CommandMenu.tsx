@@ -1,8 +1,9 @@
-import { WordMarkLogo, SearchIcon, theme, StatusWaitingIcon, XIcon } from '@expo/styleguide';
+import { SearchIcon, theme, XIcon } from '@expo/styleguide';
 import { Command } from 'cmdk';
 import { useEffect, useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
 
+import { BarLoader } from './BarLoader';
 import { CommandFooter } from './CommandFooter';
 import { RNDirectoryItem, RNDocsItem, ExpoDocsItem, ExpoItem } from './Items';
 import { entries } from './expoEntries';
@@ -54,26 +55,20 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
 
   return (
     <Command.Dialog open={open} onOpenChange={setOpen} label="Search Menu" shouldFilter={false}>
-      <SearchIcon
-        color={theme.icon.secondary}
-        css={[searchIconStyle, { opacity: !loading ? 1 : 0 }]}
-      />
-      <StatusWaitingIcon
-        color={theme.palette.purple[300]}
-        css={[searchIconStyle, { opacity: loading ? 1 : 0 }]}
-      />
+      <SearchIcon color={theme.icon.secondary} css={searchIconStyle} />
       <XIcon color={theme.icon.secondary} css={closeIconStyle} onClick={() => setOpen(false)} />
       <Command.Input value={query} onValueChange={setQuery} placeholder="search anything…" />
+      <BarLoader isLoading={loading} />
       <Command.List>
         {expoDocsItems.length > 0 && (
-          <Command.Group heading={<ExpoHeading label="documentation" />}>
+          <Command.Group heading="Expo documentation">
             {expoDocsItems.map(item => (
               <ExpoDocsItem item={item} onSelect={dismiss} key={`hit-expo-docs-${item.objectID}`} />
             ))}
           </Command.Group>
         )}
         {expoItems.length > 0 && (
-          <Command.Group heading={<ExpoHeading label="dashboard" />}>
+          <Command.Group heading="Expo dashboard">
             {expoItems.map((item: ExpoItemType) => (
               <ExpoItem item={item} onSelect={dismiss} key={`hit-expo-${item.url}`} query={query} />
             ))}
@@ -108,9 +103,3 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
     </Command.Dialog>
   );
 };
-
-const ExpoHeading = ({ label }: { label: string }) => (
-  <>
-    <WordMarkLogo width={46} /> {label}
-  </>
-);
