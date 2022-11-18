@@ -41,9 +41,8 @@ extension UIResponder: DevMenuUIResponderExtensionProtocol {
   @objc
   var EXDevMenu_keyCommands: [UIKeyCommand] {
     if self is UITextField || self is UITextView {
-      return [];
+      return []
     }
-    
     let actions = DevMenuManager.shared.devMenuCallable.filter { $0 is DevMenuExportedAction } as! [DevMenuExportedAction]
     let actionsWithKeyCommands = actions.filter { $0.keyCommand != nil }
     var keyCommands = actionsWithKeyCommands.map { $0.keyCommand! }
