@@ -22,7 +22,7 @@ interface State {
   createdFileURI: string | null;
 }
 
-export default class FileSystemScreen extends React.Component<{}, State> {
+export default class FileSystemScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'FileSystem',
   };
