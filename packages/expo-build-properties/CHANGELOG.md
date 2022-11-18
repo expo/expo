@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `extraProguardRules` be overwritten from multiple `withBuildProperties` execution.
+
 ### 💡 Others
 
 ## 0.4.0 — 2022-10-25
