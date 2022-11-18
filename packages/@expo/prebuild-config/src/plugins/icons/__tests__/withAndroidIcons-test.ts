@@ -91,9 +91,9 @@ describe('Android Icon', () => {
   it(`creates the proper AdaptiveIconXmlString`, () => {
     const withBackgroundImage = createAdaptiveIconXmlString('path/to/image', null);
     const withBackgroundColor = createAdaptiveIconXmlString(null, null);
-    const withBackgroundColorAndMonochrome = createAdaptiveIconXmlString(null, null);
+    const withBackgroundColorAndMonochrome = createAdaptiveIconXmlString(null, 'path/to/image');
     const withBoth = createAdaptiveIconXmlString('path/to/image', null);
-    const withBothAndMonochrome = createAdaptiveIconXmlString('path/to/image', null);
+    const withBothAndMonochrome = createAdaptiveIconXmlString('path/to/image', 'path/to/image');
 
     expect(withBackgroundColor).toBe(ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR);
     expect(withBackgroundColorAndMonochrome).toBe(
