@@ -211,11 +211,12 @@ export default class FileSystemScreen extends React.Component<object, State> {
 
   _askForDirPermissions = async () => {
     const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
-    if (permissions.granted && permissions.directoryUri) {
+    if (permissions.granted) {
+      const url = permissions.directoryUri;
       this.setState({
-        permittedURI: permissions.directoryUri,
+        permittedURI: url,
       });
-      alert(`You selected: ${permissions.directoryUri}`);
+      alert(`You selected: ${url}`);
     }
   };
 

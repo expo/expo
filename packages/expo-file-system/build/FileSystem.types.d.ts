@@ -284,14 +284,21 @@ export declare type ProgressEvent<T> = {
     uuid: string;
     data: T;
 };
-export declare type FileSystemRequestDirectoryPermissionsResult = {
-    /**
-     * Whether the permissions were granted.
-     */
-    granted: boolean;
+export declare type FileSystemRequestDirectoryPermissionsResult = 
+/**
+ * If the permissions were not granted.
+ */
+{
+    granted: false;
+} | 
+/**
+ * If the permissions were granted.
+ */
+{
+    granted: true;
     /**
      * The [SAF URI](#saf-uri) to the user's selected directory. Available only if permissions were granted.
      */
-    directoryUri?: string;
+    directoryUri: string;
 };
 //# sourceMappingURL=FileSystem.types.d.ts.map

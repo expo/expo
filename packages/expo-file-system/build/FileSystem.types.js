@@ -43,4 +43,5 @@ export var EncodingType;
      */
     EncodingType["Base64"] = "base64";
 })(EncodingType || (EncodingType = {}));
+/* eslint-enable */
 //# sourceMappingURL=FileSystem.types.js.map

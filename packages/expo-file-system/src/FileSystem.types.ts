@@ -318,13 +318,22 @@ export type ProgressEvent<T> = {
   data: T;
 };
 
-export type FileSystemRequestDirectoryPermissionsResult = {
+/* eslint-disable */
+export type FileSystemRequestDirectoryPermissionsResult =
   /**
-   * Whether the permissions were granted.
+   * If the permissions were not granted.
    */
-  granted: boolean;
+  {
+    granted: false;
+  } |
   /**
-   * The [SAF URI](#saf-uri) to the user's selected directory. Available only if permissions were granted.
+   * If the permissions were granted.
    */
-  directoryUri?: string;
-};
+  {
+    granted: true;
+    /**
+     * The [SAF URI](#saf-uri) to the user's selected directory. Available only if permissions were granted.
+     */
+    directoryUri: string;
+  };
+/* eslint-enable */
