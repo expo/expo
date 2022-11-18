@@ -82,6 +82,10 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
   ]);
 };
 
+/**
+ * Purge generated proguard contents from previous prebuild.
+ * This plugin only runs once in the prebuilding phase and should execute before any `withAndroidProguardRules` calls.
+ */
 export const withAndroidPurgeProguardRulesOnce: ConfigPlugin = (config) => {
   return withDangerousMod(config, [
     'android',
@@ -91,9 +95,9 @@ export const withAndroidPurgeProguardRulesOnce: ConfigPlugin = (config) => {
       /**
        * The `withRunOnce` plugin will delay this plugin's execution.
        * To make sure this plugin executes before any `withAndroidProguardRules`.
-       * We use the `withRunOnce` internal History to do the check.
-       * Example:
-       * ```
+       * We use the `withRunOnce` internal History functions to do the check.
+       * Example calls to demonstrate the case:
+       * ```ts
        * config = withBuildProperties(config as ExpoConfig, {
        *   android: {
        *     kotlinVersion: "1.6.10",

@@ -78,7 +78,7 @@ test appending contents
     `);
   });
 
-  it('should leave contents untouch when tag not found', () => {
+  it('should leave contents untouched when tag not found', () => {
     const src = `\
 # line-1
 # line-2

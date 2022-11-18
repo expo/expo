@@ -56,7 +56,7 @@ export interface PluginConfigTypeAndroid {
   extraProguardRules?: string;
 
   /**
-   * The mode to update {@link PluginConfigTypeAndroid.extraProguardRules} to `android/app/proguard-rules.pro`.
+   * The mode to update {@link PluginConfigTypeAndroid.extraProguardRules} for `android/app/proguard-rules.pro`.
    * @defaultValue 'append'
    */
   extraProguardRulesMode?: 'append' | 'overwrite';
