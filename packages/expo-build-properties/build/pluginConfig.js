@@ -34,6 +34,7 @@ const schema = {
                 kotlinVersion: { type: 'string', nullable: true },
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
+                extraProguardRulesMode: { type: 'string', enum: ['append', 'overwrite'], nullable: true },
                 packagingOptions: {
                     type: 'object',
                     properties: {

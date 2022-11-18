@@ -21,8 +21,18 @@ export interface PluginConfigTypeAndroid {
     kotlinVersion?: string;
     /** Enable Proguard (R8) in release builds to obfuscate Java code and reduce app size */
     enableProguardInReleaseBuilds?: boolean;
-    /** Append custom [Proguard rules](https://www.guardsquare.com/manual/configuration/usage) to `android/app/proguard-rules.pro` */
+    /**
+     * Add custom [Proguard rules](https://www.guardsquare.com/manual/configuration/usage) to `android/app/proguard-rules.pro`.
+     *
+     * By default, the new rules will append to the end of file.
+     * The behavior could be changed by {@link PluginConfigTypeAndroid.extraProguardRulesMode}.
+     */
     extraProguardRules?: string;
+    /**
+     * The mode to update {@link PluginConfigTypeAndroid.extraProguardRules} to `android/app/proguard-rules.pro`.
+     * @defaultValue 'append'
+     */
+    extraProguardRulesMode?: 'append' | 'overwrite';
     /** AGP [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions) */
     packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
 }
