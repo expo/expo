@@ -158,6 +158,8 @@ const { uri } = await Print.printToFileAsync({
 });
 ```
 
+If `useMarkupFormatter` is set to `true`, setting margins may cause a blank page to appear at the end of your printout. To prevent this, make sure your HTML string is a well-formed document, including `<!DOCTYPE html>` at the beginning of the string.
+
 **On Android**, if you're using `html` option in `printAsync` or `printToFileAsync`, the resulting print might contain page margins (it depends on the WebView engine).
 They are set by `@page` style block and you can override them in your HTML code:
 
