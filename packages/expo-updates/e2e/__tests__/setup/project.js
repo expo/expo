@@ -1,7 +1,33 @@
 const spawnAsync = require('@expo/spawn-async');
 const fs = require('fs/promises');
-const path = require('path');
 const glob = require('glob');
+const path = require('path');
+
+
+async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyName) {
+  // Pack up the named Expo package into the destination folder
+  const dependencyPath = path.resolve(repoRoot, 'packages', dependencyName);
+  await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
+    cwd: dependencyPath,
+    stdio: 'ignore',
+  });
+
+  // Ensure the file was created as expected
+  const dependencyTarballPath = glob.sync(path.join(destPath, `${dependencyName}-*.tgz`))[0];
+
+  if (!dependencyTarballPath) {
+    throw new Error(`Failed to locate packed ${dependencyName} in ${destPath}`);
+  }
+
+  // Return the dependency in the form needed by package.json, as a relative path
+  const dependency = `file:.${path.sep}${path.relative(projectRoot, dependencyTarballPath)}`;
+  // We also need the exact version string for each package
+  const version = require(path.resolve(dependencyPath, 'package.json')).version;
+  return {
+    dependency,
+    version,
+  };
+}
 
 async function prepareLocalUpdatesModule(repoRoot) {
   // copy UpdatesE2ETest exported module into the local package
@@ -64,34 +90,71 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin })
   const workingDir = path.dirname(projectRoot);
   const projectName = path.basename(projectRoot);
 
-  // initialize project
-  await spawnAsync('yarn', ['create', 'expo-app', projectName, '--yes'], {
+  // initialize project (do not do NPM install, we do that later)
+  await spawnAsync('yarn', ['create', 'expo-app', projectName, '--yes', '--no-install'], {
     cwd: workingDir,
     stdio: 'inherit',
   });
 
   await prepareLocalUpdatesModule(repoRoot);
 
-  // add local dependencies
+  // Create the project subfolder to hold NPM tarballs built from the current state of the repo
+  const dependenciesPath = path.join(projectRoot, 'dependencies');
+  await fs.mkdir(dependenciesPath);
+
+  const expoDependencyNames = [
+    'expo',
+    'expo-application',
+    'expo-constants',
+    'expo-eas-client',
+    'expo-error-recovery',
+    'expo-file-system',
+    'expo-font',
+    'expo-json-utils',
+    'expo-keep-awake',
+    'expo-manifests',
+    'expo-modules-autolinking',
+    'expo-modules-core',
+    'expo-splash-screen',
+    'expo-status-bar',
+    'expo-structured-headers',
+    'expo-updates-interface',
+    'expo-updates',
+  ];
+
+  const expoResolutions = {};
+  const expoVersions = {};
+
+  for (const dependencyName of expoDependencyNames) {
+    console.log(`Packing ${dependencyName}...`);
+    const result = await packExpoDependency(
+      repoRoot,
+      projectRoot,
+      dependenciesPath,
+      dependencyName
+    );
+    expoResolutions[dependencyName] = result.dependency;
+    expoVersions[dependencyName] = result.version;
+  }
+  console.log('Done packing dependencies.');
+
+  // Remove the default Expo dependencies from create-expo-app
   let packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf-8'));
+  for (const dependencyName of expoDependencyNames) {
+    if (packageJson.dependencies[dependencyName]) {
+      delete packageJson.dependencies[dependencyName];
+    }
+  }
+  // Add dependencies and resolutions to package.json
   packageJson = {
     ...packageJson,
+    dependencies: {
+      ...packageJson.dependencies,
+      ...expoVersions,
+    },
     resolutions: {
       ...packageJson.resolutions,
-      'expo-application': 'file:../expo/packages/expo-application',
-      'expo-constants': 'file:../expo/packages/expo-constants',
-      'expo-eas-client': 'file:../expo/packages/expo-eas-client',
-      'expo-error-recovery': 'file:../expo/packages/expo-error-recovery',
-      'expo-file-system': 'file:../expo/packages/expo-file-system',
-      'expo-font': 'file:../expo/packages/expo-font',
-      'expo-json-utils': 'file:../expo/packages/expo-json-utils',
-      'expo-keep-awake': 'file:../expo/packages/expo-keep-awake',
-      'expo-manifests': 'file:../expo/packages/expo-manifests',
-      'expo-modules-autolinking': 'file:../expo/packages/expo-modules-autolinking',
-      'expo-modules-core': 'file:../expo/packages/expo-modules-core',
-      'expo-splash-screen': 'file:../expo/packages/expo-splash-screen',
-      'expo-structured-headers': 'file:../expo/packages/expo-structured-headers',
-      'expo-updates-interface': 'file:../expo/packages/expo-updates-interface',
+      ...expoResolutions,
     },
   };
   await fs.writeFile(
@@ -99,20 +162,11 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin })
     JSON.stringify(packageJson, null, 2),
     'utf-8'
   );
-  await spawnAsync(
-    'yarn',
-    [
-      'add',
-      'file:../expo/packages/expo-updates',
-      'file:../expo/packages/expo',
-      'file:../expo/packages/expo-splash-screen',
-      'file:../expo/packages/expo-status-bar',
-    ],
-    {
-      cwd: projectRoot,
-      stdio: 'inherit',
-    }
-  );
+  // Now we do NPM install
+  await spawnAsync('yarn', [], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
 
   // configure app.json
   let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
@@ -163,11 +217,11 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin })
     { cwd: projectRoot, stdio: 'inherit' }
   );
 
-  // pack local template and prebuild
+  // pack local template and prebuild, but do not reinstall NPM
   const localTemplatePath = path.join(repoRoot, 'templates', 'expo-template-bare-minimum');
   await spawnAsync('npm', ['pack', '--pack-destination', projectRoot], {
     cwd: localTemplatePath,
-    stdio: 'inherit',
+    stdio: 'ignore',
   });
 
   const localTemplatePathName = glob.sync(
@@ -178,12 +232,21 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin })
     throw new Error(`Failed to locate packed template in ${projectRoot}`);
   }
 
-  await spawnAsync(localCliBin, ['prebuild', '--template', localTemplatePathName], {
+  await spawnAsync(localCliBin, ['prebuild', '--no-install', '--template', localTemplatePathName], {
     env: {
       ...process.env,
       EXPO_DEBUG: '1',
       CI: '1',
     },
+    cwd: projectRoot,
+    stdio: 'ignore',
+  });
+
+  // We are done with template tarball
+  await fs.rm(localTemplatePathName);
+
+  // iOS cocoapods install
+  await spawnAsync('npx', ['pod-install'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
@@ -211,7 +274,7 @@ async function setupBasicAppAsync(projectRoot, localCliBin) {
   // export update for test server to host
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
   await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
-  //await spawnAsync(localCliBin, ['export'], {
+    //await spawnAsync(localCliBin, ['export'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
@@ -245,7 +308,7 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
   // export update for test server to host
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
   await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
-  //await spawnAsync(localCliBin, ['export'], {
+    //await spawnAsync(localCliBin, ['export'], {
     cwd: projectRoot,
     stdio: 'inherit',
   });
