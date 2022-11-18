@@ -59,10 +59,9 @@ const withAndroidProguardRules = (config, props) => {
         'android',
         async (config) => {
             const extraProguardRules = props.android?.extraProguardRules ?? null;
-            const extraProguardRulesMode = props.android?.extraProguardRulesMode ?? 'append';
             const proguardRulesFile = path_1.default.join(config.modRequest.platformProjectRoot, 'app', 'proguard-rules.pro');
             const contents = await fs_1.default.promises.readFile(proguardRulesFile, 'utf8');
-            const newContents = updateAndroidProguardRules(contents, extraProguardRules, extraProguardRulesMode);
+            const newContents = updateAndroidProguardRules(contents, extraProguardRules, 'append');
             if (contents !== newContents) {
                 await fs_1.default.promises.writeFile(proguardRulesFile, newContents);
             }
@@ -71,6 +70,10 @@ const withAndroidProguardRules = (config, props) => {
     ]);
 };
 exports.withAndroidProguardRules = withAndroidProguardRules;
+/**
+ * Purge generated proguard contents from previous prebuild.
+ * This plugin only runs once in the prebuilding phase and should execute before any `withAndroidProguardRules` calls.
+ */
 const withAndroidPurgeProguardRulesOnce = (config) => {
     return (0, config_plugins_1.withDangerousMod)(config, [
         'android',
@@ -79,9 +82,9 @@ const withAndroidPurgeProguardRulesOnce = (config) => {
             /**
              * The `withRunOnce` plugin will delay this plugin's execution.
              * To make sure this plugin executes before any `withAndroidProguardRules`.
-             * We use the `withRunOnce` internal History to do the check.
-             * Example:
-             * ```
+             * We use the `withRunOnce` internal History functions to do the check.
+             * Example calls to demonstrate the case:
+             * ```ts
              * config = withBuildProperties(config as ExpoConfig, {
              *   android: {
              *     kotlinVersion: "1.6.10",

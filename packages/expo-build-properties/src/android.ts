@@ -61,7 +61,6 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
     'android',
     async (config) => {
       const extraProguardRules = props.android?.extraProguardRules ?? null;
-      const extraProguardRulesMode = props.android?.extraProguardRulesMode ?? 'append';
       const proguardRulesFile = path.join(
         config.modRequest.platformProjectRoot,
         'app',
@@ -69,11 +68,7 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
       );
 
       const contents = await fs.promises.readFile(proguardRulesFile, 'utf8');
-      const newContents = updateAndroidProguardRules(
-        contents,
-        extraProguardRules,
-        extraProguardRulesMode
-      );
+      const newContents = updateAndroidProguardRules(contents, extraProguardRules, 'append');
       if (contents !== newContents) {
         await fs.promises.writeFile(proguardRulesFile, newContents);
       }

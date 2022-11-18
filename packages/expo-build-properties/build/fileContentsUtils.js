@@ -1,6 +1,6 @@
 "use strict";
 /**
- * A set of helper functions to update file contents. This is a simplified version to internal generateCode in config-plugin.
+ * A set of helper functions to update file contents. This is a simplified version to the config-plugins internal generateCode functions.
  */
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -8,6 +8,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.purgeContents = exports.appendContents = void 0;
 const assert_1 = __importDefault(require("assert"));
+/**
+ * Append new contents to src with generated section comments
+ *
+ * If there is already a generated section, this function will append the new contents at the end of the section.
+ * Otherwise, this function will generate a new section at the end of file.
+ */
 function appendContents(src, contents, sectionOptions) {
     const start = createSectionComment(sectionOptions.commentPrefix, sectionOptions.tag, true);
     const end = createSectionComment(sectionOptions.commentPrefix, sectionOptions.tag, false);
@@ -23,6 +29,9 @@ function appendContents(src, contents, sectionOptions) {
     }
 }
 exports.appendContents = appendContents;
+/**
+ * Purge a generated section
+ */
 function purgeContents(src, sectionOptions) {
     const start = createSectionComment(sectionOptions.commentPrefix, sectionOptions.tag, true);
     const end = createSectionComment(sectionOptions.commentPrefix, sectionOptions.tag, false);
@@ -30,6 +39,9 @@ function purgeContents(src, sectionOptions) {
     return src.replace(regex, '');
 }
 exports.purgeContents = purgeContents;
+/**
+ * Create comments for generated section
+ */
 function createSectionComment(commentPrefix, tag, isBeginComment) {
     if (isBeginComment) {
         return `${commentPrefix} @generated begin ${tag} - expo prebuild (DO NOT MODIFY)`;

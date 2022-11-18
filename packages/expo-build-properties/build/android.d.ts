@@ -5,6 +5,10 @@ export declare const withAndroidBuildProperties: ConfigPlugin<PluginConfigType>;
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
  */
 export declare const withAndroidProguardRules: ConfigPlugin<PluginConfigType>;
+/**
+ * Purge generated proguard contents from previous prebuild.
+ * This plugin only runs once in the prebuilding phase and should execute before any `withAndroidProguardRules` calls.
+ */
 export declare const withAndroidPurgeProguardRulesOnce: ConfigPlugin;
 /**
  * Update `newProguardRules` to original `proguard-rules.pro` contents if needed
