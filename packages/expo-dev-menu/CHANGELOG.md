@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `RCTStatusBarManager` module requires that the `UIViewControllerBasedStatusBarAppearance` to be false on iOS.
+
 ### 💡 Others
 
 ## 2.0.1 - 2022-11-08
