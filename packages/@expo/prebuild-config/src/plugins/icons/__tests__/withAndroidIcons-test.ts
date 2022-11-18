@@ -87,9 +87,9 @@ describe('Android Icon', () => {
   });
 
   it(`creates the proper AdaptiveIconXmlString`, () => {
-    const withBackgroundImage = createAdaptiveIconXmlString('path/to/image');
-    const withBackgroundColor = createAdaptiveIconXmlString(null);
-    const withBoth = createAdaptiveIconXmlString('path/to/image');
+    const withBackgroundImage = createAdaptiveIconXmlString('path/to/image', null);
+    const withBackgroundColor = createAdaptiveIconXmlString(null, null);
+    const withBoth = createAdaptiveIconXmlString('path/to/image', null);
 
     expect(withBackgroundColor).toBe(ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR);
     expect(withBackgroundImage).toBe(ADAPTIVE_ICON_XML_WITH_BOTH);
@@ -103,6 +103,7 @@ describe('Android Icon', () => {
         backgroundImage: null,
         backgroundColor: null,
         isAdaptive: false,
+        monochromeImage: null,
       })
     ).toBe(null);
   });
@@ -128,6 +129,7 @@ describe('e2e: ONLY android legacy icon', () => {
       backgroundColor: null,
       backgroundImage: null,
       isAdaptive: true,
+      monochromeImage: null,
     });
   });
 
@@ -170,6 +172,7 @@ describe('e2e: android adaptive icon', () => {
       backgroundImage: '/app/assets/iconBackground.png',
       backgroundColor: '#123456',
       isAdaptive: true,
+      monochromeImage: null,
     });
   });
 
