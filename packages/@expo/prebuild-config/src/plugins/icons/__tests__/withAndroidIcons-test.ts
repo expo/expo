@@ -160,11 +160,13 @@ describe('e2e: ONLY android legacy icon', () => {
 describe('e2e: android adaptive icon', () => {
   const adaptiveIconForegroundPath = path.resolve(__dirname, '../../__tests__/fixtures/icon.png');
   const adaptiveIconBackgroundPath = path.resolve(__dirname, '../../__tests__/fixtures/icon.png');
+  const adaptiveIconMonochromePath = path.resolve(__dirname, '../../__tests__/fixtures/icon.png');
   const projectRoot = '/app';
 
   beforeAll(async () => {
     const adaptiveIconForeground = fsReal.readFileSync(adaptiveIconForegroundPath);
     const adaptiveIconBackground = fsReal.readFileSync(adaptiveIconBackgroundPath);
+    const adaptiveIconMonochrome = fsReal.readFileSync(adaptiveIconMonochromePath);
 
     vol.fromJSON(
       { './android/app/src/main/res/values/colors.xml': SAMPLE_COLORS_XML },
@@ -174,13 +176,14 @@ describe('e2e: android adaptive icon', () => {
     vol.mkdirpSync('/app/assets');
     vol.writeFileSync('/app/assets/iconForeground.png', adaptiveIconForeground);
     vol.writeFileSync('/app/assets/iconBackground.png', adaptiveIconBackground);
+    vol.writeFileSync('/app/assets/iconMonochrome.png', adaptiveIconMonochrome);
 
     await setIconAsync(projectRoot, {
       icon: '/app/assets/iconForeground.png',
       backgroundImage: '/app/assets/iconBackground.png',
       backgroundColor: '#123456',
       isAdaptive: true,
-      monochromeImage: null,
+      monochromeImage: '/app/assets/iconMonochrome.png',
     });
   });
 
