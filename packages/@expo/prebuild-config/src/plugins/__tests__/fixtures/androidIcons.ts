@@ -31,10 +31,22 @@ export const ADAPTIVE_ICON_XML_WITH_BOTH = `<?xml version="1.0" encoding="utf-8"
     <background android:drawable="@mipmap/ic_launcher_background"/>
     <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
 </adaptive-icon>`;
+export const ADAPTIVE_ICON_XML_WITH_BOTH_AND_MONOCHROME = `<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@mipmap/ic_launcher_background"/>
+    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+    <monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>'
+</adaptive-icon>`;
 export const ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR = `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/iconBackground"/>
     <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+</adaptive-icon>`;
+export const ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR_AND_MONOCHROME = `<?xml version="1.0" encoding="utf-8"?>
+<adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
+    <background android:drawable="@color/iconBackground"/>
+    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+    <monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>'
 </adaptive-icon>`;
 export const SAMPLE_COLORS_XML = `<?xml version="1.0" encoding="utf-8"?>
 <resources>

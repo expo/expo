@@ -6,7 +6,9 @@ import * as path from 'path';
 
 import {
   ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR,
+  ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR_AND_MONOCHROME,
   ADAPTIVE_ICON_XML_WITH_BOTH,
+  ADAPTIVE_ICON_XML_WITH_BOTH_AND_MONOCHROME,
   LIST_OF_ANDROID_ADAPTIVE_ICON_FILES_FINAL,
   SAMPLE_COLORS_XML,
 } from '../../__tests__/fixtures/androidIcons';
@@ -89,11 +91,17 @@ describe('Android Icon', () => {
   it(`creates the proper AdaptiveIconXmlString`, () => {
     const withBackgroundImage = createAdaptiveIconXmlString('path/to/image', null);
     const withBackgroundColor = createAdaptiveIconXmlString(null, null);
+    const withBackgroundColorAndMonochrome = createAdaptiveIconXmlString(null, null);
     const withBoth = createAdaptiveIconXmlString('path/to/image', null);
+    const withBothAndMonochrome = createAdaptiveIconXmlString('path/to/image', null);
 
     expect(withBackgroundColor).toBe(ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR);
+    expect(withBackgroundColorAndMonochrome).toBe(
+      ADAPTIVE_ICON_XML_WITH_BACKGROUND_COLOR_AND_MONOCHROME
+    );
     expect(withBackgroundImage).toBe(ADAPTIVE_ICON_XML_WITH_BOTH);
     expect(withBoth).toBe(ADAPTIVE_ICON_XML_WITH_BOTH);
+    expect(withBothAndMonochrome).toBe(ADAPTIVE_ICON_XML_WITH_BOTH_AND_MONOCHROME);
   });
 
   it('returns null if no icon config provided', async () => {
