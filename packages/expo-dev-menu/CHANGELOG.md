@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed writing 'r' into text input reloading the app on iOS.
+
 ### 💡 Others
 
 ## 2.0.1 - 2022-11-08
