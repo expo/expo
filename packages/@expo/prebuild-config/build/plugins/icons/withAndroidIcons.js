@@ -237,7 +237,7 @@ const createAdaptiveIconXmlString = (backgroundImage, monochromeImage) => {
   if (monochromeImage) iconElements.push('<monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>');
   return `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-${iconElements.map(e => ` . ${e}`).join('\n')}
+${iconElements.map(e => `  ${e}`).join('\n')}
 </adaptive-icon>`;
 };
 exports.createAdaptiveIconXmlString = createAdaptiveIconXmlString;
