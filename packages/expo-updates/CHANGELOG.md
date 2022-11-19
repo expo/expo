@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- Improvements to setup for Updates E2E tests. ([#20120](https://github.com/expo/expo/pull/20120) by [@douglowder](https://github.com/douglowder))
+
 ## 0.15.4 — 2022-11-03
 
 ### 🐛 Bug fixes

@@ -7,7 +7,7 @@ import * as Simulator from './utils/simulator';
 import { copyAssetToStaticFolder, copyBundleToStaticFolder } from './utils/update';
 
 const SERVER_HOST = process.env.UPDATES_HOST;
-const SERVER_PORT = parseInt(process.env.UPDATES_PORT, 10);
+const SERVER_PORT = parseInt(process.env.UPDATES_PORT || '', 10);
 
 const RUNTIME_VERSION = '1.0.0';
 
@@ -21,7 +21,7 @@ if (!repoRoot) {
 }
 
 const projectRoot = process.env.TEST_PROJECT_ROOT ?? path.resolve(repoRoot, '..', 'updates-e2e');
-const updateDistPath = path.join(process.env.ARTIFACTS_DEST, 'dist-assets');
+const updateDistPath = path.join(process.env.ARTIFACTS_DEST || '', 'dist-assets');
 
 /**
  * The tests in this suite install an app with multiple assets, then clear all the assets from
