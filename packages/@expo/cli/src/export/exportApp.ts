@@ -98,6 +98,8 @@ export async function exportAppAsync(
     });
     for (const [filePath, html] of htmlFiles) {
       const result = minify(html, {
+        collapseWhitespace: true,
+        removeComments: true,
         removeAttributeQuotes: true,
       });
 
