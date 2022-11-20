@@ -19,6 +19,7 @@ import {
   writeSourceMapsAsync,
 } from './writeContents';
 import { minify } from 'html-minifier';
+import { profile } from '../utils/profile';
 
 /**
  * The structure of the outputDir will be:
@@ -97,10 +98,11 @@ export async function exportAppAsync(
       scripts: [`/bundles/${fileNames.web}`],
     });
     for (const [filePath, html] of htmlFiles) {
-      const result = minify(html, {
-        collapseWhitespace: true,
-        removeComments: true,
-        removeAttributeQuotes: true,
+      const result = profile(minify, 'minify-html')(html, {
+        // collapseWhitespace: true,
+        // minifyCSS: true,
+        // removeComments: true,
+        // removeAttributeQuotes: true,
       });
 
       // If web exists, then write the template HTML file.

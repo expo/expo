@@ -138,11 +138,6 @@ export function withWebResolvers(config: ConfigT, projectRoot: string, externals
     web: ['browser', 'module', 'main'],
   };
 
-  // if (!config.serializer) {
-  //   config.serializer = {};
-  // }
-  // config.serializer.customSerializer = getModulesAsExportsSerializer(projectRoot);
-
   return withCustomResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
@@ -165,24 +160,6 @@ export function withWebResolvers(config: ConfigT, projectRoot: string, externals
           ...context,
           preferNativePlatform: platform !== 'web',
           resolveRequest: undefined,
-
-          // redirectModulePath: (modulePath: string) => {
-          //   // for (const [lib, redirect] of Object.entries(context.extraNodeModules ?? {})) {
-          //   //   if (
-          //   //     modulePath === lib ||
-          //   //     modulePath.includes(`node_modules/${lib}/`) ||
-          //   //     modulePath.endsWith(`node_modules/${lib}`)
-          //   //   ) {
-          //   //     console.log('PUSH LOCAL:', modulePath, redirect);
-          //   //     return redirect;
-          //   //   }
-          //   // }
-          //   // console.log('redirect:', modulePath);
-          //   if (platform === 'web' && modulePath === assetRegistryPath) {
-          //     return '@react-native/assets/registry.js';
-          //   }
-          //   return modulePath;
-          // },
           // Passing `mainFields` directly won't be considered
           // we need to extend the `getPackageMainPath` directly to
           // use platform specific `mainFields`.
