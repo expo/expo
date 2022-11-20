@@ -25,8 +25,8 @@ function renderReactNative(
     ),
     styles: (
       <>
-        {getStyleElement()}
         <style id="react-native-reset-style" dangerouslySetInnerHTML={{ __html: style }} />
+        {getStyleElement()}
       </>
     ),
   });
@@ -93,7 +93,7 @@ body {
 
 export function Root({ children, scripts, styles }) {
   return (
-    <html>
+    <html style={{ height: '100%' }}>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
@@ -103,7 +103,7 @@ export function Root({ children, scripts, styles }) {
         />
         {styles}
       </head>
-      <body>
+      <body style={{ height: '100%', overflow: 'hidden' }}>
         <div id="root">{children}</div>
         {scripts}
       </body>
