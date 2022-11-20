@@ -1,6 +1,7 @@
 import React, { createElement } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry, ComponentProvider } from 'react-native';
+import { Helmet } from 'react-helmet';
 
 function renderReactNative(
   name: string,
@@ -32,8 +33,27 @@ function renderReactNative(
   });
   // first the element
   const markup = ReactDOMServer.renderToString(out);
+  const helmet = Helmet.renderStatic();
 
-  return '<!DOCTYPE html>' + markup;
+  let mixedMarkup = markup;
+  // then the helmet
+  if (helmet.title.toString()) {
+    mixedMarkup = mixedMarkup.replace('<head>', `<head>${helmet.title.toString()}`);
+  }
+  if (helmet.meta.toString()) {
+    mixedMarkup = mixedMarkup.replace('<head>', `<head>${helmet.meta.toString()}`);
+  }
+  if (helmet.link.toString()) {
+    mixedMarkup = mixedMarkup.replace('<head>', `<head>${helmet.link.toString()}`);
+  }
+
+  // attributes
+  const attributes = helmet.htmlAttributes.toString();
+  mixedMarkup = mixedMarkup.replace('<html ', `<html ${attributes} `);
+  const bodyAttributes = helmet.bodyAttributes.toString();
+  mixedMarkup = mixedMarkup.replace('<body ', `<body ${bodyAttributes} `);
+
+  return '<!DOCTYPE html>' + mixedMarkup;
 }
 
 export function renderRoutes({ scripts }: { scripts: string[] }) {
@@ -93,7 +113,7 @@ body {
 
 export function Root({ children, scripts, styles }) {
   return (
-    <html style={{ height: '100%' }}>
+    <html lang="en" style={{ height: '100%' }}>
       <head>
         <meta charSet="utf-8" />
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
