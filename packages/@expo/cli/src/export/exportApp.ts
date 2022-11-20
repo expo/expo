@@ -18,6 +18,7 @@ import {
   writeMetadataJsonAsync,
   writeSourceMapsAsync,
 } from './writeContents';
+import { minify } from 'html-minifier';
 
 /**
  * The structure of the outputDir will be:
@@ -92,13 +93,17 @@ export async function exportAppAsync(
   Log.log('Finished saving JS Bundles');
 
   if (fileNames.web) {
-    // If web exists, then write the template HTML file.
-    await fs.promises.writeFile(
-      path.join(outputPath, 'index.html'),
-      await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
-        scripts: [`/bundles/${fileNames.web}`],
-      })
-    );
+    const htmlFiles = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+      scripts: [`/bundles/${fileNames.web}`],
+    });
+    for (const [filePath, html] of htmlFiles) {
+      const result = minify(html, {
+        removeAttributeQuotes: true,
+      });
+
+      // If web exists, then write the template HTML file.
+      await fs.promises.writeFile(path.join(outputPath, filePath), result);
+    }
 
     // Save assets like a typical bundler, preserving the file paths on web.
     const saveAssets = importCliSaveAssetsFromProject(projectRoot);

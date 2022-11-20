@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import fs from 'fs';
+import { Graph, Module, SerializerOptions } from 'metro';
 import { ConfigT } from 'metro-config';
 import { ResolutionContext, Resolution } from 'metro-resolver';
 import path from 'path';
@@ -81,6 +82,23 @@ function normalizeSlashes(p: string) {
   return p.replace(/\\/g, '/');
 }
 
+function getModulesAsExportsSerializer() {
+  const baseJSBundle = require('metro/src/DeltaBundler/Serializers/baseJSBundle');
+  const bundleToString = require('metro/src/lib/bundleToString');
+
+  return async function modulesAsExportsSerializer(
+    entryPoint: string,
+    preModules: ReadonlyArray<Module>,
+    graph: Graph,
+    options: SerializerOptions
+  ): Promise<{ code: string; map: string }> {
+    console.log('serialize:', entryPoint, preModules, options);
+    const bundle = baseJSBundle(entryPoint, preModules, graph, options);
+    const bundleCode = bundleToString(bundle).code;
+    return bundleCode;
+  };
+}
+
 /**
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
@@ -105,11 +123,11 @@ export function withWebResolvers(config: ConfigT, projectRoot: string, externals
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {
     web: {
-      'react/jsx-runtime': require.resolve('./external-react_jsx-runtime'),
-      // // react: require.resolve('react'),
-      'react-dom': require.resolve('./external-react-dom'),
+      // 'react/jsx-runtime': require.resolve('./external-react_jsx-runtime'),
+      // // // react: require.resolve('react'),
+      // 'react-dom': require.resolve('./external-react-dom'),
       'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
-      react: require.resolve('./external-react'),
+      // react: require.resolve('./external-react'),
     },
   };
 
@@ -119,6 +137,11 @@ export function withWebResolvers(config: ConfigT, projectRoot: string, externals
     // https://github.com/expo/router/issues/37
     web: ['browser', 'module', 'main'],
   };
+
+  // if (!config.serializer) {
+  //   config.serializer = {};
+  // }
+  // config.serializer.customSerializer = getModulesAsExportsSerializer(projectRoot);
 
   return withCustomResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
@@ -143,23 +166,23 @@ export function withWebResolvers(config: ConfigT, projectRoot: string, externals
           preferNativePlatform: platform !== 'web',
           resolveRequest: undefined,
 
-          redirectModulePath: (modulePath: string) => {
-            for (const [lib, redirect] of Object.entries(context.extraNodeModules ?? {})) {
-              if (
-                modulePath === lib ||
-                modulePath.includes(`node_modules/${lib}/`) ||
-                modulePath.endsWith(`node_modules/${lib}`)
-              ) {
-                console.log('PUSH LOCAL:', modulePath, redirect);
-                return redirect;
-              }
-            }
-            // console.log('redirect:', modulePath);
-            // if (platform === 'web' && modulePath === assetRegistryPath) {
-            //   return '@react-native/assets/registry.js';
-            // }
-            return modulePath;
-          },
+          // redirectModulePath: (modulePath: string) => {
+          //   // for (const [lib, redirect] of Object.entries(context.extraNodeModules ?? {})) {
+          //   //   if (
+          //   //     modulePath === lib ||
+          //   //     modulePath.includes(`node_modules/${lib}/`) ||
+          //   //     modulePath.endsWith(`node_modules/${lib}`)
+          //   //   ) {
+          //   //     console.log('PUSH LOCAL:', modulePath, redirect);
+          //   //     return redirect;
+          //   //   }
+          //   // }
+          //   // console.log('redirect:', modulePath);
+          //   if (platform === 'web' && modulePath === assetRegistryPath) {
+          //     return '@react-native/assets/registry.js';
+          //   }
+          //   return modulePath;
+          // },
           // Passing `mainFields` directly won't be considered
           // we need to extend the `getPackageMainPath` directly to
           // use platform specific `mainFields`.
@@ -240,11 +263,11 @@ function withMetroMultiPlatform(
 
   config = withWebPolyfills(config);
 
-  config.watchFolders = [
-    ...config.watchFolders,
-    __dirname,
-    // path.join(require.resolve('react-dom/package.json'), '../..'),
-  ];
-  console.log('WATCH FOLDERS:', config.watchFolders);
+  // config.watchFolders = [
+  //   ...config.watchFolders,
+  //   __dirname,
+  //   // path.join(require.resolve('react-dom/package.json'), '../..'),
+  // ];
+  // console.log('WATCH FOLDERS:', config.watchFolders);
   return withWebResolvers(config, projectRoot, externals);
 }

@@ -1,22 +1,35 @@
 import { ExpoConfig, getConfig, getNameFromConfig } from '@expo/config';
 import fs from 'fs';
 import path from 'path';
+import requireString from 'require-from-string';
 
 import { TEMPLATES } from '../../customize/templates';
+import { bundleAsync } from '../../export/fork-bundleAsync';
 import { env } from '../../utils/env';
 
-import requireString from 'require-from-string';
-import { bundleAsync } from '../../export/fork-bundleAsync';
-import {
-  importReactDomServerFromProject,
-  importReactNativeWebAppRegistryFromProject,
-} from './metro/resolveFromProject';
+async function createNodeEntryAsync(projectRoot: string) {
+  const tempFileLocation = path.join(projectRoot, '.expo', 'web', 'render-routes.js');
+  console.log('at: ', tempFileLocation);
 
-function interopDefault(_module: any) {
-  return _module.default || _module;
+  fs.promises.mkdir(path.dirname(tempFileLocation), { recursive: true });
+
+  const templatePath = path.join(__dirname, 'render-routes.js');
+  let template = fs.readFileSync(templatePath, 'utf8');
+  template = template.replace('[PATH_TO_COMPONENTS]', '../../app');
+
+  console.log('template:', template);
+  fs.writeFileSync(tempFileLocation, template);
+
+  return tempFileLocation;
 }
 
-async function requireBundledComponent(projectRoot: string, filePath: string) {
+async function requireBundledComponent(
+  projectRoot: string,
+  // TODO: Allow parsing just a single file for development mode.
+  filePath: string
+): Promise<Record<string, { markup: string; css: string }>> {
+  const tempFilePath = await createNodeEntryAsync(projectRoot);
+
   const obj = await bundleAsync(
     projectRoot,
     {},
@@ -25,7 +38,7 @@ async function requireBundledComponent(projectRoot: string, filePath: string) {
     },
     [
       {
-        entryPoint: filePath,
+        entryPoint: tempFilePath,
         platform: 'web',
         dev: true,
         // shallow: true,
@@ -35,38 +48,15 @@ async function requireBundledComponent(projectRoot: string, filePath: string) {
     ]
   );
 
-  const processedCode = obj[0].code.replaceAll('mockRequire', 'require');
-  console.log('obj', obj[0].code);
+  const processedCode = obj[0].code; //.replaceAll('mockRequire', 'require');
+  // console.log('obj', obj[0].code);
 
   const res = requireString(`module.exports = (() => { ${processedCode}; return __r(0); })() `);
-  const Component = interopDefault(res);
+  console.log(res);
 
-  return Component;
-}
-
-function renderReactNativeWeb(projectRoot: string, name: string, Component: Function) {
-  const ReactDOMServer = importReactDomServerFromProject(projectRoot);
-  const AppRegistry = importReactNativeWebAppRegistryFromProject(projectRoot);
-
-  // // register the app
-  AppRegistry.registerComponent(name, () => Component);
-
-  // prerender the app
-  const { element, getStyleElement } = AppRegistry.getApplication(name, {});
-  // first the element
-  const markup = ReactDOMServer.renderToString(element);
-  // then the styles
-  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
-
-  console.log('markup', markup);
-  console.log('css', css);
-
-  return { css, markup };
-}
-
-async function serverRenderComponent(projectRoot: string, filePath: string) {
-  const Component = await requireBundledComponent(projectRoot, filePath);
-  return renderReactNativeWeb(projectRoot, filePath, Component);
+  const rendered = res.renderRoutes();
+  console.log('RENDERED:', rendered);
+  return rendered;
 }
 
 /**
@@ -83,10 +73,8 @@ export async function createTemplateHtmlFromExpoConfigAsync(
     exp?: ExpoConfig;
   }
 ) {
-  const serverRendered = await serverRenderComponent(
-    projectRoot,
-    path.resolve(projectRoot, 'App.tsx')
-  );
+  const serverRendered = await requireBundledComponent(projectRoot, 'TODO');
+
   return createTemplateHtmlAsync(projectRoot, {
     serverRendered,
     langIsoCode: exp.web?.lang ?? 'en',
@@ -132,35 +120,39 @@ export async function createTemplateHtmlAsync(
     title,
     themeColor,
   }: {
-    serverRendered: { css: string; markup: string };
+    serverRendered: Record<string, { css: string; markup: string }>;
     scripts: string[];
     description?: string;
     langIsoCode: string;
     title: string;
     themeColor?: string;
   }
-): Promise<string> {
+): Promise<[string, string][]> {
   // Resolve the best possible index.html template file.
-  let contents = await getTemplateIndexHtmlAsync(projectRoot);
+  const rootContents = await getTemplateIndexHtmlAsync(projectRoot);
 
-  contents = contents.replace('%LANG_ISO_CODE%', langIsoCode);
-  contents = contents.replace('%WEB_TITLE%', title);
-  contents = contents.replace(
-    '</body>',
-    scripts.map((url) => `<script src="${url}"></script>`).join('') + '</body>'
-  );
+  return Object.entries(serverRendered).map<[string, string]>(([key, serverRendered]) => {
+    let contents = rootContents;
 
-  if (themeColor) {
-    contents = addMeta(contents, `name="theme-color" content="${themeColor}"`);
-  }
+    contents = contents.replace('%LANG_ISO_CODE%', langIsoCode);
+    contents = contents.replace('%WEB_TITLE%', title);
+    contents = contents.replace(
+      '</body>',
+      scripts.map((url) => `<script src="${url}"></script>`).join('') + '</body>'
+    );
 
-  if (description) {
-    contents = addMeta(contents, `name="description" content="${description}"`);
-  }
+    if (themeColor) {
+      contents = addMeta(contents, `name="theme-color" content="${themeColor}"`);
+    }
 
-  contents = contents.replace('<div id="root">', `<div id="root">${serverRendered.markup}`);
-  contents = contents.replace('</head>', serverRendered.css + '</head>');
-  return contents;
+    if (description) {
+      contents = addMeta(contents, `name="description" content="${description}"`);
+    }
+
+    contents = contents.replace('<div id="root">', `<div id="root">${serverRendered.markup}`);
+    contents = contents.replace('</head>', serverRendered.css + '</head>');
+    return [key + '.html', contents] as const;
+  });
 }
 
 /** Add a `<meta />` tag to the `<head />` element. */
