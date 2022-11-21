@@ -91,6 +91,12 @@ public final class AppContext: NSObject {
     return view as? ViewType
   }
 
+  // MARK: - Running on specific queues
+
+  public func runOnJS(runBlock: @escaping (() -> Void)) {
+    reactBridge?.dispatchBlock(runBlock, queue: RCTJSThread)
+  }
+
   // MARK: - Legacy modules
 
   /**
