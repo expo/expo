@@ -86,12 +86,19 @@ Learn more about [Netlify](https://www.netlify.com/).
 
 ### Manual deployment with the Netlify CDN
 
-```sh
-npm install netlify-cli -g
-netlify deploy
-```
+1. Install the Netlify CLI by running `npm install netlify-cli -g`.
 
-Choose `web-build` as the path to deploy.
+2. If your app uses routes, add a **\_redirects** file inside the **web-build** directory so the client has complete control over the routing logic. This file should contain the `/* /index.html 200` rule.
+
+   2.1. Run `cd web-build` to navigate inside the directory.
+
+   2.2. Run the command `echo "/* /index.html 200" > "_redirects"` to create **\_redirects** file with rule.
+
+3. To deploy:
+
+   3.1. Run the `netlify deploy` command and choose **web-build** as the publish directory.
+
+   3.2. You should see a URL that you can use to view your project online.
 
 ### Continuous delivery
 
