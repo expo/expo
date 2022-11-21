@@ -234,7 +234,7 @@ The `Tabs` plugin is really useful for this, and this is how you'd use it in a m
 
 <!-- prettier-ignore -->
 ```jsx
-import { Tab, Tabs } from '~/components/plugins/Tabs';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 <Tabs>
 <Tab label="Add 1 One Way">
