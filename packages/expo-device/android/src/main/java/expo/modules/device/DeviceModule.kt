@@ -50,13 +50,7 @@ class DeviceModule : Module() {
           (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
           memoryInfo.totalMem
         },
-        "supportedCpuArchitectures" to run {
-          var supportedAbis = Build.SUPPORTED_ABIS
-          if (supportedAbis != null && supportedAbis.isEmpty()) {
-            supportedAbis = null
-          }
-          supportedAbis
-        },
+        "supportedCpuArchitectures" to Build.SUPPORTED_ABIS?.takeIf { it.isNotEmpty() },
         "osName" to systemName,
         "osVersion" to Build.VERSION.RELEASE,
         "osBuildId" to Build.DISPLAY,
