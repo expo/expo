@@ -29,6 +29,14 @@ public final class ImageModule: Module {
         view.transition = transition
       }
 
+      Prop("blurRadius") { (view, blurRadius: Double?) in
+        view.blurRadius = blurRadius ?? .zero
+      }
+
+      Prop("tintColor") { (view, tintColor: UIColor?) in
+        view.imageTintColor = tintColor ?? .clear
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
