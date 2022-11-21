@@ -80,17 +80,14 @@ export function removeContents({ src, tag }: { src: string; tag: string }): Merg
 function addLines(content: string, find: string | RegExp, offset: number, deleteCount: number, toAdd: string[]) {
   const lines = content.split('\n');
 
-  let lineIndex = lines.findIndex((line) => line.match(find));
+  const lineIndex = lines.findIndex((line) => line.match(find));
   if (lineIndex < 0) {
     const error = new Error(`Failed to match "${find}" in contents:\n${content}`);
     // @ts-ignore
     error.code = 'ERR_NO_MATCH';
     throw error;
   }
-  for (const newLine of toAdd) {
-    lines.splice(lineIndex + offset, deleteCount, newLine);
-    lineIndex++;
-  }
+  lines.splice(lineIndex + offset, deleteCount, ...toAdd);
 
   return lines.join('\n');
 }

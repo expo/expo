@@ -1,22 +1,16 @@
-import { mergeContents } from '../generateCode';
+import { createGeneratedHeaderComment, mergeContents } from '../generateCode';
 
 const src = `
-#import <Foundation/Foundation.h>
-#import <React/RCTBridgeDelegate.h>
-#import <UIKit/UIKit.h>
-
-#import <Expo/Expo.h>
-
-@interface AppDelegate : EXAppDelegateWrapper <RCTBridgeDelegate>
-
-@end
+line 1
+line 2
+line 3
 `;
 
 const defaultValuesForTest = {
   src,
-  newSrc: 'NEW_SRC',
+  newSrc: 'new line',
   tag: 'MY_TAG',
-  anchor: '#import <Expo/Expo.h>',
+  anchor: 'line 2',
   comment: '//',
 };
 
@@ -40,13 +34,20 @@ describe(mergeContents, () => {
     // ensure the merge went ok
     expect(result.didMerge).toBe(true);
     expect(result.didClear).toBe(false);
-    const tagIndex = result.contents.indexOf(defaultValuesForTest.tag);
+    const startTagIndex = result.contents.indexOf(defaultValuesForTest.tag);
+    const endTagIndex = result.contents.lastIndexOf(defaultValuesForTest.tag);
     const anchorIndex = result.contents.indexOf(defaultValuesForTest.anchor);
-    // ensure tag and anchor has been found in the result content
-    expect(tagIndex).not.toBe(-1);
+    const newSrcIndex = result.contents.indexOf(defaultValuesForTest.newSrc);
+    // ensure tags, anchor and newSrc have been found in the result content
+    expect(startTagIndex).not.toBe(-1);
+    expect(endTagIndex).not.toBe(-1);
     expect(anchorIndex).not.toBe(-1);
-    // ensure the first occurence of the tag is before the anchor
-    expect(tagIndex < anchorIndex).toBe(true);
+    expect(newSrcIndex).not.toBe(-1);
+    // ensure the tags are before the anchor
+    expect(startTagIndex < anchorIndex).toBe(true);
+    expect(endTagIndex < anchorIndex).toBe(true);
+    // ensure newSrc is in between the tags
+    expect(startTagIndex < newSrcIndex && newSrcIndex < endTagIndex).toBe(true);
   });
 
   it('should insert after the found anchor', () => {
@@ -54,13 +55,23 @@ describe(mergeContents, () => {
       ...defaultValuesForTest,
       offset: 1,
     });
-    const tagIndex = result.contents.indexOf(defaultValuesForTest.tag);
+    const startTagIndex = result.contents.indexOf(defaultValuesForTest.tag);
+    const endTagIndex = result.contents.lastIndexOf(defaultValuesForTest.tag);
     const anchorIndex = result.contents.indexOf(defaultValuesForTest.anchor);
-    // ensure the first occurence of the tag is after the anchor
-    expect(tagIndex > anchorIndex).toBe(true);
+    const newSrcIndex = result.contents.indexOf(defaultValuesForTest.newSrc);
+    // ensure the tags are after the anchor
+    expect(startTagIndex > anchorIndex).toBe(true);
+    expect(endTagIndex > anchorIndex).toBe(true);
+    // ensure newSrc is in between the tags
+    expect(startTagIndex < newSrcIndex && newSrcIndex < endTagIndex).toBe(true);
   });
 
-  it('should replace the found anchor', () => {
+  it('should replace the found anchor with offest 0 and deleteCount 1', () => {
+    const initialAnchorIndex = src
+      .split('\n')
+      .findIndex((line) => line.match(defaultValuesForTest.anchor));
+    if (!initialAnchorIndex)
+      throw new Error('Something went wrong with the test, the anchor should have been found');
     const result = mergeContents({
       ...defaultValuesForTest,
       offset: 0,
@@ -69,5 +80,28 @@ describe(mergeContents, () => {
     const anchorIndex = result.contents.indexOf(defaultValuesForTest.anchor);
     // ensure anchor is not found anymore
     expect(anchorIndex).toBe(-1);
+    // ensure line at intial anchor index now is the header comment
+    const firstLineOfMerge = result.contents.split('\n')[initialAnchorIndex];
+    const { newSrc, tag, comment } = defaultValuesForTest;
+    const expectedLine = createGeneratedHeaderComment(newSrc, tag, comment);
+    expect(firstLineOfMerge).toBe(expectedLine);
+  });
+
+  it('should replace the found anchor with offest 1 and deleteCount 1', () => {
+    const result = mergeContents({
+      ...defaultValuesForTest,
+      offset: 1,
+      deleteCount: 1,
+    });
+    const anchorIndex = result.contents
+      .split('\n')
+      .findIndex((line) => line.match(defaultValuesForTest.anchor));
+    // ensure anchor is still here
+    expect(anchorIndex).not.toBe(-1);
+    // ensure line after the anchor now is the header comment
+    const firstLineOfMerge = result.contents.split('\n')[anchorIndex + 1];
+    const { newSrc, tag, comment } = defaultValuesForTest;
+    const expectedLine = createGeneratedHeaderComment(newSrc, tag, comment);
+    expect(firstLineOfMerge).toBe(expectedLine);
   });
 });
