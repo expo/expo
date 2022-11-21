@@ -93,6 +93,9 @@ public final class AppContext: NSObject {
 
   // MARK: - Running on specific queues
 
+  /**
+   Runs a code block on the javascript thread
+   */
   public func runOnJS(runBlock: @escaping (() -> Void)) {
     reactBridge?.dispatchBlock(runBlock, queue: RCTJSThread)
   }

@@ -320,6 +320,9 @@ class AppContext(
     return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
+  /**
+   * Runs a code block on the javascript thread
+   */
   fun runOnJS(runnable: Runnable) {
     reactContextHolder.get()?.runOnJSQueueThread(runnable)
   }
