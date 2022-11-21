@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed writing 'r' into text input reloading the app on iOS. ([#20107](https://github.com/expo/expo/pull/20107) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 2.0.1 - 2022-11-08
