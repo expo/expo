@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed case-sensitive import in expo-barcode-scanner ([#20142](https://github.com/expo/expo/pull/20142) by [@hirbod] 
+
 ### 💡 Others
 
 ## 12.0.0 — 2022-10-25
