@@ -19,6 +19,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.widget.TimePicker;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
@@ -39,6 +40,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
     super(reactContext);
   }
 
+  @NonNull
   @Override
   public String getName() {
     return FRAGMENT_TAG;
@@ -54,7 +56,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onTimeSet(TimePicker view, int hour, int minute) {
-      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveReactInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", RNConstants.ACTION_TIME_SET);
         result.putInt("hour", hour);
@@ -66,7 +68,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveReactInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", RNConstants.ACTION_DISMISSED);
         mPromise.resolve(result);
@@ -76,7 +78,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveReactInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", RNConstants.ACTION_NEUTRAL_BUTTON);
         mPromise.resolve(result);

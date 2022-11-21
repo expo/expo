@@ -284,7 +284,7 @@ export declare function getPermissionsAsync(writeOnly?: boolean): Promise<Permis
  *
  * @example
  * ```ts
- * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<{
@@ -360,7 +360,7 @@ export declare function deleteAssetsAsync(assets: AssetRef[] | AssetRef): Promis
  * Provides more information about an asset, including GPS location, local URI and EXIF metadata.
  * @param asset An [Asset](#asset) or its ID.
  * @param options
- * @return [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
+ * @return An [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
  */
 export declare function getAssetInfoAsync(asset: AssetRef, options?: MediaLibraryAssetInfoQueryOptions): Promise<AssetInfo>;
 /**

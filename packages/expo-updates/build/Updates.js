@@ -39,6 +39,11 @@ export const localAssets = ExpoUpdates.localAssets ?? {};
  * can use this constant to provide special behavior for this rare case.
  */
 export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
+/**
+ * This will be true if the currently running update is the one embedded in the build,
+ * and not one downloaded from the updates server.
+ */
+export const isEmbeddedLaunch = ExpoUpdates.isEmbeddedLaunch || false;
 // @docsMissing
 /**
  * @hidden
@@ -46,7 +51,7 @@ export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
 export const isUsingEmbeddedAssets = ExpoUpdates.isUsingEmbeddedAssets || false;
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/guides/how-expo-works#expo-development-server) object for the update that's currently
+ * [manifest](/workflow/expo-go#manifest) object for the update that's currently
  * running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is

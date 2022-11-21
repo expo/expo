@@ -53,16 +53,29 @@ void JSIInteropModuleRegistry::installJSI(
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(*runtime, expoModules);
 
+  // Define the `global.expo.modules` object.
+  runtimeHolder
+    ->getMainObject()
+    ->setProperty(
+      *runtime,
+      "modules",
+      expoModulesObject
+    );
+
+  // Also define `global.ExpoModules` for backwards compatibility (used before SDK47, can be removed in SDK48).
   runtime
     ->global()
     .setProperty(
       *runtime,
       "ExpoModules",
-      std::move(expoModulesObject)
+      expoModulesObject
     );
 }
 
 void JSIInteropModuleRegistry::installJSIForTests() {
+#if !UNIT_TEST
+  throw std::logic_error("The function is only available when UNIT_TEST is defined.");
+#else
   runtimeHolder = std::make_shared<JavaScriptRuntime>();
   jsi::Runtime &jsiRuntime = runtimeHolder->get();
 
@@ -71,13 +84,14 @@ void JSIInteropModuleRegistry::installJSIForTests() {
   auto expoModules = std::make_shared<ExpoModulesHostObject>(this);
   auto expoModulesObject = jsi::Object::createFromHostObject(jsiRuntime, expoModules);
 
-  jsiRuntime
-    .global()
-    .setProperty(
+  runtimeHolder
+    ->getMainObject()
+    ->setProperty(
       jsiRuntime,
-      "ExpoModules",
+      "modules",
       std::move(expoModulesObject)
     );
+#endif // !UNIT_TEST
 }
 
 jni::local_ref<JavaScriptModuleObject::javaobject>

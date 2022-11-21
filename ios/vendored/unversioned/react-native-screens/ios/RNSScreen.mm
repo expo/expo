@@ -6,13 +6,13 @@
 
 #ifdef RN_FABRIC_ENABLED
 #import <React/RCTConversions.h>
+#import <React/RCTFabricComponentsPlugins.h>
 #import <React/RCTRootComponentView.h>
 #import <React/RCTSurfaceTouchHandler.h>
 #import <react/renderer/components/rnscreens/EventEmitters.h>
 #import <react/renderer/components/rnscreens/Props.h>
 #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
 #import <rnscreens/RNSScreenComponentDescriptor.h>
-#import "RCTFabricComponentsPlugins.h"
 #import "RNSConvert.h"
 #import "RNSScreenViewEvent.h"
 #else
@@ -508,6 +508,11 @@
   }
 }
 
+- (BOOL)isModal
+{
+  return self.stackPresentation != RNSScreenStackPresentationPush;
+}
+
 #pragma mark - Fabric specific
 #ifdef RN_FABRIC_ENABLED
 
@@ -545,6 +550,17 @@
   _dismissed = NO;
   _state.reset();
   _touchHandler = nil;
+
+  // We set this prop to default value here to workaround view-recycling.
+  // Let's assume the view has had _stackPresentation == <some modal stack presentation> set
+  // before below line was executed. Then, when instantiated again (with the same modal presentation)
+  // updateProps:oldProps: method would be called and setter for stack presentation would not be called.
+  // This is crucial as in that setter we register `self.controller` as a delegate
+  // (UIAdaptivePresentationControllerDelegate) to presentation controller and this leads to buggy modal behaviour as we
+  // rely on UIAdaptivePresentationControllerDelegate callbacks. Restoring the default value and then comparing against
+  // it in updateProps:oldProps: allows for setter to be called, however if there was some additional logic to execute
+  // when stackPresentation is set to "push" the setter would not be triggered.
+  _stackPresentation = RNSScreenStackPresentationPush;
 }
 
 - (void)updateProps:(facebook::react::Props::Shared const &)props
@@ -598,9 +614,12 @@
   }
 #endif
 
-  if (newScreenProps.stackPresentation != oldScreenProps.stackPresentation) {
-    [self
-        setStackPresentation:[RNSConvert RNSScreenStackPresentationFromCppEquivalent:newScreenProps.stackPresentation]];
+  // Notice that we compare against _stackPresentation, not oldScreenProps.stackPresentation.
+  // See comment in prepareForRecycle method for explanation.
+  RNSScreenStackPresentation newStackPresentation =
+      [RNSConvert RNSScreenStackPresentationFromCppEquivalent:newScreenProps.stackPresentation];
+  if (newStackPresentation != _stackPresentation) {
+    [self setStackPresentation:newStackPresentation];
   }
 
   if (newScreenProps.stackAnimation != oldScreenProps.stackAnimation) {
@@ -739,7 +758,8 @@ Class<RCTComponentViewProtocol> RNSScreenCls(void)
 - (void)viewWillDisappear:(BOOL)animated
 {
   [super viewWillDisappear:animated];
-  if (!self.transitionCoordinator.isInteractive) {
+  // self.navigationController might be null when we are dismissing a modal
+  if (!self.transitionCoordinator.isInteractive && self.navigationController != nil) {
     // user might have long pressed ios 14 back button item,
     // so he can go back more than one screen and we need to dismiss more screens in JS stack then.
     // We check it by calculating the difference between the index of currently displayed screen

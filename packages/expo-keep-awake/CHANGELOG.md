@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 11.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.0 — 2022-10-06
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ## 10.2.1 — 2022-08-08
 
 ### 🐛 Bug fixes

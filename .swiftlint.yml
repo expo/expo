@@ -174,7 +174,7 @@ multiline_parameters_brackets: warning
 # Underscores should be used as thousand separator in large decimal numbers.
 number_separator:
   severity: warning
-  minimum_length: 0
+  minimum_length: 5
 
 # A doc comment should be attached to a declaration.
 orphaned_doc_comment: warning

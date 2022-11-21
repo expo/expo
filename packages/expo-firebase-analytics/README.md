@@ -7,7 +7,7 @@ Learn more in the official [Firebase Docs](https://firebase.google.com/docs/anal
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/firebase-analytics.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/firebase-analytics.mdx)
 
 # Installation in managed Expo projects
 

@@ -40,6 +40,7 @@ public class RNDismissableDatePickerDialog extends DatePickerDialog {
       int dayOfMonth,
       RNDatePickerDisplay display) {
     super(context, callback, year, monthOfYear, dayOfMonth);
+	setCanceledOnTouchOutside(true);
     fixSpinner(context, year, monthOfYear, dayOfMonth, display);
   }
 
@@ -52,6 +53,7 @@ public class RNDismissableDatePickerDialog extends DatePickerDialog {
       int dayOfMonth,
       RNDatePickerDisplay display) {
     super(context, theme, callback, year, monthOfYear, dayOfMonth);
+	setCanceledOnTouchOutside(true);
     fixSpinner(context, year, monthOfYear, dayOfMonth, display);
   }
 
@@ -105,6 +107,10 @@ public class RNDismissableDatePickerDialog extends DatePickerDialog {
       } catch (Exception e) {
         throw new RuntimeException(e);
       }
+    }
+    if (display == RNDatePickerDisplay.SPINNER){
+      if(this.getDatePicker() != null)
+        this.getDatePicker().setCalendarViewShown(false);
     }
   }
 }

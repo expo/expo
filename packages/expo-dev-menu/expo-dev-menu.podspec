@@ -10,14 +10,20 @@ rescue
   reactVersion = '0.66.0'
 end
 
-rnVersion = reactVersion.split('.')[1]
+if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+  reactVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+end
+
+splitedReactVersion = reactVersion.split('.')
+rnVersion = splitedReactVersion[1]
+rnPatchVersion = splitedReactVersion[2]
 
 folly_prefix = ""
 if rnVersion.to_i >= 64
   folly_prefix = "RCT-"
 end
 
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=' + rnVersion
+folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=' + rnVersion + ' -DRNPATCHVERSION=' + rnPatchVersion
 folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
 folly_version = '2021.04.26.00'
 boost_compiler_flags = '-Wno-documentation'
@@ -36,7 +42,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '12.0'
+  s.platform       = :ios, '13.0'
   s.swift_version  = '5.2'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -53,14 +59,24 @@ Pod::Spec.new do |s|
 
   s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED' }
 
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/Swift Compatibility Header\"",
+  }
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
 
   s.subspec 'GestureHandler' do |handler|
-    handler.source_files = 'vendored/react-native-gesture-handler/**/*.{h,m}'
-    handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
+    if File.exist?("vendored/react-native-gesture-handler/DevMenuRNGestureHandler.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
+      handler.source_files = "vendored/react-native-gesture-handler/**/*.{h}"
+      handler.vendored_frameworks = "vendored/react-native-gesture-handler/DevMenuRNGestureHandler.xcframework"
+      handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
+    else
+      handler.source_files = 'vendored/react-native-gesture-handler/**/*.{h,m}'
+      handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
 
-    handler.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
+      handler.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
+    end
   end
 
   s.subspec 'Reanimated' do |reanimated|
@@ -152,7 +168,7 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
-    test_spec.platform = :ios, '12.0'
+    test_spec.platform = :ios, '13.0'
   end
 
   s.test_spec 'UITests' do |test_spec|
@@ -160,7 +176,7 @@ Pod::Spec.new do |s|
     test_spec.source_files = 'ios/UITests/**/*'
     test_spec.dependency 'React-CoreModules'
     test_spec.dependency 'React'
-    test_spec.platform = :ios, '12.0'
+    test_spec.platform = :ios, '13.0'
   end
 
   s.default_subspec = 'Main'

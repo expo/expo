@@ -5,10 +5,13 @@ import path from 'path';
 import { Dictionary, serializeDictionary } from 'structured-headers';
 import { setTimeout } from 'timers/promises';
 
+import { UpdatesLogEntry } from '../../../src/Updates.types';
+
 const app: any = express();
 let server: any;
 
 let messages: any[] = [];
+let logEntries: UpdatesLogEntry[] = [];
 let responsesToServe: any[] = [];
 
 let updateRequest: any = null;
@@ -28,6 +31,7 @@ export function stop() {
     server = null;
   }
   messages = [];
+  logEntries = [];
   responsesToServe = [];
   updateRequest = null;
   manifestToServe = null;
@@ -68,6 +72,12 @@ app.post('/post', (req: any, res: any) => {
   }
 });
 
+app.post('/log', (req: any, res: any) => {
+  logEntries = req.body.logEntries || [];
+  res.set('Cache-Control', 'no-store');
+  res.send('Received request');
+});
+
 export async function waitForRequest(timeout: number, responseToServe?: { command: string }) {
   const finishTime = new Date().getTime() + timeout;
 
@@ -84,6 +94,20 @@ export async function waitForRequest(timeout: number, responseToServe?: { comman
   }
 
   return messages.shift();
+}
+
+export async function waitForLogEntries(timeout: number): Promise<UpdatesLogEntry[]> {
+  const finishTime = new Date().getTime() + timeout;
+
+  while (!logEntries.length) {
+    const currentTime = new Date().getTime();
+    if (currentTime >= finishTime) {
+      throw new Error('Timed out waiting for message');
+    }
+    await setTimeout(50);
+  }
+
+  return logEntries;
 }
 
 app.get('/update', (req: any, res: any) => {

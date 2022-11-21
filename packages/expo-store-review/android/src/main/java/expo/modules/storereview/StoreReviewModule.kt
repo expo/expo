@@ -6,65 +6,59 @@ import android.os.Build
 import com.google.android.gms.common.GooglePlayServicesUtil
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-class StoreReviewModule(private val mContext: Context) :
-  ExportedModule(mContext) {
-  companion object {
-    private const val NAME = "ExpoStoreReview"
-  }
+class StoreReviewModule : Module() {
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  private lateinit var mActivityProvider: ActivityProvider
+  private val currentActivity
+    get() = appContext.activityProvider?.currentActivity
+      ?: throw MissingCurrentActivityException()
 
-  override fun getName(): String {
-    return NAME
-  }
+  override fun definition() = ModuleDefinition {
+    Name("ExpoStoreReview")
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-  }
+    AsyncFunction("isAvailableAsync") {
+      return@AsyncFunction Build.VERSION.SDK_INT >= 21 && isPlayStoreInstalled()
+    }
 
-  @ExpoMethod
-  fun isAvailableAsync(promise: Promise) {
-    if (Build.VERSION.SDK_INT >= 21 && isPlayStoreInstalled()) {
-      promise.resolve(true)
-    } else {
-      promise.resolve(false)
+    AsyncFunction("requestReview") { promise: Promise ->
+      requestReview(promise)
     }
   }
 
-  @ExpoMethod
-  fun requestReview(promise: Promise) {
-    val manager: ReviewManager = ReviewManagerFactory.create(mContext)
+  private fun requestReview(promise: Promise) {
+    val manager: ReviewManager = ReviewManagerFactory.create(context)
     val request = manager.requestReviewFlow()
+
     request.addOnCompleteListener { task ->
       if (task.isSuccessful) {
         val reviewInfo = task.result
-        val flow = manager.launchReviewFlow(mActivityProvider.currentActivity, reviewInfo)
-        flow.addOnCompleteListener { task ->
-          if (task.isSuccessful) {
-            promise.resolve(null)
-          } else {
-            promise.reject("ERR_STORE_REVIEW_FAILED", "Android ReviewManager task failed")
+        reviewInfo?.let {
+          val flow = manager.launchReviewFlow(currentActivity, it)
+          flow.addOnCompleteListener { result ->
+            if (result.isSuccessful) {
+              promise.resolve(null)
+            } else {
+              promise.reject(RMTaskException())
+            }
           }
-        }
+        } ?: promise.reject(RMTaskException())
       } else {
-        promise.reject("ERR_STORE_REVIEW_FAILED", "Android ReviewManager task was not successful")
+        promise.reject(RMUnsuccessfulTaskException())
       }
     }
   }
 
-  private fun isPlayStoreInstalled(): Boolean {
-    return try {
-      mContext.packageManager
-        .getPackageInfo(GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0)
-      true
-    } catch (e: PackageManager.NameNotFoundException) {
-      false
-    }
+  private fun isPlayStoreInstalled(): Boolean = try {
+    context.packageManager
+      .getPackageInfo(GooglePlayServicesUtil.GOOGLE_PLAY_STORE_PACKAGE, 0)
+    true
+  } catch (e: PackageManager.NameNotFoundException) {
+    false
   }
 }

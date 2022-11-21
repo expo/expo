@@ -15,6 +15,8 @@ public enum UpdatesErrorCode: Int {
   case updateFailedToLoad = 5
   case assetsFailedToLoad = 6
   case jsRuntimeError = 7
+  case unknown = 8
+  case updateCodeSigningError = 9
 
   // Because this enum is exported to Objective-C,
   // the usual "\(UpdatesErrorCode.NoUpdatesAvailable)"
@@ -32,12 +34,16 @@ public enum UpdatesErrorCode: Int {
       return "UpdateServerUnreachable"
     case .updateHasInvalidSignature:
       return "UpdateHasInvalidSignature"
+    case .updateCodeSigningError:
+      return "UpdateCodeSigningError"
     case .updateFailedToLoad:
       return "UpdateFailedToLoad"
     case .assetsFailedToLoad:
       return "AssetsFailedToLoad"
     case .jsRuntimeError:
       return "JSRuntimeError"
+    case .unknown:
+      return "Unknown"
     }
   }
 }

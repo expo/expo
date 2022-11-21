@@ -61,7 +61,7 @@ export async function getEnrolledLevelAsync() {
  * > **Note:** Apple requires apps which use FaceID to provide a description of why they use this API.
  * If you try to use FaceID on an iPhone with FaceID without providing `infoPlist.NSFaceIDUsageDescription`
  * in `app.json`, the module will authenticate using device passcode. For more information about
- * usage descriptions on iOS, see [Deploying to App Stores](/distribution/app-stores#system-permissions-dialogs-on-ios).
+ * usage descriptions on iOS, see [permissions guide](/guides/permissions/#ios).
  * @param options
  * @return Returns a promise which fulfils with [`LocalAuthenticationResult`](#localauthenticationresult).
  */
@@ -74,9 +74,6 @@ export async function authenticateAsync(options = {}) {
     }
     const promptMessage = options.promptMessage || 'Authenticate';
     const result = await ExpoLocalAuthentication.authenticateAsync({ ...options, promptMessage });
-    if (result.warning) {
-        console.warn(result.warning);
-    }
     return result;
 }
 // @needsAudit

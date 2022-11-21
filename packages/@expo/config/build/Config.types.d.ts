@@ -134,9 +134,6 @@ export declare enum ProjectPrivacy {
     PUBLIC = "public",
     UNLISTED = "unlisted"
 }
-export declare type ExpRc = {
-    [key: string]: any;
-};
 export declare type Platform = 'android' | 'ios' | 'web';
 export declare type ProjectTarget = 'managed' | 'bare';
 export declare type ConfigErrorCode = 'NO_APP_JSON' | 'NOT_OBJECT' | 'NO_EXPO' | 'MODULE_NOT_FOUND' | 'INVALID_MODE' | 'INVALID_FORMAT' | 'INVALID_PLUGIN' | 'INVALID_CONFIG';

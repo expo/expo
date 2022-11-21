@@ -73,6 +73,7 @@ const renderTypePropertyRow = ({
 }: PropData): JSX.Element => {
   const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
   const commentData = getCommentOrSignatureComment(comment, signatures);
+  const hasDeprecationNote = Boolean(getTagData('deprecated', comment));
   return (
     <Row key={name}>
       <Cell fitContent>
@@ -87,7 +88,7 @@ const renderTypePropertyRow = ({
           comment={commentData}
           components={mdInlineComponents}
           afterContent={renderDefaultValue(initValue)}
-          emptyCommentFallback="-"
+          emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
       </Cell>
     </Row>

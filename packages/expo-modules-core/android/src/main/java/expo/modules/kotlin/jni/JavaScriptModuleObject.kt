@@ -37,7 +37,7 @@ class JavaScriptModuleObject(val name: String) {
    */
   external fun registerAsyncFunction(name: String, args: Int, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
 
-  external fun registerProperty(name: String, desiredType: Int, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
+  external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
 
   @Throws(Throwable::class)
   protected fun finalize() {

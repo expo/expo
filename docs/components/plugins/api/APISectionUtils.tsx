@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, shadows, spacing, theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
 import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -10,9 +10,10 @@ import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
 import Link from '~/components/base/link';
 import { LI, UL, OL } from '~/components/base/list';
-import { B, P, Quote } from '~/components/base/paragraph';
+import { B, P } from '~/components/base/paragraph';
 import {
   CommentData,
+  MethodDefinitionData,
   MethodParamData,
   MethodSignatureData,
   PropData,
@@ -20,7 +21,7 @@ import {
   TypePropertyDataFlags,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
-import * as Constants from '~/constants/theme';
+import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 import { A } from '~/ui/components/Text';
@@ -46,12 +47,7 @@ const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
 
 export const mdComponents: MDComponents = {
-  blockquote: ({ children }) => (
-    <Quote>
-      {/* @ts-ignore - current implementation produce type issues, this would be fixed in docs redesign */}
-      {children.map(child => (child?.props?.node?.tagName === 'p' ? child?.props.children : child))}
-    </Quote>
-  ),
+  blockquote: ({ children }) => <Callout>{children}</Callout>,
   code: ({ children, className }) =>
     className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
   h1: ({ children }) => <H4>{children}</H4>,
@@ -87,12 +83,18 @@ export const mdInlineComponents: MDComponents = {
   p: ({ children }) => (children ? <span>{children}</span> : null),
 };
 
+export const mdInlineComponentsNoValidation: MDComponents = {
+  ...mdInlineComponents,
+  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+};
+
 const nonLinkableTypes = [
   'ColorValue',
   'Component',
   'ComponentClass',
   'E',
   'EventSubscription',
+  'Listener',
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
@@ -131,6 +133,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
+  DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   ExpoConfig:
@@ -314,7 +317,7 @@ export const resolveTypeName = (
       return queryType.name;
     } else if (type === 'literal' && typeof value === 'boolean') {
       return `${value}`;
-    } else if (type === 'literal' && value) {
+    } else if (type === 'literal' && (value || (typeof value === 'number' && value === 0))) {
       return `'${value}'`;
     } else if (type === 'intersection' && types) {
       return types
@@ -361,7 +364,6 @@ export const renderParamRow = ({
       <Cell>
         <CommentTextBlock
           comment={comment}
-          components={mdInlineComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />
@@ -484,6 +486,21 @@ export const getTagNamesList = (comment?: CommentData) =>
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
 
+export const getMethodName = (
+  method: MethodDefinitionData,
+  apiName?: string,
+  name?: string,
+  parameters?: MethodParamData[]
+) => {
+  const isProperty = method.kind === TypeDocKind.Property && !parameters?.length;
+  const methodName = ((apiName && `${apiName}.`) ?? '') + (method.name || name);
+  if (!isProperty) {
+    return `${methodName}(${parameters ? listParams(parameters) : ''})`;
+  }
+
+  return methodName;
+};
+
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const CommentTextBlock = ({
@@ -527,12 +544,12 @@ export const CommentTextBlock = ({
   ));
 
   const see = getTagData('see', comment);
-  const seeText = see ? (
-    <Quote>
+  const seeText = see && (
+    <Callout>
       <B>See: </B>
       <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
-    </Quote>
-  ) : null;
+    </Callout>
+  );
 
   const hasPlatforms = (getAllTagData('platform', comment)?.length || 0) > 0;
 
@@ -564,13 +581,17 @@ export const STYLES_APIBOX = css({
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  padding: `${spacing[1]}px ${spacing[5]}px`,
+  padding: `${spacing[5]}px ${spacing[5]}px 0`,
   boxShadow: shadows.micro,
   marginBottom: spacing[6],
   overflowX: 'hidden',
 
   h3: {
-    marginTop: spacing[4],
+    marginBottom: spacing[2],
+  },
+
+  'h3, h4': {
+    marginTop: 0,
   },
 
   th: {
@@ -582,20 +603,24 @@ export const STYLES_APIBOX = css({
     boxShadow: 'none',
   },
 
-  [`@media screen and (max-width: ${Constants.breakpoints.mobile})`]: {
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
     padding: `0 ${spacing[4]}px`,
   },
 });
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
+
+  h4: {
+    marginTop: 0,
+  },
 });
 
 export const STYLES_NESTED_SECTION_HEADER = css({
   display: 'flex',
   borderTop: `1px solid ${theme.border.default}`,
   borderBottom: `1px solid ${theme.border.default}`,
-  margin: `${spacing[6]}px -${spacing[5]}px ${spacing[4]}px`,
+  margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
   padding: `${spacing[2.5]}px ${spacing[5]}px`,
   backgroundColor: theme.background.secondary,
 
@@ -603,14 +628,18 @@ export const STYLES_NESTED_SECTION_HEADER = css({
     ...typography.fontSizes[16],
     fontFamily: typography.fontFaces.medium,
     marginBottom: 0,
+    marginTop: 0,
     color: theme.text.secondary,
   },
 });
 
 export const STYLES_NOT_EXPOSED_HEADER = css({
-  marginTop: spacing[5],
-  marginBottom: spacing[2],
+  marginBottom: spacing[1],
   display: 'inline-block',
+
+  code: {
+    marginBottom: 0,
+  },
 });
 
 export const STYLES_OPTIONAL = css({
@@ -627,6 +656,11 @@ export const STYLES_SECONDARY = css({
 
 const defaultValueContainerStyle = css({
   marginTop: spacing[2],
+  marginBottom: spacing[2],
+
+  '&:last-child': {
+    marginBottom: 0,
+  },
 });
 
 const STYLES_EXAMPLE_IN_TABLE = css({

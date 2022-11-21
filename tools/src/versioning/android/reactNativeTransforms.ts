@@ -88,6 +88,30 @@ export function reactNativeTransforms(
         find: new RegExp(`SoLoader.loadLibrary\\\("${escapeRegExp(libName)}"\\\)`),
         replaceWith: `SoLoader.loadLibrary("${libName}_${abiVersion}")`,
       })),
+      // add HERMES_ENABLE_DEBUGGER for libhermes-executor-release.so
+      {
+        paths: './ReactAndroid/hermes-engine/build.gradle',
+        find: /-DHERMES_ENABLE_DEBUGGER=False/,
+        replaceWith: '-DHERMES_ENABLE_DEBUGGER=True',
+      },
+      {
+        paths: './ReactCommon/hermes/executor/CMakeLists.txt',
+        find: /\bdebug (hermes-inspector_)/g,
+        replaceWith: '$1',
+      },
+      {
+        paths: './ReactCommon/hermes/executor/CMakeLists.txt',
+        find: /if\(\${CMAKE_BUILD_TYPE} MATCHES Debug\)(\n\s*target_compile_options)/g,
+        replaceWith: 'if(true)$1',
+      },
+      {
+        paths: [
+          './ReactAndroid/src/main/java/com/facebook/hermes/reactexecutor/CMakeLists.txt', // remove this when we drop sdk 45 for sdk 48
+          './ReactAndroid/src/main/jni/react/hermes/reactexecutor/CMakeLists.txt',
+        ],
+        find: '$<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>',
+        replaceWith: '-DHERMES_ENABLE_DEBUGGER=1',
+      },
     ],
   };
 }
@@ -120,7 +144,7 @@ function reactNativeCmakeTransforms(abiVersion: string): FileTransform[] {
     })),
     {
       paths: 'CMakeLists.txt',
-      find: 'add_react_android_subdir(build/generated/source/codegen/jni)',
+      find: 'add_react_build_subdir(generated/source/codegen/jni)',
       replaceWith: 'add_react_android_subdir(../codegen/jni)',
     },
     {

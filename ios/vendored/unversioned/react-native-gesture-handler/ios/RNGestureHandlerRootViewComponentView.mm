@@ -1,6 +1,6 @@
 #ifdef RN_FABRIC_ENABLED
 
-#import "RCTFabricComponentsPlugins.h"
+#import <React/RCTFabricComponentsPlugins.h>
 
 Class<RCTComponentViewProtocol> RNGestureHandlerRootViewCls(void)
 {

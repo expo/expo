@@ -1,10 +1,17 @@
+import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 
+import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
+import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
-import { RuntimeRedirectMiddleware } from '../middleware/RuntimeRedirectMiddleware';
+import {
+  DeepLinkHandler,
+  RuntimeRedirectMiddleware,
+} from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
 
@@ -64,14 +71,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // https://github.com/expo/expo/issues/13114
     prependMiddleware(middleware, manifestMiddleware);
 
-    middleware.use(new InterstitialPageMiddleware(this.projectRoot).getHandler());
+    middleware.use(
+      new InterstitialPageMiddleware(this.projectRoot, {
+        // TODO: Prevent this from becoming stale.
+        scheme: options.location.scheme ?? null,
+      }).getHandler()
+    );
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
-      onDeepLink: ({ runtime }) => {
-        // eslint-disable-next-line no-useless-return
-        if (runtime === 'expo') return;
-        // TODO: Some heavy analytics...
-      },
+      onDeepLink: getDeepLinkHandler(this.projectRoot),
       getLocation: ({ runtime }) => {
         if (runtime === 'custom') {
           return this.urlCreator?.constructDevClientUrl();
@@ -83,6 +91,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
     });
     middleware.use(deepLinkMiddleware.getHandler());
+
+    middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
@@ -121,4 +131,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
+}
+
+export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
+  return async ({ runtime }) => {
+    if (runtime === 'expo') return;
+    const { exp } = getConfig(projectRoot);
+    await logEventAsync('dev client start command', {
+      status: 'started',
+      ...getDevClientProperties(projectRoot, exp),
+    });
+  };
 }

@@ -5,7 +5,10 @@ import MobileCoreServices
 import PhotosUI
 
 internal let DEFAULT_QUALITY = 0.2
+internal let MAXIMUM_QUALITY = 1.0
+
 internal let UNLIMITED_SELECTION = 0
+internal let SINGLE_SELECTION = 1
 
 internal struct ImagePickerOptions: Record {
   @Field

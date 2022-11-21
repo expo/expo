@@ -4,8 +4,6 @@
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
-#elif __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
 #else
 #import <jsi/JSCRuntime.h>
 #endif
@@ -16,11 +14,16 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/Swift.h>
 
-using namespace facebook;
+
+/**
+ Property name of the main object in the Expo JS runtime.
+ */
+static NSString *mainObjectPropertyName = @"expo";
 
 @implementation EXJavaScriptRuntime {
   std::shared_ptr<jsi::Runtime> _runtime;
   std::shared_ptr<react::CallInvoker> _jsCallInvoker;
+  EXJavaScriptObject *_mainObject;
 }
 
 /**
@@ -31,12 +34,13 @@ using namespace facebook;
 - (nonnull instancetype)init
 {
   if (self = [super init]) {
-#if __has_include(<reacthermes/HermesExecutorFactory.h>) || __has_include(<hermes/hermes.h>)
-    _runtime = hermes::makeHermesRuntime();
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
+    _runtime = facebook::hermes::makeHermesRuntime();
 #else
     _runtime = jsc::makeJSCRuntime();
 #endif
     _jsCallInvoker = nil;
+    [self initializeMainObject];
   }
   return self;
 }
@@ -50,6 +54,7 @@ using namespace facebook;
     // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
     _runtime = std::shared_ptr<jsi::Runtime>(std::shared_ptr<jsi::Runtime>(), runtime);
     _jsCallInvoker = callInvoker;
+    [self initializeMainObject];
   }
   return self;
 }
@@ -80,6 +85,11 @@ using namespace facebook;
 {
   auto jsGlobalPtr = std::make_shared<jsi::Object>(_runtime->global());
   return [[EXJavaScriptObject alloc] initWith:jsGlobalPtr runtime:self];
+}
+
+- (nonnull EXJavaScriptObject *)mainObject
+{
+  return _mainObject;
 }
 
 - (nonnull EXJavaScriptObject *)createSyncFunction:(nonnull NSString *)name
@@ -172,6 +182,15 @@ using namespace facebook;
 }
 
 #pragma mark - Private
+
+- (void)initializeMainObject
+{
+  if (!_mainObject) {
+    // Add the main object to the runtime (`global.expo`).
+    _mainObject = [self createObject];
+    [[self global] defineProperty:mainObjectPropertyName value:_mainObject options:EXJavaScriptObjectPropertyDescriptorEnumerable];
+  }
+}
 
 - (nonnull EXJavaScriptObject *)createHostFunction:(nonnull NSString *)name
                                          argsCount:(NSInteger)argsCount

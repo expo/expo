@@ -1,8 +1,22 @@
 require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
+
+reactNativeVersion = '0.0.0'
+begin
+  reactNativeVersion = `node --print "require('react-native/package.json').version"`
+rescue
+  reactNativeVersion = '0.0.0'
+end
+if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+  reactNativeVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+end
+
+REACT_NATIVE_MINOR_VERSION = reactNativeVersion.split('.')[1].to_i
+
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-folly_version = '2021.06.28.00-v2'
+fabric_compiler_flags = '-DRN_FABRIC_ENABLED'
+folly_version = '2021.07.22.00'
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
 Pod::Spec.new do |s|
@@ -13,7 +27,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '12.0'
+  s.platform       = :ios, '13.0'
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -25,17 +39,20 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
-    'HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
+    'HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"${PODS_ROOT}/Headers/Public/React-hermes\" \"${PODS_ROOT}/Headers/Public/hermes-engine\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
+    'OTHER_SWIFT_FLAGS' => "$(inherited) #{fabric_enabled ? fabric_compiler_flags : ''}"
   }
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/ExpoModulesCore/Swift Compatibility Header\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
   }
 
+  compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_MINOR_VERSION=#{REACT_NATIVE_MINOR_VERSION}"
+
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
 
   if fabric_enabled
-    s.compiler_flags = folly_compiler_flags + " -DRN_FABRIC_ENABLED"
+    compiler_flags << ' ' << fabric_compiler_flags
 
     s.dependency 'React-RCTFabric'
     s.dependency 'RCT-Folly', folly_version
@@ -53,8 +70,9 @@ Pod::Spec.new do |s|
     exclude_files.append('ios/Fabric/')
     exclude_files.append('common/cpp/fabric/')
   end
-  s.exclude_files = exclude_files
 
+  s.exclude_files = exclude_files
+  s.compiler_flags = compiler_flags
   s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
 
   s.test_spec 'Tests' do |test_spec|

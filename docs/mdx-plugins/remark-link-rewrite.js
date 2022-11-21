@@ -1,6 +1,6 @@
-const path = require('path');
-const visit = require('unist-util-visit');
-const { URL } = require('url');
+import path from 'path';
+import { visit } from 'unist-util-visit';
+import { URL } from 'url';
 
 /**
  * @typedef {import('@types/mdast').Root} Root - https://github.com/syntax-tree/mdast#root
@@ -8,7 +8,7 @@ const { URL } = require('url');
  */
 
 const DEFAULT_OPTIONS = {
-  extension: 'md',
+  extension: 'mdx',
   pagesDir: 'pages',
   trailingSlash: true,
 };
@@ -26,7 +26,7 @@ const FAKE_DOMAIN = 'https://fake.domain';
  * @param {boolean} [options.trailingSlash=true]
  * @returns {function} remark plugin
  */
-module.exports = function remarkLinkRewrite(options) {
+export default function remarkLinkRewrite(options) {
   const settings = { ...DEFAULT_OPTIONS, ...options };
 
   /**
@@ -69,4 +69,4 @@ module.exports = function remarkLinkRewrite(options) {
       }
     });
   };
-};
+}

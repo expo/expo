@@ -1,12 +1,9 @@
-import * as detox from 'detox';
+import { device } from 'detox';
 
-const { device, init } = detox;
+export const sleepAsync = (t) => new Promise((res) => setTimeout(res, t));
 
-export const sleepAsync = t => new Promise(res => setTimeout(res, t));
-
-export async function launchWithPermissionsAsync(config, permissions, options) {
+export async function launchWithPermissionsAsync(permissions) {
   if (Object.keys(permissions).length) {
-    await init(config, { launchApp: false, ...options });
     await device.launchApp({
       permissions: Object.keys(permissions).reduce((prev, curr) => {
         const value = permissions[curr];
@@ -23,8 +20,9 @@ export async function launchWithPermissionsAsync(config, permissions, options) {
         }
       }, {}),
       newInstance: true,
+      launchArgs: {
+        EXDevMenuIsOnboardingFinished: true,
+      },
     });
-  } else {
-    await init(config, options);
   }
 }

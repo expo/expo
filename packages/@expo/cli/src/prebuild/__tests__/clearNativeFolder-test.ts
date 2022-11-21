@@ -66,7 +66,7 @@ describe(getMalformedNativeProjectsAsync, () => {
           // Skip core files to emulate a malformed project
           if (
             [
-              'ios/ReactNativeProject/Info.plist',
+              'ios/ReactNativeProject.xcodeproj/project.pbxproj',
               'android/app/src/main/java/com/reactnativeproject/MainApplication.java',
             ].includes(key)
           ) {
@@ -80,6 +80,7 @@ describe(getMalformedNativeProjectsAsync, () => {
       },
       projectRoot
     );
+
     const malformed = await getMalformedNativeProjectsAsync(projectRoot, ['ios', 'android']);
     expect(malformed).toStrictEqual(['ios', 'android']);
   });
