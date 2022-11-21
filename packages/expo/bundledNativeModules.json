@@ -47,7 +47,7 @@
   "expo-haptics": "~12.0.1",
   "expo-image-loader": "~4.0.0",
   "expo-image-manipulator": "~11.0.0",
-  "expo-image-picker": "~14.0.1",
+  "expo-image-picker": "~14.0.2",
   "expo-in-app-purchases": "~14.0.0",
   "expo-intent-launcher": "~10.3.1",
   "expo-keep-awake": "~11.0.1",
