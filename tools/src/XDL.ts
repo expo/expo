@@ -29,7 +29,8 @@ export async function publishProjectWithExpoCliAsync(
 
     if (username && password) {
       Log.collapsed('Logging in...');
-      await ExpoCLI.runExpoCliAsync('login', ['-u', username, '-p', password]);
+      // TODO: rework this to use EAS update instead of expo publish
+      await ExpoCLI.runLegacyExpoCliAsync('login', ['-u', username, '-p', password]);
     } else {
       Log.collapsed('Expo username and password not specified. Using currently logged-in account.');
     }
@@ -42,7 +43,8 @@ export async function publishProjectWithExpoCliAsync(
     publishArgs.push('--max-workers', '1');
   }
 
-  await ExpoCLI.runExpoCliAsync('publish', publishArgs, {
+  // TODO: rework this to use EAS update instead of expo publish
+  await ExpoCLI.runLegacyExpoCliAsync('publish', publishArgs, {
     cwd: projectRoot,
   });
 }
