@@ -6,17 +6,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.createAndroidManifestPlugin = createAndroidManifestPlugin;
 exports.createStringsXmlPlugin = createStringsXmlPlugin;
 exports.withStringsXml = exports.withSettingsGradle = exports.withProjectBuildGradle = exports.withMainApplication = exports.withMainActivity = exports.withGradleProperties = exports.withAppBuildGradle = exports.withAndroidStyles = exports.withAndroidManifest = exports.withAndroidColorsNight = exports.withAndroidColors = void 0;
-
 function _withMod() {
   const data = require("./withMod");
-
   _withMod = function () {
     return data;
   };
-
   return data;
 }
-
 /**
  * Helper method for creating mods from existing config functions.
  *
@@ -27,38 +23,32 @@ function createAndroidManifestPlugin(action, name) {
     config.modResults = await action(config, config.modResults);
     return config;
   });
-
   if (name) {
     Object.defineProperty(withUnknown, 'name', {
       value: name
     });
   }
-
   return withUnknown;
 }
-
 function createStringsXmlPlugin(action, name) {
   const withUnknown = config => withStringsXml(config, async config => {
     config.modResults = await action(config, config.modResults);
     return config;
   });
-
   if (name) {
     Object.defineProperty(withUnknown, 'name', {
       value: name
     });
   }
-
   return withUnknown;
 }
+
 /**
  * Provides the AndroidManifest.xml for modification.
  *
  * @param config
  * @param action
  */
-
-
 const withAndroidManifest = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -66,16 +56,14 @@ const withAndroidManifest = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the strings.xml for modification.
  *
  * @param config
  * @param action
  */
-
-
 exports.withAndroidManifest = withAndroidManifest;
-
 const withStringsXml = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -83,16 +71,14 @@ const withStringsXml = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the `android/app/src/main/res/values/colors.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
  *
  * @param config
  * @param action
  */
-
-
 exports.withStringsXml = withStringsXml;
-
 const withAndroidColors = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -100,16 +86,14 @@ const withAndroidColors = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the `android/app/src/main/res/values-night/colors.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
  *
  * @param config
  * @param action
  */
-
-
 exports.withAndroidColors = withAndroidColors;
-
 const withAndroidColorsNight = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -117,16 +101,14 @@ const withAndroidColorsNight = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the `android/app/src/main/res/values/styles.xml` as JSON (parsed with [`xml2js`](https://www.npmjs.com/package/xml2js)).
  *
  * @param config
  * @param action
  */
-
-
 exports.withAndroidColorsNight = withAndroidColorsNight;
-
 const withAndroidStyles = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -134,16 +116,14 @@ const withAndroidStyles = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the project MainActivity for modification.
  *
  * @param config
  * @param action
  */
-
-
 exports.withAndroidStyles = withAndroidStyles;
-
 const withMainActivity = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -151,16 +131,14 @@ const withMainActivity = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the project MainApplication for modification.
  *
  * @param config
  * @param action
  */
-
-
 exports.withMainActivity = withMainActivity;
-
 const withMainApplication = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -168,16 +146,14 @@ const withMainApplication = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the project /build.gradle for modification.
  *
  * @param config
  * @param action
  */
-
-
 exports.withMainApplication = withMainApplication;
-
 const withProjectBuildGradle = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -185,16 +161,14 @@ const withProjectBuildGradle = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the app/build.gradle for modification.
  *
  * @param config
  * @param action
  */
-
-
 exports.withProjectBuildGradle = withProjectBuildGradle;
-
 const withAppBuildGradle = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -202,16 +176,14 @@ const withAppBuildGradle = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the /settings.gradle for modification.
  *
  * @param config
  * @param action
  */
-
-
 exports.withAppBuildGradle = withAppBuildGradle;
-
 const withSettingsGradle = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -219,16 +191,14 @@ const withSettingsGradle = (config, action) => {
     action
   });
 };
+
 /**
  * Provides the /gradle.properties for modification.
  *
  * @param config
  * @param action
  */
-
-
 exports.withSettingsGradle = withSettingsGradle;
-
 const withGradleProperties = (config, action) => {
   return (0, _withMod().withMod)(config, {
     platform: 'android',
@@ -236,6 +206,5 @@ const withGradleProperties = (config, action) => {
     action
   });
 };
-
 exports.withGradleProperties = withGradleProperties;
 //# sourceMappingURL=android-plugins.js.map

@@ -4,49 +4,35 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.setProvisioningProfileForPbxproj = setProvisioningProfileForPbxproj;
-
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
-
   _fs = function () {
     return data;
   };
-
   return data;
 }
-
 function _Target() {
   const data = require("./Target");
-
   _Target = function () {
     return data;
   };
-
   return data;
 }
-
 function _Xcodeproj() {
   const data = require("./utils/Xcodeproj");
-
   _Xcodeproj = function () {
     return data;
   };
-
   return data;
 }
-
 function _string() {
   const data = require("./utils/string");
-
   _string = function () {
     return data;
   };
-
   return data;
 }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function setProvisioningProfileForPbxproj(projectRoot, {
   targetName,
   profileName,
@@ -67,19 +53,15 @@ function setProvisioningProfileForPbxproj(projectRoot, {
     if (!item.attributes.TargetAttributes[nativeTargetId]) {
       item.attributes.TargetAttributes[nativeTargetId] = {};
     }
-
     item.attributes.TargetAttributes[nativeTargetId].DevelopmentTeam = quotedAppleTeamId;
     item.attributes.TargetAttributes[nativeTargetId].ProvisioningStyle = 'Manual';
   });
-
   _fs().default.writeFileSync(project.filepath, project.writeSync());
 }
-
 const ensureQuotes = value => {
   if (!value.match(/^['"]/)) {
     return `"${value}"`;
   }
-
   return value;
 };
 //# sourceMappingURL=ProvisioningProfile.js.map
