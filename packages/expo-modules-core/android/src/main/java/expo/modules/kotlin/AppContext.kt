@@ -320,6 +320,10 @@ class AppContext(
     return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
+  fun runOnJS(runnable: Runnable) {
+    reactContextHolder.get()?.runOnJSQueueThread(runnable)
+  }
+
 // region CurrentActivityProvider
 
   override val currentActivity: Activity?
