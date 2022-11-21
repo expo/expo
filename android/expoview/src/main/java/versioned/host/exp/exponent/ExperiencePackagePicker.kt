@@ -41,7 +41,7 @@ import expo.modules.mailcomposer.MailComposerPackage
 import expo.modules.manifests.core.Manifest
 import expo.modules.medialibrary.MediaLibraryPackage
 import expo.modules.navigationbar.NavigationBarPackage
-import expo.modules.network.NetworkPackage
+import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.print.PrintPackage
@@ -91,7 +91,6 @@ object ExperiencePackagePicker : ModulesProvider {
     MailComposerPackage(),
     MediaLibraryPackage(),
     NavigationBarPackage(),
-    NetworkPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
     PrintPackage(),
@@ -135,6 +134,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ImagePickerModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
+    NetworkModule::class.java,
     RandomModule::class.java,
     StoreReviewModule::class.java,
     VideoViewModule::class.java,
