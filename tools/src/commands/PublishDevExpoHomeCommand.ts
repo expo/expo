@@ -182,7 +182,8 @@ async function action(options: ActionOptions): Promise<void> {
 
   if (cliUsername) {
     console.log(`Logging out from ${chalk.green(cliUsername)} account...`);
-    await ExpoCLI.runExpoCliAsync('logout', [], {
+    // TODO: rework this to use EAS update instead of expo publish
+    await ExpoCLI.runLegacyExpoCliAsync('logout', [], {
       stdio: 'ignore',
     });
   }
