@@ -191,6 +191,10 @@ export interface ExpoConfig {
      */
     checkAutomatically?: 'ON_ERROR_RECOVERY' | 'ON_LOAD';
     /**
+     * A default channel for updates. If this is defined, and if no channel is defined in a build profile, this channel will be the default one used for fetching update manifests.
+     */
+    defaultChannel?: string;
+    /**
      * How long (in ms) to allow for fetching OTA updates before falling back to a cached version of the app. Defaults to 0. Must be between 0 and 300000 (5 minutes).
      */
     fallbackToCacheTimeout?: number;
