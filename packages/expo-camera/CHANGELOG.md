@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Use correct type for `videoStabilizationMode` option. ([#20130](https://github.com/expo/expo/pull/20130) by [@simek](https://github.com/simek))
+
 ## 13.0.0 — 2022-10-25
 
 ### 🐛 Bug fixes
