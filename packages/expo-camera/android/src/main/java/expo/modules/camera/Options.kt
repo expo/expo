@@ -12,6 +12,7 @@ class PictureOptions : Record {
   @Field val skipProcessing: Boolean = false
   @Field val fastMode: Boolean = false
   @Field val id: Int? = null
+  @Field val maxDownsampling: Int = 1
 }
 
 class RecordingOptions : Record {
