@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `ImageFormat` or the `StringFormat` not working in the release builds on Android.
+
 ### 💡 Others
 
 ## 4.0.1 — 2022-10-30
