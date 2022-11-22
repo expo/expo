@@ -138,6 +138,12 @@ function setUpdatesConfig(projectRoot, config, androidManifest, username, expoUp
   } else {
     (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.CODE_SIGNING_METADATA);
   }
+  const requestHeaders = (0, _Updates().getUpdatesRequestHeadersStringified)(config);
+  if (requestHeaders) {
+    (0, _Manifest().addMetaDataItemToMainApplication)(mainApplication, Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY, requestHeaders);
+  } else {
+    (0, _Manifest().removeMetaDataItemFromMainApplication)(mainApplication, Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY);
+  }
   return setVersionsConfig(config, androidManifest);
 }
 function setVersionsConfig(config, androidManifest) {

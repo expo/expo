@@ -95,6 +95,12 @@ function setUpdatesConfig(projectRoot, config, expoPlist, username, expoUpdatesP
   } else {
     delete newExpoPlist[Config.CODE_SIGNING_METADATA];
   }
+  const requestHeaders = (0, _Updates().getUpdatesRequestHeaders)(config);
+  if (requestHeaders) {
+    newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY] = requestHeaders;
+  } else {
+    delete newExpoPlist[Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY];
+  }
   return setVersionsConfig(config, newExpoPlist);
 }
 function setVersionsConfig(config, expoPlist) {
