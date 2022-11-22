@@ -4,7 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.15.5'
+version = '0.15.6'
 
 def ex_updates_native_debug_env = System.getenv("EX_UPDATES_NATIVE_DEBUG") ?: "0"
 def ex_updates_native_debug = ex_updates_native_debug_env == "1" ? "true" : "false"
@@ -89,7 +89,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 31
-    versionName '0.15.5'
+    versionName '0.15.6'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", ex_updates_native_debug)
