@@ -40,6 +40,7 @@ type Props = React.PropsWithChildren<{
   title?: string;
   sourceCodeUrl?: string;
   tocVisible: boolean;
+  packageName?: string;
   /** If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
   version: PageApiVersionContextType['version'];
@@ -193,7 +194,11 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         {this.props.title && <H1>{this.props.title}</H1>}
         {this.props.children}
         {this.props.title && (
-          <Footer title={this.props.title} sourceCodeUrl={this.props.sourceCodeUrl} />
+          <Footer
+            title={this.props.title}
+            sourceCodeUrl={this.props.sourceCodeUrl}
+            packageName={this.props.packageName}
+          />
         )}
       </>
     );
