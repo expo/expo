@@ -8,6 +8,7 @@ import { LI, UL } from '~/components/base/list';
 import { H2, H3Code, H4, H4Code } from '~/components/plugins/Headings';
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
+  AccessorDefinitionData,
   MethodDefinitionData,
   MethodSignatureData,
   PropData,
@@ -43,10 +44,14 @@ export type RenderMethodOptions = {
 };
 
 export const renderMethod = (
-  method: MethodDefinitionData | PropData,
+  method: MethodDefinitionData | AccessorDefinitionData | PropData,
   { apiName, exposeInSidebar = true }: RenderMethodOptions = {}
 ): JSX.Element[] => {
-  const signatures = method.signatures || (method as PropData)?.type?.declaration?.signatures || [];
+  const signatures =
+    (method as MethodDefinitionData).signatures ||
+    (method as PropData)?.type?.declaration?.signatures ||
+    (method as AccessorDefinitionData)?.getSignature ||
+    [];
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   return signatures.map(
     ({ name, parameters, comment, type }: MethodSignatureData | TypeSignaturesData) => (

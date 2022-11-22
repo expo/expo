@@ -41,7 +41,8 @@ const isProp = (child: PropData) =>
   !child.implementationOf;
 
 const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
-  child.kind === TypeDocKind.Method &&
+  child.kind &&
+  [TypeDocKind.Method, TypeDocKind.Function, TypeDocKind.Accessor].includes(child.kind) &&
   (allowOverwrites || !child.overwrites) &&
   !child.name.startsWith('_') &&
   !child?.implementationOf;

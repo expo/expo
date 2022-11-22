@@ -48,6 +48,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-document-picker': ['index.ts'],
   'expo-error-recovery': ['ErrorRecovery.ts'],
   'expo-face-detector': ['FaceDetector.ts'],
+  'expo-file-system': ['index.ts'],
   'expo-firebase-analytics': ['Analytics.ts'],
   'expo-firebase-core': ['FirebaseCore.ts'],
   'expo-font': ['index.ts'],

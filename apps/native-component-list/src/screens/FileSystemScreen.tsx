@@ -2,6 +2,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
 // import * as Progress from 'expo-progress';
+import type {
+  DownloadProgressData,
+  DownloadResumable,
+  FileSystemNetworkTaskProgressCallback,
+} from 'expo-file-system';
 import React from 'react';
 import { Alert, ScrollView, Text, Platform } from 'react-native';
 
@@ -17,9 +22,7 @@ interface State {
   createdFileURI: string | null;
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class FileSystemScreen extends React.Component<{}, State> {
+export default class FileSystemScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'FileSystem',
   };
@@ -30,7 +33,7 @@ export default class FileSystemScreen extends React.Component<{}, State> {
     createdFileURI: null,
   };
 
-  download?: FileSystem.DownloadResumable;
+  download?: DownloadResumable;
 
   _download = async () => {
     const url = 'http://ipv4.download.thinkbroadband.com/256KB.zip';
@@ -41,7 +44,9 @@ export default class FileSystemScreen extends React.Component<{}, State> {
   _startDownloading = async () => {
     const url = 'http://ipv4.download.thinkbroadband.com/5MB.zip';
     const fileUri = FileSystem.documentDirectory + '5MB.zip';
-    const callback: FileSystem.DownloadProgressCallback = (downloadProgress) => {
+    const callback: FileSystemNetworkTaskProgressCallback<DownloadProgressData> = (
+      downloadProgress
+    ) => {
       const progress =
         downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
       this.setState({
@@ -122,7 +127,9 @@ export default class FileSystemScreen extends React.Component<{}, State> {
       const downloadJson = await AsyncStorage.getItem('pausedDownload');
       if (downloadJson !== null) {
         const downloadFromStore = JSON.parse(downloadJson);
-        const callback: FileSystem.DownloadProgressCallback = (downloadProgress) => {
+        const callback: FileSystemNetworkTaskProgressCallback<DownloadProgressData> = (
+          downloadProgress
+        ) => {
           const progress =
             downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
           this.setState({
@@ -205,11 +212,11 @@ export default class FileSystemScreen extends React.Component<{}, State> {
   _askForDirPermissions = async () => {
     const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
     if (permissions.granted) {
-      const uri = permissions.directoryUri;
+      const url = permissions.directoryUri;
       this.setState({
-        permittedURI: uri,
+        permittedURI: url,
       });
-      alert(`You selected: ${uri}`);
+      alert(`You selected: ${url}`);
     }
   };
 

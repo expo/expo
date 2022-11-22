@@ -8,6 +8,7 @@ import APISectionConstants from '~/components/plugins/api/APISectionConstants';
 import APISectionEnums from '~/components/plugins/api/APISectionEnums';
 import APISectionInterfaces from '~/components/plugins/api/APISectionInterfaces';
 import APISectionMethods from '~/components/plugins/api/APISectionMethods';
+import APISectionNamespaces from '~/components/plugins/api/APISectionNamespaces';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import { getComponentName, TypeDocKind } from '~/components/plugins/api/APISectionUtils';
@@ -112,11 +113,7 @@ const renderAPI = (
       entry => entry.name === 'defaultProps'
     )[0];
 
-    const enums = filterDataByKind(
-      data,
-      [TypeDocKind.Enum, TypeDocKind.LegacyEnum],
-      entry => entry.name !== 'default'
-    );
+    const enums = filterDataByKind(data, TypeDocKind.Enum, entry => entry.name !== 'default');
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
@@ -131,6 +128,8 @@ const renderAPI = (
     const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
       componentsPropNames.includes(entry.name)
     );
+
+    const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
 
     const classes = filterDataByKind(
       data,
@@ -193,6 +192,7 @@ const renderAPI = (
           apiName={apiName}
           header="Event Subscriptions"
         />
+        <APISectionNamespaces data={namespaces} />
         <APISectionInterfaces data={interfaces} />
         <APISectionTypes data={types} />
         <APISectionEnums data={enums} />
