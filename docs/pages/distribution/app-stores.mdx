@@ -42,6 +42,11 @@ This guide offers best practices for submitting your app to the app stores. To l
   href="/guides/configuring-statusbar"
 />
 <BoxLink
+  title="Localizing your app"
+  description="Prepare versions of your app for different languages and regions."
+  href="/guides/localization"
+/>
+<BoxLink
   title="Apple: Review guidelines"
   description="Official Apple guide on preparing your app for App Store review."
   href="https://developer.apple.com/app-store/review"
@@ -79,33 +84,3 @@ Apple will ask you a series of questions when you submit the app. Depending on w
 > Supplement the above guidance with additional disclosures based on the data your particular app and the third-party services you use collect.
 
 </ConfigClassic>
-
-## Localizing your iOS app
-
-If you plan on shipping your app to different countries, or regions, or want it to support various languages, you can provide [localized](/versions/latest/sdk/localization) strings for things like the display name and system dialogs. All of this is easily set up [in your `app.json`](/workflow/configuration) file. First, set `ios.infoPlist.CFBundleAllowMixedLocalizations: true`, then provide a list of file paths to `locales`.
-
-```json app.json
-{
-  "expo": {
-    "ios": {
-      "infoPlist": {
-        "CFBundleAllowMixedLocalizations": true
-      }
-    },
-    "locales": {
-      "ja": "./languages/japanese.json"
-    }
-  }
-}
-```
-
-The keys provided to `locales` should be the [language identifier](https://developer.apple.com/documentation/xcode/choosing-localization-regions-and-scripts), made up of a [2-letter language code](https://www.loc.gov/standards/iso639-2/php/code_list.php) of your desired language, with an optional region code (e.g. `en-US` or `en-GB`), and the value should point to a JSON file that looks something like this:
-
-```json japanese.json
-{
-  "CFBundleDisplayName": "こんにちは",
-  "NSContactsUsageDescription": "日本語のこれらの言葉"
-}
-```
-
-Now, iOS knows to set the display name of your app to `こんにちは` whenever it's installed on a device with the language set to Japanese.
