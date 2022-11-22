@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `ImageFormat` or the `StringFormat` not working in the release builds on Android. ([#20155](https://github.com/expo/expo/pull/20155) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 4.0.1 — 2022-10-30
