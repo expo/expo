@@ -10,6 +10,8 @@ import {
   getUpdatesCodeSigningCertificate,
   getUpdatesCodeSigningMetadata,
   getUpdatesCodeSigningMetadataStringified,
+  getUpdatesRequestHeaders,
+  getUpdatesRequestHeadersStringified,
   getUpdatesEnabled,
   getUpdatesTimeout,
   getUpdateUrl,
@@ -40,6 +42,7 @@ describe('shared config getters', () => {
     expect(getUpdatesTimeout({})).toBe(0);
     expect(getUpdatesCodeSigningCertificate('/app', {})).toBe(undefined);
     expect(getUpdatesCodeSigningMetadata({})).toBe(undefined);
+    expect(getUpdatesRequestHeaders({})).toBe(undefined);
   });
 
   it(`returns correct value from all getters if value provided`, () => {
@@ -94,6 +97,34 @@ describe('shared config getters', () => {
     ).toMatchObject({
       alg: 'rsa-v1_5-sha256',
       keyid: 'test',
+    });
+    expect(
+      getUpdatesRequestHeadersStringified({
+        updates: {
+          requestHeaders: {
+            'expo-channel-name': 'test',
+            testheader: 'test',
+          },
+        },
+      })
+    ).toBe(
+      JSON.stringify({
+        'expo-channel-name': 'test',
+        testheader: 'test',
+      })
+    );
+    expect(
+      getUpdatesRequestHeaders({
+        updates: {
+          requestHeaders: {
+            'expo-channel-name': 'test',
+            testheader: 'test',
+          },
+        },
+      })
+    ).toMatchObject({
+      'expo-channel-name': 'test',
+      testheader: 'test',
     });
   });
 });

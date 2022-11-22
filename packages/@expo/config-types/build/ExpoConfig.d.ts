@@ -215,6 +215,10 @@ export interface ExpoConfig {
              */
             keyid?: string;
         };
+        /**
+         * Headers for `requestHeadersKey`
+         */
+        requestHeaders?: Record<string, string>;
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
