@@ -144,7 +144,7 @@ export function Button(props: ButtonProps) {
             {icon}
           </div>
         )}
-        <div>{children}</div>
+        <>{children}</>
         {iconRight && (
           <div
             css={[

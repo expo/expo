@@ -96,15 +96,19 @@ Use these for more complex rules than one-to-one path-to-path redirect mapping. 
 
 You can add your own client-side redirect rules in `common/error-utilities.ts`.
 
-## Algolia Docsearch
+## Search
 
-We use Algolia Docsearch as the search engine for our docs. Right now, it's searching for any keywords with the proper `version` tag based on the current location. This is set in the `components/DocumentationPage` header.
+We use Algolia as a main search results provider for our docs. Besides the query, results are also filtered based on the `version` tag which represents the user current location. The tag set in the `components/DocumentationPage.tsx` head.
 
-In `components/plugins/AlgoliaSearch`, you can see the `facetFilters` set to `[['version:none', 'version:{currentVersion}']]`. Translated to English, this means "Search on all pages where `version` is `none`, or the currently selected version.".
+In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
+- all unversioned pages use the version tag `none`,
+- all versioned pages use the SDK version (e.g. `v46.0.0` or `v47.0.0`),
+- all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
 
-- All unversioned pages use the version tag `none`.
-- All versioned pages use the SDK version (e.g. `v40.0.0` or `v39.0.0`).
-- All `hideFromSearch: true` pages don't have the version tag.
+Currently, the base results for Expo docs are combined with other results from multiple sources, like:
+- manually defined paths for Expo dashboard located in `ui/components/CommandMenu/expoEntries.ts`,
+- public Algolia index for React Native website,
+- React Native directory public API, see the directory [README.md](https://github.com/react-native-community/directory#i-dont-like-your-website-can-i-hit-an-api-instead-and-build-my-own-better-stuff) for more details.
 
 ## Quirks
 

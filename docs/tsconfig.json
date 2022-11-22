@@ -21,7 +21,13 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
+    "types": [
+      "jest",
+      "@testing-library/jest-dom",
+      "@types/gtag.js",
+      "user-agent-data-types"
+    ]
   },
   "include": [
     "next-env.d.ts",
