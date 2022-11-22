@@ -1,8 +1,5 @@
 PODS:
   - boost (1.76.0)
-  - CocoaLumberjack (3.7.4):
-    - CocoaLumberjack/Core (= 3.7.4)
-  - CocoaLumberjack/Core (3.7.4)
   - DoubleConversion (1.1.6)
   - EASClient (0.4.1):
     - ExpoModulesCore
@@ -161,10 +158,10 @@ PODS:
     - ExpoModulesCore
   - ExpoImage (0.2.3):
     - ExpoModulesCore
-    - React-Core
-    - SDWebImage (~> 5.0)
-    - SDWebImageSVGKitPlugin (~> 1.3)
-    - SVGKit (~> 2.1)
+    - SDWebImage (~> 5.14.2)
+    - SDWebImageAVIFCoder (~> 0.9.3)
+    - SDWebImageSVGCoder (~> 1.6.1)
+    - SDWebImageWebPCoder (~> 0.9.1)
   - ExpoImageManipulator (11.0.0):
     - EXImageLoader
     - ExpoModulesCore
@@ -273,7 +270,25 @@ PODS:
     - GoogleUtilities/Logger
   - GTMSessionFetcher/Core (1.7.2)
   - hermes-engine (0.70.5)
+  - libaom (2.0.2):
+    - libvmaf
+  - libavif (0.10.1):
+    - libavif/libaom (= 0.10.1)
+  - libavif/core (0.10.1)
+  - libavif/libaom (0.10.1):
+    - libaom (>= 2.0.0)
+    - libavif/core
   - libevent (2.1.12)
+  - libvmaf (2.2.0)
+  - libwebp (1.2.3):
+    - libwebp/demux (= 1.2.3)
+    - libwebp/mux (= 1.2.3)
+    - libwebp/webp (= 1.2.3)
+  - libwebp/demux (1.2.3):
+    - libwebp/webp
+  - libwebp/mux (1.2.3):
+    - libwebp/demux
+  - libwebp/webp (1.2.3)
   - MLImage (1.0.0-beta2)
   - MLKitCommon (5.0.0):
     - GoogleDataTransport (~> 9.0)
@@ -659,14 +674,17 @@ PODS:
     - React-Core
   - RNSVG (13.4.0):
     - React-Core
-  - SDWebImage (5.13.4):
-    - SDWebImage/Core (= 5.13.4)
-  - SDWebImage/Core (5.13.4)
-  - SDWebImageSVGKitPlugin (1.3.0):
-    - SDWebImage/Core (~> 5.10)
-    - SVGKit (>= 2.1)
-  - SVGKit (2.1.1):
-    - CocoaLumberjack (~> 3.0)
+  - SDWebImage (5.14.2):
+    - SDWebImage/Core (= 5.14.2)
+  - SDWebImage/Core (5.14.2)
+  - SDWebImageAVIFCoder (0.9.3):
+    - libavif (>= 0.9.1)
+    - SDWebImage (~> 5.10)
+  - SDWebImageSVGCoder (1.6.1):
+    - SDWebImage/Core (~> 5.6)
+  - SDWebImageWebPCoder (0.9.1):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.13)
   - UMAppLoader (4.0.0)
   - Yoga (1.14.0)
   - ZXingObjC/Core (3.6.5)
@@ -802,7 +820,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - CocoaLumberjack
     - fmt
     - GoogleDataTransport
     - GoogleMaps
@@ -812,7 +829,11 @@ SPEC REPOS:
     - GoogleUtilities
     - GoogleUtilitiesComponents
     - GTMSessionFetcher
+    - libaom
+    - libavif
     - libevent
+    - libvmaf
+    - libwebp
     - MLImage
     - MLKitCommon
     - MLKitFaceDetection
@@ -822,8 +843,9 @@ SPEC REPOS:
     - Protobuf
     - Quick
     - SDWebImage
-    - SDWebImageSVGKitPlugin
-    - SVGKit
+    - SDWebImageAVIFCoder
+    - SDWebImageSVGCoder
+    - SDWebImageWebPCoder
     - ZXingObjC
 
 EXTERNAL SOURCES:
@@ -1134,7 +1156,6 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   boost: a7c83b31436843459a1961bfd74b96033dc77234
-  CocoaLumberjack: 543c79c114dadc3b1aba95641d8738b06b05b646
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 19efe9e8ef9b3917c5f3dcb3ed82319de4d8c0bd
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
@@ -1173,7 +1194,7 @@ SPEC CHECKSUMS:
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
   ExpoGL: 75d4259b4907dbf725b5dd9309602304f29e52b3
   ExpoHaptics: 5a56d30a87ea213dd00b09566dc4b441a4dff97f
-  ExpoImage: 219eb2d8b6952861c7d351c5dd86d45b0584be08
+  ExpoImage: da2c9a0f17c5b00727619f0f0777c1a0b9da8c07
   ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
   ExpoImagePicker: 735000e53b06c327a4e8b1146f06a8765be244c3
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
@@ -1215,7 +1236,11 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   hermes-engine: 7fe5fc6ef707b7fdcb161b63898ec500e285653d
+  libaom: 9bb51e0f8f9192245e3ca2a1c9e4375d9cbccc52
+  libavif: e242998ccec1c83bcba0bbdc256f460ad5077348
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  libvmaf: 8d61aabc2f4ed3e6591cf7406fa00a223ec11289
+  libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
   MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
   MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
   MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
@@ -1269,9 +1294,10 @@ SPEC CHECKSUMS:
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
-  SDWebImage: e5cc87bf736e60f49592f307bdf9e157189298a3
-  SDWebImageSVGKitPlugin: 8797e1c9b9baf80bd50d28e673e16a12359af1c9
-  SVGKit: 652cdf7bef8bec8564d04a8511d3ab50c7595fac
+  SDWebImage: b9a731e1d6307f44ca703b3976d18c24ca561e84
+  SDWebImageAVIFCoder: 6337ea93faf8de93edf3433d75be6055add74552
+  SDWebImageSVGCoder: 6fc109f9c2a82ab44510fff410b88b1a6c271ee8
+  SDWebImageWebPCoder: 18503de6621dd2c420d680e33d46bf8e1d5169b0
   UMAppLoader: 354d71d2d2ce8d6c19fb13d72b9c8209b18a8c56
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
