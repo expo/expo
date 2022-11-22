@@ -11,7 +11,7 @@ It offers various features such as a device log viewer, interactive native layou
 
 Debugging your Expo projects with Flipper requires the following:
 
-- Building your project into a [development build](/development/introduction/)
+- Creating a [development build](/development/introduction/) of your project
 - Installing the [`expo-community-flipper`](https://github.com/jakobo/expo-community-flipper) config plugin
 
 > The `expo-community-flipper` library is a [config plugin](/guides/config-plugins/) that adds native code to your project.
@@ -57,46 +57,20 @@ In the **app.json**, add `expo-community-flipper` to the `plugins` array:
 }
 ```
 
-## Step 5: Configure a development build
+## Step 5: Configure and install a development build
 
-To configure a development build for your project, run the following command:
+To configure and install a development build, follow the instructions below for:
 
-<Terminal cmd={['$ eas build:configure']} />
+- [Android Emulator or iOS simulator](/development/create-development-builds/#on-emulatorsimulator)
+- [Physical device](/development/create-development-builds/#on-a-device)
 
-This command will generate the **eas.json** file in your project, which will contain various build profiles.
-
-Inside the `"development"` build profile in **eas.json**, add the `android.buildType` property to generate a **.apk** for an Android device or emulator. To test your project on the iOS simulator, add the `ios.simulator` property to the build profile.
-
-An example of a build profile with the configuration mentioned above is shown below:
-
-```json eas.json
-{
-  "build": {
-    "development": {
-      "developmentClient": true,
-      "distribution": "internal",
-      "android": {
-        "buildType": "apk"
-      },
-      "ios": {
-        "simulator": true
-      }
-    }
-  }
-}
-```
-
-After you have configured the build profile, run the following command to build the project:
-
-<Terminal cmd={['$ eas build --profile development --platform all']} />
-
-Once the builds are complete, you can download them from [Expo's website](https://expo.dev/accounts/[account]/projects/[project]/builds). From there, you can install them on your devices or your emulator/simulator.
+Once the build is complete, you can download them from [Expo's website](https://expo.dev/accounts/[account]/projects/[project]/builds). From there, you can install them on your device or an emulator/simulator.
 
 ## Step 6: Run the development server
 
-Run the following command to start a development server:
+After installing the build, run the following command to start a development server:
 
-<Terminal cmd={['$ npx expo --dev-client']} />
+<Terminal cmd={['$ npx expo start --dev-client']} />
 
 Once the development server is running, open the Flipper desktop app and select your device or simulator under **App Inspect**:
 
