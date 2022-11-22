@@ -2,14 +2,14 @@ import type { Dispatch, SetStateAction } from 'react';
 
 import type { AlgoliaItemHierarchy, AlgoliaItemType } from './types';
 
-export const getItems = async <T>(
+export const getItemsAsync = async <T>(
   query: string,
   fetcher: (query: string, version?: string) => Promise<Response>,
   setter: Dispatch<SetStateAction<T[]>>,
   version?: string
 ) => {
-  const data = await fetcher(query, version).then(response => response.json());
-  setter(data?.hits || data?.libraries || []);
+  const { hits, libraries } = await fetcher(query, version).then(response => response.json());
+  setter(hits || libraries || []);
 };
 
 const getAlgoliaFetchParams = (

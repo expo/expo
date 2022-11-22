@@ -9,7 +9,7 @@ import { RNDirectoryItem, RNDocsItem, ExpoDocsItem, ExpoItem } from './Items';
 import { entries } from './expoEntries';
 import { searchIconStyle, closeIconStyle } from './styles';
 import type { ExpoItemType, RNDirectoryItemType, AlgoliaItemType } from './types';
-import { getExpoDocsResults, getRNDocsResults, getDirectoryResults, getItems } from './utils';
+import { getExpoDocsResults, getRNDocsResults, getDirectoryResults, getItemsAsync } from './utils';
 
 import { CALLOUT } from '~/ui/components/Text';
 
@@ -28,9 +28,10 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
   const [directoryItems, setDirectoryItems] = useState<RNDirectoryItemType[]>([]);
 
   const getExpoDocsItems = async () =>
-    getItems(query, getExpoDocsResults, setExpoDocsItems, version);
-  const getRNDocsItems = async () => getItems(query, getRNDocsResults, setRnDocsItems);
-  const getDirectoryItems = async () => getItems(query, getDirectoryResults, setDirectoryItems);
+    getItemsAsync(query, getExpoDocsResults, setExpoDocsItems, version);
+  const getRNDocsItems = async () => getItemsAsync(query, getRNDocsResults, setRnDocsItems);
+  const getDirectoryItems = async () =>
+    getItemsAsync(query, getDirectoryResults, setDirectoryItems);
 
   const getExpoItems = async () => {
     setExpoItems(entries.filter(entry => entry.label.toLowerCase().includes(query.toLowerCase())));
@@ -44,11 +45,13 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
     );
   };
 
-  useEffect(() => {
+  const onQueryChange = () => {
     setLoading(true);
     const inputTimeout = setTimeout(fetchData, 150);
     return () => clearTimeout(inputTimeout);
-  }, [query]);
+  };
+
+  useEffect(onQueryChange, [query]);
 
   const totalCount =
     expoDocsItems.length + rnDocsItems.length + directoryItems.length + expoItems.length;
