@@ -7,16 +7,6 @@ namespace RNJsi
 {
 using namespace facebook;
 
-enum JsiWrapperValueType
-{
-    NonInitialized,
-    Undefined,
-    Null,
-    Bool,
-    Number,
-    JsiValue
-};
-
 /**
  Implements a simple wrapper class for JSI primitives like numbers and boolean values. Objects,
  strings and arrays are stored as values inside a property holder. The class also provides a method
@@ -24,9 +14,19 @@ enum JsiWrapperValueType
  */
 class JsiSimpleValueWrapper
 {
+private:
+  enum ValueType {
+    NonInitialized,
+    Undefined,
+    Null,
+    Bool,
+    Number,
+    JsiValue
+  };
+
 public:
     JsiSimpleValueWrapper(jsi::Runtime& runtime) :
-      _type(JsiWrapperValueType::NonInitialized),
+      _type(ValueType::NonInitialized),
       _propNameId(jsi::PropNameID::forUtf8(runtime, "value"))
     {}
 
@@ -34,17 +34,17 @@ public:
     {
       switch (_type)
       {
-          case JsiWrapperValueType::NonInitialized:
+          case ValueType::NonInitialized:
               return nullptr;
-          case JsiWrapperValueType::Undefined:
+          case ValueType::Undefined:
             return jsi::Value::undefined();
-          case JsiWrapperValueType::Null:
+          case ValueType::Null:
             return jsi::Value::null();
-          case JsiWrapperValueType::Bool:
+          case ValueType::Bool:
             return _boolValue;
-          case JsiWrapperValueType::Number:
+          case ValueType::Number:
             return _numberValue;
-          case JsiWrapperValueType::JsiValue:
+          case ValueType::JsiValue:
             if (_valueHolder == nullptr) {
                 return jsi::Value::undefined();
             }
@@ -55,17 +55,17 @@ public:
     void setCurrent(jsi::Runtime &runtime, const jsi::Value &value)
     {
       if(value.isNumber()) {
-        _type = JsiWrapperValueType::Number;
+        _type = ValueType::Number;
         _numberValue = value.asNumber();
       } else if(value.isBool()) {
-        _type = JsiWrapperValueType::Bool;
+        _type = ValueType::Bool;
         _boolValue = value.getBool();
       } else if(value.isUndefined()) {
-        _type = JsiWrapperValueType::Undefined;
+        _type = ValueType::Undefined;
       } else if(value.isNull()) {
-        _type = JsiWrapperValueType::Null;
+        _type = ValueType::Null;
       } else {
-        _type = JsiWrapperValueType::JsiValue;
+        _type = ValueType::JsiValue;
         // Save as javascript object - we don't want to have to copy strings, objects and values
         if(_valueHolder == nullptr) {
             _valueHolder = std::make_shared<jsi::Object>(runtime);
@@ -75,17 +75,17 @@ public:
     }
 
     bool equals(jsi::Runtime& runtime, const jsi::Value &value) {
-      if (_type == JsiWrapperValueType::NonInitialized) {
+      if (_type == ValueType::NonInitialized) {
           return false;
       }
-      if(value.isNumber() && _type == JsiWrapperValueType::Number) {
+      if(value.isNumber() && _type == ValueType::Number) {
         return _numberValue == value.asNumber();
-      } else if(value.isBool() && _type == JsiWrapperValueType::Bool) {
+      } else if(value.isBool() && _type == ValueType::Bool) {
         return _boolValue == value.getBool();
       } else if(value.isUndefined()) {
-        return _type == JsiWrapperValueType::Undefined;
+        return _type == ValueType::Undefined;
       } else if(value.isNull()) {
-        return _type == JsiWrapperValueType::Null;
+        return _type == ValueType::Null;
       } else if(value.isString()) {
           auto current = getCurrent(runtime);
           if (current.isString()) {
@@ -103,6 +103,6 @@ private:
     bool _boolValue;
     double _numberValue;
 
-    JsiWrapperValueType _type;
+    ValueType _type;
 };
 }

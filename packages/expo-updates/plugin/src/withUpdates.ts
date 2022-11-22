@@ -1,5 +1,5 @@
 import { getAccountUsername } from '@expo/config';
-import { ConfigPlugin, createRunOncePlugin, AndroidConfig, IOSConfig } from '@expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin, AndroidConfig, IOSConfig } from 'expo/config-plugins';
 
 const pkg = require('expo-updates/package.json');
 

@@ -75,6 +75,26 @@ class CardFormView: UIView, STPCardFormViewDelegate {
         if let backgroundColor = cardStyle["backgroundColor"] as? String {
             cardForm?.backgroundColor = UIColor(hexString: backgroundColor)
         }
+        /**
+                    The following reveals a bug in STPCardFormView where there's a extra space in the layer,
+                        and thus must remain commented out for now.
+         
+         if let borderWidth = cardStyle["borderWidth"] as? Int {
+             cardForm?.layer.borderWidth = CGFloat(borderWidth)
+         } else {
+             cardForm?.layer.borderWidth = CGFloat(0)
+         }
+         
+         */
+        if let borderColor = cardStyle["borderColor"] as? String {
+            cardForm?.layer.borderColor = UIColor(hexString: borderColor).cgColor
+        }
+        if let borderRadius = cardStyle["borderRadius"] as? Int {
+            cardForm?.layer.cornerRadius = CGFloat(borderRadius)
+        }
+        if let cursorColor = cardStyle["cursorColor"] as? String {
+            cardForm?.tintColor = UIColor(hexString: cursorColor)
+        }
         // if let disabledBackgroundColor = cardStyle["disabledBackgroundColor"] as? String {
         //     cardForm?.disabledBackgroundColor = UIColor(hexString: disabledBackgroundColor)
         // }

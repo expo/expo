@@ -17,7 +17,6 @@ EXPO_UPDATES_PACKAGE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
 
 DEST="$CONFIGURATION_BUILD_DIR"
 RESOURCE_BUNDLE_NAME="EXUpdates.bundle"
-ENTRY_FILE=${ENTRY_FILE:-index.js}
 RCT_METRO_PORT=${RCT_METRO_PORT:=8081}
 
 # For classic main project build phases integration, will be no-op to prevent duplicated app.manifest creation.

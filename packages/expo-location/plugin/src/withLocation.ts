@@ -3,7 +3,7 @@ import {
   ConfigPlugin,
   createRunOncePlugin,
   withInfoPlist,
-} from '@expo/config-plugins';
+} from 'expo/config-plugins';
 
 const pkg = require('expo-location/package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';

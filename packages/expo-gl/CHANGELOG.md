@@ -6,12 +6,33 @@
 
 ### 🎉 New features
 
+- Migrated the view manager to the new Expo modules API and thus added support for Fabric. ([#19859](https://github.com/expo/expo/pull/19859) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
+
+- Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Use shared C++ runtime to reduce library size on Android. ([#19372](https://github.com/expo/expo/pull/19372) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Merge `GLViewProps` and `BaseGLViewProps` into one type - `GLViewProps`. ([#18322](https://github.com/expo/expo/pull/18322) by [@Simek](https://github.com/Simek))
 - Rename Web-specific prop types from `GLViewProps` to `GLViewWebProps`. ([#18322](https://github.com/expo/expo/pull/18322) by [@Simek](https://github.com/Simek))
+- Merge `expo-gl-cpp` package into `expo-gl`. ([#18875](https://github.com/expo/expo/pull/18875) by [@wkozyra95](https://github.com/wkozyra95))
+
+### ⚠️ Notices
+
+- Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
 
 ## 11.4.0 — 2022-07-07
 

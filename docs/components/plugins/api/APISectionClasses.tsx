@@ -1,9 +1,8 @@
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
 import { B, P } from '~/components/base/paragraph';
-import { H2, H3Code, H4 } from '~/components/plugins/Headings';
+import { H2, H2Nested, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
   GeneratedData,
@@ -27,36 +26,56 @@ export type APISectionClassesProps = {
   data: GeneratedData[];
 };
 
+const classNamesMap: Record<string, string> = {
+  AccelerometerSensor: 'Accelerometer',
+  BarometerSensor: 'Barometer',
+  DeviceMotionSensor: 'DeviceMotion',
+  GyroscopeSensor: 'Gyroscope',
+  MagnetometerSensor: 'Magnetometer',
+} as const;
+
 const isProp = (child: PropData) =>
   child.kind === TypeDocKind.Property &&
   !child.overwrites &&
   !child.name.startsWith('_') &&
   !child.implementationOf;
 
-const isMethod = (child: PropData) =>
+const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   child.kind === TypeDocKind.Method &&
-  !child.overwrites &&
+  (allowOverwrites || !child.overwrites) &&
   !child.name.startsWith('_') &&
   !child?.implementationOf;
 
-const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX.Element => {
-  const { name, comment, type, extendedTypes, children, implementedTypes } = clx;
+const remapClass = (clx: ClassDefinitionData) => {
+  clx.isSensor = clx.name.endsWith('Sensor');
+  clx.name = classNamesMap[clx.name] ?? clx.name;
+
+  if (clx.isSensor && clx.extendedTypes) {
+    clx.extendedTypes = clx.extendedTypes.map(type => ({
+      ...type,
+      name: type.name === 'default' ? 'DeviceSensor' : type.name,
+    }));
+  }
+
+  return clx;
+};
+
+const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
+  const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
+  const Header = exposeInSidebar ? H2Nested : H4;
+
   const properties = children?.filter(isProp);
   const methods = children
-    ?.filter(isMethod)
+    ?.filter(child => isMethod(child, isSensor))
     .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
   const returnComment = getTagData('returns', comment);
 
   return (
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
-      {hasMultipleClasses ? (
-        <H3Code tags={getTagNamesList(comment)}>
-          <InlineCode>{name}</InlineCode>
-        </H3Code>
-      ) : (
-        <H2>{name}</H2>
-      )}
+      <H3Code tags={getTagNamesList(comment)}>
+        <InlineCode>{name}</InlineCode>
+      </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <P>
           <B>Type: </B>
@@ -94,30 +113,22 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
       )}
       {properties?.length ? (
         <>
-          {hasMultipleClasses ? (
-            <div css={STYLES_NESTED_SECTION_HEADER}>
-              <H4>{name} Properties</H4>
-            </div>
-          ) : (
-            <H2>{name} Properties</H2>
-          )}
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <Header>{name} Properties</Header>
+          </div>
           <div>
             {properties.map(property =>
-              renderProp(property, property?.defaultValue, !hasMultipleClasses)
+              renderProp(property, property?.defaultValue, exposeInSidebar)
             )}
           </div>
         </>
       ) : null}
       {methods?.length && (
         <>
-          {hasMultipleClasses ? (
-            <div css={STYLES_NESTED_SECTION_HEADER}>
-              <H4>{name} Methods</H4>
-            </div>
-          ) : (
-            <H2>{name} Methods</H2>
-          )}
-          {methods.map(method => renderMethod(method, { exposeInSidebar: !hasMultipleClasses }))}
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <Header>{name} Methods</Header>
+          </div>
+          {methods.map(method => renderMethod(method, { exposeInSidebar }))}
         </>
       )}
     </div>
@@ -126,11 +137,11 @@ const renderClass = (clx: ClassDefinitionData, hasMultipleClasses: boolean): JSX
 
 const APISectionClasses = ({ data }: APISectionClassesProps) => {
   if (data?.length) {
-    const hasMultipleClasses = data.length > 1;
+    const exposeInSidebar = data.length < 2;
     return (
       <>
-        {hasMultipleClasses ? <H2>Classes</H2> : null}
-        {data.map(cls => renderClass(cls, hasMultipleClasses))}
+        <H2>Classes</H2>
+        {data.map(clx => renderClass(remapClass(clx), exposeInSidebar))}
       </>
     );
   }

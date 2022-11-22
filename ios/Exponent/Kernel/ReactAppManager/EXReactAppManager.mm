@@ -520,7 +520,6 @@
 
 - (void)setupWebSocketControls
 {
-#if DEBUG || RCT_DEV
   if ([self enablesDeveloperTools]) {
     if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
       __weak __typeof(self) weakSelf = self;
@@ -568,7 +567,6 @@
                                              forMethod:@"devMenu"];
     }
   }
-#endif
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems

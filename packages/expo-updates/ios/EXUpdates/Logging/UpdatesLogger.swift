@@ -12,7 +12,7 @@ import ExpoModulesCore
 public class UpdatesLogger: NSObject {
   public static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
 
-  private let logger = ExpoModulesCore.Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, options: [.logToOS, .logToFile])
+  private let logger = Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, options: [.logToOS, .logToFile])
 
   // MARK: - Public logging functions
 
@@ -35,6 +35,11 @@ public class UpdatesLogger: NSObject {
     trace(message: message, code: code, updateId: nil, assetId: nil)
   }
 
+  @objc(trace:)
+  public func trace(message: String) {
+    trace(message: message, code: .none)
+  }
+
   @objc(debug:code:updateId:assetId:)
   public func debug(
     message: String,
@@ -52,6 +57,11 @@ public class UpdatesLogger: NSObject {
     code: UpdatesErrorCode = .none
   ) {
     debug(message: message, code: code, updateId: nil, assetId: nil)
+  }
+
+  @objc(debug:)
+  public func debug(message: String) {
+    debug(message: message, code: .none)
   }
 
   @objc(info:code:updateId:assetId:)
@@ -73,6 +83,11 @@ public class UpdatesLogger: NSObject {
     info(message: message, code: code, updateId: nil, assetId: nil)
   }
 
+  @objc(info:)
+  public func info(message: String) {
+    info(message: message, code: .none)
+  }
+
   @objc(warn:code:updateId:assetId:)
   public func warn(
     message: String,
@@ -90,6 +105,11 @@ public class UpdatesLogger: NSObject {
     code: UpdatesErrorCode = .none
   ) {
     warn(message: message, code: code, updateId: nil, assetId: nil)
+  }
+
+  @objc(warn:)
+  public func warn(message: String) {
+    warn(message: message, code: .none)
   }
 
   @objc(error:code:updateId:assetId:)
@@ -133,7 +153,7 @@ public class UpdatesLogger: NSObject {
   public func logEntryString(
     message: String,
     code: UpdatesErrorCode = .none,
-    level: ExpoModulesCore.LogType = .trace,
+    level: LogType = .trace,
     updateId: String?,
     assetId: String?
   ) -> String {

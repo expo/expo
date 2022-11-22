@@ -7,13 +7,12 @@ import { PlatformTags } from '~/ui/components/Tag';
 type Props = {
   comment?: CommentData;
   prefix?: string;
-  firstElement?: boolean;
   platforms?: CommentTagData[];
 };
 
-export const APISectionPlatformTags = ({ comment, prefix, firstElement, platforms }: Props) => {
+export const APISectionPlatformTags = ({ comment, prefix, platforms }: Props) => {
   const platformsData = platforms || getAllTagData('platform', comment);
   const platformNames = platformsData?.map(platformData => platformData.text);
 
-  return <PlatformTags prefix={prefix} platforms={platformNames} firstElement={firstElement} />;
+  return <PlatformTags prefix={prefix} platforms={platformNames} />;
 };

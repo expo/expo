@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", {
 exports.insertContentsAtOffset = insertContentsAtOffset;
 exports.replaceContentsWithOffset = replaceContentsWithOffset;
 exports.searchFromOffset = searchFromOffset;
-
 /**
  * Insert contents at given offset
  * @param srcContents source contents
@@ -16,21 +15,19 @@ exports.searchFromOffset = searchFromOffset;
  */
 function insertContentsAtOffset(srcContents, insertion, offset) {
   const srcContentsLength = srcContents.length;
-
   if (offset < 0 || offset > srcContentsLength) {
     throw new Error('Invalid parameters.');
   }
-
   if (offset === 0) {
     return `${insertion}${srcContents}`;
   } else if (offset === srcContentsLength) {
     return `${srcContents}${insertion}`;
   }
-
   const prefix = srcContents.substring(0, offset);
   const suffix = srcContents.substring(offset);
   return `${prefix}${insertion}${suffix}`;
 }
+
 /**
  * Replace contents at given start and end offset
  *
@@ -40,19 +37,16 @@ function insertContentsAtOffset(srcContents, insertion, offset) {
  * @param endOffset `contents` end offset for replacement
  * @returns updated contents
  */
-
-
 function replaceContentsWithOffset(contents, replacement, startOffset, endOffset) {
   const contentsLength = contents.length;
-
   if (startOffset < 0 || endOffset < 0 || startOffset >= contentsLength || endOffset >= contentsLength || startOffset > endOffset) {
     throw new Error('Invalid parameters.');
   }
-
   const prefix = contents.substring(0, startOffset);
   const suffix = contents.substring(endOffset + 1);
   return `${prefix}${replacement}${suffix}`;
 }
+
 /**
  * String.prototype.search() with offset support
  *
@@ -61,8 +55,6 @@ function replaceContentsWithOffset(contents, replacement, startOffset, endOffset
  * @param offset start offset of `source` to search `regexp` pattern
  * @returns The index of the first match between the regular expression and the given string, or -1 if no match was found.
  */
-
-
 function searchFromOffset(source, regexp, offset) {
   const target = source.substring(offset);
   const matchedIndex = target.search(regexp);

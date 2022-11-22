@@ -13,6 +13,7 @@ import {
   CameraPermissionResponse,
   MediaLibraryPermissionResponse,
   ImagePickerResult,
+  ImagePickerAsset,
   ImagePickerErrorResult,
   MediaTypeOptions,
   ImagePickerOptions,
@@ -55,6 +56,42 @@ function validateOptions(options: ImagePickerOptions) {
   }
 
   return options;
+}
+
+const DEPRECATED_RESULT_KEYS = [
+  'uri',
+  'assetId',
+  'width',
+  'height',
+  'type',
+  'exif',
+  'base64',
+  'duration',
+  'fileName',
+  'fileSize',
+];
+function mergeDeprecatedResult(result: ImagePickerResult): ImagePickerResult {
+  const firstAsset = result.assets?.[0];
+  const deprecatedResult = {
+    ...result,
+    get cancelled() {
+      console.warn(
+        'Key "cancelled" in the image picker result is deprecated and will be removed in SDK 48, use "canceled" instead'
+      );
+      return this.canceled;
+    },
+  };
+  for (const key of DEPRECATED_RESULT_KEYS) {
+    Object.defineProperty(deprecatedResult, key, {
+      get() {
+        console.warn(
+          `Key "${key}" in the image picker result is deprecated and will be removed in SDK 48, you can access selected assets through the "assets" array instead`
+        );
+        return firstAsset?.[key];
+      },
+    });
+  }
+  return deprecatedResult;
 }
 
 // @needsAudit
@@ -168,10 +205,9 @@ export async function getPendingResultAsync(): Promise<
  * intended. The `cancelled` event will not be returned in the browser due to platform restrictions
  * and inconsistencies across browsers.
  * @param options An `ImagePickerOptions` object.
- * @return If the user cancelled the action, the method returns `{ cancelled: true }`. Otherwise,
- * this method returns information about the selected media item. When the chosen item is an image,
- * this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`;
- * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+ * @return A promise that resolves to an object with `canceled` and `assets` fields.
+ * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
+ * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export async function launchCameraAsync(
   options: ImagePickerOptions = {}
@@ -179,7 +215,8 @@ export async function launchCameraAsync(
   if (!ExponentImagePicker.launchCameraAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchCameraAsync');
   }
-  return await ExponentImagePicker.launchCameraAsync(validateOptions(options));
+  const result = await ExponentImagePicker.launchCameraAsync(validateOptions(options));
+  return mergeDeprecatedResult(result);
 }
 
 // @needsAudit
@@ -188,23 +225,24 @@ export async function launchCameraAsync(
  * Requires `Permissions.MEDIA_LIBRARY` on iOS 10 only. On mobile web, this must be     called
  * immediately in a user interaction like a button press, otherwise the browser will block the
  * request without a warning.
- * **Animated GIFs support** If the selected image is an animated GIF, the result image will be an
- * animated GIF too if and only if `quality` is set to `undefined` and `allowsEditing` is set to `false`.
+ *
+ * **Animated GIFs support:** On Android, if the selected image is an animated GIF, the result image will be an
+ * animated GIF too if and only if `quality` is explicitly set to `1.0` and `allowsEditing` is set to `false`.
  * Otherwise compression and/or cropper will pick the first frame of the GIF and return it as the
- * result (on Android the result will be a PNG, on iOS — GIF).
+ * result (on Android the result will be a PNG). On iOS, both quality and cropping are supported.
+ *
  * > **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press).
  * Therefore, calling `launchImageLibraryAsync` in `componentDidMount`, for example, will **not**
  * work as intended. The `cancelled` event will not be returned in the browser due to platform
  * restrictions and inconsistencies across browsers.
  * @param options An object extended by [`ImagePickerOptions`](#imagepickeroptions).
- * @return If the user cancelled the action, the method returns `{ cancelled: true }`. Otherwise,
- * this method returns information about the selected media item. When the chosen item is an image,
- * this method returns `{ cancelled: false, type: 'image', uri, width, height, exif, base64 }`;
- * when the item is a video, this method returns `{ cancelled: false, type: 'video', uri, width, height, duration }`.
+ * @return A promise that resolves to an object with `canceled` and `assets` fields.
+ * When the user canceled the action the `assets` is always `null`, otherwise it's an array of
+ * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
-export async function launchImageLibraryAsync<T extends ImagePickerOptions>(
-  options?: T
-): Promise<ExpandImagePickerResult<T>> {
+export async function launchImageLibraryAsync(
+  options?: ImagePickerOptions
+): Promise<ImagePickerResult> {
   if (!ExponentImagePicker.launchImageLibraryAsync) {
     throw new UnavailabilityError('ImagePicker', 'launchImageLibraryAsync');
   }
@@ -215,7 +253,8 @@ export async function launchImageLibraryAsync<T extends ImagePickerOptions>(
         'to fix this warning.'
     );
   }
-  return await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
+  const result = await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
+  return mergeDeprecatedResult(result);
 }
 
 export {
@@ -223,6 +262,7 @@ export {
   ImagePickerOptions,
   ImagePickerResult,
   ImagePickerErrorResult,
+  ImagePickerAsset,
   VideoExportPreset,
   CameraPermissionResponse,
   MediaLibraryPermissionResponse,
@@ -230,11 +270,11 @@ export {
   PermissionExpiration,
   PermissionHookOptions,
   PermissionResponse,
-  ImageInfo,
-  ImagePickerMultipleResult,
-  ImagePickerCancelledResult,
+  ImageInfo, // deprecated
+  ImagePickerMultipleResult, // deprecated
+  ImagePickerCancelledResult, // deprecated
   OpenFileBrowserOptions,
-  ExpandImagePickerResult,
+  ExpandImagePickerResult, // deprecated
   UIImagePickerControllerQualityType,
   UIImagePickerPresentationStyle,
 };

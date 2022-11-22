@@ -18,7 +18,7 @@ concurrency:
 
 jobs:
   detox_e2e:
-    runs-on: macos-11
+    runs-on: macos-12
     strategy:
       matrix:
         api-level: [31]

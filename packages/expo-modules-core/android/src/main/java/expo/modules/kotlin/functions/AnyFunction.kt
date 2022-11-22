@@ -81,7 +81,7 @@ abstract class AnyFunction(
   /**
    * Attaches current function to the provided js object.
    */
-  abstract fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject)
+  internal abstract fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject)
 
   fun getCppRequiredTypes(): List<ExpectedType> {
     return desiredArgsTypes.map { it.getCppRequiredTypes() }

@@ -10,6 +10,22 @@
 
 ### 💡 Others
 
+## 12.0.1 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2022-10-25
+
+### 🐛 Bug fixes
+
+- Fix default start and end points on Android. ([#19460](https://github.com/expo/expo/pull/19460) by [@tsapeta](https://github.com/tsapeta))
+
+## 12.0.0-beta.1 — 2022-10-06
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ## 11.4.0 — 2022-07-07
 
 ### 💡 Others

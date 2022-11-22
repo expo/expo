@@ -4,11 +4,40 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated `requestCameraRollPermissionsAsync` and `getCameraRollPermissionsAsync` methods, as well as associated to them `CameraRollPermissionResponse` type. ([#18600](https://github.com/expo/expo/pull/18600) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.0.2 - 2022-11-21
+
+### 🐛 Bug fixes
+
+- Fix support for animated GIFs on iOS. ([#20034](https://github.com/expo/expo/pull/20034) by [@barthap](https://github.com/barthap))
+
+## 14.0.1 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fix incorrect asset type for videos on iOS. ([#19932](https://github.com/expo/expo/pull/19932) by [@tsapeta](https://github.com/tsapeta))
+
+## 14.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Remove deprecated `requestCameraRollPermissionsAsync` and `getCameraRollPermissionsAsync` methods, as well as associated to them `CameraRollPermissionResponse` type. ([#18600](https://github.com/expo/expo/pull/18600) by [@Simek](https://github.com/Simek))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+- Reworked the picking result object for simplicity and better compatibility with the multiple selection. ([#19570](https://github.com/expo/expo/pull/19570) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- The new `PHPickerViewController` is now default picker interface on iOS 14+. ([#18871](https://github.com/expo/expo/pull/18871) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+- Fix images taken with `launchCameraAsync` being translated incorrectly on some camera orientations. ([#19185](https://github.com/expo/expo/pull/19185) by [@jacobjaffe](https://github.com/JacobJaffe) and [@reececox](https://github.com/reececox))
+- Fix error where `launchImageLibraryAsync()` saved the photo to a global cache directory that was inaccessible in Expo Go. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

@@ -4,17 +4,22 @@ import fs from 'fs';
 
 import { AppIdResolver } from '../AppIdResolver';
 
+const debug = require('debug')('expo:start:platforms:ios:AppleAppIdResolver') as typeof console.log;
+
 /** Resolves the iOS bundle identifier from the Expo config or native files. */
 export class AppleAppIdResolver extends AppIdResolver {
   constructor(projectRoot: string) {
     super(projectRoot, 'ios', 'ios.bundleIdentifier');
   }
 
+  /** @return `true` if the app has valid `*.pbxproj` file */
   async hasNativeProjectAsync(): Promise<boolean> {
     try {
-      return !!IOSConfig.Paths.getAppDelegateFilePath(this.projectRoot);
-    } catch {
-      return true;
+      // Never returns nullish values.
+      return !!IOSConfig.Paths.getAllPBXProjectPaths(this.projectRoot).length;
+    } catch (error: any) {
+      debug('Expected error checking for native project:', error);
+      return false;
     }
   }
 
@@ -25,7 +30,9 @@ export class AppleAppIdResolver extends AppIdResolver {
       if (bundleId) {
         return bundleId;
       }
-    } catch {}
+    } catch (error: any) {
+      debug('Expected error resolving the bundle identifier from the pbxproj:', error);
+    }
 
     // Check Info.plist
     try {
@@ -34,7 +41,9 @@ export class AppleAppIdResolver extends AppIdResolver {
       if (data.CFBundleIdentifier && !data.CFBundleIdentifier.startsWith('$(')) {
         return data.CFBundleIdentifier;
       }
-    } catch {}
+    } catch (error) {
+      debug('Expected error resolving the bundle identifier from the project Info.plist:', error);
+    }
 
     return null;
   }

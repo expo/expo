@@ -7,16 +7,6 @@ exports.INTERNAL_CALLSITES_REGEX = exports.EXPO_DEBUG = void 0;
 exports.getDefaultConfig = getDefaultConfig;
 exports.loadAsync = loadAsync;
 
-function _config() {
-  const data = require("@expo/config");
-
-  _config = function () {
-    return data;
-  };
-
-  return data;
-}
-
 function _paths() {
   const data = require("@expo/config/paths");
 
@@ -118,8 +108,8 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(['/Libraries/Renderer/implementation
 // we want to omit this method from the stack trace.
 // This is akin to most React tooling.
 '/metro/.*/polyfills/require.js$', // Hide frames related to a fast refresh.
-'/metro/.*/lib/bundle-modules/.+\\.js$', '/metro/.*/lib/bundle-modules/.+\\.js$', 'node_modules/react-native/Libraries/Utilities/HMRClient.js$', 'node_modules/eventemitter3/index.js', 'node_modules/event-target-shim/dist/.+\\.js$', // Ignore the log forwarder used in the Expo Go app
-'/expo/build/environment/react-native-logs.fx.js$', '/src/environment/react-native-logs.fx.ts$', '/expo/build/logs/RemoteConsole.js$', // Improve errors thrown by invariant (ex: `Invariant Violation: "main" has not been registered`).
+'/metro/.*/lib/bundle-modules/.+\\.js$', '/metro/.*/lib/bundle-modules/.+\\.js$', 'node_modules/react-native/Libraries/Utilities/HMRClient.js$', 'node_modules/eventemitter3/index.js', 'node_modules/event-target-shim/dist/.+\\.js$', // Ignore the log forwarder used in the expo package.
+'/expo/build/logs/RemoteConsole.js$', // Improve errors thrown by invariant (ex: `Invariant Violation: "main" has not been registered`).
 'node_modules/invariant/.+\\.js$', // Remove babel runtime additions
 'node_modules/regenerator-runtime/.+\\.js$', // Remove react native setImmediate ponyfill
 'node_modules/promise/setimmediate/.+\\.js$', // Babel helpers that implement language features
@@ -135,13 +125,6 @@ function isUrl(value) {
   } catch {
     return false;
   }
-}
-
-function readIsLegacyImportsEnabled(projectRoot) {
-  const config = (0, _config().getConfig)(projectRoot, {
-    skipSDKVersionRequirement: true
-  });
-  return (0, _config().isLegacyImportsEnabled)(config.exp);
 }
 
 function getProjectBabelConfigFile(projectRoot) {
@@ -190,50 +173,12 @@ function getDefaultConfig(projectRoot, options = {}) {
   } catch {// noop -- falls back to a hardcoded value.
   }
 
-  const isLegacy = readIsLegacyImportsEnabled(projectRoot); // Deprecated -- SDK 41 --
-
-  if (options.target) {
-    if (!isLegacy) {
-      console.warn(_chalk().default.yellow(`The target option is deprecated. Learn more: http://expo.fyi/expo-extension-migration`));
-      delete options.target;
-    }
-  } else if (process.env.EXPO_TARGET) {
-    console.error('EXPO_TARGET is deprecated. Learn more: http://expo.fyi/expo-extension-migration');
-
-    if (isLegacy) {
-      // EXPO_TARGET is used by @expo/metro-config to determine the target when getDefaultConfig is
-      // called from metro.config.js.
-      // @ts-ignore
-      options.target = process.env.EXPO_TARGET;
-    }
-  } else if (isLegacy) {
-    // Fall back to guessing based on the project structure in legacy mode.
-    options.target = (0, _config().getDefaultTarget)(projectRoot);
-  }
-
-  if (!options.target) {
-    // Default to bare -- no .expo extension.
-    options.target = 'bare';
-  } // End deprecated -- SDK 41 --
-
-
-  const {
-    target
-  } = options;
-
-  if (!(target === 'managed' || target === 'bare')) {
-    throw new Error(`Invalid target: '${target}'. Debug info: \n${JSON.stringify({
-      'options.target': options.target,
-      default: (0, _config().getDefaultTarget)(projectRoot)
-    }, null, 2)}`);
-  }
-
   const sourceExtsConfig = {
     isTS: true,
     isReact: true,
     isModern: false
   };
-  const sourceExts = target === 'bare' ? (0, _paths().getBareExtensions)([], sourceExtsConfig) : (0, _paths().getManagedExtensions)([], sourceExtsConfig);
+  const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
 
   if (isExotic) {
     // Add support for cjs (without platform extensions).
@@ -262,8 +207,6 @@ function getDefaultConfig(projectRoot, options = {}) {
       console.log(`- Version: ${require('../package.json').version}`);
     } catch {}
 
-    console.log(`- Bundler target: ${target}`);
-    console.log(`- Legacy: ${isLegacy}`);
     console.log(`- Extensions: ${sourceExts.join(', ')}`);
     console.log(`- React Native: ${reactNativePath}`);
     console.log(`- Babel config: ${babelConfigPath || 'babel-preset-expo (default)'}`);
@@ -330,6 +273,8 @@ function getDefaultConfig(projectRoot, options = {}) {
       }
     },
     transformer: {
+      // `require.context` support
+      unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
       babelTransformerPath: isExotic ? require.resolve('./transformer/metro-expo-exotic-babel-transformer') : isCustomBabelConfigDefined ? // If the user defined a babel config file in their project,
       // then use the default transformer.
@@ -344,12 +289,9 @@ function getDefaultConfig(projectRoot, options = {}) {
 
 async function loadAsync(projectRoot, {
   reporter,
-  target,
   ...metroOptions
 } = {}) {
-  let defaultConfig = getDefaultConfig(projectRoot, {
-    target
-  });
+  let defaultConfig = getDefaultConfig(projectRoot);
 
   if (reporter) {
     defaultConfig = { ...defaultConfig,

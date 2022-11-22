@@ -132,13 +132,16 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
     
     func paymentCardTextFieldDidChange(_ textField: STPPaymentCardTextField) {
         if onCardChange != nil {
-            let brand = STPCardValidator.brand(forNumber: textField.cardParams.number ?? "")
-            let validExpiryDate = STPCardValidator.validationState(forExpirationYear: textField.cardParams.expYear?.stringValue ?? "", inMonth: textField.cardParams.expMonth?.stringValue ?? "")
-            let validCVC = STPCardValidator.validationState(forCVC: textField.cardParams.cvc ?? "", cardBrand: brand)
-            let validNumber = STPCardValidator.validationState(forNumber: textField.cardParams.number ?? "", validatingCardBrand: true)
+            let brand = STPCardValidator.brand(forNumber: textField.cardNumber ?? "")
+            let validExpiryDate = STPCardValidator.validationState(
+                forExpirationYear: textField.formattedExpirationYear ?? "",
+                inMonth: textField.formattedExpirationMonth ?? ""
+            )
+            let validCVC = STPCardValidator.validationState(forCVC: textField.cvc ?? "", cardBrand: brand)
+            let validNumber = STPCardValidator.validationState(forNumber: textField.cardNumber ?? "", validatingCardBrand: true)
             var cardData: [String: Any?] = [
-                "expiryMonth": textField.cardParams.expMonth ?? NSNull(),
-                "expiryYear": textField.cardParams.expYear ?? NSNull(),
+                "expiryMonth": textField.expirationMonth,
+                "expiryYear": textField.expirationYear,
                 "complete": textField.isValid,
                 "brand": Mappers.mapFromCardBrand(brand) ?? NSNull(),
                 "last4": textField.cardParams.last4 ?? "",
@@ -150,8 +153,8 @@ class CardFieldView: UIView, STPPaymentCardTextFieldDelegate {
                 cardData["postalCode"] = textField.postalCode ?? ""
             }
             if (dangerouslyGetFullCardDetails) {
-                cardData["number"] = textField.cardParams.number ?? ""
-                cardData["cvc"] = textField.cardParams.cvc ?? ""
+                cardData["number"] = textField.cardNumber ?? ""
+                cardData["cvc"] = textField.cvc ?? ""
             }
             onCardChange!(cardData as [AnyHashable : Any])
         }

@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.license        = package['license']
   s.author         = package['author']
   s.homepage       = package['homepage']
-  s.platform       = :ios, '12.0'
+  s.platform       = :ios, '13.0'
   s.swift_version  = '5.4'
   s.source         = { git: 'https://github.com/expo/expo.git' }
   s.static_framework = true
@@ -23,14 +23,19 @@ Pod::Spec.new do |s|
   s.dependency 'EASClient'
   s.dependency 'ASN1Decoder', '~> 1.8'
 
+  ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
+
+  other_c_flags = ex_updates_native_debug ? "$(inherited) -DEX_UPDATES_NATIVE_DEBUG=1" : "$(inherited)"
+
   s.pod_target_xcconfig = {
     'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
     'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
     'DEFINES_MODULE' => 'YES',
-    'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    'SWIFT_COMPILATION_MODE' => 'wholemodule',
+    'OTHER_CFLAGS[config=Debug]' => other_c_flags
   }
 
-  if !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
+  if !ex_updates_native_debug && !$ExpoUseSources&.include?(package['name']) && ENV['EXPO_USE_SOURCE'].to_i == 0 && File.exist?("#{s.name}.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
     s.source_files = "#{s.name}/**/*.h"
     s.vendored_frameworks = "#{s.name}.xcframework"
   else
@@ -38,9 +43,10 @@ Pod::Spec.new do |s|
   end
 
   if $expo_updates_create_manifest != false
+    force_bundling_flag = ex_updates_native_debug ? "export FORCE_BUNDLING=1\n" : ""
     s.script_phase = {
       :name => 'Generate app.manifest for expo-updates',
-      :script => 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-manifest-ios.sh"',
+      :script => force_bundling_flag + 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-manifest-ios.sh"',
       :execution_position => :before_compile
     }
 

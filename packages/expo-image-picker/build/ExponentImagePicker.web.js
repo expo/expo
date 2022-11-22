@@ -13,7 +13,7 @@ export default {
     async launchImageLibraryAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, base64 = false, }) {
         // SSR guard
         if (!Platform.isDOMAvailable) {
-            return { cancelled: true };
+            return { canceled: true, assets: null };
         }
         return await openFileBrowserAsync({
             mediaTypes,
@@ -24,7 +24,7 @@ export default {
     async launchCameraAsync({ mediaTypes = MediaTypeOptions.Images, allowsMultipleSelection = false, base64 = false, }) {
         // SSR guard
         if (!Platform.isDOMAvailable) {
-            return { cancelled: true };
+            return { canceled: true, assets: null };
         }
         return await openFileBrowserAsync({
             mediaTypes,
@@ -75,22 +75,15 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
         input.setAttribute('capture', 'camera');
     }
     document.body.appendChild(input);
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
         input.addEventListener('change', async () => {
             if (input.files) {
-                if (!allowsMultipleSelection) {
-                    const img = await readFile(input.files[0], { base64 });
-                    resolve({
-                        ...img,
-                    });
-                }
-                else {
-                    const imgs = await Promise.all(Array.from(input.files).map((file) => readFile(file, { base64 })));
-                    resolve({
-                        cancelled: false,
-                        selected: imgs,
-                    });
-                }
+                const files = allowsMultipleSelection ? input.files : [input.files[0]];
+                const assets = await Promise.all(Array.from(files).map((file) => readFile(file, { base64 })));
+                resolve({ canceled: false, assets });
+            }
+            else {
+                resolve({ canceled: true, assets: null });
             }
             document.body.removeChild(input);
         });
@@ -106,27 +99,23 @@ function readFile(targetFile, options) {
         };
         reader.onload = ({ target }) => {
             const uri = target.result;
-            const returnRaw = () => resolve({
-                uri,
-                width: 0,
-                height: 0,
-                cancelled: false,
-            });
+            const returnRaw = () => resolve({ uri, width: 0, height: 0 });
             if (typeof uri === 'string') {
                 const image = new Image();
                 image.src = uri;
-                image.onload = () => resolve({
-                    uri,
-                    width: image.naturalWidth ?? image.width,
-                    height: image.naturalHeight ?? image.height,
-                    cancelled: false,
-                    // The blob's result cannot be directly decoded as Base64 without
-                    // first removing the Data-URL declaration preceding the
-                    // Base64-encoded data. To retrieve only the Base64 encoded string,
-                    // first remove data:*/*;base64, from the result.
-                    // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
-                    ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
-                });
+                image.onload = () => {
+                    resolve({
+                        uri,
+                        width: image.naturalWidth ?? image.width,
+                        height: image.naturalHeight ?? image.height,
+                        // The blob's result cannot be directly decoded as Base64 without
+                        // first removing the Data-URL declaration preceding the
+                        // Base64-encoded data. To retrieve only the Base64 encoded string,
+                        // first remove data:*/*;base64, from the result.
+                        // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/readAsDataURL
+                        ...(options.base64 && { base64: uri.substr(uri.indexOf(',') + 1) }),
+                    });
+                };
                 image.onerror = () => returnRaw();
             }
             else {

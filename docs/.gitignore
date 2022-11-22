@@ -5,3 +5,6 @@ out/
 
 # copied in next.config.js
 pages/versions/latest/
+
+# staticly generated constants
+public/static/constants

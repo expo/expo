@@ -17,14 +17,14 @@ concurrency:
 
 jobs:
   ios:
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
         with:
           submodules: true
-      - name: 🔨 Switch to Xcode 13.2.1
-        run: sudo xcode-select --switch /Applications/Xcode_13.2.1.app
+      - name: 🔨 Switch to Xcode 14.1
+        run: sudo xcode-select --switch /Applications/Xcode_14.1.app
       - name: 🔓 Decrypt secrets if possible
         uses: ./.github/actions/expo-git-decrypt
         with:

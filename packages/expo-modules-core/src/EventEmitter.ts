@@ -1,9 +1,10 @@
 import invariant from 'invariant';
-import { NativeEventEmitter, Platform } from 'react-native';
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
 
 const nativeEmitterSubscriptionKey = '@@nativeEmitterSubscription@@';
 
 type NativeModule = {
+  __expo_module_name__?: string;
   startObserving?: () => void;
   stopObserving?: () => void;
   addListener: (eventName: string) => void;
@@ -24,6 +25,22 @@ export class EventEmitter {
   _eventEmitter: NativeEventEmitter;
 
   constructor(nativeModule: NativeModule) {
+    // Expo modules installed through the JSI don't have `addListener` and `removeListeners` set,
+    // so if someone wants to use them with `EventEmitter`, make sure to provide these functions
+    // as they are required by `NativeEventEmitter`. This is only temporary — in the future
+    // JSI modules will have event emitter built in.
+    if (nativeModule.__expo_module_name__ && NativeModules.EXReactNativeEventEmitter) {
+      nativeModule.addListener = (...args) =>
+        NativeModules.EXReactNativeEventEmitter.addProxiedListener(
+          nativeModule.__expo_module_name__,
+          ...args
+        );
+      nativeModule.removeListeners = (...args) =>
+        NativeModules.EXReactNativeEventEmitter.removeProxiedListeners(
+          nativeModule.__expo_module_name__,
+          ...args
+        );
+    }
     this._nativeModule = nativeModule;
     this._eventEmitter = new NativeEventEmitter(nativeModule as any);
   }

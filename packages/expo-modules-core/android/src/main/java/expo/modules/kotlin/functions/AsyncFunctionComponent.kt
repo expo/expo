@@ -11,11 +11,11 @@ class AsyncFunctionComponent(
   private val body: (args: Array<out Any?>) -> Any?
 ) : AsyncFunction(name, desiredArgsTypes) {
   @Throws(CodedException::class)
-  override fun call(args: ReadableArray, promise: Promise) {
+  override fun callUserImplementation(args: ReadableArray, promise: Promise) {
     promise.resolve(body(convertArgs(args)))
   }
 
-  override fun call(args: Array<Any?>, promise: Promise) {
+  override fun callUserImplementation(args: Array<Any?>, promise: Promise) {
     promise.resolve(body(convertArgs(args)))
   }
 }

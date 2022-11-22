@@ -53,6 +53,24 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 @end
 
+
+/**
+ * Main entry point to expo-updates in normal release builds (development clients, including Expo
+ * Go, use a different entry point). Singleton that keeps track of updates state, holds references
+ * to instances of other updates classes, and is the central hub for all updates-related tasks.
+ *
+ * The `start` method in this class should be invoked early in the application lifecycle, via
+ * ExpoUpdatesReactDelegateHandler. It delegates to an instance of EXUpdatesAppLoaderTask to start
+ * the process of loading and launching an update, then responds appropriately depending on the
+ * callbacks that are invoked.
+ *
+ * This class also provides getter methods to access information about the updates state, which are
+ * used by the exported EXUpdatesModule through EXUpdatesService. Such information includes
+ * references to: the database, the EXUpdatesConfig object, the path on disk to the updates
+ * directory, any currently active EXUpdatesAppLoaderTask, the current EXUpdatesSelectionPolicy, the
+ * error recovery handler, and the current launched update. This class is intended to be the source
+ * of truth for these objects, so other classes shouldn't retain any of them indefinitely.
+ */
 @implementation EXUpdatesAppController
 
 + (instancetype)sharedInstance
@@ -81,8 +99,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     _isStarted = NO;
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
     _logger = [EXUpdatesLogger new];
-    [_logger info:@"EXUpdatesAppController sharedInstance created"
-             code:EXUpdatesErrorCodeNone];
+    [_logger info:@"EXUpdatesAppController sharedInstance created"];
   }
   return self;
 }
@@ -260,19 +277,23 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didStartLoadingUpdate:(EXUpdatesUpdate *)update
 {
-  [_logger info:@"EXUpdatesAppController appLoaderTask didStartLoadingUpdate" code:EXUpdatesErrorCodeNone updateId:[update.updateId UUIDString] assetId:nil];
+  [_logger info:@"EXUpdatesAppController appLoaderTask didStartLoadingUpdate"
+           code:EXUpdatesErrorCodeNone
+       updateId:update.loggingId
+        assetId:nil];
   _remoteLoadStatus = EXUpdatesRemoteLoadStatusLoading;
 }
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithLauncher:(id<EXUpdatesAppLauncher>)launcher isUpToDate:(BOOL)isUpToDate
 {
+  NSString *logMessage = [NSString stringWithFormat:@"EXUpdatesAppController appLoaderTask didFinishWithLauncher, isUpToDate=%d, remoteLoadStatus=%ld", isUpToDate, _remoteLoadStatus];
+  [_logger info:logMessage];
   // if isUpToDate is false, that means a remote update is still loading in the background (this
   // method was called with a cached update because the timer ran out) so don't update the status
   if (_remoteLoadStatus == EXUpdatesRemoteLoadStatusLoading && isUpToDate) {
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
   }
   _launcher = launcher;
-  [_logger info:@"EXUpdatesAppController appLoaderTask didFinishWithLauncher" code:EXUpdatesErrorCodeNone];
   if (self->_delegate) {
     [EXUpdatesUtils runBlockOnMainThread:^{
       [self->_delegate appController:self didStartWithSuccess:YES];
@@ -282,7 +303,9 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (void)appLoaderTask:(EXUpdatesAppLoaderTask *)appLoaderTask didFinishWithError:(NSError *)error
 {
-  [_logger error:@"EXUpdatesAppController appLoaderTask didFinishWithError" code:EXUpdatesErrorCodeUpdateFailedToLoad];
+  NSString *logMessage = [NSString stringWithFormat:@"EXUpdatesAppController appLoaderTask didFinishWithError: %@", error.localizedDescription];
+  [_logger error:logMessage
+            code:EXUpdatesErrorCodeUpdateFailedToLoad];
   [self _emergencyLaunchWithFatalError:error];
 }
 
@@ -291,13 +314,25 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   if (status == EXUpdatesBackgroundUpdateStatusError) {
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
     NSAssert(error != nil, @"Background update with error status must have a nonnull error object");
+    [_logger error:@"EXUpdatesAppController appLoaderTask didFinishBackgroundUpdateWithStatus=Error"
+              code:EXUpdatesErrorCodeNone
+          updateId:update.loggingId
+           assetId:nil];
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesErrorEventName body:@{@"message": error.localizedDescription}];
   } else if (status == EXUpdatesBackgroundUpdateStatusUpdateAvailable) {
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusNewUpdateLoaded;
     NSAssert(update != nil, @"Background update with error status must have a nonnull update object");
+    [_logger info:@"EXUpdatesAppController appLoaderTask didFinishBackgroundUpdateWithStatus=NewUpdateLoaded"
+             code:EXUpdatesErrorCodeNone
+         updateId:update.loggingId
+          assetId:nil];
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesUpdateAvailableEventName body:@{@"manifest": update.manifest.rawManifestJSON}];
   } else if (status == EXUpdatesBackgroundUpdateStatusNoUpdateAvailable) {
     _remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
+    [_logger error:@"EXUpdatesAppController appLoaderTask didFinishBackgroundUpdateWithStatus=NoUpdateAvailable"
+              code:EXUpdatesErrorCodeNoUpdatesAvailable
+          updateId:update.loggingId
+           assetId:nil];
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
   [_errorRecovery notifyNewRemoteLoadStatus:_remoteLoadStatus];
@@ -398,6 +433,8 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     self->_remoteLoadStatus = update ? EXUpdatesRemoteLoadStatusNewUpdateLoaded : EXUpdatesRemoteLoadStatusIdle;
     [self->_errorRecovery notifyNewRemoteLoadStatus:self->_remoteLoadStatus];
   } error:^(NSError *error) {
+    [self->_logger error:[NSString stringWithFormat:@"EXUpdatesAppController loadRemoteUpdate error: %@", error.localizedDescription]
+              code:EXUpdatesErrorCodeUpdateFailedToLoad];
     self->_remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
     [self->_errorRecovery notifyNewRemoteLoadStatus:self->_remoteLoadStatus];
   }];
@@ -413,6 +450,10 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     if (!launchedUpdate) {
       return;
     }
+    [self->_logger error:@"EXUpdatesAppController markFailedLaunchForUpdate"
+                    code:EXUpdatesErrorCodeUnknown
+                updateId:launchedUpdate.loggingId
+                 assetId:nil];
     NSError *error;
     [self->_database incrementFailedLaunchCountForUpdate:launchedUpdate error:&error];
     if (error) {

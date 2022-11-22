@@ -7,7 +7,7 @@ import * as Simulator from './utils/simulator';
 import { copyAssetToStaticFolder, copyBundleToStaticFolder } from './utils/update';
 
 const SERVER_HOST = process.env.UPDATES_HOST;
-const SERVER_PORT = parseInt(process.env.UPDATES_PORT, 10);
+const SERVER_PORT = parseInt(process.env.UPDATES_PORT || '', 10);
 
 const RUNTIME_VERSION = '1.0.0';
 
@@ -21,7 +21,7 @@ if (!repoRoot) {
 }
 
 const projectRoot = process.env.TEST_PROJECT_ROOT ?? path.resolve(repoRoot, '..', 'updates-e2e');
-const updateDistPath = path.join(process.env.ARTIFACTS_DEST, 'dist-assets');
+const updateDistPath = path.join(process.env.ARTIFACTS_DEST || '', 'dist-assets');
 
 /**
  * The tests in this suite install an app with multiple assets, then clear all the assets from
@@ -90,6 +90,28 @@ describe('Asset deletion recovery', () => {
      */
     expect(readAssetsMessage.numFiles).toEqual(clearAssetsMessage.numFilesBefore);
     expect(readAssetsMessage.updateId).toEqual(clearAssetsMessage.updateId);
+
+    /**
+     * Check readLogEntriesAsync
+     */
+    const logEntries = await Server.waitForLogEntries(10000 * TIMEOUT_BIAS);
+    console.debug(
+      'Total number of log entries = ' +
+        logEntries.length +
+        '\n' +
+        JSON.stringify(logEntries, null, 2)
+    );
+
+    // Should have at least one message
+    expect(logEntries.length > 0).toBe(true);
+    // There should be a message 'No update available' because of the other actions
+    // that have been run already
+    // (this check will be reworked after some logging PRs go in)
+    /*
+    expect(logEntries.map((entry) => entry.message)).toEqual(
+      expect.arrayContaining([expect.stringContaining('No update available')])
+    );
+     */
   });
 
   it('embedded assets deleted from internal storage should be re-copied from a new embedded update', async () => {

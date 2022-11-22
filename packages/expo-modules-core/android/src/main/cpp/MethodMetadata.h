@@ -2,13 +2,17 @@
 
 #pragma once
 
-#include "CppType.h"
+#include "types/CppType.h"
+#include "types/ExpectedType.h"
+#include "types/AnyType.h"
 
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include <ReactCommon/TurboModuleUtils.h>
+#include <react/bridging/LongLivedObject.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <memory>
+#include <vector>
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
 
@@ -36,14 +40,26 @@ public:
    * Whether this function is async
    */
   bool isAsync;
-
-  std::unique_ptr<int[]> desiredTypes;
+  /**
+   * Representation of expected argument types.
+   */
+  std::vector<std::unique_ptr<AnyType>> argTypes;
 
   MethodMetadata(
+    std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
     std::string name,
     int args,
     bool isAsync,
-    std::unique_ptr<int[]> desiredTypes,
+    jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    jni::global_ref<jobject> &&jBodyReference
+  );
+
+  MethodMetadata(
+    std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
+    std::string name,
+    int args,
+    bool isAsync,
+    std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
     jni::global_ref<jobject> &&jBodyReference
   );
 
@@ -98,6 +114,8 @@ private:
    */
   std::shared_ptr<jsi::Function> body = nullptr;
 
+  std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
+
   jsi::Function toSyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
 
   jsi::Function toAsyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
@@ -105,16 +123,15 @@ private:
   jsi::Function createPromiseBody(
     jsi::Runtime &runtime,
     JSIInteropModuleRegistry *moduleRegistry,
-    std::vector<jobject> &&args
+    jobjectArray globalArgs
   );
 
-  std::vector<jobject> convertJSIArgsToJNI(
+  jobjectArray convertJSIArgsToJNI(
     JSIInteropModuleRegistry *moduleRegistry,
     JNIEnv *env,
     jsi::Runtime &rt,
     const jsi::Value *args,
-    size_t count,
-    bool returnGlobalReferences
+    size_t count
   );
 };
 } // namespace expo

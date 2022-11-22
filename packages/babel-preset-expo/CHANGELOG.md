@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 9.2.2 — 2022-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 9.2.1 — 2022-10-06
+
+### ⚠️ Notices
+
+- Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
+
 ## 9.2.0 — 2022-07-07
 
 ### 💡 Others

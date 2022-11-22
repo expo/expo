@@ -62,7 +62,7 @@ open class SplashScreenViewController(
       return failureCallback("Cannot hide native splash screen on activity that is already destroyed (application is already closed).")
     }
 
-    activity.runOnUiThread {
+    Handler(activity.mainLooper).post {
       contentView.removeView(splashScreenView)
       autoHideEnabled = true
       splashScreenShown = false
