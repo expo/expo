@@ -37,7 +37,11 @@ if (entry) {
   console.clear();
   // React Native's `PROJECT_ROOT` could be using a different root on MacOS (`/var` vs `/private/var`)
   // We need to make sure to get the real path, `resolveEntryPoint` is using this too
-  console.log(absolute ? path.resolve(entry) : path.relative(fs.realpathSync(projectRoot), entry));
+  console.log(
+    absolute
+      ? path.resolve(entry)
+      : path.relative(fs.realpathSync(projectRoot), fs.realpathSync(entry))
+  );
 } else {
   console.error(`Error: Could not find entry file for project at: ${projectRoot}`);
   process.exit(1);
