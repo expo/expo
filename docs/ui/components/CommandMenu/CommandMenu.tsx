@@ -20,6 +20,7 @@ type Props = {
 };
 
 export const CommandMenu = ({ version, open, setOpen }: Props) => {
+  const [initialized, setInitialized] = useState(false);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState('');
   const [expoDocsItems, setExpoDocsItems] = useState<AlgoliaItemType[]>([]);
@@ -39,18 +40,30 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
 
   const dismiss = () => setOpen(false);
 
-  const fetchData = () => {
+  const fetchData = (callback: () => void) => {
     Promise.all([getExpoDocsItems(), getRNDocsItems(), getDirectoryItems(), getExpoItems()]).then(
-      () => setLoading(false)
+      callback
     );
   };
 
   const onQueryChange = () => {
-    setLoading(true);
-    const inputTimeout = setTimeout(fetchData, 150);
-    return () => clearTimeout(inputTimeout);
+    if (open) {
+      setLoading(true);
+      const inputTimeout = setTimeout(() => fetchData(() => setLoading(false)), 150);
+      return () => clearTimeout(inputTimeout);
+    }
   };
 
+  const onMenuOpen = () => {
+    if (open && !initialized) {
+      fetchData(() => {
+        setInitialized(true);
+        setLoading(false);
+      });
+    }
+  };
+
+  useEffect(onMenuOpen, [open]);
   useEffect(onQueryChange, [query]);
 
   const totalCount =
@@ -63,43 +76,56 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
       <Command.Input value={query} onValueChange={setQuery} placeholder="search anything…" />
       <BarLoader isLoading={loading} />
       <Command.List>
-        {expoDocsItems.length > 0 && (
-          <Command.Group heading="Expo documentation">
-            {expoDocsItems.map(item => (
-              <ExpoDocsItem item={item} onSelect={dismiss} key={`hit-expo-docs-${item.objectID}`} />
-            ))}
-          </Command.Group>
-        )}
-        {expoItems.length > 0 && (
-          <Command.Group heading="Expo dashboard">
-            {expoItems.map((item: ExpoItemType) => (
-              <ExpoItem item={item} onSelect={dismiss} key={`hit-expo-${item.url}`} query={query} />
-            ))}
-          </Command.Group>
-        )}
-        {rnDocsItems.length > 0 && (
-          <Command.Group heading="React Native documentation">
-            {rnDocsItems.map(item => (
-              <RNDocsItem item={item} onSelect={dismiss} key={`hit-rn-docs-${item.objectID}`} />
-            ))}
-          </Command.Group>
-        )}
-        {directoryItems.length > 0 && (
-          <Command.Group heading="React Native directory">
-            {directoryItems.map(item => (
-              <RNDirectoryItem
-                item={item}
-                onSelect={dismiss}
-                key={`hit-rn-dir-${item.npmPkg}`}
-                query={query}
-              />
-            ))}
-          </Command.Group>
-        )}
-        {totalCount === 0 && (
-          <Command.Empty>
-            <CALLOUT theme="secondary">No results found.</CALLOUT>
-          </Command.Empty>
+        {initialized && (
+          <>
+            {expoDocsItems.length > 0 && (
+              <Command.Group heading="Expo documentation">
+                {expoDocsItems.map(item => (
+                  <ExpoDocsItem
+                    item={item}
+                    onSelect={dismiss}
+                    key={`hit-expo-docs-${item.objectID}`}
+                  />
+                ))}
+              </Command.Group>
+            )}
+            {expoItems.length > 0 && (
+              <Command.Group heading="Expo dashboard">
+                {expoItems.map((item: ExpoItemType) => (
+                  <ExpoItem
+                    item={item}
+                    onSelect={dismiss}
+                    key={`hit-expo-${item.url}`}
+                    query={query}
+                  />
+                ))}
+              </Command.Group>
+            )}
+            {rnDocsItems.length > 0 && (
+              <Command.Group heading="React Native documentation">
+                {rnDocsItems.map(item => (
+                  <RNDocsItem item={item} onSelect={dismiss} key={`hit-rn-docs-${item.objectID}`} />
+                ))}
+              </Command.Group>
+            )}
+            {directoryItems.length > 0 && (
+              <Command.Group heading="React Native directory">
+                {directoryItems.map(item => (
+                  <RNDirectoryItem
+                    item={item}
+                    onSelect={dismiss}
+                    key={`hit-rn-dir-${item.npmPkg}`}
+                    query={query}
+                  />
+                ))}
+              </Command.Group>
+            )}
+            {!loading && totalCount === 0 && (
+              <Command.Empty>
+                <CALLOUT theme="secondary">No results found.</CALLOUT>
+              </Command.Empty>
+            )}
+          </>
         )}
       </Command.List>
       <CommandFooter />
