@@ -361,7 +361,16 @@ const versionsReference = VERSIONS.reduce(
         expanded: true,
       }),
       makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
-      makeSection('React Native', sortLegacyReactNative(version), { expanded: true }),
+      makeSection(
+        'React Native',
+        [
+          make('page', {
+            href: 'https://reactnative.dev/docs/components-and-apis',
+            sidebarTitle: 'Visit documentation',
+          }),
+        ],
+        { expanded: true }
+      ),
     ],
   }),
   {}
@@ -464,136 +473,4 @@ function sortAlphabetical(pages) {
     const bTitle = b.sidebarTitle || b.name;
     return aTitle.localeCompare(bTitle);
   });
-}
-
-/**
- * Sort the list of React Native pages by legacy custom sorting.
- */
-function sortLegacyReactNative(version) {
-  const pages = pagesFromDir(`versions/${version}/react-native`);
-
-  const components = [
-    'ActivityIndicator',
-    'Button',
-    'DatePickerIOS',
-    'DrawerLayoutAndroid',
-    'FlatList',
-    'Image',
-    'ImageBackground',
-    'InputAccessoryView',
-    'KeyboardAvoidingView',
-    'ListView',
-    'MaskedViewIOS',
-    'Modal',
-    'NavigatorIOS',
-    'Picker',
-    'PickerIOS',
-    'Pressable',
-    'ProgressBarAndroid',
-    'ProgressViewIOS',
-    'RefreshControl',
-    'SafeAreaView',
-    'ScrollView',
-    'SectionList',
-    'SegmentedControl',
-    'SegmentedControlIOS',
-    'Slider',
-    'SnapshotViewIOS',
-    'StatusBar',
-    'Switch',
-    'TabBarIOS.Item',
-    'TabBarIOS',
-    'Text',
-    'TextInput',
-    'ToolbarAndroid',
-    'TouchableHighlight',
-    'TouchableNativeFeedback',
-    'TouchableOpacity',
-    'TouchableWithoutFeedback',
-    'View',
-    'ViewPagerAndroid',
-    'VirtualizedList',
-    'WebView',
-  ];
-
-  const apis = [
-    'AccessibilityInfo',
-    'ActionSheetIOS',
-    'Alert',
-    'AlertIOS',
-    'Animated',
-    'Animated.Value',
-    'Animated.ValueXY',
-    'Appearance',
-    'AppState',
-    'AsyncStorage',
-    'BackAndroid',
-    'BackHandler',
-    'Clipboard',
-    'DatePickerAndroid',
-    'Dimensions',
-    'DynamicColorIOS',
-    'Easing',
-    'ImageStore',
-    'InteractionManager',
-    'Keyboard',
-    'LayoutAnimation',
-    'ListViewDataSource',
-    'NetInfo',
-    'PanResponder',
-    'PixelRatio',
-    'Platform',
-    'PlatformColor',
-    'Settings',
-    'Share',
-    'StatusBarIOS',
-    'StyleSheet',
-    'Systrace',
-    'TimePickerAndroid',
-    'ToastAndroid',
-    'Transforms',
-    'Vibration',
-    'VibrationIOS',
-  ];
-
-  const hooks = ['useColorScheme', 'useWindowDimensions'];
-
-  const props = [
-    'Image Style Props',
-    'Layout Props',
-    'Shadow Props',
-    'Text Style Props',
-    'View Style Props',
-  ];
-
-  const types = [
-    'LayoutEvent Object Type',
-    'PressEvent Object Type',
-    'React Node Object Type',
-    'Rect Object Type',
-    'ViewToken Object Type',
-  ];
-
-  return [
-    makeGroup(
-      'Components',
-      pages.filter(page => components.includes(page.name))
-    ),
-    makeGroup(
-      'Props',
-      pages.filter(page => props.includes(page.name))
-    ),
-    makeGroup(
-      'APIs',
-      pages.filter(page => apis.includes(page.name))
-    ),
-    makeGroup(
-      'Hooks',
-      pages.filter(page => hooks.includes(page.name))
-    ),
-    makeGroup(
-      'Types',
-      pages.filter(page => types.includes(page.name))
-    ),
-  ];
 }
