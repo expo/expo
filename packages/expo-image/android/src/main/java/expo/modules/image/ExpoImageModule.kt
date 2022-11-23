@@ -47,6 +47,28 @@ class ExpoImageModule : Module() {
       }
     }
 
+    AsyncFunction("clearMemoryCache") { promise: Promise ->
+      val activity = appContext.currentActivity
+      if (activity == null) {
+        promise.resolve(false)
+        return@AsyncFunction
+      }
+
+      activity.runOnUiThread {
+        Glide.get(activity).clearMemory()
+        promise.resolve(true)
+      }
+    }
+
+    AsyncFunction("clearDiskCache") {
+      val activity = appContext.currentActivity ?: return@AsyncFunction false
+      activity.let {
+        Glide.get(activity).clearDiskCache()
+      }
+
+      return@AsyncFunction true
+    }
+
     OnDestroy {
       try {
         moduleCoroutineScope.cancel(ModuleDestroyedException())
