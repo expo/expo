@@ -89,14 +89,14 @@ public extension UIDevice {
             case "iPad13,8", "iPad13,9", "iPad13,10", "iPad13,11": return DeviceMapping(modelName: "iPad Pro (12.9-inch) (5th generation)", deviceYearClass: 2021)
             case "AppleTV5,3":                                    return DeviceMapping(modelName: "Apple TV HD (4th Generation, Siri)", deviceYearClass: 2015)
             case "AppleTV6,2":                                    return DeviceMapping(modelName: "Apple TV 4K", deviceYearClass: 2017)
-            case "i386", "x86_64", "arm64":                       return DeviceMapping(modelName: "Simulator \(mapToDevice(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "iOS"))", deviceYearClass: nil)
+            case "i386", "x86_64", "arm64":                       return DeviceMapping(modelName: "Simulator iOS", deviceYearClass: nil)
             default:                                              return DeviceMapping(modelName: identifier, deviceYearClass: nil)
             }
             #elseif os(tvOS)
             switch identifier {
             case "AppleTV5,3":  return DeviceMapping(modelName: "Apple TV HD (4th Generation, Siri)", deviceYearClass: 2015)
             case "AppleTV6,2":  return DeviceMapping(modelName: "Apple TV 4K", deviceYearClass: 2017)
-            case "i386", "x86_64": return DeviceMapping(modelName: "Simulator \(mapToDevice(identifier: ProcessInfo().environment["SIMULATOR_MODEL_IDENTIFIER"] ?? "tvOS"))", deviceYearClass: nil)
+            case "i386", "x86_64": return DeviceMapping(modelName: "Simulator tvOS", deviceYearClass: nil)
             default: return identifier
             }
             #endif
