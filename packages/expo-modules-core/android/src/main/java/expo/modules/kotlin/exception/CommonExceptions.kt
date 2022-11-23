@@ -38,4 +38,9 @@ class Exceptions {
    * An exception to throw when Android permissions haven't been granted.
    */
   class MissingPermissions(vararg permissions: String) : CodedException(message = "Missing permissions: ${permissions.joinToString(separator = ", ")}")
+
+  /**
+   * An exception to throw when the current Android activity is not longer available.
+   */
+  class MissingActivity : CodedException(message = "The current activity is no longer available")
 }

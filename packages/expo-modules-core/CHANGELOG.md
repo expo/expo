@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added the `Exception.MissingActivity` on Android. ([#20174](https://github.com/expo/expo/pull/20174) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
