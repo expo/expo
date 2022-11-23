@@ -13,7 +13,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (11.0.1):
     - ExpoModulesCore
-  - EXBarCodeScanner (12.0.0):
+  - EXBarCodeScanner (12.1.0):
     - EXImageLoader
     - ExpoModulesCore
     - ZXingObjC/OneD
@@ -24,7 +24,7 @@ PODS:
     - ExpoModulesCore
   - EXCalendar (11.0.1):
     - ExpoModulesCore
-  - EXCamera (13.0.0):
+  - EXCamera (13.1.0):
     - ExpoModulesCore
   - EXConstants (14.0.2):
     - ExpoModulesCore
@@ -1230,11 +1230,11 @@ SPEC CHECKSUMS:
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
   EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
-  EXBarCodeScanner: 25f8a6a43c817a94afe54d07a1b9fe25550ea0fe
+  EXBarCodeScanner: 0ff9f35bba5dc67fcf8919eecf1f7f4c287dc3e8
   EXBlur: d87af64a1b4ae264059983bf54baca72be2cbc7d
   EXBrightness: 1725afacfdaeb4724bb949c44384cff0ef0d7d18
   EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
-  EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
+  EXCamera: eaf52a96480d4ae1505a9b5e139c244581b5f8ca
   EXConstants: 3c86653c422dd77e40d10cbbabb3025003977415
   EXContacts: ef197934926d31c2a58092e081ca9e7c402f13fd
   EXDevice: 734a55d8935ea8e075d12df1919a0497153bf55c

@@ -1965,7 +1965,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (11.0.1):
     - ExpoModulesCore
-  - EXBarCodeScanner (12.0.0):
+  - EXBarCodeScanner (12.1.0):
     - EXImageLoader
     - ExpoModulesCore
     - ZXingObjC/OneD
@@ -1980,7 +1980,7 @@ PODS:
     - ExpoModulesCore
   - EXCalendar (11.0.1):
     - ExpoModulesCore
-  - EXCamera (13.0.0):
+  - EXCamera (13.1.0):
     - ExpoModulesCore
   - EXConstants (14.0.2):
     - ExpoModulesCore
@@ -2034,7 +2034,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.0.0):
     - ExpoModulesCore
-  - Expo (47.0.6):
+  - Expo (47.0.8):
     - ExpoModulesCore
   - ExpoBattery (7.0.0):
     - ExpoModulesCore
@@ -2110,7 +2110,7 @@ PODS:
   - EXTaskManager (11.0.1):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.15.5):
+  - EXUpdates (0.15.6):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -2118,7 +2118,7 @@ PODS:
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.15.5):
+  - EXUpdates/Tests (0.15.6):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -4491,12 +4491,12 @@ SPEC CHECKSUMS:
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
   EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
-  EXBarCodeScanner: 25f8a6a43c817a94afe54d07a1b9fe25550ea0fe
+  EXBarCodeScanner: 0ff9f35bba5dc67fcf8919eecf1f7f4c287dc3e8
   EXBlur: d87af64a1b4ae264059983bf54baca72be2cbc7d
   EXBranch: 7d74f6ff30a1efc45827517654dcc1508fe925f7
   EXBrightness: 1725afacfdaeb4724bb949c44384cff0ef0d7d18
   EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
-  EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
+  EXCamera: eaf52a96480d4ae1505a9b5e139c244581b5f8ca
   EXConstants: 3c86653c422dd77e40d10cbbabb3025003977415
   EXContacts: ef197934926d31c2a58092e081ca9e7c402f13fd
   EXDevice: 734a55d8935ea8e075d12df1919a0497153bf55c
@@ -4517,7 +4517,7 @@ SPEC CHECKSUMS:
   EXNetwork: c16feb0dc85dacaf11fef55721e0b8ead2a8038f
   EXNotifications: 2bda232eb900aa6d602e40cad363879ae827d672
   EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
-  Expo: a581e979539bae3e49cd02d9dee2432947383d3b
+  Expo: 36b5f625d36728adbdd1934d4d57182f319ab832
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
@@ -4548,7 +4548,7 @@ SPEC CHECKSUMS:
   EXSQLite: 13c91c389b3c6241ddcf5c47eaa43289721193fe
   EXStructuredHeaders: fb774e45eac2e5d62ba40b28176bfbfba61b843e
   EXTaskManager: 0afcc6fd813dec5dee98aa5ec4f22c2a840dd4a7
-  EXUpdates: b8a2788e46eda5025ccab1384e6d2aa4426da4c3
+  EXUpdates: 6e09624f9de065bb1f2364cae2d1fc520a9d2073
   EXUpdatesInterface: bffd1ead18f0bab04fa784ca159c115607b8a23c
   EXVideoThumbnails: 8b3e48f3716679dd0cbf949217a31eab5c555799
   FacebookSDK: 4b9bb8e2824898b47f18c666dc145c09b40609e6
