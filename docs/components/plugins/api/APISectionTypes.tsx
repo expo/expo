@@ -52,14 +52,18 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
 const renderTypeDeclarationTable = ({
   children,
   indexSignature,
+  comment,
 }: TypeDeclarationContentData): JSX.Element => (
-  <Table key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
-    {renderTableHeadRow()}
-    <tbody>
-      {children?.map(renderTypePropertyRow)}
-      {indexSignature?.parameters && indexSignature.parameters.map(renderTypePropertyRow)}
-    </tbody>
-  </Table>
+  <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
+    <CommentTextBlock comment={comment} />
+    <Table>
+      {renderTableHeadRow()}
+      <tbody>
+        {children?.map(renderTypePropertyRow)}
+        {indexSignature?.parameters && indexSignature.parameters.map(renderTypePropertyRow)}
+      </tbody>
+    </Table>
+  </Fragment>
 );
 
 const renderTypePropertyRow = ({
@@ -140,9 +144,9 @@ const renderType = ({
           {type.type === 'intersection' ? (
             <P>
               {type.types
-                .filter(type => type.type === 'reference')
+                .filter(type => ['reference', 'union', 'intersection'].includes(type.type))
                 .map(validType => (
-                  <Fragment key={`intersection-type-${validType.name}`}>
+                  <Fragment key={`nested-reference-type-${validType.name}`}>
                     <InlineCode>{resolveTypeName(validType)}</InlineCode>{' '}
                   </Fragment>
                 ))}

@@ -8,9 +8,9 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-The `SplashScreen` module tells the splash screen to remain visible until it has been explicitly told to hide. This is useful to do some work behind the scenes before displaying your app (eg: make API calls) and to animate your splash screen (eg: fade out or slide away, or switch from a static splash screen to an animated splash screen).
+The `SplashScreen` module from the `expo-splash-screen` library is used to tell the splash screen to remain visible until it has been explicitly told to hide. This is useful to do tasks that will happen behind the scenes such as making API calls, pre-loading fonts, animating the splash screen and so on.
 
-Read more about [creating a splash screen image](../../../guides/splash-screens.mdx), or [quickly generate an icon and splash screen on the web](https://buildicon.netlify.app/)
+Also, see the guide on [creating a splash screen image](/guides/splash-screens.mdx), or [quickly generate an icon and splash screen using your browser](https://buildicon.netlify.app/).
 
 <PlatformsSection android emulator ios simulator />
 
@@ -82,7 +82,7 @@ export default function App() {
 
 ### Animating the splash screen
 
-Refer to the [with-splash-screen example](https://github.com/expo/examples/tree/master/with-splash-screen) to see how to apply any arbitrary animations to your splash screen, such as a fade out. You can initialize a new project from this example by running `npx create-react-native-app -t with-splash-screen`.
+See the [with-splash-screen](https://github.com/expo/examples/tree/master/with-splash-screen) example on how to apply any arbitrary animations to your splash screen, such as a fade out. You can initialize a new project from this example by running `npx create-react-native-app -t with-splash-screen`.
 
 ## API
 

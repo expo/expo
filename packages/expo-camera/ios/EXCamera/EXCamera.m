@@ -1,6 +1,6 @@
 #import <AVFoundation/AVFoundation.h>
 
-#import <ExpoModulesCore/EXBarCodeScannerProviderInterface.h>
+#import <ExpoModulesCore/EXBarcodeScannerProviderInterface.h>
 #import <EXCamera/EXCamera.h>
 #import <EXCamera/EXCameraUtils.h>
 #import <EXCamera/EXCameraCameraPermissionRequester.h>

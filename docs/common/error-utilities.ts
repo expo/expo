@@ -146,6 +146,14 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/detach/': '/expokit/eject/',
   '/expokit/detach/': '/expokit/eject/',
 
+  // Development builds redirects
+  '/development/build/': '/development/create-development-builds/',
+  '/development/getting-started/': '/development/create-development-builds/',
+  '/development/troubleshooting/': '/development/introduction/',
+  '/development/upgrading/': '/development/introduction/',
+  '/development/extensions/': '/development/development-workflows/',
+  '/development/develop-your-project': '/development/use-development-builds',
+
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
 

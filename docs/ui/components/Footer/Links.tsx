@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import {
+  BuildIcon,
   CodeIcon,
   EditIcon,
   GithubIcon,
@@ -13,9 +14,14 @@ import {
 import { A, LI } from '../Text';
 import { githubUrl } from './utils';
 
-export const IssuesLink = ({ title }: { title: string }) => (
+export const IssuesLink = ({ title, repositoryUrl }: { title: string; repositoryUrl?: string }) => (
   <LI>
-    <A css={linkStyle} openInNewTab href={`https://github.com/expo/expo/labels/${title}`}>
+    <A
+      css={linkStyle}
+      openInNewTab
+      href={
+        repositoryUrl ? `${repositoryUrl}/issues` : `https://github.com/expo/expo/labels/${title}`
+      }>
       <span css={iconStyle}>
         <GithubIcon size={iconSize.small} />
       </span>
@@ -69,6 +75,17 @@ export const GitHubLink = ({ pathname }: { pathname: string }) => (
         <EditIcon size={iconSize.small} />
       </span>
       Edit this page
+    </A>
+  </LI>
+);
+
+export const NpmLink = ({ packageName }: { packageName: string }) => (
+  <LI>
+    <A css={linkStyle} openInNewTab href={`https://www.npmjs.com/package/${packageName}`}>
+      <span css={iconStyle}>
+        <BuildIcon size={iconSize.small} />
+      </span>
+      View package in npm Registry
     </A>
   </LI>
 );

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 14.0.2 - 2022-11-21
+
+### 🐛 Bug fixes
+
+- Fix support for animated GIFs on iOS. ([#20034](https://github.com/expo/expo/pull/20034) by [@barthap](https://github.com/barthap))
+
 ## 14.0.1 - 2022-11-08
 
 ### 🐛 Bug fixes
