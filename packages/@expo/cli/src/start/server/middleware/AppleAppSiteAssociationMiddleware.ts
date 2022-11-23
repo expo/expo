@@ -19,8 +19,6 @@ import { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:aasa') as typeof console.log;
 
-export type TouchFileBody = { path: string; contents: string };
-
 /**
  * Middleware for generating an Apple App Site Association file for the current project.
  *
@@ -102,9 +100,25 @@ export function getUserDefinedAasaFile(projectRoot: string): string | null {
   return null;
 }
 
+function guessAppCredentials(projectRoot: string) {
+  const bundleIdentifier = getConfig(projectRoot).exp.ios?.bundleIdentifier;
+  const appleTeamId = process.env.EXPO_APPLE_TEAM_ID;
+  if (!bundleIdentifier || !appleTeamId) {
+    return null;
+  }
+  return {
+    bundleIdentifier,
+    appleTeamId,
+  };
+}
+
 export function generateAasaForProject(projectRoot: string): AppSiteAssociation | null {
   // We currently get the bundle identifier and Apple Team ID from the pbxproj file.
   if (!fs.existsSync(path.join(projectRoot, 'ios'))) {
+    const possibleCredentials = guessAppCredentials(projectRoot);
+    if (possibleCredentials) {
+      return generateAasaAndFormat(projectRoot, possibleCredentials);
+    }
     debug('No iOS project found, skipping Apple App Site Association file');
     maybeWarnAasaCouldNotBeGenerated(projectRoot);
     return null;
@@ -124,18 +138,25 @@ export function generateAasaForProject(projectRoot: string): AppSiteAssociation 
     return null;
   }
 
-  const aasa = generateAasaJson(projectRoot, {
+  return generateAasaAndFormat(projectRoot, {
     // TODO: Drop unquote if/when we migrate to xcparse.
     bundleIdentifier: unquote(firstValid.bundleIdentifiers[0]),
     appleTeamId: unquote(firstValid.developmentTeams[0]),
   });
+}
+
+function generateAasaAndFormat(
+  projectRoot: string,
+  props: { bundleIdentifier: string; appleTeamId: string }
+) {
+  const aasa = generateAasaJson(projectRoot, props);
 
   if (!aasa) {
     debug('No valid Apple App Site Association file could be generated, skipping.');
     return null;
   }
 
-  const parsedResults = JSON.stringify(aasa, null, 2);
+  const parsedResults = getOptimallyFormattedString(aasa);
 
   debug('Generated valid Apple App Site Association file:\n', parsedResults);
 
