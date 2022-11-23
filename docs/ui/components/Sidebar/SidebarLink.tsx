@@ -67,7 +67,11 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
         {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
         {children}
         {info.href.startsWith('http') && (
-          <ArrowUpRightIcon size={iconSize.small} color={theme.icon.secondary} css={STYLES_EXTERNAL_ICON} />
+          <ArrowUpRightIcon
+            size={iconSize.small}
+            color={theme.icon.secondary}
+            css={STYLES_EXTERNAL_ICON}
+          />
         )}
       </LinkBase>
     </div>
