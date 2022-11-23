@@ -6,11 +6,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createExampleApp = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
+const getenv_1 = __importDefault(require("getenv"));
 const path_1 = __importDefault(require("path"));
 const packageManager_1 = require("./packageManager");
 const utils_1 = require("./utils");
+const debug = require('debug')('create-expo-module:createExampleApp');
 // These dependencies will be removed from the example app (`expo init` adds them)
 const DEPENDENCIES_TO_REMOVE = ['expo-status-bar', 'expo-splash-screen'];
+const EXPO_BETA = getenv_1.default.boolish('EXPO_BETA', false);
 /**
  * Initializes a new Expo project as an example app.
  */
@@ -26,7 +29,10 @@ async function createExampleApp(data, targetDir, packageManager) {
         return;
     }
     await (0, utils_1.newStep)('Initializing the example app', async (step) => {
-        await (0, spawn_async_1.default)(packageManager, ['create', 'expo-app', '--', exampleProjectSlug, '--template', 'blank-typescript', '--yes'], {
+        const templateVersion = EXPO_BETA ? 'next' : 'latest';
+        const template = `expo-template-blank-typescript@${templateVersion}`;
+        debug(`Using example template: ${template}`);
+        await (0, spawn_async_1.default)(packageManager, ['create', 'expo-app', '--', exampleProjectSlug, '--template', template, '--yes'], {
             cwd: targetDir,
             stdio: 'ignore',
         });

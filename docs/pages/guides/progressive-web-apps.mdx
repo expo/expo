@@ -10,7 +10,7 @@ A progressive web app (or PWA for short) is a website that can be installed on t
 
 Expo web projects generate PWA assets and manifests by default, you only need to [add offline web support](https://expo.fyi/enabling-web-service-workers) to get a full PWA.
 
-When you run `npx expo export:web` (`expo build:web` for SDK 45 and lower) the Webpack config reads your **app.config.js** (or **app.json**) and generates a PWA from it.
+When you run `npx expo export:web` (`expo build:web` for SDK 45 and lower) the webpack config reads your **app.config.js** (or **app.json**) and generates a PWA from it.
 
 The following properties can be used to customize your PWA:
 
@@ -40,7 +40,7 @@ If you need finer control on how the PWA is generated, you should generate the *
 
 ### Icons
 
-Icons are generated in Webpack using the [`expo-pwa`][expo-pwa] CLI. You can customize and override icon generation by using the `expo-pwa` CLI directly. [Learn more about `expo-pwa`][expo-pwa].
+Icons are generated in webpack using the [`expo-pwa`][expo-pwa] CLI. You can customize and override icon generation by using the `expo-pwa` CLI directly. [Learn more about `expo-pwa`][expo-pwa].
 
 [expo-pwa]: https://github.com/expo/expo-cli/tree/main/packages/pwa
 

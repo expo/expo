@@ -71,6 +71,14 @@ internal class IncompatibleArgTypeException(
   cause = cause
 )
 
+internal class EnumNoSuchValueException(
+  enumType: KClass<Enum<*>>,
+  enumConstants: Array<out Enum<*>>,
+  value: Any?
+) : CodedException(
+  message = "'$value' is not present in ${enumType.simpleName} enum, it must be one of: ${enumConstants.joinToString(separator = ", ") { "'${it.name}'" }}"
+)
+
 internal class MissingTypeConverter(
   forType: KType
 ) : CodedException(
@@ -137,9 +145,19 @@ internal class ArgumentCastException(
   providedType: ReadableType,
   cause: CodedException,
 ) : DecoratedException(
-  message = "Argument at index '$argIndex' couldn't be casted to type '$argDesiredType' (received '$providedType').",
+  message = "The ${formatOrdinalNumber(argIndex + 1)} argument cannot be cast to type $argDesiredType (received $providedType)",
   cause,
-)
+) {
+  companion object {
+    fun formatOrdinalNumber(number: Int) = "$number" + when {
+      (number % 100 in 11..13) -> "th"
+      (number % 10) == 1 -> "st"
+      (number % 10) == 2 -> "nd"
+      (number % 10) == 3 -> "rd"
+      else -> "th"
+    }
+  }
+}
 
 internal class FieldCastException(
   fieldName: String,

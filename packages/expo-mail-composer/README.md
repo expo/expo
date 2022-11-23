@@ -4,7 +4,7 @@ Provides an API to compose mails using OS specific UI
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/mail-composer.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/mail-composer.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/mail-composer/)
 
 # Installation in managed Expo projects

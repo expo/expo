@@ -2,13 +2,22 @@ package expo.modules.image.enums
 
 import android.widget.ImageView
 import com.facebook.react.bridge.JSApplicationIllegalArgumentException
+import expo.modules.kotlin.types.Enumerable
 
-enum class ImageResizeMode(val stringValue: String, val scaleType: ImageView.ScaleType?) {
-  CONTAIN("contain", ImageView.ScaleType.FIT_CENTER),
-  COVER("cover", ImageView.ScaleType.CENTER_CROP),
-  STRETCH("stretch", ImageView.ScaleType.FIT_XY),
-  CENTER("center", ImageView.ScaleType.CENTER),
-  REPEAT("repeat", ImageView.ScaleType.FIT_XY);
+enum class ImageResizeMode(val stringValue: String) : Enumerable {
+  CONTAIN("contain"),
+  COVER("cover"),
+  STRETCH("stretch"),
+  CENTER("center"),
+  REPEAT("repeat");
+
+  internal fun getScaleType() = when (this) {
+    CONTAIN -> ImageView.ScaleType.FIT_CENTER
+    COVER -> ImageView.ScaleType.CENTER_CROP
+    STRETCH -> ImageView.ScaleType.FIT_XY
+    CENTER -> ImageView.ScaleType.CENTER
+    REPEAT -> ImageView.ScaleType.FIT_XY
+  }
 
   companion object {
     fun fromStringValue(value: String): ImageResizeMode =

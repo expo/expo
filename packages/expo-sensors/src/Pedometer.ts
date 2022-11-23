@@ -12,7 +12,6 @@ import ExponentPedometer from './ExponentPedometer';
 
 const PedometerEventEmitter = new EventEmitter(ExponentPedometer);
 
-// @needsAudit
 export type PedometerResult = {
   /**
    * Number of steps taken between the given dates.
@@ -20,7 +19,9 @@ export type PedometerResult = {
   steps: number;
 };
 
-// @docsMissing
+/**
+ * Callback function providing event result as an argument.
+ */
 export type PedometerUpdateCallback = (result: PedometerResult) => void;
 
 // @needsAudit
@@ -54,7 +55,6 @@ export async function getStepCountAsync(start: Date, end: Date): Promise<Pedomet
   return await ExponentPedometer.getStepCountAsync(start.getTime(), end.getTime());
 }
 
-// @needsAudit
 /**
  * Returns whether the pedometer is enabled on the device.
  * @return Returns a promise that fulfills with a `boolean`, indicating whether the pedometer is
@@ -64,7 +64,9 @@ export async function isAvailableAsync(): Promise<boolean> {
   return await ExponentPedometer.isAvailableAsync();
 }
 
-// @docsMissing
+/**
+ * Checks user's permissions for accessing pedometer.
+ */
 export async function getPermissionsAsync(): Promise<PermissionResponse> {
   if (!ExponentPedometer.getPermissionsAsync) {
     return defaultPermissionsResponse;
@@ -73,7 +75,9 @@ export async function getPermissionsAsync(): Promise<PermissionResponse> {
   }
 }
 
-// @docsMissing
+/**
+ * Asks the user to grant permissions for accessing pedometer.
+ */
 export async function requestPermissionsAsync(): Promise<PermissionResponse> {
   if (!ExponentPedometer.requestPermissionsAsync) {
     return defaultPermissionsResponse;

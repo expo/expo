@@ -85,7 +85,10 @@ export enum VideoCodec {
   AppleProRes4444 = 'ap4h',
 }
 
-// @needsAudit
+/**
+ * This option specifies the stabilization mode to use when recording a video.
+ * @platform ios
+ */
 export enum VideoStabilization {
   off = 'off',
   standard = 'standard',
@@ -195,6 +198,10 @@ export type CameraPictureOptions = {
    * @hidden
    */
   fastMode?: boolean;
+  /**
+   * @hidden
+   */
+  maxDownsampling?: number;
 };
 
 // @needsAudit
@@ -405,7 +412,7 @@ export type CameraProps = ViewProps & {
    * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
    * @platform ios
    */
-  videoStabilizationMode?: number;
+  videoStabilizationMode?: VideoStabilization;
   /**
    * Callback invoked when camera preview could not been started.
    * @param event Error object that contains a `message`.

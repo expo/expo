@@ -4,7 +4,7 @@ This library provides Apple authentication for iOS standalone apps in the manage
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/apple-authentication.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/apple-authentication.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/apple-authentication/)
 
 # Installation in managed Expo projects

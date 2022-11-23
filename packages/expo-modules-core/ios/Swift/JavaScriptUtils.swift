@@ -63,7 +63,14 @@ internal class InvalidArgsNumberException: GenericException<(received: Int, expe
 
 internal class ArgumentCastException: GenericException<(index: Int, type: AnyDynamicType)> {
   override var reason: String {
-    "Argument at index '\(param.index)' couldn't be cast to type \(param.type.description)"
+    "The \(formatOrdinalNumber(param.index + 1)) argument cannot be cast to type \(param.type.description)"
+  }
+
+  func formatOrdinalNumber(_ number: Int) -> String {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .ordinal
+    formatter.locale = Locale(identifier: "en_US")
+    return formatter.string(from: NSNumber(value: number)) ?? ""
   }
 }
 

@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
+- Native module on iOS is now written in Swift using the Sweet API. ([#19980](https://github.com/expo/expo/pull/19980) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 13.0.2 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
 
 ## 13.0.1 — 2022-10-28
 
@@ -166,3 +172,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Added estimate of supported authentication types for Android. ([#8431](https://github.com/expo/expo/pull/8431) by [@bycedric](https://github.com/bycedric))
+
+### 💡 Others
+
+- Removed `console.warn` from the `authenticateAsync` function, preventing running it every time the user cancels authentication or authentication fails. ([#19803](https://github.com/expo/expo/pull/19803) by [@GustavoMont](https://github.com/GustavoMont))

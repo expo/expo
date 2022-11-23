@@ -30,7 +30,7 @@ export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps
       <div css={tileContentWrapperStyle}>
         {Icon && (
           <div css={tileIconBackgroundStyle}>
-            <Icon />
+            <Icon width={iconSize.regular} />
           </div>
         )}
         <div>

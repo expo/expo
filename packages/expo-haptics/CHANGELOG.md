@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- Migrated Android codebase to use the new Expo modules API. ([#20016](https://github.com/expo/expo/pull/20016) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.0.1 — 2022-11-03
+
+### 🐛 Bug fixes
+
+- Fixed rare crash on iOS when using Feedback Generator's API not on the main thread. ([#19819](https://github.com/expo/expo/pull/19819) by [@AntonGolikov](https://github.com/AntonGolikov))
 
 ## 12.0.0 — 2022-10-25
 

@@ -1,9 +1,11 @@
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import path from 'path';
+import ProgressBar from 'progress';
 
 import { getVersionsAsync, SDKVersion } from '../api/getVersions';
 import { downloadAppAsync } from './downloadAppAsync';
 import { CommandError } from './errors';
+import { ora } from './ora';
 import { profile } from './profile';
 import { createProgressBar } from './progress';
 
@@ -44,13 +46,9 @@ export async function downloadExpoGoAsync(
 ): Promise<string> {
   const { getFilePath, versionsKey, shouldExtractResults } = platformSettings[platform];
 
-  const bar = createProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
-    width: 64,
-    total: 100,
-    clear: true,
-    complete: '=',
-    incomplete: ' ',
-  });
+  const spinner = ora({ text: 'Fetching Expo Go', color: 'white' }).start();
+
+  let bar: ProgressBar | null = null;
 
   if (!url) {
     if (!sdkVersion) {
@@ -84,14 +82,28 @@ export async function downloadExpoGoAsync(
       cacheDirectory: 'expo-go',
       outputPath,
       extract: shouldExtractResults,
-      onProgress({ progress }) {
-        if (bar) {
-          bar.tick(1, progress);
+      onProgress({ progress, total }) {
+        if (progress && total) {
+          if (!bar) {
+            if (spinner.isSpinning) {
+              spinner.stop();
+            }
+            bar = createProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
+              width: 64,
+              total: 100,
+              // clear: true,
+              complete: '=',
+              incomplete: ' ',
+            });
+          }
+          bar!.update(progress, total);
         }
       },
     });
     return outputPath;
   } finally {
+    spinner.stop();
+    // @ts-expect-error
     bar?.terminate();
   }
 }

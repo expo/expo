@@ -8,7 +8,27 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix runtime version parsing. ([#19821](https://github.com/expo/expo/pull/19821) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
+
+- Improvements to setup for Updates E2E tests. ([#20120](https://github.com/expo/expo/pull/20120) by [@douglowder](https://github.com/douglowder))
+
+## 0.15.5 - 2022-11-14
+
+### 🎉 New features
+
+- New API Updates.isEmbeddedLaunch. ([#20014](https://github.com/expo/expo/pull/20014) by [@douglowder](https://github.com/douglowder))
+
+## 0.15.4 — 2022-11-03
+
+### 🐛 Bug fixes
+
+- Fixed another _app.manifest_ occasionally missing from build outputs on Android. ([#19809](https://github.com/expo/expo/pull/19809) by [@kudo](https://github.com/kudo))
+
+## 0.15.3 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
 
 ## 0.15.2 — 2022-10-28
 

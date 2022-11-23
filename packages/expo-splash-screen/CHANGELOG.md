@@ -8,7 +8,19 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.` warning being displayed on iOS when app is started in background. ([#20064](https://github.com/expo/expo/pull/20064) by [@grigorigoldman](https://github.com/grigorigoldman))
+
 ### 💡 Others
+
+## 0.17.4 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fixed Android `NullPointerException` in `FrameLayout.onMeasure()` when running on new architecture mode with expo-dev-client. ([#19931](https://github.com/expo/expo/pull/19931) by [@kudo](https://github.com/kudo))
+
+## 0.17.3 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
 
 ## 0.17.2 — 2022-10-28
 

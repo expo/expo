@@ -1,28 +1,43 @@
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import * as FaceDetector from 'expo-face-detector';
+import * as VideoThumbnails from 'expo-video-thumbnails';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const pictureSize = 150;
 
-interface State {
+type State = {
+  uri?: string;
   selected: boolean;
   faces: FaceDetector.FaceFeature[];
   image?: FaceDetector.Image;
-}
+  isVideo: boolean;
+};
 
-export default class Photo extends React.Component<
-  { uri: string; onSelectionToggle: (uri: string, selected: boolean) => void },
-  State
-> {
+type Props = {
+  uri: string;
+  onSelectionToggle: (uri: string, selected: boolean) => void;
+};
+
+export default class Photo extends React.Component<Props, State> {
   readonly state: State = {
     selected: false,
     faces: [],
+    uri: undefined,
+    isVideo: false,
   };
   _mounted = false;
 
   componentDidMount() {
     this._mounted = true;
+
+    if (this.props.uri.endsWith('jpg')) {
+      this.setState(() => ({ uri: this.props.uri }));
+    } else {
+      this.getVideoThumbnail(this.props.uri).then((uri) =>
+        this.setState(() => ({ uri, isVideo: true }))
+      );
+    }
   }
 
   componentWillUnmount() {
@@ -32,12 +47,13 @@ export default class Photo extends React.Component<
   toggleSelection = () => {
     this.setState(
       (state) => ({ selected: !state.selected }),
-      () => this.props.onSelectionToggle(this.props.uri, this.state.selected)
+      () => this.props.uri && this.props.onSelectionToggle(this.props.uri, this.state.selected)
     );
   };
 
   detectFace = () =>
-    FaceDetector.detectFacesAsync(this.props.uri, {
+    this.state.uri &&
+    FaceDetector.detectFacesAsync(this.state.uri, {
       detectLandmarks: FaceDetector.FaceDetectorLandmarks.none,
       runClassifications: FaceDetector.FaceDetectorClassifications.all,
     })
@@ -85,7 +101,6 @@ export default class Photo extends React.Component<
     }
   };
 
-  // tslint:disable-next-line no-console
   handleFaceDetectionError = (error: any) => console.warn(error);
 
   renderFaces = () => this.state.image && this.state.faces && this.state.faces.map(this.renderFace);
@@ -120,8 +135,18 @@ export default class Photo extends React.Component<
     );
   };
 
+  getVideoThumbnail = async (videoUri: string) => {
+    try {
+      const { uri } = await VideoThumbnails.getThumbnailAsync(videoUri, { time: 250 });
+      return uri;
+    } catch (error) {
+      console.warn(error);
+      return undefined;
+    }
+  };
+
   render() {
-    const { uri } = this.props;
+    const { uri } = this.state;
     return (
       <TouchableOpacity
         style={styles.pictureWrapper}
@@ -129,6 +154,9 @@ export default class Photo extends React.Component<
         onPress={this.toggleSelection}
         activeOpacity={1}>
         <Image style={styles.picture} source={{ uri }} />
+        {this.state.isVideo && (
+          <Ionicons name="videocam" size={24} color="#ffffffbb" style={styles.videoIcon} />
+        )}
         {this.state.selected && <Ionicons name="md-checkmark-circle" size={30} color="#4630EB" />}
         <View style={styles.facesContainer}>{this.renderFaces()}</View>
       </TouchableOpacity>
@@ -174,5 +202,10 @@ const styles = StyleSheet.create({
     margin: 2,
     fontSize: 10,
     backgroundColor: 'transparent',
+  },
+  videoIcon: {
+    position: 'absolute',
+    bottom: 0,
+    right: 36,
   },
 });

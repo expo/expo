@@ -32,10 +32,6 @@ buildscript {
 
         classpath("com.facebook.react:react-native-gradle-plugin")
 
-        // Copied version from the Exponent Android project.
-        // Newer versions suffer either from "play-services-basement was supposed to be 15.0.1,
-        // but has been resolved to 17.0.0"
-        // or https://github.com/segment-integrations/analytics-android-integration-firebase/issues/23
         classpath 'com.google.gms:google-services:4.3.5'  // Google Services plugin
 
         // NOTE: Do not place your application dependencies here; they belong
@@ -61,7 +57,7 @@ ext {
 allprojects {
     // [Custom]
     configurations.all {
-        if (findProperty("reactNativeNightly") == "true") {
+        if (findProperty("buildReactNativeFromSource") == "true") {
             resolutionStrategy {
                 dependencySubstitution {
                     substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
@@ -95,6 +91,12 @@ allprojects {
             // older versions over there.
             content {
                 excludeGroup "com.facebook.react"
+            }
+        }
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots/'
+            content {
+                includeGroup "com.facebook.react"
             }
         }
         maven { url 'https://jitpack.io' }

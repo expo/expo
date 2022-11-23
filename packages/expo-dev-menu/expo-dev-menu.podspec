@@ -10,6 +10,10 @@ rescue
   reactVersion = '0.66.0'
 end
 
+if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+  reactVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
+end
+
 splitedReactVersion = reactVersion.split('.')
 rnVersion = splitedReactVersion[1]
 rnPatchVersion = splitedReactVersion[2]
@@ -54,6 +58,10 @@ Pod::Spec.new do |s|
   ]}
 
   s.xcconfig = { 'GCC_PREPROCESSOR_DEFINITIONS' => 'EX_DEV_MENU_ENABLED=1', 'OTHER_SWIFT_FLAGS' => '-DEX_DEV_MENU_ENABLED' }
+
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/Swift Compatibility Header\"",
+  }
 
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }

@@ -1,7 +1,8 @@
+import { requireNativeViewManager, requireNativeModule } from 'expo-modules-core';
 import React from 'react';
-import { Image, requireNativeComponent, NativeModules, StyleSheet, Platform, processColor, } from 'react-native';
-const NativeExpoImage = requireNativeComponent('ExpoImage');
-const ExpoImageModule = NativeModules.ExpoImageModule;
+import { Image, StyleSheet, Platform, processColor } from 'react-native';
+const NativeExpoImage = requireNativeViewManager('ExpoImage');
+const ExpoImageModule = requireNativeModule('ExpoImage');
 export { ExpoImageModule };
 export default function ExpoImage({ source, style, defaultSource, loadingIndicatorSource, ...props }) {
     const resolvedSource = Image.resolveAssetSource(source ?? {});
@@ -53,6 +54,22 @@ export default function ExpoImage({ source, style, defaultSource, loadingIndicat
             console.warn(`"expo-image" Shadows may not be rendered correctly for the transparent parts of images. Set "backgroundColor" to a non-transparent color when using a shadow.`);
         }
     }
-    return (React.createElement(NativeExpoImage, { ...props, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedPlaceholder }));
+    const tintColor = processColor(resolvedStyle.tintColor);
+    const borderColor = processColor(resolvedStyle.borderColor);
+    // @ts-ignore
+    const borderStartColor = processColor(resolvedStyle.borderStartColor);
+    // @ts-ignore
+    const borderEndColor = processColor(resolvedStyle.borderEndColor);
+    // @ts-ignore
+    const borderLeftColor = processColor(resolvedStyle.borderLeftColor);
+    // @ts-ignore
+    const borderRightColor = processColor(resolvedStyle.borderRightColor);
+    // @ts-ignore
+    const borderTopColor = processColor(resolvedStyle.borderTopColor);
+    // @ts-ignore
+    const borderBottomColor = processColor(resolvedStyle.borderBottomColor);
+    return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedPlaceholder, 
+        // @ts-ignore
+        tintColor: tintColor, borderColor: borderColor, borderLeftColor: borderLeftColor, borderRightColor: borderRightColor, borderTopColor: borderTopColor, borderBottomColor: borderBottomColor, borderStartColor: borderStartColor, borderEndColor: borderEndColor }));
 }
 //# sourceMappingURL=ExpoImage.js.map
