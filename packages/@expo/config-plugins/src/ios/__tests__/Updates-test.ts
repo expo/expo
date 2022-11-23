@@ -44,7 +44,7 @@ describe('iOS Updates config', () => {
             },
             requestHeaders: {
               'expo-channel-name': 'test',
-              testheader: 'test'
+              testheader: 'test',
             },
           },
         },
@@ -63,7 +63,7 @@ describe('iOS Updates config', () => {
         'utf-8'
       ),
       EXUpdatesCodeSigningMetadata: { alg: 'rsa-v1_5-sha256', keyid: 'test' },
-      EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' }
+      EXUpdatesRequestHeaders: { 'expo-channel-name': 'test', testheader: 'test' },
     });
   });
 

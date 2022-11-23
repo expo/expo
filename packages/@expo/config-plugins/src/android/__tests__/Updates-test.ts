@@ -51,8 +51,8 @@ describe('Android Updates config', () => {
         },
         requestHeaders: {
           'expo-channel-name': 'test',
-          testheader: 'test'
-        }
+          testheader: 'test',
+        },
       },
     };
     androidManifestJson = Updates.setUpdatesConfig(
@@ -111,7 +111,8 @@ describe('Android Updates config', () => {
     );
 
     const requestHeaders = mainApplication['meta-data'].filter(
-      (e) => e.$['android:name'] === 'expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY'
+      (e) =>
+        e.$['android:name'] === 'expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY'
     );
     expect(requestHeaders).toHaveLength(1);
     expect(requestHeaders[0].$['android:value']).toMatch(
