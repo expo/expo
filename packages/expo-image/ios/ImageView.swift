@@ -9,34 +9,29 @@ public final class ImageView: ExpoView {
   let sdImageView = SDAnimatedImageView(frame: .zero)
   let imageManager = SDWebImageManager()
 
-  var source: ImageSource? {
-    didSet {
-      loadFromSource(source)
-    }
-  }
+  var source: ImageSource?
 
   var resizeMode: ImageResizeMode = .cover {
     didSet {
       sdImageView.contentMode = resizeMode.toContentMode()
-      loadFromSource(source)
     }
   }
 
   var transition: ImageTransition?
 
+  var blurRadius: CGFloat = 0.0
+
+  var imageTintColor: UIColor = .clear
+
   // MARK: - Events
 
-  @Event
-  var onLoadStart: Callback<Any>
+  let onLoadStart = EventDispatcher()
 
-  @Event
-  var onProgress: Callback<Any>
+  let onProgress = EventDispatcher()
 
-  @Event
-  var onError: Callback<Any>
+  let onError = EventDispatcher()
 
-  @Event
-  var onLoad: Callback<Any>
+  let onLoad = EventDispatcher()
 
   // MARK: - ExpoView
 
@@ -53,7 +48,7 @@ public final class ImageView: ExpoView {
 
   // MARK: - Implementation
 
-  func loadFromSource(_ source: ImageSource?) {
+  func reload() {
     guard let source = source else {
       renderImage(nil)
       return
@@ -71,6 +66,8 @@ public final class ImageView: ExpoView {
     if let headers = source.headers {
       context[SDWebImageContextOption.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headers)
     }
+
+    context[SDWebImageContextOption.imageTransformer] = createTransformPipeline()
 
     onLoadStart([:])
 
@@ -120,6 +117,14 @@ public final class ImageView: ExpoView {
   }
 
   // MARK: - Processing
+
+  private func createTransformPipeline() -> SDImagePipelineTransformer {
+    let transformers: [SDImageTransformer] = [
+      SDImageBlurTransformer(radius: blurRadius),
+      SDImageTintTransformer(color: imageTintColor)
+    ]
+    return SDImagePipelineTransformer(transformers: transformers)
+  }
 
   private func processImage(_ image: UIImage?) -> UIImage? {
     guard let image = image else {

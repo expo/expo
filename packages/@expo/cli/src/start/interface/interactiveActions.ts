@@ -62,13 +62,12 @@ export class DevServerManagerActions {
 
   async openJsInspectorAsync() {
     Log.log('Opening JavaScript inspector in the browser...');
-    const port = this.devServerManager.getNativeDevServerPort();
-    assert(port, 'Metro dev server is not running');
-    const metroServerOrigin = `http://localhost:${port}`;
+    const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
+    assert(metroServerOrigin, 'Metro dev server is not running');
     const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
     if (!apps.length) {
       Log.warn(
-        `No compatible apps connected. This feature is only available for apps using the Hermes runtime. ${learnMore(
+        `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine. ${learnMore(
           'https://docs.expo.dev/guides/using-hermes/'
         )}`
       );

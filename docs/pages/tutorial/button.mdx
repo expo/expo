@@ -2,14 +2,14 @@
 title: Creating a button
 ---
 
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 
 We're going to create our own custom button using the `TouchableOpacity` component and some styled `Text` inside of it.
 
 <SnackInline label="Simple button">
 
 {/* prettier-ignore */}
-```js
+```jsx
 import React from 'react';
 import { Image, StyleSheet, Text, /* @info Add the TouchableOpacity component to your list of imports */ TouchableOpacity,/* @end */ View } from 'react-native';
 
@@ -66,7 +66,7 @@ We can make our button bigger by adding some `padding` to our `TouchableOpacity`
 <SnackInline label="Simple button">
 
 {/* prettier-ignore */}
-```js
+```jsx
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -77,7 +77,7 @@ export default function App() {
       <Text style={styles.instructions}>
         To share a photo from your phone with a friend, just press the button below!
       </Text>
-      <TouchableOpacity onPress={() => alert('Hello, world!')} /* @info We moved our our style down to the StyleSheet, keep scrolling! */ style={styles.button}/* @end */>
+      <TouchableOpacity onPress={() => alert('Hello, world!')} /* @info We moved our style down to the StyleSheet, keep scrolling! */ style={styles.button}/* @end */>
         <Text /* @info See StyleSheet */style={styles.buttonText}/* @end */>Pick a photo</Text>
       </TouchableOpacity>
     </View>
@@ -120,6 +120,6 @@ const styles = StyleSheet.create({
 
 <br />
 
-> Yikes, these code snippets are getting long. For the rest of the tutorial we'll show only relevant code here, and you can click through to Snack to see the full code.
+> Yikes! These code snippets are getting long. For the rest of the tutorial we'll show only relevant code here, and you can click through to Snack to see the full code.
 
 We have a button! We can now make that button do what we want it to do: open an "image picker" - a screen with a gallery of images on your device. [Continue to the next section](/tutorial/image-picker).

@@ -67,7 +67,7 @@ class MockBundlerDevServer extends BundlerDevServer {
     const host = 'localhost';
     this.setInstance({
       // Server instance
-      server: { close: jest.fn((fn) => fn()) },
+      server: { close: jest.fn((fn) => fn?.()) },
       // URL Info
       location: {
         url: `${protocol}://${host}:${port}`,
@@ -101,6 +101,12 @@ class MockBundlerDevServer extends BundlerDevServer {
   }
 }
 
+class MockMetroBundlerDevServer extends MockBundlerDevServer {
+  get name(): string {
+    return 'metro';
+  }
+}
+
 async function getRunningServer() {
   const devServer = new MockBundlerDevServer('/', getPlatformBundlers({}));
   await devServer.startAsync({ location: {} });
@@ -118,6 +124,17 @@ describe('broadcastMessage', () => {
 });
 
 describe('openPlatformAsync', () => {
+  it(`opens a project in the browser using tunnel with metro web`, async () => {
+    const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
+    await devServer.startAsync({
+      location: {
+        hostType: 'tunnel',
+      },
+    });
+    const { url } = await devServer.openPlatformAsync('desktop');
+    expect(url).toBe('http://exp.tunnel.dev/foobar');
+    expect(openBrowserAsync).toBeCalledWith('http://exp.tunnel.dev/foobar');
+  });
   it(`opens a project in the browser`, async () => {
     const devServer = await getRunningServer();
     const { url } = await devServer.openPlatformAsync('desktop');
@@ -332,5 +349,25 @@ describe('_startTunnelAsync', () => {
   const server = new MockBundlerDevServer('/', getPlatformBundlers({}));
   it(`returns null when the server isn't running`, async () => {
     expect(await server._startTunnelAsync()).toEqual(null);
+  });
+});
+
+describe('getJsInspectorBaseUrl', () => {
+  it('should return http based url', async () => {
+    const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
+    await devServer.startAsync({ location: {} });
+    expect(devServer.getJsInspectorBaseUrl()).toBe('http://100.100.1.100:3000');
+  });
+
+  it('should return tunnel url', async () => {
+    const devServer = new MockMetroBundlerDevServer('/', getPlatformBundlers({}));
+    await devServer.startAsync({ location: { hostType: 'tunnel' } });
+    expect(devServer.getJsInspectorBaseUrl()).toBe('http://exp.tunnel.dev');
+  });
+
+  it('should throw error for unsupported bundler', async () => {
+    const devServer = new MockBundlerDevServer('/', getPlatformBundlers({}));
+    await devServer.startAsync({ location: {} });
+    expect(() => devServer.getJsInspectorBaseUrl()).toThrow();
   });
 });

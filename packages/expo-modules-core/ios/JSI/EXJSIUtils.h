@@ -59,6 +59,10 @@ void defineProperty(jsi::Runtime &runtime, const jsi::Object *object, const char
  */
 void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, ObjectDeallocatorBlock deallocatorBlock);
 
+#pragma mark - Errors
+
+jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *message);
+
 } // namespace expo
 
 #endif

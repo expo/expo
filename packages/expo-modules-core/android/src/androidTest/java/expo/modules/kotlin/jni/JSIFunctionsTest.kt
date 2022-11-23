@@ -5,25 +5,27 @@ package expo.modules.kotlin.jni
 import com.google.common.truth.Truth
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.typedarray.Float32Array
 import expo.modules.kotlin.typedarray.Int32Array
 import expo.modules.kotlin.typedarray.Int8Array
 import expo.modules.kotlin.types.Either
+import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Test
 
 class JSIFunctionsTest {
-  enum class SimpleEnumClass {
+  enum class SimpleEnumClass : Enumerable {
     V1, V2
   }
 
-  enum class StringEnumClass(val value: String) {
+  enum class StringEnumClass(val value: String) : Enumerable {
     K1("V1"), K2("V2")
   }
 
-  enum class IntEnumClass(val value: Int) {
+  enum class IntEnumClass(val value: Int) : Enumerable {
     K1(1), K2(2)
   }
 
@@ -302,17 +304,17 @@ class JSIFunctionsTest {
     Truth.assertThat(exception.getProperty("message").getString()).contains("java.lang.IllegalStateException")
   }
 
-//  @Test(expected = JavaScriptEvaluateException::class)
-//  fun uncaught_error_should_be_piped_to_host_language() = withJSIInterop(
-//    inlineModule {
-//      Name("TestModule")
-//      Function("f") { ->
-//        throw IllegalStateException()
-//      }
-//    }
-//  ) {
-//    evaluateScript("expo.modules.TestModule.f()")
-//  }
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun uncaught_error_should_be_piped_to_host_language() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { ->
+        throw IllegalStateException()
+      }
+    }
+  ) {
+    evaluateScript("expo.modules.TestModule.f()")
+  }
 
   @Test
   fun typed_arrays_should_be_obtainable_as_function_argument() = withJSIInterop(
@@ -356,15 +358,15 @@ class JSIFunctionsTest {
     )
   }
 
-//  @Test(expected = JavaScriptEvaluateException::class)
-//  fun should_throw_if_js_value_cannnot_be_passed() = withJSIInterop(
-//    inlineModule {
-//      Name("TestModule")
-//      Function("f") { _: Int -> }
-//    }
-//  ) {
-//    evaluateScript("expo.modules.TestModule.f(Symbol())")
-//  }
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun should_throw_if_js_value_cannot_be_passed() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Function("f") { _: Int -> }
+    }
+  ) {
+    evaluateScript("expo.modules.TestModule.f(Symbol())")
+  }
 
   @Test
   fun int_array_should_be_convertible() = withJSIInterop(

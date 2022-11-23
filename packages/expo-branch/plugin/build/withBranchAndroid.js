@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setBranchApiKey = exports.getBranchApiKey = exports.withBranchAndroid = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const { addMetaDataItemToMainApplication, getMainApplicationOrThrow, removeMetaDataItemFromMainApplication, } = config_plugins_1.AndroidConfig.Manifest;
 const META_BRANCH_KEY = 'io.branch.sdk.BranchKey';
 const withBranchAndroid = (config) => {

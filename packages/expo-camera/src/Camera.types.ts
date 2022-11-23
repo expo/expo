@@ -85,7 +85,10 @@ export enum VideoCodec {
   AppleProRes4444 = 'ap4h',
 }
 
-// @needsAudit
+/**
+ * This option specifies the stabilization mode to use when recording a video.
+ * @platform ios
+ */
 export enum VideoStabilization {
   off = 'off',
   standard = 'standard',
@@ -195,6 +198,10 @@ export type CameraPictureOptions = {
    * @hidden
    */
   fastMode?: boolean;
+  /**
+   * @hidden
+   */
+  maxDownsampling?: number;
 };
 
 // @needsAudit
@@ -250,7 +257,33 @@ export type Point = {
   y: number;
 };
 
+export type BarCodeSize = {
+  /**
+   * The height value.
+   */
+  height: number;
+  /**
+   * The width value.
+   */
+  width: number;
+};
+
+/**
+ * These coordinates are represented in the coordinate space of the camera source (e.g. when you
+ * are using the camera view, these values are adjusted to the dimensions of the view).
+ */
 export type BarCodePoint = Point;
+
+export type BarCodeBounds = {
+  /**
+   * The origin point of the bounding box.
+   */
+  origin: BarCodePoint;
+  /**
+   * The size of the bounding box.
+   */
+  size: BarCodeSize;
+};
 
 // @needsAudit
 export type BarCodeScanningResult = {
@@ -264,8 +297,17 @@ export type BarCodeScanningResult = {
   data: string;
   /**
    * Corner points of the bounding box.
+   * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
+   * you don't get this value.
    */
-  cornerPoints?: BarCodePoint[];
+  cornerPoints: BarCodePoint[];
+  /**
+   * The [BarCodeBounds](#barcodebounds) object.
+   * `bounds` in some case will be representing an empty rectangle.
+   * Moreover, `bounds` doesn't have to bound the whole barcode.
+   * For some types, they will represent the area used by the scanner.
+   */
+  bounds: BarCodeBounds;
 };
 
 export type Face = {
@@ -370,7 +412,7 @@ export type CameraProps = ViewProps & {
    * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
    * @platform ios
    */
-  videoStabilizationMode?: number;
+  videoStabilizationMode?: VideoStabilization;
   /**
    * Callback invoked when camera preview could not been started.
    * @param event Error object that contains a `message`.

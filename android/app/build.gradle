@@ -34,8 +34,8 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 173
-    versionName '2.25.1'
+    versionCode 175
+    versionName '2.26.0'
     // END VERSIONS
 
     multiDexEnabled true
@@ -106,12 +106,6 @@ android {
   packagingOptions {
     // libfbjni.so is prebuilt library shared between all ABIs
     pickFirst "lib/**/libfbjni.so"
-  }
-}
-
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r245459'
   }
 }
 
@@ -200,6 +194,11 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_47
+  versionedImplementation(project(':expoview-abi47_0_0'))
+  // END_SDK_47
+
+
   // BEGIN_SDK_46
   versionedImplementation(project(':expoview-abi46_0_0'))
   // END_SDK_46
@@ -216,7 +215,7 @@ dependencies {
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   /* UNCOMMENT WHEN DISTRIBUTING
-  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
+  api 'org.webkit:android-jsc:r250230' // needs to be before react-native
   api 'com.facebook.react:react-native:+'
   END UNCOMMENT WHEN DISTRIBUTING */
 

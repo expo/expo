@@ -1,10 +1,10 @@
-import { mount } from 'enzyme';
+import { render, screen } from '@testing-library/react-native';
 import React from 'react';
 
 import { LinearGradient } from '../LinearGradient';
 
 it(`renders a complex gradient`, () => {
-  const component = mount(
+  render(
     <LinearGradient
       colors={['red', 'blue']}
       start={{ x: 0, y: 0 }}
@@ -13,7 +13,5 @@ it(`renders a complex gradient`, () => {
     />
   );
 
-  expect(
-    component.find('ViewManagerAdapter_ExpoLinearGradient').first().prop('proxiedProperties')
-  ).toMatchSnapshot();
+  expect(screen.toJSON()).toMatchSnapshot();
 });

@@ -128,6 +128,9 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
 - (NSArray<UIKeyCommand *> *)EX_keyCommands
 {
+  if ([self isKindOfClass:[UITextView class]] || [self isKindOfClass:[UITextField class]]) {
+    return @[];
+  }
   NSSet<EXKeyCommand *> *commands = [EXKernelDevKeyCommands sharedInstance].commands;
   return [[commands valueForKeyPath:@"keyCommand"] allObjects];
 }

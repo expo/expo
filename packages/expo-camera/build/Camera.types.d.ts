@@ -73,6 +73,10 @@ export declare enum VideoCodec {
     AppleProRes422 = "apcn",
     AppleProRes4444 = "ap4h"
 }
+/**
+ * This option specifies the stabilization mode to use when recording a video.
+ * @platform ios
+ */
 export declare enum VideoStabilization {
     off = "off",
     standard = "standard",
@@ -174,6 +178,10 @@ export declare type CameraPictureOptions = {
      * @hidden
      */
     fastMode?: boolean;
+    /**
+     * @hidden
+     */
+    maxDownsampling?: number;
 };
 export declare type CameraRecordingOptions = {
     /**
@@ -228,7 +236,31 @@ export declare type Point = {
     x: number;
     y: number;
 };
+export declare type BarCodeSize = {
+    /**
+     * The height value.
+     */
+    height: number;
+    /**
+     * The width value.
+     */
+    width: number;
+};
+/**
+ * These coordinates are represented in the coordinate space of the camera source (e.g. when you
+ * are using the camera view, these values are adjusted to the dimensions of the view).
+ */
 export declare type BarCodePoint = Point;
+export declare type BarCodeBounds = {
+    /**
+     * The origin point of the bounding box.
+     */
+    origin: BarCodePoint;
+    /**
+     * The size of the bounding box.
+     */
+    size: BarCodeSize;
+};
 export declare type BarCodeScanningResult = {
     /**
      * The barcode type.
@@ -240,8 +272,17 @@ export declare type BarCodeScanningResult = {
     data: string;
     /**
      * Corner points of the bounding box.
+     * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
+     * you don't get this value.
      */
-    cornerPoints?: BarCodePoint[];
+    cornerPoints: BarCodePoint[];
+    /**
+     * The [BarCodeBounds](#barcodebounds) object.
+     * `bounds` in some case will be representing an empty rectangle.
+     * Moreover, `bounds` doesn't have to bound the whole barcode.
+     * For some types, they will represent the area used by the scanner.
+     */
+    bounds: BarCodeBounds;
 };
 export declare type Face = {
     faceID: number;
@@ -343,7 +384,7 @@ export declare type CameraProps = ViewProps & {
      * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
      * @platform ios
      */
-    videoStabilizationMode?: number;
+    videoStabilizationMode?: VideoStabilization;
     /**
      * Callback invoked when camera preview could not been started.
      * @param event Error object that contains a `message`.

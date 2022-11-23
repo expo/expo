@@ -397,7 +397,7 @@ export async function test(t) {
               showBadge: false,
               sound: null,
               audioAttributes: {
-                usage: Notifications.AndroidAudioUsage.NOTIFICATION_COMMUNICATION_INSTANT,
+                usage: Notifications.AndroidAudioUsage.NOTIFICATION,
                 contentType: Notifications.AndroidAudioContentType.SONIFICATION,
                 flags: {
                   enforceAudibility: true,

@@ -35,7 +35,7 @@ A project's **tsconfig.json** should extend the `expo/tsconfig.base` by default.
 - `"lib"`: `["DOM", "ESNext"]`
   - Allow using the latest [ECMAScript proposed features and libraries](https://github.com/tc39/proposals).
 - [`"moduleResolution"`][tsc-moduleresolution]: `"node"`
-  - Emulate how Metro and Webpack resolve modules.
+  - Emulate how Metro and webpack resolve modules.
 - `"noEmit"`: `true`
   - Only use the TypeScript compiler (TSC) to check the code. The Metro bundler is responsible for compiling TypeScript to JavaScript.
 - `"resolveJsonModule"`: `true`
@@ -140,13 +140,14 @@ module.exports = require('./app.config.ts');
 **app.config.ts**
 
 ```ts
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
 
-// In SDK 47 and higher, use the following import instead:
-// import { ExpoConfig } from 'expo/config';
+// In SDK 46 and lower, use the following import instead:
+// import { ExpoConfig } from '@expo/config-types';
 
 const config: ExpoConfig = {
   name: 'my-app',
+  slug: 'my-app',
 };
 
 export default config;
@@ -154,7 +155,7 @@ export default config;
 
 ## Learning how to use TypeScript
 
-A good place to start learning TypeScript is the official [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/basic-types.html).
+A good place to start learning TypeScript is the official [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html).
 
 ### TypeScript and React components
 

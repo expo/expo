@@ -1,14 +1,13 @@
 ---
-title: Native Modules
+title: Module API Reference
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
-import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
+import { PlatformTags } from '~/ui/components/Tag';
+import { APIMethod } from '~/components/plugins/api/APISectionMethods';
 
-> **warning** Expo Modules APIs are in beta and subject to breaking changes.
-
-The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primities that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy to use and convenient API that is consistent across platforms where possible.
+The native modules API is an abstraction layer on top of [JSI](https://reactnative.dev/architecture/glossary#javascript-interfaces-jsi) and other low-level primitives that React Native is built upon. It is built with modern languages (Swift and Kotlin) and provides an easy to use and convenient API that is consistent across platforms where possible.
 
 ## Definition Components
 
@@ -152,10 +151,32 @@ async function getMessageAsync() {
 }
 ```
 
+<hr />
+
+#### Kotlin coroutines <PlatformTags prefix="" platforms={['android']} />
+
+`AsyncFunction` can receive a suspendable body on Android. However, it has to be passed in the infix notation after the `Coroutine` block. You can read more about suspendable functions and coroutines on [coroutine overview](https://kotlinlang.org/docs/coroutines-overview.html).
+
+`AsyncFunction` with suspendable body can't receive `Promise` as an argument. It uses a suspension mechanism to execute asynchronous calls.
+The function is immediately resolved with the returned value of the provided suspendable block or rejected if it throws an exception. The function can receive up to 8 arguments.
+
+By default, suspend functions are dispatched on the module's coroutine scope. Moreover, every other suspendable function called from the body block is run within the same scope.
+This scope's lifecycle is bound to the module's lifecycle - all unfinished suspend functions will be canceled when the module is deallocated.
+
+```kotlin Kotlin
+AsyncFunction("suspendFunction") Coroutine { message: String ->
+  launch {
+    return@Coroutine message
+  }
+}
+```
+
 </APIBox>
 <APIBox header="Events">
 
 Defines event names that the module can send to JavaScript.
+
+> **Note**: This component can be used inside of the [`View`](#view) block to define callback names. See [`View callbacks`](#view-callbacks)
 
 <CodeBlocksTable>
 
@@ -168,10 +189,13 @@ Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
 ```
 
 </CodeBlocksTable>
+
+See [Sending events](#sending-events) to learn how to send events from the native code to JavaScript/TypeScript.
+
 </APIBox>
 <APIBox header="ViewManager">
 
-> **warning** > **Deprecated**: To better integrate with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer) and its recycling mechanism, as of SDK 47 the `ViewManager` component is deprecated in favor of [`View`](#view) with a view class passed as the first argument. This component will be removed in SDK 48.
+> **warning** **Deprecated**: To better integrate with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer) and its recycling mechanism, as of SDK 47 the `ViewManager` component is deprecated in favor of [`View`](#view) with a view class passed as the first argument. This component will be removed in SDK 48.
 
 Enables the module to be used as a view manager. The view manager definition is built from the definition components used in the closure passed to `ViewManager`. Definition components that are accepted as part of the view manager definition: [`View`](#view), [`Prop`](#prop).
 
@@ -209,7 +233,7 @@ Enables the module to be used as a native view. Definition components that are a
 
 #### Arguments
 
-- **viewType** — The class of the native view that will be rendered.
+- **viewType** — The class of the native view that will be rendered. Note: On Android, the provided class must inherit from the [`ExpoView`](#expoview), on iOS it's optional. See [`Extending ExpoView`](#extending--expoview).
 - **definition**: `() -> ViewDefinition` — A builder of the view definition.
 
 <CodeBlocksTable>
@@ -228,7 +252,6 @@ View(TextView::class) {
 
 </CodeBlocksTable>
 
-> **info**
 > Support for rendering SwiftUI views is planned. For now, you can use [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) and add its content view to your UIKit view.
 
 </APIBox>
@@ -350,7 +373,7 @@ _Convertibles_ are native types that can be initialized from certain specific ki
 
 Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
-| Native Type             | TypeScript                                                                                                                                                                        |
+| Native iOS Type         | TypeScript                                                                                                                                                                        |
 | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `URL`                   | `string` with a URL. When scheme is not provided, it's assumed to be a file URL.                                                                                                  |
 | `CGFloat`               | `number`                                                                                                                                                                          |
@@ -359,6 +382,16 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 | `CGVector`              | `{ dx: number, dy: number }` or `number[]` with _dx_ and _dy_ vector differentials                                                                                                |
 | `CGRect`                | `{ x: number, y: number, width: number, height: number }` or `number[]` with _x_, _y_, _width_ and _height_ values                                                                |
 | `CGColor`<br/>`UIColor` | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
+
+Similarly, some common Android types from packages like `java.io`, `java.net`, or `android.graphics` are also made convertible.
+
+| Native Android Type                                                           | TypeScript                                                                                                                                                                        |
+| ----------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `java.net.URL`                                                                | `string` with a URL. Note that the scheme has to be provided                                                                                                                      |
+| `android.net.Uri`<br/>`java.net.URI`                                          | `string` with a URI. Note that the scheme has to be provided                                                                                                                      |
+| `java.io.File`<br/>`java.nio.file.Path` (is only available on Android API 26) | `string` with a path to the file                                                                                                                                                  |
+| `android.graphics.Color`                                                      | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
+| `kotlin.Pair<A, B>`                                                           | Array with two values, where the first one is of type _A_ and the second is of type _B_                                                                                           |
 
 </APIBox>
 <APIBox header="Records">
@@ -408,12 +441,12 @@ Function("readFile") { path: String, options: FileReadOptions ->
 </APIBox>
 <APIBox header="Enums">
 
-With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (e.g. `String`, `Int`) and conform to `EnumArgument`.
+With enums we can go even further with the above example (with `FileReadOptions` record) and limit supported encodings to `"utf8"` and `"base64"`. To use an enum as an argument or record field, it must represent a primitive value (e.g. `String`, `Int`) and conform to `Enumerable`.
 
 <CodeBlocksTable>
 
 ```swift
-enum FileEncoding: String, EnumArgument {
+enum FileEncoding: String, Enumerable {
   case utf8
   case base64
 }
@@ -427,7 +460,7 @@ struct FileReadOptions: Record {
 
 ```kotlin
 // Note: the constructor must have an argument called value.
-enum class FileEncoding(val value: String) {
+enum class FileEncoding(val value: String) : Enumerable {
   utf8("utf8"),
   base64("base64")
 }
@@ -478,8 +511,377 @@ The implementation for three Either types is currently provided out of the box, 
 - `EitherOfThree<FirstType, SecondType, ThirdType>` — A container for one of three types.
 - `EitherOfFour<FirstType, SecondType, ThirdType, FourthType>` — A container for one of four types.
 
-> **info**
 > Either types are available as of SDK 47.
+
+</APIBox>
+
+## Native Classes
+
+<APIBox header="Module">
+
+A base class for a native module.
+
+#### Properties
+
+<APIMethod
+  name="appContext"
+  comment="Provides access to the [`AppContext`](#appcontext)."
+  returnTypeName="AppContext"
+  isProperty={true}
+  isReturnTypeReference={true}
+/>
+
+#### Methods
+
+<APIMethod
+  name="sendEvent"
+  comment="Sends an event with a given name and a payload to JavaScript. See [`Sending events`](#sending-events)"
+  returnTypeName="void"
+  parameters={[
+    {
+      name: 'eventName',
+      comment: 'The name of the JavaScript event',
+      typeName: 'string',
+    },
+    {
+      name: 'payload',
+      comment: 'The event payload',
+      typeName: 'Android: Map<String, Any?> | Bundle\niOS: [String: Any?]',
+    },
+  ]}
+/>
+
+</APIBox>
+
+<APIBox header="AppContext">
+
+The app context is an interface to a single Expo app.
+
+#### Properties
+
+<APIMethod
+  name="constants"
+  comment="Provides access to app's constants from legacy module registry."
+  returnTypeName="Android: ConstantsInterface? iOS: EXConstantsInterface?"
+  isProperty={true}
+/>
+
+<APIMethod
+  name="permissions"
+  comment="Provides access to the permissions manager from legacy module registry."
+  returnTypeName="Android: Permissions? iOS: EXPermissionsInterface?"
+  isProperty={true}
+/>
+
+<APIMethod
+  name="imageLoader"
+  comment="Provides access to the image loader from the legacy module registry."
+  returnTypeName="Android: ImageLoaderInterface? iOS: EXImageLoaderInterface?"
+  isProperty={true}
+/>
+
+<APIMethod
+  name="barcodeScanner"
+  comment="Provides access to the bar code scanner manager from the legacy module registry."
+  returnTypeName="ImageLoaderInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="camera"
+  comment="Provides access to the camera view manager from the legacy module registry."
+  returnTypeName="CameraViewInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="font"
+  comment="Provides access to the font manager from the legacy module registry."
+  returnTypeName="FontManagerInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="sensor"
+  comment="Provides access to the sensor manager from the legacy module registry."
+  returnTypeName="SensorServiceInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="taskManager"
+  comment="Provides access to the task manager from the legacy module registry."
+  returnTypeName="TaskManagerInterface?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="activityProvider"
+  comment="Provides access to the activity provider from the legacy module registry."
+  returnTypeName="ActivityProvider?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="reactContext"
+  comment="Provides access to the react application context."
+  returnTypeName="Context?"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="hasActiveReactInstance"
+  comment="Checks if there is an not-null, alive react native instance."
+  returnTypeName="Boolean"
+  isProperty={true}
+  platforms={['Android']}
+/>
+
+<APIMethod
+  name="utilities"
+  comment="Provides access to the utilities from legacy module registry."
+  returnTypeName="EXUtilitiesInterface?"
+  isProperty={true}
+  platforms={['iOS']}
+/>
+
+</APIBox>
+
+<APIBox header="ExpoView">
+
+A base class that should be used by all exported views.
+
+On iOS, `ExpoView` extends the `RCTView` which handles some styles (e.g. borders) and accessibility.
+
+#### Properties
+
+<APIMethod
+  name="appContext"
+  comment="Provides access to the [`AppContext`](#appcontext)."
+  returnTypeName="AppContext"
+  isProperty={true}
+  isReturnTypeReference={true}
+/>
+
+<hr />
+
+#### Extending `ExpoView`
+
+To export your view using the [`View`](#view) component, your custom class must inherit from the `ExpoView`. By doing that you will get access to the [`AppContext`](#appcontext) object. It's the only way of communicating with other modules and the JavaScript runtime. Also, you can't change constructor parameters, because provided view will be initialized by `expo-modules-core`.
+
+<CodeBlocksTable>
+
+```swift
+class LinearGradientView: ExpoView {}
+
+public class LinearGradientModule: Module {
+  public func definition() -> ModuleDefinition {
+    View(LinearGradientView.self) {
+      // ...
+    }
+  }
+}
+```
+
+```kotlin
+class LinearGradientView(
+  context: Context,
+  appContext: AppContext,
+) : ExpoView(context, appContext)
+
+class LinearGradientModule : Module() {
+  override fun definition() = ModuleDefinition {
+    View(LinearGradientView::class) {
+      // ...
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+</APIBox>
+
+## Guides
+
+<APIBox header="Sending events">
+
+While JavaScript/TypeScript to Native communication is mostly covered by native functions, you might also want to let the JavaScript/TypeScript code know about certain system events, for example, when the clipboard content changes.
+
+To do this, in the module definition, you need to provide the event names that the module can send using the [Events](#events) definition component. After that, you can use the `sendEvent(eventName, payload)` function on the module instance to send the actual event with some payload. For example, a minimal clipboard implementation that sends native events may look like this:
+
+<CodeBlocksTable>
+
+```swift
+let CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
+
+public class ClipboardModule: Module {
+  public func definition() -> ModuleDefinition {
+    Events(CLIPBOARD_CHANGED_EVENT_NAME)
+
+    OnStartObserving {
+      NotificationCenter.default.addObserver(
+        self,
+        selector: #selector(self.clipboardChangedListener),
+        name: UIPasteboard.changedNotification,
+        object: nil
+      )
+    }
+
+    OnStopObserving {
+      NotificationCenter.default.removeObserver(
+        self,
+        name: UIPasteboard.changedNotification,
+        object: nil
+      )
+    }
+  }
+
+  @objc
+  private func clipboardChangedListener() {
+    sendEvent(CLIPBOARD_CHANGED_EVENT_NAME, [
+      "contentTypes": availableContentTypes()
+    ])
+  }
+}
+```
+
+```kotlin
+const val CLIPBOARD_CHANGED_EVENT_NAME = "onClipboardChanged"
+
+class ClipboardModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Events(CLIPBOARD_CHANGED_EVENT_NAME)
+
+    OnStartObserving {
+      clipboardManager?.addPrimaryClipChangedListener(listener)
+    }
+
+    OnStopObserving {
+      clipboardManager?.removePrimaryClipChangedListener(listener)
+    }
+  }
+
+  private val clipboardManager: ClipboardManager?
+    get() = appContext.reactContext?.getSystemService(Context.CLIPBOARD_SERVICE) as? ClipboardManager
+
+  private val listener = ClipboardManager.OnPrimaryClipChangedListener {
+    clipboardManager?.primaryClipDescription?.let { clip ->
+      this@ClipboardModule.sendEvent(
+        CLIPBOARD_CHANGED_EVENT_NAME,
+        bundleOf(
+          "contentTypes" to availableContentTypes(clip)
+        )
+      )
+    }
+  }
+}
+```
+
+</CodeBlocksTable>
+
+To subscribe to these events in JavaScript/TypeScript, you need to wrap the native module with `EventEmitter` class as shown:
+
+```ts TypeScript
+import { requireNativeModule, EventEmitter, Subscription } from 'expo-modules-core';
+
+const ClipboardModule = requireNativeModule('Clipboard');
+const emitter = new EventEmitter(ClipboardModule);
+
+export function addClipboardListener(listener: (event) => void): Subscription {
+  return emitter.addListener('onClipboardChanged', listener);
+}
+```
+
+</APIBox>
+
+<APIBox header="View callbacks">
+
+Some events are connected to a certain view. For example, the touch event should be sent only to the underlying JavaScript view which was pressed. In that case, you can't use `sendEvent` described in [`Sending events`](#sending-events). The `expo-modules-core` introduces a view callbacks mechanism to handle view-bound events.
+
+To use it, in the view definition, you need to provide the event names that the view can send using the [Events](#events) definition component. After that, you need to declare a property of type `EventDispatcher` in your view class. The name of the declared property has to be the same as the name exported in the `Events` component. Later, you can call it as a function and pass a payload of type `[String: Any?]` on iOS and `Map<String, Any?>` on Android.
+
+> **Note**: On Android, it's possible to specify the payload type. In case of types that don't convert into objects, the payload will be encapsulated and stored under the `payload` key: `{payload: <provided value>}`.
+
+<CodeBlocksTable>
+
+```swift
+class CameraViewModule: Module {
+  public func definition() -> ModuleDefinition {
+    View(CamerView.self) {
+      Events(
+        "onCameraReady"
+      )
+
+      // ...
+    }
+  }
+}
+
+class CameraView: ExpoView {
+  let onCameraReady = EventDispatcher()
+
+  func callOnCameraReady() {
+    onCameraReady([
+      "message": "Camera was mounted"
+    ]);
+  }
+}
+```
+
+```kotlin
+class CameraViewModule : Module() {
+  override fun definition() = ModuleDefinition {
+    View(ExpoCameraView::class) {
+      Events(
+        "onCameraReady"
+      )
+
+      // ...
+    }
+  }
+}
+
+class CameraView(
+  context: Context,
+  appContext: AppContext
+) : ExpoView(context, appContext) {
+  val onCameraReady by EventDispatcher()
+
+  fun callOnCameraReady() {
+    onCameraReady(mapOf(
+      "message" to "Camera was mounted"
+    ));
+  }
+}
+```
+
+</CodeBlocksTable>
+
+To subscribe to these events in JavaScript/TypeScript, you need to pass a function to the native view as shown:
+
+```ts TypeScript
+import { requireNativeViewManager } from 'expo-modules-core';
+
+const CameraView = requireNativeViewManager('CameraView');
+
+export default function MainView() {
+  const onCameraReady = event => {
+    console.log(event.nativeEvent);
+  };
+
+  return <CameraView onCameraReady={onCameraReady} />;
+}
+```
+
+Provided payload is available under the `nativeEvent` key.
 
 </APIBox>
 
@@ -527,4 +929,5 @@ For more examples from real modules, you can refer to Expo modules that already 
 - `expo-localization` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-localization/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-localization/android/src/main/java/expo/modules/localization))
 - `expo-store-review` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-store-review/ios))
 - `expo-system-ui` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-system-ui/ios/ExpoSystemUI))
+- `expo-video-thumbnails` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-video-thumbnails/ios))
 - `expo-web-browser` ([Swift](https://github.com/expo/expo/blob/main/packages/expo-web-browser/ios), [Kotlin](https://github.com/expo/expo/blob/main/packages/expo-web-browser/android/src/main/java/expo/modules/webbrowser))

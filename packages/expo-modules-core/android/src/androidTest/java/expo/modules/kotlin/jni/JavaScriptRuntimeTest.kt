@@ -1,7 +1,9 @@
 package expo.modules.kotlin.jni
 
 import com.google.common.truth.Truth
+import expo.modules.kotlin.exception.JavaScriptEvaluateException
 import io.mockk.mockk
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
@@ -15,19 +17,19 @@ class JavaScriptRuntimeTest {
     }
   }
 
-//  @Test(expected = JavaScriptEvaluateException::class)
-//  fun evaluate_should_throw_evaluate_exception() {
-//    jsiInterop.evaluateScript("'")
-//  }
+  @Test(expected = JavaScriptEvaluateException::class)
+  fun evaluate_should_throw_evaluate_exception() {
+    jsiInterop.evaluateScript("'")
+  }
 
-//  @Test
-//  fun evaluate_should_throw_evaluate_exception_with_stack() {
-//    val exception = Assert.assertThrows(JavaScriptEvaluateException::class.java) {
-//      jsiInterop.evaluateScript("function x() { global.nonExistingFunction(10); }; x();")
-//    }
-//
-//    Truth.assertThat(exception.jsStack).isNotEmpty()
-//  }
+  @Test
+  fun evaluate_should_throw_evaluate_exception_with_stack() {
+    val exception = Assert.assertThrows(JavaScriptEvaluateException::class.java) {
+      jsiInterop.evaluateScript("function x() { global.nonExistingFunction(10); }; x();")
+    }
+
+    Truth.assertThat(exception.jsStack).isNotEmpty()
+  }
 
   @Test
   fun evaluate_returns_undefined() {

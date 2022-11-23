@@ -37,6 +37,7 @@
     "fs-extra": "^10.1.0",
     "glob": "^7.2.0",
     "glob-promise": "^4.2.2",
+    "gradle-upgrade-interactive": "^0.7.4",
     "http-proxy": "^1.18.1",
     "inquirer": "^8.2.2",
     "ip": "^1.1.5",

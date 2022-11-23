@@ -6,20 +6,21 @@ import com.google.common.truth.Truth
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
 import org.junit.Test
 
 class JSIAsyncFunctionsTest {
-  enum class SimpleEnumClass {
+  enum class SimpleEnumClass : Enumerable {
     V1, V2
   }
 
-  enum class StringEnumClass(val value: String) {
+  enum class StringEnumClass(val value: String) : Enumerable {
     K1("V1"), K2("V2")
   }
 
-  enum class IntEnumClass(val value: Int) {
+  enum class IntEnumClass(val value: Int) : Enumerable {
     K1(1), K2(2)
   }
 
@@ -196,15 +197,15 @@ class JSIAsyncFunctionsTest {
     Truth.assertThat(exception.message).contains("java.lang.IllegalStateException")
   }
 
-//  @Test(expected = JavaScriptEvaluateException::class)
-//  fun should_throw_if_js_value_cannnot_be_passed() = withJSIInterop(
-//    inlineModule {
-//      Name("TestModule")
-//      AsyncFunction("f") { _: Int -> }
-//    }
-//  ) { methodQueue ->
-//    waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f(Symbol())")
-//  }
+  @Test(expected = PromiseException::class)
+  fun should_reject_if_js_value_cannot_be_passed() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      AsyncFunction("f") { _: Int -> }
+    }
+  ) { methodQueue ->
+    waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f(Symbol())")
+  }
 
   @Test
   fun int_array_should_be_convertible() = withJSIInterop(

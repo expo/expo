@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '5.3.0'
+version = '6.0.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -74,7 +74,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 4
-    versionName "5.3.0"
+    versionName "6.0.0"
   }
   lintOptions {
     abortOnError false
@@ -84,6 +84,8 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  api 'com.google.android.gms:play-services-base:17.3.0'
-  api 'com.google.android.play:core:1.8.0'
+
+  implementation "com.google.android.play:review:2.0.1"
+  implementation "com.google.android.play:review-ktx:2.0.0"
+  api "com.google.android.gms:play-services-base:17.3.0"
 }

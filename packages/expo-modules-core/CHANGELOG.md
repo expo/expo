@@ -6,9 +6,84 @@
 
 ### 🎉 New features
 
+- Added the `Exception.MissingActivity` on Android. ([#20174](https://github.com/expo/expo/pull/20174) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
+- Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+- Fixed failed resolution of 'java.nio.file.Path' on Android. ([#20037](https://github.com/expo/expo/pull/20037) by [@lukmccall](https://github.com/lukmccall))
+- Fixed views are not correctly initialized after reloading on Android. ([#20063](https://github.com/expo/expo/pull/20063) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
+
+## 1.0.2 - 2022-11-08
+
+### 💡 Others
+
+- Rephrased the message of `ArgumentCastException` to use ordinal numbers. ([#19912](https://github.com/expo/expo/pull/19912) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.0.1 - 2022-11-07
+
+### 🐛 Bug fixes
+
+- Added a list of the acceptable enum values to the conversion error on Android. ([#19895](https://github.com/expo/expo/pull/19895) by [@lukmccall](https://github.com/lukmccall))
+- Fixed `new NativeEventEmitter() was called with a non-null argument without the required addListener method.` warnings on Android with JSC. ([#19920](https://github.com/expo/expo/pull/19920) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Exposed coroutines related packages on Android. ([#19896](https://github.com/expo/expo/pull/19896) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.0.0 — 2022-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.13.4 — 2022-11-02
+
+### 🐛 Bug fixes
+
+- Fixed build errors when testing on React Native nightly builds. ([#19369](https://github.com/expo/expo/pull/19369) by [@kudo](https://github.com/kudo))
+
+## 0.13.3 — 2022-10-30
+
+### 🎉 New features
+
+- Added `AppContext.hasActiveReactInstance` on Android. ([#19723](https://github.com/expo/expo/pull/19723) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.13.2 — 2022-10-28
+
+### 🐛 Bug fixes
+
+- Fixed `new NativeEventEmitter() was called with a non-null argument without the required addListener method.` warnings on Android. ([#19704](https://github.com/expo/expo/pull/19704) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+
+## 0.13.1 — 2022-10-27
+
+### 🐛 Bug fixes
+
+- Fixed `~CallbackWrapper()` dangling pointer crashes when reloading the app on Android. ([#19699](https://github.com/expo/expo/pull/19699) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+
+## 0.13.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Convertible enums must inherit from `expo.modules.kotlin.types.Enumerable` on Android. ([#19551](https://github.com/expo/expo/pull/19551) by [@lukmccall](https://github.com/lukmccall))
+- `AppContext.currentActivity` is not longer returning `AppCompatActivity`, but an instance of `android.app.Activity` class. ([#19573](https://github.com/expo/expo/pull/19573) by [@lukmccall](https://github.com/lukmccall))
+
+### ⚠️ Notices
+
+- Deprecated `ConvertibleArgument` in favor of `Convertible` and `EnumArgument` in favor of `Enumerable`. ([#19612](https://github.com/expo/expo/pull/19612) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Implemented a mechanism for hooking into to the view lifecycle events (introduces new `OnViewDidUpdateProps` definition component). ([#19549](https://github.com/expo/expo/pull/19549) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed records aren't correctly converted to JS objects in the release builds on Android. ([#19551](https://github.com/expo/expo/pull/19551) by [@lukmccall](https://github.com/lukmccall))
+- Reject promises with a `CodedError` instead of a plain object. ([#19605](https://github.com/expo/expo/pull/19605) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- Simplified dispatching view events. ([#19537](https://github.com/expo/expo/pull/19537) by [@tsapeta](https://github.com/tsapeta))
 
 ## 0.12.0 — 2022-10-06
 
@@ -43,6 +118,7 @@
 - Add the `RegisterActivityContracts` component to register all of activity result contracts on Android. ([#19180](https://github.com/expo/expo/pull/19180) by [@lukmccall](https://github.com/lukmccall))
 - Improves JSI/JNI type conversion to support complex function arguments on Android. ([#19120](https://github.com/expo/expo/pull/19120) & [#19094](https://github.com/expo/expo/pull/19094) by [@lukmccall](https://github.com/lukmccall))
 - Using JSI instead of the bridge to call native methods also on legacy modules on iOS. ([#19209](https://github.com/expo/expo/pull/19209) by [@lukmccall](https://github.com/lukmccall))
+- Added `cacheDirectory` and `persistentFilesDirectory` to `AppContext` on Android to fix cache directories being incorrect in new Sweet API modules. It uses a new `AppDirectoriesModule` to get correct scoped directories from old module API. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 

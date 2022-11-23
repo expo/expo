@@ -1,0 +1,64 @@
+{
+  "name": "ABI47_0_0react-native-skia",
+  "version": "0.1.155",
+  "summary": "High-performance ABI47_0_0React Native Graphics using Skia",
+  "description": "@shopify/react-native-skia",
+  "homepage": "https://github.com/shopify/react-native-skia",
+  "license": "MIT",
+  "authors": {
+    "Your Name": "yourname@email.com"
+  },
+  "platforms": {
+    "ios": "9.0"
+  },
+  "source": {
+    "git": "https://github.com/shopify/react-native-skia/react-native-skia.git",
+    "tag": "0.1.155"
+  },
+  "requires_arc": true,
+  "pod_target_xcconfig": {
+    "GCC_PREPROCESSOR_DEFINITIONS": "$(inherited) SK_GL=1 SK_METAL=1",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++17",
+    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/Headers/Private/ABI47_0_0React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/ABI47_0_0React-bridging/react_bridging.framework/Headers\""
+  },
+  "frameworks": [
+    "GLKit",
+    "MetalKit"
+  ],
+  "ios": {},
+  "source_files": [
+    "ios/**/*.{h,c,cc,cpp,m,mm,swift}"
+  ],
+  "dependencies": {
+    "ABI47_0_0React": [],
+    "ABI47_0_0React-callinvoker": [],
+    "ABI47_0_0React-Core": []
+  },
+  "subspecs": [
+    {
+      "name": "SkiaHeaders",
+      "header_mappings_dir": "cpp/skia",
+      "source_files": "cpp/skia/**/*.{h,cpp}"
+    },
+    {
+      "name": "Utils",
+      "header_mappings_dir": "cpp/utils",
+      "source_files": "cpp/utils/**/*.{h,cpp}"
+    },
+    {
+      "name": "Jsi",
+      "header_mappings_dir": "cpp/jsi",
+      "source_files": "cpp/jsi/**/*.{h,cpp}"
+    },
+    {
+      "name": "Api",
+      "header_mappings_dir": "cpp/api",
+      "source_files": "cpp/api/**/*.{h,cpp}"
+    },
+    {
+      "name": "ABI47_0_0RNSkia",
+      "header_mappings_dir": "cpp/rnskia",
+      "source_files": "cpp/rnskia/**/*.{h,cpp}"
+    }
+  ]
+}

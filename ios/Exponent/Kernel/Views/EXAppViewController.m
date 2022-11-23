@@ -31,12 +31,22 @@
 #endif
 
 #import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
+#import <ABI47_0_0React/ABI47_0_0RCTAppearance.h>
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
 #import <ABI46_0_0React/ABI46_0_0RCTAppearance.h>
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
 #import <ABI45_0_0React/ABI45_0_0RCTAppearance.h>
 #endif
+
+#if defined(EX_DETACHED)
+#import "ExpoKit-Swift.h"
+#else
+#import "Expo_Go-Swift.h"
+#endif // defined(EX_DETACHED)
+
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -260,8 +270,18 @@ NS_ASSUME_NONNULL_BEGIN
   [_appRecord.appLoader requestFromCache];
 }
 
+- (bool)_readSupportsRTLFromManifest:(EXManifestsManifest *)manifest
+{
+  return [[[[manifest rawManifestJSON] valueForKey:@"extra"] valueForKey: @"supportsRTL"] boolValue];
+}
+
 - (void)appStateDidBecomeActive
 {
+  if (_isHomeApp) {
+    [EXTextDirectionController setSupportsRTL:false];
+  } else if(_appRecord.appLoader.manifest != nil) {
+    [EXTextDirectionController setSupportsRTL:[self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest]];
+  }
   dispatch_async(dispatch_get_main_queue(), ^{
     // Reset the root view background color and window color if we switch between Expo home and project
     [self _setBackgroundColor];
@@ -463,6 +483,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
+  if (!_isHomeApp) {
+    [EXTextDirectionController setSupportsRTL:[self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest]];
+  }
   [self _rebuildBridge];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];
@@ -622,6 +645,9 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
+  ABI47_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
   ABI46_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif

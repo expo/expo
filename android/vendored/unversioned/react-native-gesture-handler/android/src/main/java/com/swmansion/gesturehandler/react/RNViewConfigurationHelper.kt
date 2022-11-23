@@ -5,8 +5,8 @@ import android.view.ViewGroup
 import com.facebook.react.uimanager.PointerEvents
 import com.facebook.react.uimanager.ReactPointerEventsView
 import com.facebook.react.views.view.ReactViewGroup
-import com.swmansion.gesturehandler.PointerEventsConfig
-import com.swmansion.gesturehandler.ViewConfigurationHelper
+import com.swmansion.gesturehandler.core.PointerEventsConfig
+import com.swmansion.gesturehandler.core.ViewConfigurationHelper
 
 class RNViewConfigurationHelper : ViewConfigurationHelper {
   override fun getPointerEventsConfigForView(view: View): PointerEventsConfig {

@@ -1,6 +1,7 @@
 import { ConfigPlugin } from '../Plugin.types';
 import { ExpoConfigUpdates } from '../utils/Updates';
 import { AndroidManifest } from './Manifest';
+import { ResourceXML } from './Resources';
 export declare enum Config {
     ENABLED = "expo.modules.updates.ENABLED",
     CHECK_ON_LAUNCH = "expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH",
@@ -16,6 +17,7 @@ export declare enum Config {
 export declare const withUpdates: ConfigPlugin<{
     expoUsername: string | null;
 }>;
+export declare function applyRuntimeVersionFromConfig(config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, stringsJSON: ResourceXML): ResourceXML;
 export declare function setUpdatesConfig(projectRoot: string, config: ExpoConfigUpdates, androidManifest: AndroidManifest, username: string | null, expoUpdatesPackageVersion?: string | null): AndroidManifest;
 export declare function setVersionsConfig(config: Pick<ExpoConfigUpdates, 'sdkVersion' | 'runtimeVersion'>, androidManifest: AndroidManifest): AndroidManifest;
 export declare function ensureBuildGradleContainsConfigurationScript(projectRoot: string, buildGradleContents: string): string;

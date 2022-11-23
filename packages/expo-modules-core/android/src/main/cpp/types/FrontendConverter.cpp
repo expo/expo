@@ -197,7 +197,7 @@ jobject UnknownFrontendConverter::convert(
   const jsi::Value &value
 ) const {
   auto stringRepresentation = value.toString(rt).utf8(rt);
-  jni::throwNewJavaException(
+  throwNewJavaException(
     UnexpectedException::create(
       "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
   );
@@ -239,7 +239,7 @@ jobject PolyFrontendConverter::convert(
   }
   // That shouldn't happen.
   auto stringRepresentation = value.toString(rt).utf8(rt);
-  jni::throwNewJavaException(
+  throwNewJavaException(
     UnexpectedException::create(
       "Cannot convert '" + stringRepresentation + "' to a Kotlin type.").get()
   );
