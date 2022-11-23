@@ -113,13 +113,7 @@ export async function exportAppAsync(
     const saveAssets = importCliSaveAssetsFromProject(projectRoot);
     await Promise.all(
       Object.entries(bundles).map(([platform, bundle]) => {
-        return saveAssets(
-          // @ts-expect-error: tolerable type mismatches: unused `readonly` (common in Metro) and `undefined` instead of `null`.
-          bundle.assets,
-          platform,
-          outputPath,
-          undefined
-        );
+        return saveAssets(bundle.assets, platform, outputPath);
       })
     );
   }

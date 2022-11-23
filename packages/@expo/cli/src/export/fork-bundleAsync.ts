@@ -24,7 +24,7 @@ export type MetroDevServerOptions = LoadOptions & {
 };
 export type BundleOptions = {
   entryPoint: string;
-  platform: 'android' | 'ios' | 'web';
+  platform?: 'android' | 'ios' | 'web' | null;
   dev?: boolean;
   minify?: boolean;
   sourceMapUrl?: string;
@@ -85,7 +85,7 @@ async function assertEngineMismatchAsync(projectRoot: string, exp: ExpoConfig, p
 export async function bundleAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,
-  { externals, ...options }: MetroDevServerOptions & { externals?: string[] },
+  options: MetroDevServerOptions,
   bundles: BundleOptions[]
 ): Promise<BundleOutput[]> {
   // Assert early so the user doesn't have to wait until bundling is complete to find out that
@@ -113,7 +113,7 @@ export async function bundleAsync(
 
   const bundlerPlatforms = getPlatformBundlers(exp);
 
-  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms, externals);
+  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
 
   const metroServer = await metro.runMetro(config, {
     watch: false,
@@ -183,7 +183,8 @@ export async function bundleAsync(
     const isHermesManaged = isEnableHermesManaged(expoConfig, platform);
     if (isHermesManaged) {
       const platformTag = chalk.bold(
-        { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform
+        { ios: 'iOS', android: 'Android', web: 'Web', node: 'Node.js' }[platform ?? 'node'] ||
+          platform
       );
 
       terminalReporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);
