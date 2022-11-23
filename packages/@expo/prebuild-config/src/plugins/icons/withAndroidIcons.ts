@@ -186,12 +186,13 @@ export async function configureAdaptiveIconAsync(
   monochromeImage: string | null,
   isAdaptive: boolean
 ) {
-  if (monochromeImage)
+  if (monochromeImage) {
     await generateMonochromeImageAsync(projectRoot, {
       icon: monochromeImage,
       imageCacheFolder: 'android-adaptive-monochrome',
       outputImageFileName: IC_LAUNCHER_MONOCHROME_PNG,
     });
+  }
   await generateMultiLayerImageAsync(projectRoot, {
     backgroundColor: 'transparent',
     backgroundImage,
@@ -231,8 +232,9 @@ export const createAdaptiveIconXmlString = (
     '<foreground android:drawable="@mipmap/ic_launcher_foreground"/>',
   ];
 
-  if (monochromeImage)
+  if (monochromeImage) {
     iconElements.push('<monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>');
+  }
 
   return `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
