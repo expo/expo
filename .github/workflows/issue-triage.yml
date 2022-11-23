@@ -144,3 +144,31 @@ jobs:
               repo: context.repo.repo,
               state: 'closed'
             })
+
+  third-party:
+    runs-on: ubuntu-20.04
+    if: "${{ contains(github.event.label.name, 'invalid issue: third-party library') }}"
+    steps:
+      - uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Hi there! It looks like your issue is more closely related to a third-party tool.
+
+              If you are able to narrow down the root cause to a bug relevant to this repository, please create an issue here with a [minimal reproducible example](https://stackoverflow.com/help/minimal-reproducible-example). Otherwise, we recommend posting this issue to the repository for the tool that you are using.
+
+              ### Resources
+
+              - ["How to create a Minimal, Reproducible Example"](https://stackoverflow.com/help/minimal-reproducible-example)
+              - ["How to narrow down the source of an error"](https://expo.fyi/manual-debugging)
+            `})
+            github.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed'
+            })
