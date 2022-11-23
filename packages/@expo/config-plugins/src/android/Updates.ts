@@ -149,7 +149,10 @@ export function setUpdatesConfig(
       requestHeaders
     );
   } else {
-    removeMetaDataItemFromMainApplication(mainApplication, Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY);
+    removeMetaDataItemFromMainApplication(
+      mainApplication,
+      Config.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY
+    );
   }
 
   return setVersionsConfig(config, androidManifest);
