@@ -1,5 +1,5 @@
-import firebase from 'firebase/compat/app';
-import 'firebase/compat/auth';
+import { getApp } from 'firebase/app';
+import { getAuth, RecaptchaVerifier } from "firebase/auth";
 import * as React from 'react';
 
 import { FirebaseAuthApplicationVerifier } from './FirebaseRecaptcha.types';
@@ -13,19 +13,20 @@ interface Props {
 
 class FirebaseRecaptchaVerifierModal extends React.Component<Props> {
   private verifier: FirebaseAuthApplicationVerifier | null = null;
+  private auth = getAuth(getApp())
 
   private setRef = (ref: any) => {
     if (ref) {
       if (this.props.appVerificationDisabledForTesting !== undefined) {
-        firebase.auth().settings.appVerificationDisabledForTesting =
+       this.auth.settings.appVerificationDisabledForTesting =
           !!this.props.appVerificationDisabledForTesting;
       }
       if (this.props.languageCode) {
-        firebase.auth().languageCode = this.props.languageCode;
+        this.auth.languageCode = this.props.languageCode;
       }
-      this.verifier = new firebase.auth.RecaptchaVerifier(ref, {
+      this.verifier = new RecaptchaVerifier(ref, {
         size: this.props.attemptInvisibleVerification ? 'invisible' : 'normal',
-      });
+      }, this.auth);
     } else {
       this.verifier = null;
     }
