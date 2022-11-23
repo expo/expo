@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { breakpoints, spacing, theme } from '@expo/styleguide';
 import { useRouter } from 'next/router';
 
-import { ForumsLink, GitHubLink, IssuesLink, SourceCodeLink } from './Links';
+import { ForumsLink, GitHubLink, IssuesLink, NpmLink, SourceCodeLink } from './Links';
 
 import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
 import { PageVote } from '~/ui/components/Footer/PageVote';
@@ -13,22 +13,26 @@ const NEWSLETTER_DISABLED = true as const;
 type Props = {
   title: string;
   sourceCodeUrl?: string;
+  packageName?: string;
 };
 
-export const Footer = ({ title, sourceCodeUrl }: Props) => {
-  const router = useRouter();
-
-  const isAPIPage = router.asPath.includes('/sdk/');
+export const Footer = ({ title, sourceCodeUrl, packageName }: Props) => {
+  const { pathname } = useRouter();
+  const isAPIPage = pathname.includes('/sdk/');
+  const isExpoPackage = packageName && packageName.startsWith('expo-');
 
   return (
     <footer css={footerStyle}>
       <UL css={linksListStyle}>
         <ForumsLink isAPIPage={isAPIPage} title={title} />
-        {isAPIPage && <IssuesLink title={title} />}
+        {isAPIPage && (
+          <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
+        )}
         {isAPIPage && sourceCodeUrl && (
           <SourceCodeLink title={title} sourceCodeUrl={sourceCodeUrl} />
         )}
-        {router && <GitHubLink pathname={router.pathname} />}
+        {packageName && <NpmLink packageName={packageName} />}
+        <GitHubLink pathname={pathname} />
       </UL>
       <PageVote />
       {!NEWSLETTER_DISABLED && <NewsletterSignUp />}

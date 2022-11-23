@@ -1,45 +1,79 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import { RouterContext } from 'next/dist/shared/lib/router-context';
 import { NextRouter } from 'next/router';
-import * as React from 'react';
+import { ReactElement } from 'react';
 
 import { Footer } from './Footer';
 import { githubUrl } from './utils';
 
-const withTestRouter = (tree: React.ReactElement, router: Partial<NextRouter> = {}) => (
+const withTestRouter = (tree: ReactElement, router: Partial<NextRouter> = {}) => (
   <RouterContext.Provider value={router as NextRouter}>{tree}</RouterContext.Provider>
 );
 
-describe('DocumentationFooter', () => {
+describe('Footer', () => {
   test('displays default links', () => {
-    const router = { asPath: '/', pathname: '/example/' };
-    const { container } = render(withTestRouter(<Footer title="test-title" />, router));
+    const router = { pathname: '/example/' };
+    render(withTestRouter(<Footer title="test-title" />, router));
 
-    expect(container).toHaveTextContent('Ask a question on the forums');
-    expect(container).toHaveTextContent('Edit this page');
+    screen.getByText('Ask a question on the forums');
+    screen.getByText('Edit this page');
   });
 
   test('displays forums link with tag', () => {
-    const router = { asPath: '/sdk/', pathname: '' };
-    const { container } = render(withTestRouter(<Footer title="test-title" />, router));
+    const router = { pathname: '/sdk/' };
+    render(withTestRouter(<Footer title="test-title" />, router));
 
-    expect(container).toHaveTextContent('Ask a question on the forums about test-title');
+    screen.getByText('Ask a question on the forums about test-title');
   });
 
   test('displays issues link', () => {
-    const router = { asPath: '/sdk/', pathname: '' };
-    const { container } = render(withTestRouter(<Footer title="test-title" />, router));
+    const router = { pathname: '/sdk/' };
+    render(withTestRouter(<Footer title="test-title" />, router));
 
-    expect(container).toHaveTextContent('View open bug reports for test-title');
+    screen.getByText('View open bug reports for test-title');
+  });
+
+  test('displays correct issues link for 3rd-party package', () => {
+    const router = { pathname: '/sdk/' };
+    render(
+      withTestRouter(
+        <Footer
+          title="GestureHandler"
+          sourceCodeUrl="https://github.com/software-mansion/react-native-gesture-handler"
+          packageName="react-native-gesture-handler"
+        />,
+        router
+      )
+    );
+
+    const link = screen.getByRole('link', {
+      name: 'Github-icon View open bug reports for GestureHandler',
+    });
+    expect(link.getAttribute('href')).toBe(
+      'https://github.com/software-mansion/react-native-gesture-handler/issues'
+    );
   });
 
   test('displays source code link', () => {
-    const router = { asPath: '/sdk/', pathname: '' };
-    const { container } = render(
-      withTestRouter(<Footer title="test-title" sourceCodeUrl="/" />, router)
+    const router = { pathname: '/sdk/' };
+    render(
+      withTestRouter(
+        <Footer
+          title="test-title"
+          sourceCodeUrl="https://github.com/expo/expo/tree/main/packages/expo-av"
+        />,
+        router
+      )
     );
 
-    expect(container).toHaveTextContent('View source code for test-title');
+    screen.getByText('View source code for test-title');
+  });
+
+  test('displays npm registry link', () => {
+    const router = { pathname: '/sdk/' };
+    render(withTestRouter(<Footer title="test-title" packageName="expo-av" />, router));
+
+    screen.getByText('View package in npm Registry');
   });
 });
 
