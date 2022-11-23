@@ -203,11 +203,13 @@ async function generateRoundIconAsync(projectRoot, icon, backgroundImage, backgr
  * - A backgroundColor was specified
  */
 async function configureAdaptiveIconAsync(projectRoot, foregroundImage, backgroundImage, monochromeImage, isAdaptive) {
-  if (monochromeImage) await generateMonochromeImageAsync(projectRoot, {
-    icon: monochromeImage,
-    imageCacheFolder: 'android-adaptive-monochrome',
-    outputImageFileName: IC_LAUNCHER_MONOCHROME_PNG
-  });
+  if (monochromeImage) {
+    await generateMonochromeImageAsync(projectRoot, {
+      icon: monochromeImage,
+      imageCacheFolder: 'android-adaptive-monochrome',
+      outputImageFileName: IC_LAUNCHER_MONOCHROME_PNG
+    });
+  }
   await generateMultiLayerImageAsync(projectRoot, {
     backgroundColor: 'transparent',
     backgroundImage,
@@ -234,10 +236,12 @@ function setBackgroundColor(backgroundColor, colors) {
 const createAdaptiveIconXmlString = (backgroundImage, monochromeImage) => {
   const background = backgroundImage ? `@mipmap/ic_launcher_background` : `@color/iconBackground`;
   const iconElements = [`<background android:drawable="${background}"/>`, '<foreground android:drawable="@mipmap/ic_launcher_foreground"/>'];
-  if (monochromeImage) iconElements.push('<monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>');
+  if (monochromeImage) {
+    iconElements.push('<monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>');
+  }
   return `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-${iconElements.map(e => `    ${e}`).join('\n')}
+    ${iconElements.join('\n    ')}
 </adaptive-icon>`;
 };
 exports.createAdaptiveIconXmlString = createAdaptiveIconXmlString;
