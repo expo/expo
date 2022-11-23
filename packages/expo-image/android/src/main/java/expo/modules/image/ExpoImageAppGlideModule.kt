@@ -8,4 +8,6 @@ import com.bumptech.glide.module.AppGlideModule
  * to work.
  */
 @GlideModule
-class ExpoImageAppGlideModule : AppGlideModule()
+class ExpoImageAppGlideModule : AppGlideModule() {
+  override fun isManifestParsingEnabled() = false
+}

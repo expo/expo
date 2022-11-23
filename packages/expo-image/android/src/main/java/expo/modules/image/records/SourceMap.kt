@@ -9,7 +9,7 @@ data class SourceMap(
   @Field val uri: String? = null,
   @Field val width: Int? = null,
   @Field val height: Int? = null,
-  @Field val scale: Double? = null,
+  @Field val scale: Double = 1.0,
 ) : Record {
   internal fun createGlideUrl(): GlideUrl? = uri?.let { GlideUrl(it) }
 
@@ -18,7 +18,7 @@ data class SourceMap(
       .apply {
         // Override the size for local assets. This ensures that
         // resizeMode "center" displays the image in the correct size.
-        if (width != null && height != null && scale != null) {
+        if (width != null && height != null) {
           override((width * scale).toInt(), (height * scale).toInt())
         }
       }
