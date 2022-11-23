@@ -2,6 +2,7 @@
 
 import ExpoModulesCore
 import UIKit
+import MachO
 
 public class DeviceModule: Module {
   public func definition() -> ModuleDefinition {
@@ -20,7 +21,7 @@ public class DeviceModule: Module {
       "osBuildId": osBuildId(),
       "osInternalBuildId": osBuildId(),
       "deviceName": UIDevice.current.name,
-      "supportedCpuArchitectures": nil
+      "supportedCpuArchitectures": cpuArchitectures()
     ])
 
     AsyncFunction("getDeviceTypeAsync") { () -> Int in
@@ -79,6 +80,16 @@ func osBuildId() -> String? {
     return nil
   #endif
 }
+
+
+func cpuArchitectures() -> [String]? {
+  // Credit: https://stackoverflow.com/a/70134518
+  guard let archRaw = NXGetLocalArchInfo().pointee.name else {
+    return nil
+  }
+  return [String(cString: archRaw)]
+}
+
 
 enum DeviceType: Int {
   case unknown = 0
