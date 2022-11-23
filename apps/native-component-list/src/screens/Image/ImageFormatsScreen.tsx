@@ -6,6 +6,7 @@ import {
   SectionListRenderItemInfo,
   StyleSheet,
   View,
+  Platform,
 } from 'react-native';
 
 import HeadingText from '../../components/HeadingText';
@@ -84,15 +85,21 @@ const data: SectionListData<ImageSource>[] = [
       },
     ],
   },
-  {
-    title: 'ICNS',
-    data: [
-      {
-        uri: 'https://icon-icons.com/downloadimage.php?id=214748&root=3398/ICNS/512/&file=react_logo_icon_214748.icns',
-      },
-    ],
-  },
 ];
+
+const iOSData =
+  Platform.OS === 'ios'
+    ? [
+        {
+          title: 'ICNS',
+          data: [
+            {
+              uri: 'https://icon-icons.com/downloadimage.php?id=214748&root=3398/ICNS/512/&file=react_logo_icon_214748.icns',
+            },
+          ],
+        },
+      ]
+    : [];
 
 function keyExtractor(item: any, index: number) {
   return '' + index;
@@ -113,7 +120,7 @@ function renderSectionHeader({ section }: { section: SectionListData<ImageSource
 export default function ImageFormatsScreen() {
   return (
     <SectionList
-      sections={data}
+      sections={[...data, ...iOSData]}
       keyExtractor={keyExtractor}
       renderItem={renderItem}
       renderSectionHeader={renderSectionHeader}
