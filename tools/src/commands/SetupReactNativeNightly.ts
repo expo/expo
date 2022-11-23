@@ -34,8 +34,7 @@ async function main() {
   await updateReactNativePackageAsync();
 
   await patchReanimatedAsync(nightlyVersion);
-
-  await removeKotlinAndroidExtensionAsync();
+  await patchSkiaAsync(nightlyVersion);
 
   logger.info('Setting up Expo modules files');
   await updateExpoModulesAsync();
@@ -170,7 +169,7 @@ task unpackReactNativeAAR {
         `}\n` +
         `\n` +
         `dependencies {\n` +
-        `  compileOnly "com.facebook.react:hermes-engine:${nightlyVersion}-SNAPSHOT"` +
+        `  compileOnly "com.facebook.react:hermes-android:${nightlyVersion}-SNAPSHOT"\n` +
         `}\n`,
     },
   ]);
@@ -212,23 +211,63 @@ task unpackReactNativeAAR {
   );
 }
 
-/**
- * Remove deprecated kotlin-android-extensions
- * TODO: remove this after detox updated
- */
-async function removeKotlinAndroidExtensionAsync() {
-  const gradleFiles = ['node_modules/detox/android/detox/build.gradle'];
+async function patchSkiaAsync(nightlyVersion: string) {
+  const root = path.join(EXPO_DIR, 'node_modules', '@shopify', 'react-native-skia');
 
-  await Promise.all(
-    gradleFiles.map((file) =>
-      transformFileAsync(file, [
-        {
-          find: /apply plugin: ['"]kotlin-android-extensions['"]/g,
-          replaceWith: '',
-        },
-      ])
-    )
-  );
+  await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
+    {
+      // Add REACT_NATIVE_OVERRIDE_VERSION support
+      find: `def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()`,
+      replaceWith: `def REACT_NATIVE_VERSION = (System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")).split("\\.")[1].toInteger()`,
+    },
+    {
+      // Remove builtin aar extraction from react-native node_modules
+      find: `defaultDir = file("$nodeModules/react-native/android")`,
+      replaceWith: `defaultDir = file("$nodeModules/react-native")`,
+    },
+    {
+      // Remove builtin aar extraction from react-native node_modules
+      find: /^\s*def rnAAR.*\n\s*extractJNI.*$/gm,
+      replaceWith: '',
+    },
+    {
+      // Add prefab support
+      transform: (text: string) =>
+        text +
+        '\n\n' +
+        `android {\n` +
+        `  buildFeatures {\n` +
+        `    prefab true\n` +
+        `  }\n` +
+        `}\n`,
+    },
+  ]);
+
+  await transformFileAsync(path.join(root, 'android', 'CMakeLists.txt'), [
+    {
+      find: /^(\s*target_link_libraries\(\s*)$/gm,
+      replaceWith: `\
+find_package(fbjni REQUIRED CONFIG)
+find_package(ReactAndroid REQUIRED CONFIG)
+$1`,
+    },
+    {
+      find: '${FBJNI_LIBRARY}',
+      replaceWith: 'fbjni::fbjni',
+    },
+    {
+      find: '${REACT_LIB}',
+      replaceWith: 'ReactAndroid::react_nativemodule_core',
+    },
+    {
+      find: '${JSI_LIB}',
+      replaceWith: 'ReactAndroid::jsi',
+    },
+    {
+      find: '${TURBOMODULES_LIB}',
+      replaceWith: 'ReactAndroid::turbomodulejsijni',
+    },
+  ]);
 }
 
 async function updateExpoModulesAsync() {
@@ -250,7 +289,10 @@ async function updateBareExpoAsync(nightlyVersion: string) {
   await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
     {
       find: 'resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"',
-      replaceWith: `resolutionStrategy.force "com.facebook.react:react-native:${nightlyVersion}-SNAPSHOT"`,
+      replaceWith: `resolutionStrategy.dependencySubstitution {
+                    substitute module("com.facebook.react:react-native") using module("com.facebook.react:react-android:${nightlyVersion}-SNAPSHOT")
+                    substitute module("com.facebook.react:hermes-engine") using module("com.facebook.react:hermes-android:${nightlyVersion}-SNAPSHOT")
+            }`,
     },
   ]);
 
