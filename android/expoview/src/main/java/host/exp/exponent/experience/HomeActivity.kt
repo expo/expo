@@ -16,7 +16,6 @@ import de.greenrobot.event.EventBus
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.constants.ConstantsPackage
 import expo.modules.core.interfaces.Package
-import expo.modules.device.DevicePackage
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
@@ -153,7 +152,6 @@ open class HomeActivity : BaseExperienceActivity() {
         MediaLibraryPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
-        DevicePackage(),
         SplashScreenPackage()
       )
     }
