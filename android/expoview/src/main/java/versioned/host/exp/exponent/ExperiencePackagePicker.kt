@@ -15,7 +15,7 @@ import expo.modules.constants.ConstantsPackage
 import expo.modules.contacts.ContactsPackage
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
-import expo.modules.device.DevicePackage
+import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerPackage
 import expo.modules.easclient.EASClientModule
 import expo.modules.errorrecovery.ErrorRecoveryPackage
@@ -73,7 +73,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    DevicePackage(),
     DocumentPickerPackage(),
     ErrorRecoveryPackage(),
     FaceDetectorPackage(),
@@ -129,6 +128,7 @@ object ExperiencePackagePicker : ModulesProvider {
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,
+    DeviceModule::class.java,
     EASClientModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
