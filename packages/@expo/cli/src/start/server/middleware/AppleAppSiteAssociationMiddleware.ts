@@ -16,6 +16,7 @@ import { ExpoMiddleware } from './ExpoMiddleware';
 import { streamStaticFileResponse } from './ServeStaticMiddleware';
 import { AppSiteAssociation, Detail } from './aasa.types';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { profile } from '../../../utils/profile';
 
 const debug = require('debug')('expo:start:server:middleware:aasa') as typeof console.log;
 
@@ -117,7 +118,11 @@ export function generateAasaForProject(projectRoot: string): AppSiteAssociation 
   if (!fs.existsSync(path.join(projectRoot, 'ios'))) {
     const possibleCredentials = guessAppCredentials(projectRoot);
     if (possibleCredentials) {
-      return generateAasaAndFormat(projectRoot, possibleCredentials);
+      const aasa = generateAasaJson(projectRoot, possibleCredentials);
+      if (!aasa) {
+        debug('No valid Apple App Site Association file could be generated, skipping.');
+      }
+      return aasa ?? null;
     }
     debug('No iOS project found, skipping Apple App Site Association file');
     maybeWarnAasaCouldNotBeGenerated(projectRoot);
@@ -138,29 +143,15 @@ export function generateAasaForProject(projectRoot: string): AppSiteAssociation 
     return null;
   }
 
-  return generateAasaAndFormat(projectRoot, {
+  const aasa = generateAasaJson(projectRoot, {
     // TODO: Drop unquote if/when we migrate to xcparse.
     bundleIdentifier: unquote(firstValid.bundleIdentifiers[0]),
     appleTeamId: unquote(firstValid.developmentTeams[0]),
   });
-}
-
-function generateAasaAndFormat(
-  projectRoot: string,
-  props: { bundleIdentifier: string; appleTeamId: string }
-) {
-  const aasa = generateAasaJson(projectRoot, props);
-
   if (!aasa) {
     debug('No valid Apple App Site Association file could be generated, skipping.');
-    return null;
   }
-
-  const parsedResults = getOptimallyFormattedString(aasa);
-
-  debug('Generated valid Apple App Site Association file:\n', parsedResults);
-
-  return aasa;
+  return aasa ?? null;
 }
 
 /** Will format nicely if possible, minified if too large, and assert if the file is simply too big. */
@@ -226,12 +217,34 @@ const maybeWarnAasaCouldNotBeGenerated = memoize((projectRoot: string) => {
   }
 });
 
+async function introspectEntitlementsAsync(projectRoot: string) {
+  const { getPrebuildConfigAsync } = require('@expo/prebuild-config');
+  const { compileModsAsync } = require('@expo/config-plugins/build/plugins/mod-compiler');
+
+  const config = await profile(getPrebuildConfigAsync)(projectRoot, {
+    platforms: ['ios'],
+  });
+
+  await compileModsAsync(config.exp, {
+    projectRoot,
+    introspect: true,
+    platforms: ['ios'],
+    assertMissingModProviders: false,
+  });
+  // @ts-ignore
+  delete config.modRequest;
+  // @ts-ignore
+  delete config.modResults;
+  console.log('Entitlements:', config);
+}
+
 function generateAasaJson(
   projectRoot: string,
   { bundleIdentifier, appleTeamId }: { bundleIdentifier: string; appleTeamId: string }
 ) {
   const aasaAppID = [appleTeamId, bundleIdentifier].join('.');
 
+  introspectEntitlementsAsync(projectRoot);
   const entitlements = getEntitlements(projectRoot);
   const associatedDomains = entitlements?.['com.apple.developer.associated-domains'];
   // Only generate the web verification file if the native verification is setup.
