@@ -60,7 +60,7 @@ These metadata items include:
 - `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
 - `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
-  - `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
+- `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
 
 ### Editing Code
 
