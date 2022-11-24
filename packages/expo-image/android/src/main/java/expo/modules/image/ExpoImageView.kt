@@ -42,7 +42,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal val onLoad by EventDispatcher<ImageLoadEvent>()
 
   private val activity: Activity
-    get() = appContext.currentActivity ?: throw  MissingActivity()
+    get() = appContext.currentActivity ?: throw MissingActivity()
 
   internal val imageView = run {
     val activity = activity
