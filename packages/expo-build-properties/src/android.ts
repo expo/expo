@@ -1,12 +1,8 @@
-import { AndroidConfig, ConfigPlugin, withDangerousMod } from '@expo/config-plugins';
-import {
-  mergeContents,
-  removeContents,
-  MergeResults,
-} from '@expo/config-plugins/build/utils/generateCode';
+import { AndroidConfig, ConfigPlugin, History, withDangerousMod } from 'expo/config-plugins';
 import fs from 'fs';
 import path from 'path';
 
+import { appendContents, purgeContents } from './fileContentsUtils';
 import type { PluginConfigType } from './pluginConfig';
 
 const { createBuildGradlePropsConfigPlugin } = AndroidConfig.BuildProperties;
@@ -72,8 +68,59 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
       );
 
       const contents = await fs.promises.readFile(proguardRulesFile, 'utf8');
-      const newContents = updateAndroidProguardRules(contents, extraProguardRules);
-      if (newContents) {
+      const newContents = updateAndroidProguardRules(contents, extraProguardRules, 'append');
+      if (contents !== newContents) {
+        await fs.promises.writeFile(proguardRulesFile, newContents);
+      }
+      return config;
+    },
+  ]);
+};
+
+/**
+ * Purge generated proguard contents from previous prebuild.
+ * This plugin only runs once in the prebuilding phase and should execute before any `withAndroidProguardRules` calls.
+ */
+export const withAndroidPurgeProguardRulesOnce: ConfigPlugin = (config) => {
+  return withDangerousMod(config, [
+    'android',
+    async (config) => {
+      const RUN_ONCE_NAME = 'expo-build-properties-android-purge-proguard-rules-once';
+
+      /**
+       * The `withRunOnce` plugin will delay this plugin's execution.
+       * To make sure this plugin executes before any `withAndroidProguardRules`.
+       * We use the `withRunOnce` internal History functions to do the check.
+       * Example calls to demonstrate the case:
+       * ```ts
+       * config = withBuildProperties(config as ExpoConfig, {
+       *   android: {
+       *     kotlinVersion: "1.6.10",
+       *   },
+       * });
+       * config = withBuildProperties(config as ExpoConfig, {
+       *   android: {
+       *     enableProguardInReleaseBuilds: true,
+       *     extraProguardRules: "-keep class com.mycompany.** { *; }",
+       *   },
+       * });
+       * ```
+       */
+      if (History.getHistoryItem(config, RUN_ONCE_NAME)) {
+        return config;
+      } else {
+        History.addHistoryItem(config, { name: RUN_ONCE_NAME });
+      }
+
+      const proguardRulesFile = path.join(
+        config.modRequest.platformProjectRoot,
+        'app',
+        'proguard-rules.pro'
+      );
+
+      const contents = await fs.promises.readFile(proguardRulesFile, 'utf8');
+      const newContents = updateAndroidProguardRules(contents, '', 'overwrite');
+      if (contents !== newContents) {
         await fs.promises.writeFile(proguardRulesFile, newContents);
       }
       return config;
@@ -85,34 +132,25 @@ export const withAndroidProguardRules: ConfigPlugin<PluginConfigType> = (config,
  * Update `newProguardRules` to original `proguard-rules.pro` contents if needed
  *
  * @param contents the original `proguard-rules.pro` contents
- * @param newProguardRules new proguard rules to add. If the value is null, the generated proguard rules will be cleanup
- * @returns return string when results is updated or return null when nothing changed.
+ * @param newProguardRules new proguard rules to add. If the value is null, the returned value will be original `contents`.
+ * @returns return updated contents
  */
 export function updateAndroidProguardRules(
   contents: string,
-  newProguardRules: string | null
-): string | null {
-  const mergeTag = 'expo-build-properties';
-
-  let mergeResults: MergeResults;
-  if (newProguardRules) {
-    mergeResults = mergeContents({
-      tag: mergeTag,
-      src: contents,
-      newSrc: newProguardRules,
-      anchor: /^/,
-      offset: contents.length,
-      comment: '#',
-    });
-  } else {
-    mergeResults = removeContents({
-      tag: mergeTag,
-      src: contents,
-    });
+  newProguardRules: string | null,
+  updateMode: 'append' | 'overwrite'
+): string {
+  if (newProguardRules == null) {
+    return contents;
   }
 
-  if (mergeResults.didMerge || mergeResults.didClear) {
-    return mergeResults.contents;
+  const options = { tag: 'expo-build-properties', commentPrefix: '#' };
+  let newContents = contents;
+  if (updateMode === 'overwrite') {
+    newContents = purgeContents(contents, options);
   }
-  return null;
+  if (newProguardRules !== '') {
+    newContents = appendContents(newContents, newProguardRules, options);
+  }
+  return newContents;
 }

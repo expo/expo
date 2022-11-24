@@ -1,4 +1,4 @@
-import type { ConfigPlugin } from '@expo/config-plugins';
+import type { ConfigPlugin } from 'expo/config-plugins';
 import { PluginConfigType } from './pluginConfig';
 /**
  * Config plugin to customize native Android or iOS build properties for managed apps
