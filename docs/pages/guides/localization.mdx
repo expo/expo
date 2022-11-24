@@ -28,7 +28,7 @@ const deviceLanguage = getLocales()[0].languageCode;
 
 The `getLocales` method returns the current locale based on the system settings of the device.
 
-On new Android and iOS versions, app language can be set per app, so you usually don't need to build a custom UI to allow users to change the current locale inside of your app. 
+On new Android and iOS versions, app language can be set per app, so you usually don't need to build a custom UI to allow users to change the current locale inside of your app.
 
 Sometimes, it makes sense to build UI to allow the user to set other localization preferences on a per-app basis. As a general rule, you should allow the user to change the following:
  - Localized units if your app makes at least a moderate use of them (such as metric/imperial measurements, currency, temperature, and more)
@@ -64,7 +64,7 @@ Now, you can use the `i18n.t` function to translate strings throughout your appl
 
 You can refrain from localizing text for certain things, for example, names. In this case, you can define them _once_ in your default language and reuse them with `i18n.enableFallback = true;`.
 
-On Android, when a user changes the device's language, the app will not reset. You can use the [`AppState`](../versions/latest/react-native/appstate#basic-usage) API to listen for changes to the app's state and call the `getLocales()` function each time the app's state changes.
+On Android, when a user changes the device's language, the app will not reset. You can use the [`AppState`](https://reactnative.dev/docs/appstate#basic-usage) API to listen for changes to the app's state and call the `getLocales()` function each time the app's state changes.
 
 On iOS, when a user changes the device's language, the app will reset. This means you can set the language once without updating any of your React components to account for the language changes.
 ### Complete example
@@ -133,7 +133,7 @@ While this guide uses `i18n-js` as an example, there are many other libraries th
 - Some libraries make it easy to move the component structure around (not just words of your copy) based on translation strings. Imagine you want to localize a string that includes a `<Pressable>` link, and you want the link to be in a different order from the rest of the text, depending on the translation.
 
 Here are some libraries that can be a good option depending on your needs:
-  
+
 - [`React i18next`](https://react.i18next.com/)
 
   `React i18next` is a stable, well-maintained library based on `i18next`.
@@ -252,7 +252,7 @@ You don't need to manually adjust `<View>` styling properties based on locale. Y
 
 #### Web support
 
-Web support for RTL layouts requires no Expo config changes. 
+Web support for RTL layouts requires no Expo config changes.
 
 Expo uses `react-native-web` for running Expo projects in the browser.
 To make `react-native-web` automatically adapt to locale direction, add a `dir` property to your root `<View>` component.
@@ -354,8 +354,8 @@ new Intl.NumberFormat('default', { style: 'currency', currency: 'EUR' }).format(
 ```
 
 > You can use `Intl` APIs to format strings and values once you know what the user expects to see.
-> 
-> `Intl` APIs do not provide information about the device or current locale, so you can't use the `Intl` APIs to get current locale units, currencies, or measurement systems. 
-> 
+>
+> `Intl` APIs do not provide information about the device or current locale, so you can't use the `Intl` APIs to get current locale units, currencies, or measurement systems.
+>
 > For this you need to use `expo-localization`, JS code on the web, or third-party or custom native code on Android and iOS.
 
