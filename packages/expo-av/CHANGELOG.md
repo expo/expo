@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
-- Fixed crashes in the release when the proguard is enabled on Android.
+- Fixed crashes when ProGuard or R8 is enabled on Android.
 
 ### 💡 Others
 
