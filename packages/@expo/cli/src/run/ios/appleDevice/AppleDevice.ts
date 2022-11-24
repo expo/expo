@@ -45,7 +45,7 @@ export async function getConnectedDevicesAsync(): Promise<ConnectedDevice[]> {
 export async function getConnectedDeviceValuesAsync(): Promise<DeviceValues[]> {
   const client = new UsbmuxdClient(UsbmuxdClient.connectUsbmuxdSocket());
   const devices = (await client.getDevices()).filter(
-    device => device.Properties?.ConnectionType === "USB" // only USB devices
+    (device) => device.Properties?.ConnectionType === "USB" // only USB devices
   );
   client.socket.end();
 
