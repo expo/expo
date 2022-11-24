@@ -10,7 +10,9 @@
         "image": "ubuntu-20.04-jdk-11-ndk-r21e",
         "cache": {
           "customPaths": [
-            "../../android/prebuiltHermes"
+            "../../android/prebuiltHermes",
+            "/home/expo/.gradle/caches",
+            "/home/expo/.gradle/wrapper"
           ]
         },
         "env": {
@@ -74,6 +76,9 @@
       "extends": "versioned-client",
       "env": {
         "EAS_BUILD_PROFILE": "versioned-client-add-sdk"
+      },
+      "cache": {
+        "disabled": true
       }
     },
     "unversioned-client": {
