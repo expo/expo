@@ -1,5 +1,7 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
+import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
 import glob from 'glob-promise';
 import path from 'path';
 
@@ -22,6 +24,9 @@ async function main() {
     throw new Error('Unable to get react-native nightly version.');
   }
 
+  logger.info('Adding bare-expo optional packages:');
+  await addBareExpoOptionalPackagesAsync();
+
   logger.info('Adding pinned packages:');
   const pinnedPackages = {
     'react-native': nightlyVersion,
@@ -41,6 +46,34 @@ async function main() {
 
   logger.info('Setting up project files for bare-expo.');
   await updateBareExpoAsync(nightlyVersion);
+}
+
+/**
+ * To save the CI build time, some third-party libraries are intentionally not listed as dependencies in bare-expo.
+ * Adding these packages for nightly testing to increase coverage.
+ */
+async function addBareExpoOptionalPackagesAsync() {
+  const bareExpoRoot = path.join(EXPO_DIR, 'apps', 'bare-expo');
+  const OPTIONAL_PKGS = ['@shopify/react-native-skia'];
+
+  const packageJsonNCL = await JsonFile.readAsync(
+    path.join(EXPO_DIR, 'apps', 'native-component-list', 'package.json')
+  );
+  const versionMap = {
+    ...(packageJsonNCL.devDependencies as object),
+    ...(packageJsonNCL.dependencies as object),
+  };
+
+  const installPackages = OPTIONAL_PKGS.map((pkg) => {
+    const version = versionMap[pkg];
+    assert(version);
+    return `${pkg}@${version}`;
+  });
+  for (const pkg of installPackages) {
+    logger.log('  ', pkg);
+  }
+
+  await spawnAsync('yarn', ['add', ...installPackages], { cwd: bareExpoRoot });
 }
 
 async function addPinnedPackagesAsync(packages: Record<string, string>) {
