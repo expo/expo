@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
-import { theme, typography, spacing } from '@expo/styleguide';
-import NextLink from 'next/link';
+import { theme, typography, spacing, ArrowUpRightIcon, iconSize } from '@expo/styleguide';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 import { useEffect, useRef } from 'react';
 
 import stripVersionFromPath from '~/common/stripVersionFromPath';
 import { NavigationRoute } from '~/types/common';
+import { LinkBase } from '~/ui/components/Text';
 
 type SidebarLinkProps = React.PropsWithChildren<{
   info: NavigationRoute;
@@ -58,15 +58,22 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
 
   return (
     <div css={STYLES_CONTAINER}>
-      <NextLink
+      <LinkBase
         href={info.href as string}
-        as={info.as || info.href}
         {...customDataAttributes}
         ref={ref}
+        target={info.href.startsWith('http') ? '_blank' : undefined}
         css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}>
         {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
         {children}
-      </NextLink>
+        {info.href.startsWith('http') && (
+          <ArrowUpRightIcon
+            size={iconSize.small}
+            color={theme.icon.secondary}
+            css={STYLES_EXTERNAL_ICON}
+          />
+        )}
+      </LinkBase>
     </div>
   );
 };
@@ -78,7 +85,7 @@ const STYLES_LINK = css`
   text-decoration: none;
   color: ${theme.text.secondary};
   transition: 50ms ease color;
-  align-items: flex-start;
+  align-items: center;
   padding-left: ${spacing[4] + spacing[0.5]}px;
   scroll-margin: 60px;
 
@@ -109,4 +116,8 @@ const STYLES_ACTIVE_BULLET = css`
   background-color: ${theme.link.default};
   border-radius: 100%;
   margin: ${spacing[2]}px ${spacing[1.5]}px;
+`;
+
+const STYLES_EXTERNAL_ICON = css`
+  margin-left: ${spacing[1]}px;
 `;

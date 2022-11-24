@@ -60,6 +60,7 @@ These metadata items include:
 - `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
 - `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
+- `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
 
 ### Editing Code
 
@@ -171,18 +172,6 @@ So, if you wish to override the alphabetical ordering, manipulate page titles in
 To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema.
 
 If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync <SDK version integer>` or `yarn run schema-sync unversioned`.
-
-### Importing from the React Native docs
-
-You can import the React Native docs in an automated way into these docs.
-
-1. Update the react-native-website submodule here
-2. `yarn run import-react-native-docs`
-
-This will write all the relevant RN doc stuff into the unversioned version directory.
-You may need to tweak the script as the source docs change; the script hackily translates between the different forms of markdown that have different quirks.
-
-The React Native docs are actually versioned but we currently read off of main.
 
 ### Adding Images and Assets
 
