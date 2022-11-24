@@ -12,6 +12,7 @@
 
 - Fix web assets not loading in Metro for web on Windows. ([#19935](https://github.com/expo/expo/pull/19935) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade @expo/code-signing-certificates dependency. ([#20078](https://github.com/expo/expo/pull/20078) by [@wschurman](https://github.com/wschurman))
+- Only show physical USB devices in the Apple device list, suppress bogus Network devices. ([#20188](https://github.com/expo/expo/pull/20188) by [@shreeve](https://github.com/shreeve))
 
 ### 💡 Others
 
