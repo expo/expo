@@ -1,5 +1,7 @@
 import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
+import spawnAsync from '@expo/spawn-async';
+import assert from 'assert';
 import glob from 'glob-promise';
 import path from 'path';
 
@@ -22,6 +24,9 @@ async function main() {
     throw new Error('Unable to get react-native nightly version.');
   }
 
+  logger.info('Adding bare-expo optional packages:');
+  await addBareExpoOptionalPackagesAsync();
+
   logger.info('Adding pinned packages:');
   const pinnedPackages = {
     'react-native': nightlyVersion,
@@ -34,14 +39,41 @@ async function main() {
   await updateReactNativePackageAsync();
 
   await patchReanimatedAsync(nightlyVersion);
-
-  await removeKotlinAndroidExtensionAsync();
+  await patchSkiaAsync(nightlyVersion);
 
   logger.info('Setting up Expo modules files');
   await updateExpoModulesAsync();
 
   logger.info('Setting up project files for bare-expo.');
   await updateBareExpoAsync(nightlyVersion);
+}
+
+/**
+ * To save the CI build time, some third-party libraries are intentionally not listed as dependencies in bare-expo.
+ * Adding these packages for nightly testing to increase coverage.
+ */
+async function addBareExpoOptionalPackagesAsync() {
+  const bareExpoRoot = path.join(EXPO_DIR, 'apps', 'bare-expo');
+  const OPTIONAL_PKGS = ['@shopify/react-native-skia'];
+
+  const packageJsonNCL = await JsonFile.readAsync(
+    path.join(EXPO_DIR, 'apps', 'native-component-list', 'package.json')
+  );
+  const versionMap = {
+    ...(packageJsonNCL.devDependencies as object),
+    ...(packageJsonNCL.dependencies as object),
+  };
+
+  const installPackages = OPTIONAL_PKGS.map((pkg) => {
+    const version = versionMap[pkg];
+    assert(version);
+    return `${pkg}@${version}`;
+  });
+  for (const pkg of installPackages) {
+    logger.log('  ', pkg);
+  }
+
+  await spawnAsync('yarn', ['add', ...installPackages], { cwd: bareExpoRoot });
 }
 
 async function addPinnedPackagesAsync(packages: Record<string, string>) {
@@ -170,7 +202,7 @@ task unpackReactNativeAAR {
         `}\n` +
         `\n` +
         `dependencies {\n` +
-        `  compileOnly "com.facebook.react:hermes-engine:${nightlyVersion}-SNAPSHOT"` +
+        `  compileOnly "com.facebook.react:hermes-android:${nightlyVersion}-SNAPSHOT"\n` +
         `}\n`,
     },
   ]);
@@ -212,23 +244,63 @@ task unpackReactNativeAAR {
   );
 }
 
-/**
- * Remove deprecated kotlin-android-extensions
- * TODO: remove this after detox updated
- */
-async function removeKotlinAndroidExtensionAsync() {
-  const gradleFiles = ['node_modules/detox/android/detox/build.gradle'];
+async function patchSkiaAsync(nightlyVersion: string) {
+  const root = path.join(EXPO_DIR, 'node_modules', '@shopify', 'react-native-skia');
 
-  await Promise.all(
-    gradleFiles.map((file) =>
-      transformFileAsync(file, [
-        {
-          find: /apply plugin: ['"]kotlin-android-extensions['"]/g,
-          replaceWith: '',
-        },
-      ])
-    )
-  );
+  await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
+    {
+      // Add REACT_NATIVE_OVERRIDE_VERSION support
+      find: `def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()`,
+      replaceWith: `def REACT_NATIVE_VERSION = (System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")).split("\\.")[1].toInteger()`,
+    },
+    {
+      // Remove builtin aar extraction from react-native node_modules
+      find: `defaultDir = file("$nodeModules/react-native/android")`,
+      replaceWith: `defaultDir = file("$nodeModules/react-native")`,
+    },
+    {
+      // Remove builtin aar extraction from react-native node_modules
+      find: /^\s*def rnAAR.*\n\s*extractJNI.*$/gm,
+      replaceWith: '',
+    },
+    {
+      // Add prefab support
+      transform: (text: string) =>
+        text +
+        '\n\n' +
+        `android {\n` +
+        `  buildFeatures {\n` +
+        `    prefab true\n` +
+        `  }\n` +
+        `}\n`,
+    },
+  ]);
+
+  await transformFileAsync(path.join(root, 'android', 'CMakeLists.txt'), [
+    {
+      find: /^(\s*target_link_libraries\(\s*)$/gm,
+      replaceWith: `\
+find_package(fbjni REQUIRED CONFIG)
+find_package(ReactAndroid REQUIRED CONFIG)
+$1`,
+    },
+    {
+      find: '${FBJNI_LIBRARY}',
+      replaceWith: 'fbjni::fbjni',
+    },
+    {
+      find: '${REACT_LIB}',
+      replaceWith: 'ReactAndroid::react_nativemodule_core',
+    },
+    {
+      find: '${JSI_LIB}',
+      replaceWith: 'ReactAndroid::jsi',
+    },
+    {
+      find: '${TURBOMODULES_LIB}',
+      replaceWith: 'ReactAndroid::turbomodulejsijni',
+    },
+  ]);
 }
 
 async function updateExpoModulesAsync() {
@@ -250,7 +322,10 @@ async function updateBareExpoAsync(nightlyVersion: string) {
   await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
     {
       find: 'resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"',
-      replaceWith: `resolutionStrategy.force "com.facebook.react:react-native:${nightlyVersion}-SNAPSHOT"`,
+      replaceWith: `resolutionStrategy.dependencySubstitution {
+                    substitute module("com.facebook.react:react-native") using module("com.facebook.react:react-android:${nightlyVersion}-SNAPSHOT")
+                    substitute module("com.facebook.react:hermes-engine") using module("com.facebook.react:hermes-android:${nightlyVersion}-SNAPSHOT")
+            }`,
     },
   ]);
 
