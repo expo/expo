@@ -25,14 +25,14 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         if parsedSubscribers.isEmpty {
-            return;
+            return
         }
-        
+
         parsedSubscribers.forEach {
             $0.buildMenu(with: builder)
         }
     }
-    
+
   // MARK: - Initializing the App
 
   open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
@@ -121,8 +121,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   open func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     subscribers.forEach { $0.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
   }
-    
-  
+
+
 
   open func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     subscribers.forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }

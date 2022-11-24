@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Exposing buildMenu to AppDelegate subscribers. ([#20192](https://github.com/expo/expo/pull/20192))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
