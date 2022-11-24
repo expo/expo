@@ -11,6 +11,14 @@ class CryptoModule : Module() {
 
     Function("digestString", this@CryptoModule::digestString)
     AsyncFunction("digestStringAsync", this@CryptoModule::digestString)
+    Function("getRandomBase64String", this@RandomModule::getRandomBase64String)
+    AsyncFunction("getRandomBase64StringAsync", this@RandomModule::getRandomBase64String)
+  }
+
+  private fun getRandomBase64String(randomByteCount: Int): String {
+    val output = ByteArray(randomByteCount)
+    secureRandom.nextBytes(output)
+    return Base64.encodeToString(output, Base64.NO_WRAP)
   }
 
   private fun digestString(algorithm: DigestAlgorithm, data: String, options: DigestOptions): String {
