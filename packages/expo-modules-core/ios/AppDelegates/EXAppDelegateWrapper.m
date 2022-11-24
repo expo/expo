@@ -27,6 +27,10 @@
   return self;
 }
 
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder{
+    [_expoAppDelegate buildMenuWithBuilder:builder];
+}
+
 // This needs to be implemented, otherwise forwarding won't be called.
 // When the app starts, `UIApplication` uses it to check beforehand
 // which `UIApplicationDelegate` selectors are implemented.

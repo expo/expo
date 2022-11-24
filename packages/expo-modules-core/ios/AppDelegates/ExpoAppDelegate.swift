@@ -2,7 +2,7 @@ import UIKit
 import Dispatch
 import Foundation
 
-var subscribers = [ExpoAppDelegateSubscriberProtocol]()
+var subscribers = [ExpoAppDelegateSubscriber]()
 var reactDelegateHandlers = [ExpoReactDelegateHandler]()
 
 /**
@@ -18,10 +18,25 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   @objc
   public let reactDelegate = ExpoReactDelegate(handlers: reactDelegateHandlers)
 
+    @objc
+    open override func buildMenu(with builder: UIMenuBuilder) {
+        let parsedSubscribers = subscribers.filter {
+            $0.responds(to: #selector(buildMenu(with:)))
+        }
+
+        if parsedSubscribers.isEmpty {
+            return;
+        }
+        
+        parsedSubscribers.forEach {
+            $0.buildMenu(with: builder)
+        }
+    }
+    
   // MARK: - Initializing the App
 
   open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    let parsedSubscribers = subscribers.filter {
+      let parsedSubscribers = subscribers.filter {
       $0.responds(to: #selector(application(_:willFinishLaunchingWithOptions:)))
     }
 
@@ -106,6 +121,8 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   open func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
     subscribers.forEach { $0.application?(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
   }
+    
+  
 
   open func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
     subscribers.forEach { $0.application?(application, didFailToRegisterForRemoteNotificationsWithError: error) }
@@ -300,7 +317,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   @objc
-  public static func registerSubscriber(_ subscriber: ExpoAppDelegateSubscriberProtocol) {
+  public static func registerSubscriber(_ subscriber: ExpoAppDelegateSubscriber) {
     if subscribers.contains(where: { $0 === subscriber }) {
       fatalError("Given app delegate subscriber `\(String(describing: subscriber))` is already registered.")
     }
@@ -308,7 +325,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   }
 
   @objc
-  public static func getSubscriber(_ name: String) -> ExpoAppDelegateSubscriberProtocol? {
+  public static func getSubscriber(_ name: String) -> ExpoAppDelegateSubscriber? {
     return subscribers.first { String(describing: $0) == name }
   }
 
