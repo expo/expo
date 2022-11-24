@@ -32,7 +32,7 @@ function Header({
   // @todo: this is static and we don't know if it's visible or not on iOS.
   // need to use a more reliable and cross-platform API when one exists, like
   // LayoutContext. We also don't know if it's translucent or not on Android
-  // and depend on react-native-safe-area-view to tell us.
+  // and depend on react-native-safe-area-context to tell us.
   const STATUSBAR_HEIGHT = top || 8;
 
   return (
