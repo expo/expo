@@ -554,35 +554,6 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.0):
     - React-Core
-  - react-native-skia (0.1.157):
-    - React
-    - React-callinvoker
-    - React-Core
-    - react-native-skia/Api (= 0.1.157)
-    - react-native-skia/Jsi (= 0.1.157)
-    - react-native-skia/RNSkia (= 0.1.157)
-    - react-native-skia/SkiaHeaders (= 0.1.157)
-    - react-native-skia/Utils (= 0.1.157)
-  - react-native-skia/Api (0.1.157):
-    - React
-    - React-callinvoker
-    - React-Core
-  - react-native-skia/Jsi (0.1.157):
-    - React
-    - React-callinvoker
-    - React-Core
-  - react-native-skia/RNSkia (0.1.157):
-    - React
-    - React-callinvoker
-    - React-Core
-  - react-native-skia/SkiaHeaders (0.1.157):
-    - React
-    - React-callinvoker
-    - React-Core
-  - react-native-skia/Utils (0.1.157):
-    - React
-    - React-callinvoker
-    - React-Core
   - react-native-slider (4.2.4):
     - React-Core
   - react-native-view-shot (3.4.0):
@@ -818,7 +789,6 @@ DEPENDENCIES:
   - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../../../node_modules/@react-native-segmented-control/segmented-control`)"
-  - "react-native-skia (from `../../../node_modules/@shopify/react-native-skia`)"
   - "react-native-slider (from `../../../node_modules/@react-native-community/slider`)"
   - react-native-view-shot (from `../../../node_modules/react-native-view-shot`)
   - "react-native-viewpager (from `../../../node_modules/@react-native-community/viewpager`)"
@@ -1126,8 +1096,6 @@ EXTERNAL SOURCES:
     :path: "../../../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
     :path: "../../../node_modules/@react-native-segmented-control/segmented-control"
-  react-native-skia:
-    :path: "../../../node_modules/@shopify/react-native-skia"
   react-native-slider:
     :path: "../../../node_modules/@react-native-community/slider"
   react-native-view-shot:
@@ -1300,7 +1268,6 @@ SPEC CHECKSUMS:
   react-native-netinfo: 85b2a435c4d3705c08b0c42ff2d6ef6b9622ea0a
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
-  react-native-skia: 7f9a3bd36c4247005e87005d912dcf6db76a6289
   react-native-slider: cecabb58ecffad671d2ad3ccc58c7f4d2d029e95
   react-native-view-shot: a60a98a18c72bcaaaf2138f9aab960ae9b0d96c7
   react-native-viewpager: b99b53127d830885917ef84809c5065edd614a78
