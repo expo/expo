@@ -1,22 +1,26 @@
 ---
 title: Installing app variants on the same device
+maxHeadingDepth: 4
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-When creating [development, preview, and production builds](../build/eas-json/#common-use-cases), it's common to want to install one of each build on your device at the same time. This allows you to do development work, preview the next version of your app, and run the production version all on the same device, without needing to uninstall and reinstall the app.
+When creating [development, preview, and production builds](../build/eas-json/#common-use-cases), it's common to want to install one of each build on your device at the same time.
+This allows you to do development work, preview the next version of your app, and run the production version all on the same device, without needing to uninstall and reinstall the app.
 
 In order to be able to have multiple instances of an app installed on your device, each instance must have a unique Application ID (Android) or Bundle Identifier (iOS).
 
-**If you have a bare project**, you can accomplish this using flavors (Android) and targets (iOS). To configure which flavor is used, use the `gradleCommand` field on your build profile; to configure which target is used, use the `scheme` field for iOS.
-
 **If you have a managed project**, this can be accomplished by using **app.config.js** and environment variables in **eas.json**.
 
-## Example: configuring development and production variants in a managed project
+**If you have a bare project**, you can accomplish this using flavors (Android) and targets (iOS). To configure which flavor is used, use the `gradleCommand` field on your build profile. To configure which target is used, use the `scheme` field for iOS.
+
+## Configuring development and production variants
+
+### In managed project
 
 Let's say we wanted a development build and production build of our managed Expo project. Your **eas.json** might look like this:
 
-```json
+```json eas.json
 {
   "build": {
     "development": {
@@ -29,7 +33,7 @@ Let's say we wanted a development build and production build of our managed Expo
 
 And your **app.json** might look like this:
 
-```json
+```json app.json
 {
   "expo": {
     "name": "MyApp",
@@ -46,7 +50,7 @@ And your **app.json** might look like this:
 
 Let's convert this to **app.config.js** so we can make it more dynamic:
 
-```javascript
+```js app.config.js
 export default {
   name: 'MyApp',
   slug: 'my-app',
@@ -61,7 +65,7 @@ export default {
 
 Now let's switch out the iOS `bundleIdentifier` and Android `package` (which becomes the Application ID) based on the presence of an environment variable in **app.config.js**:
 
-```js
+```js app.config.js
 const IS_DEV = process.env.APP_VARIANT === 'development';
 
 export default {
@@ -82,7 +86,7 @@ export default {
 
 To automatically set the `APP_VARIANT` environment variable when running builds with the "development" profile, we can use `env` in **eas.json**:
 
-```json
+```json eas.json
 {
   "build": {
     "development": {
@@ -102,15 +106,15 @@ When you run `eas build --profile production` the `APP_VARIANT` variable environ
 
 > **Note**: if you use EAS Update to publish JavaScript updates of your app, you should be cautious to set the correct environment variables for the app variant that you are publishing for when you run the `eas update` command. Refer to the EAS Build ["Environment variables and secrets" guide](/build/updates.mdx) for more information.
 
-## Example: configuring development and production variants in a bare project
+### In bare project
 
-### Android
+#### Android
 
 In **android/app/build.gradle**, create a separate flavor for every build profile from **eas.json** that you want to build.
 
-```groovy
+```groovy android/app/build.gradle
 android {
-    ...
+    /* @hide ... */ /* @end */
     flavorDimensions "env"
     productFlavors {
         production {
@@ -122,7 +126,7 @@ android {
             applicationId 'com.myapp.dev'
         }
     }
-    ...
+    /* @hide ... */ /* @end */
 }
 ```
 
@@ -130,7 +134,7 @@ android {
 
 Assign Android flavors to EAS build profiles by specifying a `gradleCommand` in the **eas.json**:
 
-```json
+```json eas.json
 {
   "build": {
     "development": {
@@ -149,9 +153,9 @@ Assign Android flavors to EAS build profiles by specifying a `gradleCommand` in 
 
 By default, every flavor can be built in either debug or release mode. If you want to restrict some flavor to a specific mode, see the snippet below, and modify **build.gradle**.
 
-```groovy
+```groovy android/app/build.gradle
 android {
-    ...
+    /* @hide ... */ /* @end */
     variantFilter { variant ->
         def validVariants = [
                 ["production", "release"],
@@ -165,7 +169,7 @@ android {
             setIgnore(true)
         }
     }
-    ...
+    /* @hide ... */ /* @end */
 }
 ```
 
@@ -181,11 +185,11 @@ The rest of the configuration at this point is not specific to EAS, it's the sam
 - To specify **google-services.json** for a specific flavor put it in a **android/app/src/&lbrace;flavor&rbrace;/google-services.json** file.
 - To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (e.g. **android/sentry-production-release.properties**)
 
-### iOS
+#### iOS
 
 Assign a distinct scheme to every build profile in **eas.json**:
 
-```json
+```json eas.json
 {
   "build": {
     "development": {
@@ -204,17 +208,18 @@ Assign a distinct scheme to every build profile in **eas.json**:
 }
 ```
 
-`Podfile` should have a target defined like this:
+**Podfile** should have a target defined like this:
 
-```ruby
+```ruby Podfile
 target 'myapp' do
-    ...
+  # @hide ... #
+  # @end #
 end
 ```
 
-Replace it with an abstract target, where common configuration can be copied from the old target.
+Replace it with an abstract target, where common configuration can be copied from the old target:
 
-```ruby
+```ruby Podfile
 abstract_target 'common' do
   # put common target configuration here
 

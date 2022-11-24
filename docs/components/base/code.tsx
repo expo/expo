@@ -197,7 +197,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
   }
 
   private cleanCopyValue(value: string) {
-    return value.replace(/ *(\/\*|#|<!--)+\s@.+(\*\/|-->)\r?\n/g, '');
+    return value.replace(/ *(\/\*|#|<!--)+\s@.+(\*\/|-->|#)\r?\n/g, '');
   }
 
   render() {
