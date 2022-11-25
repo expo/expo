@@ -1,6 +1,6 @@
 import path from 'path';
 import { setTimeout } from 'timers/promises';
-import { v4 as uuid } from 'uuid';
+import uuid from 'uuid/v4';
 
 import * as Server from './utils/server';
 import * as Simulator from './utils/simulator';

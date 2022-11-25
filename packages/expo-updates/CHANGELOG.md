@@ -13,7 +13,6 @@
 ### 💡 Others
 
 - Improvements to setup for Updates E2E tests. ([#20120](https://github.com/expo/expo/pull/20120) by [@douglowder](https://github.com/douglowder))
-- Upgrade uuid package and update uuid/v4 import to new format. ([#20211](https://github.com/expo/expo/pull/20211) by [@peterpme](https://github.com/peterpme))
 
 ## 0.15.5 - 2022-11-14
 

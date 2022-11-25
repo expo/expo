@@ -10,8 +10,6 @@
 
 ### 💡 Others
 
-- Upgrade uuid package and update uuid/v4 import to new format. ([#20211](https://github.com/expo/expo/pull/20211) by [@peterpme](https://github.com/peterpme))
-
 ## 47.0.1 — 2022-11-03
 
 _This version does not introduce any user-facing changes._

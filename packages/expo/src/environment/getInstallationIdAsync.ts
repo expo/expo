@@ -1,5 +1,5 @@
 import * as Application from 'expo-application';
-import { v5 as uuidv5 } from 'uuid';
+import uuidv5 from 'uuid/v5';
 
 let installationId: string | null;
 const UUID_NAMESPACE = '29cc8a0d-747c-5f85-9ff9-f2f16636d963'; // uuidv5(0, "expo")

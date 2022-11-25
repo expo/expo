@@ -50,7 +50,7 @@
     "expo-updates-interface": "~0.8.0",
     "fbemitter": "^3.0.0",
     "resolve-from": "^5.0.0",
-    "uuid": "^9.0.0"
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",
