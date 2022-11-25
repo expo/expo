@@ -29,12 +29,18 @@ if (!platform || !projectRoot) {
   process.exit(1);
 }
 
+// Prevent any logs from the app.config.js
+// from being used in the output of this command.
+const originalWrite = process.stdout.write;
+process.stdout.write = () => {};
+
+// Resolve the entry point
 const entry = resolveEntryPoint(projectRoot, { platform });
 
+// Restore stdout
+process.stdout.write = originalWrite;
+
 if (entry) {
-  // Prevent any logs from the app.config.js
-  // from being used in the output of this command.
-  console.clear();
   // React Native's `PROJECT_ROOT` could be using a different root on MacOS (`/var` vs `/private/var`)
   // We need to make sure to get the real path, `resolveEntryPoint` is using this too
   console.log(
