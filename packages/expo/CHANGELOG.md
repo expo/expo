@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Swallow stdout while resolving entry point ([#20212](https://github.com/expo/expo/pull/20212) by [@brentvatne](https://github.com/brentvatne))
+
 ### 💡 Others
 
 - Upgrade uuid package and update uuid/v4 import to new format. ([#20211](https://github.com/expo/expo/pull/20211) by [@peterpme](https://github.com/peterpme))
