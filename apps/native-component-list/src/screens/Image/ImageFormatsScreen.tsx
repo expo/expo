@@ -93,7 +93,7 @@ const data: SectionListData<ImageSource>[] = [
       },
     ],
   },
-].filter(Boolean);
+].filter(Boolean) as SectionListData<ImageSource>[];
 
 function keyExtractor(item: any, index: number) {
   return '' + index;
