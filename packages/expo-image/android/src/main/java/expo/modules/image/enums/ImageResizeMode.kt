@@ -15,13 +15,7 @@ enum class ImageResizeMode(val stringValue: String) : Enumerable {
     CONTAIN -> ImageView.ScaleType.FIT_CENTER
     COVER -> ImageView.ScaleType.CENTER_CROP
     STRETCH -> ImageView.ScaleType.FIT_XY
-    CENTER -> ImageView.ScaleType.CENTER
+    CENTER -> ImageView.ScaleType.CENTER_INSIDE
     REPEAT -> ImageView.ScaleType.FIT_XY
-  }
-
-  companion object {
-    fun fromStringValue(value: String): ImageResizeMode =
-      values().firstOrNull { it.stringValue == value }
-        ?: throw JSApplicationIllegalArgumentException("Invalid resizeMode: $value")
   }
 }
