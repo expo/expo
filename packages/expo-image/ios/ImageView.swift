@@ -33,7 +33,16 @@ public final class ImageView: ExpoView {
 
   let onLoad = EventDispatcher()
 
-  // MARK: - ExpoView
+  // MARK: - View
+
+  public override var bounds: CGRect {
+    didSet {
+      // Reload the image when the bounds size has changed and the view is mounted.
+      if oldValue.size != bounds.size && window != nil {
+        reload()
+      }
+    }
+  }
 
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -43,7 +52,21 @@ public final class ImageView: ExpoView {
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     sdImageView.layer.masksToBounds = true
 
+    // Apply trilinear filtering to smooth out mis-sized images.
+    sdImageView.layer.magnificationFilter = .trilinear
+    sdImageView.layer.minificationFilter = .trilinear
+
     addSubview(sdImageView)
+  }
+
+  public override func didMoveToWindow() {
+    if window == nil {
+      // Cancel pending requests when the view is unmounted.
+      imageManager.cancelAll()
+    } else if !bounds.isEmpty {
+      // Reload the image after mounting the view with non-empty bounds.
+      reload()
+    }
   }
 
   // MARK: - Implementation
@@ -68,6 +91,11 @@ public final class ImageView: ExpoView {
     }
 
     context[SDWebImageContextOption.imageTransformer] = createTransformPipeline()
+
+    // Assets from the bundler have `scale` prop which needs to be passed to the context,
+    // otherwise they would be saved in cache with scale = 1.0 which may result in
+    // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
+    context[.imageScaleFactor] = source.scale
 
     onLoadStart([:])
 
@@ -127,14 +155,15 @@ public final class ImageView: ExpoView {
   }
 
   private func processImage(_ image: UIImage?) -> UIImage? {
-    guard let image = image else {
+    guard let image = image, !bounds.isEmpty else {
       return nil
     }
     if resizeMode == .repeat {
       return image.resizableImage(withCapInsets: .zero, resizingMode: .tile)
-    } else {
-      return image.resizableImage(withCapInsets: .zero, resizingMode: .stretch)
     }
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+
+    return maybeDownscale(image: image, frameSize: frame.size, scale: scale)
   }
 
   // MARK: - Rendering
