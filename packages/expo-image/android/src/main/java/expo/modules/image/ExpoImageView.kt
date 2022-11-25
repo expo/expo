@@ -11,11 +11,12 @@ import android.graphics.drawable.Drawable
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import com.bumptech.glide.integration.webp.decoder.WebpDrawable
-import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation
 import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.DrawableImageViewTarget
+import com.bumptech.glide.request.target.SizeReadyCallback
+import com.bumptech.glide.request.target.Target
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
@@ -146,6 +147,7 @@ class ExpoImageView(
     set(value) {
       field = value
       scaleType = value.getScaleType()
+      propsChanged = true
     }
 
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
@@ -212,14 +214,14 @@ class ExpoImageView(
         .load(sourceToLoad)
         .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
         .apply(options)
+        .downsample(DownsampleStrategy.NONE)
         .addListener(eventsManager)
-        .run {
-          val fitCenter = FitCenter()
-          optionalTransform(fitCenter)
-          optionalTransform(WebpDrawable::class.java, WebpDrawableTransformation(fitCenter))
-        }
         .apply(propOptions)
-        .into(this)
+        .into(object : DrawableImageViewTarget(this) {
+          override fun getSize(cb: SizeReadyCallback) {
+            cb.onSizeReady(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+          }
+        })
 
       requestManager
         .`as`(BitmapFactory.Options::class.java)
