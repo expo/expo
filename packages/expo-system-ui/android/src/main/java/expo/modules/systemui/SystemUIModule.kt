@@ -28,7 +28,7 @@ class SystemUIModule : Module() {
       } else {
         null
       }
-    }.runOnQueue(Queues.MAIN)
+    }
   }
 
   companion object {
