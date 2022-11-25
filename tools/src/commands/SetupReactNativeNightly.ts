@@ -54,7 +54,7 @@ async function main() {
  */
 async function addBareExpoOptionalPackagesAsync() {
   const bareExpoRoot = path.join(EXPO_DIR, 'apps', 'bare-expo');
-  const OPTIONAL_PKGS = ['@shopify/react-native-skia'];
+  const OPTIONAL_PKGS = ['@shopify/react-native-skia', 'lottie-react-native', 'react-native-maps'];
 
   const packageJsonNCL = await JsonFile.readAsync(
     path.join(EXPO_DIR, 'apps', 'native-component-list', 'package.json')
