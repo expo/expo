@@ -14,7 +14,6 @@ class CryptoError extends TypeError {
   }
 }
 
-
 // @needsAudit
 /**
  * Generates completely random bytes using native implementations. The `byteCount` property
