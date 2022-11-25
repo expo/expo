@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
@@ -183,6 +184,14 @@ class ExpoImageView(
 
   internal fun setBorderStyle(style: String?) {
     borderDrawable.setBorderStyle(style)
+  }
+
+  internal fun setBackgroundColor(color: Int?) {
+    if (color == null) {
+      setBackgroundColor(Color.TRANSPARENT)
+    } else {
+      setBackgroundColor(color)
+    }
   }
 
   internal fun setTintColor(color: Int?) {
