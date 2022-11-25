@@ -289,10 +289,6 @@ PODS:
   - libwebp/mux (1.2.3):
     - libwebp/demux
   - libwebp/webp (1.2.3)
-  - lottie-ios (3.4.4)
-  - lottie-react-native (5.1.4):
-    - lottie-ios (~> 3.4.0)
-    - React-Core
   - MLImage (1.0.0-beta2)
   - MLKitCommon (5.0.0):
     - GoogleDataTransport (~> 9.0)
@@ -548,8 +544,6 @@ PODS:
   - React-jsinspector (0.70.5)
   - React-logger (0.70.5):
     - glog
-  - react-native-maps (1.3.2):
-    - React-Core
   - react-native-netinfo (9.3.5):
     - React-Core
   - react-native-pager-view (6.0.1):
@@ -775,7 +769,6 @@ DEPENDENCIES:
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes/hermes-engine.podspec`)
   - libevent (~> 2.1.12)
-  - lottie-react-native (from `../../../node_modules/lottie-react-native`)
   - Nimble (from `./../../../ios/Nimble.podspec`)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -793,7 +786,6 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - react-native-maps (from `../../../node_modules/react-native-maps`)
   - "react-native-netinfo (from `../../../node_modules/@react-native-community/netinfo`)"
   - react-native-pager-view (from `../../../node_modules/react-native-pager-view`)
   - react-native-safe-area-context (from `../../../node_modules/react-native-safe-area-context`)
@@ -842,7 +834,6 @@ SPEC REPOS:
     - libevent
     - libvmaf
     - libwebp
-    - lottie-ios
     - MLImage
     - MLKitCommon
     - MLKitFaceDetection
@@ -1067,8 +1058,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
     :podspec: "../node_modules/react-native/sdks/hermes/hermes-engine.podspec"
-  lottie-react-native:
-    :path: "../../../node_modules/lottie-react-native"
   Nimble:
     :podspec: "./../../../ios/Nimble.podspec"
   RCT-Folly:
@@ -1101,8 +1090,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
-  react-native-maps:
-    :path: "../../../node_modules/react-native-maps"
   react-native-netinfo:
     :path: "../../../node_modules/@react-native-community/netinfo"
   react-native-pager-view:
@@ -1254,8 +1241,6 @@ SPEC CHECKSUMS:
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   libvmaf: 8d61aabc2f4ed3e6591cf7406fa00a223ec11289
   libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
-  lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
-  lottie-react-native: b702fab740cdb952a8e2354713d3beda63ff97b0
   MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
   MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
   MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
@@ -1280,7 +1265,6 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 31564fa6912459921568e8b0e49024285a4d584b
   React-jsinspector: badd81696361249893a80477983e697aab3c1a34
   React-logger: fdda34dd285bdb0232e059b19d9606fa0ec3bb9c
-  react-native-maps: 085f614cf14d3637b2048bb9752da5b1c27c2886
   react-native-netinfo: 85b2a435c4d3705c08b0c42ff2d6ef6b9622ea0a
   react-native-pager-view: 3051346698a0ba0c4e13e40097cc11b00ee03cca
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
