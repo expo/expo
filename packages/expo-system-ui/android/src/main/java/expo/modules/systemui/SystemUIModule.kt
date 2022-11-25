@@ -16,8 +16,7 @@ class SystemUIModule : Module() {
 
     AsyncFunction("setBackgroundColorAsync") { color: Int ->
       val rootView = currentActivity.window.decorView
-      val colorString = colorToHex(color)
-      val colorInt = Color.parseColor(colorString)
+      val colorInt = Color.parseColor(colorToHex(color))
       rootView.setBackgroundColor(colorInt)
     }.runOnQueue(Queues.MAIN)
 
