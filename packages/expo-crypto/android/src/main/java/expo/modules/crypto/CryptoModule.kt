@@ -4,15 +4,18 @@ import android.util.Base64
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.security.MessageDigest
+import java.security.SecureRandom
 
 class CryptoModule : Module() {
+  private val secureRandom by lazy { SecureRandom() }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoCrypto")
 
     Function("digestString", this@CryptoModule::digestString)
     AsyncFunction("digestStringAsync", this@CryptoModule::digestString)
-    Function("getRandomBase64String", this@RandomModule::getRandomBase64String)
-    AsyncFunction("getRandomBase64StringAsync", this@RandomModule::getRandomBase64String)
+    Function("getRandomBase64String", this@CryptoModule::getRandomBase64String)
+    AsyncFunction("getRandomBase64StringAsync", this@CryptoModule::getRandomBase64String)
   }
 
   private fun getRandomBase64String(randomByteCount: Int): String {
