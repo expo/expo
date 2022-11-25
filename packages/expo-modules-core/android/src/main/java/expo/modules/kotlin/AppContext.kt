@@ -321,7 +321,7 @@ class AppContext(
   }
 
   /**
-   * Runs a code block on the javascript thread
+   * Runs a code block on the JavaScript thread.
    */
   fun executeOnJavaScriptThread(runnable: Runnable) {
     reactContextHolder.get()?.runOnJSQueueThread(runnable)
