@@ -241,7 +241,7 @@ function initialArgumentsFromParameters(parameters: FunctionParameter[]) {
  * Hook that handles function arguments' values.
  * Initial value is constructed based on the description of each parameter.
  */
-function useArguments(
+export function useArguments(
   parameters: FunctionParameter[]
 ): [FunctionArgument[], OnArgumentChangeCallback] {
   const [args, setArgs] = useState(initialArgumentsFromParameters(parameters));
