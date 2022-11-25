@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- New API Updates.isEmbeddedLaunch. ([#20014](https://github.com/expo/expo/pull/20014) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
 
 - [Android] Fix runtime version parsing. ([#19821](https://github.com/expo/expo/pull/19821) by [@douglowder](https://github.com/douglowder))
@@ -15,6 +13,13 @@
 ### 💡 Others
 
 - Improvements to setup for Updates E2E tests. ([#20120](https://github.com/expo/expo/pull/20120) by [@douglowder](https://github.com/douglowder))
+- Upgrade uuid package and update uuid/v4 import to new format. ([#20211](https://github.com/expo/expo/pull/20211) by [@peterpme](https://github.com/peterpme))
+
+## 0.15.5 - 2022-11-14
+
+### 🎉 New features
+
+- New API Updates.isEmbeddedLaunch. ([#20014](https://github.com/expo/expo/pull/20014) by [@douglowder](https://github.com/douglowder))
 
 ## 0.15.4 — 2022-11-03
 

@@ -1,6 +1,7 @@
 package expo.modules.image
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
@@ -28,7 +29,6 @@ import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.SourceMap
 import expo.modules.image.svg.SVGSoftwareLayerSetter
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import jp.wasabeef.glide.transformations.BlurTransformation
@@ -41,18 +41,21 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal val onError by EventDispatcher<ImageErrorEvent>()
   internal val onLoad by EventDispatcher<ImageLoadEvent>()
 
-  private val reactContext: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val activity: Activity
+    get() = appContext.currentActivity ?: throw MissingActivity()
 
-  internal val imageView = ExpoImageView(
-    reactContext.applicationContext,
-    getOrCreateRequestManager(appContext, reactContext),
-    ImageLoadEventsManager(
-      WeakReference(this)
-    )
-  ).apply {
-    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    addView(this)
+  internal val imageView = run {
+    val activity = activity
+    ExpoImageView(
+      activity,
+      getOrCreateRequestManager(appContext, activity),
+      ImageLoadEventsManager(
+        WeakReference(this)
+      )
+    ).apply {
+      layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+      addView(this)
+    }
   }
 
   companion object {
@@ -61,17 +64,17 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
     fun getOrCreateRequestManager(
       appContext: AppContext,
-      reactContext: Context
+      activity: Activity
     ): RequestManager = synchronized(Companion) {
       val cachedRequestManager = requestManager
-        ?: return createNewRequestManager(reactContext).also {
+        ?: return createNewRequestManager(activity).also {
           requestManager = it
           appContextRef = WeakReference(appContext)
         }
 
-      // Request manager was created using different app context
+      // Request manager was created using different activity
       if (appContextRef.get() != appContext) {
-        return createNewRequestManager(reactContext).also {
+        return createNewRequestManager(activity).also {
           requestManager = it
           appContextRef = WeakReference(appContext)
         }
@@ -80,8 +83,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       return cachedRequestManager
     }
 
-    private fun createNewRequestManager(reactContext: Context): RequestManager =
-      Glide.with(reactContext).addDefaultRequestListener(SVGSoftwareLayerSetter())
+    private fun createNewRequestManager(activity: Activity): RequestManager =
+      Glide.with(activity).addDefaultRequestListener(SVGSoftwareLayerSetter())
   }
 }
 
