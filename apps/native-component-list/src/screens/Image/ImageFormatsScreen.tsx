@@ -6,6 +6,7 @@ import {
   SectionListRenderItemInfo,
   StyleSheet,
   View,
+  Platform,
 } from 'react-native';
 
 import HeadingText from '../../components/HeadingText';
@@ -84,7 +85,7 @@ const data: SectionListData<ImageSource>[] = [
       },
     ],
   },
-  {
+  Platform.OS === 'ios' && {
     title: 'ICNS',
     data: [
       {
@@ -92,7 +93,7 @@ const data: SectionListData<ImageSource>[] = [
       },
     ],
   },
-];
+].filter(Boolean) as SectionListData<ImageSource>[];
 
 function keyExtractor(item: any, index: number) {
   return '' + index;
