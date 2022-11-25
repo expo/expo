@@ -48,7 +48,7 @@ By default, `eas build:configure` will create a `development` profile with `"dev
 
 The `development` profile also defaults to `"distribution": "internal"`. This will make it easy to distribute your app directly to physical iOS and Android devices &mdash; [learn more](/build/internal-distribution.mdx).
 
-You may alternatively prefer for your development build to [run in an iOS simulator](/build-reference/simulators.mdx). To do this, use the following configuration for `development` profile:
+You may alternatively prefer for your development build to [run on an iOS Simulator](/build-reference/simulators.mdx). To do this, use the following configuration for `development` profile:
 
 ```json
 {
@@ -66,7 +66,7 @@ You may alternatively prefer for your development build to [run in an iOS simula
 }
 ```
 
-If you'd like to create a build for internal distribution and another for the iOS simulator then you can create another development profile for that build. You might call the profile something like `development-simulator` and use the above configuration on that profile instead of on `development`. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.mdx); the same APK will work in both circumstances.
+If you'd like to create a build for internal distribution and another for the iOS Simulator then you can create another development profile for that build. You might call the profile something like `development-simulator` and use the above configuration on that profile instead of on `development`. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.mdx); the same APK will work in both circumstances.
 
 ### Preview builds
 
@@ -86,13 +86,13 @@ A minimal `preview` profile looks like this:
 }
 ```
 
-Similar to [development builds](#development-builds), you can configure your preview build to run in the [iOS simulator](/build-reference/simulators.mdx) or create a variant of your preview profile for that purpose. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.mdx); the same APK will work in both circumstances.
+Similar to [development builds](#development-builds), you can configure your preview build to run on the [iOS Simulator](/build-reference/simulators.mdx) or create a variant of your preview profile for that purpose. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.mdx); the same APK will work in both circumstances.
 
 ### Production builds
 
 These builds are submitted to an app store, for release to the general public or as part of a store-facilitated testing process such as TestFlight.
 
-Production builds must be installed through their respective app stores; they cannot be installed directly to your iOS device/simulator or Android device/emulator. The only exception to this if you explicitly set `"buildType": "apk"` for Android on your build profile; however, it is recommended to use AAB when submitting to stores, and this is the default configuration.
+Production builds must be installed through their respective app stores; they cannot be installed directly on your Android Emulator or device, or iOS Simulator or device. The only exception to this is if you explicitly set `"buildType": "apk"` for Android on your build profile; however, it is recommended to use AAB when submitting to stores, and this is the default configuration.
 
 A minimal `production` profile looks like this:
 

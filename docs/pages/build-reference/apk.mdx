@@ -2,7 +2,7 @@
 title: Building APKs for Android emulators and devices
 ---
 
-The default file format used when building Android apps with EAS Build is an [Android App Bundle](https://developer.android.com/platform/technology/app-bundle) (AAB / **.aab**). This format is optimized for distributing to the Google Play Store, but AABs can't be installed directly to your device. To install a build directly to your Android device or emulator, you need to build an [Android Package](https://en.wikipedia.org/wiki/Android_application_package) (APK / **.apk**) instead.
+The default file format used when building Android apps with EAS Build is an [Android App Bundle](https://developer.android.com/platform/technology/app-bundle) (AAB/**.aab**). This format is optimized for distribution to the Google Play Store, but AABs can't be installed directly on your device. To install a build directly to your Android device or emulator, you need to build an [Android Package](https://en.wikipedia.org/wiki/Android_application_package) (APK/**.apk**) instead.
 
 ## Configuring a profile to build APKs
 
@@ -35,13 +35,13 @@ To generate an **.apk**, modify the [**eas.json**](/build/eas-json.mdx) by addin
 }
 ```
 
-Now you can run your build with `eas build -p android --profile preview`. Remember that you can name the profile whatever you like. We named the profile `"preview"`, but you can call it `"local"`, `"simulator"`, or whatever makes the most sense for you.
+Now you can run your build with `eas build -p android --profile preview`. Remember that you can name the profile whatever you like. We named the profile `"preview"`, however, you can call it `"local"`, `"simulator"`, or whatever makes the most sense for you.
 
 ## Installing your build
 
 ### Emulator ("Virtual device")
 
-> If you haven't installed or run an Android Emulator before, follow the [Android Studio emulator guide](/workflow/android-studio-emulator.mdx) before proceeding.
+> If you haven't installed or run an Android Emulator before, follow the [Android Studio emulator guide](/workflow/android-studio-emulator) before proceeding.
 
 - Once your build is completed, download the APK from the build details page or the link provided when `eas build` is done.
 - Open up your emulator.

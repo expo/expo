@@ -13,7 +13,7 @@ Every app is inevitably going to use a third-party library, so it's important to
 
 ## Using React Native Core Libraries
 
-React Native provides a set of built-in primitives that most developers will need in their app. These include components such as ActivityIndicator, TextInput, Text, ScrollView, and View. These are listed in the [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) page of the React Native documentation. We also list the React Native Core Components and APIs in the [API Reference](/versions/latest/) section of the Expo documentation, so you can quickly see the documentation relevant to the SDK version that your app uses in the same place as you would find it for Expo SDK libraries. You can see the React Native version that corresponds to your Expo SDK version in the table on the [API Reference index](/versions/latest/).
+React Native provides a set of built-in primitives that most developers will need in their apps. These include components such as `<ActivityIndicator>`, `<TextInput>`, `<Text>`, `<ScrollView>`, and `<View>`. These are listed at [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) in React Native documentation. You can see the React Native version that corresponds to your Expo SDK version in the table on the [API Reference index](/versions/latest/).
 
 To use a React Native component or API in your project, import it from the `react-native` package in your code:
 
@@ -36,7 +36,7 @@ export default function App() {
 
 ## Using Expo SDK Libraries
 
-The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like updates, maps, OAuth authentication tools, and more. For details on how we decide what goes into the Expo SDK, [read here](https://expo.fyi/whats-in-the-sdk).
+The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like updates, maps, OAuth authentication tools, and more. For more information, see how we decide [what goes into the Expo SDK](https://expo.fyi/whats-in-the-sdk).
 
 To use a library from the Expo SDK, find the one you are looking for in the [API Reference](/versions/latest/) or through the documentation Search bar.
 
@@ -136,7 +136,7 @@ If the module needs additional native configuration, you can do so using [config
 
 <ConfigReactNative>
 
-If your project does not support [Expo Prebuild](/workflow/prebuild) then you won't be able to use [config plugins](/guides/config-plugins). You can either [adopt Expo Prebuild](/guides/adopting-prebuild) or setup and configure each library manually by following any additional setup guides from the respective module's website or README.
+If your project does not support [Expo Prebuild](/workflow/prebuild) then you won't be able to use [config plugins](/guides/config-plugins). You can either [adopt Expo Prebuild](/guides/adopting-prebuild) or set up and configure each library manually by following any additional setup guides from the respective module's website or README.
 
 </ConfigReactNative>
 

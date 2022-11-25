@@ -25,9 +25,9 @@ This document outlines how to configure EAS Build for some common scenarios, suc
 
 See [Using private npm packages](/build-reference/private-npm-packages) to learn more.
 
-## Using npm cache with yarn v1
+## Using npm cache with Yarn v1
 
-By default the EAS npm cache won't work with yarn v1, because `yarn.lock` files contain URLs to registries for every package and yarn does not provide any way to override it. The issue is fixed in yarn v2, but the yarn team does not plan to backport it to yarn v1. If you want to take advantage of the npm cache, you can use the `eas-build-pre-install` script to override the registry in your `yarn.lock`.
+By default, the EAS npm cache won't work with Yarn v1, because `yarn.lock` files contain URLs to registries for every package and Yarn does not provide any way to override it. The issue is fixed in Yarn v2, but the Yarn team does not plan to backport it to Yarn v1. If you want to take advantage of the npm cache, you can use the `eas-build-pre-install` script to override the registry in your `yarn.lock`.
 
 #### Example
 

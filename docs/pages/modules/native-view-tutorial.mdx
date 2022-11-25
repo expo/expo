@@ -9,11 +9,11 @@ import { APIBox } from '~/components/plugins/APIBox';
 import { Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-In this tutorial we are going to build a module with a native view that will render a WebView. We will be using the [WebView](https://developer.android.com/reference/android/webkit/WebView) component for Android and [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview) for iOS. It is possible to implement web support using [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), but we'll leave that as an exercise for the reader.
+In this tutorial, we are going to build a module with a native view that will render a WebView. We will be using the [WebView](https://developer.android.com/reference/android/webkit/WebView) component for Android and [WKWebView](https://developer.apple.com/documentation/webkit/wkwebview) for iOS. It is possible to implement web support using [`iframe`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/iframe), but we'll leave that as an exercise for the reader.
 
 ## 1. Initialize a new module
 
-First, we'll create a new module. On this page we will use the name `expo-web-view` / `ExpoWebView`. You can name it whatever you like, just adjust the instructions accordingly:
+First, we'll create a new module. On this page, we will use the name `expo-web-view`/`ExpoWebView`. You can name it whatever you like, just adjust the instructions accordingly:
 
 <Terminal cmd={['$ npx create-expo-module expo-web-view']} />
 
@@ -179,7 +179,6 @@ We use the [Prop definition component](/modules/module-api/#prop) to define the 
 
 ### iOS module
 
-
 ```swift ios/ExpoWebViewModule.swift
 import ExpoModulesCore
 
@@ -257,7 +256,7 @@ When you rebuild and run the app, you will now see the Expo homepage.
 
 ## 6. Add an event to notify when the page has loaded
 
-[View callbacks](/modules/module-api/#view-callbacks) allow developers to listen for events on components. They are typically registered through props on the component, for example: `<Image onLoad={...} />`.  We can use the [Events definition component](/modules/module-api/#events) to define an event for our WebView. We'll call it `onLoad` as well.
+[View callbacks](/modules/module-api/#view-callbacks) allow developers to listen for events on components. They are typically registered through props on the component, for example: `<Image onLoad={...} />`. We can use the [Events definition component](/modules/module-api/#events) to define an event for our WebView. We'll call it `onLoad` as well.
 
 ### iOS view and module
 
@@ -423,24 +422,18 @@ Now that we have a web view, we can build a web browser UI around it. Have some 
 <Collapsible summary="example/App.tsx">
 
 ```typescript
-import { useState } from "react";
-import {
-  ActivityIndicator,
-  Platform,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
-import { WebView } from "expo-web-view";
-import { StatusBar } from "expo-status-bar";
+import { useState } from 'react';
+import { ActivityIndicator, Platform, Text, TextInput, View } from 'react-native';
+import { WebView } from 'expo-web-view';
+import { StatusBar } from 'expo-status-bar';
 
 export default function App() {
-  const [inputUrl, setInputUrl] = useState("https://docs.expo.dev/modules/");
+  const [inputUrl, setInputUrl] = useState('https://docs.expo.dev/modules/');
   const [url, setUrl] = useState(inputUrl);
   const [isLoading, setIsLoading] = useState(true);
 
   return (
-    <View style={{ flex: 1, paddingTop: Platform.OS === "ios" ? 80 : 30 }}>
+    <View style={{ flex: 1, paddingTop: Platform.OS === 'ios' ? 80 : 30 }}>
       <TextInput
         value={inputUrl}
         onChangeText={setInputUrl}
@@ -454,8 +447,8 @@ export default function App() {
         }}
         keyboardType="url"
         style={{
-          color: "#fff",
-          backgroundColor: "#000",
+          color: '#fff',
+          backgroundColor: '#000',
           borderRadius: 10,
           marginHorizontal: 10,
           paddingHorizontal: 20,
@@ -464,11 +457,7 @@ export default function App() {
       />
 
       <WebView
-        url={
-          url.startsWith("https://") || url.startsWith("http://")
-            ? url
-            : `https://${url}`
-        }
+        url={url.startsWith('https://') || url.startsWith('http://') ? url : `https://${url}`}
         onLoad={() => setIsLoading(false)}
         style={{ flex: 1, marginTop: 20 }}
       />
@@ -486,28 +475,22 @@ function LoadingView({ isLoading }: { isLoading: boolean }) {
   return (
     <View
       style={{
-        position: "absolute",
+        position: 'absolute',
         bottom: 0,
         left: 0,
         right: 0,
         height: 80,
-        backgroundColor: "rgba(0,0,0,0.5)",
+        backgroundColor: 'rgba(0,0,0,0.5)',
         paddingBottom: 10,
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "row",
-      }}
-    >
-      <ActivityIndicator
-        animating={isLoading}
-        color="#fff"
-        style={{ marginRight: 10 }}
-      />
-      <Text style={{ color: "#fff" }}>Loading...</Text>
+        justifyContent: 'center',
+        alignItems: 'center',
+        flexDirection: 'row',
+      }}>
+      <ActivityIndicator animating={isLoading} color="#fff" style={{ marginRight: 10 }} />
+      <Text style={{ color: '#fff' }}>Loading...</Text>
     </View>
   );
 }
-
 ```
 
 </Collapsible>
