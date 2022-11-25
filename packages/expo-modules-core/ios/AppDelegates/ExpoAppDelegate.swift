@@ -36,7 +36,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
   // MARK: - Initializing the App
 
   open func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-      let parsedSubscribers = subscribers.filter {
+    let parsedSubscribers = subscribers.filter {
       $0.responds(to: #selector(application(_:willFinishLaunchingWithOptions:)))
     }
 
