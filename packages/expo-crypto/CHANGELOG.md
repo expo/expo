@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Ported over `getRandomBytes`, `getRandomBytesAsync` methods from `expo-random`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
