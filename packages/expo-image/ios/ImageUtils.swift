@@ -5,6 +5,9 @@ import ExpoModulesCore
 
 // MARK: - Constants
 
+/**
+ When downscaling, the ideal size will be (up)scaled by this value so we can throttle re-scaling when the view is resized.
+ */
 let downscalingThreshold = 1.2
 
 // MARK: - Functions
