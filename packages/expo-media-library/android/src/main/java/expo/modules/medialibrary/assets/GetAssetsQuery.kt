@@ -3,6 +3,7 @@ package expo.modules.medialibrary.assets
 import android.provider.MediaStore
 import expo.modules.core.utilities.ifNull
 import expo.modules.core.utilities.takeIfInstanceOf
+import expo.modules.medialibrary.AssetsOptions
 import expo.modules.medialibrary.GET_ASSETS_DEFAULT_LIMIT
 import expo.modules.medialibrary.MediaType
 import expo.modules.medialibrary.SortBy
@@ -16,20 +17,19 @@ data class GetAssetsQuery(
 )
 
 @Throws(IllegalArgumentException::class)
-internal fun getQueryFromOptions(input: Map<String, Any?>): GetAssetsQuery {
-  val limit = input["first"].takeIfInstanceOf<Number>()?.toInt() ?: GET_ASSETS_DEFAULT_LIMIT
+internal fun getQueryFromOptions(input: AssetsOptions): GetAssetsQuery {
+  val limit = input.first ?: GET_ASSETS_DEFAULT_LIMIT
 
   // to maintain compatibility with iOS field `after` is string
-  val offset = input["after"]
-    .takeIfInstanceOf<String>()
+  val offset = input.after
     ?.runCatching { toInt() } // NumberFormatException
     ?.getOrNull()
     ?: 0
 
   val selection = createSelectionString(input)
 
-  val sortBy = input["sortBy"] as? List<*>
-  val order = if (sortBy != null && sortBy.isNotEmpty()) {
+  val sortBy = input.sortBy
+  val order = if (sortBy.isNotEmpty()) {
     convertOrderDescriptors(sortBy)
   } else {
     MediaStore.Images.Media.DEFAULT_SORT_ORDER
@@ -39,16 +39,16 @@ internal fun getQueryFromOptions(input: Map<String, Any?>): GetAssetsQuery {
 }
 
 @Throws(IllegalArgumentException::class)
-private fun createSelectionString(input: Map<String, Any?>): String {
+private fun createSelectionString(input: AssetsOptions): String {
   val selectionBuilder = StringBuilder()
 
-  if (input.containsKey("album")) {
-    selectionBuilder.append("${MediaStore.Images.Media.BUCKET_ID} = ${input["album"]}")
+  if (input.album != null) {
+    selectionBuilder.append("${MediaStore.Images.Media.BUCKET_ID} = ${input.album}")
     selectionBuilder.append(" AND ")
   }
 
-  val mediaType = input["mediaType"] as? List<*>
-  if (mediaType != null && !mediaType.contains(MediaType.ALL.apiName)) {
+  val mediaType = input.mediaType
+  if (!mediaType.contains(MediaType.ALL.apiName)) {
     val mediaTypeInts = mediaType.map { parseMediaType(it.toString()) }
     selectionBuilder.append(
       "${MediaStore.Files.FileColumns.MEDIA_TYPE} IN (${mediaTypeInts.joinToString(separator = ",")})"
@@ -59,10 +59,10 @@ private fun createSelectionString(input: Map<String, Any?>): String {
     )
   }
 
-  input["createdAfter"].takeIfInstanceOf<Number>()?.let {
+  input.createdAfter?.let {
     selectionBuilder.append(" AND ${MediaStore.Images.Media.DATE_TAKEN} > ${it.toLong()}")
   }
-  input["createdBefore"].takeIfInstanceOf<Number>()?.let {
+  input.createdBefore?.let {
     selectionBuilder.append(" AND ${MediaStore.Images.Media.DATE_TAKEN} < ${it.toLong()}")
   }
 
