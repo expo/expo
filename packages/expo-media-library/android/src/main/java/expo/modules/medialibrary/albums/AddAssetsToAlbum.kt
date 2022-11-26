@@ -23,7 +23,7 @@ internal class AddAssetsToAlbum(
   private val strategy = if (copyToAlbum) AssetFileStrategy.copyStrategy else AssetFileStrategy.moveStrategy
 
   // Media store table can be corrupted. Extra check won't harm anyone.
-  private val album: File?
+  private val album: File
     get() {
       val path = arrayOf(MediaStore.MediaColumns.DATA)
       val selection = "${MediaStore.MediaColumns.BUCKET_ID}=?"
@@ -53,11 +53,11 @@ internal class AddAssetsToAlbum(
     }
 
   fun execute() {
-    val assets = MediaLibraryUtils.getAssetsById(context, promise, *assetIds) ?: return
-    val album = album ?: return
+    val assets = MediaLibraryUtils.getAssetsById(context, *assetIds)
 
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !album.canWrite()) {
-      throw PermissionsException("The application doesn't have permission to write to the album's directory. For more information, check out https://expo.fyi/android-r."
+      throw PermissionsException(
+        "The application doesn't have permission to write to the album's directory. For more information, check out https://expo.fyi/android-r."
       )
     }
 

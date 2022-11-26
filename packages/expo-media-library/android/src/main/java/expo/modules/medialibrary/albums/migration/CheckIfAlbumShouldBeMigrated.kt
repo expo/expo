@@ -28,6 +28,7 @@ class CheckIfAlbumShouldBeMigrated(
 /**
  * Returns directory for given Album ID (`BUCKET_ID` column) or `null` if album not found.
  */
+@RequiresApi(Build.VERSION_CODES.R)
 private fun getAlbumDirectory(context: Context, albumId: String): File? {
   val selection =
     "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}" +

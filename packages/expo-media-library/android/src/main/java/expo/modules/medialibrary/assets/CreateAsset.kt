@@ -110,7 +110,7 @@ class CreateAsset @JvmOverloads constructor(
    * Creates asset using filesystem. Legacy method - do not use above API 29
    */
   @Throws(IOException::class)
-  private fun createAssetFileLegacy(): File? {
+  private fun createAssetFileLegacy(): File {
     val localFile = File(mUri.path!!)
 
     val destDir = MediaLibraryUtils.getEnvDirectoryForAssetType(
@@ -137,7 +137,7 @@ class CreateAsset @JvmOverloads constructor(
         return
       }
 
-      val asset = createAssetFileLegacy() ?: return
+      val asset = createAssetFileLegacy()
       MediaScannerConnection.scanFile(
         context, arrayOf(asset.path),
         null

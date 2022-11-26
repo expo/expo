@@ -31,6 +31,3 @@ class ContentEntryException :
 
 class AssetFileException(message: String) :
   CodedException(message)
-
-
-

@@ -12,7 +12,6 @@ import android.text.TextUtils
 import android.util.Log
 import android.webkit.MimeTypeMap
 import expo.modules.kotlin.Promise
-import expo.modules.core.utilities.ifNull
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -136,7 +135,7 @@ object MediaLibraryUtils {
       .joinToString(separator = ",")
 
   // Used in albums and migrations only - consider moving it there
-  fun getAssetsById(context: Context, promise: Promise?, vararg assetsId: String?): List<AssetFile>? {
+  fun getAssetsById(context: Context, vararg assetsId: String?): List<AssetFile> {
 
     val path = arrayOf(
       MediaStore.MediaColumns._ID,

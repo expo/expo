@@ -2,12 +2,9 @@ package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
 import expo.modules.core.utilities.ifNull
-import expo.modules.core.utilities.takeIfInstanceOf
 import expo.modules.medialibrary.AssetsOptions
-import expo.modules.medialibrary.GET_ASSETS_DEFAULT_LIMIT
 import expo.modules.medialibrary.MediaType
 import expo.modules.medialibrary.SortBy
-import java.util.ArrayList
 
 data class GetAssetsQuery(
   val selection: String,
@@ -18,7 +15,7 @@ data class GetAssetsQuery(
 
 @Throws(IllegalArgumentException::class)
 internal fun getQueryFromOptions(input: AssetsOptions): GetAssetsQuery {
-  val limit = input.first ?: GET_ASSETS_DEFAULT_LIMIT
+  val limit = input.first
 
   // to maintain compatibility with iOS field `after` is string
   val offset = input.after
@@ -42,14 +39,14 @@ internal fun getQueryFromOptions(input: AssetsOptions): GetAssetsQuery {
 private fun createSelectionString(input: AssetsOptions): String {
   val selectionBuilder = StringBuilder()
 
-  if (input.album != null) {
+  input.album?.let {
     selectionBuilder.append("${MediaStore.Images.Media.BUCKET_ID} = ${input.album}")
     selectionBuilder.append(" AND ")
   }
 
   val mediaType = input.mediaType
   if (!mediaType.contains(MediaType.ALL.apiName)) {
-    val mediaTypeInts = mediaType.map { parseMediaType(it.toString()) }
+    val mediaTypeInts = mediaType.map { parseMediaType(it) }
     selectionBuilder.append(
       "${MediaStore.Files.FileColumns.MEDIA_TYPE} IN (${mediaTypeInts.joinToString(separator = ",")})"
     )

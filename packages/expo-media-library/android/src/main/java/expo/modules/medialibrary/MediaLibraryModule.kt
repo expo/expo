@@ -136,7 +136,7 @@ class MediaLibraryModule : Module() {
       }
     }
 
-    AsyncFunction("getAlbumsAsync") { _ : Map<String, Any?>? /* unused on android atm */, promise: Promise ->
+    AsyncFunction("getAlbumsAsync") { _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
       rejectUnlessPermissionsGranted {
         GetAlbums(context, promise).execute()
       }
@@ -197,7 +197,7 @@ class MediaLibraryModule : Module() {
         context,
         null,
         *getAssetsInAlbums(context, albumId).toTypedArray()
-      ) ?: throw AlbumException("Couldn't find album.")
+      )
 
       val albumsMap = assets
         // All files should have mime type, but if not, we can safely assume that

@@ -23,7 +23,7 @@ internal class CreateAlbum(
 ) {
   private val mStrategy = if (copyAsset) AssetFileStrategy.copyStrategy else AssetFileStrategy.moveStrategy
 
-  private fun createAlbum(mimeType: String): File? {
+  private fun createAlbum(mimeType: String): File {
     val albumDir = MediaLibraryUtils.getEnvDirectoryForAssetType(mimeType, false)
       .ifNull {
         throw AssetFileException("Could not guess asset type.")
@@ -39,9 +39,9 @@ internal class CreateAlbum(
 
   fun execute() {
     try {
-      val files = MediaLibraryUtils.getAssetsById(context, promise, assetId) ?: return
+      val files = MediaLibraryUtils.getAssetsById(context, assetId)
       val albumCreator = files[0]
-      val album = createAlbum(albumCreator.mimeType) ?: return
+      val album = createAlbum(albumCreator.mimeType)
       val newFile = mStrategy.apply(albumCreator, album, context)
       MediaScannerConnection.scanFile(
         context,

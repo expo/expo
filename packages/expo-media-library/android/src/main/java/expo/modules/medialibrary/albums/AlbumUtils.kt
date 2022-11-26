@@ -17,7 +17,7 @@ import expo.modules.medialibrary.MediaLibraryUtils.queryPlaceholdersFor
  */
 fun queryAlbum(
   context: Context,
-  selection: String?,
+  selection: String,
   selectionArgs: Array<String>?,
   promise: Promise
 ) {

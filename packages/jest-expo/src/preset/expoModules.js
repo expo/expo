@@ -578,7 +578,7 @@ module.exports = {
           { name: 'isAvailableAsync', argumentsCount: 0, key: 0 },
           { name: 'setUpdateInterval', argumentsCount: 1, key: 1 },
         ],
-        ExponentMediaLibrary: [
+        ExpoMediaLibrary: [
           { name: 'createAssetAsync', argumentsCount: 1, key: 0 },
           { name: 'deleteAssetsAsync', argumentsCount: 1, key: 1 },
           { name: 'getPermissionsAsync', argumentsCount: 1, key: 2 },

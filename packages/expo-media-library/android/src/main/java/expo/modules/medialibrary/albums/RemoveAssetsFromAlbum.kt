@@ -10,7 +10,7 @@ internal class RemoveAssetsFromAlbum(
   private val assetIds: Array<String>,
   private val albumId: String,
   private val promise: Promise
-)  {
+) {
   fun execute() {
     val bucketSelection = "${Media.BUCKET_ID}=? AND ${Media._ID} IN (${assetIds.joinToString(",")} )"
     val bucketId = arrayOf(albumId)

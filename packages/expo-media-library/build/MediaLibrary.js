@@ -1,6 +1,6 @@
 import { PermissionStatus, createPermissionHook, EventEmitter, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import MediaLibrary from './ExponentMediaLibrary';
+import MediaLibrary from './ExpoMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
 export { PermissionStatus, };
 function arrayize(item) {

@@ -10,7 +10,7 @@ internal class DeleteAlbums(
   private val context: Context,
   albumIds: List<String>,
   private val promise: Promise
-)  {
+) {
   private val mAlbumIds = albumIds.toTypedArray()
 
   fun execute() {

@@ -9,7 +9,10 @@ import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 
-internal open class GetAlbums(private val context: Context, private val promise: Promise) {
+internal open class GetAlbums(
+  private val context: Context,
+  private val promise: Promise
+) {
   fun execute() {
     val projection = arrayOf(Media.BUCKET_ID, Media.BUCKET_DISPLAY_NAME)
     val selection = "${MediaStore.Files.FileColumns.MEDIA_TYPE} != ${MediaStore.Files.FileColumns.MEDIA_TYPE_NONE}"
