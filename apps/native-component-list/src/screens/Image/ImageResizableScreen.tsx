@@ -1,6 +1,6 @@
 import { ImageResizeMode, Image } from 'expo-image';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Dimensions, Image as RNImage, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
@@ -8,145 +8,168 @@ import Animated, {
   useSharedValue,
 } from 'react-native-reanimated';
 
+import { FunctionParameter, useArguments } from '../../components/FunctionDemo';
 import Configurator from '../../components/FunctionDemo/Configurator';
-import { useArguments } from '../../components/FunctionDemo/FunctionDemo';
+import { Colors } from '../../constants';
 
-type CustomViewProps = React.PropsWithChildren<{
-  initWidth: number;
-  initHeight: number;
-  boxWidth: number;
-}>;
+type CustomViewProps = React.PropsWithChildren<object>;
 
 type ContextType = {
   x: number;
   y: number;
 };
 
-const ResizableView: React.FC<CustomViewProps> = ({
-  initWidth,
-  initHeight,
-  boxWidth,
-  children,
-}) => {
-  const x = useSharedValue(initWidth);
-  const y = useSharedValue(initHeight);
+const PADDING = 20;
+const HANDLE_SIZE = 25;
+const HANDLE_SLOP = 10;
+const WINDOW_DIMENSIONS = Dimensions.get('window');
+const MAX_WIDTH = WINDOW_DIMENSIONS.width - 2 * PADDING;
+const MAX_HEIGHT = WINDOW_DIMENSIONS.height - 330;
+
+const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
+  const width = useSharedValue(300);
+  const height = useSharedValue(300);
 
   const panGestureEvent = useAnimatedGestureHandler<PanGestureHandlerGestureEvent, ContextType>({
     onStart: (_, context) => {
-      context.x = x.value;
-      context.y = y.value;
+      context.x = width.value;
+      context.y = height.value;
     },
     onActive: (event, context) => {
-      const newX = event.translationX + context.x;
-      const newY = event.translationY + context.y;
-
-      if (newX > boxWidth) {
-        x.value = newX;
-      }
-      if (newY > boxWidth) {
-        y.value = newY;
-      }
+      width.value = Math.max(HANDLE_SIZE, Math.min(event.translationX + context.x, MAX_WIDTH));
+      height.value = Math.max(HANDLE_SIZE, Math.min(event.translationY + context.y, MAX_HEIGHT));
     },
   });
-  const panStyle = useAnimatedStyle(() => {
+
+  const canvasStyle = useAnimatedStyle(() => {
     return {
-      transform: [
-        {
-          translateX: x.value - boxWidth / 2,
-        },
-        {
-          translateY: y.value - boxWidth / 2,
-        },
-      ],
+      width: width.value,
+      height: height.value,
     };
-  }, [x, y]);
-  const boxStyle = useAnimatedStyle(() => {
-    return {
-      width: x.value,
-      height: y.value,
-    };
-  }, [x, y]);
+  }, [width, height]);
 
   return (
-    <View>
-      <PanGestureHandler onGestureEvent={panGestureEvent}>
-        <Animated.View
-          style={[
-            {
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              position: 'absolute',
-              zIndex: 1,
-            },
-            panStyle,
-          ]}>
-          <View
-            style={[styles.box, { width: boxWidth, height: boxWidth, borderRadius: boxWidth / 5 }]}
-          />
-        </Animated.View>
-      </PanGestureHandler>
-      <Animated.View style={[{ backgroundColor: 'red' }, boxStyle]}>{children}</Animated.View>
+    <View style={styles.resizableView}>
+      <Text style={styles.hintText}>
+        Move the handle above to resize the image canvas and see how it lays out in different
+        components, sizes and resize modes
+      </Text>
+
+      <Animated.View style={[styles.canvas, canvasStyle]}>
+        {children}
+
+        <PanGestureHandler onGestureEvent={panGestureEvent}>
+          <Animated.View style={styles.resizeHandle}>
+            <View style={styles.resizeHandleChild} />
+          </Animated.View>
+        </PanGestureHandler>
+      </Animated.View>
     </View>
   );
 };
 
-const parameters = [
+const parameters: FunctionParameter[] = [
   {
-    name: 'options',
-    type: 'object',
-    properties: [
-      {
-        name: 'resizeMode',
-        type: 'enum',
-        values: [
-          { name: 'ImageResizeMode.CENTER', value: ImageResizeMode.CENTER },
-          { name: 'ImageResizeMode.CONTAIN', value: ImageResizeMode.CONTAIN },
-          { name: 'ImageResizeMode.COVER', value: ImageResizeMode.COVER },
-          { name: 'ImageResizeMode.REPEAT', value: ImageResizeMode.REPEAT },
-          { name: 'ImageResizeMode.STRETCH', value: ImageResizeMode.STRETCH },
-        ],
-      },
+    name: 'Use React Native Image',
+    type: 'boolean',
+    initial: false,
+  },
+  {
+    name: 'Size',
+    type: 'enum',
+    values: [
+      { name: '1500x1000', value: '1500/1000' },
+      { name: '1000x1500', value: '1000/1500' },
+      { name: '100x100', value: '100/100' },
+    ],
+  },
+  {
+    name: 'Resize mode',
+    type: 'enum',
+    values: [
+      { name: 'cover', value: ImageResizeMode.COVER },
+      { name: 'contain', value: ImageResizeMode.CONTAIN },
+      { name: 'center', value: ImageResizeMode.CENTER },
+      { name: 'repeat', value: ImageResizeMode.REPEAT },
+      { name: 'stretch', value: ImageResizeMode.STRETCH },
     ],
   },
 ];
 
-const App = () => {
+export default function ImageResizableScreen() {
+  const [seed] = React.useState(1 + Math.round(Math.random() * 10));
   const [args, updateArgument] = useArguments(parameters);
-  const combindedArgs = args.reduce<object>(
-    (previous, current) => ({ ...previous, ...current }),
-    {}
-  );
+  const [showReactNativeComponent, size, resizeMode] = args as [boolean, string, ImageResizeMode];
+  const ImageComponent: React.ElementType = showReactNativeComponent ? RNImage : Image;
 
   return (
-    <View style={styles.container}>
-      <ResizableView initHeight={300} initWidth={300} boxWidth={50}>
-        <Image
-          style={{ flex: 1 }}
-          source={{ uri: `https://source.unsplash.com/random/2137` }}
-          {...combindedArgs}
+    <ScrollView style={styles.container}>
+      <ResizableView>
+        <ImageComponent
+          style={styles.image}
+          source={{ uri: `https://picsum.photos/seed/${seed}/${size}` }}
+          resizeMode={resizeMode}
         />
       </ResizableView>
 
-      <View style={styles.cofigurator}>
+      <View style={styles.configurator}>
         <Configurator parameters={parameters} onChange={updateArgument} value={args} />
       </View>
-    </View>
+    </ScrollView>
   );
-};
-
-export default App;
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  cofigurator: {
-    flex: 1,
-    paddingTop: 50,
-    alignItems: 'center',
+  resizableView: {
+    margin: PADDING,
+    width: MAX_WIDTH,
+    height: MAX_HEIGHT,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    backgroundColor: '#eef',
   },
-  box: {
-    backgroundColor: '#00f',
+  configurator: {
+    flex: 1,
+    paddingHorizontal: 15,
+  },
+  canvas: {
+    margin: -1,
+    minWidth: HANDLE_SIZE,
+    minHeight: HANDLE_SIZE,
+    maxWidth: MAX_WIDTH,
+    maxHeight: MAX_HEIGHT,
+    backgroundColor: '#00f2',
+    borderWidth: 2,
+    borderStyle: 'dotted',
+    borderColor: Colors.tintColor,
+    borderRadius: 3,
+  },
+  resizeHandle: {
+    padding: HANDLE_SLOP,
+    position: 'absolute',
+    bottom: -HANDLE_SIZE / 2 - HANDLE_SLOP,
+    right: -HANDLE_SIZE / 2 - HANDLE_SLOP,
+  },
+  resizeHandleChild: {
+    width: HANDLE_SIZE,
+    height: HANDLE_SIZE,
+    borderRadius: HANDLE_SIZE,
+    borderWidth: 3,
+    borderColor: Colors.tintColor,
+    backgroundColor: '#fff',
+  },
+  hintText: {
+    color: Colors.secondaryText,
+    textAlign: 'center',
+    position: 'absolute',
+    right: 10,
+    left: 10,
+    bottom: 16,
+  },
+  image: {
+    flex: 1,
   },
 });
