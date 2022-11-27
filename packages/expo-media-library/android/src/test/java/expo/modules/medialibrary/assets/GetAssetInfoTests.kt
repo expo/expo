@@ -2,6 +2,7 @@ package expo.modules.medialibrary.assets
 
 import android.os.Bundle
 import android.provider.MediaStore
+import expo.modules.medialibrary.AssetQueryException
 import expo.modules.medialibrary.ERROR_IO_EXCEPTION
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MediaLibraryUtils
@@ -18,6 +19,7 @@ import io.mockk.runs
 import io.mockk.slot
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -68,7 +70,7 @@ internal class GetAssetInfoTests {
     val assetId = "testAssetId"
 
     // act
-    GetAssetInfo(context, assetId, promise).doInBackground()
+    GetAssetInfo(context, assetId, promise).execute()
 
     // assert
     assertEquals(expectedSelection, selectionSlot.captured)
@@ -108,10 +110,10 @@ internal class GetAssetInfoTests {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    queryAssetInfo(context, "", emptyArray(), false, promise)
-
     // assert
-    assertRejected(promise)
+    assertThrows(AssetQueryException::class.java) {
+      queryAssetInfo(context, "", emptyArray(), false, promise)
+    }
   }
 
   @Test
@@ -120,10 +122,10 @@ internal class GetAssetInfoTests {
     val context = mockContext with throwableContentResolver(SecurityException())
 
     // act
-    queryAssetInfo(context, "", emptyArray(), false, promise)
-
     // assert
-    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
+    assertThrows(SecurityException::class.java) {
+      queryAssetInfo(context, "", emptyArray(), false, promise)
+    }
   }
 
   @Test
@@ -132,9 +134,9 @@ internal class GetAssetInfoTests {
     val context = mockContext with throwableContentResolver(IOException())
 
     // act
-    queryAssetInfo(context, "", emptyArray(), false, promise)
-
     // assert
-    assertRejectedWithCode(promise, ERROR_IO_EXCEPTION)
+    assertThrows(IOException::class.java) {
+      queryAssetInfo(context, "", emptyArray(), false, promise)
+    }
   }
 }

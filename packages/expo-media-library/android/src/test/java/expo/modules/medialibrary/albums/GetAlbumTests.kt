@@ -3,6 +3,7 @@ package expo.modules.medialibrary.albums
 import android.os.Bundle
 import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.MediaColumns
+import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.CursorResults
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
@@ -14,6 +15,7 @@ import io.mockk.mockkStatic
 import io.mockk.slot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -62,7 +64,7 @@ internal class GetAlbumTests {
     val albumName = "TestAlbum"
 
     // act
-    GetAlbum(context, albumName, promise).doInBackground()
+    GetAlbum(context, albumName, promise).execute()
 
     // assert
     assertEquals(expectedSelection, selectionSlot.captured)
@@ -111,10 +113,10 @@ internal class GetAlbumTests {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    queryAlbum(context, "", emptyArray(), promise)
-
     // assert
-    assertRejected(promise)
+    assertThrows(AlbumException::class.java) {
+      queryAlbum(context, "", emptyArray(), promise)
+    }
   }
 
   @Test

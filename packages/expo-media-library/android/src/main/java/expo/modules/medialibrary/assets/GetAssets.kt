@@ -37,7 +37,7 @@ internal class GetAssets(
           contentResolver,
           assetsCursor,
           assetsInfo,
-          limit,
+          limit.toInt(),
           offset,
           false
         )

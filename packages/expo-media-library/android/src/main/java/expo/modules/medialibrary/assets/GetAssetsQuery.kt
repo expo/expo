@@ -9,7 +9,7 @@ import expo.modules.medialibrary.SortBy
 data class GetAssetsQuery(
   val selection: String,
   val order: String,
-  val limit: Int,
+  val limit: Double,
   val offset: Int,
 )
 
@@ -25,9 +25,8 @@ internal fun getQueryFromOptions(input: AssetsOptions): GetAssetsQuery {
 
   val selection = createSelectionString(input)
 
-  val sortBy = input.sortBy
-  val order = if (sortBy.isNotEmpty()) {
-    convertOrderDescriptors(sortBy)
+  val order = if (input.sortBy.isNotEmpty()) {
+    convertOrderDescriptors(input.sortBy)
   } else {
     MediaStore.Images.Media.DEFAULT_SORT_ORDER
   }
@@ -45,7 +44,7 @@ private fun createSelectionString(input: AssetsOptions): String {
   }
 
   val mediaType = input.mediaType
-  if (!mediaType.contains(MediaType.ALL.apiName)) {
+  if (mediaType.isNotEmpty() && !mediaType.contains(MediaType.ALL.apiName)) {
     val mediaTypeInts = mediaType.map { parseMediaType(it) }
     selectionBuilder.append(
       "${MediaStore.Files.FileColumns.MEDIA_TYPE} IN (${mediaTypeInts.joinToString(separator = ",")})"
