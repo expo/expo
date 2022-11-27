@@ -61,7 +61,7 @@ internal func concat(arguments: [Any], withOwner owner: AnyObject?, forFunction 
     result = [owner] + arguments
   }
   if arguments.count < function.argumentsCount {
-    result = result + Array(repeating: nil, count: function.argumentsCount - arguments.count) as [Any]
+    result += Array(repeating: Any?.none as Any, count: function.argumentsCount - arguments.count)
   }
   return result
 }
