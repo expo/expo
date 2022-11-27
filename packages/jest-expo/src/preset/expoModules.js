@@ -758,7 +758,7 @@ module.exports = {
           documentDirectory: { type: 'string' },
         },
         ExponentImagePicker: {},
-        ExponentMediaLibrary: {
+        ExpoMediaLibrary: {
           CHANGE_LISTENER_NAME: { type: 'string' },
           MediaType: { type: 'object' },
           SortBy: { type: 'object' },
