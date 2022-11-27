@@ -3,8 +3,6 @@ package expo.modules.medialibrary.assets
 import android.os.Bundle
 import android.provider.MediaStore
 import expo.modules.medialibrary.AssetQueryException
-import expo.modules.medialibrary.ERROR_IO_EXCEPTION
-import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
@@ -26,8 +24,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertListsEqual
-import org.unimodules.test.core.assertRejected
-import org.unimodules.test.core.assertRejectedWithCode
 import org.unimodules.test.core.promiseResolvedWithType
 import java.io.IOException
 

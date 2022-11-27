@@ -2,7 +2,6 @@ package expo.modules.medialibrary.assets
 
 import android.provider.MediaStore
 import expo.modules.medialibrary.AssetsOptions
-import expo.modules.medialibrary.GET_ASSETS_DEFAULT_LIMIT
 import expo.modules.medialibrary.MediaType
 import expo.modules.medialibrary.SortBy
 import io.mockk.clearAllMocks
