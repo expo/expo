@@ -51,8 +51,11 @@ open class Either<FirstType, SecondType>: Convertible {
   // MARK: - Convertible
 
   public class func convert(from value: Any?) throws -> Self {
-    if value is FirstType || value is SecondType {
-      return Self(value)
+    for type in dynamicTypes() {
+      // Initialize the "either" when the current type can cast given value.
+      if let value = try? type.cast(value) {
+        return Self(value)
+      }
     }
     throw NeitherTypeException(Self.dynamicTypes())
   }
@@ -79,12 +82,6 @@ open class EitherOfThree<FirstType, SecondType, ThirdType>: Either<FirstType, Se
   public func get() -> ThirdType? {
     return value as? ThirdType
   }
-
-  // MARK: - Convertible
-
-  public override class func convert(from value: Any?) throws -> Self {
-    return value is ThirdType ? Self(value) : try super.convert(from: value)
-  }
 }
 
 /*
@@ -107,12 +104,6 @@ open class EitherOfFour<FirstType, SecondType, ThirdType, FourthType>: EitherOfT
    */
   public func get() -> FourthType? {
     return value as? FourthType
-  }
-
-  // MARK: - Convertible
-
-  public override class func convert(from value: Any?) throws -> Self {
-    return value is FourthType ? Self(value) : try super.convert(from: value)
   }
 }
 
