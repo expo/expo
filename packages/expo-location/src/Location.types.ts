@@ -501,4 +501,4 @@ export type LocationPermissionResponse = PermissionResponse & {
   android?: PermissionDetailsLocationAndroid;
 };
 
-export { PermissionResponse };
+export type { PermissionResponse };
