@@ -41,7 +41,7 @@ export function getRandomBytes(byteCount: number): Uint8Array {
     const base64 = ExpoCrypto.getRandomBase64String(validByteCount);
     return toByteArray(base64);
   } else {
-    throw new UnavailabilityError('expo-random', 'getRandomBytes');
+    throw new UnavailabilityError('expo-crypto', 'getRandomBytes');
   }
 }
 
@@ -61,7 +61,7 @@ export async function getRandomBytesAsync(byteCount: number): Promise<Uint8Array
     const base64 = await ExpoCrypto.getRandomBase64StringAsync(validByteCount);
     return toByteArray(base64);
   } else {
-    throw new UnavailabilityError('expo-random', 'getRandomBytesAsync');
+    throw new UnavailabilityError('expo-crypto', 'getRandomBytesAsync');
   }
 }
 
@@ -73,7 +73,7 @@ function assertByteCount(value: any, methodName: string): void {
     Math.floor(value) > 1024
   ) {
     throw new TypeError(
-      `expo-random: ${methodName}(${value}) expected a valid number from range 0...1024`
+      `expo-crypto: ${methodName}(${value}) expected a valid number from range 0...1024`
     );
   }
 }
