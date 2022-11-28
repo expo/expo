@@ -38,7 +38,7 @@ export function getRandomBytes(byteCount) {
         return toByteArray(base64);
     }
     else {
-        throw new UnavailabilityError('expo-random', 'getRandomBytes');
+        throw new UnavailabilityError('expo-crypto', 'getRandomBytes');
     }
 }
 // @needsAudit
@@ -59,7 +59,7 @@ export async function getRandomBytesAsync(byteCount) {
         return toByteArray(base64);
     }
     else {
-        throw new UnavailabilityError('expo-random', 'getRandomBytesAsync');
+        throw new UnavailabilityError('expo-crypto', 'getRandomBytesAsync');
     }
 }
 function assertByteCount(value, methodName) {
@@ -67,7 +67,7 @@ function assertByteCount(value, methodName) {
         isNaN(value) ||
         Math.floor(value) < 0 ||
         Math.floor(value) > 1024) {
-        throw new TypeError(`expo-random: ${methodName}(${value}) expected a valid number from range 0...1024`);
+        throw new TypeError(`expo-crypto: ${methodName}(${value}) expected a valid number from range 0...1024`);
     }
 }
 function assertAlgorithm(algorithm) {
