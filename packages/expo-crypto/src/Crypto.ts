@@ -4,6 +4,8 @@ import { UnavailabilityError } from 'expo-modules-core';
 import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';
 
+declare const global: any;
+
 export * from './Crypto.types';
 
 class CryptoError extends TypeError {

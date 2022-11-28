@@ -4,7 +4,11 @@ import ExpoCrypto from '../ExpoCrypto';
 jest.mock('../ExpoCrypto', () => ({
   getRandomBytesAsync: jest.fn(async () => 0),
   getRandomBase64StringAsync: jest.fn(async () => 0),
+  digestStringAsync: jest.fn(async () => 0),
+  digestString: jest.fn(async () => 0),
 }));
+
+jest.mock('base64-js', () => ({ toByteArray: jest.fn(() => {}) }));
 
 it(`asserts invalid algorithm errors`, async () => {
   await expect(Crypto.digestStringAsync(null as any, '<DEBUG>')).rejects.toThrowError(TypeError);
