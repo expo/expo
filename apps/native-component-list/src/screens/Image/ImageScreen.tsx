@@ -32,6 +32,13 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageResizableScreen'));
     },
   },
+  {
+    name: 'Events',
+    route: 'image/events',
+    getComponent() {
+      return optionalRequire(() => require('./ImageEventsScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {
