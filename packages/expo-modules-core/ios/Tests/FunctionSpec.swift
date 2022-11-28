@@ -179,6 +179,37 @@ class FunctionSpec: ExpoSpec {
         }
       }
 
+      it("allows to skip trailing optional arguments") {
+        let returnedValue = "something"
+        let fn = Function(functionName) { (a: String, b: Int?, c: Bool?) in
+          expect(c).to(beNil())
+          return returnedValue
+        }
+
+        expect({ try fn.call(by: nil, withArguments: ["test"]) })
+          .notTo(throwError())
+          .to(be(returnedValue))
+
+        expect({ try fn.call(by: nil, withArguments: ["test", 3]) })
+          .notTo(throwError())
+          .to(be(returnedValue))
+      }
+
+      it("throws when called without required arguments") {
+        let fn = Function(functionName) { (requiredArgument: String, optionalArgument: Int?) in
+          return "something"
+        }
+
+        expect({ try fn.call(by: nil, withArguments: []) })
+          .to(throwError(errorType: FunctionCallException.self) { error in
+            expect(error.rootCause).to(beAKindOf(InvalidArgsNumberException.self))
+            let exception = error.rootCause as! InvalidArgsNumberException
+            expect(exception.param.received) == 0
+            expect(exception.param.required) == 1
+            expect(exception.param.expected) == 2
+          })
+      }
+
       it("throws when called with arguments of incompatible types") {
         waitUntil { done in
           mockModuleHolder(appContext) {
