@@ -9,6 +9,8 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { GithubIcon } from '@expo/styleguide';
 
 `expo-sqlite` gives your app access to a database that can be queried through a [WebSQL](https://www.w3.org/TR/webdatabase/)-like API. The database is persisted across restarts of your app.
 
@@ -20,7 +22,12 @@ import { Step } from '~/ui/components/Step';
 
 ## Usage
 
-An [example to-do list app](https://github.com/expo/examples/tree/master/with-sqlite) is available that uses this module for storage.
+<BoxLink
+  title="To-do list app"
+  description="An example to-do list app is available that uses this module for storage."
+  href="https://github.com/expo/examples/tree/master/with-sqlite"
+  Icon={GithubIcon}
+/>
 
 ### Importing an existing database
 
