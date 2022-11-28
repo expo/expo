@@ -17,10 +17,10 @@ public extension UIDevice {
       }
       return identifier + String(UnicodeScalar(UInt8(value)))
     }
-    
+
     return identifier
   }()
-  
+
   static internal let DeviceMap: ExpoDeviceType = {
     func mapToDevice(identifier: String) -> ExpoDeviceType {
       #if os(iOS)
@@ -163,15 +163,15 @@ public extension UIDevice {
       }
       #endif
     }
-    
+
     return mapToDevice(identifier: modelIdentifier)
   }()
-  
+
   // Credit: https://github.com/developerinsider/isJailBroken/blob/master/IsJailBroken/Extension/UIDevice%2BJailBroken.swift
   var isSimulator: Bool {
     return TARGET_OS_SIMULATOR != 0
   }
-  
+
   var isJailBroken: Bool {
     if UIDevice.current.isSimulator {
       return false
@@ -197,21 +197,21 @@ private struct JailbreakHelper {
     }
     return false
   }
-  
+
   static func doesContainSuspiciousApps() -> Bool {
     for path in suspiciousAppsPathToCheck where FileManager.default.fileExists(atPath: path) {
       return true
     }
     return false
   }
-  
+
   static func doesSuspiciousSystemPathExist() -> Bool {
     for path in suspiciousSystemPathsToCheck where FileManager.default.fileExists(atPath: path) {
       return true
     }
     return false
   }
-  
+
   static func canEditSystemFiles() -> Bool {
     let jailBreakText = "Developer Insider"
     do {
@@ -221,7 +221,7 @@ private struct JailbreakHelper {
       return false
     }
   }
-  
+
   /**
    Add more paths here to check for jail break
    */
@@ -238,7 +238,7 @@ private struct JailbreakHelper {
       "/Applications/WinterBoard.app"
     ]
   }
-  
+
   static var suspiciousSystemPathsToCheck: [String] {
     return [
       "/Library/MobileSubstrate/DynamicLibraries/LiveClock.plist",

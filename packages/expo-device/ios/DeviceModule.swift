@@ -5,7 +5,7 @@ import MachO
 public class DeviceModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoDevice")
-    
+
     Constants([
       "isDevice": isDevice(),
       "brand": "Apple",
@@ -21,7 +21,7 @@ public class DeviceModule: Module {
       "deviceName": UIDevice.current.name,
       "supportedCpuArchitectures": cpuArchitectures()
     ])
-    
+
     AsyncFunction("getDeviceTypeAsync") { () -> Int in
       switch UIDevice.current.userInterfaceIdiom {
       case UIUserInterfaceIdiom.phone:
@@ -34,13 +34,13 @@ public class DeviceModule: Module {
         return DeviceType.unknown.rawValue
       }
     }
-    
+
     AsyncFunction("getUptimeAsync") { () -> Double in
       let uptimeMs: Double = ProcessInfo.processInfo.systemUptime * 1000
-      
+
       return uptimeMs
     }
-    
+
     AsyncFunction("isRootedExperimentalAsync") { () -> Bool in
       return UIDevice.current.isJailBroken
     }
