@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Export types with type-only annotation to fix build when using `isolatedModules` flag. ([#20239](https://github.com/expo/expo/pull/20239) by [@zakharchenkoAndrii](https://github.com/zakharchenkoAndrii))
+
 ### 💡 Others
 
 ## 15.0.1 — 2022-10-28

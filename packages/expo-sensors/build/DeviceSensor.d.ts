@@ -57,5 +57,6 @@ export default class DeviceSensor<Measurement> {
      */
     requestPermissionsAsync(): Promise<PermissionResponse>;
 }
-export { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription };
+export { PermissionStatus };
+export type { Subscription, PermissionResponse, PermissionExpiration };
 //# sourceMappingURL=DeviceSensor.d.ts.map

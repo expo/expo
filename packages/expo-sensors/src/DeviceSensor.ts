@@ -129,4 +129,5 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
-export { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription };
+export { PermissionStatus };
+export type { Subscription, PermissionResponse, PermissionExpiration };
