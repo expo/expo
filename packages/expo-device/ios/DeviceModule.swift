@@ -51,9 +51,9 @@ public class DeviceModule: Module {
 
 func isDevice() -> Bool {
   #if targetEnvironment(simulator)
-    return false
+  return false
   #else
-    return true
+  return true
   #endif
 }
 
@@ -63,18 +63,17 @@ func osBuildId() -> String? {
   #else
     // Credit: https://stackoverflow.com/a/65858410
     var mib: [Int32] = [CTL_KERN, KERN_OSVERSION]
-    let namelen = u_int(MemoryLayout.size(ofValue: mib) / MemoryLayout.size(ofValue: mib[0]))
-    var bufferSize: size_t = 0
+    let namelen = UInt32(MemoryLayout.size(ofValue: mib) / MemoryLayout.size(ofValue: mib[0]))
+    var bufferSize = 0
 
     // Get the size for the buffer
     sysctl(&mib, namelen, nil, &bufferSize, nil, 0)
 
-    var buildBuffer: [u_char] = .init(repeating: 0, count: bufferSize)
-
+    var buildBuffer = [UInt8](repeating: 0, count: bufferSize)
     let result = sysctl(&mib, namelen, &buildBuffer, &bufferSize, nil, 0)
 
     if result >= 0 && bufferSize > 0 {
-        return String(bytesNoCopy: &buildBuffer, length: bufferSize - 1, encoding: .utf8, freeWhenDone: false)
+      return String(bytesNoCopy: &buildBuffer, length: bufferSize - 1, encoding: .utf8, freeWhenDone: false)
     }
 
     return nil
@@ -95,4 +94,4 @@ enum DeviceType: Int {
   case tablet = 2
   case desktop = 3
   case tv = 4
- }
+}

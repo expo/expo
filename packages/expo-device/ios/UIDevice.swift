@@ -29,7 +29,8 @@ public extension UIDevice {
         func mapToDevice(identifier: String) -> DeviceMapping {
             #if os(iOS)
             switch identifier {
-            case "iPod7,1":                                       return DeviceMapping(modelName: "iPod touch (6th generation)", deviceYearClass: 2015)
+            case "iPod7,1":
+              return DeviceMapping(modelName: "iPod touch (6th generation)", deviceYearClass: 2015)
             case "iPod9,1":                                       return DeviceMapping(modelName: "iPod touch (7th generation)", deviceYearClass: 2019)
             case "iPhone6,1", "iPhone6,2":                        return DeviceMapping(modelName: "iPhone 5s", deviceYearClass: 2013)
             case "iPhone7,1":                                     return DeviceMapping(modelName: "iPhone 6 Plus", deviceYearClass: 2014)
@@ -130,19 +131,19 @@ public extension UIDevice {
 }
 
 // Credit: https://github.com/developerinsider/isJailBroken/blob/master/IsJailBroken/Extension/UIDevice%2BJailBroken.swift
-private struct JailBreakHelper {
+private struct JailbreakHelper {
     static func hasCydiaInstalled() -> Bool {
         return UIApplication.shared.canOpenURL(URL(string: "cydia://")!)
     }
 
-    static func isContainsSuspiciousApps() -> Bool {
+    static func doesContainSuspiciousApps() -> Bool {
         for path in suspiciousAppsPathToCheck where FileManager.default.fileExists(atPath: path) {
           return true
         }
         return false
     }
 
-    static func isSuspiciousSystemPathsExists() -> Bool {
+    static func doesSuspiciousSystemPathExist() -> Bool {
         for path in suspiciousSystemPathsToCheck where FileManager.default.fileExists(atPath: path) {
           return true
         }
