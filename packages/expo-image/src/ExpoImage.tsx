@@ -59,6 +59,14 @@ export default function ExpoImage({
     hasShadows = !!resolvedStyle.shadowColor;
   }
 
+  // @ts-ignore
+  const backgroundColor = processColor(resolvedStyle.backgroundColor);
+  // On Android, we have to set the `backgroundColor` directly on the correct component.
+  // So we have to remove it from styles. Otherwise, the background color won't take into consideration the border-radius.
+  if (Platform.OS === 'android') {
+    delete resolvedStyle.backgroundColor;
+  }
+
   // Shadows are rendered quite differently on iOS, Android and web.
   // - iOS renders the shadow along the transparent contours of the image.
   // - Android renders an underlay which extends to the inside of the bounds.
@@ -67,8 +75,7 @@ export default function ExpoImage({
   // to set a background-color on the Image when using shadows. This will ensure
   // consistent rendering on all platforms and mitigate Androids drawing artefacts.
   if (hasShadows) {
-    const processedColor = processColor(resolvedStyle.backgroundColor);
-    const bkColor: number = typeof processedColor === 'number' ? processedColor : 0;
+    const bkColor: number = typeof backgroundColor === 'number' ? backgroundColor : 0;
     const alpha = bkColor >> 24;
     if (alpha !== -1 && alpha !== 255) {
       // To silence this warning, set background-color to a fully transparent color
@@ -110,6 +117,7 @@ export default function ExpoImage({
       borderBottomColor={borderBottomColor}
       borderStartColor={borderStartColor}
       borderEndColor={borderEndColor}
+      backgroundColor={backgroundColor}
     />
   );
 }
