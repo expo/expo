@@ -1,5 +1,3 @@
-// swiftlint:disable:all number_separator
-
 import ExpoModulesCore
 import UIKit
 import MachO
@@ -7,7 +5,7 @@ import MachO
 public class DeviceModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoDevice")
-
+    
     Constants([
       "isDevice": isDevice(),
       "brand": "Apple",
@@ -23,7 +21,7 @@ public class DeviceModule: Module {
       "deviceName": UIDevice.current.name,
       "supportedCpuArchitectures": cpuArchitectures()
     ])
-
+    
     AsyncFunction("getDeviceTypeAsync") { () -> Int in
       switch UIDevice.current.userInterfaceIdiom {
       case UIUserInterfaceIdiom.phone:
@@ -36,13 +34,13 @@ public class DeviceModule: Module {
         return DeviceType.unknown.rawValue
       }
     }
-
+    
     AsyncFunction("getUptimeAsync") { () -> Double in
       let uptimeMs: Double = ProcessInfo.processInfo.systemUptime * 1000
-
+      
       return uptimeMs
     }
-
+    
     AsyncFunction("isRootedExperimentalAsync") { () -> Bool in
       return UIDevice.current.isJailBroken
     }
@@ -59,24 +57,24 @@ func isDevice() -> Bool {
 
 func osBuildId() -> String? {
   #if os(tvOS)
-    return nil
+  return nil
   #else
-    // Credit: https://stackoverflow.com/a/65858410
-    var mib: [Int32] = [CTL_KERN, KERN_OSVERSION]
-    let namelen = UInt32(MemoryLayout.size(ofValue: mib) / MemoryLayout.size(ofValue: mib[0]))
-    var bufferSize = 0
+  // Credit: https://stackoverflow.com/a/65858410
+  var mib: [Int32] = [CTL_KERN, KERN_OSVERSION]
+  let namelen = UInt32(MemoryLayout.size(ofValue: mib) / MemoryLayout.size(ofValue: mib[0]))
+  var bufferSize = 0
 
-    // Get the size for the buffer
-    sysctl(&mib, namelen, nil, &bufferSize, nil, 0)
+  // Get the size for the buffer
+  sysctl(&mib, namelen, nil, &bufferSize, nil, 0)
 
-    var buildBuffer = [UInt8](repeating: 0, count: bufferSize)
-    let result = sysctl(&mib, namelen, &buildBuffer, &bufferSize, nil, 0)
+  var buildBuffer = [UInt8](repeating: 0, count: bufferSize)
+  let result = sysctl(&mib, namelen, &buildBuffer, &bufferSize, nil, 0)
 
-    if result >= 0 && bufferSize > 0 {
-      return String(bytesNoCopy: &buildBuffer, length: bufferSize - 1, encoding: .utf8, freeWhenDone: false)
-    }
+  if result >= 0 && bufferSize > 0 {
+    return String(bytesNoCopy: &buildBuffer, length: bufferSize - 1, encoding: .utf8, freeWhenDone: false)
+  }
 
-    return nil
+  return nil
   #endif
 }
 
