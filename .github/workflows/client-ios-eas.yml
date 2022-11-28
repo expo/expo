@@ -113,7 +113,7 @@ jobs:
           profile: ${{ steps.profile.outputs.profile  }}
           projectRoot: './apps/eas-expo-go'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          resourceClass: default
+          resourceClass: m1-experimental
           noWait: ${{ github.event.schedule }}
           message: ${{ github.event.pull_request.title }}
       - name: On workflow canceled
