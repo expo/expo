@@ -142,6 +142,10 @@ class ExpoImageModule : Module() {
         view.imageView.setBorderStyle(borderStyle)
       }
 
+      Prop("backgroundColor") { view: ExpoImageViewWrapper, color: Int? ->
+        view.imageView.setBackgroundColor(color)
+      }
+
       Prop("tintColor") { view: ExpoImageViewWrapper, color: Int? ->
         view.imageView.setTintColor(color)
       }

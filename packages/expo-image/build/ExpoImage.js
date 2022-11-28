@@ -38,6 +38,13 @@ export default function ExpoImage({ source, style, defaultSource, loadingIndicat
         delete resolvedStyle.elevation;
         hasShadows = !!resolvedStyle.shadowColor;
     }
+    // @ts-ignore
+    const backgroundColor = processColor(resolvedStyle.backgroundColor);
+    // On Android, we have to set the `backgroundColor` directly on the correct component.
+    // So we have to remove it from styles. Otherwise, the background color won't take into consideration the border-radius.
+    if (Platform.OS === 'android') {
+        delete resolvedStyle.backgroundColor;
+    }
     // Shadows are rendered quite differently on iOS, Android and web.
     // - iOS renders the shadow along the transparent contours of the image.
     // - Android renders an underlay which extends to the inside of the bounds.
@@ -46,8 +53,7 @@ export default function ExpoImage({ source, style, defaultSource, loadingIndicat
     // to set a background-color on the Image when using shadows. This will ensure
     // consistent rendering on all platforms and mitigate Androids drawing artefacts.
     if (hasShadows) {
-        const processedColor = processColor(resolvedStyle.backgroundColor);
-        const bkColor = typeof processedColor === 'number' ? processedColor : 0;
+        const bkColor = typeof backgroundColor === 'number' ? backgroundColor : 0;
         const alpha = bkColor >> 24;
         if (alpha !== -1 && alpha !== 255) {
             // To silence this warning, set background-color to a fully transparent color
@@ -70,6 +76,6 @@ export default function ExpoImage({ source, style, defaultSource, loadingIndicat
     const borderBottomColor = processColor(resolvedStyle.borderBottomColor);
     return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedPlaceholder, 
         // @ts-ignore
-        tintColor: tintColor, borderColor: borderColor, borderLeftColor: borderLeftColor, borderRightColor: borderRightColor, borderTopColor: borderTopColor, borderBottomColor: borderBottomColor, borderStartColor: borderStartColor, borderEndColor: borderEndColor }));
+        tintColor: tintColor, borderColor: borderColor, borderLeftColor: borderLeftColor, borderRightColor: borderRightColor, borderTopColor: borderTopColor, borderBottomColor: borderBottomColor, borderStartColor: borderStartColor, borderEndColor: borderEndColor, backgroundColor: backgroundColor }));
 }
 //# sourceMappingURL=ExpoImage.js.map
