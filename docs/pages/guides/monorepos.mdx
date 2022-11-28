@@ -98,7 +98,7 @@ Metro has three separate stages in its bundling process, [documented here](https
 
 When using monorepos, your app dependencies splits up into different directories. Each of these directories must be within the scope of the [watchFolders](https://facebook.github.io/metro/docs/configuration/#watchfolders). If a file is outside of that scope, Metro won't be able to find it. Setting this path to the root of your monorepo
 
-As your monorepo increases in size, watching all files within the monorepo becomes slower. If you want to speed that up, you can (dynamically) watch the relevant paths to minimize the watch scope. For example:
+As your monorepo increases in size, watching all files within the monorepo becomes slower. You can speed things up by only watching the packages your app uses. Typically, these are the ones that are installed with an asterisk (*) in your **package.json**. For example:
 
 ```js
 // Learn more https://docs.expo.dev/guides/monorepos
@@ -108,6 +108,7 @@ const path = require('path');
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
 
+// Only list the packages within your monorepo that your app uses. No need to add anything else.
 // If your monorepo tooling can give you the list of monorepo workspaces linked
 // in your app workspace, you can automate this list instead of hardcoding them.
 const monorepoPackages = {
@@ -115,8 +116,10 @@ const monorepoPackages = {
   '@acme/components': path.resolve(workspaceRoot, 'packages/components'),
 };
 
-// 1. Watch the local app folder, and all related packages (limiting the scope and speeding it up)
-config.watchFolders = [__dirname, ...Object.values(monorepoPackages)];
+// 1. Watch the local app folder, and only the shared packages (limiting the scope and speeding it up)
+// Note how we change this from `workspaceRoot` to `projectRoot`. This is part of the optimization!
+config.watchFolders = [projectRoot, ...Object.values(monorepoPackages)];
+
 // Add the monorepo workspaces as `extraNodeModules` to Metro.
 // If your monorepo tooling creates workspace symlinks in the `node_modules` folder,
 // you can either add symlink support to Metro or set the `extraNodeModules` to avoid the symlinks.
