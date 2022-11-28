@@ -4,26 +4,6 @@ import { StyleSheet } from 'react-native';
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
 import { ImageResizeMode } from './Image.types';
 export class Image extends React.Component {
-    static getDerivedStateFromProps(props) {
-        return {
-            onLoad: props.onLoadEnd
-                ? (e) => {
-                    if (props.onLoad) {
-                        props.onLoad(e);
-                    }
-                    props.onLoadEnd();
-                }
-                : props.onLoad,
-            onError: props.onLoadEnd
-                ? (e) => {
-                    if (props.onError) {
-                        props.onError(e);
-                    }
-                    props.onLoadEnd();
-                }
-                : props.onError,
-        };
-    }
     /**
      * **Available on @Android only.** Caching the image that can be later used in ImageView
      * @return an empty promise.
@@ -34,15 +14,11 @@ export class Image extends React.Component {
         }
         return await ExpoImageModule.prefetch(url);
     }
-    state = {
-        onLoad: undefined,
-        onError: undefined,
-    };
     render() {
         const { style, resizeMode: resizeModeProp, ...restProps } = this.props;
         const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten([style]) || {};
         const resizeMode = resizeModeProp ?? resizeModeStyle ?? ImageResizeMode.COVER;
-        return (React.createElement(ExpoImage, { ...restProps, style: restStyle, resizeMode: resizeMode, onLoad: this.state.onLoad, onError: this.state.onError }));
+        return React.createElement(ExpoImage, { ...restProps, style: restStyle, resizeMode: resizeMode });
     }
 }
 //# sourceMappingURL=Image.js.map
