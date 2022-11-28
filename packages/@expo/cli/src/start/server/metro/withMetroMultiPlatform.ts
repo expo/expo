@@ -5,7 +5,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import fs from 'fs';
-import { Graph, Module, SerializerOptions } from 'metro';
 import { ConfigT } from 'metro-config';
 import { ResolutionContext, Resolution } from 'metro-resolver';
 import path from 'path';
@@ -82,30 +81,13 @@ function normalizeSlashes(p: string) {
   return p.replace(/\\/g, '/');
 }
 
-function getModulesAsExportsSerializer() {
-  const baseJSBundle = require('metro/src/DeltaBundler/Serializers/baseJSBundle');
-  const bundleToString = require('metro/src/lib/bundleToString');
-
-  return async function modulesAsExportsSerializer(
-    entryPoint: string,
-    preModules: ReadonlyArray<Module>,
-    graph: Graph,
-    options: SerializerOptions
-  ): Promise<{ code: string; map: string }> {
-    console.log('serialize:', entryPoint, preModules, options);
-    const bundle = baseJSBundle(entryPoint, preModules, graph, options);
-    const bundleCode = bundleToString(bundle).code;
-    return bundleCode;
-  };
-}
-
 /**
  * Apply custom resolvers to do the following:
  * - Disable `.native.js` extensions on web.
  * - Alias `react-native` to `react-native-web` on web.
  * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  */
-export function withWebResolvers(config: ConfigT, projectRoot: string, externals?: string[]) {
+export function withWebResolvers(config: ConfigT, projectRoot: string) {
   // Get the `transformer.assetRegistryPath`
   // this needs to be unified since you can't dynamically
   // swap out the transformer based on platform.
@@ -204,8 +186,7 @@ export function shouldAliasAssetRegistryForWeb(
 export async function withMetroMultiPlatformAsync(
   projectRoot: string,
   config: ConfigT,
-  platformBundlers: PlatformBundlers,
-  externals?: string[]
+  platformBundlers: PlatformBundlers
 ) {
   // Auto pick App entry: this is injected with Babel.
   process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
@@ -218,14 +199,13 @@ export async function withMetroMultiPlatformAsync(
     return config;
   }
 
-  return withMetroMultiPlatform(projectRoot, config, platformBundlers, externals);
+  return withMetroMultiPlatform(projectRoot, config, platformBundlers);
 }
 
 function withMetroMultiPlatform(
   projectRoot: string,
   config: ConfigT,
-  platformBundlers: PlatformBundlers,
-  externals?: string[]
+  platformBundlers: PlatformBundlers
 ) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(([, bundler]) => bundler === 'metro')
@@ -246,5 +226,5 @@ function withMetroMultiPlatform(
   //   // path.join(require.resolve('react-dom/package.json'), '../..'),
   // ];
   // console.log('WATCH FOLDERS:', config.watchFolders);
-  return withWebResolvers(config, projectRoot, externals);
+  return withWebResolvers(config, projectRoot);
 }
