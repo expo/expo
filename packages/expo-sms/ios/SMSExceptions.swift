@@ -18,8 +18,20 @@ internal class SMSSendingException: GenericException<String> {
   }
 }
 
-internal class SMSAttachmentException: GenericException<String> {
+internal class SMSFileException: GenericException<String> {
   override var reason: String {
-    param
+    "Failed to attach file: \(param)"
+  }
+}
+
+internal class SMSMimeTypeException: GenericException<String> {
+  override var reason: String {
+    "Failed to find UTI for mimeType: \(param)"
+  }
+}
+
+internal class SMSUriException: GenericException<String> {
+  override var reason: String {
+    "Invalid file uri: \(param)"
   }
 }

@@ -20,7 +20,7 @@ public class ExpoSMSModule: Module, SMSResultHandler {
       return MFMessageComposeViewController.canSendText()
     }
 
-    AsyncFunction("sendSMSAsync") {(addresses: [String], message: String, options: SMSOptions, promise: Promise) in
+    AsyncFunction("sendSMSAsync") { (addresses: [String], message: String, options: SMSOptions, promise: Promise) in
       try sendSMSAsync(addresses: addresses, message: message, options: options, promise: promise)
     }.runOnQueue(.main)
   }
@@ -47,11 +47,11 @@ public class ExpoSMSModule: Module, SMSResultHandler {
         kUTTagClassMIMEType, attachment.mimeType as CFString, nil)
 
       if utiRef == nil {
-        throw SMSAttachmentException("Failed to find UTI for mimeType: \(attachment.mimeType)")
+        throw SMSMimeTypeException(attachment.mimeType)
       }
 
       guard let url = URL(string: attachment.uri) else {
-        throw SMSAttachmentException("Invalid file uri: \(attachment.uri)")
+        throw SMSUriException(attachment.uri)
       }
 
       do {
@@ -61,7 +61,7 @@ public class ExpoSMSModule: Module, SMSResultHandler {
           typeIdentifier: attachment.mimeType,
           filename: attachment.filename)
         if !attached {
-          throw SMSAttachmentException("Failed to attach file: \(attachment.uri)")
+          throw SMSFileException(attachment.uri)
         }
       } catch {
         context.promise.reject(error)
