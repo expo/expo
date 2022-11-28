@@ -22,7 +22,7 @@
     "@expo/commander": "2.21.1",
     "@expo/json-file": "^8.2.36",
     "@expo/spawn-async": "^1.7.0",
-    "@expo/swiftlint": "^0.1.1",
+    "@expo/swiftlint": "^0.2.0",
     "@expo/xcodegen": "2.18.0-patch.1",
     "@expo/xdl": "^59.2.1",
     "@octokit/rest": "^19.0.4",

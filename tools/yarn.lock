@@ -1209,10 +1209,10 @@
   dependencies:
     cross-spawn "^7.0.3"
 
-"@expo/swiftlint@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@expo/swiftlint/-/swiftlint-0.1.1.tgz#9dd8062879111718eb804e288f3aa5d67f722ed7"
-  integrity sha512-tCoNwDm2TyTePMdpe0pIRs6Dg+ZhoLGpZZ0JYEPuPQh4R4Wqq5RQhsz88fCK0H19US3mgpgvibq/vto8vWbMuA==
+"@expo/swiftlint@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@expo/swiftlint/-/swiftlint-0.2.0.tgz#ad371837aac602b8f9cb9b93982f315ac72f1f68"
+  integrity sha512-kEKIuLaGSf5CfCIpjv1K+iEbuXFphiuel6LTIUzO59rLa7jM4HRot4N5SH3JsTLNFQJspjuHKiHfRrtfAf6Ywg==
   dependencies:
     "@expo/spawn-async" "^1.5.0"
 
