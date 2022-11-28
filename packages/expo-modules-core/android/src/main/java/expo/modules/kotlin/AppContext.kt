@@ -320,6 +320,13 @@ class AppContext(
     return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
+  /**
+   * Runs a code block on the JavaScript thread.
+   */
+  fun executeOnJavaScriptThread(runnable: Runnable) {
+    reactContextHolder.get()?.runOnJSQueueThread(runnable)
+  }
+
 // region CurrentActivityProvider
 
   override val currentActivity: Activity?
