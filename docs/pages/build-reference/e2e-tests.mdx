@@ -475,8 +475,6 @@ The full example from this guide is available at https://github.com/expo/eas-tes
 
 ### Using development builds to speed up test run time
 
-> **Warning** This might not work properly on Android.
-
 The above guide explains how to run E2E tests against a release build of your project, which requires executing a full native build before each test run. Re-building the native app each time you run E2E tests may not be desirable if only the project JavaScript or assets have changed. However, this is necessary for release builds because the app JavaScript bundle is embedded into the binary.
 
 Instead, we can use [development builds](/development/introduction/) to load from a local development server or from [published updates](/eas-update/introduction/) to save time and CI resources. This can be done by having your E2E test runner invoke the app with a URL that points to a specific update bundle URL, as described in the [development builds deep linking URLs guide](/development/development-workflows/#deep-linking-urls).
@@ -486,18 +484,15 @@ Development builds typically display an onboarding welcome screen when an app is
 An example of such a Detox test is shown below. Full example code is available on the [eas-tests-example](https://github.com/expo/eas-tests-example) repository.
 
 <Collapsible summary="e2e/homeScreen.e2e.js">
-
 ```js
 /* @info New line */
-const { openAppForDebugBuild } = require('./utils/openAppForDebugBuild');
+const { openApp } = require('./utils/openApp');
 /* @end */
 
 describe('Home screen', () => {
   beforeEach(async () => {
-    await device.launchApp({
-      newInstance: true,
-    });
-    /* @info New line */ await openAppForDebugBuild(); /* @end */
+    // await device.launchApp();
+    /* @info New line */ await openApp(); /* @end */
   });
 
   it('"Click me" button should be visible', async () => {
@@ -513,25 +508,46 @@ describe('Home screen', () => {
 
 </Collapsible>
 
-<Collapsible summary="e2e/utils/openAppForDebugBuild.js">
+<Collapsible summary="e2e/utils/openApp.js">
 
 ```js
 const appConfig = require('../../../app.json');
 
-module.exports.openAppForDebugBuild = async function openAppForDebugBuild() {
+module.exports.openApp = async function openApp() {
   const [platform, target] = process.env.DETOX_CONFIGURATION.split('.');
-  if (target !== 'debug') {
-    return;
+  if (target === 'debug') {
+    return await openAppForDebugBuild(platform);
+  } else {
+    return await device.launchApp({
+      newInstance: true,
+    });
+  }
+}
+
+async function openAppForDebugBuild(platform) {
+  const deepLinkUrl = process.env.EXPO_USE_UPDATES
+    ? // Testing latest published EAS update for the test_debug channel
+      getDeepLinkUrl(getLatestUpdateUrl())
+    : // Local testing with packager
+      getDeepLinkUrl(getDevLauncherPackagerUrl(platform));
+
+  if (platform === 'ios') {
+    // For iOS, the app must be launched, then the deep link URL invoked
+    await device.launchApp({
+      newInstance: true,
+    });
+    sleep(3000);
+    await device.openURL({
+      url: deepLinkUrl,
+    });
+  } else {
+    // For Android, the app must be launched directly with the deep link URL
+    await device.launchApp({
+      newInstance: true,
+      url: deepLinkUrl,
+    });
   }
 
-  await sleep(1000);
-  await device.openURL({
-    url: process.env.EXPO_USE_UPDATES
-      ? // Testing latest published EAS update for the test_debug channel
-        getDeepLinkUrl(getLatestUpdateUrl())
-      : // Local testing with packager
-        getDeepLinkUrl(getDevLauncherPackagerUrl(platform)),
-  });
   await sleep(3000);
 };
 
