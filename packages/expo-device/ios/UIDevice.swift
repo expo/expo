@@ -172,7 +172,7 @@ public extension UIDevice {
     return TARGET_OS_SIMULATOR != 0
   }
 
-  var isJailBroken: Bool {
+  var isJailbroken: Bool {
     if UIDevice.current.isSimulator {
       return false
     }
@@ -213,9 +213,9 @@ private struct JailbreakHelper {
   }
 
   static func canEditSystemFiles() -> Bool {
-    let jailBreakText = "Developer Insider"
+    let jailbreakText = "Developer Insider"
     do {
-      try jailBreakText.write(toFile: jailBreakText, atomically: true, encoding: .utf8)
+      try jailbreakText.write(toFile: jailbreakText, atomically: true, encoding: .utf8)
       return true
     } catch {
       return false
