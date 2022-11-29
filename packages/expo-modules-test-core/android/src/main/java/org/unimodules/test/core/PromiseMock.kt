@@ -1,7 +1,6 @@
 package org.unimodules.test.core
 
-import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.CodedException
+import expo.modules.core.Promise
 
 enum class PromiseState {
   NONE,
@@ -48,19 +47,32 @@ class PromiseMock : Promise {
     resolveValue = value
   }
 
-  override fun reject(code: String, message: String?, cause: Throwable?) {
+  override fun reject(code: String?, message: String?, e: Throwable?) {
     assertNotResolvedNorRejected()
     state = PromiseState.REJECTED
     rejectCode = code
     rejectMessage = message
-    rejectThrowable = cause
+    rejectThrowable = e
   }
 
-  override fun reject(exception: CodedException) {
-    super.reject(exception)
+  override fun reject(e: Throwable?) {
     assertNotResolvedNorRejected()
     state = PromiseState.REJECTED
-    rejectThrowable = exception
+    rejectThrowable = e
+  }
+
+  override fun reject(code: String?, message: String?) {
+    assertNotResolvedNorRejected()
+    state = PromiseState.REJECTED
+    rejectCode = code
+    rejectMessage = message
+  }
+
+  override fun reject(code: String?, e: Throwable?) {
+    assertNotResolvedNorRejected()
+    state = PromiseState.REJECTED
+    rejectCode = code
+    rejectThrowable = e
   }
 
   private fun assertNotResolvedNorRejected() {

@@ -10,6 +10,11 @@ import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.throwableContentResolver
+import expo.modules.test.core.PromiseMock
+import expo.modules.test.core.assertRejected
+import expo.modules.test.core.assertRejectedWithCode
+import expo.modules.test.core.promiseResolved
+import expo.modules.test.core.promiseResolvedWithType
 import io.mockk.justRun
 import io.mockk.mockkStatic
 import io.mockk.slot
@@ -21,11 +26,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.fakes.RoboCursor
-import org.unimodules.test.core.PromiseMock
-import org.unimodules.test.core.assertRejected
-import org.unimodules.test.core.assertRejectedWithCode
-import org.unimodules.test.core.promiseResolved
-import org.unimodules.test.core.promiseResolvedWithType
 import java.lang.IllegalArgumentException
 
 private const val ALBUM_SELECTION = "${FileColumns.MEDIA_TYPE} != ${FileColumns.MEDIA_TYPE_NONE}" +

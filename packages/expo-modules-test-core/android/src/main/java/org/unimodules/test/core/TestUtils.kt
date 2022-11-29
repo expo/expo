@@ -56,6 +56,10 @@ fun assertRejectedWithCode(promise: PromiseMock, rejectCode: String) {
   }
 }
 
+fun readableArgumentsOf(values: Map<String, Any>): ReadableArguments {
+  return MapArguments(values)
+}
+
 fun assertStringValueNull(bundle: Bundle, key: String) {
   assertTrue(bundle.containsKey(key))
   assertEquals(null, bundle.getString(key))

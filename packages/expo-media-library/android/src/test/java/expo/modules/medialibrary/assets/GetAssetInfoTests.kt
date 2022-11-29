@@ -9,6 +9,8 @@ import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
+import expo.modules.test.core.PromiseMock
+import expo.modules.test.core.promiseResolvedWithType
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.just
@@ -22,9 +24,7 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.PromiseMock
 import org.unimodules.test.core.assertListsEqual
-import org.unimodules.test.core.promiseResolvedWithType
 import java.io.IOException
 
 @RunWith(RobolectricTestRunner::class)

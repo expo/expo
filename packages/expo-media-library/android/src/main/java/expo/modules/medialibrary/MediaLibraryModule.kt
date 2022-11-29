@@ -17,6 +17,8 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.MediaStore
+import android.util.Log
+import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.interfaces.permissions.Permissions.askForPermissionsWithPermissionsManager
 import expo.modules.interfaces.permissions.Permissions.getPermissionsWithPermissionsManager
 import expo.modules.kotlin.Promise
@@ -38,6 +40,10 @@ import expo.modules.medialibrary.assets.CreateAsset
 import expo.modules.medialibrary.assets.DeleteAssets
 import expo.modules.medialibrary.assets.GetAssetInfo
 import expo.modules.medialibrary.assets.GetAssets
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 
 class MediaLibraryModule : Module() {
   private val context: Context
@@ -45,6 +51,7 @@ class MediaLibraryModule : Module() {
   private val currentActivity
     get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
 
+  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
   private var imagesObserver: MediaStoreContentObserver? = null
   private var videosObserver: MediaStoreContentObserver? = null
   private var awaitingAction: Action? = null
@@ -396,5 +403,6 @@ class MediaLibraryModule : Module() {
 
   companion object {
     private const val WRITE_REQUEST_CODE = 7463
+    internal val TAG = MediaLibraryModule::class.java.simpleName
   }
 }
