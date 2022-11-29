@@ -12,6 +12,8 @@ export declare const isDevice: boolean;
  * ```js
  * Device.brand; // Android: "google", "xiaomi"; iOS: "Apple"; web: null
  * ```
+ * @platform android
+ * @platform ios
  */
 export declare const brand: string | null;
 /**

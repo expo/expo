@@ -18,6 +18,8 @@ export const isDevice: boolean = ExpoDevice ? ExpoDevice.isDevice : true;
  * ```js
  * Device.brand; // Android: "google", "xiaomi"; iOS: "Apple"; web: null
  * ```
+ * @platform android
+ * @platform ios
  */
 export const brand: string | null = ExpoDevice ? ExpoDevice.brand : null;
 
