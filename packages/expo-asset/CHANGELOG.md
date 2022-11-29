@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix loading Metro web assets from origins other than `/`.
+
 ### 💡 Others
+
+- Remove unused web features
 
 ## 8.6.2 — 2022-10-25
 
