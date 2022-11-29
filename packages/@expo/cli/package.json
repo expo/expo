@@ -62,6 +62,7 @@
     "ci-info": "^3.3.0",
     "debug": "^4.3.4",
     "env-editor": "^0.4.1",
+    "expo-router": "^0.0.36",
     "form-data": "^3.0.1",
     "freeport-async": "2.0.0",
     "fs-extra": "~8.1.0",
