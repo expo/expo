@@ -10,11 +10,9 @@ jest.mock('expo-file-system', () => {
   };
 });
 
-jest.mock('react-native/Libraries/Image/AssetRegistry', () => {
-  return {
-    getAssetByID: jest.fn(),
-  };
-});
+jest.mock('@react-native/assets/registry', () => ({
+  getAssetByID: jest.fn(),
+}));
 
 jest.mock('react-native/Libraries/Image/resolveAssetSource', () => {
   return {
@@ -104,7 +102,7 @@ it(`interns assets by URI`, () => {
 it(`creates assets from virtual modules`, () => {
   const { Asset } = require('../index');
 
-  const { getAssetByID } = require('react-native/Libraries/Image/AssetRegistry');
+  const { getAssetByID } = require('@react-native/assets/registry');
   getAssetByID.mockReturnValueOnce(mockImageMetadata);
 
   const asset = Asset.fromModule(1);
@@ -114,7 +112,7 @@ it(`creates assets from virtual modules`, () => {
 it(`throws when creating an asset from a missing module`, () => {
   const { Asset } = require('../index');
 
-  const { getAssetByID } = require('react-native/Libraries/Image/AssetRegistry');
+  const { getAssetByID } = require('@react-native/assets/registry');
   getAssetByID.mockReturnValueOnce(undefined);
 
   expect(() => Asset.fromModule(2)).toThrowError();

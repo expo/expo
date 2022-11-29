@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
+    "@types/react-native__assets": "~1.0.0",
     "@types/url-parse": "^1.4.1",
     "expo-module-scripts": "^3.0.0"
   }
