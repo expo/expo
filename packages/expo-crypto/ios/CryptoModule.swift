@@ -14,7 +14,7 @@ public class CryptoModule: Module {
     AsyncFunction("getRandomBase64StringAsync", getRandomBase64String)
 
     Function("getRandomBase64String", getRandomBase64String)
-    
+
     Function("getRandomValues", getRandomValues)
   }
 }
@@ -55,11 +55,10 @@ private func getRandomValues(array: TypedArray) throws -> TypedArray {
     array.byteLength,
     array.rawPointer
   )
-  
+
   if status == errSecSuccess {
     return array
-  }
-  else {
+  } else {
     throw FailedGeneratingRandomBytesException(status)
   }
 }
