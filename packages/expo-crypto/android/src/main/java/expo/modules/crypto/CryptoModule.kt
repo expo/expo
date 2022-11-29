@@ -47,6 +47,6 @@ class CryptoModule : Module() {
   private fun getRandomValues(typedArray: TypedArray) {
     val array = ByteArray(typedArray.byteLength)
     secureRandom.nextBytes(array)
-    typedArray.write(array,typedArray.byteOffset, typedArray.byteLength)
+    typedArray.write(array, typedArray.byteOffset, typedArray.byteLength)
   }
 }
