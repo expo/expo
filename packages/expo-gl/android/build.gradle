@@ -125,7 +125,7 @@ android {
 
   packagingOptions {
     // Gradle will add cmake target dependencies into packaging.
-    excludes = [
+    excludes += [
         "**/libc++_shared.so",
         "**/libjsi.so",
     ]
