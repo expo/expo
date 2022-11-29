@@ -1,7 +1,7 @@
 import { toByteArray } from 'base64-js';
 import { UnavailabilityError } from 'expo-modules-core';
 
-import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest } from './Crypto.types';
+import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest, TypedArray } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';
 
 declare const global: any;
@@ -143,10 +143,21 @@ export async function digestStringAsync(
   return await ExpoCrypto.digestStringAsync(algorithm, data, options);
 }
 
-export function getRandomValues(bytes: any): any {
+/**
+ * The `getRandomValues()` method of `Crypto` fills a provided `TypedArray` with cryptographically secure random values.
+ *
+ * @param typedArray A `TypedArray` to fill with cryptographically secure random values.
+ * @return The same array that was passed in, but filled with cryptographically secure random values.
+ *
+ * @example
+ * ```ts
+ * Crypto.getRandomValues(new Uint8Array(16));
+ * ```
+ */
+export function getRandomValues(typedArray: TypedArray): TypedArray {
   if (!ExpoCrypto.getRandomValues) {
     throw new UnavailabilityError('expo-crypto', 'getRandomValues');
   }
-  ExpoCrypto.getRandomValues(bytes);
-  return bytes;
+  ExpoCrypto.getRandomValues(typedArray);
+  return typedArray;
 }

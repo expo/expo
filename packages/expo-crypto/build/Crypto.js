@@ -115,11 +115,22 @@ export async function digestStringAsync(algorithm, data, options = { encoding: C
     assertEncoding(options.encoding);
     return await ExpoCrypto.digestStringAsync(algorithm, data, options);
 }
-export function getRandomValues(bytes) {
+/**
+ * The `getRandomValues()` method of `Crypto` fills a provided `TypedArray` with cryptographically secure random values.
+ *
+ * @param typedArray A `TypedArray` to fill with cryptographically secure random values.
+ * @return The same array that was passed in, but filled with cryptographically secure random values.
+ *
+ * @example
+ * ```ts
+ * Crypto.getRandomValues(new Uint8Array(16));
+ * ```
+ */
+export function getRandomValues(typedArray) {
     if (!ExpoCrypto.getRandomValues) {
         throw new UnavailabilityError('expo-crypto', 'getRandomValues');
     }
-    ExpoCrypto.getRandomValues(bytes);
-    return bytes;
+    ExpoCrypto.getRandomValues(typedArray);
+    return typedArray;
 }
 //# sourceMappingURL=Crypto.js.map

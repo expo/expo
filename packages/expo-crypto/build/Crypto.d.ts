@@ -1,4 +1,4 @@
-import { CryptoDigestAlgorithm, CryptoDigestOptions, Digest } from './Crypto.types';
+import { CryptoDigestAlgorithm, CryptoDigestOptions, Digest, TypedArray } from './Crypto.types';
 export * from './Crypto.types';
 /**
  * Generates completely random bytes using native implementations. The `byteCount` property
@@ -36,5 +36,16 @@ export declare function getRandomBytesAsync(byteCount: number): Promise<Uint8Arr
  * ```
  */
 export declare function digestStringAsync(algorithm: CryptoDigestAlgorithm, data: string, options?: CryptoDigestOptions): Promise<Digest>;
-export declare function getRandomValues(bytes: any): any;
+/**
+ * The `getRandomValues()` method of `Crypto` fills a provided `TypedArray` with cryptographically secure random values.
+ *
+ * @param typedArray A `TypedArray` to fill with cryptographically secure random values.
+ * @return The same array that was passed in, but filled with cryptographically secure random values.
+ *
+ * @example
+ * ```ts
+ * Crypto.getRandomValues(new Uint8Array(16));
+ * ```
+ */
+export declare function getRandomValues(typedArray: TypedArray): TypedArray;
 //# sourceMappingURL=Crypto.d.ts.map
