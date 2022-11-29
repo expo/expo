@@ -34,6 +34,7 @@ const screens = [
   'Clipboard',
   'Constants',
   'Contacts',
+  'Crypto',
   'Device',
   'DocumentPicker',
   'FaceDetector',

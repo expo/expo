@@ -19,6 +19,16 @@ export default {
         }
         throw new CodedError('ERR_CRYPTO_DIGEST', 'Invalid encoding type provided.');
     },
+    getRandomBytes(length) {
+        const array = new Uint8Array(length);
+        // @ts-ignore
+        return (window.crypto ?? window.msCrypto).getRandomValues(array);
+    },
+    async getRandomBytesAsync(length) {
+        const array = new Uint8Array(length);
+        // @ts-ignore
+        return (window.crypto ?? window.msCrypto).getRandomValues(array);
+    },
 };
 function hexString(buffer) {
     const byteArray = new Uint8Array(buffer);
