@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Remove unused web features
+- Remove unused web features.
 
 ## 8.6.2 — 2022-10-25
 
