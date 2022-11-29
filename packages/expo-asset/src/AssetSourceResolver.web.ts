@@ -1,6 +1,6 @@
 import { PackagerAsset } from '@react-native/assets/registry';
 import { Platform } from 'expo-modules-core';
-import { Dimensions } from 'react-native';
+import { PixelRatio } from 'react-native';
 
 export type ResolvedAssetSource = {
   __packager_asset: boolean;
@@ -10,15 +10,9 @@ export type ResolvedAssetSource = {
   scale: number;
 };
 
-// TODO(EvanBacon): This seems like a bad practice on web.
-// The analogous system on web would be a CDN and/or the picture tag.
-function getScale(): number {
-  return Dimensions.get('window').scale;
-}
-
 // Returns the Metro dev server-specific asset location.
 function getScaledAssetPath(asset): string {
-  const scale = AssetSourceResolver.pickScale(asset.scales, getScale());
+  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   const type = !asset.type ? '' : `.${asset.type}`;
   return asset.httpServerLocation + '/' + asset.name + scaleSuffix + type;
@@ -77,7 +71,7 @@ export default class AssetSourceResolver {
       width: this.asset.width ?? undefined,
       height: this.asset.height ?? undefined,
       uri: source,
-      scale: AssetSourceResolver.pickScale(this.asset.scales, getScale()),
+      scale: AssetSourceResolver.pickScale(this.asset.scales, PixelRatio.get()),
     };
   }
 

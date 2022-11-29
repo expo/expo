@@ -1,13 +1,8 @@
 import { Platform } from 'expo-modules-core';
-import { Dimensions } from 'react-native';
-// TODO(EvanBacon): This seems like a bad practice on web.
-// The analogous system on web would be a CDN and/or the picture tag.
-function getScale() {
-    return Dimensions.get('window').scale;
-}
+import { PixelRatio } from 'react-native';
 // Returns the Metro dev server-specific asset location.
 function getScaledAssetPath(asset) {
-    const scale = AssetSourceResolver.pickScale(asset.scales, getScale());
+    const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
     const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
     const type = !asset.type ? '' : `.${asset.type}`;
     return asset.httpServerLocation + '/' + asset.name + scaleSuffix + type;
@@ -54,7 +49,7 @@ export default class AssetSourceResolver {
             width: this.asset.width ?? undefined,
             height: this.asset.height ?? undefined,
             uri: source,
-            scale: AssetSourceResolver.pickScale(this.asset.scales, getScale()),
+            scale: AssetSourceResolver.pickScale(this.asset.scales, PixelRatio.get()),
         };
     }
     static pickScale(scales, deviceScale) {
