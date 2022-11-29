@@ -21,6 +21,7 @@ public extension UIDevice {
     return identifier
   }()
 
+  // swiftlint:disable function_body_length
   static internal let DeviceMap: ExpoDeviceType = {
     func mapToDevice(identifier: String) -> ExpoDeviceType {
       #if os(iOS)
@@ -166,6 +167,7 @@ public extension UIDevice {
 
     return mapToDevice(identifier: modelIdentifier)
   }()
+  // swiftlint:enable function_body_length
 
   // Credit: https://github.com/developerinsider/isJailBroken/blob/master/IsJailBroken/Extension/UIDevice%2BJailBroken.swift
   var isSimulator: Bool {
@@ -176,16 +178,10 @@ public extension UIDevice {
     if UIDevice.current.isSimulator {
       return false
     }
-    if JailbreakHelper.hasCydiaInstalled() {
-      return true
-    }
-    if JailbreakHelper.doesContainSuspiciousApps() {
-      return true
-    }
-    if JailbreakHelper.doesSuspiciousSystemPathExist() {
-      return true
-    }
-    return JailbreakHelper.canEditSystemFiles()
+
+    let isJailbroken = JailbreakHelper.hasCydiaInstalled() || JailbreakHelper.doesContainSuspiciousApps() || JailbreakHelper.doesSuspiciousSystemPathExist() || JailbreakHelper.canEditSystemFiles()
+
+    return isJailbroken
   }
 }
 
