@@ -281,4 +281,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/branch/':
     'https://github.com/expo/config-plugins/tree/main/packages/react-native-branch',
   '/versions/latest/sdk/appstate/': '/versions/latest/react-native/appstate/',
+
+  // Push notifications
+  '/push-notifications/using-fcm/':
+    '/push-notifications/push-notifications-setup/#get-credentials-for-development-builds',
 };
