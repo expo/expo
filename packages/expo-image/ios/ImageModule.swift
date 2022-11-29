@@ -24,8 +24,13 @@ public final class ImageModule: Module {
         "onLoad"
       )
 
-      Prop("source") { (view, source: ImageSource) in
-        view.source = source
+      Prop("source") { (view, sourceSet: Either<ImageSource, [ImageSource]>) in
+        if let source: ImageSource = sourceSet.get() {
+          view.sources = [source]
+        }
+        if let sources: [ImageSource] = sourceSet.get() {
+          view.sources = sources
+        }
       }
 
       Prop("resizeMode") { (view, resizeMode: ImageResizeMode) in

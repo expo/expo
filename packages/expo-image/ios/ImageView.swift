@@ -9,7 +9,7 @@ public final class ImageView: ExpoView {
   let sdImageView = SDAnimatedImageView(frame: .zero)
   let imageManager = SDWebImageManager()
 
-  var source: ImageSource?
+  var sources: [ImageSource]?
 
   var resizeMode: ImageResizeMode = .cover {
     didSet {
@@ -72,7 +72,7 @@ public final class ImageView: ExpoView {
   // MARK: - Implementation
 
   func reload() {
-    guard let source = source else {
+    guard let source = bestSource else {
       renderImage(nil)
       return
     }
@@ -177,5 +177,37 @@ public final class ImageView: ExpoView {
     } else {
       sdImageView.image = image
     }
+  }
+
+  // MARK: - Helpers
+
+  /**
+   The image source that fits best into the view bounds, that is the one with the closest number of pixels.
+   May be `nil` if there are no sources available or the view bounds size is zero.
+   */
+  var bestSource: ImageSource? {
+    guard let sources = sources, !sources.isEmpty else {
+      return nil
+    }
+    if bounds.isEmpty, window == nil {
+      return nil
+    }
+    if sources.count == 1 {
+      return sources.first
+    }
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+    var bestSource: ImageSource?
+    var bestFit = Double.infinity
+    let targetPixelCount = bounds.width * bounds.height * scale * scale
+
+    for source in sources {
+      let fit = abs(1 - (source.pixelCount / targetPixelCount))
+
+      if fit < bestFit {
+        bestSource = source
+        bestFit = fit
+      }
+    }
+    return bestSource
   }
 }
