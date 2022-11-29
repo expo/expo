@@ -14,6 +14,8 @@ public class CryptoModule: Module {
     AsyncFunction("getRandomBase64StringAsync", getRandomBase64String)
 
     Function("getRandomBase64String", getRandomBase64String)
+    
+    Function("getRandomValues", getRandomValues)
   }
 }
 
@@ -44,6 +46,21 @@ private func digestString(algorithm: DigestAlgorithm, str: String, options: Dige
     return digest.reduce("") { $0 + String(format: "%02x", $1) }
   case .base64:
     return Data(digest).base64EncodedString()
+  }
+}
+
+private func getRandomValues(array: TypedArray) throws -> TypedArray {
+  let status = SecRandomCopyBytes(
+    kSecRandomDefault,
+    array.byteLength,
+    array.rawPointer
+  )
+  
+  if status == errSecSuccess {
+    return array
+  }
+  else {
+    throw FailedGeneratingRandomBytesException(status)
   }
 }
 

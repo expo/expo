@@ -142,3 +142,11 @@ export async function digestStringAsync(
 
   return await ExpoCrypto.digestStringAsync(algorithm, data, options);
 }
+
+export function getRandomValues(bytes: any): any {
+  if (!ExpoCrypto.getRandomValues) {
+    throw new UnavailabilityError('expo-crypto', 'getRandomValues');
+  }
+  ExpoCrypto.getRandomValues(bytes);
+  return bytes;
+}

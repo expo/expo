@@ -36,4 +36,5 @@ export declare function getRandomBytesAsync(byteCount: number): Promise<Uint8Arr
  * ```
  */
 export declare function digestStringAsync(algorithm: CryptoDigestAlgorithm, data: string, options?: CryptoDigestOptions): Promise<Digest>;
+export declare function getRandomValues(bytes: any): any;
 //# sourceMappingURL=Crypto.d.ts.map

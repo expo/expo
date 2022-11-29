@@ -115,4 +115,11 @@ export async function digestStringAsync(algorithm, data, options = { encoding: C
     assertEncoding(options.encoding);
     return await ExpoCrypto.digestStringAsync(algorithm, data, options);
 }
+export function getRandomValues(bytes) {
+    if (!ExpoCrypto.getRandomValues) {
+        throw new UnavailabilityError('expo-crypto', 'getRandomValues');
+    }
+    ExpoCrypto.getRandomValues(bytes);
+    return bytes;
+}
 //# sourceMappingURL=Crypto.js.map
