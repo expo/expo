@@ -1960,7 +1960,7 @@ PODS:
     - ExpoModulesCore
   - EXApplication (5.0.1):
     - ExpoModulesCore
-  - EXAV (13.0.1):
+  - EXAV (13.0.2):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (11.0.1):
@@ -2009,7 +2009,7 @@ PODS:
     - Firebase/Core (= 9.5.0)
   - EXFont (11.0.1):
     - ExpoModulesCore
-  - EXGL (12.0.0):
+  - EXGL (12.0.1):
     - ExpoModulesCore
     - React-jsi
   - EXImageLoader (4.0.0):
@@ -4489,7 +4489,7 @@ SPEC CHECKSUMS:
   EASClient: 19efe9e8ef9b3917c5f3dcb3ed82319de4d8c0bd
   EXAppleAuthentication: d93f7acd71fb3dcfa14eb6cb12ada053e06d4b66
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
-  EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
+  EXAV: 9a45d37772c5329294c054a041dcc39931fc5032
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
   EXBarCodeScanner: 0ff9f35bba5dc67fcf8919eecf1f7f4c287dc3e8
   EXBlur: d87af64a1b4ae264059983bf54baca72be2cbc7d
@@ -4507,7 +4507,7 @@ SPEC CHECKSUMS:
   EXFirebaseAnalytics: 58d70e698859b070b2450ad8664d7b5bc6c6e3e1
   EXFirebaseCore: d0d88cb904e893af07f809ab08c0892489bc6956
   EXFont: 319606bfe48c33b5b5063fb0994afdc496befe80
-  EXGL: 2ddfb92926ffa55e62e2e00584f6fb6336f81cd2
+  EXGL: 5f24aaf2552f784d5d59e960823faf53d120893c
   EXImageLoader: 84b65e6bd9d3345d6fbb3ab936a546c54496a64d
   EXJSONUtils: 09aef2c1fba1a116ca8c73a2c8299aac00d96b43
   EXLocalAuthentication: 78cc5a00b13745b41d16d189ab332b61a01299f9

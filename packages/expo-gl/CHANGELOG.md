@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed error for duplicated META-INF files when building on Android. ([#20251](https://github.com/expo/expo/pull/20251) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 12.0.1 — 2022-11-29
+
+### 🐛 Bug fixes
+
+- Fixed error for duplicated META-INF files when building on Android. ([#20251](https://github.com/expo/expo/pull/20251) by [@kudo](https://github.com/kudo))
 
 ## 12.0.0 — 2022-10-25
 
