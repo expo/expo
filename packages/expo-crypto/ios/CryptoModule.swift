@@ -56,11 +56,10 @@ private func getRandomValues(array: TypedArray) throws -> TypedArray {
     array.rawPointer
   )
 
-  if status == errSecSuccess {
-    return array
-  } else {
+  guard status == errSecSuccess else {
     throw FailedGeneratingRandomBytesException(status)
   }
+  return array
 }
 
 private class LossyConversionException: Exception {

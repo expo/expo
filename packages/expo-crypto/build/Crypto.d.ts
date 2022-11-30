@@ -1,4 +1,5 @@
-import { CryptoDigestAlgorithm, CryptoDigestOptions, Digest, TypedArray } from './Crypto.types';
+import { UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
+import { CryptoDigestAlgorithm, CryptoDigestOptions, Digest } from './Crypto.types';
 export * from './Crypto.types';
 /**
  * Generates completely random bytes using native implementations. The `byteCount` property
@@ -44,8 +45,10 @@ export declare function digestStringAsync(algorithm: CryptoDigestAlgorithm, data
  *
  * @example
  * ```ts
- * Crypto.getRandomValues(new Uint8Array(16));
+ * const byteArray = new Uint8Array(16);
+ * Crypto.getRandomValues(byteArray);
+ * console.log('Your lucky bytes: ' + byteArray);
  * ```
  */
-export declare function getRandomValues(typedArray: TypedArray): TypedArray;
+export declare function getRandomValues<T extends IntBasedTypedArray | UintBasedTypedArray>(typedArray: T): T;
 //# sourceMappingURL=Crypto.d.ts.map

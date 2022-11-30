@@ -123,13 +123,12 @@ export async function digestStringAsync(algorithm, data, options = { encoding: C
  *
  * @example
  * ```ts
- * Crypto.getRandomValues(new Uint8Array(16));
+ * const byteArray = new Uint8Array(16);
+ * Crypto.getRandomValues(byteArray);
+ * console.log('Your lucky bytes: ' + byteArray);
  * ```
  */
 export function getRandomValues(typedArray) {
-    if (!ExpoCrypto.getRandomValues) {
-        throw new UnavailabilityError('expo-crypto', 'getRandomValues');
-    }
     ExpoCrypto.getRandomValues(typedArray);
     return typedArray;
 }

@@ -1,7 +1,7 @@
 import { toByteArray } from 'base64-js';
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError, UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
 
-import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest, TypedArray } from './Crypto.types';
+import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';
 
 declare const global: any;
@@ -151,13 +151,14 @@ export async function digestStringAsync(
  *
  * @example
  * ```ts
- * Crypto.getRandomValues(new Uint8Array(16));
+ * const byteArray = new Uint8Array(16);
+ * Crypto.getRandomValues(byteArray);
+ * console.log('Your lucky bytes: ' + byteArray);
  * ```
  */
-export function getRandomValues(typedArray: TypedArray): TypedArray {
-  if (!ExpoCrypto.getRandomValues) {
-    throw new UnavailabilityError('expo-crypto', 'getRandomValues');
-  }
+export function getRandomValues<T extends IntBasedTypedArray | UintBasedTypedArray>(
+  typedArray: T
+): T {
   ExpoCrypto.getRandomValues(typedArray);
   return typedArray;
 }
