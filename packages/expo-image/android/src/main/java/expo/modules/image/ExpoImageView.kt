@@ -3,7 +3,6 @@ package expo.modules.image
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -23,7 +22,8 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
 import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ImageResizeMode
-import expo.modules.image.events.ImageLoadEventsManager
+import expo.modules.image.events.GlideRequestListener
+import expo.modules.image.events.OkHttpProgressListener
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
@@ -51,9 +51,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     ExpoImageView(
       activity,
       getOrCreateRequestManager(appContext, activity),
-      ImageLoadEventsManager(
-        WeakReference(this)
-      )
+      WeakReference(this)
     ).apply {
       layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
       addView(this)
@@ -94,7 +92,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 class ExpoImageView(
   context: Context,
   private val requestManager: RequestManager,
-  private val eventsManager: ImageLoadEventsManager
+  private val expoImageViewWrapper: WeakReference<ExpoImageViewWrapper>
 ) : AppCompatImageView(context) {
   private val progressInterceptor = OkHttpClientProgressInterceptor
 
@@ -214,8 +212,12 @@ class ExpoImageView(
       loadedSource = sourceToLoad
       val options = sourceMap?.createOptions() ?: RequestOptions()
       val propOptions = createPropOptions()
-      progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
-      eventsManager.onLoadStarted()
+      progressInterceptor.registerProgressListener(
+        sourceToLoad.toStringUrl(),
+        OkHttpProgressListener(expoImageViewWrapper)
+      )
+
+      expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
 
       val defaultSourceToLoad = defaultSourceMap?.createGlideUrl()
       requestManager
@@ -224,23 +226,13 @@ class ExpoImageView(
         .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
         .apply(options)
         .downsample(DownsampleStrategy.NONE)
-        .addListener(eventsManager)
+        .addListener(GlideRequestListener(expoImageViewWrapper))
         .apply(propOptions)
         .into(object : DrawableImageViewTarget(this) {
           override fun getSize(cb: SizeReadyCallback) {
             cb.onSizeReady(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
           }
         })
-
-      requestManager
-        .`as`(BitmapFactory.Options::class.java)
-        // Remove any default listeners from this request
-        // (an example would be an SVGSoftwareLayerSetter
-        // added in ExpoImageViewManager).
-        // This request won't load the image, only the size.
-        .listener(null)
-        .load(sourceToLoad)
-        .into(eventsManager)
     }
   }
 
