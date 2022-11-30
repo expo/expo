@@ -540,7 +540,7 @@ export interface Android {
          */
         foregroundImage?: string;
         /**
-         * Local path or remote URL to a background image for your app's Adaptive Icon on Android. If specified, this overrides the `backgroundColor` key. Must have the same dimensions as foregroundImage`, and has no effect if `foregroundImage` is not specified. Should follow the [specified guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive).
+         * Local path or remote URL to a background image for your app's Adaptive Icon on Android. If specified, this overrides the `backgroundColor` key. Must have the same dimensions as `foregroundImage`, and has no effect if `foregroundImage` is not specified. Should follow the [specified guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive).
          */
         backgroundImage?: string;
         /**
@@ -548,7 +548,7 @@ export interface Android {
          */
         backgroundColor?: string;
         /**
-         * (Android 13+ only) Local path or remote URL to an image to use for your app's monochrome Adaptive Icon on Android. Must have the same dimensions as foregroundImage`, and has no effect if `foregroundImage` is not specified. Should follow the [specified guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive). This icon will appear on the home screen when the user enables "Themed icons" in system settings.
+         * (Android 13+ only) Local path or remote URL to an image to use for your app's monochrome Adaptive Icon on Android. Must have the same dimensions as `foregroundImage`, and has no effect if `foregroundImage` is not specified. Should follow the [specified guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive). This icon will appear on the home screen when the user enables "Themed icons" in system settings.
          */
         monochromeImage?: string;
     };
