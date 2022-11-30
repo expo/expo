@@ -83,6 +83,11 @@ android {
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", ex_updates_native_debug)
+
+    // Enable experimented delay loadApp
+    // toBoolean() first for supporting truthy value, e.g. `expo.delayLoadApp=1` or `expo.delayLoadApp=TRUE`
+    buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", findProperty("expo.delayLoadApp").toString().toBoolean().toString())
+
     // uncomment below to export the database schema when making changes
     /* javaCompileOptions {
       annotationProcessorOptions {
