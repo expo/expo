@@ -25,7 +25,9 @@ import java.lang.Exception
 private const val DIRECTORY_NOT_FOUND_MSG = "Documents directory of the app could not be found."
 private const val UNKNOWN_IO_EXCEPTION_MSG = "An unknown I/O exception has occurred."
 private const val UNKNOWN_EXCEPTION_MSG = "An unknown exception has occurred."
+private const val OUT_OF_MEMORY_EXCEPTION_MSG = "Cannot allocate enough space to process the taken picture."
 private const val ERROR_TAG = "E_TAKING_PICTURE_FAILED"
+private const val OUT_OF_MEMORY_TAG = "ERR_CAMERA_OUT_OF_MEMORY"
 private const val DIRECTORY_NAME = "Camera"
 private const val EXTENSION = ".jpg"
 private const val SKIP_PROCESSING_KEY = "skipProcessing"
@@ -72,9 +74,6 @@ class ResolveTakenPictureAsyncTask(
     if (imageData != null && isOptionEnabled(SKIP_PROCESSING_KEY)) {
       return handleSkipProcessing()
     }
-    if (bitmap == null) {
-      bitmap = imageData?.let { BitmapFactory.decodeByteArray(imageData, 0, it.size) }
-    }
     try {
       ByteArrayInputStream(imageData).use { inputStream ->
         val response = Bundle()
@@ -86,11 +85,29 @@ class ResolveTakenPictureAsyncTask(
           ExifInterface.ORIENTATION_UNDEFINED
         )
 
-        // Rotate the bitmap to the proper orientation if needed
-        if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
-          bitmap = bitmap?.let {
-            rotateBitmap(it, getImageRotation(orientation))
+        val bitmapOptions = BitmapFactory
+          .Options()
+          .apply {
+            inSampleSize = 1
           }
+        var bitmap: Bitmap? = null
+        var lastError: Error? = null
+
+        val maxDownsampling = ((options.getOrDefault("maxDownsampling", 1.0)) as Double).toInt()
+        // If OOM exception was thrown, we try to use downsampling to recover.
+        while (bitmapOptions.inSampleSize <= maxDownsampling) {
+          try {
+            bitmap = decodeBitmap(orientation, bitmapOptions)
+            break
+          } catch (exception: OutOfMemoryError) {
+            bitmapOptions.inSampleSize *= 2
+            lastError = exception
+          }
+        }
+
+        if (bitmap == null) {
+          promise.reject(OUT_OF_MEMORY_TAG, OUT_OF_MEMORY_EXCEPTION_MSG, lastError)
+          return null
         }
 
         // Write Exif data to the response if requested
@@ -101,13 +118,13 @@ class ResolveTakenPictureAsyncTask(
 
         // Upon rotating, write the image's dimensions to the response
         response.apply {
-          putInt(WIDTH_KEY, bitmap!!.width)
-          putInt(HEIGHT_KEY, bitmap!!.height)
+          putInt(WIDTH_KEY, bitmap.width)
+          putInt(HEIGHT_KEY, bitmap.height)
         }
 
         // Cache compressed image in imageStream
         ByteArrayOutputStream().use { imageStream ->
-          bitmap!!.compress(Bitmap.CompressFormat.JPEG, quality, imageStream)
+          bitmap.compress(Bitmap.CompressFormat.JPEG, quality, imageStream)
           // Write compressed image to file in cache directory
           val filePath = writeStreamToFile(imageStream)
 
@@ -211,6 +228,28 @@ class ResolveTakenPictureAsyncTask(
       e.printStackTrace()
     }
     return null
+  }
+
+  private fun decodeBitmap(orientation: Int, bitmapOptions: BitmapFactory.Options): Bitmap {
+    // Rotate the bitmap to the proper orientation if needed
+    return if (orientation != ExifInterface.ORIENTATION_UNDEFINED) {
+      if (bitmap == null) {
+        decodeAndRotateBitmap(imageData!!, getImageRotation(orientation), bitmapOptions)
+      } else {
+        rotateBitmap(bitmap!!, getImageRotation(orientation))
+      }
+    } else {
+      if (bitmap == null) {
+        BitmapFactory.decodeByteArray(imageData, 0, imageData!!.size, bitmapOptions)
+      } else {
+        bitmap!!
+      }
+    }
+  }
+
+  private fun decodeAndRotateBitmap(imageData: ByteArray, angle: Int, options: BitmapFactory.Options): Bitmap {
+    val source = BitmapFactory.decodeByteArray(imageData, 0, imageData.size, options)
+    return rotateBitmap(source, angle)
   }
 
   private fun rotateBitmap(source: Bitmap, angle: Int): Bitmap {

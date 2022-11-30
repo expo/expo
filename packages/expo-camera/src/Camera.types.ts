@@ -189,6 +189,10 @@ export type CameraPictureOptions = {
    * @hidden
    */
   fastMode?: boolean;
+  /**
+   * @hidden
+   */
+  maxDownsampling?: number;
 };
 
 // @needsAudit
