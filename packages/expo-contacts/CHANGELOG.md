@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Remove deprecated and legacy contact fields constants.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Simplify exported types.
 
 ## 11.0.1 — 2022-10-28
 

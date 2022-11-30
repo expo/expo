@@ -25,6 +25,7 @@ import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 import { A } from '~/ui/components/Text';
+import { Tag } from '~/ui/components/Tag';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -357,6 +358,7 @@ export const renderParamRow = ({
   defaultValue,
 }: MethodParamData): JSX.Element => {
   const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  console.warn(comment);
   return (
     <Row key={`param-${name}`}>
       <Cell>
@@ -377,7 +379,7 @@ export const renderParamRow = ({
   );
 };
 
-export const renderTableHeadRow = () => (
+export const ParamsTableHeadRow = () => (
   <TableHead>
     <Row>
       <HeaderCell>Name</HeaderCell>
@@ -389,7 +391,7 @@ export const renderTableHeadRow = () => (
 
 export const renderParams = (parameters: MethodParamData[]) => (
   <Table>
-    {renderTableHeadRow()}
+    <ParamsTableHeadRow />
     <tbody>{parameters?.map(renderParamRow)}</tbody>
   </Table>
 );
@@ -508,6 +510,15 @@ export const getMethodName = (
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
+const PARAM_TAGS_REGEX = /@tag-\S*/g;
+
+const getParamTags = (shortText?: string) => {
+  if (!shortText || !shortText.includes('@tag-')) {
+    return undefined;
+  }
+  return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
+};
+
 export const CommentTextBlock = ({
   comment,
   components = mdComponents,
@@ -517,9 +528,11 @@ export const CommentTextBlock = ({
   includePlatforms = true,
   emptyCommentFallback,
 }: CommentTextBlockProps) => {
+  const paramTags = getParamTags(comment?.shortText?.trim());
+
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(comment.shortText)}
+      {parseCommentContent(paramTags ? comment.shortText.replaceAll(PARAM_TAGS_REGEX, '') : comment.shortText)}
     </ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
@@ -562,6 +575,14 @@ export const CommentTextBlock = ({
     <>
       {!withDash && includePlatforms && hasPlatforms && (
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      )}
+      {paramTags && (
+        <>
+          <B>Only for:&ensp;</B>
+          {paramTags.map(tag => (
+            <Tag key={tag} name={tag.split('-')[1]} />
+          ))}
+        </>
       )}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
