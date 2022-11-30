@@ -3,12 +3,15 @@ package expo.modules.medialibrary.albums
 import android.os.Bundle
 import android.provider.MediaStore.Images.Media
 import expo.modules.medialibrary.AlbumException
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockCursor
 import expo.modules.medialibrary.throwableContentResolver
 import expo.modules.test.core.PromiseMock
+import expo.modules.test.core.assertRejectedWithCode
 import expo.modules.test.core.promiseResolvedWithType
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
@@ -16,7 +19,6 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-
 
 @RunWith(RobolectricTestRunner::class)
 class GetAlbumsTests {
@@ -101,10 +103,10 @@ class GetAlbumsTests {
     val context = mockContext with throwableContentResolver(SecurityException())
 
     // act
+    GetAlbums(context, promise).execute()
+
     // assert
-    assertThrows(SecurityException::class.java) {
-      GetAlbums(context, promise).execute()
-    }
+    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test
@@ -113,9 +115,9 @@ class GetAlbumsTests {
     val context = mockContext with throwableContentResolver(IllegalArgumentException())
 
     // act
+    GetAlbums(context, promise).execute()
+
     // assert
-    assertThrows(IllegalArgumentException::class.java) {
-      GetAlbums(context, promise).execute()
-    }
+    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD)
   }
 }

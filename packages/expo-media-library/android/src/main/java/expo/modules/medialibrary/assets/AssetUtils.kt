@@ -15,11 +15,17 @@ import androidx.exifinterface.media.ExifInterface
 import expo.modules.kotlin.Promise
 import expo.modules.medialibrary.ASSET_PROJECTION
 import expo.modules.medialibrary.AssetQueryException
-import expo.modules.medialibrary.EXIF_TAGS
+import expo.modules.medialibrary.ERROR_IO_EXCEPTION
+import expo.modules.medialibrary.ERROR_NO_PERMISSIONS
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.EXIF_TAGS
 import expo.modules.medialibrary.MediaType
 import java.io.FileNotFoundException
 import java.io.IOException
+import java.lang.NumberFormatException
+import java.lang.RuntimeException
+import java.lang.UnsupportedOperationException
 import kotlin.math.abs
 
 /**
@@ -34,28 +40,40 @@ fun queryAssetInfo(
   promise: Promise
 ) {
   val contentResolver = context.contentResolver
-  contentResolver.query(
-    EXTERNAL_CONTENT_URI,
-    ASSET_PROJECTION,
-    selection,
-    selectionArgs,
-    null
-  ).use { assetCursor ->
-    if (assetCursor == null) {
-      throw AssetQueryException()
-    } else {
-      if (assetCursor.count == 1) {
-        assetCursor.moveToFirst()
-        val array = arrayListOf<Bundle>()
-        putAssetsInfo(contentResolver, assetCursor, array, limit = 1, offset = 0, resolveWithFullInfo)
-        // actually we want to return just the first item, but array.getMap returns ReadableMap
-        // which is not compatible with promise.resolve and there is no simple solution to convert
-        // ReadableMap to WritableMap so it's easier to return an array and pick the first item on JS side
-        promise.resolve(array)
+  try {
+    contentResolver.query(
+      EXTERNAL_CONTENT_URI,
+      ASSET_PROJECTION,
+      selection,
+      selectionArgs,
+      null
+    ).use { assetCursor ->
+      if (assetCursor == null) {
+        throw AssetQueryException()
       } else {
-        promise.resolve(null)
+        if (assetCursor.count == 1) {
+          assetCursor.moveToFirst()
+          val array = arrayListOf<Bundle>()
+          putAssetsInfo(contentResolver, assetCursor, array, limit = 1, offset = 0, resolveWithFullInfo)
+          // actually we want to return just the first item, but array.getMap returns ReadableMap
+          // which is not compatible with promise.resolve and there is no simple solution to convert
+          // ReadableMap to WritableMap so it's easier to return an array and pick the first item on JS side
+          promise.resolve(array)
+        } else {
+          promise.resolve(null)
+        }
       }
     }
+  } catch (e: SecurityException) {
+    promise.reject(
+      ERROR_UNABLE_TO_LOAD_PERMISSION,
+      "Could not get asset: need READ_EXTERNAL_STORAGE permission.", e
+    )
+  } catch (e: IOException) {
+    promise.reject(ERROR_IO_EXCEPTION, "Could not read file", e)
+  } catch (e: UnsupportedOperationException) {
+    e.printStackTrace()
+    promise.reject(ERROR_NO_PERMISSIONS, e.message, e)
   }
 }
 

@@ -3,6 +3,8 @@ package expo.modules.medialibrary.assets
 import android.os.Bundle
 import android.provider.MediaStore
 import expo.modules.medialibrary.AssetQueryException
+import expo.modules.medialibrary.ERROR_IO_EXCEPTION
+import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MediaLibraryUtils
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
@@ -10,6 +12,7 @@ import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockContentResolverForResult
 import expo.modules.medialibrary.throwableContentResolver
 import expo.modules.test.core.PromiseMock
+import expo.modules.test.core.assertRejectedWithCode
 import expo.modules.test.core.promiseResolvedWithType
 import io.mockk.clearAllMocks
 import io.mockk.every
@@ -118,10 +121,9 @@ internal class GetAssetInfoTests {
     val context = mockContext with throwableContentResolver(SecurityException())
 
     // act
+    queryAssetInfo(context, "", emptyArray(), false, promise)
     // assert
-    assertThrows(SecurityException::class.java) {
-      queryAssetInfo(context, "", emptyArray(), false, promise)
-    }
+    assertRejectedWithCode(promise, ERROR_UNABLE_TO_LOAD_PERMISSION)
   }
 
   @Test
@@ -130,9 +132,9 @@ internal class GetAssetInfoTests {
     val context = mockContext with throwableContentResolver(IOException())
 
     // act
+    queryAssetInfo(context, "", emptyArray(), false, promise)
+
     // assert
-    assertThrows(IOException::class.java) {
-      queryAssetInfo(context, "", emptyArray(), false, promise)
-    }
+    assertRejectedWithCode(promise, ERROR_IO_EXCEPTION)
   }
 }
