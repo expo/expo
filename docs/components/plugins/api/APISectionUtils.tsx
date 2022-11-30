@@ -24,8 +24,8 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
-import { A } from '~/ui/components/Text';
 import { Tag } from '~/ui/components/Tag';
+import { A } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -531,7 +531,9 @@ export const CommentTextBlock = ({
 
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(paramTags ? comment.shortText.replaceAll(PARAM_TAGS_REGEX, '') : comment.shortText)}
+      {parseCommentContent(
+        paramTags ? comment.shortText.replaceAll(PARAM_TAGS_REGEX, '') : comment.shortText
+      )}
     </ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
