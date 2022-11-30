@@ -29,6 +29,7 @@ When selecting an image for the build you can use the full name provided below o
 ## Android build server configurations
 
 Android workers run on Kubernetes in an isolated environment. Every build gets its own container running on a dedicated Kubernetes node:
+
 - Build resources: 4 CPU, 12 GB RAM
 - [npm cache deployed with Kubernetes](caching/#javascript-dependencies)
 - [Maven cache deployed with Kubernetes](caching/#android-dependencies)
@@ -145,6 +146,7 @@ Android workers run on Kubernetes in an isolated environment. Every build gets i
 ## iOS build server configurations
 
 iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build gets its own fresh macOS VM:
+
 - Hardware: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
 - Build resource limits: 3 cores, 12 GB RAM
 - [npm cache](caching/#javascript-dependencies)
@@ -215,38 +217,6 @@ iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build
 
 </Collapsible>
 
-#### `macos-monterey-12.3-xcode-13.3`
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.3.1
-- Xcode 13.3.1 (13E500a)
-- Node.js 16.18.1
-- Yarn 1.22.17
-- pnpm 7.0.0
-- npm 8.19.2
-- fastlane 2.205.2
-- CocoaPods 1.11.3
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-monterey-12.1-xcode-13.2`
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.1
-- Xcode 13.2.1 (13C100)
-- Node.js 16.18.1
-- Yarn 1.22.17
-- pnpm 7.0.0
-- npm 8.19.2
-- fastlane 2.201.0
-- CocoaPods 1.11.2
-- Ruby 2.7
-
-</Collapsible>
-
 #### `macos-big-sur-11.4-xcode-13.0`
 
 <Collapsible summary="Details">
@@ -263,7 +233,39 @@ iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build
 
 </Collapsible>
 
-#### `macos-big-sur-11.4-xcode-12.5`
+#### `macos-monterey-12.3-xcode-13.3` (deprecated)
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.3.1
+- Xcode 13.3.1 (13E500a)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- fastlane 2.205.2
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-monterey-12.1-xcode-13.2` (deprecated)
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.1
+- Xcode 13.2.1 (13C100)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- fastlane 2.201.0
+- CocoaPods 1.11.2
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-big-sur-11.4-xcode-12.5` (deprecated)
 
 <Collapsible summary="Details">
 
