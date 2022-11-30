@@ -14,11 +14,13 @@ import com.facebook.react.turbomodule.core.CallInvokerHolderImpl
 import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
+import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.JavaScriptContextProvider
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.camera.CameraViewInterface
 import expo.modules.interfaces.constants.ConstantsInterface
+import expo.modules.interfaces.filesystem.AppDirectoriesModuleInterface
 import expo.modules.interfaces.filesystem.FilePermissionModuleInterface
 import expo.modules.interfaces.font.FontManagerInterface
 import expo.modules.interfaces.imageloader.ImageLoaderInterface
@@ -46,6 +48,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
+import java.io.File
 import java.io.Serializable
 import java.lang.ref.WeakReference
 
@@ -152,6 +155,26 @@ class AppContext(
     get() = legacyModule()
 
   /**
+   * Provides access to the scoped directories from the legacy module registry.
+   */
+  private val appDirectories: AppDirectoriesModuleInterface?
+    get() = legacyModule()
+
+  /**
+   * A directory for storing user documents and other permanent files.
+   */
+  val persistentFilesDirectory: File
+    get() = appDirectories?.persistentFilesDirectory
+      ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+
+  /**
+   * A directory for storing temporary files that can be removed at any time by the device's operating system.
+   */
+  val cacheDirectory: File
+    get() = appDirectories?.cacheDirectory
+      ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+
+  /**
    * Provides access to the permissions manager from the legacy module registry
    */
   val permissions: Permissions?
@@ -206,6 +229,12 @@ class AppContext(
     get() = reactContextHolder.get()
 
   /**
+   * @return true if there is an non-null, alive react native instance
+   */
+  val hasActiveReactInstance: Boolean
+    get() = reactContextHolder.get()?.hasActiveReactInstance() ?: false
+
+  /**
    * Provides access to the event emitter
    */
   fun eventEmitter(module: Module): EventEmitter? {
@@ -240,11 +269,12 @@ class AppContext(
   }
 
   internal fun onHostResume() {
-    activityResultsManager.onHostResume(
-      requireNotNull(currentActivity) {
-        "Current Activity is not available at this moment. This is an invalid state and this should never happen"
-      }
-    )
+    val activity = currentActivity
+    check(activity is AppCompatActivity) {
+      "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
+    }
+
+    activityResultsManager.onHostResume(activity)
     registry.post(EventName.ACTIVITY_ENTERS_FOREGROUND)
   }
 
@@ -254,6 +284,10 @@ class AppContext(
 
   internal fun onHostDestroy() {
     currentActivity?.let {
+      check(it is AppCompatActivity) {
+        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity?.localClassName}"
+      }
+
       activityResultsManager.onHostDestroy(it)
     }
     registry.post(EventName.ACTIVITY_DESTROYS)
@@ -286,17 +320,18 @@ class AppContext(
     return UIManagerHelper.getUIManagerForReactTag(reactContext, viewTag)?.resolveView(viewTag) as? T
   }
 
+  /**
+   * Runs a code block on the JavaScript thread.
+   */
+  fun executeOnJavaScriptThread(runnable: Runnable) {
+    reactContextHolder.get()?.runOnJSQueueThread(runnable)
+  }
+
 // region CurrentActivityProvider
 
-  override val currentActivity: AppCompatActivity?
+  override val currentActivity: Activity?
     get() {
-      val currentActivity = this.activityProvider?.currentActivity ?: return null
-
-      check(currentActivity is AppCompatActivity) {
-        "Current Activity is of incorrect class, expected AppCompatActivity, received ${currentActivity.localClassName}"
-      }
-
-      return currentActivity
+      return activityProvider?.currentActivity
     }
 
 // endregion

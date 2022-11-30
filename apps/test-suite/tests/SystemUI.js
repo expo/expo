@@ -9,8 +9,8 @@ export async function test(t) {
 
     // Get the newly set value.
     const value = await getAsync();
-    t.expect(value.toUpperCase()).toBeDefined();
-    t.expect(value).toBe(values[0]);
+    t.expect(value).toBeDefined();
+    t.expect(value.toUpperCase()).toBe(values[0]);
 
     // Toggle value again and ensure it's different.
     const nextValue = value === values[0] ? values[1] : values[0];

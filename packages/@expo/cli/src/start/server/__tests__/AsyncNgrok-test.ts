@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 
 import { asMock } from '../../../__tests__/asMock';
-import { NgrokInstance } from '../../doctor/ngrok/NgrokResolver';
-import { startAdbReverseAsync } from '../../platforms/android/adbReverse';
+import { NgrokInstance, NgrokResolver } from '../../doctor/ngrok/NgrokResolver';
+import { hasAdbReverseAsync, startAdbReverseAsync } from '../../platforms/android/adbReverse';
 import { AsyncNgrok } from '../AsyncNgrok';
 
 jest.mock('../../../log');
@@ -19,6 +19,7 @@ jest.mock('../../doctor/ngrok/NgrokResolver', () => {
   };
 
   return {
+    isNgrokClientError: jest.requireActual('../../doctor/ngrok/NgrokResolver').isNgrokClientError,
     NgrokResolver: jest.fn(() => ({
       resolveAsync: jest.fn(async () => instance),
       get: jest.fn(async () => instance),
@@ -26,6 +27,7 @@ jest.mock('../../doctor/ngrok/NgrokResolver', () => {
   };
 });
 jest.mock('../../platforms/android/adbReverse', () => ({
+  hasAdbReverseAsync: jest.fn(async () => true),
   startAdbReverseAsync: jest.fn(async () => true),
 }));
 jest.mock('../../../utils/exit');
@@ -43,6 +45,12 @@ function createNgrokInstance() {
   };
 }
 
+const originalEnv = process.env;
+
+afterAll(() => {
+  process.env = originalEnv;
+});
+
 beforeEach(() => {
   vol.reset();
 });
@@ -57,6 +65,16 @@ describe('getActiveUrl', () => {
 });
 
 describe('startAsync', () => {
+  it(`skips adb reverse if Android cannot be found`, async () => {
+    const { ngrok } = createNgrokInstance();
+    asMock(hasAdbReverseAsync).mockReturnValueOnce(false);
+
+    await ngrok.startAsync();
+    expect(startAdbReverseAsync).not.toBeCalled();
+  });
+  beforeEach(() => {
+    delete process.env.EXPO_TUNNEL_SUBDOMAIN;
+  });
   it(`fails if adb reverse doesn't work`, async () => {
     const { ngrok } = createNgrokInstance();
     asMock(startAdbReverseAsync).mockResolvedValueOnce(false);
@@ -66,6 +84,22 @@ describe('startAsync', () => {
   it(`starts`, async () => {
     const { ngrok } = createNgrokInstance();
     expect(await ngrok._connectToNgrokAsync()).toEqual('http://localhost:3000');
+  });
+  it(`starts with custom subdomain`, async () => {
+    process.env.EXPO_TUNNEL_SUBDOMAIN = 'test';
+    const { ngrok } = createNgrokInstance();
+    expect(await ngrok._connectToNgrokAsync()).toEqual('http://localhost:3000');
+    const instance = await new NgrokResolver('/').resolveAsync();
+    expect(instance.connect).toBeCalledWith(expect.objectContaining({ subdomain: 'test' }));
+  });
+  it(`starts with any subdomain`, async () => {
+    process.env.EXPO_TUNNEL_SUBDOMAIN = '1';
+    const { ngrok } = createNgrokInstance();
+    expect(await ngrok._connectToNgrokAsync()).toEqual('http://localhost:3000');
+    const instance = await new NgrokResolver('/').resolveAsync();
+    expect(instance.connect).toBeCalledWith(
+      expect.objectContaining({ subdomain: expect.stringMatching(/.*-anonymous-3000$/) })
+    );
   });
 
   it(`retries three times`, async () => {
@@ -97,7 +131,7 @@ describe('startAsync', () => {
       .mockImplementationOnce(() => {
         const err = new Error();
         // @ts-expect-error
-        err.error_code = 103;
+        err.body = { msg: '...', error_code: 103 };
 
         throw err;
       })

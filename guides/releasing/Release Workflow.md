@@ -15,7 +15,6 @@
   - [1.1. Cut off release branch](#11-cut-off-release-branch)
   - [1.2. Unversioned Quality Assurance](#12-unversioned-quality-assurance)
   - [1.3. Version code for the new SDK](#13-version-code-for-the-new-sdk)
-  - [1.4. Update JS dependencies required for build](#14-update-js-dependencies-required-for-build)
 - [Stage 2 - Quality Assurance](#stage-2---quality-assurance)
   - [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid)
   - [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)
@@ -185,6 +184,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 **How:**
 
 - Do this step immediately before cutting the release branch.
+- Run `et generate-docs-api-data` to regenerate `unversioned` API data files before cutting new documentation version.
 - Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, talk with @byCedric.)
 - Run `yarn run schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.md` from `unversioned` to the new versioned schema file.
 - In the Expo CLI repo, inside of `packages/expo-cli`, run `yarn introspect md | pbcopy` to generate the updated Expo CLI documentation and copy it to your clipboard. Replace everything under the `<Terminal ..>` in `docs/pages/workflow/expo-cli.md` with it, and remove the junk included in your pasted output above the first heading and the "Done in .." bit at the end. Sanity check the diff.
@@ -237,16 +237,6 @@ In the managed workflow, we use our forked `react-native` repository because we 
   - Some libraries (particularly expo-notifications and expo-updates) include classes and singletons that should be left out of versioning on Android -- i.e. of which there should only be one copy of in Expo Go. The file `tools/src/versioning/android/android-packages-to-rename.txt` contains all the Java/Kotlin packages and classes that will be versioned, and `tools/src/versioning/android/android-packages-to-keep.txt` contains all the packages and classes that will be left out of versioning (with the latter taking precedence over the former). If you run into compilation errors like `incompatible types: expo.modules.... cannot be converted to abixx_x_x.expo.modules...`, especially in one of the aforementioned modules, it's possible one or both of these lists may need to be updated with classes that have been added since the last SDK release.
   - The versioning script is not idempotent, so if you need to make any changes or re-version any libraries, the simplest way to do so is either make the changes manually in versioned classes (if they are very simple) or remove the SDK and re-add it. If you run `et remove-sdk --platform android --sdkVersion XX.X.X && et add-sdk --platform android` then the resulting diff should just include the re-versioned changes, and it's easy to check this manually.
 - Commit the changes to the `sdk-XX` branch and push. Take a look at the GitHub stats of added/deleted lines in your commit and be proud of your most productive day this month 😎.
-
-## 1.4. Update JS dependencies required for build
-
-**Why:** When building an iOS shell app XDL installs some extra packages needed for the build process.
-
-**How:**
-
-- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native-unimodules' -v 'X.Y.Z'` where `X.Y.Z` is the version of `react-native-unimodules` that is going to be used in ejected and standalone apps using this new SDK version.
-- Run `et update-versions -k 'packagesToInstallWhenEjecting.react-native' -v 'https://github.com/expo/react-native/archive/sdk-XX.X.X.tar.gz'` using the corresponding tag created in step [0.5](#05-tag-react-native-fork).
-- Run `et promote-versions-to-prod` to promote these versions to production, since the production endpoint is used when building the shell app.
 
 # Stage 2 - Quality Assurance
 
@@ -465,7 +455,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 5.3. Re-publish project templates
 
-**Why:** Ensure that the templates include the latest version of packages, so when we release the beta
+**Why:** Ensure that the templates include the latest version of packages, so when we release the beta everything is up to date.
 
 **How:** Follow [0.9. Publish `sdk-XX` project templates](#09-publish-sdk-xx-project-templates) but be sure that the published template has the `sdk-xx` tag on npm in addition to `next`.
 

@@ -4,11 +4,27 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Export types with type-only annotation to fix build when using `isolatedModules` flag. ([#20239](https://github.com/expo/expo/pull/20239) by [@zakharchenkoAndrii](https://github.com/zakharchenkoAndrii))
+
+### 💡 Others
+
+## 15.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 15.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed `trueHeading` is sometimes bigger then 360 on Android. ([#19629](https://github.com/expo/expo/pull/19629) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

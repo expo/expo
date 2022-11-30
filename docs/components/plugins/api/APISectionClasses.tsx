@@ -1,4 +1,3 @@
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
 import { InlineCode } from '~/components/base/code';
@@ -27,26 +26,50 @@ export type APISectionClassesProps = {
   data: GeneratedData[];
 };
 
+const classNamesMap: Record<string, string> = {
+  AccelerometerSensor: 'Accelerometer',
+  BarometerSensor: 'Barometer',
+  DeviceMotionSensor: 'DeviceMotion',
+  GyroscopeSensor: 'Gyroscope',
+  MagnetometerSensor: 'Magnetometer',
+} as const;
+
 const isProp = (child: PropData) =>
   child.kind === TypeDocKind.Property &&
   !child.overwrites &&
   !child.name.startsWith('_') &&
   !child.implementationOf;
 
-const isMethod = (child: PropData) =>
-  child.kind === TypeDocKind.Method &&
-  !child.overwrites &&
+const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
+  child.kind &&
+  [TypeDocKind.Method, TypeDocKind.Function, TypeDocKind.Accessor].includes(child.kind) &&
+  (allowOverwrites || !child.overwrites) &&
   !child.name.startsWith('_') &&
   !child?.implementationOf;
 
+const remapClass = (clx: ClassDefinitionData) => {
+  clx.isSensor = clx.name.endsWith('Sensor');
+  clx.name = classNamesMap[clx.name] ?? clx.name;
+
+  if (clx.isSensor && clx.extendedTypes) {
+    clx.extendedTypes = clx.extendedTypes.map(type => ({
+      ...type,
+      name: type.name === 'default' ? 'DeviceSensor' : type.name,
+    }));
+  }
+
+  return clx;
+};
+
 const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
-  const { name, comment, type, extendedTypes, children, implementedTypes } = clx;
+  const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
+  const Header = exposeInSidebar ? H2Nested : H4;
+
   const properties = children?.filter(isProp);
   const methods = children
-    ?.filter(isMethod)
+    ?.filter(child => isMethod(child, isSensor))
     .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
   const returnComment = getTagData('returns', comment);
-  const Header = exposeInSidebar ? H2Nested : H4;
 
   return (
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
@@ -119,7 +142,7 @@ const APISectionClasses = ({ data }: APISectionClassesProps) => {
     return (
       <>
         <H2>Classes</H2>
-        {data.map(cls => renderClass(cls, exposeInSidebar))}
+        {data.map(clx => renderClass(remapClass(clx), exposeInSidebar))}
       </>
     );
   }

@@ -104,9 +104,12 @@ const SET_IMAGE_ASYNC_CONFIG: FunctionDescription = {
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         base64: true,
       });
-      if (!result.cancelled && result.base64) {
-        await Clipboard.setImageAsync(result.base64);
-        return 'Image copied to clipboard';
+      if (!result.canceled) {
+        const [asset] = result.assets;
+        if (asset.base64) {
+          await Clipboard.setImageAsync(asset.base64);
+          return 'Image copied to clipboard';
+        }
       }
     } else {
       Alert.alert('Permission required!', 'You must allow accessing images in order to proceed.');

@@ -7,13 +7,13 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '1.3.0'
+version = '2.0.2'
 
 // reanimated v2
 def reactNativeFilePath = ["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()
 def inputFile = new File(reactNativeFilePath)
 def json = new JsonSlurper().parseText(inputFile.text)
-def reactNativeVersion = json.version as String
+def reactNativeVersion = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: json.version as String
 def (major, minor, patch) = reactNativeVersion.tokenize('.')
 
 def engine = "jsc"
@@ -207,7 +207,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 10
-    versionName '1.3.0'
+    versionName '2.0.2'
   }
   lintOptions {
     abortOnError false

@@ -150,44 +150,16 @@ async function getVendoredModuleNamesAsync(directory: string): Promise<string[]>
 /**
  * Removes the directory with vendored modules for given SDK number.
  */
-export async function removeVersionedVendoredModulesAsync(sdkNumber: number): Promise<void> {
+export async function removeVersionedVendoredModulesAsync(version: string): Promise<void> {
+  const sdkNumber = Number(version.split('.')[0]);
   const versionedDir = vendoredDirectoryForSDK(sdkNumber);
   await fs.remove(versionedDir);
-}
-
-/**
- * Get the gradle dependency version from `android/expoview/build.gradle`
- */
-async function getGradleDependencyVersionFromExpoViewAsync(
-  group: string,
-  name: string
-): Promise<string | null> {
-  const expoviewGradleFile = path.join(ANDROID_DIR, 'expoview', 'build.gradle');
-  const content = await fs.readFile(expoviewGradleFile, 'utf-8');
-  const searchPattern = new RegExp(
-    `\\b(api|implementation)[\\s(]['"]${group}:${name}:(.+?)['"]`,
-    'g'
-  );
-  const result = searchPattern.exec(content);
-  if (!result) {
-    return null;
-  }
-  return result[2];
 }
 
 /**
  * Generates base transforms to apply for all vendored modules.
  */
 async function baseTransformsFactoryAsync(prefix: string): Promise<Required<FileTransforms>> {
-  const fbjniVersion = await getGradleDependencyVersionFromExpoViewAsync(
-    'com.facebook.fbjni',
-    'fbjni-java-only'
-  );
-  const proguardAnnotationVersion = await getGradleDependencyVersionFromExpoViewAsync(
-    'com.facebook.yoga',
-    'proguard-annotations'
-  );
-
   return {
     path: [
       {
@@ -204,8 +176,16 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: '*.{java,kt}',
-        find: /(\bcom\.facebook\.(catalyst|csslayout|fbreact|hermes|perftest|quicklog|react|systrace|yoga|debug)\b)/g,
+        find: new RegExp(
+          `\\b(?<!${prefix}\\.)(com\\.facebook\\.(catalyst|csslayout|fbreact|hermes|perftest|quicklog|react|systrace|yoga|debug)\\b)`,
+          'g'
+        ),
         replaceWith: `${prefix}.$1`,
+      },
+      {
+        paths: '*.{java,kt}',
+        find: /\bimport (com\.swmansion\.)/g,
+        replaceWith: `import ${prefix}.$1`,
       },
       {
         paths: '*.{java,kt}',
@@ -214,19 +194,22 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: '*.{h,cpp}',
-        find: /(\bkJavaDescriptor\s*=\s*\n?\s*"L)/gm,
-        replaceWith: `$1${prefix}/`,
+        find: /(\bkJavaDescriptor\s*=\s*\n?\s*"L)(com\/)/gm,
+        replaceWith: `$1${prefix}/$2`,
       },
       {
         paths: 'build.gradle',
-        find: /\b(compileOnly|implementation)\s+['"]com.facebook.react:react-native:.+['"]/gm,
+        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-native:.+['"]/gm,
         replaceWith:
           `implementation 'host.exp:reactandroid-${prefix}:1.0.0'` +
           '\n' +
           // Adding some compile time common dependencies where the versioned react-native AAR doesn't expose
-          `    compileOnly 'com.facebook.fbjni:fbjni:${fbjniVersion}'\n` +
-          `    compileOnly 'com.facebook.yoga:proguard-annotations:${proguardAnnotationVersion}'\n` +
-          `    compileOnly 'androidx.annotation:annotation:+'\n`,
+          `    compileOnly 'com.facebook.fbjni:fbjni:+'\n` +
+          `    compileOnly 'com.facebook.yoga:proguard-annotations:+'\n` +
+          `    compileOnly 'com.facebook.soloader:soloader:+'\n` +
+          `    compileOnly 'androidx.annotation:annotation:+'\n` +
+          `    compileOnly 'com.google.code.findbugs:jsr305:+'\n` +
+          `    compileOnly 'androidx.appcompat:appcompat:+'\n`,
       },
       {
         paths: 'build.gradle',

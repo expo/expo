@@ -3,10 +3,13 @@ package expo.modules.devmenu
 import android.app.Application
 import android.content.Context
 import android.util.Log
+import com.facebook.react.ReactApplication
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
+import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JavaScriptExecutorFactory
+import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
 import devmenu.com.swmansion.gesturehandler.react.RNGestureHandlerPackage
@@ -98,5 +101,15 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     }
 
     return reactInstanceManager
+  }
+
+  override fun getReactPackageTurboModuleManagerDelegateBuilder(): ReactPackageTurboModuleManagerDelegate.Builder? {
+    if (!ReactFeatureFlags.useTurboModules) {
+      return null
+    }
+    val appHost = (application as ReactApplication)?.reactNativeHost ?: return null
+    val method = ReactNativeHost::class.java.getDeclaredMethod("getReactPackageTurboModuleManagerDelegateBuilder")
+    method.isAccessible = true
+    return method.invoke(appHost) as ReactPackageTurboModuleManagerDelegate.Builder
   }
 }

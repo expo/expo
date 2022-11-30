@@ -68,7 +68,7 @@ const tableStyle = css({
   borderCollapse: 'collapse',
   color: theme.text.default,
 
-  'blockquote div, li': {
+  'blockquote div, li, p': {
     ...typography.fontSizes[14],
   },
 });

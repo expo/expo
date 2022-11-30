@@ -4,9 +4,9 @@ import { PropsWithChildren } from 'react';
 
 import { paragraph } from './typography';
 
-const attributes = {
-  'data-text': true,
-};
+const getAttributes = (isHeading = false) => ({
+  [`data-${isHeading ? 'heading' : 'text'}`]: true,
+});
 
 const STYLES_PARAGRAPH = css`
   ${paragraph}
@@ -14,7 +14,7 @@ const STYLES_PARAGRAPH = css`
 `;
 
 export const P = ({ children }: PropsWithChildren<object>) => (
-  <p {...attributes} css={STYLES_PARAGRAPH}>
+  <p {...getAttributes()} css={STYLES_PARAGRAPH}>
     {children}
   </p>
 );
@@ -48,7 +48,15 @@ const STYLES_PARAGRAPH_DIV = css`
 export const PDIV = ({ children }: PropsWithChildren<object>) => {
   const isWider = (children as JSX.Element)?.props?.snackId;
   return (
-    <div {...attributes} css={STYLES_PARAGRAPH_DIV} className={isWider ? 'is-wider' : ''}>
+    <div {...getAttributes()} css={STYLES_PARAGRAPH_DIV} className={isWider ? 'is-wider' : ''}>
+      {children}
+    </div>
+  );
+};
+
+export const PDIVHEADER = ({ children }: PropsWithChildren<object>) => {
+  return (
+    <div {...getAttributes(true)} css={STYLES_PARAGRAPH_DIV}>
       {children}
     </div>
   );

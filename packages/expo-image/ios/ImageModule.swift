@@ -2,12 +2,19 @@
 
 import ExpoModulesCore
 import SDWebImage
+import SDWebImageWebPCoder
+import SDWebImageAVIFCoder
+import SDWebImageSVGCoder
 
 public final class ImageModule: Module {
   lazy var prefetcher = SDWebImagePrefetcher.shared
 
   public func definition() -> ModuleDefinition {
     Name("ExpoImage")
+
+    OnCreate {
+      ImageModule.registerCoders()
+    }
 
     View(ImageView.self) {
       Events(
@@ -17,8 +24,13 @@ public final class ImageModule: Module {
         "onLoad"
       )
 
-      Prop("source") { (view, source: ImageSource) in
-        view.source = source
+      Prop("source") { (view, sourceSet: Either<ImageSource, [ImageSource]>) in
+        if let source: ImageSource = sourceSet.get() {
+          view.sources = [source]
+        }
+        if let sources: [ImageSource] = sourceSet.get() {
+          view.sources = sources
+        }
       }
 
       Prop("resizeMode") { (view, resizeMode: ImageResizeMode) in
@@ -27,6 +39,18 @@ public final class ImageModule: Module {
 
       Prop("transition") { (view, transition: ImageTransition?) in
         view.transition = transition
+      }
+
+      Prop("blurRadius") { (view, blurRadius: Double?) in
+        view.blurRadius = blurRadius ?? .zero
+      }
+
+      Prop("tintColor") { (view, tintColor: UIColor?) in
+        view.imageTintColor = tintColor ?? .clear
+      }
+
+      OnViewDidUpdateProps { view in
+        view.reload()
       }
     }
 
@@ -37,5 +61,12 @@ public final class ImageModule: Module {
     Function("clearDiskCache") {
       SDImageCache.shared.clearDisk()
     }
+  }
+
+  static func registerCoders() {
+    SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
+    SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
+    SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
+    SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)
   }
 }

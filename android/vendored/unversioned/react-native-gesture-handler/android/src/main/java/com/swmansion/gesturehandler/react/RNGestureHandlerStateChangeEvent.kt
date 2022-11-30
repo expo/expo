@@ -11,7 +11,7 @@ import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
-import com.swmansion.gesturehandler.GestureHandler
+import com.swmansion.gesturehandler.core.GestureHandler
 
 class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHandlerStateChangeEvent>() {
   private var extraData: WritableMap? = null
@@ -57,16 +57,16 @@ class RNGestureHandlerStateChangeEvent private constructor() : Event<RNGestureHa
         init(handler, newState, oldState, dataExtractor)
       }
 
-    fun <T: GestureHandler<T>> createEventData(
+    fun <T : GestureHandler<T>> createEventData(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
       newState: Int,
       oldState: Int,
     ): WritableMap = Arguments.createMap().apply {
-        dataExtractor?.extractEventData(handler, this)
-        putInt("handlerTag", handler.tag)
-        putInt("state", newState)
-        putInt("oldState", oldState)
-      }
+      dataExtractor?.extractEventData(handler, this)
+      putInt("handlerTag", handler.tag)
+      putInt("state", newState)
+      putInt("oldState", oldState)
+    }
   }
 }

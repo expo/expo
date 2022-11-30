@@ -1,4 +1,4 @@
-import React, { useEffect, useState, PropsWithChildren } from 'react';
+import { useEffect, useState, PropsWithChildren } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
 import { Snippet } from '../Snippet';

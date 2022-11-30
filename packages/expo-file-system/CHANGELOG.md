@@ -10,6 +10,19 @@
 
 ### 💡 Others
 
+- Extract nested object definitions to the separate types, which adds: `DeletingOptions`, `InfoOptions`, `RelocatingOptions` and `MakeDirectoryOptions` types. ([#20103](https://github.com/expo/expo/pull/20103) by [@Simek](https://github.com/Simek))
+- Simplify the way in which types are exported from the package. ([#20103](https://github.com/expo/expo/pull/20103) by [@Simek](https://github.com/Simek))
+
+## 15.1.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 15.1.0 — 2022-10-25
+
+### 🎉 New features
+
+- Added `DirectoriesModule` to expo-file-system on Android as a temporary solution to fix cache directories being incorrect in new Sweet API modules. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
+
 ## 15.0.0 — 2022-10-06
 
 ### 🛠 Breaking changes

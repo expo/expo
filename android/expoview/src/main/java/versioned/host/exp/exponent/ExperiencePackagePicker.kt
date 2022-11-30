@@ -15,7 +15,7 @@ import expo.modules.constants.ConstantsPackage
 import expo.modules.contacts.ContactsPackage
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
-import expo.modules.device.DevicePackage
+import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerPackage
 import expo.modules.easclient.EASClientModule
 import expo.modules.errorrecovery.ErrorRecoveryPackage
@@ -25,7 +25,7 @@ import expo.modules.firebase.analytics.FirebaseAnalyticsPackage
 import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
-import expo.modules.haptics.HapticsPackage
+import expo.modules.haptics.HapticsModule
 import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorPackage
 import expo.modules.imagepicker.ImagePickerModule
@@ -41,7 +41,7 @@ import expo.modules.mailcomposer.MailComposerPackage
 import expo.modules.manifests.core.Manifest
 import expo.modules.medialibrary.MediaLibraryPackage
 import expo.modules.navigationbar.NavigationBarPackage
-import expo.modules.network.NetworkPackage
+import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.print.PrintPackage
@@ -55,7 +55,7 @@ import expo.modules.sms.SMSPackage
 import expo.modules.speech.SpeechPackage
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.sqlite.SQLitePackage
-import expo.modules.storereview.StoreReviewPackage
+import expo.modules.storereview.StoreReviewModule
 import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
@@ -73,7 +73,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    DevicePackage(),
     DocumentPickerPackage(),
     ErrorRecoveryPackage(),
     FaceDetectorPackage(),
@@ -82,7 +81,6 @@ object ExperiencePackagePicker : ModulesProvider {
     FirebaseAnalyticsPackage(),
     FontLoaderPackage(),
     GLPackage(),
-    HapticsPackage(),
     ImageLoaderPackage(),
     ImageManipulatorPackage(),
     IntentLauncherPackage(),
@@ -92,12 +90,10 @@ object ExperiencePackagePicker : ModulesProvider {
     MailComposerPackage(),
     MediaLibraryPackage(),
     NavigationBarPackage(),
-    NetworkPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
     PrintPackage(),
     SMSPackage(),
-    StoreReviewPackage(),
     SQLitePackage(),
     ScreenCapturePackage(),
     ScreenOrientationPackage(),
@@ -132,11 +128,15 @@ object ExperiencePackagePicker : ModulesProvider {
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,
+    DeviceModule::class.java,
     EASClientModule::class.java,
+    HapticsModule::class.java,
     ImagePickerModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
+    NetworkModule::class.java,
     RandomModule::class.java,
+    StoreReviewModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,
   )

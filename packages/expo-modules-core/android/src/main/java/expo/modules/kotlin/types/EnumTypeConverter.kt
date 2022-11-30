@@ -1,12 +1,15 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.exception.EnumNoSuchValueException
 import expo.modules.kotlin.exception.IncompatibleArgTypeException
 import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.logger
 import expo.modules.kotlin.toKType
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 
 class EnumTypeConverter(
@@ -23,6 +26,12 @@ class EnumTypeConverter(
 
   private val primaryConstructor = requireNotNull(enumClass.primaryConstructor) {
     "Cannot convert js value to enum without the primary constructor"
+  }
+
+  init {
+    if (!enumClass.isSubclassOf(Enumerable::class)) {
+      logger.warn("Enum '$enumClass' should inherit from ${Enumerable::class}.")
+    }
   }
 
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forEnum()
@@ -65,9 +74,8 @@ class EnumTypeConverter(
     stringRepresentation: String,
     enumConstants: Array<out Enum<*>>
   ): Enum<*> {
-    return requireNotNull(
-      enumConstants.find { it.name == stringRepresentation }
-    ) { "Couldn't convert '$stringRepresentation' to ${enumClass.simpleName}" }
+    return enumConstants.find { it.name == stringRepresentation }
+      ?: throw EnumNoSuchValueException(enumClass, enumConstants, stringRepresentation)
   }
 
   /**

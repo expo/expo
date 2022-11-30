@@ -1,24 +1,28 @@
 # Changelog
 
-### 🎉 New features
-
-- Added `requireAuthentication` and `authenticationPrompt` parameters to `SecureStoreOptions` options object used in `SecureStore.{deleteItemAsync, getItemAsync, setItemAsync}` methods to enable user authentication while accessing Secure Store. ([#14512](https://github.com/expo/expo/pull/14512) by [@j-piasecki](https://github.com/j-piasecki))
-
 ## Unpublished
 
 ### 🛠 Breaking changes
-
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed missing `code` and `message` in promise errors. ([#19555](https://github.com/expo/expo/pull/19555) by [@tsapeta](https://github.com/tsapeta))
+
 ### ⚠️ Notices
 
 - Changed `requireAuthentication` option to also require biometrics on iOS (matches Android behavior) ([#18591](https://github.com/expo/expo/pull/18591) by [@stefan-schweiger](https://github.com/stefan-schweiger))
-
-### 💡 Others
 
 ## 11.3.0 — 2022-07-07
 

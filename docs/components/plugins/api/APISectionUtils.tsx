@@ -13,6 +13,7 @@ import { LI, UL, OL } from '~/components/base/list';
 import { B, P } from '~/components/base/paragraph';
 import {
   CommentData,
+  MethodDefinitionData,
   MethodParamData,
   MethodSignatureData,
   PropData,
@@ -28,7 +29,7 @@ import { A } from '~/ui/components/Text';
 const isDev = process.env.NODE_ENV === 'development';
 
 export enum TypeDocKind {
-  LegacyEnum = 4,
+  Namespace = 4,
   Enum = 8,
   Variable = 32,
   Function = 64,
@@ -37,6 +38,7 @@ export enum TypeDocKind {
   Property = 1024,
   Method = 2048,
   Parameter = 32768,
+  Accessor = 262144,
   TypeAlias = 4194304,
 }
 
@@ -93,6 +95,7 @@ const nonLinkableTypes = [
   'ComponentClass',
   'E',
   'EventSubscription',
+  'Listener',
   'NativeSyntheticEvent',
   'ParsedQs',
   'ServiceActionResult',
@@ -131,6 +134,7 @@ const hardcodedTypeLinks: Record<string, string> = {
   AVPlaybackStatusToSet: '/versions/latest/sdk/av/#avplaybackstatustoset',
   Blob: 'https://developer.mozilla.org/en-US/docs/Web/API/Blob',
   Date: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date',
+  DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
   ExpoConfig:
@@ -152,6 +156,8 @@ const hardcodedTypeLinks: Record<string, string> = {
 
 const renderWithLink = (name: string, type?: string) => {
   const replacedName = replaceableTypes[name] ?? name;
+
+  if (name.includes('.')) return name;
 
   return nonLinkableTypes.includes(replacedName) ? (
     replacedName + (type === 'array' ? '[]' : '')
@@ -314,7 +320,7 @@ export const resolveTypeName = (
       return queryType.name;
     } else if (type === 'literal' && typeof value === 'boolean') {
       return `${value}`;
-    } else if (type === 'literal' && value) {
+    } else if (type === 'literal' && (value || (typeof value === 'number' && value === 0))) {
       return `'${value}'`;
     } else if (type === 'intersection' && types) {
       return types
@@ -329,6 +335,8 @@ export const resolveTypeName = (
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
       return operator || 'undefined';
+    } else if (type === 'intrinsic') {
+      return name || 'undefined';
     } else if (value === null) {
       return 'null';
     }
@@ -361,7 +369,6 @@ export const renderParamRow = ({
       <Cell>
         <CommentTextBlock
           comment={comment}
-          components={mdInlineComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />
@@ -483,6 +490,21 @@ export const getTagNamesList = (comment?: CommentData) =>
     ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
+
+export const getMethodName = (
+  method: MethodDefinitionData,
+  apiName?: string,
+  name?: string,
+  parameters?: MethodParamData[]
+) => {
+  const isProperty = method.kind === TypeDocKind.Property && !parameters?.length;
+  const methodName = ((apiName && `${apiName}.`) ?? '') + (method.name || name);
+  if (!isProperty) {
+    return `${methodName}(${parameters ? listParams(parameters) : ''})`;
+  }
+
+  return methodName;
+};
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 

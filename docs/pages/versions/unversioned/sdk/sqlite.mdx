@@ -7,23 +7,43 @@ packageName: 'expo-sqlite'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { GithubIcon } from '@expo/styleguide';
 
-**`expo-sqlite`** gives your app access to a database that can be queried through a [WebSQL](https://www.w3.org/TR/webdatabase/)-like API. The database is persisted across restarts of your app.
-
-An [example to do list app](https://github.com/expo/examples/tree/master/with-sqlite) is available that uses this module for storage.
+`expo-sqlite` gives your app access to a database that can be queried through a [WebSQL](https://www.w3.org/TR/webdatabase/)-like API. The database is persisted across restarts of your app.
 
 <PlatformsSection android emulator ios simulator />
 
-## Guides
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+<BoxLink
+  title="To-do list app"
+  description="An example to-do list app is available that uses this module for storage."
+  href="https://github.com/expo/examples/tree/master/with-sqlite"
+  Icon={GithubIcon}
+/>
 
 ### Importing an existing database
 
-In order to open a new SQLite database using an existing `.db` file you already have, you need to do three things:
+To open a new SQLite database using an existing `.db` file you already have, follow the steps below:
 
-- `npx expo install expo-file-system expo-asset`
-- create a **metro.config.js** file in the root of your project with the following contents ([curious why? read here](/guides/customizing-metro.mdx#adding-more-file-extensions-to--assetexts)):
+<Step label="1">
+Install `expo-file-system` and `expo-asset` modules:
 
-```ts
+<Terminal cmd={['$ npx expo install expo-file-system expo-asset']} />
+
+</Step>
+
+<Step label="2">
+Create a **metro.config.js** file at the root of your project with the following contents to include [extra asset extensions](/guides/customizing-metro/#adding-more-file-extensions-to--assetexts):
+
+```js
 const { getDefaultConfig } = require('expo/metro-config');
 
 const defaultConfig = getDefaultConfig(__dirname);
@@ -33,7 +53,11 @@ defaultConfig.resolver.assetExts.push('db');
 module.exports = defaultConfig;
 ```
 
-- Use the following function (or similar) to open your database:
+</Step>
+
+<Step label="3">
+
+Use the following function (or similar) to open your database:
 
 ```ts
 async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDatabase> {
@@ -48,9 +72,11 @@ async function openDatabase(pathToDatabaseFile: string): Promise<SQLite.WebSQLDa
 }
 ```
 
+</Step>
+
 ### Executing statements outside of a transaction
 
-> Please note that you should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions (like eg. `PRAGMA foreign_keys = ON;`).
+> You should use this kind of execution only when it is necessary. For instance, when code is a no-op within transactions. Example: `PRAGMA foreign_keys = ON;`.
 
 ```js
 const db = SQLite.openDatabase('dbName', version);
@@ -59,10 +85,6 @@ db.exec([{ sql: 'PRAGMA foreign_keys = ON;', args: [] }], false, () =>
   console.log('Foreign keys turned on')
 );
 ```
-
-## Installation
-
-<APIInstallSection />
 
 ## API
 

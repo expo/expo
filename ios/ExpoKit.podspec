@@ -3,7 +3,7 @@
 
 Pod::Spec.new do |s|
   s.name = "ExpoKit"
-  s.version = "46.0.0"
+  s.version = "47.0.0"
   s.summary = 'ExpoKit'
   s.description = 'ExpoKit allows native projects to integrate with the Expo SDK.'
   s.homepage = 'http://docs.expo.io'
@@ -39,7 +39,7 @@ Pod::Spec.new do |s|
     ss.dependency 'CocoaLumberjack', '~> 3.5.3'
     ss.dependency 'GoogleMaps', '~> 3.3'
     ss.dependency 'Google-Maps-iOS-Utils', '~> 2.1.0'
-    ss.dependency 'lottie-ios', '~> 3.4.0'
+    ss.dependency 'lottie-ios', '~> 3.2.3'
     ss.dependency 'JKBigInteger', '0.0.6'
     ss.dependency 'MBProgressHUD', '~> 1.2.0'
     ss.dependency 'React-Core' # explicit dependency required for CocoaPods >= 1.5.0

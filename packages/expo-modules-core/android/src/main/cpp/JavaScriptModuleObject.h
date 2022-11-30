@@ -4,6 +4,7 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
+#include <react/bridging/LongLivedObject.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <jni/JCallback.h>
 
@@ -104,6 +105,8 @@ public:
   public:
     HostObject(JavaScriptModuleObject *);
 
+  ~HostObject() override;
+
     jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
 
     void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) override;
@@ -113,6 +116,9 @@ public:
   private:
     JavaScriptModuleObject *jsModule;
   };
+
+private:
+  explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis);
 
 private:
   friend HybridBase;
@@ -139,7 +145,10 @@ private:
    */
   std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
 
-  explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
-    : javaPart_(jni::make_global(jThis)) {}
+  /**
+   * The `LongLivedObjectCollection` to hold `LongLivedObject` (callbacks or promises) for this module.
+   */
+  std::shared_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
+
 };
 } // namespace expo
