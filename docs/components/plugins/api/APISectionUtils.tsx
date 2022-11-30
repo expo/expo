@@ -358,7 +358,6 @@ export const renderParamRow = ({
   defaultValue,
 }: MethodParamData): JSX.Element => {
   const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
-  console.warn(comment);
   return (
     <Row key={`param-${name}`}>
       <Cell>
