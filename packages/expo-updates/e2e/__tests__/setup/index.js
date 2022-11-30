@@ -16,6 +16,7 @@ const runtimeVersion = '1.0.0';
  * $ export UPDATES_PORT=4747
  * $ export EXPO_REPO_ROOT=<path to local expo repo>
  * $ export ARTIFACTS_DEST=<path to any temp artifacts dir>
+ * $ export TEST_PROJECT_ROOT=<path to any temp dir for the project root>
  *
  * Then execute this file to setup the test project and builds.
  *
@@ -35,7 +36,7 @@ const runtimeVersion = '1.0.0';
       'Missing one or more environment variables; see instructions in e2e/__tests__/setup/index.js'
     );
   }
-  const projectRoot = path.join(workingDir, 'updates-e2e');
+  const projectRoot = process.env.TEST_PROJECT_ROOT || path.join(workingDir, 'updates-e2e');
   const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
 
   await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin });

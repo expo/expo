@@ -40,6 +40,34 @@ final class EitherSpec: ExpoSpec {
       it("throws when converting from neither type") {
         expect({ try Either<String, Int>.convert(from: true) }).to(throwError(errorType: NeitherTypeException.self))
       }
+
+      it("supports arrays") {
+        let either = try Either<String, [String]>.convert(from: ["foo"])
+        let value: [String]? = either.get()
+
+        expect(either.is([String].self)) == true
+        expect(value) == ["foo"]
+      }
+
+      it("supports convertibles (UIColor)") {
+        let either = try Either<Int, UIColor>.convert(from: "blue")
+        let color: UIColor? = either.get()
+
+        expect(either.is(UIColor.self)) == true
+        expect(color?.cgColor.components) == CGColor(red: 0, green: 0, blue: 1, alpha: 1).components
+      }
+
+      it("supports records") {
+        struct TestRecord: Record {
+          @Field
+          var foo: String
+        }
+        let either = try Either<String, TestRecord>.convert(from: ["foo": "bar"])
+        let record: TestRecord? = either.get()
+
+        expect(either.is(TestRecord.self)) == true
+        expect(record?.foo) == "bar"
+      }
     }
     describe("EitherOfThree") {
       it("is the third type") {

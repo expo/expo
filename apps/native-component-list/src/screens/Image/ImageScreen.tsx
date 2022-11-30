@@ -18,6 +18,27 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageFlashListScreen'));
     },
   },
+  {
+    name: 'Image formats',
+    route: 'image/formats',
+    getComponent() {
+      return optionalRequire(() => require('./ImageFormatsScreen'));
+    },
+  },
+  {
+    name: 'Resizable image',
+    route: 'image/resizable',
+    getComponent() {
+      return optionalRequire(() => require('./ImageResizableScreen'));
+    },
+  },
+  {
+    name: 'Events',
+    route: 'image/events',
+    getComponent() {
+      return optionalRequire(() => require('./ImageEventsScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {

@@ -9,7 +9,7 @@ public final class ImageView: ExpoView {
   let sdImageView = SDAnimatedImageView(frame: .zero)
   let imageManager = SDWebImageManager()
 
-  var source: ImageSource?
+  var sources: [ImageSource]?
 
   var resizeMode: ImageResizeMode = .cover {
     didSet {
@@ -18,6 +18,10 @@ public final class ImageView: ExpoView {
   }
 
   var transition: ImageTransition?
+
+  var blurRadius: CGFloat = 0.0
+
+  var imageTintColor: UIColor = .clear
 
   // MARK: - Events
 
@@ -29,7 +33,16 @@ public final class ImageView: ExpoView {
 
   let onLoad = EventDispatcher()
 
-  // MARK: - ExpoView
+  // MARK: - View
+
+  public override var bounds: CGRect {
+    didSet {
+      // Reload the image when the bounds size has changed and the view is mounted.
+      if oldValue.size != bounds.size && window != nil {
+        reload()
+      }
+    }
+  }
 
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
@@ -39,13 +52,27 @@ public final class ImageView: ExpoView {
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     sdImageView.layer.masksToBounds = true
 
+    // Apply trilinear filtering to smooth out mis-sized images.
+    sdImageView.layer.magnificationFilter = .trilinear
+    sdImageView.layer.minificationFilter = .trilinear
+
     addSubview(sdImageView)
+  }
+
+  public override func didMoveToWindow() {
+    if window == nil {
+      // Cancel pending requests when the view is unmounted.
+      imageManager.cancelAll()
+    } else if !bounds.isEmpty {
+      // Reload the image after mounting the view with non-empty bounds.
+      reload()
+    }
   }
 
   // MARK: - Implementation
 
   func reload() {
-    guard let source = source else {
+    guard let source = bestSource else {
       renderImage(nil)
       return
     }
@@ -62,6 +89,13 @@ public final class ImageView: ExpoView {
     if let headers = source.headers {
       context[SDWebImageContextOption.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headers)
     }
+
+    context[SDWebImageContextOption.imageTransformer] = createTransformPipeline()
+
+    // Assets from the bundler have `scale` prop which needs to be passed to the context,
+    // otherwise they would be saved in cache with scale = 1.0 which may result in
+    // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
+    context[.imageScaleFactor] = source.scale
 
     onLoadStart([:])
 
@@ -112,15 +146,24 @@ public final class ImageView: ExpoView {
 
   // MARK: - Processing
 
+  private func createTransformPipeline() -> SDImagePipelineTransformer {
+    let transformers: [SDImageTransformer] = [
+      SDImageBlurTransformer(radius: blurRadius),
+      SDImageTintTransformer(color: imageTintColor)
+    ]
+    return SDImagePipelineTransformer(transformers: transformers)
+  }
+
   private func processImage(_ image: UIImage?) -> UIImage? {
-    guard let image = image else {
+    guard let image = image, !bounds.isEmpty else {
       return nil
     }
     if resizeMode == .repeat {
       return image.resizableImage(withCapInsets: .zero, resizingMode: .tile)
-    } else {
-      return image.resizableImage(withCapInsets: .zero, resizingMode: .stretch)
     }
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+
+    return maybeDownscale(image: image, frameSize: frame.size, scale: scale)
   }
 
   // MARK: - Rendering
@@ -134,5 +177,37 @@ public final class ImageView: ExpoView {
     } else {
       sdImageView.image = image
     }
+  }
+
+  // MARK: - Helpers
+
+  /**
+   The image source that fits best into the view bounds, that is the one with the closest number of pixels.
+   May be `nil` if there are no sources available or the view bounds size is zero.
+   */
+  var bestSource: ImageSource? {
+    guard let sources = sources, !sources.isEmpty else {
+      return nil
+    }
+    if bounds.isEmpty, window == nil {
+      return nil
+    }
+    if sources.count == 1 {
+      return sources.first
+    }
+    let scale = window?.screen.scale ?? UIScreen.main.scale
+    var bestSource: ImageSource?
+    var bestFit = Double.infinity
+    let targetPixelCount = bounds.width * bounds.height * scale * scale
+
+    for source in sources {
+      let fit = abs(1 - (source.pixelCount / targetPixelCount))
+
+      if fit < bestFit {
+        bestSource = source
+        bestFit = fit
+      }
+    }
+    return bestSource
   }
 }

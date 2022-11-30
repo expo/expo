@@ -1,26 +1,29 @@
 package expo.modules.image
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Shader
 import android.graphics.drawable.Drawable
 import androidx.appcompat.widget.AppCompatImageView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import com.bumptech.glide.integration.webp.decoder.WebpDrawable
-import com.bumptech.glide.integration.webp.decoder.WebpDrawableTransformation
 import com.bumptech.glide.load.model.GlideUrl
-import com.bumptech.glide.load.resource.bitmap.FitCenter
+import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
+import com.bumptech.glide.request.target.DrawableImageViewTarget
+import com.bumptech.glide.request.target.SizeReadyCallback
+import com.bumptech.glide.request.target.Target
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
 import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ImageResizeMode
-import expo.modules.image.events.ImageLoadEventsManager
+import expo.modules.image.events.GlideRequestListener
+import expo.modules.image.events.OkHttpProgressListener
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
@@ -28,7 +31,6 @@ import expo.modules.image.records.ImageProgressEvent
 import expo.modules.image.records.SourceMap
 import expo.modules.image.svg.SVGSoftwareLayerSetter
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import jp.wasabeef.glide.transformations.BlurTransformation
@@ -41,18 +43,19 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal val onError by EventDispatcher<ImageErrorEvent>()
   internal val onLoad by EventDispatcher<ImageLoadEvent>()
 
-  private val reactContext: Context
-    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val activity: Activity
+    get() = appContext.currentActivity ?: throw MissingActivity()
 
-  internal val imageView = ExpoImageView(
-    reactContext.applicationContext,
-    getOrCreateRequestManager(appContext, reactContext),
-    ImageLoadEventsManager(
+  internal val imageView = run {
+    val activity = activity
+    ExpoImageView(
+      activity,
+      getOrCreateRequestManager(appContext, activity),
       WeakReference(this)
-    )
-  ).apply {
-    layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-    addView(this)
+    ).apply {
+      layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+      addView(this)
+    }
   }
 
   companion object {
@@ -61,17 +64,17 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
     fun getOrCreateRequestManager(
       appContext: AppContext,
-      reactContext: Context
+      activity: Activity
     ): RequestManager = synchronized(Companion) {
       val cachedRequestManager = requestManager
-        ?: return createNewRequestManager(reactContext).also {
+        ?: return createNewRequestManager(activity).also {
           requestManager = it
           appContextRef = WeakReference(appContext)
         }
 
-      // Request manager was created using different app context
+      // Request manager was created using different activity
       if (appContextRef.get() != appContext) {
-        return createNewRequestManager(reactContext).also {
+        return createNewRequestManager(activity).also {
           requestManager = it
           appContextRef = WeakReference(appContext)
         }
@@ -80,8 +83,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       return cachedRequestManager
     }
 
-    private fun createNewRequestManager(reactContext: Context): RequestManager =
-      Glide.with(reactContext).addDefaultRequestListener(SVGSoftwareLayerSetter())
+    private fun createNewRequestManager(activity: Activity): RequestManager =
+      Glide.with(activity).addDefaultRequestListener(SVGSoftwareLayerSetter())
   }
 }
 
@@ -89,7 +92,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 class ExpoImageView(
   context: Context,
   private val requestManager: RequestManager,
-  private val eventsManager: ImageLoadEventsManager
+  private val expoImageViewWrapper: WeakReference<ExpoImageViewWrapper>
 ) : AppCompatImageView(context) {
   private val progressInterceptor = OkHttpClientProgressInterceptor
 
@@ -143,6 +146,7 @@ class ExpoImageView(
     set(value) {
       field = value
       scaleType = value.getScaleType()
+      propsChanged = true
     }
 
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
@@ -180,6 +184,14 @@ class ExpoImageView(
     borderDrawable.setBorderStyle(style)
   }
 
+  internal fun setBackgroundColor(color: Int?) {
+    if (color == null) {
+      setBackgroundColor(Color.TRANSPARENT)
+    } else {
+      setBackgroundColor(color)
+    }
+  }
+
   internal fun setTintColor(color: Int?) {
     color?.let { setColorFilter(it, PorterDuff.Mode.SRC_IN) } ?: clearColorFilter()
   }
@@ -200,8 +212,12 @@ class ExpoImageView(
       loadedSource = sourceToLoad
       val options = sourceMap?.createOptions() ?: RequestOptions()
       val propOptions = createPropOptions()
-      progressInterceptor.registerProgressListener(sourceToLoad.toStringUrl(), eventsManager)
-      eventsManager.onLoadStarted()
+      progressInterceptor.registerProgressListener(
+        sourceToLoad.toStringUrl(),
+        OkHttpProgressListener(expoImageViewWrapper)
+      )
+
+      expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
 
       val defaultSourceToLoad = defaultSourceMap?.createGlideUrl()
       requestManager
@@ -209,24 +225,14 @@ class ExpoImageView(
         .load(sourceToLoad)
         .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
         .apply(options)
-        .addListener(eventsManager)
-        .run {
-          val fitCenter = FitCenter()
-          optionalTransform(fitCenter)
-          optionalTransform(WebpDrawable::class.java, WebpDrawableTransformation(fitCenter))
-        }
+        .downsample(DownsampleStrategy.NONE)
+        .addListener(GlideRequestListener(expoImageViewWrapper))
         .apply(propOptions)
-        .into(this)
-
-      requestManager
-        .`as`(BitmapFactory.Options::class.java)
-        // Remove any default listeners from this request
-        // (an example would be an SVGSoftwareLayerSetter
-        // added in ExpoImageViewManager).
-        // This request won't load the image, only the size.
-        .listener(null)
-        .load(sourceToLoad)
-        .into(eventsManager)
+        .into(object : DrawableImageViewTarget(this) {
+          override fun getSize(cb: SizeReadyCallback) {
+            cb.onSizeReady(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+          }
+        })
     }
   }
 

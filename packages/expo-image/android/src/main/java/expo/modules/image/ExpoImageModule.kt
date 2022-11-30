@@ -13,6 +13,7 @@ import expo.modules.image.enums.ImageResizeMode
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.views.ViewDefinitionBuilder
@@ -45,6 +46,21 @@ class ExpoImageModule : Module() {
           promise.reject(ImagePrefetchFailure(e.message ?: e.toString()))
         }
       }
+    }
+
+    AsyncFunction("clearMemoryCache") {
+      val activity = appContext.currentActivity ?: return@AsyncFunction false
+      Glide.get(activity).clearMemory()
+      return@AsyncFunction true
+    }.runOnQueue(Queues.MAIN)
+
+    AsyncFunction("clearDiskCache") {
+      val activity = appContext.currentActivity ?: return@AsyncFunction false
+      activity.let {
+        Glide.get(activity).clearDiskCache()
+      }
+
+      return@AsyncFunction true
     }
 
     OnDestroy {
@@ -124,6 +140,10 @@ class ExpoImageModule : Module() {
 
       Prop("borderStyle") { view: ExpoImageViewWrapper, borderStyle: String? ->
         view.imageView.setBorderStyle(borderStyle)
+      }
+
+      Prop("backgroundColor") { view: ExpoImageViewWrapper, color: Int? ->
+        view.imageView.setBackgroundColor(color)
       }
 
       Prop("tintColor") { view: ExpoImageViewWrapper, color: Int? ->

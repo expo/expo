@@ -24,3 +24,5 @@ export declare function getUpdatesCheckOnLaunch(config: Pick<ExpoConfigUpdates, 
 export declare function getUpdatesCodeSigningCertificate(projectRoot: string, config: Pick<ExpoConfigUpdates, 'updates'>): string | undefined;
 export declare function getUpdatesCodeSigningMetadata(config: Pick<ExpoConfigUpdates, 'updates'>): NonNullable<ExpoConfigUpdates['updates']>['codeSigningMetadata'];
 export declare function getUpdatesCodeSigningMetadataStringified(config: Pick<ExpoConfigUpdates, 'updates'>): string | undefined;
+export declare function getUpdatesRequestHeaders(config: Pick<ExpoConfigUpdates, 'updates'>): NonNullable<ExpoConfigUpdates['updates']>['requestHeaders'];
+export declare function getUpdatesRequestHeadersStringified(config: Pick<ExpoConfigUpdates, 'updates'>): string | undefined;

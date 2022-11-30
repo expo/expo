@@ -454,5 +454,5 @@ export declare type LocationPermissionResponse = PermissionResponse & {
     ios?: PermissionDetailsLocationIOS;
     android?: PermissionDetailsLocationAndroid;
 };
-export { PermissionResponse };
+export type { PermissionResponse };
 //# sourceMappingURL=Location.types.d.ts.map
