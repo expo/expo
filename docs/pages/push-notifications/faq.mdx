@@ -112,7 +112,55 @@ When your push notification credentials have expired, run `eas credentials`, cho
 
 Check the `details` property of the returned push ticket or receipt for more information that you can use to debug further. [Read here for common error code responses and their associated solutions](/push-notifications/sending-notifications/#errors).
 
+### Push token fetched takes a long time on iOS
+
+`getDevicePushTokenAsync` and `getExpoPushTokenAsync` can sometimes take a long time to resolve on iOS. This is outside of `expo-notifications`'s control, as stated in Apple's [Troubleshooting Push Notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html) technical note:
+
+> This is not necessarily an error condition. The system may not have Internet connectivity at all because it is out of range of any cell towers or Wi-Fi access points, or it may be in airplane mode. Instead of treating this as an error, your app should continue normally, disabling only that functionality that relies on push notifications.
+
+As mentioned, the most common reasons for this issue are either an invalid Internet connection (fetching a push token requires an Internet connection to register the device with the service provider) or an invalid configuration of your App ID or Provisioning Profile.
+
+Here are some ways our community members have resolved this issue:
+
+<Collapsible summary={<span>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></span>}>
+
+Read Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This is the single most reliable source of information on this problem. To help you grasp what they're suggesting:
+
+- Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling the firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
+- **Bare React Native apps** must [manually enable the **Push Notifications** capability](/build-reference/ios-capabilities#manual-setup). If you have trouble setting this up, refer to [this Stack Overflow answer](https://stackoverflow.com/a/10791240/1123156). You may also want to try to debug this even further by logging persistent connection debug information as outlined by [this Stack Overflow answer](https://stackoverflow.com/a/8036052/1123156).
+
+</Collapsible>
+
+<Collapsible summary="Try again in a little while">
+
+- APNS servers near the device may be down as indicated by [this forum thread](https://developer.apple.com/forums/thread/52224). Take a walk and try again later!
+- Try again in a few days as suggested by [this GitHub comment](https://github.com/expo/expo/issues/10369#issuecomment-717872956).
+
+</Collapsible>
+
+<Collapsible summary="Disable network sharing on your device">
+
+You may need to disable network sharing as this may impact the registration as suggested by [this Stack Overflow answer](https://stackoverflow.com/a/59156989/1123156).
+
+</Collapsible>
+
+<Collapsible summary="Restart your device">
+
+If you just changed the APNS servers where the app should be registering (by installing a TestFlight build over an Xcode build on the same device) you may need to restart your device as suggested by [this Stack Overflow answer](https://stackoverflow.com/a/59864028/1123156).
+
+</Collapsible>
+
+<Collapsible summary="Setup your device with a SIM card">
+
+If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this Stack Overflow answer](https://stackoverflow.com/a/19432504/1123156).
+
+</Collapsible>
+
 ## Miscellaneous
+
+### Sending notifications directly through FCM and APNs
+
+If you are not using [Expo's push notification service](/push-notifications/sending-notifications) and instead, would like to communicate with Google and Apple directly, see [Send notifications with FCM & APNs](/push-notifications/sending-notifications-custom), paying **special attention to the payload formats**, since providing different formats can result in unexpected behavior on both platforms.
 
 ### Notification icon on Android is a grey or white square
 
