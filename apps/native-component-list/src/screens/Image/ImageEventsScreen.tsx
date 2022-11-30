@@ -10,6 +10,8 @@ export default function ImageEventsScreen() {
   const [uri, setSourceUri] = useState(getRandomImageUri());
   const [logs, setLogs] = useState<string[]>([]);
 
+  const generateSeed = () => 1 + Math.round(Math.random() * 2137);
+
   const onLoadStart = useCallback(() => {
     logs.push('🚀 onLoadStart');
     setLogs([...logs]);
@@ -50,7 +52,7 @@ export default function ImageEventsScreen() {
   }, []);
 
   const loadWithError = useCallback(() => {
-    setSourceUri('https://expo.dev/');
+    setSourceUri(`https://expo.dev/?r=${generateSeed()}`);
     setLogs([]);
   }, []);
 
@@ -77,8 +79,7 @@ export default function ImageEventsScreen() {
 }
 
 function getRandomImageUri(): string {
-  const seed = 1 + Math.round(Math.random() * 2137);
-  return `https://picsum.photos/seed/${seed}/3000/2000`;
+  return `https://picsum.photos/seed/${generateSeed()}/3000/2000`;
 }
 
 const styles = StyleSheet.create({
