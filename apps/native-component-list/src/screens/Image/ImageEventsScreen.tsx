@@ -6,11 +6,11 @@ import Button from '../../components/Button';
 import ConsoleBox from '../../components/ConsoleBox';
 import { Colors } from '../../constants';
 
+const generateSeed = () => 1 + Math.round(Math.random() * 2137);
+
 export default function ImageEventsScreen() {
   const [uri, setSourceUri] = useState(getRandomImageUri());
   const [logs, setLogs] = useState<string[]>([]);
-
-  const generateSeed = () => 1 + Math.round(Math.random() * 2137);
 
   const onLoadStart = useCallback(() => {
     logs.push('🚀 onLoadStart');
