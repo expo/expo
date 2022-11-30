@@ -257,6 +257,12 @@ module.exports = {
         ExpoCrypto: [
           { name: 'digestString', argumentsCount: 3, key: 'digestString' },
           { name: 'digestStringAsync', key: 'digestStringAsync', argumentsCount: 3 },
+          { name: 'getRandomBase64String', key: 'getRandomBase64String', argumentsCount: 1 },
+          {
+            name: 'getRandomBase64StringAsync',
+            key: 'getRandomBase64StringAsync',
+            argumentsCount: 1,
+          },
         ],
         ExpoDevice: [
           { name: 'getDeviceTypeAsync', argumentsCount: 0, key: 0 },
