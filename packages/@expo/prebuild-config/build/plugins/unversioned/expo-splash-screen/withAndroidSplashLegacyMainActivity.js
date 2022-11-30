@@ -5,78 +5,57 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.setSplashScreenLegacyMainActivity = setSplashScreenLegacyMainActivity;
 exports.withAndroidSplashLegacyMainActivity = void 0;
-
 function _configPlugins() {
   const data = require("@expo/config-plugins");
-
   _configPlugins = function () {
     return data;
   };
-
   return data;
 }
-
 function _codeMod() {
   const data = require("@expo/config-plugins/build/android/codeMod");
-
   _codeMod = function () {
     return data;
   };
-
   return data;
 }
-
 function _generateCode() {
   const data = require("@expo/config-plugins/build/utils/generateCode");
-
   _generateCode = function () {
     return data;
   };
-
   return data;
 }
-
 function _debug() {
   const data = _interopRequireDefault(require("debug"));
-
   _debug = function () {
     return data;
   };
-
   return data;
 }
-
 function _getAndroidSplashConfig() {
   const data = require("./getAndroidSplashConfig");
-
   _getAndroidSplashConfig = function () {
     return data;
   };
-
   return data;
 }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:android:mainActivity');
 
-const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:android:mainActivity'); // DO NOT CHANGE
-
+// DO NOT CHANGE
 const SHOW_SPLASH_ID = 'expo-splash-screen-mainActivity-onCreate-show-splash';
-
 const withAndroidSplashLegacyMainActivity = config => {
   return (0, _configPlugins().withMainActivity)(config, config => {
     config.modResults.contents = setSplashScreenLegacyMainActivity(config, config.modResults.contents, config.modResults.language);
     return config;
   });
 };
-
 exports.withAndroidSplashLegacyMainActivity = withAndroidSplashLegacyMainActivity;
-
 function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
   var _config$androidStatus;
-
   debug(`Modify with language: "${language}"`);
   const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
-
   if (!splashConfig) {
     // Remove our generated code safely...
     const mod = (0, _generateCode().removeContents)({
@@ -84,15 +63,12 @@ function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
       tag: SHOW_SPLASH_ID
     });
     mainActivity = mod.contents;
-
     if (mod.didClear) {
       debug('Removed SplashScreen.show()');
     }
-
     return mainActivity;
-  } // TODO: Translucent is weird
-
-
+  }
+  // TODO: Translucent is weird
   const statusBarTranslucent = !!((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.translucent);
   const {
     resizeMode
@@ -100,7 +76,6 @@ function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
   const isJava = language === 'java';
   const LE = isJava ? ';' : '';
   mainActivity = (0, _codeMod().addImports)(mainActivity, ['expo.modules.splashscreen.SplashScreen', 'expo.modules.splashscreen.SplashScreenImageResizeMode', 'android.os.Bundle'], isJava);
-
   if (!mainActivity.match(/(?<=^.*super\.onCreate.*$)/m)) {
     const onCreateBlock = isJava ? ['    @Override', '    protected void onCreate(Bundle savedInstanceState) {', '      super.onCreate(savedInstanceState);', '    }'] : ['    override fun onCreate(savedInstanceState: Bundle?) {', '      super.onCreate(savedInstanceState)', '    }'];
     mainActivity = (0, _generateCode().mergeContents)({
@@ -112,18 +87,20 @@ function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
       tag: 'expo-splash-screen-mainActivity-onCreate',
       newSrc: onCreateBlock.join('\n')
     }).contents;
-  } // Remove our generated code safely...
+  }
 
-
+  // Remove our generated code safely...
   mainActivity = (0, _generateCode().removeContents)({
     src: mainActivity,
     tag: SHOW_SPLASH_ID
-  }).contents; // Remove code from `@expo/configure-splash-screen`
+  }).contents;
 
+  // Remove code from `@expo/configure-splash-screen`
   mainActivity = mainActivity.split('\n').filter(line => {
     return !/SplashScreen\.show\(this,\s?SplashScreenImageResizeMode\./.test(line);
-  }).join('\n'); // Reapply generated code.
+  }).join('\n');
 
+  // Reapply generated code.
   mainActivity = (0, _generateCode().mergeContents)({
     src: mainActivity,
     // insert just below super.onCreate
@@ -132,7 +109,9 @@ function setSplashScreenLegacyMainActivity(config, mainActivity, language) {
     comment: '//',
     tag: SHOW_SPLASH_ID,
     newSrc: `    SplashScreen.show(this, SplashScreenImageResizeMode.${resizeMode.toUpperCase()}, ReactRootView${isJava ? '.class' : '::class.java'}, ${statusBarTranslucent})${LE}`
-  }).contents; // TODO: Remove old `SplashScreen.show`
+  }).contents;
+
+  // TODO: Remove old `SplashScreen.show`
 
   return mainActivity;
 }
