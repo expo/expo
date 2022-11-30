@@ -20,7 +20,7 @@
     "expo-barcode-scanner": "~11.4.0",
     "expo-brightness": "~10.3.0",
     "expo-calendar": "~10.3.0",
-    "expo-camera": "~12.3.0",
+    "expo-camera": "~12.4.0",
     "expo-cellular": "~4.3.0",
     "expo-constants": "~13.2.0",
     "expo-contacts": "~10.3.0",
