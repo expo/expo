@@ -584,7 +584,7 @@ module.exports = {
           { name: 'isAvailableAsync', argumentsCount: 0, key: 0 },
           { name: 'setUpdateInterval', argumentsCount: 1, key: 1 },
         ],
-        ExponentMediaLibrary: [
+        ExpoMediaLibrary: [
           { name: 'createAssetAsync', argumentsCount: 1, key: 0 },
           { name: 'deleteAssetsAsync', argumentsCount: 1, key: 1 },
           { name: 'getPermissionsAsync', argumentsCount: 1, key: 2 },
@@ -764,7 +764,7 @@ module.exports = {
           documentDirectory: { type: 'string' },
         },
         ExponentImagePicker: {},
-        ExponentMediaLibrary: {
+        ExpoMediaLibrary: {
           CHANGE_LISTENER_NAME: { type: 'string' },
           MediaType: { type: 'object' },
           SortBy: { type: 'object' },

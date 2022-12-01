@@ -10,7 +10,7 @@ import {
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
-import MediaLibrary from './ExponentMediaLibrary';
+import MediaLibrary from './ExpoMediaLibrary';
 
 const eventEmitter = new EventEmitter(MediaLibrary);
 

@@ -4,12 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.MediaColumns
-import expo.modules.core.Promise
+import expo.modules.kotlin.Promise
+import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
 import expo.modules.medialibrary.MediaLibraryUtils.queryPlaceholdersFor
-import java.lang.IllegalArgumentException
 
 /**
  * Queries for assets filtered by given `selection`.
@@ -17,7 +17,7 @@ import java.lang.IllegalArgumentException
  */
 fun queryAlbum(
   context: Context,
-  selection: String?,
+  selection: String,
   selectionArgs: Array<String>?,
   promise: Promise
 ) {
@@ -32,8 +32,7 @@ fun queryAlbum(
       order
     ).use { albumsCursor ->
       if (albumsCursor == null) {
-        promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album. Query is incorrect.")
-        return
+        throw AlbumException("Could not get album. Query is incorrect.")
       }
       if (!albumsCursor.moveToNext()) {
         promise.resolve(null)
@@ -51,7 +50,8 @@ fun queryAlbum(
   } catch (e: SecurityException) {
     promise.reject(
       ERROR_UNABLE_TO_LOAD_PERMISSION,
-      "Could not get albums: need READ_EXTERNAL_STORAGE permission.", e
+      "Could not get albums: need READ_EXTERNAL_STORAGE permission.",
+      e
     )
   } catch (e: IllegalArgumentException) {
     promise.reject(ERROR_UNABLE_TO_LOAD, "Could not get album.", e)
@@ -76,7 +76,8 @@ fun getAssetsInAlbums(context: Context, vararg albumIds: String?): List<String> 
       return assetIds
     }
     while (assetCursor.moveToNext()) {
-      val id = assetCursor.getString(assetCursor.getColumnIndex(MediaStore.Images.Media._ID))
+      val columnId = assetCursor.getColumnIndex(MediaStore.Images.Media._ID)
+      val id = assetCursor.getString(columnId)
       assetIds.add(id)
     }
   }

@@ -11,7 +11,7 @@ const noPermissionResponse: PermissionResponse = {
 
 export default {
   get name(): string {
-    return 'ExponentMediaLibrary';
+    return 'ExpoMediaLibrary';
   },
   get CHANGE_LISTENER_NAME(): string {
     return 'mediaLibraryDidChange';

@@ -11,8 +11,7 @@ import android.provider.MediaStore
 import android.text.TextUtils
 import android.util.Log
 import android.webkit.MimeTypeMap
-import expo.modules.core.Promise
-import expo.modules.core.utilities.ifNull
+import expo.modules.kotlin.Promise
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
@@ -87,11 +86,12 @@ object MediaLibraryUtils {
         null
       ).use { filesToDelete ->
         if (filesToDelete == null) {
-          promise.reject(ERROR_UNABLE_TO_LOAD, "Could not delete assets. Cursor is null.")
+          throw AssetFileException("Could not delete assets. Cursor is null.")
         } else {
           while (filesToDelete.moveToNext()) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-              val id = filesToDelete.getLong(filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID))
+              val columnId = filesToDelete.getColumnIndex(MediaStore.MediaColumns._ID)
+              val id = filesToDelete.getLong(columnId)
               val assetUri = ContentUris.withAppendedId(EXTERNAL_CONTENT_URI, id)
               context.contentResolver.delete(assetUri, null)
             } else {
@@ -104,8 +104,7 @@ object MediaLibraryUtils {
                   "${MediaStore.MediaColumns.DATA}=?", arrayOf(filePath)
                 )
               } else {
-                promise.reject(ERROR_UNABLE_TO_DELETE, "Could not delete file.")
-                return
+                throw AssetFileException("Could not delete file.")
               }
             }
           }
@@ -136,13 +135,7 @@ object MediaLibraryUtils {
       .joinToString(separator = ",")
 
   // Used in albums and migrations only - consider moving it there
-  fun getAssetsById(context: Context, promise: Promise?, vararg assetsId: String?): List<AssetFile>? {
-    val maybePromise = promise.ifNull {
-      object : Promise {
-        override fun resolve(value: Any) = Unit
-        override fun reject(code: String, message: String, e: Throwable) = Unit
-      }
-    }
+  fun getAssetsById(context: Context, vararg assetsId: String?): List<AssetFile> {
 
     val path = arrayOf(
       MediaStore.MediaColumns._ID,
@@ -159,23 +152,23 @@ object MediaLibraryUtils {
       null
     ).use { assets ->
       if (assets == null) {
-        maybePromise.reject(ERROR_UNABLE_TO_LOAD, "Could not get assets. Query returns null.")
-        return null
+        throw AssetFileException("Could not get assets. Query returns null.")
       } else if (assets.count != assetsId.size) {
-        maybePromise.reject(ERROR_NO_ASSET, "Could not get all of the requested assets")
-        return null
+        throw AssetFileException("Could not get all of the requested assets")
       }
       val assetFiles = mutableListOf<AssetFile>()
       while (assets.moveToNext()) {
-        val assetPath = assets.getString(assets.getColumnIndex(MediaStore.Images.Media.DATA))
+        val data = assets.getColumnIndex(MediaStore.Images.Media.DATA)
+        val assetPath = assets.getString(data)
+        val id = assets.getColumnIndex(MediaStore.MediaColumns._ID)
+        val mimeType = assets.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
         val asset = AssetFile(
           assetPath,
-          assets.getString(assets.getColumnIndex(MediaStore.MediaColumns._ID)),
-          assets.getString(assets.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
+          assets.getString(id),
+          assets.getString(mimeType)
         )
         if (!asset.exists() || !asset.isFile) {
-          maybePromise.reject(ERROR_UNABLE_TO_LOAD, "Path $assetPath does not exist or isn't file.")
-          return null
+          throw AssetFileException("Path $assetPath does not exist or isn't file.")
         }
         assetFiles.add(asset)
       }
@@ -204,9 +197,11 @@ object MediaLibraryUtils {
       null
     )?.use { cursor ->
       while (cursor.moveToNext()) {
-        val id = cursor.getLong(cursor.getColumnIndex(MediaStore.MediaColumns._ID))
-        val mineType = cursor.getString(cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE))
-        val assetUri = ContentUris.withAppendedId(mimeTypeToExternalUri(mineType), id)
+        val columnId = cursor.getColumnIndex(MediaStore.MediaColumns._ID)
+        val columnMimeType = cursor.getColumnIndex(MediaStore.MediaColumns.MIME_TYPE)
+        val id = cursor.getLong(columnId)
+        val mimeType = cursor.getString(columnMimeType)
+        val assetUri = ContentUris.withAppendedId(mimeTypeToExternalUri(mimeType), id)
         result.add(assetUri)
       }
     }

@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Renamed `ExponentMediaLibrary` to `ExpoMediaLibrary` ([#20232](https://github.com/expo/expo/pull/20232) by [@alanhughes](https://github.com/alanjhughes))
+
 ## 47.0.1 — 2022-10-30
 
 _This version does not introduce any user-facing changes._
