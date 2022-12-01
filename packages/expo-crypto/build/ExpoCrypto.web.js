@@ -22,7 +22,6 @@ export default {
     },
     getRandomBytes(length) {
         const array = new Uint8Array(length);
-        // @ts-ignore
         return getCrypto().getRandomValues(array);
     },
     async getRandomBytesAsync(length) {

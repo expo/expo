@@ -31,7 +31,6 @@ export default {
   },
   getRandomBytes(length: number): Uint8Array {
     const array = new Uint8Array(length);
-    // @ts-ignore
     return getCrypto().getRandomValues(array);
   },
   async getRandomBytesAsync(length: number): Promise<Uint8Array> {
