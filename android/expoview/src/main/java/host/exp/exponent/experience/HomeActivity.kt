@@ -149,7 +149,6 @@ open class HomeActivity : BaseExperienceActivity() {
         BarCodeScannerPackage(),
         KeepAwakePackage(),
         FaceDetectorPackage(),
-        MediaLibraryPackage(),
         NotificationsPackage(), // home doesn't use notifications, but we want the singleton modules created
         TaskManagerPackage(), // load expo-task-manager to restore tasks once the client is opened
         SplashScreenPackage()
