@@ -20,7 +20,6 @@ import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.keepawake.KeepAwakePackage
-import expo.modules.medialibrary.MediaLibraryPackage
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.splashscreen.SplashScreenImageResizeMode
