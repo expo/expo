@@ -11,9 +11,10 @@ export default function NativeLinearGradient({
   endPoint,
   ...props
 }: NativeLinearGradientProps): React.ReactElement {
-  const [layout, setLayout] = React.useState<LayoutRectangle | null>(null);
-
-  const { width = 1, height = 1 } = layout ?? {};
+  const [{ height, width }, setLayout] = React.useState({
+    height: 1,
+    width: 1
+  });
 
   // TODO(Bacon): In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
   // browser support.
@@ -31,16 +32,19 @@ export default function NativeLinearGradient({
       ]}
       onLayout={(event) => {
         const { x, y, width, height } = event.nativeEvent.layout;
-        const oldLayout = layout ?? { x: 0, y: 0, width: 1, height: 1 };
-        // don't set new layout state unless the layout has actually changed
-        if (
-          x !== oldLayout.x ||
-          y !== oldLayout.y ||
-          width !== oldLayout.width ||
-          height !== oldLayout.height
-        ) {
-          setLayout({ x, y, width, height });
-        }
+        
+        setLayout(oldLayout => {        
+          // don't set new layout state unless the layout has actually changed
+          if (
+            width !== oldLayout.width ||
+            height !== oldLayout.height
+          ) {
+            return { height, width }
+          }
+          
+          return oldLayout
+        });
+        
 
         if (props.onLayout) {
           props.onLayout(event);
