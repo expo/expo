@@ -3,7 +3,7 @@ import SystemConfiguration
 
 enum NetworkType: CustomStringConvertible {
   case unknown, wifi, none, cellular
-  
+
   var description: String {
     switch self {
     case .wifi:
@@ -56,8 +56,7 @@ public final class NetworkModule: Module {
       ])
     }
   }
-  
-  
+
   private func getIPAddress() throws -> String {
     var address = "0.0.0.0"
     var ifaddr: UnsafeMutablePointer<ifaddrs>?
@@ -66,7 +65,7 @@ public final class NetworkModule: Module {
     if error == 0 {
       guard let firstAddr = ifaddr else { return address }
 
-      for ifptr in sequence(first:firstAddr , next: { $0.pointee.ifa_next }) {
+      for ifptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next }) {
         let temp = ifptr.pointee
         let family = temp.ifa_addr.pointee.sa_family
 
@@ -92,7 +91,7 @@ public final class NetworkModule: Module {
       throw IpAddressException(error)
     }
   }
-  
+
   func createReachabilityRef() -> SCNetworkReachability? {
     var zeroAddress = sockaddr()
     zeroAddress.sa_len = UInt8(MemoryLayout<sockaddr>.size)
@@ -105,7 +104,7 @@ public final class NetworkModule: Module {
     setFlags(ref: reachability)
     return reachability
   }
-  
+
   private func setFlags(ref: SCNetworkReachability) {
     var flags = SCNetworkReachabilityFlags()
     if !SCNetworkReachabilityGetFlags(ref, &flags) {
