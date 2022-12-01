@@ -16,7 +16,7 @@
   "expo-apple-authentication": "~5.0.1",
   "expo-application": "~5.0.1",
   "expo-asset": "~8.6.2",
-  "expo-auth-session": "~3.7.2",
+  "expo-auth-session": "~3.7.3",
   "expo-av": "~13.0.2",
   "expo-background-fetch": "~11.0.1",
   "expo-barcode-scanner": "~12.1.0",

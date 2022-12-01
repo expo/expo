@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.7.3 — 2022-12-01
+
+_This version does not introduce any user-facing changes._
+
 ## 3.7.2 — 2022-10-25
 
 ### 💡 Others
