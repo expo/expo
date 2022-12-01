@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Renamed the module on iOS to match the name used on Android. ([#20283](https://github.com/expo/expo/pull/20283) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 15.0.0 — 2022-10-25
