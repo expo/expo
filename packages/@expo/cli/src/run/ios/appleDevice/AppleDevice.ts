@@ -24,6 +24,8 @@ export interface ConnectedDevice {
   model: string;
   /** @example `device` */
   deviceType: 'device' | 'catalyst';
+  /** @example `USB` */
+  connectionType: 'USB' | 'Network';
   /** @example `15.4.1` */
   osVersion: string;
 }
@@ -37,6 +39,7 @@ export async function getConnectedDevicesAsync(): Promise<ConnectedDevice[]> {
     model: device.ProductType,
     osVersion: device.ProductVersion,
     deviceType: 'device',
+    connectionType: device.ConnectionType,
     udid: device.UniqueDeviceID,
   }));
 }
@@ -55,7 +58,11 @@ export async function getConnectedDeviceValuesAsync(): Promise<DeviceValues[]> {
       );
       const deviceValue = await new LockdowndClient(socket).getAllValues();
       socket.end();
-      return deviceValue;
+      return {
+        ...deviceValue,
+        ConnectionType: device.Properties.ConnectionType,
+        UniqueDeviceID: device.Properties.UDID ?? device.Properties.SerialNumber,
+      };
     })
   );
 }

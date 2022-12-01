@@ -18,21 +18,26 @@ const debug = Debug('expo:apple-device:client:usbmuxd');
 
 export interface UsbmuxdDeviceProperties {
   /** 480000000 */
-  ConnectionSpeed: number;
+  ConnectionSpeed?: number;
   /** 'USB' */
-  ConnectionType: 'USB';
+  ConnectionType: 'USB' | 'Network';
   /** 7 */
   DeviceID: number;
   /** 339738624 */
-  LocationID: number;
+  LocationID?: number;
   /** 4776 */
-  ProductID: number;
+  ProductID?: number;
   /** '00008101-001964A22629003A' */
   SerialNumber: string;
   /** '00008101-001964A22629003A' */
-  UDID: string;
+  UDID?: string;
   /** '00008101001964A22629003A' */
-  USBSerialNumber: string;
+  USBSerialNumber?: string;
+  /** '08:c7:29:05:f2:30@fe80::ac7:29ff:fe05:f230-supportsRP._apple-mobdev2._tcp.local.' */
+  EscapedFullServiceName?: string;
+  /** 5 **/
+  InterfaceIndex?: number;
+  NetworkAddress?: Buffer;
 }
 
 export interface UsbmuxdDevice {
