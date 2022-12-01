@@ -44,7 +44,6 @@ export default function NativeLinearGradient({
           
           return oldLayout
         });
-        
 
         if (props.onLayout) {
           props.onLayout(event);
