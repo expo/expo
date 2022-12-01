@@ -142,7 +142,6 @@ export function useAuthRequest(
       // The redirect URI should be created using fb + client ID on native.
       native: `fb${clientId}://authorize`,
       useProxy,
-      projectNameForProxy: '@community/native-component-list',
       ...redirectUriOptions,
     });
   }, [useProxy, clientId, config.redirectUri, redirectUriOptions]);
