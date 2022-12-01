@@ -40,8 +40,8 @@ export declare function digestStringAsync(algorithm: CryptoDigestAlgorithm, data
 /**
  * The `getRandomValues()` method of `Crypto` fills a provided `TypedArray` with cryptographically secure random values.
  *
- * @param typedArray An integer based [`TypedArray`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray) to fill with cryptographically secure random values.
- * @return The same array that was passed in, but filled with cryptographically secure random values.
+ * @param typedArray An integer based [`TypedArray`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray) to fill with cryptographically secure random values. It modifies the input array in place.
+ * @return The input array filled with cryptographically secure random values.
  *
  * @example
  * ```ts
