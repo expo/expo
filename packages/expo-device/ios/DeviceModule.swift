@@ -42,7 +42,7 @@ public class DeviceModule: Module {
     }
 
     AsyncFunction("isRootedExperimentalAsync") { () -> Bool in
-      return UIDevice.current.isJailBroken
+      return UIDevice.current.isJailbroken
     }
   }
 }

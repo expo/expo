@@ -179,9 +179,10 @@ public extension UIDevice {
       return false
     }
 
-    let isJailbroken = JailbreakHelper.hasCydiaInstalled() || JailbreakHelper.doesContainSuspiciousApps() || JailbreakHelper.doesSuspiciousSystemPathExist() || JailbreakHelper.canEditSystemFiles()
+    let jailbroken = JailbreakHelper.hasCydiaInstalled() || JailbreakHelper.doesContainSuspiciousApps() ||
+    JailbreakHelper.doesSuspiciousSystemPathExist() || JailbreakHelper.canEditSystemFiles()
 
-    return isJailbroken
+    return jailbroken
   }
 }
 
