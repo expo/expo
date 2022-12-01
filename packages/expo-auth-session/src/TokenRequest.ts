@@ -79,8 +79,9 @@ export class TokenResponse implements TokenResponseConfig {
   state?: string;
   idToken?: string;
   issuedAt: number;
+  rawResponse?: any;
 
-  constructor(response: TokenResponseConfig) {
+  constructor(response: TokenResponseConfig, rawResponse?: any) {
     this.accessToken = response.accessToken;
     this.tokenType = response.tokenType ?? 'bearer';
     this.expiresIn = response.expiresIn;
@@ -89,6 +90,7 @@ export class TokenResponse implements TokenResponseConfig {
     this.state = response.state;
     this.idToken = response.idToken;
     this.issuedAt = response.issuedAt ?? getCurrentTimeInSeconds();
+    this.rawResponse = rawResponse;
   }
 
   private applyResponseConfig(response: TokenResponseConfig) {
@@ -211,15 +213,18 @@ export class TokenRequest<T extends TokenRequestConfig>
       throw new TokenError(response);
     }
 
-    return new TokenResponse({
-      accessToken: response.access_token,
-      tokenType: response.token_type,
-      expiresIn: response.expires_in,
-      refreshToken: response.refresh_token,
-      scope: response.scope,
-      idToken: response.id_token,
-      issuedAt: response.issued_at,
-    });
+    return new TokenResponse(
+      {
+        accessToken: response.access_token,
+        tokenType: response.token_type,
+        expiresIn: response.expires_in,
+        refreshToken: response.refresh_token,
+        scope: response.scope,
+        idToken: response.id_token,
+        issuedAt: response.issued_at,
+      },
+      response
+    );
   }
 
   getQueryBody() {
