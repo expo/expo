@@ -2,7 +2,7 @@ import UIKit
 
 struct ExpoDeviceType {
   let modelName: String
-  let deviceYearClass: Int16?
+  let deviceYearClass: Int?
 }
 
 public extension UIDevice {
@@ -24,6 +24,8 @@ public extension UIDevice {
   // swiftlint:disable function_body_length
   static internal let DeviceMap: ExpoDeviceType = {
     func mapToDevice(identifier: String) -> ExpoDeviceType {
+      let currentYear = Calendar(identifier: .gregorian).dateComponents([.year], from: Date()).year
+
       #if os(iOS)
       switch identifier {
       case "iPod7,1":
@@ -147,9 +149,9 @@ public extension UIDevice {
       case "AppleTV6,2":
         return ExpoDeviceType(modelName: "Apple TV 4K", deviceYearClass: 2017)
       case "i386", "x86_64", "arm64":
-        return ExpoDeviceType(modelName: "Simulator iOS", deviceYearClass: nil)
+        return ExpoDeviceType(modelName: "Simulator iOS", deviceYearClass: currentYear)
       default:
-        return ExpoDeviceType(modelName: identifier, deviceYearClass: nil)
+        return ExpoDeviceType(modelName: identifier, deviceYearClass: currentYear)
       }
       #elseif os(tvOS)
       switch identifier {
@@ -158,7 +160,7 @@ public extension UIDevice {
       case "AppleTV6,2":
         return ExpoDeviceType(modelName: "Apple TV 4K", deviceYearClass: 2017)
       case "i386", "x86_64":
-        return ExpoDeviceType(modelName: "Simulator tvOS", deviceYearClass: nil)
+        return ExpoDeviceType(modelName: "Simulator tvOS", deviceYearClass: currentYear)
       default:
         return identifier
       }
