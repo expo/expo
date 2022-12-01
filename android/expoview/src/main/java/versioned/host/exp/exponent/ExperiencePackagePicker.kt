@@ -39,7 +39,7 @@ import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationPackage
 import expo.modules.mailcomposer.MailComposerPackage
 import expo.modules.manifests.core.Manifest
-import expo.modules.medialibrary.MediaLibraryPackage
+import expo.modules.medialibrary.MediaLibraryModule
 import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
@@ -88,7 +88,6 @@ object ExperiencePackagePicker : ModulesProvider {
     LocalAuthenticationPackage(),
     LocationPackage(),
     MailComposerPackage(),
-    MediaLibraryPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
@@ -134,6 +133,7 @@ object ExperiencePackagePicker : ModulesProvider {
     ImagePickerModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
+    MediaLibraryModule::class.java,
     NetworkModule::class.java,
     RandomModule::class.java,
     StoreReviewModule::class.java,
