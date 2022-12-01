@@ -49,6 +49,22 @@ Another example can be stated using [available location accuracies](#accuracy). 
 
 To learn more on how to exclude a permission, see [Excluding Android permissions](/guides/permissions/#excluding-android-permissions).
 
+### iOS Permissions
+
+Apple App Store review guidelines require [detailed justification](https://developer.apple.com/design/human-interface-guidelines/patterns/accessing-private-data#requesting-permission) for requesting location access. This library includes default request strings but it is unlikely they will be sufficient to pass app review. Use the [config plugin](/guides/config-plugins/) to specify customized strings for inclusion in `Info.plist`:
+
+```js
+  "plugins": [
+      ["expo-location", {
+        locationAlwaysAndWhenInUsePermission: 'string',
+        locationAlwaysPermission: 'string',
+        locationWhenInUsePermission: 'string',
+        isIosBackgroundLocationEnabled: 'string',
+        isAndroidBackgroundLocationEnabled: 'string',
+      }]
+  ]
+```
+
 ### Background Location Methods
 
 To use Background Location methods, the following requirements apply:
