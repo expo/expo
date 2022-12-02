@@ -3,13 +3,13 @@ import SystemConfiguration
 import Network
 
 extension NWInterface.InterfaceType: CaseIterable {
-    public static var allCases: [NWInterface.InterfaceType] = [
-        .other,
-        .wifi,
-        .cellular,
-        .loopback,
-        .wiredEthernet
-    ]
+  public static var allCases: [NWInterface.InterfaceType] = [
+    .other,
+    .wifi,
+    .cellular,
+    .loopback,
+    .wiredEthernet
+  ]
 }
 
 enum NetworkType: CustomStringConvertible {
@@ -69,7 +69,9 @@ public final class NetworkModule: Module {
       throw IpAddressException(error)
     }
 
-    guard let firstAddr = ifaddr else { return address }
+    guard let firstAddr = ifaddr else {
+      return address
+    }
 
     for ifptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next }) {
       let temp = ifptr.pointee
@@ -97,7 +99,9 @@ public final class NetworkModule: Module {
 
   private func startMonitor() {
     monitor.pathUpdateHandler = { [weak self] path in
-      guard let self = self else { return }
+      guard let self = self else {
+        return
+      }
       self.connected = path.status == .satisfied
 
       if !self.connected {
