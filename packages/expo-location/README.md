@@ -36,6 +36,20 @@ Add `NSLocationAlwaysAndWhenInUseUsageDescription`, `NSLocationAlwaysUsageDescri
 
 Run `npx pod-install` after installing the npm package.
 
+#### Alternative: Configure with config plugin
+
+```js
+  "plugins": [
+      ["expo-location", {
+        locationAlwaysAndWhenInUsePermission: 'string',
+        locationAlwaysPermission: 'string',
+        locationWhenInUsePermission: 'string',
+        isIosBackgroundLocationEnabled: 'string',
+        isAndroidBackgroundLocationEnabled: 'string',
+      }]
+  ]
+```
+
 ### Configure for Android
 
 This module requires the permissions for approximate and exact device location. It also needs the foreground service permission to subscribe to location updates, while the app is in use. These permissions are automatically added.

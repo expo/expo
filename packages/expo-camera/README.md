@@ -34,20 +34,6 @@ Add `NSCameraUsageDescription` and `NSMicrophoneUsageDescription` keys to your `
 
 Run `npx pod-install` after installing the npm package.
 
-#### Alternative: Configure with config plugin
-
-```js
-  "plugins": [
-      ["expo-location", {
-        locationAlwaysAndWhenInUsePermission: 'string',
-        locationAlwaysPermission: 'string',
-        locationWhenInUsePermission: 'string',
-        isIosBackgroundLocationEnabled: 'string',
-        isAndroidBackgroundLocationEnabled: 'string',
-      }]
-  ]
-```
-
 ### Configure for Android
 
 This package automatically adds the `CAMERA` permission to your app. If you want to record videos with audio, you have to include the `RECORD_AUDIO`.

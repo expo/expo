@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Add config plugin documentation. ([#20290](https://github.com/expo/expo/pull/20290) by [@bradjones1](https://github.com/bradjones1))
+
 ## 15.0.1 — 2022-10-28
 
 _This version does not introduce any user-facing changes._
