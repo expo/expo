@@ -81,13 +81,14 @@ public final class NetworkModule: Module {
         let name = String(cString: temp.ifa_name)
         if name == "en0" || name == "en1" {
           var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-          getnameinfo(temp.ifa_addr,
-                      socklen_t(temp.ifa_addr.pointee.sa_len),
-                      &hostname,
-                      socklen_t(hostname.count),
-                      nil,
-                      socklen_t(0),
-                      NI_NUMERICHOST)
+          getnameinfo(
+            temp.ifa_addr,
+            socklen_t(temp.ifa_addr.pointee.sa_len),
+            &hostname,
+            socklen_t(hostname.count),
+            nil,
+            socklen_t(0),
+            NI_NUMERICHOST)
           address = String(cString: hostname)
         }
       }
