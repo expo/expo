@@ -706,7 +706,6 @@ DEPENDENCIES:
   - EXCamera (from `../../../packages/expo-camera/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
-  - EXDevice (from `../../../packages/expo-device/ios`)
   - EXDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../../../packages/expo-error-recovery/ios`)
   - EXFaceDetector (from `../../../packages/expo-face-detector/ios`)
@@ -883,9 +882,6 @@ EXTERNAL SOURCES:
   EXContacts:
     inhibit_warnings: false
     :path: "../../../packages/expo-contacts/ios"
-  EXDevice:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-device/ios"
   EXDocumentPicker:
     inhibit_warnings: false
     :path: "../../../packages/expo-document-picker/ios"
