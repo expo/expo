@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - Migrated Android codebase to use the new Expo modules API. ([#20118](https://github.com/expo/expo/pull/20118) by [@alanhughes](https://github.com/alanjhughes))
+- Native module on iOS is now written in Swift using the Sweet API. ([#19526](https://github.com/expo/expo/pull/19526) by [@fobos531](https://github.com/fobos531))
 
 ### 🐛 Bug fixes
 
