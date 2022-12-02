@@ -142,25 +142,19 @@ Edit **.detoxrc.json** and replace the configuration with:
   "runnerConfig": "e2e/config.json",
   "skipLegacyWorkersInjection": true,
   "apps": {
-    "ios.debug": {
-      "type": "ios.app",
-      "build": "xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Debug -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
-      "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/eastestsexample.app"
-    },
     "ios.release": {
       "type": "ios.app",
+      /* @info This is project-specific, replace eastestsexample with correct value */
       "build": "xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
       "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/eastestsexample.app"
-    },
-    "android.debug": {
-      "type": "android.apk",
-      "build": "cd android && ./gradlew :app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug && cd ..",
-      "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk"
+      /* @end */
     },
     "android.release": {
       "type": "android.apk",
+      /* @info This is project-specific, replace eastestsexample with correct value */
       "build": "cd android && ./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release && cd ..",
       "binaryPath": "android/app/build/outputs/apk/release/app-release.apk"
+      /* @end */
     }
   },
   "devices": {
@@ -178,17 +172,9 @@ Edit **.detoxrc.json** and replace the configuration with:
     }
   },
   "configurations": {
-    "ios.debug": {
-      "device": "simulator",
-      "app": "ios.debug"
-    },
     "ios.release": {
       "device": "simulator",
       "app": "ios.release"
-    },
-    "android.debug": {
-      "device": "emulator",
-      "app": "android.debug"
     },
     "android.release": {
       "device": "emulator",
@@ -530,7 +516,7 @@ describe('Home screen', () => {
 
 </Collapsible>
 
-<Collapsible summary="e2e/utils/openApp.js">
+<Collapsible summary="e2e/utils/openApp.js (new file)">
 
 ```js
 const appConfig = require('../../../app.json');
@@ -587,6 +573,151 @@ const getLatestUpdateUrl = () =>
 const getAppId = () => appConfig?.expo?.extra?.eas?.projectId ?? '';
 
 const sleep = t => new Promise(res => setTimeout(res, t));
+```
+
+</Collapsible>
+
+<Collapsible summary=".detoxrc.json">
+
+```json
+{
+  "testRunner": "jest",
+  "runnerConfig": "e2e/config.json",
+  "skipLegacyWorkersInjection": true,
+  "apps": {
+    /* @info New section */ "ios.debug": {
+      "type": "ios.app",
+      "build": "xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Debug -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
+      "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/eastestsexample.app"
+    }, /* @end */
+    "ios.release": {
+      "type": "ios.app",
+      "build": "xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
+      "binaryPath": "ios/build/Build/Products/Release-iphonesimulator/eastestsexample.app"
+    },
+    /* @info New section */ "android.debug": {
+      "type": "android.apk",
+      "build": "cd android && ./gradlew :app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug && cd ..",
+      "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk"
+    }, /* @end */
+    "android.release": {
+      "type": "android.apk",
+      "build": "cd android && ./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release && cd ..",
+      "binaryPath": "android/app/build/outputs/apk/release/app-release.apk"
+    }
+  },
+  "devices": {
+    "simulator": {
+      "type": "ios.simulator",
+      "device": {
+        "type": "iPhone 14"
+      }
+    },
+    "emulator": {
+      "type": "android.emulator",
+      "device": {
+        "avdName": "pixel_4"
+      }
+    }
+  },
+  "configurations": {
+    /* @info New section */ "ios.debug": {
+      "device": "simulator",
+      "app": "ios.debug"
+    }, /* @end */
+    "ios.release": {
+      "device": "simulator",
+      "app": "ios.release"
+    },
+    /* @info New section */ "android.debug": {
+      "device": "emulator",
+      "app": "android.debug"
+    }, /* @end */
+    "android.release": {
+      "device": "emulator",
+      "app": "android.release"
+    }
+  }
+}
+```
+</Collapsible>
+
+<Collapsible summary="eas-hooks/eas-build-on-success.sh">
+
+```sh
+#!/usr/bin/env bash
+
+set -eox pipefail
+
+ANDROID_EMULATOR=pixel_4
+
+if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+  # Start emulator
+  $ANDROID_SDK_ROOT/emulator/emulator @$ANDROID_EMULATOR -no-audio -no-boot-anim -no-window -use-system-libs 2>&1 >/dev/null &
+
+  # Wait for emulator
+  max_retry=10
+  counter=0
+  until adb shell getprop sys.boot_completed; do
+    sleep 10
+    [[ counter -eq $max_retry ]] && echo "Failed to start the emulator!" && exit 1
+    counter=$((counter + 1))
+  done
+
+  if [[ "$EAS_BUILD_PROFILE" == "test" ]]; then
+    detox test --configuration android.release --headless
+  fi
+  ###### New section ######
+  if [[ "$EAS_BUILD_PROFILE" == "test_debug" ]]; then
+    detox test --configuration android.debug --headless
+  fi
+  #########################
+  # Kill emulator
+  adb emu kill
+else
+  if [[  "$EAS_BUILD_PROFILE" == "test" ]]; then
+    detox test --configuration ios.release --headless
+  fi
+  ###### New section ######
+  if [[ "$EAS_BUILD_PROFILE" == "test_debug" ]]; then
+    detox test --configuration ios.debug --headless
+  fi
+  #########################
+fi
+```
+
+</Collapsible>
+
+<Collapsible summary="eas.json">
+
+```json
+{
+  "build": {
+    "test": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "simulator": true
+      }
+    },
+    /* @info New section */ "test_debug": {
+      "android": {
+        "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "buildConfiguration": "Debug",
+        "simulator": true
+      },
+      "env": {
+        "EXPO_USE_UPDATES": "1"
+      },
+      "channel": "test_debug"
+    } /* @end */
+  }
+}
 ```
 
 </Collapsible>
