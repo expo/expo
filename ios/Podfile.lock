@@ -1984,8 +1984,6 @@ PODS:
     - ExpoModulesCore
   - EXContacts (11.0.1):
     - ExpoModulesCore
-  - EXDevice (5.0.0):
-    - ExpoModulesCore
   - EXDocumentPicker (11.0.1):
     - ExpoModulesCore
   - EXErrorRecovery (4.0.1):
@@ -2041,6 +2039,8 @@ PODS:
     - ExpoModulesCore
     - ExpoModulesTestCore
   - ExpoCrypto (12.0.0):
+    - ExpoModulesCore
+  - ExpoDevice (5.0.0):
     - ExpoModulesCore
   - ExpoGL (12.0.0):
     - ExpoModulesCore
@@ -3098,7 +3098,6 @@ DEPENDENCIES:
   - EXCamera (from `../packages/expo-camera/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
-  - EXDevice (from `../packages/expo-device/ios`)
   - EXDocumentPicker (from `../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../packages/expo-error-recovery/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
@@ -3123,6 +3122,7 @@ DEPENDENCIES:
   - ExpoClipboard (from `../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../packages/expo-crypto/ios`)
+  - ExpoDevice (from `../packages/expo-device/ios`)
   - ExpoGL (from `../packages/expo-gl`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
@@ -3946,8 +3946,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-constants/ios"
   EXContacts:
     :path: "../packages/expo-contacts/ios"
-  EXDevice:
-    :path: "../packages/expo-device/ios"
   EXDocumentPicker:
     :path: "../packages/expo-document-picker/ios"
   EXErrorRecovery:
@@ -3990,6 +3988,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-clipboard/ios"
   ExpoCrypto:
     :path: "../packages/expo-crypto/ios"
+  ExpoDevice:
+    :path: "../packages/expo-device/ios"
   ExpoGL:
     :path: "../packages/expo-gl"
   ExpoHaptics:
@@ -4498,7 +4498,6 @@ SPEC CHECKSUMS:
   EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
   EXConstants: d9bff28e1d37cd1c05133e6955e9ba8f2a702947
   EXContacts: ef197934926d31c2a58092e081ca9e7c402f13fd
-  EXDevice: 734a55d8935ea8e075d12df1919a0497153bf55c
   EXDocumentPicker: 067af3535841bd1298d772c0eaa6d262ba9d38a4
   EXErrorRecovery: ae43433feb0608a64dc5b1c8363b3e7769a9ea24
   EXFaceDetector: 0bb666598a78ae4a787689a45a58ddb68e3bd86e
@@ -4520,6 +4519,7 @@ SPEC CHECKSUMS:
   ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
+  ExpoDevice: f3c8baaea11ae02095ecb474dcfd48d80ee5bf8f
   ExpoGL: 75d4259b4907dbf725b5dd9309602304f29e52b3
   ExpoHaptics: 5a56d30a87ea213dd00b09566dc4b441a4dff97f
   ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
