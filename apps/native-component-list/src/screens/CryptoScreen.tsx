@@ -29,6 +29,31 @@ const GET_RANDOM_BYTES_ASYNC: FunctionDescription = {
   actions: Crypto.getRandomBytesAsync,
 };
 
+const GET_RANDOM_VALUES: FunctionDescription = {
+  name: 'getRandomValues',
+  parameters: [
+    {
+      name: 'array',
+      type: 'enum',
+      values: [
+        {
+          name: 'new Uint16Array(10)',
+          value: new Uint16Array(10),
+        },
+        {
+          name: 'new Int8Array(100)',
+          value: new Int8Array(100),
+        },
+        {
+          name: 'new Uint8ClampedArray(1)',
+          value: new Uint8ClampedArray(1),
+        },
+      ],
+    },
+  ],
+  actions: Crypto.getRandomValues,
+};
+
 const DIGEST_STRING: FunctionDescription = {
   name: 'digestString',
   parameters: [
@@ -64,7 +89,12 @@ const DIGEST_STRING: FunctionDescription = {
   actions: Crypto.digestStringAsync,
 };
 
-const FUNCTIONS_DESCRIPTIONS = [GET_RANDOM_BYTES, GET_RANDOM_BYTES_ASYNC, DIGEST_STRING];
+const FUNCTIONS_DESCRIPTIONS = [
+  GET_RANDOM_BYTES,
+  GET_RANDOM_BYTES_ASYNC,
+  DIGEST_STRING,
+  GET_RANDOM_VALUES,
+];
 
 function CryptoScreen() {
   return (

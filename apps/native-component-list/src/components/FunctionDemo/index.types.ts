@@ -30,7 +30,7 @@ export type EnumParameter = Parameter & {
   type: 'enum';
   values: {
     name: string;
-    value: undefined | string | number | Tuple;
+    value: any;
   }[];
 };
 
