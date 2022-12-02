@@ -1,5 +1,16 @@
 import ExpoModulesCore
 import SystemConfiguration
+import Network
+
+extension NWInterface.InterfaceType: CaseIterable {
+    public static var allCases: [NWInterface.InterfaceType] = [
+        .other,
+        .wifi,
+        .cellular,
+        .loopback,
+        .wiredEthernet
+    ]
+}
 
 enum NetworkType: CustomStringConvertible {
   case unknown, wifi, none, cellular
@@ -19,41 +30,32 @@ enum NetworkType: CustomStringConvertible {
 }
 
 public final class NetworkModule: Module {
+  private let monitor = NWPathMonitor()
+  private let monitorQueue = DispatchQueue.global(qos: .background)
   private var type = NetworkType.unknown
-  private var lastFlags: SCNetworkReachabilityFlags?
-
-  private var connected: Bool {
-    self.type != NetworkType.unknown && self.type != NetworkType.none
-  }
+  private var connected: Bool = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoNetwork")
+
+    OnCreate {
+      startMonitor()
+    }
 
     AsyncFunction("getIpAddressAsync") { () -> String? in
       return try getIPAddress()
     }
 
     AsyncFunction("getNetworkStateAsync") { (promise: Promise) in
-      let reachability = createReachabilityRef()
-      let flags = self.lastFlags
-
-      if flags?.contains(.reachable) == false || flags?.contains(.connectionRequired) != false {
-        self.type = .unknown
-      } else {
-        self.type = .wifi
-      }
-
-      #if os(tvOS)
-      if flags?.contains(.isWWAN) {
-        self.type = .cellular
-      }
-      #endif
-
       promise.resolve([
         "type": self.type.description,
         "isConnected": self.connected,
         "isInternetReachable": self.connected
       ])
+    }
+
+    OnDestroy {
+      monitor.cancel()
     }
   }
 
@@ -62,55 +64,60 @@ public final class NetworkModule: Module {
     var ifaddr: UnsafeMutablePointer<ifaddrs>?
 
     let error = getifaddrs(&ifaddr)
-    if error == 0 {
-      guard let firstAddr = ifaddr else { return address }
 
-      for ifptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next }) {
-        let temp = ifptr.pointee
-        let family = temp.ifa_addr.pointee.sa_family
-
-        if family == UInt8(AF_INET) {
-          let name = String(cString: temp.ifa_name)
-          if name == "en0" || name == "en1" {
-            var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
-            getnameinfo(temp.ifa_addr,
-                        socklen_t(temp.ifa_addr.pointee.sa_len),
-                        &hostname,
-                        socklen_t(hostname.count),
-                        nil,
-                        socklen_t(0),
-                        NI_NUMERICHOST)
-            address = String(cString: hostname)
-          }
-        }
-      }
-
-      freeifaddrs(ifaddr)
-      return address
-    } else {
+    guard error == 0 else {
       throw IpAddressException(error)
     }
-  }
 
-  func createReachabilityRef() -> SCNetworkReachability? {
-    var zeroAddress = sockaddr()
-    zeroAddress.sa_len = UInt8(MemoryLayout<sockaddr>.size)
-    zeroAddress.sa_family = sa_family_t(AF_INET)
+    guard let firstAddr = ifaddr else { return address }
 
-    guard let reachability = SCNetworkReachabilityCreateWithAddress(nil, &zeroAddress) else {
-      return nil
+    for ifptr in sequence(first: firstAddr, next: { $0.pointee.ifa_next }) {
+      let temp = ifptr.pointee
+      let family = temp.ifa_addr.pointee.sa_family
+
+      if family == UInt8(AF_INET) {
+        let name = String(cString: temp.ifa_name)
+        if name == "en0" || name == "en1" {
+          var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+          getnameinfo(temp.ifa_addr,
+                      socklen_t(temp.ifa_addr.pointee.sa_len),
+                      &hostname,
+                      socklen_t(hostname.count),
+                      nil,
+                      socklen_t(0),
+                      NI_NUMERICHOST)
+          address = String(cString: hostname)
+        }
+      }
     }
 
-    setFlags(ref: reachability)
-    return reachability
+    freeifaddrs(ifaddr)
+    return address
   }
 
-  private func setFlags(ref: SCNetworkReachability) {
-    var flags = SCNetworkReachabilityFlags()
-    if !SCNetworkReachabilityGetFlags(ref, &flags) {
-      log.error("Could not determine flags")
-    }
+  private func startMonitor() {
+    monitor.pathUpdateHandler = { [weak self] path in
+      guard let self = self else { return }
+      self.connected = path.status == .satisfied
 
-    self.lastFlags = flags
+      if !self.connected {
+        self.type = .none
+        return
+      }
+
+      let connectionType = NWInterface.InterfaceType.allCases.filter {
+        path.usesInterfaceType($0)
+      }.first
+
+      switch connectionType {
+      case .wifi:
+        self.type = .wifi
+      case .cellular:
+        self.type = .cellular
+      default:
+        self.type = .unknown
+      }
+    }
+    monitor.start(queue: monitorQueue)
   }
 }
