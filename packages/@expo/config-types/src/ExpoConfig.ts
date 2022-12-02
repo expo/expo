@@ -40,10 +40,9 @@ export interface ExpoConfig {
    * **Note: Don't use this property unless you are sure what you're doing**
    *
    * The runtime version associated with this manifest.
-   * Set this to `{"policy": "nativeVersion"}` to generate it automatically based on the 'version' and
-   * 'android.versionCode'/'ios.buildNumber' or to `{"policy": "appVersion"}` to use just 'version' field.
+   * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
    */
-  runtimeVersion?: string | { policy: RuntimeVersionPolicy };
+  runtimeVersion?: string | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' };
   /**
    * Your app version. In addition to this field, you'll also use `ios.buildNumber` and `android.versionCode` — read more about how to version your app [here](https://docs.expo.dev/distribution/app-stores/#versioning-your-app). On iOS this corresponds to `CFBundleShortVersionString`, and on Android, this corresponds to `versionName`. The required format can be found [here](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleshortversionstring).
    */
@@ -101,10 +100,6 @@ export interface ExpoConfig {
      */
     androidCollapsedTitle?: string;
   };
-  /**
-   * @deprecated By default, Expo looks for the application registered with the AppRegistry as `main`. If you would like to change this, you can specify the name in this property.
-   */
-  appKey?: string;
   /**
    * Configuration for the status bar on Android. For more details please navigate to [Configuring StatusBar](https://docs.expo.dev/guides/configuring-statusbar/).
    */
@@ -215,10 +210,6 @@ export interface ExpoConfig {
        */
       keyid?: string;
     };
-    /**
-     * Extra HTTP headers to include in HTTP requests made by expo-updates. These may override preset headers.
-     */
-    requestHeaders?: Record<string, string>;
   };
   /**
    * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -344,7 +335,7 @@ export interface IOS {
    */
   bundleIdentifier?: string;
   /**
-   * Build number for your iOS standalone app. Corresponds to `CFBundleVersion` and must match Apple's [specified format](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/20001431-102364). (Note: Transporter will pull the value for `Version Number` from `expo.version` and NOT from `expo.ios.buildNumber`.)
+   * Build number for your iOS standalone app. Corresponds to `CFBundleVersion` and must match Apple's [specified format](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleversion). (Note: Transporter will pull the value for `Version Number` from `expo.version` and NOT from `expo.ios.buildNumber`.)
    */
   buildNumber?: string;
   /**
@@ -357,10 +348,6 @@ export interface IOS {
    *  Expo will generate the other required sizes. This icon will appear on the home screen and within the Expo app.
    */
   icon?: string;
-  /**
-   * @deprecated Merchant ID for use with Apple Pay in your standalone app.
-   */
-  merchantId?: string;
   /**
    * URL to your app on the Apple App Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
    */
@@ -398,15 +385,6 @@ export interface IOS {
      * A boolean indicating whether to initialize Google App Measurement and begin sending user-level event data to Google immediately when the app starts. The default in Expo (Go and in standalone apps) is `false`. [Sets the opposite of the given value to the following key in `Info.plist`.](https://developers.google.com/admob/ios/eu-consent#delay_app_measurement_optional)
      */
     googleMobileAdsAutoInit?: boolean;
-    /**
-     * @deprecated Use `ios.googleServicesFile` instead.
-     */
-    googleSignIn?: {
-      /**
-       * @deprecated Use `ios.googleServicesFile` instead.
-       */
-      reservedClientId?: string;
-    };
   };
   /**
    * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `GoogleService-Info.plist` file for configuring Firebase.
@@ -461,10 +439,6 @@ export interface IOS {
    */
   splash?: {
     /**
-     * @deprecated Apple has deprecated `.xib` splash screens in favor of `.storyboard` files. Local path to a XIB file as the loading screen. It overrides other loading screen options. Note: This will only be used in the standalone app (i.e., after you build the app). It will not be used in the Expo Go.
-     */
-    xib?: string;
-    /**
      * Color to fill the loading screen background
      */
     backgroundColor?: string;
@@ -490,10 +464,9 @@ export interface IOS {
    * **Note: Don't use this property unless you are sure what you're doing**
    *
    * The runtime version associated with this manifest for the iOS platform. If provided, this will override the top level runtimeVersion key.
-   * Set this to `{"policy": "nativeVersion"}` to generate it automatically based on the 'version' and 'ios.buildNumber' or
-   * to `{"policy": "appVersion"}` to use just 'version' field.
+   * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
    */
-  runtimeVersion?: string | { policy: RuntimeVersionPolicy };
+  runtimeVersion?: string | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' };
 }
 /**
  * Configuration that is specific to the Android platform.
@@ -524,10 +497,6 @@ export interface Android {
    */
   userInterfaceStyle?: 'light' | 'dark' | 'automatic';
   /**
-   * @deprecated A Boolean value that indicates whether the app should use the new notifications API.
-   */
-  useNextNotificationsApi?: boolean;
-  /**
    * Local path or remote URL to an image to use for your app's icon on Android. If specified, this overrides the top-level `icon` key. We recommend that you use a 1024x1024 png file (transparency is recommended for the Google Play Store). This icon will appear on the home screen and within the Expo app.
    */
   icon?: string;
@@ -540,6 +509,10 @@ export interface Android {
      */
     foregroundImage?: string;
     /**
+     * Local path or remote URL to an image representing the Android 13+ monochromatic icon. Should follow the [specified guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive). This icon will appear on the home screen when the user enables 'Themed icons' in system settings on a device running Android 13+.
+     */
+    monochromeImage?: string;
+    /**
      * Local path or remote URL to a background image for your app's Adaptive Icon on Android. If specified, this overrides the `backgroundColor` key. Must have the same dimensions as `foregroundImage`, and has no effect if `foregroundImage` is not specified. Should follow the [specified guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive).
      */
     backgroundImage?: string;
@@ -547,10 +520,6 @@ export interface Android {
      * Color to use as the background for your app's Adaptive Icon on Android. Defaults to white, `#FFFFFF`. Has no effect if `foregroundImage` is not specified.
      */
     backgroundColor?: string;
-    /**
-     * (Android 13+ only) Local path or remote URL to an image to use for your app's monochrome Adaptive Icon on Android. Must have the same dimensions as `foregroundImage`, and has no effect if `foregroundImage` is not specified. Should follow the [specified guidelines](https://developer.android.com/guide/practices/ui_guidelines/icon_design_adaptive). This icon will appear on the home screen when the user enables "Themed icons" in system settings.
-     */
-    monochromeImage?: string;
   };
   /**
    * URL to your app on the Google Play Store, if you have deployed it there. This is used to link to your store page from your Expo project page if your app is public.
@@ -644,19 +613,6 @@ export interface Android {
      * A boolean indicating whether to initialize Google App Measurement and begin sending user-level event data to Google immediately when the app starts. The default in Expo (Client and in standalone apps) is `false`. [Sets the opposite of the given value to the following key in `Info.plist`](https://developers.google.com/admob/ios/eu-consent#delay_app_measurement_optional)
      */
     googleMobileAdsAutoInit?: boolean;
-    /**
-     * @deprecated Use `googleServicesFile` instead. [Google Sign-In Android SDK](https://developers.google.com/identity/sign-in/android/start-integrating) keys for your standalone app.
-     */
-    googleSignIn?: {
-      /**
-       * The Android API key. Can be found in the credentials section of the developer console or in `google-services.json`.
-       */
-      apiKey?: string;
-      /**
-       * The SHA-1 hash of the signing certificate used to build the APK without any separator (`:`). Can be found in `google-services.json`. https://developers.google.com/android/guides/client-auth
-       */
-      certificateHash?: string;
-    };
   };
   /**
    * Configuration for loading and splash screen for managed and standalone Android apps.
@@ -734,10 +690,9 @@ export interface Android {
    * **Note: Don't use this property unless you are sure what you're doing**
    *
    * The runtime version associated with this manifest for the Android platform. If provided, this will override the top level runtimeVersion key.
-   * Set this to `{"policy": "nativeVersion"}` to generate it automatically based on the 'version' and 'versionCode' or
-   * to `{"policy": "appVersion"}` to use just 'version' field.
+   * Set this to `{"policy": "nativeVersion"}` to generate it automatically.
    */
-  runtimeVersion?: string | { policy: RuntimeVersionPolicy };
+  runtimeVersion?: string | { policy: 'nativeVersion' | 'sdkVersion' | 'appVersion' };
 }
 export interface AndroidIntentFiltersData {
   /**
@@ -884,7 +839,6 @@ export interface Web {
   bundler?: 'webpack' | 'metro';
   [k: string]: any;
 }
-
 export interface PublishHook {
   file?: string;
   config?: {
@@ -892,5 +846,3 @@ export interface PublishHook {
   };
   [k: string]: any;
 }
-
-export type RuntimeVersionPolicy = 'sdkVersion' | 'nativeVersion' | 'appVersion';
