@@ -21,7 +21,7 @@ public extension UIDevice {
     return identifier
   }()
 
-  // swiftlint:disable function_body_length
+  // swiftlint:disable function_body_length closure_body_length
   static internal let DeviceMap: ExpoDeviceType = {
     func mapToDevice(identifier: String) -> ExpoDeviceType {
       let currentYear = Calendar(identifier: .gregorian).dateComponents([.year], from: Date()).year
@@ -169,7 +169,7 @@ public extension UIDevice {
 
     return mapToDevice(identifier: modelIdentifier)
   }()
-  // swiftlint:enable function_body_length
+  // swiftlint:enable function_body_length closure_body_length
 
   // Credit: https://github.com/developerinsider/isJailBroken/blob/master/IsJailBroken/Extension/UIDevice%2BJailBroken.swift
   var isSimulator: Bool {
