@@ -33,7 +33,7 @@ public final class NetworkModule: Module {
   private let monitor = NWPathMonitor()
   private let monitorQueue = DispatchQueue.global(qos: .background)
   private var type = NetworkType.unknown
-  private var connected: Bool = false
+  private var connected = false
 
   public func definition() -> ModuleDefinition {
     Name("ExpoNetwork")
