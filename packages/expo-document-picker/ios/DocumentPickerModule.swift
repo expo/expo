@@ -45,7 +45,7 @@ public class DocumentPickerModule: Module, DocumentPickingResultHandler {
 
     let mimeTypes = options.type
 
-    if mimeTypes.count == 0 {
+    if mimeTypes.isEmpty {
       return promise.reject(IncorrectTypeArgumentException())
     }
 
@@ -112,10 +112,9 @@ public class DocumentPickerModule: Module, DocumentPickingResultHandler {
       var newUrl = documentUrl
 
       if options.copyToCacheDirectory == true {
-
         let directory = URL(fileURLWithPath: fileSystem.cachesDirectory).appendingPathComponent("DocumentPicker")
         let fileExtension = documentUrl.pathExtension
-        let path = fileSystem.generatePath(inDirectory: directory.absoluteString, withExtension: fileExtension == "" ? fileExtension : ".\(fileExtension)")
+        let path = fileSystem.generatePath(inDirectory: directory.absoluteString, withExtension: fileExtension.isEmpty ? fileExtension : ".\(fileExtension)")
 
         newUrl = URL.init(fileURLWithPath: path)
 
@@ -148,7 +147,6 @@ public class DocumentPickerModule: Module, DocumentPickingResultHandler {
 func getFileSize(url: URL) throws -> Int? {
   let resources = try url.resourceValues(forKeys: [.fileSizeKey])
   return resources.fileSize
-
 }
 
 func getMimeType(pathExtension: String) -> String {
