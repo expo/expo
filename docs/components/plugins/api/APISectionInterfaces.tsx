@@ -21,7 +21,7 @@ import {
   parseCommentContent,
   renderFlags,
   renderParamRow,
-  renderTableHeadRow,
+  ParamsTableHeadRow,
   resolveTypeName,
   renderDefaultValue,
   STYLES_APIBOX,
@@ -144,7 +144,7 @@ const renderInterface = ({
             <H4>{name} Properties</H4>
           </div>
           <Table>
-            {renderTableHeadRow()}
+            <ParamsTableHeadRow />
             <tbody>{interfaceFields.map(renderInterfacePropertyRow)}</tbody>
           </Table>
         </>
