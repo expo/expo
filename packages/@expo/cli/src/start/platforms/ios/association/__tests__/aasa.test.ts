@@ -1,7 +1,4 @@
-import {
-  generateAasaForProject,
-  getUserDefinedAasaFile,
-} from '../AppleAppSiteAssociationMiddleware';
+import { generateAasaForProject, getUserDefinedAasaFile } from '../aasa';
 
 import { vol } from 'memfs';
 

@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
+import { exportAppleAppSiteAssociationAsync } from '../start/platforms/ios/association/aasa';
 import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFromProject';
-import { exportAppleAppSiteAssociationAsync } from '../start/server/middleware/AppleAppSiteAssociationMiddleware';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
