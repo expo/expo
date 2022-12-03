@@ -11,15 +11,19 @@ const debug = require('debug')('expo:start:server:middleware:aasa') as typeof co
 /**
  * Middleware for generating an Apple App Site Association file for the current project.
  *
+ * Currently requires a code-signed iOS project to exist locally,
+ * e.g. `npx expo run:ios` with associated domains set up.
+ *
  * Test by making a get request with:
- * curl -v http://localhost:19000/apple-app-site-association
+ * curl -v http://localhost:19000/.well-known/apple-app-site-association
  */
 export class AppleAppSiteAssociationMiddleware extends ExpoMiddleware {
   constructor(protected projectRoot: string) {
     super(projectRoot, [
-      // TODO(EvanBacon): Maybe we should just support the more qualified path? Apple will always ping both paths.
-      '/apple-app-site-association',
+      // NOTE(EvanBacon): Apple pings both so we don't technically need to support both URLs.
+      // Here I'm opting to only support the fully qualified, well-known path.
       '/.well-known/apple-app-site-association',
+      // '/apple-app-site-association',
     ]);
   }
 

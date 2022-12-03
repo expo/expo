@@ -16,6 +16,7 @@ import { AppSiteAssociation, Detail } from './aasa.types';
 
 const debug = require('debug')('expo:aasa') as typeof console.log;
 
+/** @returns the file system path for a user-defined apple app site association file in the public folder. */
 export function getUserDefinedAasaFile(projectRoot: string): string | null {
   const publicPath = path.join(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
@@ -114,7 +115,8 @@ function getAppLinkDetails(id: string): Detail {
     appIDs: [id],
     components: [
       // TODO(EvanBacon): All routes in Expo Router should be able to export some static settings
-      // indicating that a route should be excluded from the AASA file. We will need to support this here.
+      // indicating that a route should be excluded from the AASA file.
+      // We will need to support this here as an extension to our SSG support.
       {
         '/': '*',
         comment: 'Matches all routes',
@@ -130,8 +132,7 @@ function getEntitlements(projectRoot: string) {
   }
 
   const entitlementsContents = fs.readFileSync(entitlementsPath, 'utf8');
-  const entitlements = plist.parse(entitlementsContents);
-  return entitlements;
+  return plist.parse(entitlementsContents);
 }
 
 const maybeWarnAasaCouldNotBeGenerated = memoize((projectRoot: string) => {
@@ -143,7 +144,7 @@ const maybeWarnAasaCouldNotBeGenerated = memoize((projectRoot: string) => {
         path.join(env.EXPO_PUBLIC_FOLDER, '.well-known/apple-app-site-association')
       )} file manually, or remove the {bold ios.associatedDomains} from the project ${chalk.bold(
         configName
-      )} file to disable universal link support on iOS.`
+      )} file to disable universal link support on iOS. {gray Feature can also be disabled with $EXPO_NO_APPLE_APP_SITE_ASSOCIATION=1}`
     );
   }
 });
@@ -185,11 +186,10 @@ function generateAasaJson(
     maybeWarnAasaCouldNotBeGenerated(projectRoot);
     return null;
   }
-  const supportedFields = ['activitycontinuation', 'applinks', 'webcredentials'].filter((field) => {
-    return associatedDomains.some((domain: string) => {
-      return domain.startsWith(`${field}:`);
-    });
-  });
+
+  const supportedFields = ['activitycontinuation', 'applinks', 'webcredentials'].filter((field) =>
+    associatedDomains.some((domain: string) => domain.startsWith(`${field}:`))
+  );
 
   if (!supportedFields.length) {
     debug('No supported fields found in entitlements associated domains');
