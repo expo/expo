@@ -7,7 +7,7 @@ import * as Log from '../log';
 import { resolveGoogleServicesFile } from '../start/server/middleware/resolveAssets';
 import { uniqBy } from '../utils/array';
 import { BundleOutput } from './fork-bundleAsync';
-import { Asset, saveAssetsAsync } from './saveAssets';
+import { Asset, saveAssetsAsync, writeAssetsManifestAsync } from './saveAssets';
 
 const debug = require('debug')('expo:export:exportAssets') as typeof console.log;
 
@@ -92,6 +92,7 @@ export async function exportAssetsAsync(
 
   if (assets[0]?.fileHashes) {
     Log.log('Saving assets');
+    await writeAssetsManifestAsync(projectRoot, { assets, outputDir });
     await saveAssetsAsync(projectRoot, { assets, outputDir });
   }
 

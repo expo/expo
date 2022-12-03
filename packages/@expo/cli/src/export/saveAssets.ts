@@ -1,4 +1,5 @@
 import { BundleAssetWithFileHashes } from '@expo/dev-server';
+import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
@@ -7,7 +8,14 @@ import { copyAsync } from '../utils/dir';
 
 const debug = require('debug')('expo:export:saveAssets') as typeof console.log;
 
-export type ManifestAsset = { fileHashes: string[]; files: string[]; hash: string };
+export type ManifestAsset = {
+  fileSystemLocation: string;
+  name: string;
+  type: string;
+  fileHashes: string[];
+  files: string[];
+  hash: string;
+};
 
 export type Asset = ManifestAsset | BundleAssetWithFileHashes;
 
@@ -22,11 +30,43 @@ function collectAssetPaths(assets: Asset[]): Record<string, string> {
   // Collect paths by key, also effectively handles duplicates in the array
   const paths: { [fileHash: string]: string } = {};
   assets.forEach((asset) => {
-    asset.files.forEach((path: string, index: number) => {
-      paths[asset.fileHashes[index]] = path;
+    asset.files.forEach((_path: string, index: number) => {
+      paths[asset.fileHashes[index]] = _path;
     });
   });
   return paths;
+}
+
+export async function getAssetsManifestAsync(
+  projectRoot: string,
+  { assets }: { assets: Asset[] }
+): Promise<Record<string, string>> {
+  // path -> hash
+  const assetsManifest: Record<string, string> = {};
+
+  // Collect paths by key, also effectively handles duplicates in the array
+  assets.forEach((asset) => {
+    asset.files.forEach((_path: string, index: number) => {
+      const realPath = path.relative(
+        projectRoot,
+        path.join(asset.fileSystemLocation, [asset.name, asset.type].filter(Boolean).join('.'))
+      );
+      const hashName = 'assets/' + asset.fileHashes[index];
+      assetsManifest[realPath] = hashName;
+    });
+  });
+
+  return assetsManifest;
+}
+
+export async function writeAssetsManifestAsync(
+  projectRoot: string,
+  { assets, outputDir }: { assets: Asset[]; outputDir: string }
+): Promise<void> {
+  await fs.promises.writeFile(
+    path.join(outputDir, 'assets-manifest.json'),
+    JSON.stringify(await getAssetsManifestAsync(projectRoot, { assets }), null, 2)
+  );
 }
 
 export async function saveAssetsAsync(
