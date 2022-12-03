@@ -3,7 +3,7 @@ import path from 'path';
 
 import * as Log from '../log';
 import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFromProject';
-import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
+import { generateStaticRoutesAsync } from '../start/server/generateStaticRoutes';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { createBundlesAsync } from './createBundles';
@@ -94,7 +94,7 @@ export async function exportAppAsync(
   Log.log('Finished saving JS Bundles');
 
   if (fileNames.web) {
-    const htmlFiles = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+    const htmlFiles = await generateStaticRoutesAsync(projectRoot, {
       scripts: [`/bundles/${fileNames.web}`],
     });
     for (const [filePath, html] of htmlFiles) {
