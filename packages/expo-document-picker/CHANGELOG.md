@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Native module on iOS is now written in Swift using the Sweet API. ([#20315](https://github.com/expo/expo/pull/20315) by [@fobos531](https://github.com/fobos531))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
