@@ -5,18 +5,16 @@ import plist from '@expo/plist';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import { parse } from 'url';
 
 import { Log } from '../../../log';
 import { getCodeSigningInfoForPbxproj } from '../../../run/ios/codeSigning/xcodeCodeSigning';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
+import { profile } from '../../../utils/profile';
 import { ExpoMiddleware } from './ExpoMiddleware';
-import { streamStaticFileResponse } from './ServeStaticMiddleware';
 import { AppSiteAssociation, Detail } from './aasa.types';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
-import { profile } from '../../../utils/profile';
 
 const debug = require('debug')('expo:start:server:middleware:aasa') as typeof console.log;
 
@@ -28,7 +26,11 @@ const debug = require('debug')('expo:start:server:middleware:aasa') as typeof co
  */
 export class AppleAppSiteAssociationMiddleware extends ExpoMiddleware {
   constructor(protected projectRoot: string) {
-    super(projectRoot, ['/apple-app-site-association', '/.well-known/apple-app-site-association']);
+    super(projectRoot, [
+      // TODO(EvanBacon): Maybe we should just support the more qualified path? Apple will always ping both paths.
+      '/apple-app-site-association',
+      '/.well-known/apple-app-site-association',
+    ]);
   }
 
   async handleRequestAsync(
@@ -38,39 +40,6 @@ export class AppleAppSiteAssociationMiddleware extends ExpoMiddleware {
   ): Promise<void> {
     if (!req?.url || (req.method !== 'GET' && req.method !== 'HEAD')) {
       return next();
-    }
-
-    const pathname = parse(req.url).pathname;
-    if (!pathname) {
-      return next();
-    }
-    const publicPath = path.join(this.projectRoot, env.EXPO_PUBLIC_FOLDER);
-
-    // TODO(EvanBacon): Delete this, depend on serve-static, Apple servers will always ping for both.
-
-    // If any apple-app-site-association file exists in the public folder, serve that instead.
-    if (pathname.includes('.well-known')) {
-      if (fs.existsSync(path.join(publicPath, 'apple-app-site-association'))) {
-        streamStaticFileResponse(
-          '/apple-app-site-association',
-          { root: publicPath },
-          req,
-          res,
-          next
-        );
-        return;
-      }
-    } else {
-      if (fs.existsSync(path.join(publicPath, './.well-known/apple-app-site-association'))) {
-        streamStaticFileResponse(
-          '/.well-known/apple-app-site-association',
-          { root: publicPath },
-          req,
-          res,
-          next
-        );
-        return;
-      }
     }
 
     if (env.EXPO_NO_APPLE_APP_SITE_ASSOCIATION) {
