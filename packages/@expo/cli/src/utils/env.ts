@@ -143,6 +143,13 @@ class Env {
   get HTTP_PROXY(): string {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
+
+  /**
+   * Disable automated Apple app site association generation for universal links.
+   */
+  get EXPO_NO_APPLE_APP_SITE_ASSOCIATION(): boolean {
+    return boolish('EXPO_NO_APPLE_APP_SITE_ASSOCIATION', false);
+  }
 }
 
 export const env = new Env();

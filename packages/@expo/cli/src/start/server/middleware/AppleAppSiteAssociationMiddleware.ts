@@ -46,6 +46,8 @@ export class AppleAppSiteAssociationMiddleware extends ExpoMiddleware {
     }
     const publicPath = path.join(this.projectRoot, env.EXPO_PUBLIC_FOLDER);
 
+    // TODO(EvanBacon): Delete this, depend on serve-static, Apple servers will always ping for both.
+
     // If any apple-app-site-association file exists in the public folder, serve that instead.
     if (pathname.includes('.well-known')) {
       if (fs.existsSync(path.join(publicPath, 'apple-app-site-association'))) {
@@ -69,6 +71,13 @@ export class AppleAppSiteAssociationMiddleware extends ExpoMiddleware {
         );
         return;
       }
+    }
+
+    if (env.EXPO_NO_APPLE_APP_SITE_ASSOCIATION) {
+      debug(
+        'Skipping Apple App Site Association middleware because EXPO_NO_APPLE_APP_SITE_ASSOCIATION is set.'
+      );
+      return next();
     }
 
     const aasa = generateAasaForProject(this.projectRoot);
@@ -292,7 +301,7 @@ function generateAasaJson(
   return aasa;
 }
 
-export function ensureAasaWritten(projectRoot: string, distRoot: string): boolean {
+export function exportAppleAppSiteAssociationAsync(projectRoot: string, distRoot: string): boolean {
   if (getUserDefinedAasaFile(projectRoot)) {
     debug('User defined Apple App Site Association file found, skipping.');
     return false;
@@ -300,6 +309,13 @@ export function ensureAasaWritten(projectRoot: string, distRoot: string): boolea
 
   const aasa = generateAasaForProject(projectRoot);
   if (!aasa) {
+    return false;
+  }
+
+  if (env.EXPO_NO_APPLE_APP_SITE_ASSOCIATION) {
+    Log.log(
+      chalk.gray`Skipping Apple App Site Association generation because EXPO_NO_APPLE_APP_SITE_ASSOCIATION is set.`
+    );
     return false;
   }
 
