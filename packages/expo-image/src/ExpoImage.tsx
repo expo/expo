@@ -3,10 +3,12 @@ import React from 'react';
 import { Image, NativeSyntheticEvent, StyleSheet, Platform, processColor } from 'react-native';
 
 import {
+  ImageContentFit,
   ImageErrorEventData,
   ImageLoadEventData,
   ImageProgressEventData,
   ImageProps,
+  ImageResizeMode,
 } from './Image.types';
 
 const NativeExpoImage = requireNativeViewManager('ExpoImage');
@@ -25,6 +27,45 @@ function withDeprecatedNativeEvent<NativeEvent>(
     },
   });
   return event.nativeEvent;
+}
+
+let loggedResizeModeDeprecationWarning = false;
+let loggedRepeatDeprecationWarning = false;
+
+/**
+ * If the `contentFit` is not provided, it's resolved from the the equivalent `resizeMode` prop
+ * that we support to provide compatibility with React Native Image.
+ */
+function resolveContentFit(
+  contentFit?: ImageContentFit,
+  resizeMode?: ImageResizeMode
+): ImageContentFit {
+  if (contentFit) {
+    return contentFit;
+  }
+  if (resizeMode) {
+    if (!loggedResizeModeDeprecationWarning) {
+      console.log('[expo-image]: Prop "resizeMode" is deprecated, use "contentFit" instead');
+      loggedResizeModeDeprecationWarning = true;
+    }
+
+    switch (resizeMode) {
+      case ImageResizeMode.CONTAIN:
+        return ImageContentFit.CONTAIN;
+      case ImageResizeMode.COVER:
+        return ImageContentFit.COVER;
+      case ImageResizeMode.STRETCH:
+        return ImageContentFit.FILL;
+      case ImageResizeMode.CENTER:
+        return ImageContentFit.SCALE_DOWN;
+      case ImageResizeMode.REPEAT:
+        if (!loggedRepeatDeprecationWarning) {
+          console.log('[expo-image]: Resize mode "repeat" is no longer supported');
+          loggedRepeatDeprecationWarning = true;
+        }
+    }
+  }
+  return ImageContentFit.CONTAIN;
 }
 
 class ExpoImage extends React.PureComponent<ImageProps> {
@@ -57,6 +98,7 @@ class ExpoImage extends React.PureComponent<ImageProps> {
     const resolvedPlaceholder = Image.resolveAssetSource(
       defaultSource ?? loadingIndicatorSource ?? {}
     );
+    const contentFit = resolveContentFit(props.contentFit, props.resizeMode);
 
     // If both are specified, we default to use default source
     if (defaultSource && loadingIndicatorSource) {
@@ -141,6 +183,7 @@ class ExpoImage extends React.PureComponent<ImageProps> {
         source={resolvedSource}
         style={resolvedStyle}
         defaultSource={resolvedPlaceholder}
+        contentFit={contentFit}
         onLoadStart={this.onLoadStart}
         onLoad={this.onLoad}
         onProgress={this.onProgress}

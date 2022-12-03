@@ -11,11 +11,13 @@ public final class ImageView: ExpoView {
 
   var sources: [ImageSource]?
 
-  var resizeMode: ImageResizeMode = .cover {
+  var contentFit: ContentFit = .cover {
     didSet {
-      sdImageView.contentMode = resizeMode.toContentMode()
+      sdImageView.contentMode = contentFit.toContentMode()
     }
   }
+
+  var contentPosition: ContentPosition = .center
 
   var transition: ImageTransition?
 
@@ -50,7 +52,7 @@ public final class ImageView: ExpoView {
     clipsToBounds = true
     sdImageView.contentMode = .scaleAspectFill
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    sdImageView.layer.masksToBounds = true
+    sdImageView.layer.masksToBounds = false
 
     // Apply trilinear filtering to smooth out mis-sized images.
     sdImageView.layer.magnificationFilter = .trilinear
@@ -140,8 +142,21 @@ public final class ImageView: ExpoView {
           "mediaType": imageFormatToMediaType(image.sd_imageFormat)
         ]
       ])
+
+      let scale = window?.screen.scale ?? UIScreen.main.scale
+      let idealSize = idealSize(
+        contentPixelSize: image.size * image.scale,
+        containerSize: frame.size,
+        scale: scale,
+        contentFit: contentFit
+      ).rounded(.up)
+      let image = processImage(image, idealSize: idealSize, scale: scale)
+
+      applyContentPosition(contentSize: idealSize, containerSize: frame.size)
+      renderImage(image)
+    } else {
+      renderImage(nil)
     }
-    renderImage(processImage(image))
   }
 
   // MARK: - Processing
@@ -154,19 +169,26 @@ public final class ImageView: ExpoView {
     return SDImagePipelineTransformer(transformers: transformers)
   }
 
-  private func processImage(_ image: UIImage?) -> UIImage? {
+  private func processImage(_ image: UIImage?, idealSize: CGSize, scale: Double) -> UIImage? {
     guard let image = image, !bounds.isEmpty else {
       return nil
     }
-    if resizeMode == .repeat {
-      return image.resizableImage(withCapInsets: .zero, resizingMode: .tile)
+    // Downscale the image only when necessary
+    if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
+      return resize(animatedImage: image, toSize: idealSize, scale: scale)
     }
-    let scale = window?.screen.scale ?? UIScreen.main.scale
-
-    return maybeDownscale(image: image, frameSize: frame.size, scale: scale)
+    return image
   }
 
   // MARK: - Rendering
+
+  /**
+   Moves the layer on which the image is rendered to respect the `contentPosition` prop.
+   */
+  private func applyContentPosition(contentSize: CGSize, containerSize: CGSize) {
+    let offset = contentPosition.offset(contentSize: contentSize, containerSize: containerSize)
+    sdImageView.layer.frame.origin = offset
+  }
 
   private func renderImage(_ image: UIImage?) {
     if let transition = transition, transition.duration > 0 {

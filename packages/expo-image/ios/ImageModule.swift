@@ -33,8 +33,12 @@ public final class ImageModule: Module {
         }
       }
 
-      Prop("resizeMode") { (view, resizeMode: ImageResizeMode) in
-        view.resizeMode = resizeMode
+      Prop("contentFit") { (view, contentFit: ContentFit?) in
+        view.contentFit = contentFit ?? .cover
+      }
+
+      Prop("contentPosition") { (view, contentPosition: ContentPosition?) in
+        view.contentPosition = contentPosition ?? .center
       }
 
       Prop("transition") { (view, transition: ImageTransition?) in
