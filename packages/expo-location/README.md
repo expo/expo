@@ -44,8 +44,8 @@ Run `npx pod-install` after installing the npm package.
         locationAlwaysAndWhenInUsePermission: 'string',
         locationAlwaysPermission: 'string',
         locationWhenInUsePermission: 'string',
-        isIosBackgroundLocationEnabled: 'string',
-        isAndroidBackgroundLocationEnabled: 'string',
+        isIosBackgroundLocationEnabled: false,
+        isAndroidBackgroundLocationEnabled: false,
       }]
   ]
 ```
