@@ -12,6 +12,12 @@ internal class MissingCurrentViewControllerException: Exception {
   }
 }
 
+internal class DocumentPickingInProgressException: Exception {
+  override var reason: String {
+    "Different document picking in progress. Await other document picking first."
+  }
+}
+
 internal class UnableToGetFileSizeException: Exception {
   override var reason: String {
     "Unable to get file size"

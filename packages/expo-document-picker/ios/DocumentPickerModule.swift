@@ -17,10 +17,10 @@ public class DocumentPickerModule: Module, DocumentPickingResultHandler {
     Name("ExpoDocumentPicker")
 
     AsyncFunction("getDocumentAsync") { (options: DocumentPickerOptions, promise: Promise) -> Void in
-      // TODO: do we need this?
-      //  if (promise.resolver != nil) {
-      //    promise.reject(DocumentPickingInProgressException())
-      //  }
+
+      if self.currentPickingContext != nil {
+        return promise.reject(DocumentPickingInProgressException())
+      }
 
       guard let utilities = self.appContext?.utilities else {
         throw UtilitiesInterfaceNotFoundException()
@@ -88,7 +88,14 @@ public class DocumentPickerModule: Module, DocumentPickingResultHandler {
 
   // MARK: - DocumentPickingResultHandler
   func didCancelPicking() {
-    self.currentPickingContext?.promise.resolve(["type": "cancel"])
+    guard let promise = self.currentPickingContext?.promise else {
+      log.error("Picking operation context has been lost.")
+      return
+    }
+
+    // Cleanup the currently stored picking context
+    self.currentPickingContext = nil
+    return promise.resolve(["type": "cancel"])
   }
 
   func didPickDocument(documentUrl: URL) {
