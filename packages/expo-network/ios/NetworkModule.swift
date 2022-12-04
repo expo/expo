@@ -67,9 +67,9 @@ public final class NetworkModule: Module {
 
   private func getNetworkStateAsync() -> [String: Any] {
     let path = monitor.currentPath
+    let isConnected = path.status == .satisfied
     var currentNetworkType = NetworkType.unknown
-    var isConnected = path.status == .satisfied
-
+  
     if !isConnected {
       return [
         "type": NetworkType.none.description,
