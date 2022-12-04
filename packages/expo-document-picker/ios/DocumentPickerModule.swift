@@ -94,7 +94,7 @@ public class DocumentPickerModule: Module, DocumentPickingResultHandler {
   func didPickDocument(documentUrl: URL) {
     guard let options = self.currentPickingContext?.options,
     let promise = self.currentPickingContext?.promise else {
-      NSLog("Picking operation context has been lost.")
+      log.error("Picking operation context has been lost.")
       return
     }
 
