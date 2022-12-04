@@ -17,7 +17,6 @@ public class DocumentPickerModule: Module, DocumentPickingResultHandler {
     Name("ExpoDocumentPicker")
 
     AsyncFunction("getDocumentAsync") { (options: DocumentPickerOptions, promise: Promise) -> Void in
-
       if self.currentPickingContext != nil {
         return promise.reject(DocumentPickingInProgressException())
       }
