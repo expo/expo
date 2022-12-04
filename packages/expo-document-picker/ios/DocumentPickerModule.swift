@@ -59,7 +59,7 @@ public class DocumentPickerModule: Module, DocumentPickingResultHandler {
           utTypes.append(convertedUTType)
         }
       }
-      picker = UIDocumentPickerViewController.init(forOpeningContentTypes: utTypes)
+      picker = UIDocumentPickerViewController.init(forOpeningContentTypes: utTypes, asCopy: true)
     } else {
       var utiTypes: [String] = []
 
