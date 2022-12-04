@@ -47,16 +47,16 @@ public class BrightnessModule: Module {
     OnStartObserving {
       hasListeners = true
       NotificationCenter.default.addObserver(self,
-                                             selector: #selector(self.brightnessDidChange),
-                                             name: UIScreen.brightnessDidChangeNotification,
-                                             object: nil)
+        selector: #selector(self.brightnessDidChange),
+        name: UIScreen.brightnessDidChangeNotification,
+        object: nil)
     }
 
     OnStopObserving {
       hasListeners = false
       NotificationCenter.default.removeObserver(self,
-                                                name: UIScreen.brightnessDidChangeNotification,
-                                                object: nil)
+        name: UIScreen.brightnessDidChangeNotification,
+        object: nil)
     }
 
     // Are all of these still needed?
