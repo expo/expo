@@ -29,6 +29,7 @@ When selecting an image for the build you can use the full name provided below o
 ## Android build server configurations
 
 Android workers run on Kubernetes in an isolated environment. Every build gets its own container running on a dedicated Kubernetes node:
+
 - Build resources: 4 CPU, 12 GB RAM
 - [npm cache deployed with Kubernetes](caching/#javascript-dependencies)
 - [Maven cache deployed with Kubernetes](caching/#android-dependencies)
@@ -64,10 +65,10 @@ Android workers run on Kubernetes in an isolated environment. Every build gets i
 
 - Docker image: `ubuntu:jammy-20220531`
 - NDK 21.4.7075529
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.0.0
-- npm 8.1.2
+- npm 8.19.2
 - Java 11
 
 </Collapsible>
@@ -78,10 +79,10 @@ Android workers run on Kubernetes in an isolated environment. Every build gets i
 
 - Docker image: `ubuntu:jammy-20220531`
 - NDK 21.4.7075529
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.0.0
-- npm 8.1.2
+- npm 8.19.2
 - Java 8
 
 </Collapsible>
@@ -92,10 +93,10 @@ Android workers run on Kubernetes in an isolated environment. Every build gets i
 
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.0.0
-- npm 8.1.2
+- npm 8.19.2
 - Java 11
 
 </Collapsible>
@@ -106,10 +107,10 @@ Android workers run on Kubernetes in an isolated environment. Every build gets i
 
 - Docker image: `ubuntu:focal-20210921`
 - NDK 21.4.7075529
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.0.0
-- npm 8.1.2
+- npm 8.19.2
 - Java 8
 
 </Collapsible>
@@ -120,10 +121,10 @@ Android workers run on Kubernetes in an isolated environment. Every build gets i
 
 - Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.0.0
-- npm 8.1.2
+- npm 8.19.2
 - Java 11
 
 </Collapsible>
@@ -134,10 +135,10 @@ Android workers run on Kubernetes in an isolated environment. Every build gets i
 
 - Docker image: `ubuntu:bionic-20210930`
 - NDK 19.2.5345600
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.0.0
-- npm 8.1.2
+- npm 8.19.2
 - Java 8
 
 </Collapsible>
@@ -145,6 +146,7 @@ Android workers run on Kubernetes in an isolated environment. Every build gets i
 ## iOS build server configurations
 
 iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build gets its own fresh macOS VM:
+
 - Hardware: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
 - Build resource limits: 3 cores, 12 GB RAM
 - [npm cache](caching/#javascript-dependencies)
@@ -173,10 +175,10 @@ iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build
 
 - macOS Monterey 12.6
 - Xcode 14.1 (14B47b)
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.15.0
-- npm 8.1.2
+- npm 8.19.2
 - fastlane 2.210.1
 - CocoaPods 1.11.3
 - Ruby 2.7
@@ -189,10 +191,10 @@ iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build
 
 - macOS Monterey 12.6
 - Xcode 14.0 (14A309)
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.11.0
-- npm 8.1.2
+- npm 8.19.2
 - fastlane 2.210.0
 - CocoaPods 1.11.3
 - Ruby 2.7
@@ -205,44 +207,12 @@ iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build
 
 - macOS Monterey 12.4
 - Xcode 13.4 (13F17a)
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.0.0
-- npm 8.1.2
+- npm 8.19.2
 - fastlane 2.205.2
 - CocoaPods 1.11.3
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-monterey-12.3-xcode-13.3`
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.3.1
-- Xcode 13.3.1 (13E500a)
-- Node.js 16.13.2
-- Yarn 1.22.17
-- pnpm 7.0.0
-- npm 8.1.2
-- fastlane 2.205.2
-- CocoaPods 1.11.3
-- Ruby 2.7
-
-</Collapsible>
-
-#### `macos-monterey-12.1-xcode-13.2`
-
-<Collapsible summary="Details">
-
-- macOS Monterey 12.1
-- Xcode 13.2.1 (13C100)
-- Node.js 16.13.2
-- Yarn 1.22.17
-- pnpm 7.0.0
-- npm 8.1.2
-- fastlane 2.201.0
-- CocoaPods 1.11.2
 - Ruby 2.7
 
 </Collapsible>
@@ -253,26 +223,58 @@ iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build
 
 - macOS Big Sur 11.4
 - Xcode 13.0 (13A233)
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.0.0
-- npm 8.1.2
+- npm 8.19.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
 - Ruby 2.7
 
 </Collapsible>
 
-#### `macos-big-sur-11.4-xcode-12.5`
+#### `macos-monterey-12.3-xcode-13.3` (deprecated)
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.3.1
+- Xcode 13.3.1 (13E500a)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- fastlane 2.205.2
+- CocoaPods 1.11.3
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-monterey-12.1-xcode-13.2` (deprecated)
+
+<Collapsible summary="Details">
+
+- macOS Monterey 12.1
+- Xcode 13.2.1 (13C100)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 7.0.0
+- npm 8.19.2
+- fastlane 2.201.0
+- CocoaPods 1.11.2
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-big-sur-11.4-xcode-12.5` (deprecated)
 
 <Collapsible summary="Details">
 
 - macOS Big Sur 11.4
 - Xcode 12.5 (12E5244e)
-- Node.js 16.13.2
+- Node.js 16.18.1
 - Yarn 1.22.17
 - pnpm 7.0.0
-- npm 8.1.2
+- npm 8.19.2
 - fastlane 2.185.1
 - CocoaPods 1.10.1
 - Ruby 2.7

@@ -197,7 +197,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
   }
 
   private cleanCopyValue(value: string) {
-    return value.replace(/ *(\/\*|#|<!--)+\s@.+(\*\/|-->)\r?\n/g, '');
+    return value.replace(/ *(\/\*|#|<!--)+\s@.+(\*\/|-->|#)\r?\n/g, '');
   }
 
   render() {
@@ -227,7 +227,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
       }
 
       html = Prism.highlight(html, grammar, lang as Language);
-      if (['properties', 'ruby'].includes(lang)) {
+      if (['properties', 'ruby', 'bash'].includes(lang)) {
         html = this.replaceHashCommentsWithAnnotations(html);
       } else if (['xml', 'html'].includes(lang)) {
         html = this.replaceXmlCommentsWithAnnotations(html);

@@ -6,7 +6,7 @@ packageName: 'expo-firebase-recaptcha'
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 import { Terminal } from '~/ui/components/Snippet';
 
 `expo-firebase-recaptcha` provides a set of building blocks for creating a reCAPTCHA verifier and using that with your Firebase Phone authentication workflow.
@@ -35,7 +35,7 @@ Instead of using the standard `firebase.auth.RecaptchaVerifier` class, we will b
 
 Add the `<FirebaseRecaptchaVerifierModal>` component to your screen and store its ref for later use. Also pass in the Firebase web configuration using the `firebaseConfig` prop.
 
-> 🚨 Optionally you can turn on **experimental invisible reCAPTCHA** using `attemptInvisibleVerification`. This feature is experimental and attempts to complete the verification process without showing any UI to the user. When invisible verification fails, the full reCATPCHA challenge UI is shown. The Google terms for invisible reCAPTCHA apply - use `<FirebaseRecaptchaBanner>` to show the Google terms when using invisible reCAPTCHA.
+> Optionally you can turn on **experimental invisible reCAPTCHA** using `attemptInvisibleVerification`. This feature is experimental and attempts to complete the verification process without showing any UI to the user. When invisible verification fails, the full reCATPCHA challenge UI is shown. The Google terms for invisible reCAPTCHA apply - use `<FirebaseRecaptchaBanner>` to show the Google terms when using invisible reCAPTCHA.
 
 ```tsx
 <FirebaseRecaptchaVerifierModal

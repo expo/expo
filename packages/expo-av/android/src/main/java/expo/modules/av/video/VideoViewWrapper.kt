@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Bundle
 import android.widget.FrameLayout
+import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.viewevent.EventDispatcher
 
@@ -13,7 +14,8 @@ import expo.modules.kotlin.viewevent.EventDispatcher
  * overriding our native layout.
  */
 @SuppressLint("ViewConstructor")
-class VideoViewWrapper(context: Context, appContext: AppContext) : FrameLayout(context) {
+@DoNotStrip
+class VideoViewWrapper @DoNotStrip constructor(context: Context, appContext: AppContext) : FrameLayout(context) {
   val videoViewInstance: VideoView
   private val mLayoutRunnable = Runnable {
     measure(

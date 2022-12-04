@@ -6,17 +6,13 @@ Object.defineProperty(exports, "__esModule", {
 exports.getAutolinkedPackagesAsync = getAutolinkedPackagesAsync;
 exports.resolvePackagesList = resolvePackagesList;
 exports.shouldSkipAutoPlugin = shouldSkipAutoPlugin;
-
 function _importExpoModulesAutolinking() {
   const data = require("./importExpoModulesAutolinking");
-
   _importExpoModulesAutolinking = function () {
     return data;
   };
-
   return data;
 }
-
 /**
  * Returns a list of packages that are autolinked to a project.
  *
@@ -34,38 +30,32 @@ async function getAutolinkedPackagesAsync(projectRoot, platforms = ['ios', 'andr
   })));
   return resolvePackagesList(platformPaths);
 }
-
 function resolvePackagesList(platformPaths) {
   const allPlatformPaths = platformPaths.map(paths => Object.keys(paths)).flat();
   const uniquePaths = [...new Set(allPlatformPaths)];
   return uniquePaths.sort();
 }
-
 function shouldSkipAutoPlugin(config, plugin) {
   var _config$_internal;
-
   // Hack workaround because expo-dev-client doesn't use expo modules.
   if (plugin === 'expo-dev-client') {
     return false;
-  } // Only perform the check if `autolinkedModules` is defined, otherwise we assume
+  }
+
+  // Only perform the check if `autolinkedModules` is defined, otherwise we assume
   // this is a legacy runner which doesn't support autolinking.
-
-
   if (Array.isArray((_config$_internal = config._internal) === null || _config$_internal === void 0 ? void 0 : _config$_internal.autolinkedModules)) {
     // Resolve the pluginId as a string.
     const pluginId = Array.isArray(plugin) ? plugin[0] : plugin;
-
     if (typeof pluginId === 'string') {
       // Determine if the autolinked modules list includes our moduleId
       const isIncluded = config._internal.autolinkedModules.includes(pluginId);
-
       if (!isIncluded) {
         // If it doesn't then we know that any potential plugin shouldn't be applied automatically.
         return true;
       }
     }
   }
-
   return false;
 }
 //# sourceMappingURL=getAutolinkedPackages.js.map

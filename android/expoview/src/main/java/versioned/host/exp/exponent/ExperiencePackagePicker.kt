@@ -15,7 +15,7 @@ import expo.modules.constants.ConstantsPackage
 import expo.modules.contacts.ContactsPackage
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
-import expo.modules.device.DevicePackage
+import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerPackage
 import expo.modules.easclient.EASClientModule
 import expo.modules.errorrecovery.ErrorRecoveryPackage
@@ -39,7 +39,7 @@ import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationPackage
 import expo.modules.mailcomposer.MailComposerPackage
 import expo.modules.manifests.core.Manifest
-import expo.modules.medialibrary.MediaLibraryPackage
+import expo.modules.medialibrary.MediaLibraryModule
 import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
@@ -73,7 +73,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    DevicePackage(),
     DocumentPickerPackage(),
     ErrorRecoveryPackage(),
     FaceDetectorPackage(),
@@ -89,7 +88,6 @@ object ExperiencePackagePicker : ModulesProvider {
     LocalAuthenticationPackage(),
     LocationPackage(),
     MailComposerPackage(),
-    MediaLibraryPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
@@ -129,11 +127,13 @@ object ExperiencePackagePicker : ModulesProvider {
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,
+    DeviceModule::class.java,
     EASClientModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
+    MediaLibraryModule::class.java,
     NetworkModule::class.java,
     RandomModule::class.java,
     StoreReviewModule::class.java,
