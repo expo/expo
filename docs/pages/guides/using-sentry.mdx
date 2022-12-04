@@ -220,12 +220,14 @@ Skipping or misconfiguring either of these can lead to invalid sourcemaps, and y
 
 ### Uploading sourcemaps for updates
 
+> This requires SDK 47, with `sentry-expo@6.0.0` or above and `expo-updates@0.15.5` or above.
+
 If you're using EAS Update, or if you're self-hosting your updates (this means you run `npx expo export` manually), you need to take the following steps to upload the sourcemaps for your update to Sentry:
 
-- Running `eas update` or `npx expo export` will generate a **dist** folder in your project root, which contains your JavaScript bundles and sourcemaps. This command will also output the 'Android update ID' and  'iOS update ID' that we'll need in the next step.
-- Copy or rename the bundle names in the **dist/bundles** folder to match **main.jsbundle** (iOS) or **index.android.bundle** (Android)/ 
+- Run `eas update`. This will generate a **dist** folder in your project root, which contains your JavaScript bundles and sourcemaps. This command will also output the 'Android update ID' and  'iOS update ID' that we'll need in the next step.
+- Copy or rename the bundle names in the **dist/bundles** folder to match **main.jsbundle** (iOS) or **index.android.bundle** (Android).
 - Next, you can use the Sentry CLI to upload your bundles and sourcemaps:
-  - `release name` should be set to `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android), so for example `com.domain.myapp@1.0.0+1`
+  - `release name` should be set to `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android), so for example `com.domain.myapp@1.0.0+1`.
   - `dist` should be set to the Update ID that `eas update` generated.
 
 <Tabs>
@@ -253,7 +255,7 @@ If you're using EAS Update, or if you're self-hosting your updates (this means y
 
 For more information, see Sentry's [instructions for uploading the bundle and sourcemaps](https://docs.sentry.io/platforms/react-native/sourcemaps/#3-upload-the-bundle-and-source-maps).
 
-These steps define a new 'dist' on Sentry, under the same release as your full app build, and associate the sourcemaps with this dist. If you want to customize this behavior, you can pass in your own values for `release` and `dist` when you initialize Sentry in your code. For example:
+The steps above define a new 'dist' on Sentry, under the same release as your full app build, and associate the sourcemaps with this new dist. If you want to customize this behavior, you can pass in your own values for `release` and `dist` when you initialize Sentry in your code. For example:
 
 ```js
 import * as Sentry from '@sentry/react-native';
