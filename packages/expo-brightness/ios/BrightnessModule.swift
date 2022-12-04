@@ -46,7 +46,8 @@ public class BrightnessModule: Module {
 
     OnStartObserving {
       hasListeners = true
-      NotificationCenter.default.addObserver(self,
+      NotificationCenter.default.addObserver(
+        self,
         selector: #selector(self.brightnessDidChange),
         name: UIScreen.brightnessDidChangeNotification,
         object: nil)
@@ -54,7 +55,8 @@ public class BrightnessModule: Module {
 
     OnStopObserving {
       hasListeners = false
-      NotificationCenter.default.removeObserver(self,
+      NotificationCenter.default.removeObserver(
+        self,
         name: UIScreen.brightnessDidChangeNotification,
         object: nil)
     }
