@@ -2,56 +2,23 @@ import ExpoModulesCore
 import SystemConfiguration
 import Network
 
-extension NWInterface.InterfaceType: CaseIterable {
-  public static var allCases: [NWInterface.InterfaceType] = [
-    .other,
-    .wifi,
-    .cellular,
-    .loopback,
-    .wiredEthernet
-  ]
-}
-
-enum NetworkType: CustomStringConvertible {
-  case unknown, wifi, none, cellular
-
-  var description: String {
-    switch self {
-    case .wifi:
-      return "WIFI"
-    case .cellular:
-      return "CELLULAR"
-    case .unknown:
-      return "UNKNOWN"
-    case .none:
-      return "NONE"
-    }
-  }
-}
-
 public final class NetworkModule: Module {
   private let monitor = NWPathMonitor()
-  private let monitorQueue = DispatchQueue.global(qos: .background)
-  private var type = NetworkType.unknown
-  private var connected = false
+  private let monitorQueue = DispatchQueue.global(qos: .default)
 
   public func definition() -> ModuleDefinition {
     Name("ExpoNetwork")
 
     OnCreate {
-      startMonitor()
+      monitor.start(queue: monitorQueue)
     }
 
     AsyncFunction("getIpAddressAsync") { () -> String? in
       return try getIPAddress()
     }
 
-    AsyncFunction("getNetworkStateAsync") { (promise: Promise) in
-      promise.resolve([
-        "type": self.type.description,
-        "isConnected": self.connected,
-        "isInternetReachable": self.connected
-      ])
+    AsyncFunction("getNetworkStateAsync") {
+      return getNetworkStateAsync()
     }
 
     OnDestroy {
@@ -98,31 +65,38 @@ public final class NetworkModule: Module {
     return address
   }
 
-  private func startMonitor() {
-    monitor.pathUpdateHandler = { [weak self] path in
-      guard let self = self else {
-        return
-      }
-      self.connected = path.status == .satisfied
+  private func getNetworkStateAsync() -> [String: Any] {
+    let path = monitor.currentPath
+    var currentNetworkType = NetworkType.unknown
+    var isConnected = path.status == .satisfied
 
-      if !self.connected {
-        self.type = .none
-        return
-      }
-
-      let connectionType = NWInterface.InterfaceType.allCases.filter {
-        path.usesInterfaceType($0)
-      }.first
-
-      switch connectionType {
-      case .wifi:
-        self.type = .wifi
-      case .cellular:
-        self.type = .cellular
-      default:
-        self.type = .unknown
-      }
+    if !isConnected {
+      return [
+        "type": NetworkType.none.description,
+        "isConnected": isConnected,
+        "isInternetReachable": isConnected
+      ]
     }
-    monitor.start(queue: monitorQueue)
+
+    let connectionType = NWInterface
+      .InterfaceType
+      .allCases
+      .filter { path.usesInterfaceType($0) }
+      .first
+
+    switch connectionType {
+    case .wifi:
+      currentNetworkType = .wifi
+    case .cellular:
+      currentNetworkType = .cellular
+    default:
+      currentNetworkType = .unknown
+    }
+
+    return [
+      "type": currentNetworkType.description,
+      "isConnected": isConnected,
+      "isInternetReachable": isConnected
+    ]
   }
 }
