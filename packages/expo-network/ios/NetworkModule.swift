@@ -69,7 +69,7 @@ public final class NetworkModule: Module {
     let path = monitor.currentPath
     let isConnected = path.status == .satisfied
     var currentNetworkType = NetworkType.unknown
-  
+
     if !isConnected {
       return [
         "type": NetworkType.none.description,
