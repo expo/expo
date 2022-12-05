@@ -61,7 +61,7 @@ export async function getConnectedDeviceValuesAsync(): Promise<DeviceValues[]> {
       return {
         ...deviceValue,
         ConnectionType: device.Properties.ConnectionType,
-        UniqueDeviceID: device.Properties.UDID ?? device.Properties.SerialNumber,
+        UniqueDeviceID: device.Properties.SerialNumber,
       };
     })
   );
