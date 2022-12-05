@@ -1,6 +1,14 @@
-import { ImageResizeMode, Image } from 'expo-image';
+import { ImageContentFit, ImageContentPosition, Image } from 'expo-image';
 import React from 'react';
-import { Dimensions, Image as RNImage, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Image as RNImage,
+  ImageResizeMode,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
@@ -80,26 +88,56 @@ const parameters: FunctionParameter[] = [
     values: [
       { name: '1500x1000', value: '1500/1000' },
       { name: '1000x1500', value: '1000/1500' },
+      { name: '300x300', value: '300/300' },
       { name: '100x100', value: '100/100' },
     ],
   },
   {
-    name: 'Resize mode',
+    name: 'Content fit',
     type: 'enum',
     values: [
-      { name: 'cover', value: ImageResizeMode.COVER },
-      { name: 'contain', value: ImageResizeMode.CONTAIN },
-      { name: 'center', value: ImageResizeMode.CENTER },
-      { name: 'repeat', value: ImageResizeMode.REPEAT },
-      { name: 'stretch', value: ImageResizeMode.STRETCH },
+      { name: 'cover', value: ImageContentFit.COVER },
+      { name: 'contain', value: ImageContentFit.CONTAIN },
+      { name: 'fill', value: ImageContentFit.FILL },
+      { name: 'none', value: ImageContentFit.NONE },
+      { name: 'scale-down', value: ImageContentFit.SCALE_DOWN },
+    ],
+  },
+  {
+    name: 'Content position',
+    type: 'enum',
+    values: [
+      { name: 'top 50%, left 50%', value: { top: '50%', left: '50%' } },
+      { name: 'top 0, right 0', value: { top: 0, right: 0 } },
+      { name: 'top 100, left 50', value: { top: 100, left: 50 } },
+      { name: 'bottom 10%, right 25%', value: { bottom: '10%', right: '25%' } },
+      { name: 'bottom 0, right 10', value: { bottom: 0, right: 10 } },
     ],
   },
 ];
 
+function mapContentFitToResizeMode(contentFit: ImageContentFit): ImageResizeMode {
+  switch (contentFit) {
+    case ImageContentFit.COVER:
+    case ImageContentFit.CONTAIN:
+      return contentFit;
+    case ImageContentFit.FILL:
+      return 'stretch';
+    case ImageContentFit.NONE:
+    case ImageContentFit.SCALE_DOWN:
+      return 'center';
+  }
+}
+
 export default function ImageResizableScreen() {
   const [seed] = React.useState(1 + Math.round(Math.random() * 10));
   const [args, updateArgument] = useArguments(parameters);
-  const [showReactNativeComponent, size, resizeMode] = args as [boolean, string, ImageResizeMode];
+  const [showReactNativeComponent, size, contentFit, contentPosition] = args as [
+    boolean,
+    string,
+    ImageContentFit,
+    ImageContentPosition
+  ];
   const ImageComponent: React.ElementType = showReactNativeComponent ? RNImage : Image;
 
   return (
@@ -108,7 +146,9 @@ export default function ImageResizableScreen() {
         <ImageComponent
           style={styles.image}
           source={{ uri: `https://picsum.photos/seed/${seed}/${size}` }}
-          resizeMode={resizeMode}
+          contentFit={contentFit}
+          contentPosition={contentPosition}
+          resizeMode={mapContentFitToResizeMode(contentFit)}
         />
       </ResizableView>
 
