@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Migrated to Expo Modules API. ([#20327](https://github.com/expo/expo/pull/20327) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -52,7 +54,7 @@ _This version does not introduce any user-facing changes._
 
 - Replace the stand-alone action constant strings with String Enum named `ActivityAction`. ([#14070](https://github.com/expo/expo/pull/14070) by [@Simek](https://github.com/Simek))
 
-```diff
+````diff
 - IntentLauncher.ACTION_* // ACTION_ACCESSIBILITY_SETTINGS
 + IntentLauncher.ActivityAction.* // ActivityAction.ACCESSIBILITY_SETTINGS
 ```## 9.1.0 — 2021-06-16
@@ -91,6 +93,8 @@ _This version does not introduce any user-facing changes._
 ## 8.2.0 — 2020-05-27
 
 *This version does not introduce any user-facing changes.*
-``````
+````
+
+```
 
 ```
