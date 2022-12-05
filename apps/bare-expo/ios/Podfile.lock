@@ -151,7 +151,7 @@ PODS:
     - ExpoModulesCore
   - ExpoDevice (5.0.0):
     - ExpoModulesCore
-  - ExpoGL (12.0.0):
+  - ExpoGL (12.1.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.0.1):
@@ -1192,7 +1192,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
   ExpoDevice: f3c8baaea11ae02095ecb474dcfd48d80ee5bf8f
-  ExpoGL: 75d4259b4907dbf725b5dd9309602304f29e52b3
+  ExpoGL: 1f734be738a52713e6ec7abe4fd970f0946a2a0b
   ExpoHaptics: 5a56d30a87ea213dd00b09566dc4b441a4dff97f
   ExpoImage: da2c9a0f17c5b00727619f0f0777c1a0b9da8c07
   ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
