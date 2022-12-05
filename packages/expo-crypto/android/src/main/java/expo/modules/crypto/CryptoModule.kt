@@ -6,6 +6,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.typedarray.TypedArray
 import java.security.MessageDigest
 import java.security.SecureRandom
+import java.util.UUID
 
 class CryptoModule : Module() {
   private val secureRandom by lazy { SecureRandom() }
@@ -18,6 +19,7 @@ class CryptoModule : Module() {
     Function("getRandomBase64String", this@CryptoModule::getRandomBase64String)
     AsyncFunction("getRandomBase64StringAsync", this@CryptoModule::getRandomBase64String)
     Function("getRandomValues", this@CryptoModule::getRandomValues)
+    Function("randomUUID", this@CryptoModule::randomUUID)
   }
 
   private fun getRandomBase64String(randomByteCount: Int): String {
@@ -48,5 +50,9 @@ class CryptoModule : Module() {
     val array = ByteArray(typedArray.byteLength)
     secureRandom.nextBytes(array)
     typedArray.write(array, typedArray.byteOffset, typedArray.byteLength)
+  }
+
+  private fun randomUUID(): String {
+    return UUID.randomUUID().toString()
   }
 }

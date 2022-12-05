@@ -31,6 +31,9 @@ export default {
     getRandomValues(typedArray) {
         return getCrypto().getRandomValues(typedArray);
     },
+    randomUUID() {
+        return getCrypto().randomUUID();
+    },
 };
 function hexString(buffer) {
     const byteArray = new Uint8Array(buffer);
