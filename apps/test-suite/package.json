@@ -30,7 +30,7 @@
     "expo-device": "~5.0.0",
     "expo-eas-client": "~0.4.0",
     "expo-file-system": "~15.1.0",
-    "expo-gl": "~12.0.0",
+    "expo-gl": "~12.1.0",
     "expo-haptics": "~12.0.0",
     "expo-image-manipulator": "~11.0.0",
     "expo-keep-awake": "~11.0.0",

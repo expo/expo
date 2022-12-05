@@ -83,7 +83,7 @@
     "expo-face-detector": "~12.0.0",
     "expo-file-system": "~15.1.0",
     "expo-font": "~11.0.0",
-    "expo-gl": "~12.0.0",
+    "expo-gl": "~12.1.0",
     "expo-haptics": "~12.0.0",
     "expo-image": "~0.2.0",
     "expo-image-loader": "^4.0.0",
