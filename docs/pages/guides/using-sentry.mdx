@@ -231,16 +231,6 @@ If you're using EAS Update, or if you're self-hosting your updates (this means y
   - `dist` should be set to the Update ID that `eas update` generated.
 
 <Tabs>
-<Tab label="iOS">
-<Terminal cmd={[
-  "$ node_modules/@sentry/cli/bin/sentry-cli releases \\",
-  "    files <release name> \\",
-  "    upload-sourcemaps \\",
-  "    --dist <iOS Update ID> \\",
-  "    --rewrite \\",
-  "    dist/bundles/main.jsbundle dist/bundles/ios-<hash>.map",
-]} />
-</Tab>
 <Tab label="Android">
 <Terminal cmd={[
   "$ node_modules/@sentry/cli/bin/sentry-cli releases \\",
@@ -249,6 +239,16 @@ If you're using EAS Update, or if you're self-hosting your updates (this means y
   "    --dist <Android Update ID> \\",
   "    --rewrite \\",
   "    dist/bundles/index.android.bundle dist/bundles/android-<hash>.map",
+]} />
+</Tab>
+<Tab label="iOS">
+<Terminal cmd={[
+  "$ node_modules/@sentry/cli/bin/sentry-cli releases \\",
+  "    files <release name> \\",
+  "    upload-sourcemaps \\",
+  "    --dist <iOS Update ID> \\",
+  "    --rewrite \\",
+  "    dist/bundles/main.jsbundle dist/bundles/ios-<hash>.map",
 ]} />
 </Tab>
 </Tabs>
