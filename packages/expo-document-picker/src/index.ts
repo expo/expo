@@ -22,5 +22,6 @@ export async function getDocumentAsync({
   if (typeof type === 'string') {
     type = [type] as string[];
   }
+  console.log({ type, copyToCacheDirectory, multiple });
   return await ExpoDocumentPicker.getDocumentAsync({ type, copyToCacheDirectory, multiple });
 }
