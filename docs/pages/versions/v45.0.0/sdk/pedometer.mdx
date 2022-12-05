@@ -31,33 +31,29 @@ export default function App() {
   const [pastStepCount, setPastStepCount] = useState(0);
   const [currentStepCount, setCurrentStepCount] = useState(0);
 
+  const subscribe = async () => {
+    const isAvailable = await Pedometer.isAvailableAsync();
+    setIsPedometerAvailable(String(isAvailable));
+
+    if (isAvailable) {
+      const end = new Date();
+      const start = new Date();
+      start.setDate(end.getDate() - 1);
+
+      const pastStepCountResult = await Pedometer.getStepCountAsync(start, end);
+      if (pastStepCountResult) {
+        setPastStepCount(pastStepCountResult.steps);
+      }
+
+      return Pedometer.watchStepCount(result => {
+        setCurrentStepCount(result.steps);
+      });
+    }
+  };
+
   useEffect(() => {
-    const subscribe = Pedometer.watchStepCount(result => setCurrentStepCount(result.steps));
-    Pedometer.isAvailableAsync().then(
-      result => {
-        setIsPedometerAvailable(String(result));
-      },
-      error => {
-        setIsPedometerAvailable('Could not get isPedometerAvailable: ' + error);
-      }
-    );
-
-    const end = new Date();
-    const start = new Date();
-    start.setDate(end.getDate() - 1);
-
-    Pedometer.getStepCountAsync(start, end).then(
-      result => {
-        setPastStepCount(result.steps);
-      },
-      error => {
-        setPastStepCount('Could not get stepCount: ' + error);
-      }
-    );
-
-    return () => {
-      subscribe();
-    };
+    const subscription = subscribe();
+    return () => subscription && subscription.remove();
   }, []);
 
   return (
