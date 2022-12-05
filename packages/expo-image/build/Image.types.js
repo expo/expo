@@ -30,6 +30,9 @@ export var ImageContentFit;
      */
     ImageContentFit["SCALE_DOWN"] = "scale-down";
 })(ImageContentFit || (ImageContentFit = {}));
+/**
+ * @deprecated The resize mode is deprecated in favor of `ImageContentFit` and `contentFit` prop.
+ */
 export var ImageResizeMode;
 (function (ImageResizeMode) {
     /**

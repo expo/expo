@@ -119,10 +119,12 @@ export declare enum ImageContentFit {
      */
     SCALE_DOWN = "scale-down"
 }
-declare type Percentage = `${number}%`;
-declare type PositionValue = number | Percentage | `${number}` | 'center';
 /**
- * @hidden
+ * @docsMissing
+ */
+export declare type PositionValue = number | `${number}%` | `${number}` | 'center';
+/**
+ * @docsMissing
  */
 export declare type ImageContentPositionObject = {
     top?: PositionValue;
@@ -138,9 +140,17 @@ export declare type ImageContentPositionObject = {
     left?: PositionValue;
 };
 /**
- * @hidden
+ * A stringified and shorthand form of the `contentPosition` prop. This specifies the edges to which to align the image content.
+ * If only one keyword is provided, the other dimension is then set to 50%, so the image is placed in the middle of the edge specified.
  */
-export declare type ImageContentPosition = ImageContentPositionObject;
+export declare type ImageContentPositionString = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'top center' | 'top right' | 'top left' | 'right center' | 'right top' | 'right bottom' | 'bottom center' | 'bottom right' | 'bottom left' | 'left center' | 'left top' | 'left bottom';
+/**
+ * @docsMissing
+ */
+export declare type ImageContentPosition = ImageContentPositionString | ImageContentPositionObject;
+/**
+ * @deprecated The resize mode is deprecated in favor of `ImageContentFit` and `contentFit` prop.
+ */
 export declare enum ImageResizeMode {
     /**
      * The image will be resized such that the entire area of the view
@@ -212,5 +222,4 @@ export declare type ImageProgressEventData = {
 export declare type ImageErrorEventData = {
     error: string;
 };
-export {};
 //# sourceMappingURL=Image.types.d.ts.map
