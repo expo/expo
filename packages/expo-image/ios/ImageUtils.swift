@@ -3,15 +3,6 @@
 import SDWebImage
 import ExpoModulesCore
 
-// MARK: - Constants
-
-/**
- When downscaling, the ideal size will be (up)scaled by this value so we can throttle re-scaling when the view is resized.
- */
-let downscalingThreshold = 1.2
-
-// MARK: - Functions
-
 func cacheTypeToString(_ cacheType: SDImageCacheType) -> String {
   switch cacheType {
   case .none:
@@ -56,11 +47,30 @@ func imageFormatToMediaType(_ format: SDImageFormat) -> String? {
 }
 
 /**
- Calculates the ideal size that fills in the target size while maintaining the source aspect ratio.
+ Calculates the ideal size that fills in the container size while maintaining the source aspect ratio.
  */
-func idealSize(sourceSize: CGSize, targetSize: CGSize) -> CGSize {
-  let aspectRatio = max(targetSize.width / sourceSize.width, targetSize.height / sourceSize.height)
-  return sourceSize * aspectRatio
+func idealSize(contentPixelSize: CGSize, containerSize: CGSize, scale: Double, contentFit: ContentFit) -> CGSize {
+  switch contentFit {
+  case .contain:
+    let aspectRatio = min(containerSize.width / contentPixelSize.width, containerSize.height / contentPixelSize.height)
+    return contentPixelSize * aspectRatio
+  case .cover:
+    let aspectRatio = max(containerSize.width / contentPixelSize.width, containerSize.height / contentPixelSize.height)
+    return contentPixelSize * aspectRatio
+  case .fill:
+    return containerSize
+  case .scaleDown:
+    if containerSize.width < contentPixelSize.width / scale || containerSize.height < contentPixelSize.height / scale {
+      // The container is smaller than the image — scale it down and behave like `contain`
+      let aspectRatio = min(containerSize.width / contentPixelSize.width, containerSize.height / contentPixelSize.height)
+      return contentPixelSize * aspectRatio
+    } else {
+      // The container is bigger than the image — don't scale it and behave like `none`
+      return contentPixelSize / scale
+    }
+  case .none:
+    return contentPixelSize / scale
+  }
 }
 
 /**
@@ -77,24 +87,7 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
     return false
   }
   let imageSize = image.size * image.scale
-  let idealSize = size * scale
-
-  return imageSize.width > idealSize.width * downscalingThreshold && imageSize.height > idealSize.height * downscalingThreshold
-}
-
-/**
- Downscales the given image only if necessary (image is much bigger than the view frame).
- */
-func maybeDownscale(image: UIImage, frameSize size: CGSize, scale: Double) -> UIImage {
-  // Calculate the ideal size. Source and target sizes are first normalized from points to pixels.
-  let idealSize = (
-    idealSize(sourceSize: image.size * image.scale, targetSize: size * scale) * (downscalingThreshold / scale)
-  ).rounded(.up)
-
-  if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
-    return resize(animatedImage: image, toSize: idealSize, scale: scale)
-  }
-  return image
+  return imageSize.width > size.width && imageSize.height > size.height
 }
 
 /**
@@ -135,6 +128,13 @@ extension CGSize {
    */
   static func * (size: CGSize, scalar: Double) -> CGSize {
     return CGSize(width: size.width * scalar, height: size.height * scalar)
+  }
+
+  /**
+   Divides a size with a scalar.
+   */
+  static func / (size: CGSize, scalar: Double) -> CGSize {
+    return CGSize(width: size.width / scalar, height: size.height / scalar)
   }
 
   /**

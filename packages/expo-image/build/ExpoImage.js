@@ -1,6 +1,7 @@
 import { requireNativeViewManager, requireNativeModule } from 'expo-modules-core';
 import React from 'react';
 import { Image, StyleSheet, Platform, processColor } from 'react-native';
+import { ImageContentFit, ImageResizeMode, } from './Image.types';
 const NativeExpoImage = requireNativeViewManager('ExpoImage');
 const ExpoImageModule = requireNativeModule('ExpoImage');
 function withDeprecatedNativeEvent(event) {
@@ -11,6 +12,39 @@ function withDeprecatedNativeEvent(event) {
         },
     });
     return event.nativeEvent;
+}
+let loggedResizeModeDeprecationWarning = false;
+let loggedRepeatDeprecationWarning = false;
+/**
+ * If the `contentFit` is not provided, it's resolved from the the equivalent `resizeMode` prop
+ * that we support to provide compatibility with React Native Image.
+ */
+function resolveContentFit(contentFit, resizeMode) {
+    if (contentFit) {
+        return contentFit;
+    }
+    if (resizeMode) {
+        if (!loggedResizeModeDeprecationWarning) {
+            console.log('[expo-image]: Prop "resizeMode" is deprecated, use "contentFit" instead');
+            loggedResizeModeDeprecationWarning = true;
+        }
+        switch (resizeMode) {
+            case ImageResizeMode.CONTAIN:
+                return ImageContentFit.CONTAIN;
+            case ImageResizeMode.COVER:
+                return ImageContentFit.COVER;
+            case ImageResizeMode.STRETCH:
+                return ImageContentFit.FILL;
+            case ImageResizeMode.CENTER:
+                return ImageContentFit.SCALE_DOWN;
+            case ImageResizeMode.REPEAT:
+                if (!loggedRepeatDeprecationWarning) {
+                    console.log('[expo-image]: Resize mode "repeat" is no longer supported');
+                    loggedRepeatDeprecationWarning = true;
+                }
+        }
+    }
+    return ImageContentFit.CONTAIN;
 }
 class ExpoImage extends React.PureComponent {
     onLoadStart = () => {
@@ -35,6 +69,7 @@ class ExpoImage extends React.PureComponent {
         const resolvedSource = Image.resolveAssetSource(source ?? {});
         const resolvedStyle = StyleSheet.flatten([style]);
         const resolvedPlaceholder = Image.resolveAssetSource(defaultSource ?? loadingIndicatorSource ?? {});
+        const contentFit = resolveContentFit(props.contentFit, props.resizeMode);
         // If both are specified, we default to use default source
         if (defaultSource && loadingIndicatorSource) {
             console.warn("<Image> component can't have both defaultSource and loadingIndicatorSource at the same time. Defaulting to defaultSource");
@@ -101,7 +136,7 @@ class ExpoImage extends React.PureComponent {
         const borderTopColor = processColor(resolvedStyle.borderTopColor);
         // @ts-ignore
         const borderBottomColor = processColor(resolvedStyle.borderBottomColor);
-        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedPlaceholder, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, 
+        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedPlaceholder, contentFit: contentFit, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, 
             // @ts-ignore
             tintColor: tintColor, borderColor: borderColor, borderLeftColor: borderLeftColor, borderRightColor: borderRightColor, borderTopColor: borderTopColor, borderBottomColor: borderBottomColor, borderStartColor: borderStartColor, borderEndColor: borderEndColor, backgroundColor: backgroundColor }));
     }

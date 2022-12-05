@@ -1,4 +1,4 @@
-import { Image, ImageResizeMode, ImageSource } from 'expo-image';
+import { Image, ImageContentFit, ImageSource } from 'expo-image';
 import * as React from 'react';
 import {
   SectionList,
@@ -100,7 +100,7 @@ function keyExtractor(item: any, index: number) {
 }
 
 function renderItem({ item }: SectionListRenderItemInfo<ImageSource>) {
-  return <Image style={styles.image} resizeMode={ImageResizeMode.CONTAIN} source={item} />;
+  return <Image style={styles.image} contentFit={ImageContentFit.CONTAIN} source={item} />;
 }
 
 function renderSectionHeader({ section }: { section: SectionListData<ImageSource> }) {

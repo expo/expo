@@ -1,3 +1,35 @@
+/**
+ * Determines how the image should be resized to fit its container.
+ */
+export var ImageContentFit;
+(function (ImageContentFit) {
+    /**
+     * The image is sized to maintain its aspect ratio while filling the element's entire content box.
+     * If the image's aspect ratio does not match the aspect ratio of its box, then the object will be clipped to fit.
+     */
+    ImageContentFit["COVER"] = "cover";
+    /**
+     * The image is scaled to maintain its aspect ratio while fitting within the element's content box.
+     * The entire image is made to fill the box, while preserving its aspect ratio,
+     * so the image will be "letterboxed" if its aspect ratio does not match the aspect ratio of the box.
+     */
+    ImageContentFit["CONTAIN"] = "contain";
+    /**
+     * The image is sized to fill the element's content box. The entire object will completely fill the box.
+     * If the image's aspect ratio does not match the aspect ratio of its box, then the image will be stretched to fit.
+     */
+    ImageContentFit["FILL"] = "fill";
+    /**
+     * The image is not resized and is centered by default.
+     * When specified, the exact position can be controlled with `objectPosition` option.
+     */
+    ImageContentFit["NONE"] = "none";
+    /**
+     * The image is sized as if `none` or `contain` were specified,
+     * whichever would result in a smaller concrete object size.
+     */
+    ImageContentFit["SCALE_DOWN"] = "scale-down";
+})(ImageContentFit || (ImageContentFit = {}));
 export var ImageResizeMode;
 (function (ImageResizeMode) {
     /**
