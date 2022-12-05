@@ -46,6 +46,40 @@ function resolveContentFit(contentFit, resizeMode) {
     }
     return ImageContentFit.CONTAIN;
 }
+/**
+ * It resolves a stringified form of the `contentPosition` prop to an object,
+ * which is the only form supported in the native code.
+ */
+function resolveContentPosition(contentPosition) {
+    if (typeof contentPosition === 'string') {
+        const contentPositionStringMappings = {
+            center: { top: '50%', left: '50%' },
+            top: { top: 0, left: '50%' },
+            right: { top: '50%', right: 0 },
+            bottom: { bottom: 0, left: '50%' },
+            left: { top: '50%', left: 0 },
+            'top center': { top: 0, left: '50%' },
+            'top right': { top: 0, right: 0 },
+            'top left': { top: 0, left: 0 },
+            'right center': { top: '50%', right: 0 },
+            'right top': { top: 0, right: 0 },
+            'right bottom': { bottom: 0, right: 0 },
+            'bottom center': { bottom: 0, left: '50%' },
+            'bottom right': { bottom: 0, right: 0 },
+            'bottom left': { bottom: 0, left: 0 },
+            'left center': { top: '50%', left: 0 },
+            'left top': { top: 0, left: 0 },
+            'left bottom': { bottom: 0, left: 0 },
+        };
+        const contentPositionObject = contentPositionStringMappings[contentPosition];
+        if (!contentPositionObject) {
+            console.warn(`[expo-image]: Content position "${contentPosition}" is invalid`);
+            return contentPositionStringMappings.center;
+        }
+        return contentPositionObject;
+    }
+    return contentPosition;
+}
 class ExpoImage extends React.PureComponent {
     onLoadStart = () => {
         this.props.onLoadStart?.();
@@ -70,6 +104,7 @@ class ExpoImage extends React.PureComponent {
         const resolvedStyle = StyleSheet.flatten([style]);
         const resolvedPlaceholder = Image.resolveAssetSource(defaultSource ?? loadingIndicatorSource ?? {});
         const contentFit = resolveContentFit(props.contentFit, props.resizeMode);
+        const contentPosition = resolveContentPosition(props.contentPosition);
         // If both are specified, we default to use default source
         if (defaultSource && loadingIndicatorSource) {
             console.warn("<Image> component can't have both defaultSource and loadingIndicatorSource at the same time. Defaulting to defaultSource");
@@ -136,7 +171,7 @@ class ExpoImage extends React.PureComponent {
         const borderTopColor = processColor(resolvedStyle.borderTopColor);
         // @ts-ignore
         const borderBottomColor = processColor(resolvedStyle.borderBottomColor);
-        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedPlaceholder, contentFit: contentFit, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, 
+        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedPlaceholder, contentFit: contentFit, contentPosition: contentPosition, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, 
             // @ts-ignore
             tintColor: tintColor, borderColor: borderColor, borderLeftColor: borderLeftColor, borderRightColor: borderRightColor, borderTopColor: borderTopColor, borderBottomColor: borderBottomColor, borderStartColor: borderStartColor, borderEndColor: borderEndColor, backgroundColor: backgroundColor }));
     }

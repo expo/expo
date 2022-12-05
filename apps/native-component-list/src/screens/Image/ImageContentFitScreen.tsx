@@ -1,4 +1,9 @@
-import { Image, ImageContentFit, ImageContentPosition } from 'expo-image';
+import {
+  Image,
+  ImageContentFit,
+  ImageContentPosition,
+  ImageContentPositionString,
+} from 'expo-image';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import HeadingText from '../../components/HeadingText';
@@ -10,6 +15,26 @@ const CONTENT_FITS = [
   ImageContentFit.FILL,
   ImageContentFit.NONE,
   ImageContentFit.SCALE_DOWN,
+];
+
+const CONTENT_POSITIONS: ImageContentPositionString[] = [
+  'center',
+  'top',
+  'right',
+  'bottom',
+  'left',
+  'top center',
+  'top right',
+  'top left',
+  'right center',
+  'right top',
+  'right bottom',
+  'bottom center',
+  'bottom right',
+  'bottom left',
+  'left center',
+  'left top',
+  'left bottom',
 ];
 
 type ContentFitExample = {
@@ -87,6 +112,14 @@ function renderContentFitExamples(contentFit: ImageContentFit, index: number) {
   );
 }
 
+function renderContentPositionExample(contentPosition: ImageContentPositionString, index: number) {
+  const example: ContentFitExample = {
+    size: [100, 100],
+    position: contentPosition,
+  };
+  return renderExample(ImageContentFit.NONE, example, index);
+}
+
 export default function ImageContentFitScreen() {
   return (
     <ScrollView style={styles.container}>
@@ -95,6 +128,13 @@ export default function ImageContentFitScreen() {
       <Text style={styles.description}>1500 x 1000</Text>
 
       {CONTENT_FITS.map(renderContentFitExamples)}
+
+      <View style={styles.contentFitExamples}>
+        <HeadingText style={styles.headingText}>Content positions (strings)</HeadingText>
+        <ScrollView style={styles.examplesScrollView} horizontal indicatorStyle="black">
+          {CONTENT_POSITIONS.map(renderContentPositionExample)}
+        </ScrollView>
+      </View>
     </ScrollView>
   );
 }
