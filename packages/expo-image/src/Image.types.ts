@@ -129,11 +129,13 @@ export enum ImageContentFit {
   SCALE_DOWN = 'scale-down',
 }
 
-type Percentage = `${number}%`;
-type PositionValue = number | Percentage | `${number}` | 'center';
+/**
+ * @docsMissing
+ */
+export type PositionValue = number | `${number}%` | `${number}` | 'center';
 
 /**
- * @hidden
+ * @docsMissing
  */
 export type ImageContentPositionObject =
   | { top?: PositionValue; right?: PositionValue }
@@ -142,10 +144,36 @@ export type ImageContentPositionObject =
   | { bottom?: PositionValue; left?: PositionValue };
 
 /**
- * @hidden
+ * A stringified and shorthand form of the `contentPosition` prop. This specifies the edges to which to align the image content.
+ * If only one keyword is provided, the other dimension is then set to 50%, so the image is placed in the middle of the edge specified.
  */
-export type ImageContentPosition = ImageContentPositionObject;
+export type ImageContentPositionString =
+  | 'center'
+  | 'top'
+  | 'right'
+  | 'bottom'
+  | 'left'
+  | 'top center'
+  | 'top right'
+  | 'top left'
+  | 'right center'
+  | 'right top'
+  | 'right bottom'
+  | 'bottom center'
+  | 'bottom right'
+  | 'bottom left'
+  | 'left center'
+  | 'left top'
+  | 'left bottom';
 
+/**
+ * @docsMissing
+ */
+export type ImageContentPosition = ImageContentPositionString | ImageContentPositionObject;
+
+/**
+ * @deprecated The resize mode is deprecated in favor of `ImageContentFit` and `contentFit` prop.
+ */
 export enum ImageResizeMode {
   /**
    * The image will be resized such that the entire area of the view
