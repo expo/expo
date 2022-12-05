@@ -1,5 +1,7 @@
 import ExpoModulesCore
 
+let brightnessChangeEvent = "Expo.brightnessDidChange"
+
 public class BrightnessModule: Module {
   private var hasListeners = false
 
@@ -12,33 +14,34 @@ public class BrightnessModule: Module {
       ])
     }
 
-    Events(BrightnessEvents.didChange)
+    Events(brightnessChangeEvent)
 
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
       guard let permissions = appContext?.permissions else {
-        throw PermissionsModuleNotFoundException()
+        throw Exceptions.PermissionsModuleNotFound()
       }
       permissions.getPermissionUsingRequesterClass(
         BrightnessPermissionsRequester.self,
         resolve: promise.resolver,
-        reject: promise.legacyRejecter)
+        reject: promise.legacyRejecter
+      )
     }
 
     AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
       guard let permissions = appContext?.permissions else {
-        throw PermissionsModuleNotFoundException()
+        throw Exceptions.PermissionsModuleNotFound()
       }
       permissions.askForPermission(
         usingRequesterClass: BrightnessPermissionsRequester.self,
         resolve: promise.resolver,
-        reject: promise.legacyRejecter)
+        reject: promise.legacyRejecter
+      )
     }
 
-    // A Double was the only way to satisfy the compiler and avoid a cast. It won't accept a CGFloat argument
-    // "Contextual closure type '() throws -> ()' expects 0 arguments, but 1 was used in closure body"
     AsyncFunction("setBrightnessAsync") { (brightnessValue: Double) in
       UIScreen.main.brightness = brightnessValue
-    }.runOnQueue(.main)
+    }
+    .runOnQueue(.main)
 
     AsyncFunction("getBrightnessAsync") {
       return UIScreen.main.brightness
@@ -50,7 +53,8 @@ public class BrightnessModule: Module {
         self,
         selector: #selector(self.brightnessDidChange),
         name: UIScreen.brightnessDidChangeNotification,
-        object: nil)
+        object: nil
+      )
     }
 
     OnStopObserving {
@@ -58,10 +62,10 @@ public class BrightnessModule: Module {
       NotificationCenter.default.removeObserver(
         self,
         name: UIScreen.brightnessDidChangeNotification,
-        object: nil)
+        object: nil
+      )
     }
 
-    // Are all of these still needed?
     AsyncFunction("getSystemBrightnessAsync") {}
     AsyncFunction("setSystemBrightnessAsync") {}
     AsyncFunction("useSystemBrightnessAsync") {}
@@ -75,6 +79,6 @@ public class BrightnessModule: Module {
     if !hasListeners {
       return
     }
-    sendEvent(BrightnessEvents.didChange, ["brightness": UIScreen.main.brightness])
+    sendEvent(brightnessChangeEvent, ["brightness": UIScreen.main.brightness])
   }
 }
