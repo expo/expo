@@ -13,11 +13,13 @@ import expo.modules.kotlin.records.Record
  */
 typealias ContentPositionValue = Any
 
-private typealias CalcAxisOffset = (value: Float,
-                                    imageRect: RectF,
-                                    viewRect: RectF,
-                                    isPercentage: Boolean,
-                                    isReverse: Boolean) -> Float
+private typealias CalcAxisOffset = (
+  value: Float,
+  imageRect: RectF,
+  viewRect: RectF,
+  isPercentage: Boolean,
+  isReverse: Boolean
+) -> Float
 
 class ContentPosition : Record {
   @Field
@@ -85,4 +87,3 @@ class ContentPosition : Record {
     val center = ContentPosition()
   }
 }
-
