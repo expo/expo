@@ -66,6 +66,19 @@ export default class IntentLauncherScreen extends React.Component {
             data: 'package:package.name.that.doesnt.exist',
           }
         )}
+
+        {this.renderSettingsLink(
+          'Wireless Settings with Chooser',
+          ActivityAction.WIRELESS_SETTINGS,
+          {
+            chooser: {
+              title: 'Open Wireless Settings',
+              extra: {
+                'android.intent.extra.AUTO_LAUNCH_SINGLE_CHOICE': false,
+              },
+            },
+          }
+        )}
       </ScrollView>
     );
   }
