@@ -34,9 +34,11 @@ class IntentLauncherModule : Module() {
 
       params.className?.let {
         intent.component =
-          if (params.packageName != null)
+          if (params.packageName != null) {
             ComponentName(params.packageName, params.className)
-          else ComponentName(context, params.className)
+          } else {
+            ComponentName(context, params.className)
+          }
       }
 
       // `setData` and `setType` are exclusive, so we need to use `setDateAndType` in that case.
