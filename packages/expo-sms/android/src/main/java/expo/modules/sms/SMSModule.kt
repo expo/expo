@@ -67,7 +67,7 @@ class SMSModule : Module(), LifecycleEventListener {
     val defaultSMSPackage = Telephony.Sms.getDefaultSmsPackage(context)
     defaultSMSPackage?.let {
       smsIntent.setPackage(it)
-    } ?: throw SMSNoSMSAppException()
+    } ?: throw MissingSMSAppException()
 
     smsIntent.apply {
       putExtra("exit_on_sent", true)
