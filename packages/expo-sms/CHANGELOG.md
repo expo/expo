@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Migrated Android implementation to Expo Modules API. ([#19967](https://github.com/expo/expo/pull/19967) by [@alanhughes](https://github.com/alanjhughes))
+- Migrated to Expo Modules API. ([#19996](https://github.com/expo/expo/pull/19996) and ([#19967](https://github.com/expo/expo/pull/19967) by [@alanhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
