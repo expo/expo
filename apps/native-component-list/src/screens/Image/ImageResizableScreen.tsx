@@ -69,30 +69,28 @@ const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
   const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
 
   return (
-    <View>
-      <View style={styles.resizableView}>
-        <AnimatedTextInput
-          editable={false}
-          value={text.value}
-          underlineColorAndroid="transparent"
-          style={styles.sizeText}
-          {...{ animatedProps }}
-        />
+    <View style={styles.resizableView}>
+      <AnimatedTextInput
+        editable={false}
+        value={text.value}
+        underlineColorAndroid="transparent"
+        style={styles.sizeText}
+        {...{ animatedProps }}
+      />
 
-        <Text style={styles.hintText}>
-          Move the handle above to resize the image canvas and see how it lays out in different
-          components, sizes and resize modes
-        </Text>
-        <Animated.View style={[styles.canvas, canvasStyle]}>
-          {children}
+      <Text style={styles.hintText}>
+        Move the handle above to resize the image canvas and see how it lays out in different
+        components, sizes and resize modes
+      </Text>
+      <Animated.View style={[styles.canvas, canvasStyle]}>
+        {children}
 
-          <PanGestureHandler onGestureEvent={panGestureEvent}>
-            <Animated.View style={styles.resizeHandle}>
-              <View style={styles.resizeHandleChild} />
-            </Animated.View>
-          </PanGestureHandler>
-        </Animated.View>
-      </View>
+        <PanGestureHandler onGestureEvent={panGestureEvent}>
+          <Animated.View style={styles.resizeHandle}>
+            <View style={styles.resizeHandleChild} />
+          </Animated.View>
+        </PanGestureHandler>
+      </Animated.View>
     </View>
   );
 };
