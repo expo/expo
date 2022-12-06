@@ -258,7 +258,7 @@ For more information, see Sentry's [instructions for uploading the bundle and so
 The steps above define a new 'dist' on Sentry, under the same release as your full app build, and associate the sourcemaps with this new dist. If you want to customize this behavior, you can pass in your own values for `release` and `dist` when you initialize Sentry in your code. For example:
 
 ```js
-import * as Sentry from '@sentry/react-native';
+import * as Sentry from 'sentry-expo';
 import * as Updates from 'expo-updates';
 
 Sentry.init({
