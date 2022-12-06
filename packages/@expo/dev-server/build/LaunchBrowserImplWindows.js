@@ -46,6 +46,7 @@ const IS_WSL = require('is-wsl') && !require('is-docker')();
 class LaunchBrowserImplWindows {
   constructor() {
     _defineProperty(this, "_appId", void 0);
+    _defineProperty(this, "_powershellEnv", void 0);
     _defineProperty(this, "MAP", {
       [_LaunchBrowser().LaunchBrowserTypes.CHROME]: {
         appId: 'chrome',
@@ -60,9 +61,11 @@ class LaunchBrowserImplWindows {
   async isSupportedBrowser(browserType) {
     let result = false;
     try {
+      const env = await this.getPowershellEnv();
       const {
         status
       } = await (0, _spawnAsync().default)('powershell.exe', ['-c', `Get-Package -Name '${this.MAP[browserType].fullName}'`], {
+        env,
         stdio: 'ignore'
       });
       result = status === 0;
@@ -98,12 +101,30 @@ class LaunchBrowserImplWindows {
         // And we cannot just call `process.kill()` kill it.
         // The implementation tries to find the pid of target chromium browser process (with --app=https://chrome-devtools-frontend.appspot.com in command arguments),
         // and uses taskkill to terminate the process.
+        const env = await this.getPowershellEnv();
         await (0, _spawnAsync().default)('powershell.exe', ['-c', `taskkill.exe /pid @(Get-WmiObject Win32_Process -Filter "name = '${this._appId}.exe' AND CommandLine LIKE '%chrome-devtools-frontend.appspot.com%'" | Select-Object -ExpandProperty ProcessId)`], {
+          env,
           stdio: 'ignore'
         });
       } catch {}
       this._appId = undefined;
     }
+  }
+
+  /**
+   * This method is used to get the powershell environment variables for `Get-Package` command.
+   * Especially for powershell 7, its default `PSModulePath` is different from powershell 5 and `Get-Package` command is not available.
+   * We need to set the PSModulePath to include the default value of powershell 5.
+   */
+  async getPowershellEnv() {
+    if (this._powershellEnv) {
+      return this._powershellEnv;
+    }
+    const PSModulePath = (await (0, _spawnAsync().default)('powershell.exe', ['-c', 'echo "$PSHOME\\Modules"'])).stdout.trim();
+    this._powershellEnv = {
+      PSModulePath
+    };
+    return this._powershellEnv;
   }
 }
 exports.default = LaunchBrowserImplWindows;

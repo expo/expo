@@ -17,6 +17,7 @@ const IS_WSL = require('is-wsl') && !require('is-docker')();
  */
 export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, LaunchBrowserInstance {
   private _appId: string | undefined;
+  private _powershellEnv: { [key: string]: string } | undefined;
 
   MAP = {
     [LaunchBrowserTypes.CHROME]: {
@@ -32,10 +33,11 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
   async isSupportedBrowser(browserType: LaunchBrowserTypes): Promise<boolean> {
     let result = false;
     try {
+      const env = await this.getPowershellEnv();
       const { status } = await spawnAsync(
         'powershell.exe',
         ['-c', `Get-Package -Name '${this.MAP[browserType].fullName}'`],
-        { stdio: 'ignore' }
+        { env, stdio: 'ignore' }
       );
       result = status === 0;
     } catch {
@@ -74,16 +76,35 @@ export default class LaunchBrowserImplWindows implements LaunchBrowserImpl, Laun
         // And we cannot just call `process.kill()` kill it.
         // The implementation tries to find the pid of target chromium browser process (with --app=https://chrome-devtools-frontend.appspot.com in command arguments),
         // and uses taskkill to terminate the process.
+        const env = await this.getPowershellEnv();
         await spawnAsync(
           'powershell.exe',
           [
             '-c',
             `taskkill.exe /pid @(Get-WmiObject Win32_Process -Filter "name = '${this._appId}.exe' AND CommandLine LIKE '%chrome-devtools-frontend.appspot.com%'" | Select-Object -ExpandProperty ProcessId)`,
           ],
-          { stdio: 'ignore' }
+          { env, stdio: 'ignore' }
         );
       } catch {}
       this._appId = undefined;
     }
+  }
+
+  /**
+   * This method is used to get the powershell environment variables for `Get-Package` command.
+   * Especially for powershell 7, its default `PSModulePath` is different from powershell 5 and `Get-Package` command is not available.
+   * We need to set the PSModulePath to include the default value of powershell 5.
+   */
+  private async getPowershellEnv(): Promise<{ [key: string]: string }> {
+    if (this._powershellEnv) {
+      return this._powershellEnv;
+    }
+    const PSModulePath = (
+      await spawnAsync('powershell.exe', ['-c', 'echo "$PSHOME\\Modules"'])
+    ).stdout.trim();
+    this._powershellEnv = {
+      PSModulePath,
+    };
+    return this._powershellEnv;
   }
 }
