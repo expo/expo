@@ -1,4 +1,4 @@
-package expo.modules.systemui
+package expo.modules.systemui.singletons
 
 import android.os.Build
 import android.util.Log
