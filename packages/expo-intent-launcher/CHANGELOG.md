@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Migrated to Expo Modules API. ([#20327](https://github.com/expo/expo/pull/20327) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
