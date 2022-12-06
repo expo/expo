@@ -55,12 +55,14 @@ enum class ContentFit(val value: String) : Enumerable {
         setScale(scale, scale)
       }
       Fill -> setRectToRect(imageRect, viewRect, Matrix.ScaleToFit.FILL)
-      None -> { /* we don't need to do anything */
+      None -> {
+        // we don't need to do anything
       }
-      ScaleDown ->
+      ScaleDown -> {
         if (imageRect.width() >= viewRect.width() || imageRect.height() >= viewRect.height()) {
           setRectToRect(imageRect, viewRect, Matrix.ScaleToFit.START)
         }
+      }
     }
   }
 }
