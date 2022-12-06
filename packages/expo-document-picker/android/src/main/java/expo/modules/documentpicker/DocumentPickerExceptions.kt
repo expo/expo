@@ -8,5 +8,5 @@ class PickingInProgressException :
 class FailedToCopyToCacheException :
   CodedException("Failed to copy to cache directory.")
 
-class FailedToReadDocumentException:
+class FailedToReadDocumentException :
   CodedException("Failed to read the selected document.")

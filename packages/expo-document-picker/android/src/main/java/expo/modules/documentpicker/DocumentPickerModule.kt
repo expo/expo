@@ -19,13 +19,12 @@ import java.io.IOException
 private const val OPEN_DOCUMENT_CODE = 4137
 
 class DocumentPickerModule : Module() {
-  private var pendingPromise: Promise? = null
-  private var copyToCacheDirectory = true
-
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
   private val currentActivity
     get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
+  private var pendingPromise: Promise? = null
+  private var copyToCacheDirectory = true
 
   override fun definition() = ModuleDefinition {
     Name("ExpoDocumentPicker")
@@ -38,27 +37,27 @@ class DocumentPickerModule : Module() {
       copyToCacheDirectory = options.copyToCacheDirectory
       val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
-        type = if (options.types != null && options.types.size > 1) {
-          putExtra(Intent.EXTRA_MIME_TYPES, options.types)
+        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        type = if (options.type.size > 1) {
+          putExtra(Intent.EXTRA_MIME_TYPES, options.type.toTypedArray())
+
           "*/*"
         } else {
-          options.types?.get(0)
+          options.type[0]
         }
       }
       currentActivity.startActivityForResult(intent, OPEN_DOCUMENT_CODE)
     }
 
-    OnActivityResult { _, payload ->
-      if (payload.requestCode != OPEN_DOCUMENT_CODE) {
-        return@OnActivityResult
-      }
-      if (pendingPromise == null) {
+    OnActivityResult { _, (requestCode, resultCode, intent) ->
+      if (requestCode != OPEN_DOCUMENT_CODE || pendingPromise == null) {
         return@OnActivityResult
       }
 
       val promise = pendingPromise!!
-      if (payload.resultCode == Activity.RESULT_OK) {
-        payload.data?.data?.let { uri ->
+
+      if (resultCode == Activity.RESULT_OK) {
+        intent?.data?.let { uri ->
           val originalDocumentDetails = DocumentDetailsReader(context).read(uri)
           if (!copyToCacheDirectory || originalDocumentDetails == null) {
             originalDocumentDetails
@@ -83,9 +82,11 @@ class DocumentPickerModule : Module() {
           promise.resolve(result)
         } ?: throw FailedToReadDocumentException()
       } else {
-        promise.resolve(Bundle().apply {
-          putString("type", "cancel")
-        })
+        promise.resolve(
+          Bundle().apply {
+            putString("type", "cancel")
+          }
+        )
       }
       pendingPromise = null
     }
