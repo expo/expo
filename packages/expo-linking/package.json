@@ -33,7 +33,7 @@
     "@types/qs": "^6.5.3",
     "expo-constants": "~14.0.0",
     "invariant": "^2.2.4",
-    "qs": "^6.9.1",
+    "qs": "^6.9.7",
     "url-parse": "^1.5.9"
   },
   "devDependencies": {
