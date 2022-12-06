@@ -2075,6 +2075,8 @@ PODS:
     - Quick (~> 5.0.0)
   - ExpoRandom (13.0.0):
     - ExpoModulesCore
+  - ExpoSMS (11.0.0):
+    - ExpoModulesCore
   - ExpoStoreReview (6.0.0):
     - ExpoModulesCore
   - ExpoSystemUI (2.0.1):
@@ -2097,8 +2099,6 @@ PODS:
   - EXSensors (12.0.1):
     - ExpoModulesCore
   - EXSharing (11.0.1):
-    - ExpoModulesCore
-  - EXSMS (11.0.0):
     - ExpoModulesCore
   - EXSpeech (11.0.0):
     - ExpoModulesCore
@@ -3136,6 +3136,7 @@ DEPENDENCIES:
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../packages/expo-modules-test-core/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
+  - ExpoSMS (from `../packages/expo-sms/ios`)
   - ExpoStoreReview (from `../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
@@ -3147,7 +3148,6 @@ DEPENDENCIES:
   - EXSecureStore (from `../packages/expo-secure-store/ios`)
   - EXSensors (from `../packages/expo-sensors/ios`)
   - EXSharing (from `../packages/expo-sharing/ios`)
-  - EXSMS (from `../packages/expo-sms/ios`)
   - EXSpeech (from `../packages/expo-speech/ios`)
   - EXSplashScreen (from `../packages/expo-splash-screen/ios`)
   - EXSQLite (from `../packages/expo-sqlite/ios`)
@@ -4014,6 +4014,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-modules-test-core/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
+  ExpoSMS:
+    :path: "../packages/expo-sms/ios"
   ExpoStoreReview:
     :path: "../packages/expo-store-review/ios"
   ExpoSystemUI:
@@ -4036,8 +4038,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-sensors/ios"
   EXSharing:
     :path: "../packages/expo-sharing/ios"
-  EXSMS:
-    :path: "../packages/expo-sms/ios"
   EXSpeech:
     :path: "../packages/expo-speech/ios"
   EXSplashScreen:
@@ -4532,6 +4532,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: e47e5d3e3f8fbc03b6c41cfc1d54421381201dd5
   ExpoModulesTestCore: fe0a7344268158f254dadc9ac947b2c66bb19fed
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
+  ExpoSMS: 9cd247733eb868bb39f25a8ba0d37167c632468a
   ExpoStoreReview: ff6d631f2949eb7e4b2d14146ef6af25a16d770d
   ExpoSystemUI: c844dec5e49e677bcd6bfe15cc305b02127b1124
   ExpoTrackingTransparency: 8d02327d4414009f03a43e6b2dbad52265996936
@@ -4543,7 +4544,6 @@ SPEC CHECKSUMS:
   EXSecureStore: daec0117c922a67c658cb229152a9e252e5c1750
   EXSensors: 535beac36b78487d53c630eb627d7528bcc610b3
   EXSharing: e4c5ebc5b36828f1e0dff1415b2b28b23dc770b8
-  EXSMS: 9b0da8ca484165b7f1ebbd5cfedd670b5abf87fd
   EXSpeech: b1e02f7d9d4e9731133da25ee4b26cc0740707ed
   EXSplashScreen: 20052670daff7650fa01140a178d0af1a914584b
   EXSQLite: 13c91c389b3c6241ddcf5c47eaa43289721193fe
