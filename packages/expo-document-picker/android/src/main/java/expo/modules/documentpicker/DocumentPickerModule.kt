@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.os.Bundle
 import expo.modules.core.utilities.FileUtilities
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -68,24 +67,18 @@ class DocumentPickerModule : Module() {
             } ?: throw FailedToCopyToCacheException()
           }
         }?.let { details ->
-          val result = Bundle().apply {
-            putString("type", "success")
-            putString("uri", details.uri)
-            putString("name", details.name)
-            details.mimeType?.let { mimeType ->
-              putString("mimeType", mimeType)
-            }
-            details.size?.let { size ->
-              putInt("size", size)
-            }
-          }
+          val result = DocumentPickerResult(
+            type = "success",
+            uri = details.uri,
+            name = details.name,
+            mimeType = details.mimeType,
+            size = details.size
+          )
           promise.resolve(result)
         } ?: throw FailedToReadDocumentException()
       } else {
         promise.resolve(
-          Bundle().apply {
-            putString("type", "cancel")
-          }
+          DocumentPickerCancelled(type = "cancel")
         )
       }
       pendingPromise = null
