@@ -9,7 +9,8 @@ import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import expo.modules.core.errors.ModuleDestroyedException
-import expo.modules.image.enums.ImageResizeMode
+import expo.modules.image.enums.ContentFit
+import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -83,8 +84,12 @@ class ExpoImageModule : Module() {
         view.imageView.sourceMap = sourceMap
       }
 
-      Prop("resizeMode") { view: ExpoImageViewWrapper, resizeMode: ImageResizeMode ->
-        view.imageView.resizeMode = resizeMode
+      Prop("contentFit") { view: ExpoImageViewWrapper, contentFit: ContentFit? ->
+        view.imageView.contentFit = contentFit ?: ContentFit.Cover
+      }
+
+      Prop("contentPosition") { view: ExpoImageViewWrapper, contentPosition: ContentPosition? ->
+        view.imageView.contentPosition = contentPosition ?: ContentPosition.center
       }
 
       Prop("blurRadius") { view: ExpoImageViewWrapper, blurRadius: Int ->

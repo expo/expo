@@ -6,9 +6,10 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.Shader
+import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.graphics.transform
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.model.GlideUrl
@@ -21,10 +22,11 @@ import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
 import expo.modules.image.drawing.OutlineProvider
-import expo.modules.image.enums.ImageResizeMode
+import expo.modules.image.enums.ContentFit
 import expo.modules.image.events.GlideRequestListener
 import expo.modules.image.events.OkHttpProgressListener
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
+import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
@@ -118,11 +120,34 @@ class ExpoImageView(
     }
   }
 
+  override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
+    super.onLayout(changed, left, top, right, bottom)
+    if (drawable == null) {
+      return
+    }
+
+    applyTransformationMatrix()
+  }
+
+  fun applyTransformationMatrix() {
+    val imageRect = RectF(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
+    val viewRect = RectF(0f, 0f, width.toFloat(), height.toFloat())
+
+    val matrix = contentFit.toMatrix(imageRect, viewRect)
+
+    val scaledImageRect = imageRect.transform(matrix)
+
+    imageMatrix = matrix.apply {
+      contentPosition.apply(this, scaledImageRect, viewRect)
+    }
+  }
+
   private val borderDrawable
     get() = borderDrawableLazyHolder.value
 
   init {
     clipToOutline = true
+    scaleType = ScaleType.MATRIX
     super.setOutlineProvider(outlineProvider)
   }
 
@@ -142,10 +167,15 @@ class ExpoImageView(
       propsChanged = true
     }
 
-  internal var resizeMode = ImageResizeMode.COVER.also { scaleType = it.getScaleType() }
+  internal var contentFit: ContentFit = ContentFit.Cover
     set(value) {
       field = value
-      scaleType = value.getScaleType()
+      propsChanged = true
+    }
+
+  internal var contentPosition: ContentPosition = ContentPosition.center
+    set(value) {
+      field = value
       propsChanged = true
     }
 
@@ -227,10 +257,18 @@ class ExpoImageView(
         .apply(options)
         .downsample(DownsampleStrategy.NONE)
         .addListener(GlideRequestListener(expoImageViewWrapper))
+        .encodeQuality(100)
         .apply(propOptions)
         .into(object : DrawableImageViewTarget(this) {
           override fun getSize(cb: SizeReadyCallback) {
             cb.onSizeReady(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
+          }
+
+          override fun setResource(resource: Drawable?) {
+            super.setResource(resource)
+            if (resource != null) {
+              applyTransformationMatrix()
+            }
           }
         })
     }
@@ -291,19 +329,20 @@ class ExpoImageView(
     }
   }
 
-  /**
-   * Called when Glide "injects" drawable into the view.
-   * When `resizeMode = REPEAT`, we need to update
-   * received drawable (unless null) and set correct tiling.
-   */
-  override fun setImageDrawable(drawable: Drawable?) {
-    val maybeUpdatedDrawable = drawable
-      ?.takeIf { resizeMode == ImageResizeMode.REPEAT }
-      ?.toBitmapDrawable(resources)
-      ?.apply {
-        setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-      }
-    super.setImageDrawable(maybeUpdatedDrawable ?: drawable)
-  }
+  // TODO(@lukmccall): Fix `repeat`
+//  /**
+//   * Called when Glide "injects" drawable into the view.
+//   * When `resizeMode = REPEAT`, we need to update
+//   * received drawable (unless null) and set correct tiling.
+//   */
+//  override fun setImageDrawable(drawable: Drawable?) {
+//    val maybeUpdatedDrawable = drawable
+//      ?.takeIf { resizeMode == ImageResizeMode.REPEAT }
+//      ?.toBitmapDrawable(resources)
+//      ?.apply {
+//        setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
+//      }
+//    super.setImageDrawable(maybeUpdatedDrawable ?: drawable)
+//  }
   // endregion
 }
