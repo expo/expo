@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.appcompat.widget.AppCompatImageView
@@ -37,6 +38,7 @@ import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.kotlin.views.ExpoView
 import jp.wasabeef.glide.transformations.BlurTransformation
 import java.lang.ref.WeakReference
+import kotlin.math.abs
 
 @SuppressLint("ViewConstructor")
 class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
@@ -122,10 +124,11 @@ class ExpoImageView(
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     super.onLayout(changed, left, top, right, bottom)
+    onAfterUpdateTransaction()
+
     if (drawable == null) {
       return
     }
-
     applyTransformationMatrix()
   }
 
@@ -152,7 +155,39 @@ class ExpoImageView(
   }
 
   // region Component Props
-  internal var sourceMap: SourceMap? = null
+  internal var sources: List<SourceMap> = emptyList()
+  private val bestSource: SourceMap?
+    get() {
+      if (sources.isEmpty()) {
+        return null
+      }
+
+      if (sources.size == 1) {
+        return sources.first()
+      }
+
+      val parent = parent as? ExpoImageViewWrapper ?: return null
+      val parentRect = Rect(0, 0, parent.width, parent.height)
+      if (parentRect.isEmpty) {
+        return null
+      }
+
+      val targetPixelCount = parentRect.width() * parentRect.height()
+
+      var bestSource: SourceMap? = null
+      var bestFit = Double.MAX_VALUE
+
+      sources.forEach {
+        val fit = abs(1 - (it.pixelCount / targetPixelCount))
+        if (fit < bestFit) {
+          bestFit = fit
+          bestSource = it
+        }
+      }
+
+      return bestSource
+    }
+
   internal var defaultSourceMap: SourceMap? = null
 
   internal var blurRadius: Int? = null
@@ -229,7 +264,9 @@ class ExpoImageView(
 
   // region ViewManager Lifecycle methods
   internal fun onAfterUpdateTransaction() {
-    val sourceToLoad = sourceMap?.createGlideUrl()
+    val bestSource = bestSource
+    val sourceToLoad = bestSource?.createGlideUrl()
+
     if (sourceToLoad == null) {
       requestManager.clear(this)
       setImageDrawable(null)
@@ -240,7 +277,7 @@ class ExpoImageView(
     if (sourceToLoad != loadedSource || propsChanged) {
       propsChanged = false
       loadedSource = sourceToLoad
-      val options = sourceMap?.createOptions(context) ?: RequestOptions()
+      val options = bestSource.createOptions(context)
       val propOptions = createPropOptions()
       progressInterceptor.registerProgressListener(
         sourceToLoad.toStringUrl(),

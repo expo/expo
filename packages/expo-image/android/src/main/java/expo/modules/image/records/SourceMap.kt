@@ -14,9 +14,9 @@ import expo.modules.kotlin.records.Record
 
 data class SourceMap(
   @Field val uri: String? = null,
-  @Field val width: Int? = null,
-  @Field val height: Int? = null,
-  @Field val scale: Double? = null,
+  @Field val width: Int = 0,
+  @Field val height: Int = 0,
+  @Field val scale: Double = 1.0,
   @Field val headers: Map<String, String>? = null
 ) : Record {
   internal fun createGlideUrl(): GlideUrl? = uri?.let {
@@ -28,7 +28,7 @@ data class SourceMap(
       .apply {
         // Override the size for local assets. This ensures that
         // resizeMode "center" displays the image in the correct size.
-        if (width != null && height != null && scale != null) {
+        if (width != 0 && height != 0) {
           override((width * scale).toInt(), (height * scale).toInt())
         }
 
@@ -82,4 +82,7 @@ data class SourceMap(
   private fun computeLocalUri(stringUri: String, context: Context): Uri? {
     return ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(context, stringUri)
   }
+  
+  internal val pixelCount: Double
+    get() = width * height * scale * scale
 }

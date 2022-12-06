@@ -80,8 +80,8 @@ class ExpoImageModule : Module() {
         "onLoad"
       )
 
-      Prop("source") { view: ExpoImageViewWrapper, sourceMap: SourceMap? ->
-        view.imageView.sourceMap = sourceMap
+      Prop("source") { view: ExpoImageViewWrapper, sources: List<SourceMap> ->
+        view.imageView.sources = sources
       }
 
       Prop("contentFit") { view: ExpoImageViewWrapper, contentFit: ContentFit? ->
