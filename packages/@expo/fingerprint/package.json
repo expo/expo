@@ -14,7 +14,7 @@
     "test:e2e": "jest --config e2e/jest.config.js"
   },
   "bin": {
-    "@expo/fingerprint": "bin/cli.js"
+    "fingerprint": "bin/cli.js"
   },
   "keywords": [
     "expo",
