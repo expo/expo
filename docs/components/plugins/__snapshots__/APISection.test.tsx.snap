@@ -8,7 +8,7 @@ exports[`APISection expo-apple-authentication 1`] = `
   >
     <a
       class="css-ah3byb"
-      href="/#component"
+      href="#component"
     >
       <span
         class="css-s3qkfm"
@@ -58,7 +58,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationbutton"
+        href="#appleauthenticationbutton"
       >
         <span
           class="css-s3qkfm"
@@ -121,7 +121,7 @@ exports[`APISection expo-apple-authentication 1`] = `
         <span>
           <a
             class="css-153g748-InternalLink"
-            href="/#appleauthenticationbuttonprops"
+            href="#appleauthenticationbuttonprops"
           >
             AppleAuthenticationButtonProps
           </a>
@@ -145,7 +145,7 @@ available via the provided properties.
       You should only attempt to render this if 
       <a
         class="css-153g748-InternalLink"
-        href="/#isavailableasync"
+        href="#isavailableasync"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -280,7 +280,7 @@ for more details.
     >
       <a
         class="css-ah3byb"
-        href="/#props"
+        href="#props"
       >
         <span
           class="css-s3qkfm"
@@ -331,7 +331,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#buttonstyle"
+            href="#buttonstyle"
           >
             <span
               class="css-s3qkfm"
@@ -391,7 +391,7 @@ for more details.
           >
             <a
               class="css-153g748-InternalLink"
-              href="/#appleauthenticationbuttonstyle"
+              href="#appleauthenticationbuttonstyle"
             >
               AppleAuthenticationButtonStyle
             </a>
@@ -413,7 +413,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#buttontype"
+            href="#buttontype"
           >
             <span
               class="css-s3qkfm"
@@ -473,7 +473,7 @@ for more details.
           >
             <a
               class="css-153g748-InternalLink"
-              href="/#appleauthenticationbuttontype"
+              href="#appleauthenticationbuttontype"
             >
               AppleAuthenticationButtonType
             </a>
@@ -495,7 +495,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#cornerradius"
+            href="#cornerradius"
           >
             <span
               class="css-s3qkfm"
@@ -584,7 +584,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#style"
+            href="#style"
           >
             <span
               class="css-s3qkfm"
@@ -711,7 +711,7 @@ properties.
         >
           <a
             class="css-ah3byb"
-            href="/#onpress"
+            href="#onpress"
           >
             <span
               class="css-s3qkfm"
@@ -782,7 +782,7 @@ properties.
           The method to call when the user presses the button. You should call 
           <a
             class="css-153g748-InternalLink"
-            href="/#isavailableasync"
+            href="#isavailableasync"
           >
             <code
               class="inline css-ov7own-InlineCode"
@@ -800,7 +800,7 @@ in here.
       >
         <a
           class="css-ah3byb"
-          href="/#inherited-props"
+          href="#inherited-props"
         >
           <span
             class="css-s3qkfm"
@@ -868,7 +868,7 @@ in here.
   >
     <a
       class="css-ah3byb"
-      href="/#methods"
+      href="#methods"
     >
       <span
         class="css-s3qkfm"
@@ -918,7 +918,7 @@ in here.
     >
       <a
         class="css-ah3byb"
-        href="/#getcredentialstateasyncuser"
+        href="#getcredentialstateasyncuser"
       >
         <span
           class="css-s3qkfm"
@@ -1025,7 +1025,7 @@ in here.
 This should come from the user field of an 
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationcredentialstate"
+                  href="#appleauthenticationcredentialstate"
                 >
                   <code
                     class="inline css-ov7own-InlineCode"
@@ -1103,7 +1103,7 @@ This should come from the user field of an
       >
         <a
           class="css-ah3byb"
-          href="/#returns"
+          href="#returns"
         >
           <span
             class="css-s3qkfm"
@@ -1185,7 +1185,7 @@ This should come from the user field of an
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#appleauthenticationcredentialstate"
+              href="#appleauthenticationcredentialstate"
             >
               AppleAuthenticationCredentialState
             </a>
@@ -1201,7 +1201,7 @@ This should come from the user field of an
       A promise that fulfills with an 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationcredentialstate"
+        href="#appleauthenticationcredentialstate"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -1222,7 +1222,7 @@ value depending on the state of the credential.
     >
       <a
         class="css-ah3byb"
-        href="/#isavailableasync"
+        href="#isavailableasync"
       >
         <span
           class="css-s3qkfm"
@@ -1283,7 +1283,7 @@ value depending on the state of the credential.
       >
         <a
           class="css-ah3byb"
-          href="/#returns-1"
+          href="#returns-1"
         >
           <span
             class="css-s3qkfm"
@@ -1397,7 +1397,7 @@ value depending on the state of the credential.
     >
       <a
         class="css-ah3byb"
-        href="/#refreshasyncoptions"
+        href="#refreshasyncoptions"
       >
         <span
           class="css-s3qkfm"
@@ -1492,7 +1492,7 @@ value depending on the state of the credential.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationrefreshoptions"
+                  href="#appleauthenticationrefreshoptions"
                 >
                   AppleAuthenticationRefreshOptions
                 </a>
@@ -1508,7 +1508,7 @@ value depending on the state of the credential.
                 An 
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationrefreshoptions"
+                  href="#appleauthenticationrefreshoptions"
                 >
                   <code
                     class="inline css-ov7own-InlineCode"
@@ -1540,7 +1540,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       >
         <a
           class="css-ah3byb"
-          href="/#returns-2"
+          href="#returns-2"
         >
           <span
             class="css-s3qkfm"
@@ -1622,7 +1622,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#appleauthenticationcredential"
+              href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
             </a>
@@ -1638,7 +1638,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       A promise that fulfills with an 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationcredential"
+        href="#appleauthenticationcredential"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -1666,7 +1666,7 @@ refresh operation.
     >
       <a
         class="css-ah3byb"
-        href="/#signinasyncoptions"
+        href="#signinasyncoptions"
       >
         <span
           class="css-s3qkfm"
@@ -1767,7 +1767,7 @@ refresh operation.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationsigninoptions"
+                  href="#appleauthenticationsigninoptions"
                 >
                   AppleAuthenticationSignInOptions
                 </a>
@@ -1783,7 +1783,7 @@ refresh operation.
                 An optional 
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationsigninoptions"
+                  href="#appleauthenticationsigninoptions"
                 >
                   <code
                     class="inline css-ov7own-InlineCode"
@@ -1824,7 +1824,7 @@ into your app, so you must store it for later use. It's best to store this infor
 server-side, or using 
       <a
         class="css-153g748-InternalLink"
-        href="/securestore"
+        href="./securestore"
       >
         SecureStore
       </a>
@@ -1832,7 +1832,7 @@ server-side, or using
 You can use 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationcredential"
+        href="#appleauthenticationcredential"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -1853,7 +1853,7 @@ the user, since this remains the same for apps released by the same developer.
       >
         <a
           class="css-ah3byb"
-          href="/#returns-3"
+          href="#returns-3"
         >
           <span
             class="css-s3qkfm"
@@ -1935,7 +1935,7 @@ the user, since this remains the same for apps released by the same developer.
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#appleauthenticationcredential"
+              href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
             </a>
@@ -1951,7 +1951,7 @@ the user, since this remains the same for apps released by the same developer.
       A promise that fulfills with an 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationcredential"
+        href="#appleauthenticationcredential"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -1979,7 +1979,7 @@ sign-in operation.
     >
       <a
         class="css-ah3byb"
-        href="/#signoutasyncoptions"
+        href="#signoutasyncoptions"
       >
         <span
           class="css-s3qkfm"
@@ -2074,7 +2074,7 @@ sign-in operation.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationsignoutoptions"
+                  href="#appleauthenticationsignoutoptions"
                 >
                   AppleAuthenticationSignOutOptions
                 </a>
@@ -2090,7 +2090,7 @@ sign-in operation.
                 An 
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationsignoutoptions"
+                  href="#appleauthenticationsignoutoptions"
                 >
                   <code
                     class="inline css-ov7own-InlineCode"
@@ -2121,7 +2121,7 @@ Instead of using this method it is recommended to simply clear all the user's da
 from using 
       <a
         class="css-153g748-InternalLink"
-        href="/#signinasync"
+        href="./#signinasync"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -2132,7 +2132,7 @@ from using
        or 
       <a
         class="css-153g748-InternalLink"
-        href="/#refreshasync"
+        href="./#refreshasync"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -2152,7 +2152,7 @@ from using
       >
         <a
           class="css-ah3byb"
-          href="/#returns-4"
+          href="#returns-4"
         >
           <span
             class="css-s3qkfm"
@@ -2234,7 +2234,7 @@ from using
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#appleauthenticationcredential"
+              href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
             </a>
@@ -2250,7 +2250,7 @@ from using
       A promise that fulfills with an 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationcredential"
+        href="#appleauthenticationcredential"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -2275,7 +2275,7 @@ sign-out operation.
   >
     <a
       class="css-ah3byb"
-      href="/#event-subscriptions"
+      href="#event-subscriptions"
     >
       <span
         class="css-s3qkfm"
@@ -2325,7 +2325,7 @@ sign-out operation.
     >
       <a
         class="css-ah3byb"
-        href="/#addrevokelistenerlistener"
+        href="#addrevokelistenerlistener"
       >
         <span
           class="css-s3qkfm"
@@ -2442,7 +2442,7 @@ sign-out operation.
       >
         <a
           class="css-ah3byb"
-          href="/#returns-5"
+          href="#returns-5"
         >
           <span
             class="css-s3qkfm"
@@ -2514,7 +2514,7 @@ sign-out operation.
         >
           <a
             class="css-153g748-InternalLink"
-            href="/#subscription"
+            href="#subscription"
           >
             Subscription
           </a>
@@ -2528,7 +2528,7 @@ sign-out operation.
   >
     <a
       class="css-ah3byb"
-      href="/#types"
+      href="#types"
     >
       <span
         class="css-s3qkfm"
@@ -2578,7 +2578,7 @@ sign-out operation.
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationcredential"
+        href="#appleauthenticationcredential"
       >
         <span
           class="css-s3qkfm"
@@ -2630,7 +2630,7 @@ sign-out operation.
       The object type returned from a successful call to 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationsigninasyncoptions"
+        href="#appleauthenticationsigninasyncoptions"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -2642,7 +2642,7 @@ sign-out operation.
 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationrefreshasyncoptions"
+        href="#appleauthenticationrefreshasyncoptions"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -2653,7 +2653,7 @@ sign-out operation.
       , or 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationsignoutasyncoptions"
+        href="#appleauthenticationsignoutasyncoptions"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -2849,7 +2849,7 @@ an Apple domain.
                 <span>
                   <a
                     class="css-153g748-InternalLink"
-                    href="/#appleauthenticationfullname"
+                    href="#appleauthenticationfullname"
                   >
                     AppleAuthenticationFullName
                   </a>
@@ -2943,7 +2943,7 @@ your app.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationuserdetectionstatus"
+                  href="#appleauthenticationuserdetectionstatus"
                 >
                   AppleAuthenticationUserDetectionStatus
                 </a>
@@ -3058,7 +3058,7 @@ developers.
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationfullname"
+        href="#appleauthenticationfullname"
       >
         <span
           class="css-s3qkfm"
@@ -3357,7 +3357,7 @@ may be
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationrefreshoptions"
+        href="#appleauthenticationrefreshoptions"
       >
         <span
           class="css-s3qkfm"
@@ -3409,7 +3409,7 @@ may be
       The options you can supply when making a call to 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationrefreshasyncoptions"
+        href="#appleauthenticationrefreshasyncoptions"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -3524,7 +3524,7 @@ for more details.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationscope"
+                  href="#appleauthenticationscope"
                 >
                   AppleAuthenticationScope
                   []
@@ -3648,7 +3648,7 @@ OAuth 2.0 protocol
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationsigninoptions"
+        href="#appleauthenticationsigninoptions"
       >
         <span
           class="css-s3qkfm"
@@ -3700,7 +3700,7 @@ OAuth 2.0 protocol
       The options you can supply when making a call to 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationsigninasyncoptions"
+        href="#appleauthenticationsigninasyncoptions"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -3860,7 +3860,7 @@ for more details.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#appleauthenticationscope"
+                  href="#appleauthenticationscope"
                 >
                   AppleAuthenticationScope
                   []
@@ -3957,7 +3957,7 @@ OAuth 2.0 protocol
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationsignoutoptions"
+        href="#appleauthenticationsignoutoptions"
       >
         <span
           class="css-s3qkfm"
@@ -4009,7 +4009,7 @@ OAuth 2.0 protocol
       The options you can supply when making a call to 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationsignoutasyncoptions"
+        href="#appleauthenticationsignoutasyncoptions"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -4185,7 +4185,7 @@ OAuth 2.0 protocol
     >
       <a
         class="css-ah3byb"
-        href="/#subscription"
+        href="#subscription"
       >
         <span
           class="css-s3qkfm"
@@ -4302,7 +4302,7 @@ OAuth 2.0 protocol
   >
     <a
       class="css-ah3byb"
-      href="/#enums"
+      href="#enums"
     >
       <span
         class="css-s3qkfm"
@@ -4352,7 +4352,7 @@ OAuth 2.0 protocol
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationbuttonstyle"
+        href="#appleauthenticationbuttonstyle"
       >
         <span
           class="css-s3qkfm"
@@ -4404,7 +4404,7 @@ OAuth 2.0 protocol
       An enum whose values control which pre-defined color scheme to use when rendering an 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationappleauthenticationbutton"
+        href="#appleauthenticationappleauthenticationbutton"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -4427,7 +4427,7 @@ OAuth 2.0 protocol
         >
           <a
             class="css-ah3byb"
-            href="/#white"
+            href="#white"
           >
             <span
               class="css-s3qkfm"
@@ -4501,7 +4501,7 @@ OAuth 2.0 protocol
         >
           <a
             class="css-ah3byb"
-            href="/#white_outline"
+            href="#white_outline"
           >
             <span
               class="css-s3qkfm"
@@ -4575,7 +4575,7 @@ OAuth 2.0 protocol
         >
           <a
             class="css-ah3byb"
-            href="/#black"
+            href="#black"
           >
             <span
               class="css-s3qkfm"
@@ -4646,7 +4646,7 @@ OAuth 2.0 protocol
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationbuttontype"
+        href="#appleauthenticationbuttontype"
       >
         <span
           class="css-s3qkfm"
@@ -4698,7 +4698,7 @@ OAuth 2.0 protocol
       An enum whose values control which pre-defined text to use when rendering an 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationappleauthenticationbutton"
+        href="#appleauthenticationappleauthenticationbutton"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -4721,7 +4721,7 @@ OAuth 2.0 protocol
         >
           <a
             class="css-ah3byb"
-            href="/#sign_in"
+            href="#sign_in"
           >
             <span
               class="css-s3qkfm"
@@ -4795,7 +4795,7 @@ OAuth 2.0 protocol
         >
           <a
             class="css-ah3byb"
-            href="/#continue"
+            href="#continue"
           >
             <span
               class="css-s3qkfm"
@@ -4902,7 +4902,7 @@ OAuth 2.0 protocol
         >
           <a
             class="css-ah3byb"
-            href="/#sign_up"
+            href="#sign_up"
           >
             <span
               class="css-s3qkfm"
@@ -4973,7 +4973,7 @@ OAuth 2.0 protocol
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationcredentialstate"
+        href="#appleauthenticationcredentialstate"
       >
         <span
           class="css-s3qkfm"
@@ -5025,7 +5025,7 @@ OAuth 2.0 protocol
       An enum whose values specify state of the credential when checked with 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationgetcredentialstateasyncuser"
+        href="#appleauthenticationgetcredentialstateasyncuser"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -5096,7 +5096,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#revoked"
+            href="#revoked"
           >
             <span
               class="css-s3qkfm"
@@ -5164,7 +5164,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#authorized"
+            href="#authorized"
           >
             <span
               class="css-s3qkfm"
@@ -5232,7 +5232,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#not_found"
+            href="#not_found"
           >
             <span
               class="css-s3qkfm"
@@ -5300,7 +5300,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#transferred"
+            href="#transferred"
           >
             <span
               class="css-s3qkfm"
@@ -5365,7 +5365,7 @@ for more details.
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationoperation"
+        href="#appleauthenticationoperation"
       >
         <span
           class="css-s3qkfm"
@@ -5423,7 +5423,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#implicit"
+            href="#implicit"
           >
             <span
               class="css-s3qkfm"
@@ -5497,7 +5497,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#login"
+            href="#login"
           >
             <span
               class="css-s3qkfm"
@@ -5565,7 +5565,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#refresh"
+            href="#refresh"
           >
             <span
               class="css-s3qkfm"
@@ -5633,7 +5633,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#logout"
+            href="#logout"
           >
             <span
               class="css-s3qkfm"
@@ -5698,7 +5698,7 @@ for more details.
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationscope"
+        href="#appleauthenticationscope"
       >
         <span
           class="css-s3qkfm"
@@ -5750,7 +5750,7 @@ for more details.
       An enum whose values specify scopes you can request when calling 
       <a
         class="css-153g748-InternalLink"
-        href="/#appleauthenticationsigninasyncoptions"
+        href="#appleauthenticationsigninasyncoptions"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -5862,7 +5862,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#full_name"
+            href="#full_name"
           >
             <span
               class="css-s3qkfm"
@@ -5930,7 +5930,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#email"
+            href="#email"
           >
             <span
               class="css-s3qkfm"
@@ -5995,7 +5995,7 @@ for more details.
     >
       <a
         class="css-ah3byb"
-        href="/#appleauthenticationuserdetectionstatus"
+        href="#appleauthenticationuserdetectionstatus"
       >
         <span
           class="css-s3qkfm"
@@ -6107,7 +6107,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#unsupported"
+            href="#unsupported"
           >
             <span
               class="css-s3qkfm"
@@ -6181,7 +6181,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#unknown"
+            href="#unknown"
           >
             <span
               class="css-s3qkfm"
@@ -6255,7 +6255,7 @@ for more details.
         >
           <a
             class="css-ah3byb"
-            href="/#likely_real"
+            href="#likely_real"
           >
             <span
               class="css-s3qkfm"
@@ -6328,7 +6328,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
   >
     <a
       class="css-ah3byb"
-      href="/#component"
+      href="#component"
     >
       <span
         class="css-s3qkfm"
@@ -6378,7 +6378,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     >
       <a
         class="css-ah3byb"
-        href="/#barcodescanner"
+        href="#barcodescanner"
       >
         <span
           class="css-s3qkfm"
@@ -6441,7 +6441,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         <span>
           <a
             class="css-153g748-InternalLink"
-            href="/#barcodescannerprops"
+            href="#barcodescannerprops"
           >
             BarCodeScannerProps
           </a>
@@ -6455,7 +6455,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     >
       <a
         class="css-ah3byb"
-        href="/#props"
+        href="#props"
       >
         <span
           class="css-s3qkfm"
@@ -6506,7 +6506,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         >
           <a
             class="css-ah3byb"
-            href="/#barcodetypes"
+            href="#barcodetypes"
           >
             <span
               class="css-s3qkfm"
@@ -6592,7 +6592,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
            is one of these 
           <a
             class="css-153g748-InternalLink"
-            href="/#supported-formats"
+            href="#supported-formats"
           >
             listed above
           </a>
@@ -6622,7 +6622,7 @@ minimize battery usage.
         >
           <a
             class="css-ah3byb"
-            href="/#onbarcodescanned"
+            href="#onbarcodescanned"
           >
             <span
               class="css-s3qkfm"
@@ -6687,7 +6687,7 @@ minimize battery usage.
           >
             <a
               class="css-153g748-InternalLink"
-              href="/#barcodescannedcallback"
+              href="#barcodescannedcallback"
             >
               BarCodeScannedCallback
             </a>
@@ -6701,7 +6701,7 @@ minimize battery usage.
 provided with an 
           <a
             class="css-153g748-InternalLink"
-            href="/#barcodescannerresult"
+            href="#barcodescannerresult"
           >
             BarCodeScannerResult
           </a>
@@ -6778,7 +6778,7 @@ data has been retrieved.
         >
           <a
             class="css-ah3byb"
-            href="/#type"
+            href="#type"
           >
             <span
               class="css-s3qkfm"
@@ -6906,7 +6906,7 @@ Same as
       >
         <a
           class="css-ah3byb"
-          href="/#inherited-props"
+          href="#inherited-props"
         >
           <span
             class="css-s3qkfm"
@@ -6974,7 +6974,7 @@ Same as
   >
     <a
       class="css-ah3byb"
-      href="/#hooks"
+      href="#hooks"
     >
       <span
         class="css-s3qkfm"
@@ -7024,7 +7024,7 @@ Same as
     >
       <a
         class="css-ah3byb"
-        href="/#usepermissionsoptions"
+        href="#usepermissionsoptions"
       >
         <span
           class="css-s3qkfm"
@@ -7125,7 +7125,7 @@ Same as
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#permissionhookoptions"
+                  href="#permissionhookoptions"
                 >
                   PermissionHookOptions
                 </a>
@@ -7245,7 +7245,7 @@ This can be used to quickly create specific permission hooks in every module.
       >
         <a
           class="css-ah3byb"
-          href="/#returns"
+          href="#returns"
         >
           <span
             class="css-s3qkfm"
@@ -7324,7 +7324,7 @@ This can be used to quickly create specific permission hooks in every module.
             <span>
               <a
                 class="css-153g748-InternalLink"
-                href="/#permissionresponse"
+                href="#permissionresponse"
               >
                 PermissionResponse
               </a>
@@ -7337,7 +7337,7 @@ This can be used to quickly create specific permission hooks in every module.
             <span>
               <a
                 class="css-153g748-InternalLink"
-                href="/#permissionresponse"
+                href="#permissionresponse"
               >
                 PermissionResponse
               </a>
@@ -7351,7 +7351,7 @@ This can be used to quickly create specific permission hooks in every module.
             <span>
               <a
                 class="css-153g748-InternalLink"
-                href="/#permissionresponse"
+                href="#permissionresponse"
               >
                 PermissionResponse
               </a>
@@ -7369,7 +7369,7 @@ This can be used to quickly create specific permission hooks in every module.
   >
     <a
       class="css-ah3byb"
-      href="/#methods"
+      href="#methods"
     >
       <span
         class="css-s3qkfm"
@@ -7419,7 +7419,7 @@ This can be used to quickly create specific permission hooks in every module.
     >
       <a
         class="css-ah3byb"
-        href="/#barcodescannergetpermissionsasync"
+        href="#barcodescannergetpermissionsasync"
       >
         <span
           class="css-s3qkfm"
@@ -7480,7 +7480,7 @@ This can be used to quickly create specific permission hooks in every module.
       >
         <a
           class="css-ah3byb"
-          href="/#returns-1"
+          href="#returns-1"
         >
           <span
             class="css-s3qkfm"
@@ -7562,7 +7562,7 @@ This can be used to quickly create specific permission hooks in every module.
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#permissionresponse"
+              href="#permissionresponse"
             >
               PermissionResponse
             </a>
@@ -7578,7 +7578,7 @@ This can be used to quickly create specific permission hooks in every module.
       Return a promise that fulfills to an object of type 
       <a
         class="css-153g748-InternalLink"
-        href="/#permissionresponse"
+        href="#permissionresponse"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -7598,7 +7598,7 @@ This can be used to quickly create specific permission hooks in every module.
     >
       <a
         class="css-ah3byb"
-        href="/#barcodescannerrequestpermissionsasync"
+        href="#barcodescannerrequestpermissionsasync"
       >
         <span
           class="css-s3qkfm"
@@ -7677,7 +7677,7 @@ This can be used to quickly create specific permission hooks in every module.
       >
         <a
           class="css-ah3byb"
-          href="/#returns-2"
+          href="#returns-2"
         >
           <span
             class="css-s3qkfm"
@@ -7759,7 +7759,7 @@ This can be used to quickly create specific permission hooks in every module.
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#permissionresponse"
+              href="#permissionresponse"
             >
               PermissionResponse
             </a>
@@ -7775,7 +7775,7 @@ This can be used to quickly create specific permission hooks in every module.
       Return a promise that fulfills to an object of type 
       <a
         class="css-153g748-InternalLink"
-        href="/#permissionresponse"
+        href="#permissionresponse"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -7795,7 +7795,7 @@ This can be used to quickly create specific permission hooks in every module.
     >
       <a
         class="css-ah3byb"
-        href="/#barcodescannerscanfromurlasyncurl-barcodetypes"
+        href="#barcodescannerscanfromurlasyncurl-barcodetypes"
       >
         <span
           class="css-s3qkfm"
@@ -8007,7 +8007,7 @@ the platform.
       >
         <a
           class="css-ah3byb"
-          href="/#returns-3"
+          href="#returns-3"
         >
           <span
             class="css-s3qkfm"
@@ -8089,7 +8089,7 @@ the platform.
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#barcodescannerresult"
+              href="#barcodescannerresult"
             >
               BarCodeScannerResult
               []
@@ -8120,7 +8120,7 @@ code.
   >
     <a
       class="css-ah3byb"
-      href="/#interfaces"
+      href="#interfaces"
     >
       <span
         class="css-s3qkfm"
@@ -8170,7 +8170,7 @@ code.
     >
       <a
         class="css-ah3byb"
-        href="/#permissionresponse"
+        href="#permissionresponse"
       >
         <span
           class="css-s3qkfm"
@@ -8231,7 +8231,7 @@ code.
       >
         <a
           class="css-ah3byb"
-          href="/#permissionresponse--properties"
+          href="#permissionresponse--properties"
         >
           <span
             class="css-s3qkfm"
@@ -8355,7 +8355,7 @@ in order to enable/disable the permission.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#permissionexpiration"
+                  href="#permissionexpiration"
                 >
                   PermissionExpiration
                 </a>
@@ -8418,7 +8418,7 @@ in order to enable/disable the permission.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#permissionstatus"
+                  href="#permissionstatus"
                 >
                   PermissionStatus
                 </a>
@@ -8442,7 +8442,7 @@ in order to enable/disable the permission.
   >
     <a
       class="css-ah3byb"
-      href="/#types"
+      href="#types"
     >
       <span
         class="css-s3qkfm"
@@ -8492,7 +8492,7 @@ in order to enable/disable the permission.
     >
       <a
         class="css-ah3byb"
-        href="/#barcodebounds"
+        href="#barcodebounds"
       >
         <span
           class="css-s3qkfm"
@@ -8587,7 +8587,7 @@ in order to enable/disable the permission.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#barcodepoint"
+                  href="#barcodepoint"
                 >
                   BarCodePoint
                 </a>
@@ -8621,7 +8621,7 @@ in order to enable/disable the permission.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#barcodesize"
+                  href="#barcodesize"
                 >
                   BarCodeSize
                 </a>
@@ -8648,7 +8648,7 @@ in order to enable/disable the permission.
     >
       <a
         class="css-ah3byb"
-        href="/#barcodeevent"
+        href="#barcodeevent"
       >
         <span
           class="css-s3qkfm"
@@ -8702,7 +8702,7 @@ in order to enable/disable the permission.
       >
         <a
           class="css-153g748-InternalLink"
-          href="/#barcodescannerresult"
+          href="#barcodescannerresult"
         >
           BarCodeScannerResult
         </a>
@@ -8786,7 +8786,7 @@ in order to enable/disable the permission.
     >
       <a
         class="css-ah3byb"
-        href="/#barcodeeventcallbackarguments"
+        href="#barcodeeventcallbackarguments"
       >
         <span
           class="css-s3qkfm"
@@ -8881,7 +8881,7 @@ in order to enable/disable the permission.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#barcodeevent"
+                  href="#barcodeevent"
                 >
                   BarCodeEvent
                 </a>
@@ -8906,7 +8906,7 @@ in order to enable/disable the permission.
     >
       <a
         class="css-ah3byb"
-        href="/#barcodepoint"
+        href="#barcodepoint"
       >
         <span
           class="css-s3qkfm"
@@ -9071,7 +9071,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     >
       <a
         class="css-ah3byb"
-        href="/#barcodescannedcallback"
+        href="#barcodescannedcallback"
       >
         <span
           class="css-s3qkfm"
@@ -9168,7 +9168,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 >
                   <a
                     class="css-153g748-InternalLink"
-                    href="/#barcodeevent"
+                    href="#barcodeevent"
                   >
                     BarCodeEvent
                   </a>
@@ -9194,7 +9194,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     >
       <a
         class="css-ah3byb"
-        href="/#barcodescannerresult"
+        href="#barcodescannerresult"
       >
         <span
           class="css-s3qkfm"
@@ -9289,7 +9289,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#barcodebounds"
+                  href="#barcodebounds"
                 >
                   BarCodeBounds
                 </a>
@@ -9302,7 +9302,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 The 
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#barcodebounds"
+                  href="#barcodebounds"
                 >
                   BarCodeBounds
                 </a>
@@ -9345,7 +9345,7 @@ For some types, they will represent the area used by the scanner.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#barcodepoint"
+                  href="#barcodepoint"
                 >
                   BarCodePoint
                   []
@@ -9451,7 +9451,7 @@ you don't get this value.
     >
       <a
         class="css-ah3byb"
-        href="/#barcodesize"
+        href="#barcodesize"
       >
         <span
           class="css-s3qkfm"
@@ -9597,7 +9597,7 @@ you don't get this value.
     >
       <a
         class="css-ah3byb"
-        href="/#permissionhookoptions"
+        href="#permissionhookoptions"
       >
         <span
           class="css-s3qkfm"
@@ -9672,7 +9672,7 @@ you don't get this value.
   >
     <a
       class="css-ah3byb"
-      href="/#enums"
+      href="#enums"
     >
       <span
         class="css-s3qkfm"
@@ -9722,7 +9722,7 @@ you don't get this value.
     >
       <a
         class="css-ah3byb"
-        href="/#permissionstatus"
+        href="#permissionstatus"
       >
         <span
           class="css-s3qkfm"
@@ -9780,7 +9780,7 @@ you don't get this value.
         >
           <a
             class="css-ah3byb"
-            href="/#denied"
+            href="#denied"
           >
             <span
               class="css-s3qkfm"
@@ -9854,7 +9854,7 @@ you don't get this value.
         >
           <a
             class="css-ah3byb"
-            href="/#granted"
+            href="#granted"
           >
             <span
               class="css-s3qkfm"
@@ -9928,7 +9928,7 @@ you don't get this value.
         >
           <a
             class="css-ah3byb"
-            href="/#undetermined"
+            href="#undetermined"
           >
             <span
               class="css-s3qkfm"
@@ -10001,7 +10001,7 @@ exports[`APISection expo-pedometer 1`] = `
   >
     <a
       class="css-ah3byb"
-      href="/#methods"
+      href="#methods"
     >
       <span
         class="css-s3qkfm"
@@ -10051,7 +10051,7 @@ exports[`APISection expo-pedometer 1`] = `
     >
       <a
         class="css-ah3byb"
-        href="/#getpermissionsasync"
+        href="#getpermissionsasync"
       >
         <span
           class="css-s3qkfm"
@@ -10106,7 +10106,7 @@ exports[`APISection expo-pedometer 1`] = `
       >
         <a
           class="css-ah3byb"
-          href="/#returns"
+          href="#returns"
         >
           <span
             class="css-s3qkfm"
@@ -10188,7 +10188,7 @@ exports[`APISection expo-pedometer 1`] = `
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#permissionresponse"
+              href="#permissionresponse"
             >
               PermissionResponse
             </a>
@@ -10207,7 +10207,7 @@ exports[`APISection expo-pedometer 1`] = `
     >
       <a
         class="css-ah3byb"
-        href="/#getstepcountasyncstart-end"
+        href="#getstepcountasyncstart-end"
       >
         <span
           class="css-s3qkfm"
@@ -10379,7 +10379,7 @@ exports[`APISection expo-pedometer 1`] = `
       >
         <a
           class="css-ah3byb"
-          href="/#returns-1"
+          href="#returns-1"
         >
           <span
             class="css-s3qkfm"
@@ -10461,7 +10461,7 @@ exports[`APISection expo-pedometer 1`] = `
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#pedometerresult"
+              href="#pedometerresult"
             >
               PedometerResult
             </a>
@@ -10477,7 +10477,7 @@ exports[`APISection expo-pedometer 1`] = `
       Returns a promise that fulfills with a 
       <a
         class="css-153g748-InternalLink"
-        href="/#pedometerresult"
+        href="#pedometerresult"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -10557,7 +10557,7 @@ a start date that is more than seven days in the past returns only the available
     >
       <a
         class="css-ah3byb"
-        href="/#isavailableasync"
+        href="#isavailableasync"
       >
         <span
           class="css-s3qkfm"
@@ -10618,7 +10618,7 @@ a start date that is more than seven days in the past returns only the available
       >
         <a
           class="css-ah3byb"
-          href="/#returns-2"
+          href="#returns-2"
         >
           <span
             class="css-s3qkfm"
@@ -10727,7 +10727,7 @@ available on this device.
     >
       <a
         class="css-ah3byb"
-        href="/#requestpermissionsasync"
+        href="#requestpermissionsasync"
       >
         <span
           class="css-s3qkfm"
@@ -10782,7 +10782,7 @@ available on this device.
       >
         <a
           class="css-ah3byb"
-          href="/#returns-3"
+          href="#returns-3"
         >
           <span
             class="css-s3qkfm"
@@ -10864,7 +10864,7 @@ available on this device.
           <span>
             <a
               class="css-153g748-InternalLink"
-              href="/#permissionresponse"
+              href="#permissionresponse"
             >
               PermissionResponse
             </a>
@@ -10883,7 +10883,7 @@ available on this device.
     >
       <a
         class="css-ah3byb"
-        href="/#watchstepcountcallback"
+        href="#watchstepcountcallback"
       >
         <span
           class="css-s3qkfm"
@@ -10978,7 +10978,7 @@ available on this device.
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#pedometerupdatecallback"
+                  href="#pedometerupdatecallback"
                 >
                   PedometerUpdateCallback
                 </a>
@@ -10995,7 +10995,7 @@ available on this device.
 provided with a single argument that is 
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#pedometerresult"
+                  href="#pedometerresult"
                 >
                   <code
                     class="inline css-ov7own-InlineCode"
@@ -11026,7 +11026,7 @@ provided with a single argument that is
       >
         <a
           class="css-ah3byb"
-          href="/#returns-4"
+          href="#returns-4"
         >
           <span
             class="css-s3qkfm"
@@ -11098,7 +11098,7 @@ provided with a single argument that is
         >
           <a
             class="css-153g748-InternalLink"
-            href="/#subscription"
+            href="#subscription"
           >
             Subscription
           </a>
@@ -11112,7 +11112,7 @@ provided with a single argument that is
       Returns a 
       <a
         class="css-153g748-InternalLink"
-        href="/#subscription"
+        href="#subscription"
       >
         <code
           class="inline css-ov7own-InlineCode"
@@ -11136,7 +11136,7 @@ provided with a single argument that is
   >
     <a
       class="css-ah3byb"
-      href="/#interfaces"
+      href="#interfaces"
     >
       <span
         class="css-s3qkfm"
@@ -11186,7 +11186,7 @@ provided with a single argument that is
     >
       <a
         class="css-ah3byb"
-        href="/#permissionresponse"
+        href="#permissionresponse"
       >
         <span
           class="css-s3qkfm"
@@ -11241,7 +11241,7 @@ provided with a single argument that is
       >
         <a
           class="css-ah3byb"
-          href="/#permissionresponse--properties"
+          href="#permissionresponse--properties"
         >
           <span
             class="css-s3qkfm"
@@ -11361,7 +11361,7 @@ provided with a single argument that is
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#permissionexpiration"
+                  href="#permissionexpiration"
                 >
                   PermissionExpiration
                 </a>
@@ -11420,7 +11420,7 @@ provided with a single argument that is
               >
                 <a
                   class="css-153g748-InternalLink"
-                  href="/#permissionstatus"
+                  href="#permissionstatus"
                 >
                   PermissionStatus
                 </a>
@@ -11442,7 +11442,7 @@ provided with a single argument that is
   >
     <a
       class="css-ah3byb"
-      href="/#types"
+      href="#types"
     >
       <span
         class="css-s3qkfm"
@@ -11492,7 +11492,7 @@ provided with a single argument that is
     >
       <a
         class="css-ah3byb"
-        href="/#pedometerresult"
+        href="#pedometerresult"
       >
         <span
           class="css-s3qkfm"
@@ -11609,7 +11609,7 @@ provided with a single argument that is
     >
       <a
         class="css-ah3byb"
-        href="/#pedometerupdatecallback"
+        href="#pedometerupdatecallback"
       >
         <span
           class="css-s3qkfm"
@@ -11706,7 +11706,7 @@ provided with a single argument that is
                 >
                   <a
                     class="css-153g748-InternalLink"
-                    href="/#pedometerresult"
+                    href="#pedometerresult"
                   >
                     PedometerResult
                   </a>
@@ -11732,7 +11732,7 @@ provided with a single argument that is
     >
       <a
         class="css-ah3byb"
-        href="/#permissionexpiration"
+        href="#permissionexpiration"
       >
         <span
           class="css-s3qkfm"
@@ -11810,7 +11810,7 @@ provided with a single argument that is
     >
       <a
         class="css-ah3byb"
-        href="/#subscription"
+        href="#subscription"
       >
         <span
           class="css-s3qkfm"
@@ -11927,7 +11927,7 @@ provided with a single argument that is
   >
     <a
       class="css-ah3byb"
-      href="/#enums"
+      href="#enums"
     >
       <span
         class="css-s3qkfm"
@@ -11977,7 +11977,7 @@ provided with a single argument that is
     >
       <a
         class="css-ah3byb"
-        href="/#permissionstatus"
+        href="#permissionstatus"
       >
         <span
           class="css-s3qkfm"
@@ -12035,7 +12035,7 @@ provided with a single argument that is
         >
           <a
             class="css-ah3byb"
-            href="/#denied"
+            href="#denied"
           >
             <span
               class="css-s3qkfm"
@@ -12103,7 +12103,7 @@ provided with a single argument that is
         >
           <a
             class="css-ah3byb"
-            href="/#granted"
+            href="#granted"
           >
             <span
               class="css-s3qkfm"
@@ -12171,7 +12171,7 @@ provided with a single argument that is
         >
           <a
             class="css-ah3byb"
-            href="/#undetermined"
+            href="#undetermined"
           >
             <span
               class="css-s3qkfm"
