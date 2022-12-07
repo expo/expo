@@ -33,6 +33,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Image sources',
+    route: 'image/sources',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSourcesScreen'));
+    },
+  },
+  {
     name: 'Content fit and position',
     route: 'image/content-fit',
     getComponent() {
