@@ -3,8 +3,8 @@ import path from 'path';
 
 import {
   getGoogleServicesFile,
-  getGoogleSignInReservedClientId,
-  setGoogleSignInReservedClientId,
+  getGoogleSignInReversedClientId,
+  setGoogleSignInReversedClientId,
 } from '../Google';
 import { appendScheme } from '../Scheme';
 
@@ -17,10 +17,10 @@ const googleServicesFixture = jest
   .requireActual('fs')
   .readFileSync(path.join(__dirname, 'fixtures/GoogleService-Info.plist'), 'utf-8');
 
-describe(getGoogleSignInReservedClientId, () => {
+describe(getGoogleSignInReversedClientId, () => {
   afterEach(() => vol.reset());
   it(`returns null when no file is defined`, () => {
-    expect(getGoogleSignInReservedClientId({}, { projectRoot: '' })).toBe(null);
+    expect(getGoogleSignInReversedClientId({}, { projectRoot: '' })).toBe(null);
     expect(getGoogleServicesFile({})).toBe(null);
   });
   it(`returns the REVERSED_CLIENT_ID from the linked file`, () => {
@@ -36,13 +36,13 @@ describe(getGoogleSignInReservedClientId, () => {
     };
 
     expect(getGoogleServicesFile(config)).toBe('./path/to/GoogleService-Info.plist');
-    expect(getGoogleSignInReservedClientId(config, { projectRoot: '/' })).toBe(
+    expect(getGoogleSignInReversedClientId(config, { projectRoot: '/' })).toBe(
       'com.googleusercontent.apps.1234567890123-abcdef'
     );
   });
 });
 
-describe(setGoogleSignInReservedClientId, () => {
+describe(setGoogleSignInReversedClientId, () => {
   afterEach(() => vol.reset());
 
   it(`adds the reversed client id to scheme from GoogleService-Info.Plist`, () => {
@@ -54,7 +54,7 @@ describe(setGoogleSignInReservedClientId, () => {
     );
 
     expect(
-      setGoogleSignInReservedClientId(
+      setGoogleSignInReversedClientId(
         {
           ios: { googleServicesFile: './path/to/GoogleService-Info.plist' },
         },
