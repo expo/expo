@@ -13,7 +13,6 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
-import com.bumptech.glide.load.model.GlideUrl
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.DrawableImageViewTarget
@@ -104,7 +103,7 @@ class ExpoImageView(
   private val outlineProvider = OutlineProvider(context)
 
   private var propsChanged = false
-  private var loadedSource: GlideUrl? = null
+  private var loadedSource: GlideModel? = null
 
   private val borderDrawableLazyHolder = lazy {
     ReactViewBackgroundDrawable(context).apply {
@@ -268,9 +267,9 @@ class ExpoImageView(
   // region ViewManager Lifecycle methods
   internal fun onAfterUpdateTransaction() {
     val bestSource = bestSource
-    val sourceToLoad = bestSource?.createGlideUrl()
+    val sourceToLoad = bestSource?.createGlideModel()
 
-    if (sourceToLoad == null) {
+    if (bestSource == null || sourceToLoad == null) {
       requestManager.clear(this)
       setImageDrawable(null)
       loadedSource = null
@@ -285,17 +284,20 @@ class ExpoImageView(
       }
 
       val propOptions = createPropOptions()
-      progressInterceptor.registerProgressListener(
-        sourceToLoad.toStringUrl(),
-        OkHttpProgressListener(expoImageViewWrapper)
-      )
+
+      if (sourceToLoad is GlideUrlModel) {
+        progressInterceptor.registerProgressListener(
+          sourceToLoad.glideData.toStringUrl(),
+          OkHttpProgressListener(expoImageViewWrapper)
+        )
+      }
 
       expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
 
-      val defaultSourceToLoad = defaultSourceMap?.createGlideUrl()
+      val defaultSourceToLoad = defaultSourceMap?.createGlideModel()
       requestManager
         .asDrawable()
-        .load(sourceToLoad)
+        .load(sourceToLoad.glideData)
         .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
         .apply(options)
         .downsample(DownsampleStrategy.NONE)
