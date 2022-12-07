@@ -209,6 +209,10 @@ describe('built-in plugins', () => {
   const projectRoot = '/app';
   const iconPath = path.resolve(__dirname, './fixtures/icon.png');
   const icon = fsReal.readFileSync(iconPath) as any;
+  const googleServiceInfoFixture = fsReal.readFileSync(
+    path.resolve(__dirname, './fixtures/GoogleService-Info.plist'),
+    'utf8'
+  ) as any;
 
   beforeEach(async () => {
     // Trick XDL Info.plist reading
@@ -222,7 +226,7 @@ describe('built-in plugins', () => {
         // App files
         ...rnFixture,
         'ios/Podfile': PodfileBasic,
-        'config/GoogleService-Info.plist': 'noop',
+        'config/GoogleService-Info.plist': googleServiceInfoFixture,
         'config/google-services.json': '{}',
         './icons/foreground.png': icon,
         './icons/background.png': icon,
@@ -318,7 +322,7 @@ describe('built-in plugins', () => {
     // Google Sign In
     expect(
       config.ios?.infoPlist?.CFBundleURLTypes?.find(({ CFBundleURLSchemes }) =>
-        CFBundleURLSchemes.includes('GOOGLE_SIGN_IN_CLIENT_ID')
+        CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
     // Branch
@@ -383,7 +387,7 @@ describe('built-in plugins', () => {
     expect(after['ios/ReactNativeProject/Supporting/en.lproj/InfoPlist.strings']).toMatch(
       /foo = "uhh bar"/
     );
-    expect(after['ios/ReactNativeProject/GoogleService-Info.plist']).toBe('noop');
+    expect(after['ios/ReactNativeProject/GoogleService-Info.plist']).toBe(googleServiceInfoFixture);
 
     expect(after['android/app/src/main/java/com/bacon/todo/MainApplication.java']).toMatch(
       'package com.bacon.todo;'
@@ -451,7 +455,7 @@ describe('built-in plugins', () => {
     // Google Sign In
     expect(
       config.ios?.infoPlist?.CFBundleURLTypes?.find(({ CFBundleURLSchemes }) =>
-        CFBundleURLSchemes.includes('GOOGLE_SIGN_IN_CLIENT_ID')
+        CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
     // Branch
@@ -550,7 +554,7 @@ describe('built-in plugins', () => {
         // Required to link react-native-maps
         './node_modules/react-native-maps/package.json': JSON.stringify({}),
         // App files
-        'config/GoogleService-Info.plist': 'noop',
+        'config/GoogleService-Info.plist': googleServiceInfoFixture,
         'config/google-services.json': '{}',
         'icons/foreground.png': icon,
         'icons/background.png': icon,
@@ -574,7 +578,7 @@ describe('built-in plugins', () => {
     // Google Sign In
     expect(
       config.ios?.infoPlist?.CFBundleURLTypes?.find(({ CFBundleURLSchemes }) =>
-        CFBundleURLSchemes.includes('GOOGLE_SIGN_IN_CLIENT_ID')
+        CFBundleURLSchemes.includes('com.googleusercontent.apps.1234567890123-abcdef')
       )
     ).toBeDefined();
     // Branch
