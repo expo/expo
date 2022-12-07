@@ -5,7 +5,7 @@ import { StyleSheet, View, Text } from 'react-native';
 import Button from '../../components/Button';
 import { Colors } from '../../constants';
 
-export default function ImageEventsScreen() {
+export default function ImagePriorityScreen() {
   const [id, setId] = useState(0);
 
   const defaultProps = {
