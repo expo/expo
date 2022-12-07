@@ -339,7 +339,6 @@ Object {
     "hidden": false,
     "translucent": true,
   },
-  "appKey": "othermain",
   "backgroundColor": "orange",
   "description": "my app is great because it uses expo",
   "developmentClient": Object {
@@ -368,9 +367,6 @@ Object {
       "googleMapsApiKey": "TEST_googleMapsApiKey",
       "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
       "googleMobileAdsAutoInit": true,
-      "googleSignIn": Object {
-        "reservedClientId": "GOOGLE_SIGN_IN_CLIENT_ID",
-      },
       "usesNonExemptEncryption": true,
     },
     "entitlements": Object {
@@ -401,7 +397,7 @@ Object {
         },
         Object {
           "CFBundleURLSchemes": Array [
-            "GOOGLE_SIGN_IN_CLIENT_ID",
+            "com.googleusercontent.apps.1234567890123-abcdef",
           ],
         },
         Object {
@@ -466,7 +462,6 @@ Object {
       },
     },
     "isTabletOnly": false,
-    "merchantId": "TEST_MERCHANT_ID",
     "requireFullScreen": true,
     "supportsTablet": true,
     "userInterfaceStyle": "automatic",
@@ -1152,7 +1147,7 @@ Object {
             },
             Object {
               "CFBundleURLSchemes": Array [
-                "GOOGLE_SIGN_IN_CLIENT_ID",
+                "com.googleusercontent.apps.1234567890123-abcdef",
               ],
             },
             Object {
@@ -1553,7 +1548,6 @@ Object {
     "hidden": false,
     "translucent": true,
   },
-  "appKey": "othermain",
   "backgroundColor": "orange",
   "description": "my app is great because it uses expo",
   "developmentClient": Object {
@@ -1582,9 +1576,6 @@ Object {
       "googleMapsApiKey": "TEST_googleMapsApiKey",
       "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
       "googleMobileAdsAutoInit": true,
-      "googleSignIn": Object {
-        "reservedClientId": "GOOGLE_SIGN_IN_CLIENT_ID",
-      },
       "usesNonExemptEncryption": true,
     },
     "entitlements": Object {
@@ -1615,7 +1606,7 @@ Object {
         },
         Object {
           "CFBundleURLSchemes": Array [
-            "GOOGLE_SIGN_IN_CLIENT_ID",
+            "com.googleusercontent.apps.1234567890123-abcdef",
           ],
         },
         Object {
@@ -1680,7 +1671,6 @@ Object {
       },
     },
     "isTabletOnly": false,
-    "merchantId": "TEST_MERCHANT_ID",
     "requireFullScreen": true,
     "supportsTablet": true,
     "userInterfaceStyle": "automatic",
@@ -2264,7 +2254,7 @@ Object {
             },
             Object {
               "CFBundleURLSchemes": Array [
-                "GOOGLE_SIGN_IN_CLIENT_ID",
+                "com.googleusercontent.apps.1234567890123-abcdef",
               ],
             },
             Object {
@@ -2666,7 +2656,6 @@ Object {
     "hidden": false,
     "translucent": true,
   },
-  "appKey": "othermain",
   "backgroundColor": "orange",
   "description": "my app is great because it uses expo",
   "developmentClient": Object {
@@ -2695,9 +2684,6 @@ Object {
       "googleMapsApiKey": "TEST_googleMapsApiKey",
       "googleMobileAdsAppId": "TEST_googleMobileAdsAppId",
       "googleMobileAdsAutoInit": true,
-      "googleSignIn": Object {
-        "reservedClientId": "GOOGLE_SIGN_IN_CLIENT_ID",
-      },
       "usesNonExemptEncryption": true,
     },
     "entitlements": Object {
@@ -2728,7 +2714,7 @@ Object {
         },
         Object {
           "CFBundleURLSchemes": Array [
-            "GOOGLE_SIGN_IN_CLIENT_ID",
+            "com.googleusercontent.apps.1234567890123-abcdef",
           ],
         },
         Object {
@@ -2794,7 +2780,6 @@ Object {
       },
     },
     "isTabletOnly": false,
-    "merchantId": "TEST_MERCHANT_ID",
     "requireFullScreen": true,
     "supportsTablet": true,
     "userInterfaceStyle": "automatic",
