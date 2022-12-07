@@ -1,4 +1,6 @@
 /packages/@expo/cli                             @EvanBacon @bycedric
+/packages/@expo/config-plugins                  @EvanBacon @douglowder
+/packages/@expo/config-types                    @EvanBacon @douglowder
 /packages/@expo/package-manager                 @EvanBacon @bycedric
 /packages/babel-preset-expo                     @brentvatne @ide @EvanBacon
 /packages/expo-app-loader-provider              @tsapeta
