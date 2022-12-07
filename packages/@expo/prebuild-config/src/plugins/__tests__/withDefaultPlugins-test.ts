@@ -68,7 +68,6 @@ function getLargeConfig(): ExportedConfig {
       androidMode: 'collapse',
       androidCollapsedTitle: '#{unread_notifications} new interactions',
     },
-    appKey: 'othermain',
     androidStatusBar: {
       barStyle: 'light-content',
       backgroundColor: '#000FFF',
@@ -107,7 +106,6 @@ function getLargeConfig(): ExportedConfig {
       bundleIdentifier: 'com.bacon.tester.expoapp',
       buildNumber: '6.5.0',
       backgroundColor: '#ff0000',
-      merchantId: 'TEST_MERCHANT_ID',
       appStoreUrl: 'https://itunes.apple.com/us/app/pillar-valley/id1336398804?ls=1&mt=8',
       config: {
         branch: {
@@ -117,9 +115,6 @@ function getLargeConfig(): ExportedConfig {
         googleMapsApiKey: 'TEST_googleMapsApiKey',
         googleMobileAdsAppId: 'TEST_googleMobileAdsAppId',
         googleMobileAdsAutoInit: true,
-        googleSignIn: {
-          reservedClientId: 'GOOGLE_SIGN_IN_CLIENT_ID',
-        },
       },
       googleServicesFile: './config/GoogleService-Info.plist',
       supportsTablet: true,
@@ -317,8 +312,8 @@ describe('built-in plugins', () => {
 
     // App config should have been modified
     expect(config.name).toBe('my cool app');
-    expect(config.ios.infoPlist).toBeDefined();
-    expect(config.ios.entitlements).toBeDefined();
+    expect(config.ios?.infoPlist).toBeDefined();
+    expect(config.ios?.entitlements).toBeDefined();
 
     // Google Sign In
     expect(
@@ -330,7 +325,9 @@ describe('built-in plugins', () => {
     expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
     // Mods should all be functions
-    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods!.ios!).every((value) => typeof value === 'function')).toBe(
+      true
+    );
 
     delete config.mods;
 
@@ -448,8 +445,8 @@ describe('built-in plugins', () => {
 
     // App config should have been modified
     expect(config.name).toBe('my cool app');
-    expect(config.ios.infoPlist).toBeDefined();
-    expect(config.ios.entitlements).toBeDefined();
+    expect(config.ios?.infoPlist).toBeDefined();
+    expect(config.ios?.entitlements).toBeDefined();
 
     // Google Sign In
     expect(
@@ -460,32 +457,31 @@ describe('built-in plugins', () => {
     // Branch
     expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
+    const mods = config.mods!;
     // Mods should all be functions
-    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
-    expect(Object.values(config.mods.android).every((value) => typeof value === 'function')).toBe(
-      true
-    );
+    expect(Object.values(mods.ios!).every((value) => typeof value === 'function')).toBe(true);
+    expect(Object.values(mods.android!).every((value) => typeof value === 'function')).toBe(true);
     // Ensure these mods are removed
-    expect(config.mods.android.dangerous).toBeUndefined();
-    expect(config.mods.android.mainActivity).toBeUndefined();
-    expect(config.mods.android.appBuildGradle).toBeUndefined();
-    expect(config.mods.android.projectBuildGradle).toBeUndefined();
-    expect(config.mods.android.settingsGradle).toBeUndefined();
-    expect(config.mods.ios.dangerous).toBeUndefined();
-    expect(config.mods.ios.xcodeproj).toBeUndefined();
+    expect(mods.android?.dangerous).toBeUndefined();
+    expect(mods.android?.mainActivity).toBeUndefined();
+    expect(mods.android?.appBuildGradle).toBeUndefined();
+    expect(mods.android?.projectBuildGradle).toBeUndefined();
+    expect(mods.android?.settingsGradle).toBeUndefined();
+    expect(mods.ios?.dangerous).toBeUndefined();
+    expect(mods.ios?.xcodeproj).toBeUndefined();
 
     delete config.mods;
 
     // Shape
     expect(config).toMatchSnapshot();
 
-    expect(config._internal.modResults).toBeDefined();
-    expect(config._internal.modResults.ios.infoPlist).toBeDefined();
-    expect(config._internal.modResults.ios.expoPlist).toBeDefined();
-    expect(config._internal.modResults.ios.entitlements).toBeDefined();
-    expect(config._internal.modResults.android.manifest).toBeDefined();
-    expect(Array.isArray(config._internal.modResults.android.gradleProperties)).toBe(true);
-    expect(config._internal.modResults.android.strings).toBeDefined();
+    expect(config._internal?.modResults).toBeDefined();
+    expect(config._internal?.modResults.ios.infoPlist).toBeDefined();
+    expect(config._internal?.modResults.ios.expoPlist).toBeDefined();
+    expect(config._internal?.modResults.ios.entitlements).toBeDefined();
+    expect(config._internal?.modResults.android.manifest).toBeDefined();
+    expect(Array.isArray(config._internal?.modResults.android.gradleProperties)).toBe(true);
+    expect(config._internal?.modResults.android.strings).toBeDefined();
 
     // Test the written files...
     const after = getDirFromFS(vol.toJSON(), projectRoot);
@@ -572,8 +568,8 @@ describe('built-in plugins', () => {
 
     // App config should have been modified
     expect(config.name).toBe('my cool app');
-    expect(config.ios.infoPlist).toBeDefined();
-    expect(config.ios.entitlements).toBeDefined();
+    expect(config.ios?.infoPlist).toBeDefined();
+    expect(config.ios?.entitlements).toBeDefined();
 
     // Google Sign In
     expect(
@@ -584,32 +580,31 @@ describe('built-in plugins', () => {
     // Branch
     expect(config.ios?.infoPlist?.branch_key?.live).toBe('MY_BRANCH_KEY');
 
+    const mods = config.mods!;
     // Mods should all be functions
-    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
-    expect(Object.values(config.mods.android).every((value) => typeof value === 'function')).toBe(
-      true
-    );
+    expect(Object.values(mods.ios!).every((value) => typeof value === 'function')).toBe(true);
+    expect(Object.values(mods.android!).every((value) => typeof value === 'function')).toBe(true);
     // Ensure these mods are removed
-    expect(config.mods.android.dangerous).toBeUndefined();
-    expect(config.mods.android.mainActivity).toBeUndefined();
-    expect(config.mods.android.appBuildGradle).toBeUndefined();
-    expect(config.mods.android.projectBuildGradle).toBeUndefined();
-    expect(config.mods.android.settingsGradle).toBeUndefined();
-    expect(config.mods.ios.dangerous).toBeUndefined();
-    expect(config.mods.ios.xcodeproj).toBeUndefined();
+    expect(mods.android?.dangerous).toBeUndefined();
+    expect(mods.android?.mainActivity).toBeUndefined();
+    expect(mods.android?.appBuildGradle).toBeUndefined();
+    expect(mods.android?.projectBuildGradle).toBeUndefined();
+    expect(mods.android?.settingsGradle).toBeUndefined();
+    expect(mods.ios?.dangerous).toBeUndefined();
+    expect(mods.ios?.xcodeproj).toBeUndefined();
 
     delete config.mods;
 
     // Shape
     expect(config).toMatchSnapshot();
 
-    expect(config._internal.modResults).toBeDefined();
-    expect(config._internal.modResults.ios.infoPlist).toBeDefined();
-    expect(config._internal.modResults.ios.expoPlist).toBeDefined();
-    expect(config._internal.modResults.ios.entitlements).toBeDefined();
-    expect(config._internal.modResults.android.manifest).toBeDefined();
-    expect(Array.isArray(config._internal.modResults.android.gradleProperties)).toBe(true);
-    expect(config._internal.modResults.android.strings).toBeDefined();
+    expect(config._internal?.modResults).toBeDefined();
+    expect(config._internal?.modResults.ios.infoPlist).toBeDefined();
+    expect(config._internal?.modResults.ios.expoPlist).toBeDefined();
+    expect(config._internal?.modResults.ios.entitlements).toBeDefined();
+    expect(config._internal?.modResults.android.manifest).toBeDefined();
+    expect(Array.isArray(config._internal?.modResults.android.gradleProperties)).toBe(true);
+    expect(config._internal?.modResults.android.strings).toBeDefined();
 
     // Test the written files...
     const after = getDirFromFS(vol.toJSON(), projectRoot);

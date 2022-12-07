@@ -4,10 +4,10 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getGoogleServicesFile = getGoogleServicesFile;
-exports.getGoogleSignInReservedClientId = getGoogleSignInReservedClientId;
+exports.getGoogleSignInReversedClientId = getGoogleSignInReversedClientId;
 exports.setGoogleConfig = setGoogleConfig;
 exports.setGoogleServicesFile = setGoogleServicesFile;
-exports.setGoogleSignInReservedClientId = setGoogleSignInReservedClientId;
+exports.setGoogleSignInReversedClientId = setGoogleSignInReversedClientId;
 exports.withGoogleServicesFile = exports.withGoogle = void 0;
 function _plist() {
   const data = _interopRequireDefault(require("@expo/plist"));
@@ -91,12 +91,8 @@ function readGoogleServicesInfoPlist(relativePath, {
   (0, _assert().default)(contents, 'GoogleService-Info.plist is empty');
   return _plist().default.parse(contents);
 }
-function getGoogleSignInReservedClientId(config, modRequest) {
-  var _config$ios$config$go, _config$ios, _config$ios$config, _config$ios$config$go2, _infoPlist$REVERSED_C;
-  const reservedClientId = (_config$ios$config$go = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : (_config$ios$config = _config$ios.config) === null || _config$ios$config === void 0 ? void 0 : (_config$ios$config$go2 = _config$ios$config.googleSignIn) === null || _config$ios$config$go2 === void 0 ? void 0 : _config$ios$config$go2.reservedClientId) !== null && _config$ios$config$go !== void 0 ? _config$ios$config$go : null;
-  if (reservedClientId) {
-    return reservedClientId;
-  }
+function getGoogleSignInReversedClientId(config, modRequest) {
+  var _infoPlist$REVERSED_C;
   const googleServicesFileRelativePath = getGoogleServicesFile(config);
   if (googleServicesFileRelativePath === null) {
     return null;
@@ -105,18 +101,18 @@ function getGoogleSignInReservedClientId(config, modRequest) {
   return (_infoPlist$REVERSED_C = infoPlist.REVERSED_CLIENT_ID) !== null && _infoPlist$REVERSED_C !== void 0 ? _infoPlist$REVERSED_C : null;
 }
 function getGoogleServicesFile(config) {
-  var _config$ios$googleSer, _config$ios2;
-  return (_config$ios$googleSer = (_config$ios2 = config.ios) === null || _config$ios2 === void 0 ? void 0 : _config$ios2.googleServicesFile) !== null && _config$ios$googleSer !== void 0 ? _config$ios$googleSer : null;
+  var _config$ios$googleSer, _config$ios;
+  return (_config$ios$googleSer = (_config$ios = config.ios) === null || _config$ios === void 0 ? void 0 : _config$ios.googleServicesFile) !== null && _config$ios$googleSer !== void 0 ? _config$ios$googleSer : null;
 }
-function setGoogleSignInReservedClientId(config, infoPlist, modRequest) {
-  const reservedClientId = getGoogleSignInReservedClientId(config, modRequest);
-  if (reservedClientId === null) {
+function setGoogleSignInReversedClientId(config, infoPlist, modRequest) {
+  const reversedClientId = getGoogleSignInReversedClientId(config, modRequest);
+  if (reversedClientId === null) {
     return infoPlist;
   }
-  return (0, _Scheme().appendScheme)(reservedClientId, infoPlist);
+  return (0, _Scheme().appendScheme)(reversedClientId, infoPlist);
 }
 function setGoogleConfig(config, infoPlist, modRequest) {
-  infoPlist = setGoogleSignInReservedClientId(config, infoPlist, modRequest);
+  infoPlist = setGoogleSignInReversedClientId(config, infoPlist, modRequest);
   return infoPlist;
 }
 function setGoogleServicesFile(config, {
