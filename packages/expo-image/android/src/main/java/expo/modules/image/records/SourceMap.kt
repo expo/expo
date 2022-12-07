@@ -8,7 +8,10 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ApplicationVersionSignature
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
+import expo.modules.image.GlideDataUrlModel
+import expo.modules.image.GlideModel
 import expo.modules.image.GlideOptions
+import expo.modules.image.GlideUrlModel
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
@@ -19,8 +22,19 @@ data class SourceMap(
   @Field val scale: Double = 1.0,
   @Field val headers: Map<String, String>? = null
 ) : Record {
-  internal fun createGlideUrl(): GlideUrl? = uri?.let {
-    GlideUrl(it, getCustomHeaders())
+
+  private fun isDataUrl() = uri?.startsWith("data:")
+
+  internal fun createGlideModel(): GlideModel? {
+    if (uri == null) {
+      return null
+    }
+
+    if (isDataUrl() == true) {
+      return GlideDataUrlModel(uri)
+    }
+
+    return GlideUrlModel(GlideUrl(uri, getCustomHeaders()))
   }
 
   internal fun createOptions(context: Context): RequestOptions {
