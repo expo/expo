@@ -87,4 +87,10 @@ export var ImageCacheType;
     ImageCacheType["DISK"] = "disk";
     ImageCacheType["MEMORY"] = "memory";
 })(ImageCacheType || (ImageCacheType = {}));
+export var ImagePriority;
+(function (ImagePriority) {
+    ImagePriority["LOW"] = "low";
+    ImagePriority["NORMAL"] = "normal";
+    ImagePriority["HIGH"] = "high";
+})(ImagePriority || (ImagePriority = {}));
 //# sourceMappingURL=Image.types.js.map

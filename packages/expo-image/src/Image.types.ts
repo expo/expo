@@ -71,6 +71,14 @@ export type ImageProps = AccessibilityProps & {
    */
   transition?: ImageTransition | null;
   /**
+   * Priorities for completing loads. If more than one load is queued at a time,
+   * the load with the higher priority will be started first.
+   * Priorities are considered best effort, there are no guarantees about the order in which loads will start or finish.
+   * @default ImagePriority.NORMAL
+   * @platform android
+   */
+  priority?: ImagePriority | null;
+  /**
    * Called when the image starts to load.
    */
   onLoadStart?: () => void;
@@ -232,6 +240,12 @@ export enum ImageCacheType {
   NONE = 'none',
   DISK = 'disk',
   MEMORY = 'memory',
+}
+
+export enum ImagePriority {
+  LOW = 'low',
+  NORMAL = 'normal',
+  HIGH = 'high',
 }
 
 export type ImageLoadEventData = {
