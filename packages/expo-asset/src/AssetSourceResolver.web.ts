@@ -62,8 +62,7 @@ export default class AssetSourceResolver {
    * @returns absolute remote URL for the hosted asset.
    */
   assetServerURL(): ResolvedAssetSource {
-    const fromUrl = new URL(this.serverUrl);
-    fromUrl.pathname = joinPathComponents(fromUrl.pathname, getScaledAssetPath(this.asset));
+    const fromUrl = new URL(this.serverUrl, getScaledAssetPath(this.asset));
     fromUrl.searchParams.set('platform', Platform.OS);
     fromUrl.searchParams.set('hash', this.asset.hash);
     return this.fromSource(fromUrl.toString());
