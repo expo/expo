@@ -18,6 +18,10 @@ function getScaledAssetPath(asset): string {
   return asset.httpServerLocation + '/' + asset.name + scaleSuffix + type;
 }
 
+function joinPathComponents(...components: string[]): string {
+  return components.filter(Boolean).join('/').replace(/\/+/g, '/');
+}
+
 export default class AssetSourceResolver {
   serverUrl: string;
   // where the jsbundle is being run from
@@ -59,7 +63,7 @@ export default class AssetSourceResolver {
    */
   assetServerURL(): ResolvedAssetSource {
     const fromUrl = new URL(this.serverUrl);
-    fromUrl.pathname = getScaledAssetPath(this.asset);
+    fromUrl.pathname = joinPathComponents(fromUrl.pathname, getScaledAssetPath(this.asset));
     fromUrl.searchParams.set('platform', Platform.OS);
     fromUrl.searchParams.set('hash', this.asset.hash);
     return this.fromSource(fromUrl.toString());

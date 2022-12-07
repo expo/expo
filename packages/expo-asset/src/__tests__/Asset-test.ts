@@ -27,7 +27,7 @@ jest.mock('../ImageAssets', () => {
   const ImageAssets = jest.requireActual('../ImageAssets');
   return {
     ...ImageAssets,
-    getImageInfoAsync: jest.fn(() => Promise.resolve({ width: 1, height: 1 })),
+    getImageInfoAsync: jest.fn(async () => ({ width: 1, height: 1 })),
   };
 });
 
