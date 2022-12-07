@@ -14,5 +14,4 @@ export interface IOSSplashConfig {
     };
 }
 export declare function getIosSplashConfig(config: ExpoConfig): IOSSplashConfig | null;
-export declare function warnUnsupportedSplashProperties(config: ExpoConfig): void;
 export {};

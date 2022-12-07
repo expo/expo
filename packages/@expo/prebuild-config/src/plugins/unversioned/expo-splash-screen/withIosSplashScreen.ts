@@ -1,11 +1,7 @@
 import { ConfigPlugin, withPlugins } from '@expo/config-plugins';
 import Debug from 'debug';
 
-import {
-  getIosSplashConfig,
-  IOSSplashConfig,
-  warnUnsupportedSplashProperties,
-} from './getIosSplashConfig';
+import { getIosSplashConfig, IOSSplashConfig } from './getIosSplashConfig';
 import { withIosSplashAssets } from './withIosSplashAssets';
 import { withIosSplashInfoPlist } from './withIosSplashInfoPlist';
 import { withIosSplashScreenStoryboardBaseMod } from './withIosSplashScreenStoryboard';
@@ -18,9 +14,6 @@ export const withIosSplashScreen: ConfigPlugin<IOSSplashConfig | undefined | nul
   config,
   splash
 ) => {
-  // only warn once
-  warnUnsupportedSplashProperties(config);
-
   // If the user didn't specify a splash object, infer the splash object from the Expo config.
   if (!splash) {
     splash = getIosSplashConfig(config);
