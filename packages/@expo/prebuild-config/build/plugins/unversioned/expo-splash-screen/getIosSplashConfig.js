@@ -4,14 +4,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getIosSplashConfig = getIosSplashConfig;
-exports.warnUnsupportedSplashProperties = warnUnsupportedSplashProperties;
-function _configPlugins() {
-  const data = require("@expo/config-plugins");
-  _configPlugins = function () {
-    return data;
-  };
-  return data;
-}
 const defaultResizeMode = 'contain';
 const defaultBackgroundColor = '#ffffff';
 // TODO: Maybe use an array on splash with theme value. Then remove the array in serialization for legacy and manifest.
@@ -61,11 +53,5 @@ function getIosSplashConfig(config) {
     tabletImage: null,
     tabletBackgroundColor: null
   };
-}
-function warnUnsupportedSplashProperties(config) {
-  var _config$ios3, _config$ios3$splash;
-  if ((_config$ios3 = config.ios) !== null && _config$ios3 !== void 0 && (_config$ios3$splash = _config$ios3.splash) !== null && _config$ios3$splash !== void 0 && _config$ios3$splash.xib) {
-    _configPlugins().WarningAggregator.addWarningIOS('ios.splash.xib', 'property is not supported in prebuild. Please use ios.splash.image instead.');
-  }
 }
 //# sourceMappingURL=getIosSplashConfig.js.map

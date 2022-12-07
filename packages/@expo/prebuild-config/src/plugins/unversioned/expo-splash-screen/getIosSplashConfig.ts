@@ -1,4 +1,3 @@
-import { WarningAggregator } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
 
 type ExpoConfigIosSplash = NonNullable<NonNullable<ExpoConfig['ios']>['splash']>;
@@ -68,13 +67,4 @@ export function getIosSplashConfig(config: ExpoConfig): IOSSplashConfig | null {
     tabletImage: null,
     tabletBackgroundColor: null,
   };
-}
-
-export function warnUnsupportedSplashProperties(config: ExpoConfig) {
-  if (config.ios?.splash?.xib) {
-    WarningAggregator.addWarningIOS(
-      'ios.splash.xib',
-      'property is not supported in prebuild. Please use ios.splash.image instead.'
-    );
-  }
 }

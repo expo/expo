@@ -63,9 +63,6 @@ function _wtihIosSplashScreenStoryboardImage() {
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = (0, _debug().default)('expo:prebuild-config:expo-splash-screen:ios');
 const withIosSplashScreen = (config, splash) => {
-  // only warn once
-  (0, _getIosSplashConfig().warnUnsupportedSplashProperties)(config);
-
   // If the user didn't specify a splash object, infer the splash object from the Expo config.
   if (!splash) {
     splash = (0, _getIosSplashConfig().getIosSplashConfig)(config);

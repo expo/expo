@@ -11,7 +11,6 @@ jest.mock('../../../../api/getExpoSchema', () => ({
       'notification.icon',
       'splash.image',
       'ios.icon',
-      'ios.splash.xib',
       'ios.splash.image',
       'ios.splash.tabletImage',
       'android.icon',
