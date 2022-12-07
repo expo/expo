@@ -25,14 +25,6 @@ describe('ios google config', () => {
 
   it(`returns the correct values from all getters if a value is provided`, () => {
     expect(
-      getGoogleSignInReservedClientId(
-        {
-          ios: { config: { googleSignIn: { reservedClientId: '000' } } },
-        },
-        { projectRoot: null }
-      )
-    ).toBe('000');
-    expect(
       getGoogleServicesFile({ ios: { googleServicesFile: './path/to/GoogleService-Info.plist' } })
     ).toBe('./path/to/GoogleService-Info.plist');
   });
@@ -52,7 +44,6 @@ describe('ios google config', () => {
     setGoogleSignInReservedClientId(
       {
         ios: {
-          config: { googleSignIn: { reservedClientId: 'client-id-scheme' } },
           googleServicesFile: './path/to/GoogleService-Info.plist',
         },
       },
@@ -60,7 +51,7 @@ describe('ios google config', () => {
       { projectRoot }
     );
 
-    expect(appendScheme).toHaveBeenCalledWith('client-id-scheme', infoPlist);
+    expect(appendScheme).toHaveBeenCalledWith('com.googleusercontent.apps.1234567890123-abcdef', infoPlist);
   });
 
   it(`adds the reserved client id to scheme from GoogleService-Info.Plist`, () => {

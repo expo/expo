@@ -43,11 +43,6 @@ export function getGoogleSignInReservedClientId(
   config: Pick<ExpoConfig, 'ios'>,
   modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>
 ): string | null {
-  const reservedClientId = config.ios?.config?.googleSignIn?.reservedClientId ?? null;
-  if (reservedClientId) {
-    return reservedClientId;
-  }
-
   const googleServicesFileRelativePath = getGoogleServicesFile(config);
   if (googleServicesFileRelativePath === null) {
     return null;
