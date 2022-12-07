@@ -140,21 +140,20 @@ export default function ImageResizableScreen() {
   const [showReactNativeComponent, size, contentFit, contentPosition, useResponsiveSources] =
     args as [boolean, string, ImageContentFit, ImageContentPosition, boolean];
   const ImageComponent: React.ElementType = showReactNativeComponent ? RNImage : Image;
+  const source = useResponsiveSources
+    ? [
+        { uri: `https://picsum.photos/id/238/800/800`, width: 800, height: 800 },
+        { uri: `https://picsum.photos/id/237/500/500`, width: 500, height: 500 },
+        { uri: `https://picsum.photos/id/236/300/300`, width: 300, height: 300 },
+      ]
+    : { uri: `https://picsum.photos/seed/${seed}/${size}` };
 
   return (
     <ScrollView style={styles.container}>
       <ResizableView>
         <ImageComponent
           style={styles.image}
-          source={
-            useResponsiveSources
-              ? [
-                  { uri: `https://picsum.photos/id/238/800/800`, width: 800, height: 800 },
-                  { uri: `https://picsum.photos/id/237/500/500`, width: 500, height: 500 },
-                  { uri: `https://picsum.photos/id/236/300/300`, width: 300, height: 300 },
-                ]
-              : { uri: `https://picsum.photos/seed/${seed}/${size}` }
-          }
+          source={source}
           contentFit={contentFit}
           contentPosition={contentPosition}
           resizeMode={mapContentFitToResizeMode(contentFit)}
