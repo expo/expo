@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import expo.modules.core.utilities.FileUtilities
 import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -36,6 +37,7 @@ class DocumentPickerModule : Module() {
       copyToCacheDirectory = options.copyToCacheDirectory
       val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
+        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, options.multiple)
         type = if (options.type.size > 1) {
           putExtra(Intent.EXTRA_MIME_TYPES, options.type.toTypedArray())
           "*/*"
@@ -55,29 +57,18 @@ class DocumentPickerModule : Module() {
       pendingPromise = null
 
       if (resultCode == Activity.RESULT_OK) {
-        intent?.data?.let { uri ->
-          val originalDocumentDetails = DocumentDetailsReader(context).read(uri)
-          if (!copyToCacheDirectory || originalDocumentDetails == null) {
-            originalDocumentDetails
+        try {
+          if (intent?.clipData != null) {
+            handleMultipleSelection(intent)
           } else {
-            val copyPath = copyDocumentToCacheDirectory(uri, originalDocumentDetails.name)
-            copyPath?.let {
-              originalDocumentDetails.copy(uri = it)
-            } ?: throw FailedToCopyToCacheException()
+            handleSingleSelection(intent)
           }
-        }?.let { details ->
-          val result = DocumentPickerResult(
-            type = "success",
-            uri = details.uri,
-            name = details.name,
-            mimeType = details.mimeType,
-            size = details.size
-          )
-          promise.resolve(result)
-        } ?: throw FailedToReadDocumentException()
+        } catch (e: CodedException) {
+          promise.resolve(e)
+        }
       } else {
         promise.resolve(
-          DocumentPickerCancelled(type = "cancel")
+          DocumentPickerResult(type = "cancel")
         )
       }
     }
@@ -101,5 +92,56 @@ class DocumentPickerModule : Module() {
       return null
     }
     return Uri.fromFile(outputFile).toString()
+  }
+
+  private fun handleSingleSelection(intent: Intent?) {
+    intent?.data?.let { uri ->
+      val details = readDocumentDetails(uri)
+      val result = DocumentPickerResult(
+        type = "success",
+        result = listOf(details)
+      )
+      pendingPromise?.resolve(result)
+    } ?: throw FailedToReadDocumentException()
+  }
+
+  private fun handleMultipleSelection(intent: Intent?) {
+    val count = intent?.clipData?.itemCount ?: 0
+    val documents = mutableListOf<DocumentPickerData>()
+
+    for (i in 0 until count) {
+      val uri = intent?.clipData?.getItemAt(i)?.uri
+        ?: throw FailedToReadDocumentException()
+      val document = readDocumentDetails(uri)
+      documents.add(document)
+    }
+
+    val pickingResult = DocumentPickerResult(
+      type = "success",
+      result = documents
+    )
+    pendingPromise?.resolve(pickingResult)
+  }
+
+  private fun readDocumentDetails(uri: Uri): DocumentPickerData {
+    val originalDocumentDetails = DocumentDetailsReader(context).read(uri)
+
+    val details = if (!copyToCacheDirectory || originalDocumentDetails == null) {
+      originalDocumentDetails
+    } else {
+      val copyPath = copyDocumentToCacheDirectory(uri, originalDocumentDetails.name)
+      copyPath?.let {
+        originalDocumentDetails.copy(uri = it)
+      } ?: throw FailedToCopyToCacheException()
+    }
+
+    return details?.let { it ->
+      DocumentPickerData(
+        uri = it.uri,
+        name = it.name,
+        mimeType = it.mimeType,
+        size = it.size
+      )
+    } ?: throw FailedToReadDocumentException()
   }
 }

@@ -8,6 +8,11 @@ data class DocumentPickerResult(
   val type: String,
 
   @Field
+  val result: List<DocumentPickerData> = emptyList()
+) : Record
+
+data class DocumentPickerData(
+  @Field
   val uri: String,
 
   @Field

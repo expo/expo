@@ -40,34 +40,31 @@ export type DocumentResult =
        * Field indicating that the document pick has been successful.
        */
       type: 'success';
-      /**
-       * Document original name.
-       */
-      name: string;
-      /**
-       * Document size in bytes.
-       */
-      size?: number;
-      /**
-       * An URI to the local document file.
-       */
-      uri: string;
-      /**
-       * Document MIME type.
-       */
-      mimeType?: string;
-      /**
-       * Timestamp of last document modification.
-       */
-      lastModified?: number;
-      /**
-       * `File` object for the parity with web File API.
-       * @platform web
-       */
-      file?: File;
-      /**
-       * `FileList` object for the parity with web File API.
-       * @platform web
-       */
-      output?: FileList | null;
+
+      result: Document[];
     };
+
+type Document = {
+  /**
+   * Document original name.
+   */
+  name: string;
+  /**
+   * Document size in bytes.
+   */
+  size?: number;
+  /**
+   * An URI to the local document file.
+   */
+  uri: string;
+  /**
+   * Document MIME type.
+   */
+  mimeType?: string;
+  /**
+   * Timestamp of last document modification.
+   */
+  lastModified?: number;
+  file?: File;
+  output?: FileList | null;
+};

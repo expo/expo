@@ -1,23 +1,25 @@
 import * as DocumentPicker from 'expo-document-picker';
 import React from 'react';
-import { Alert, Image, Platform, Text, View } from 'react-native';
+import { Alert, FlatList, Image, Platform, Text, View } from 'react-native';
 
 import Button from '../components/Button';
 import TitleSwitch from '../components/TitledSwitch';
 
 export default function DocumentPickerScreen() {
   const [copyToCache, setCopyToCache] = React.useState(false);
-  const [document, setDocument] = React.useState<DocumentPicker.DocumentResult | null>(null);
+  const [multiple, setMultiple] = React.useState(false);
+  const [documents, setDocuments] = React.useState<DocumentPicker.DocumentResult | null>(null);
 
   const openPicker = async () => {
     const time = Date.now();
     const result = await DocumentPicker.getDocumentAsync({
       copyToCacheDirectory: copyToCache,
+      multiple,
     });
     console.log(`Duration: ${Date.now() - time}ms`);
     console.log(`Results:`, result);
     if (result.type === 'success') {
-      setDocument(result);
+      setDocuments(result);
     } else {
       setTimeout(() => {
         if (Platform.OS === 'web') {
@@ -33,28 +35,41 @@ export default function DocumentPickerScreen() {
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
       <Button onPress={openPicker} title="Open document picker" />
       <TitleSwitch
-        style={{ marginVertical: 24 }}
+        style={{ marginVertical: 10 }}
         value={copyToCache}
         setValue={setCopyToCache}
         title="Copy to cache"
       />
-      {document?.type === 'success' && (
-        <View>
-          {document.name!.match(/\.(png|jpg)$/gi) ? (
-            <Image
-              source={{ uri: document.uri }}
-              resizeMode="cover"
-              style={{ width: 100, height: 100 }}
-            />
-          ) : null}
-          <Text>
-            {document.name} ({document.size! / 1000} KB)
-          </Text>
-          <Text>
-            URI: {document.uri} MimeType: {document.mimeType}
-          </Text>
-        </View>
-      )}
+      <TitleSwitch
+        style={{ marginVertical: 10 }}
+        value={multiple}
+        setValue={setMultiple}
+        title="Pick multiple"
+      />
+      <FlatList
+        data={documents?.type === 'success' ? documents.result : []}
+        keyExtractor={(item) => item.uri}
+        renderItem={({ item: document }) => {
+          console.log(document);
+          return (
+            <View>
+              {document.name!.match(/\.(png|jpg)$/gi) ? (
+                <Image
+                  source={{ uri: document.uri }}
+                  resizeMode="cover"
+                  style={{ width: 100, height: 100 }}
+                />
+              ) : null}
+              <Text>
+                {document.name} ({document.size! / 1000} KB)
+              </Text>
+              <Text>
+                URI: {document.uri} MimeType: {document.mimeType}
+              </Text>
+            </View>
+          );
+        }}
+      />
     </View>
   );
 }

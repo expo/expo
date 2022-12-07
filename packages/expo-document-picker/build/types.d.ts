@@ -35,6 +35,9 @@ export type DocumentResult = {
      * Field indicating that the document pick has been successful.
      */
     type: 'success';
+    result: Document[];
+};
+type Document = {
     /**
      * Document original name.
      */
@@ -55,15 +58,8 @@ export type DocumentResult = {
      * Timestamp of last document modification.
      */
     lastModified?: number;
-    /**
-     * `File` object for the parity with web File API.
-     * @platform web
-     */
     file?: File;
-    /**
-     * `FileList` object for the parity with web File API.
-     * @platform web
-     */
     output?: FileList | null;
 };
+export {};
 //# sourceMappingURL=types.d.ts.map
