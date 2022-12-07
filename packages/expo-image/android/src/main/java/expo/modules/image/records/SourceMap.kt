@@ -82,7 +82,7 @@ data class SourceMap(
   private fun computeLocalUri(stringUri: String, context: Context): Uri? {
     return ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(context, stringUri)
   }
-  
+
   internal val pixelCount: Double
     get() = width * height * scale * scale
 }
