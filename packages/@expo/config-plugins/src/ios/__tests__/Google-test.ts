@@ -9,83 +9,67 @@ import {
 import { appendScheme } from '../Scheme';
 
 jest.mock('fs');
-jest.mock('../Scheme');
+jest.mock('../Scheme', () => ({
+  appendScheme: jest.fn((...props) => jest.requireActual('../Scheme').appendScheme(...props)),
+}));
 
-const originalFs = jest.requireActual('fs');
+const googleServicesFixture = jest
+  .requireActual('fs')
+  .readFileSync(path.join(__dirname, 'fixtures/GoogleService-Info.plist'), 'utf-8');
 
-describe('ios google config', () => {
-  const projectRoot = '/testproject';
-
+describe(getGoogleSignInReservedClientId, () => {
   afterEach(() => vol.reset());
-
-  it(`returns null from all getters if no value provided`, () => {
-    expect(getGoogleSignInReservedClientId({}, { projectRoot: null })).toBe(null);
+  it(`returns null when no file is defined`, () => {
+    expect(getGoogleSignInReservedClientId({}, { projectRoot: '' })).toBe(null);
     expect(getGoogleServicesFile({})).toBe(null);
   });
-
-  it(`returns the correct values from all getters if a value is provided`, () => {
-    expect(
-      getGoogleSignInReservedClientId(
-        {
-          ios: { config: { googleSignIn: { reservedClientId: '000' } } },
-        },
-        { projectRoot: null }
-      )
-    ).toBe('000');
-    expect(
-      getGoogleServicesFile({ ios: { googleServicesFile: './path/to/GoogleService-Info.plist' } })
-    ).toBe('./path/to/GoogleService-Info.plist');
-  });
-
-  it(`adds the reserved client id to scheme if provided`, () => {
+  it(`returns the REVERSED_CLIENT_ID from the linked file`, () => {
     vol.fromJSON(
       {
-        'path/to/GoogleService-Info.plist': originalFs.readFileSync(
-          path.join(__dirname, 'fixtures/GoogleService-Info.plist'),
-          'utf-8'
-        ),
+        'path/to/GoogleService-Info.plist': googleServicesFixture,
       },
-      projectRoot
+      '/'
     );
 
-    const infoPlist = {};
-    setGoogleSignInReservedClientId(
-      {
-        ios: {
-          config: { googleSignIn: { reservedClientId: 'client-id-scheme' } },
-          googleServicesFile: './path/to/GoogleService-Info.plist',
-        },
-      },
-      infoPlist,
-      { projectRoot }
-    );
+    const config = {
+      ios: { googleServicesFile: './path/to/GoogleService-Info.plist' },
+    };
 
-    expect(appendScheme).toHaveBeenCalledWith('client-id-scheme', infoPlist);
+    expect(getGoogleServicesFile(config)).toBe('./path/to/GoogleService-Info.plist');
+    expect(getGoogleSignInReservedClientId(config, { projectRoot: '/' })).toBe(
+      'com.googleusercontent.apps.1234567890123-abcdef'
+    );
   });
+});
+
+describe(setGoogleSignInReservedClientId, () => {
+  afterEach(() => vol.reset());
 
   it(`adds the reserved client id to scheme from GoogleService-Info.Plist`, () => {
     vol.fromJSON(
       {
-        'path/to/GoogleService-Info.plist': originalFs.readFileSync(
-          path.join(__dirname, 'fixtures/GoogleService-Info.plist'),
-          'utf-8'
-        ),
+        'path/to/GoogleService-Info.plist': googleServicesFixture,
       },
-      projectRoot
+      '/'
     );
 
-    const infoPlist = {};
-    setGoogleSignInReservedClientId(
-      {
-        ios: { googleServicesFile: './path/to/GoogleService-Info.plist' },
-      },
-      infoPlist,
-      { projectRoot }
-    );
+    expect(
+      setGoogleSignInReservedClientId(
+        {
+          ios: { googleServicesFile: './path/to/GoogleService-Info.plist' },
+        },
+        {},
+        { projectRoot: '/' }
+      )
+    ).toEqual({
+      CFBundleURLTypes: [
+        { CFBundleURLSchemes: ['com.googleusercontent.apps.1234567890123-abcdef'] },
+      ],
+    });
 
     expect(appendScheme).toHaveBeenCalledWith(
       'com.googleusercontent.apps.1234567890123-abcdef',
-      infoPlist
+      {}
     );
   });
 });
