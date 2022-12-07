@@ -45,7 +45,7 @@ describe(getGoogleSignInReservedClientId, () => {
 describe(setGoogleSignInReservedClientId, () => {
   afterEach(() => vol.reset());
 
-  it(`adds the reserved client id to scheme from GoogleService-Info.Plist`, () => {
+  it(`adds the reversed client id to scheme from GoogleService-Info.Plist`, () => {
     vol.fromJSON(
       {
         'path/to/GoogleService-Info.plist': googleServicesFixture,
