@@ -240,7 +240,7 @@ class ExpoImageView(
     if (sourceToLoad != loadedSource || propsChanged) {
       propsChanged = false
       loadedSource = sourceToLoad
-      val options = sourceMap?.createOptions() ?: RequestOptions()
+      val options = sourceMap?.createOptions(context) ?: RequestOptions()
       val propOptions = createPropOptions()
       progressInterceptor.registerProgressListener(
         sourceToLoad.toStringUrl(),
