@@ -46,6 +46,13 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageEventsScreen'));
     },
   },
+  {
+    name: 'Prioritizing images',
+    route: 'image/priority',
+    getComponent() {
+      return optionalRequire(() => require('./ImagePriorityScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {

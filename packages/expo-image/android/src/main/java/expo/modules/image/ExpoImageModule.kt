@@ -10,6 +10,7 @@ import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.image.enums.ContentFit
+import expo.modules.image.enums.Priority
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
@@ -161,6 +162,10 @@ class ExpoImageModule : Module() {
 
       Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean ->
         view.imageView.isFocusable = accessible
+      }
+
+      Prop("priority") { view: ExpoImageViewWrapper, priority: Priority ->
+        view.imageView.priority = priority
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->

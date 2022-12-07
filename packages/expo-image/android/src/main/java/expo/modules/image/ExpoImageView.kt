@@ -24,6 +24,7 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
 import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ContentFit
+import expo.modules.image.enums.Priority
 import expo.modules.image.events.GlideRequestListener
 import expo.modules.image.events.OkHttpProgressListener
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
@@ -214,6 +215,8 @@ class ExpoImageView(
       propsChanged = true
     }
 
+  internal var priority: Priority = Priority.NORMAL
+
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
     val isInvalidated = outlineProvider.setBorderRadius(borderRadius, position)
     if (isInvalidated) {
@@ -277,7 +280,10 @@ class ExpoImageView(
     if (sourceToLoad != loadedSource || propsChanged) {
       propsChanged = false
       loadedSource = sourceToLoad
-      val options = bestSource.createOptions(context)
+      val options = bestSource.createOptions(context).apply {
+        priority(this@ExpoImageView.priority.toGlidePriority())
+      }
+
       val propOptions = createPropOptions()
       progressInterceptor.registerProgressListener(
         sourceToLoad.toStringUrl(),
