@@ -171,7 +171,7 @@ class ExpoImage extends React.PureComponent {
         const borderTopColor = processColor(resolvedStyle.borderTopColor);
         // @ts-ignore
         const borderBottomColor = processColor(resolvedStyle.borderBottomColor);
-        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: resolvedSource, style: resolvedStyle, defaultSource: resolvedPlaceholder, contentFit: contentFit, contentPosition: contentPosition, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, 
+        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: Array.isArray(resolvedSource) ? resolvedSource : [resolvedSource], style: resolvedStyle, defaultSource: resolvedPlaceholder, contentFit: contentFit, contentPosition: contentPosition, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, 
             // @ts-ignore
             tintColor: tintColor, borderColor: borderColor, borderLeftColor: borderLeftColor, borderRightColor: borderRightColor, borderTopColor: borderTopColor, borderBottomColor: borderBottomColor, borderStartColor: borderStartColor, borderEndColor: borderEndColor, backgroundColor: backgroundColor }));
     }

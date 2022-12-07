@@ -222,7 +222,7 @@ class ExpoImage extends React.PureComponent<ImageProps> {
       <NativeExpoImage
         {...props}
         {...resolvedStyle}
-        source={resolvedSource}
+        source={Array.isArray(resolvedSource) ? resolvedSource : [resolvedSource]}
         style={resolvedStyle}
         defaultSource={resolvedPlaceholder}
         contentFit={contentFit}

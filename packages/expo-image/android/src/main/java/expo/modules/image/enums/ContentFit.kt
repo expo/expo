@@ -3,6 +3,7 @@ package expo.modules.image.enums
 import android.graphics.Matrix
 import android.graphics.RectF
 import expo.modules.kotlin.types.Enumerable
+import kotlin.math.max
 
 /**
  * Describes how the image should be resized to fit its container.
@@ -50,7 +51,7 @@ enum class ContentFit(val value: String) : Enumerable {
         val reactWidth = viewRect.width()
         val reactHeight = viewRect.height()
 
-        val scale = Math.max(reactWidth / imageWidth, reactHeight / imageHeight)
+        val scale = max(reactWidth / imageWidth, reactHeight / imageHeight)
 
         setScale(scale, scale)
       }

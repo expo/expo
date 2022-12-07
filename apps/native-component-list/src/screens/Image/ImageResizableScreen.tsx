@@ -114,6 +114,11 @@ const parameters: FunctionParameter[] = [
       { name: 'bottom 0, right 10', value: { bottom: 0, right: 10 } },
     ],
   },
+  {
+    name: 'Use responsive sources',
+    type: 'boolean',
+    initial: false,
+  },
 ];
 
 function mapContentFitToResizeMode(contentFit: ImageContentFit): ImageResizeMode {
@@ -132,20 +137,23 @@ function mapContentFitToResizeMode(contentFit: ImageContentFit): ImageResizeMode
 export default function ImageResizableScreen() {
   const [seed] = React.useState(1 + Math.round(Math.random() * 10));
   const [args, updateArgument] = useArguments(parameters);
-  const [showReactNativeComponent, size, contentFit, contentPosition] = args as [
-    boolean,
-    string,
-    ImageContentFit,
-    ImageContentPosition
-  ];
+  const [showReactNativeComponent, size, contentFit, contentPosition, useResponsiveSources] =
+    args as [boolean, string, ImageContentFit, ImageContentPosition, boolean];
   const ImageComponent: React.ElementType = showReactNativeComponent ? RNImage : Image;
+  const source = useResponsiveSources
+    ? [
+        { uri: `https://picsum.photos/id/238/800/800`, width: 800, height: 800 },
+        { uri: `https://picsum.photos/id/237/500/500`, width: 500, height: 500 },
+        { uri: `https://picsum.photos/id/236/300/300`, width: 300, height: 300 },
+      ]
+    : { uri: `https://picsum.photos/seed/${seed}/${size}` };
 
   return (
     <ScrollView style={styles.container}>
       <ResizableView>
         <ImageComponent
           style={styles.image}
-          source={{ uri: `https://picsum.photos/seed/${seed}/${size}` }}
+          source={source}
           contentFit={contentFit}
           contentPosition={contentPosition}
           resizeMode={mapContentFitToResizeMode(contentFit)}
