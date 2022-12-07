@@ -51,7 +51,10 @@ describe('ios google config', () => {
       { projectRoot }
     );
 
-    expect(appendScheme).toHaveBeenCalledWith('com.googleusercontent.apps.1234567890123-abcdef', infoPlist);
+    expect(appendScheme).toHaveBeenCalledWith(
+      'com.googleusercontent.apps.1234567890123-abcdef',
+      infoPlist
+    );
   });
 
   it(`adds the reserved client id to scheme from GoogleService-Info.Plist`, () => {
