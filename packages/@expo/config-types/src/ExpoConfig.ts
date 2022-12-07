@@ -210,6 +210,10 @@ export interface ExpoConfig {
        */
       keyid?: string;
     };
+    /**
+     * Extra HTTP headers to include in HTTP requests made by expo-updates. These may override preset headers.
+     */
+    requestHeaders?: Record<string, string>;
   };
   /**
    * Provide overrides by locale for System Dialog prompts like Permissions Boxes
@@ -385,6 +389,15 @@ export interface IOS {
      * A boolean indicating whether to initialize Google App Measurement and begin sending user-level event data to Google immediately when the app starts. The default in Expo (Go and in standalone apps) is `false`. [Sets the opposite of the given value to the following key in `Info.plist`.](https://developers.google.com/admob/ios/eu-consent#delay_app_measurement_optional)
      */
     googleMobileAdsAutoInit?: boolean;
+    /**
+     * @deprecated Use `ios.googleServicesFile` instead.
+     */
+    googleSignIn?: {
+      /**
+       * @deprecated Use `ios.googleServicesFile` instead.
+       */
+      reservedClientId?: string;
+    };
   };
   /**
    * [Firebase Configuration File](https://support.google.com/firebase/answer/7015592) Location of the `GoogleService-Info.plist` file for configuring Firebase.
