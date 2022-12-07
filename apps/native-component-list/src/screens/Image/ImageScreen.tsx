@@ -47,7 +47,7 @@ export const ImageScreens = [
     },
   },
   {
-    name: 'Prioretizing images',
+    name: 'Prioritizing images',
     route: 'image/priority',
     getComponent() {
       return optionalRequire(() => require('./ImagePriorityScreen'));
