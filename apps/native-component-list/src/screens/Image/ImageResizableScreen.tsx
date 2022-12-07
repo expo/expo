@@ -7,12 +7,15 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
+  useAnimatedProps,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
 
@@ -56,22 +59,39 @@ const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
     };
   }, [width, height]);
 
+  const text = useDerivedValue(() => `${Math.round(width.value)}x${Math.round(height.value)}`);
+  const animatedProps = useAnimatedProps(() => {
+    return {
+      text: text.value,
+      // Here we use any because the text prop is not available in the type
+    } as any;
+  });
+  const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+
   return (
-    <View style={styles.resizableView}>
-      <Text style={styles.hintText}>
-        Move the handle above to resize the image canvas and see how it lays out in different
-        components, sizes and resize modes
-      </Text>
+    <View>
+      <AnimatedTextInput
+        editable={false}
+        value={text.value}
+        underlineColorAndroid="transparent"
+        style={styles.sizeText}
+        {...{ animatedProps }}
+      />
+      <View style={styles.resizableView}>
+        <Text style={styles.hintText}>
+          Move the handle above to resize the image canvas and see how it lays out in different
+          components, sizes and resize modes
+        </Text>
+        <Animated.View style={[styles.canvas, canvasStyle]}>
+          {children}
 
-      <Animated.View style={[styles.canvas, canvasStyle]}>
-        {children}
-
-        <PanGestureHandler onGestureEvent={panGestureEvent}>
-          <Animated.View style={styles.resizeHandle}>
-            <View style={styles.resizeHandleChild} />
-          </Animated.View>
-        </PanGestureHandler>
-      </Animated.View>
+          <PanGestureHandler onGestureEvent={panGestureEvent}>
+            <Animated.View style={styles.resizeHandle}>
+              <View style={styles.resizeHandleChild} />
+            </Animated.View>
+          </PanGestureHandler>
+        </Animated.View>
+      </View>
     </View>
   );
 };
@@ -216,6 +236,13 @@ const styles = StyleSheet.create({
     right: 10,
     left: 10,
     bottom: 16,
+  },
+  sizeText: {
+    position: 'absolute',
+    zIndex: 1,
+    top: -PADDING + 8,
+    right: PADDING - 4,
+    color: Colors.secondaryText,
   },
   image: {
     flex: 1,
