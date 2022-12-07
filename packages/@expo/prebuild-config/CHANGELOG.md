@@ -10,4 +10,4 @@
 
 ### 💡 Others
 
-- Removed warning about the (deprecated property) `expo.ios.splash.xib` being unsupported.
+- Removed warning about the (deprecated property) `expo.ios.splash.xib` being unsupported. ([#20377](https://github.com/expo/expo/pull/20377) by [@EvanBacon](https://github.com/EvanBacon))
