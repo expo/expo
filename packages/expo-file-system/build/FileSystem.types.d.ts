@@ -170,15 +170,11 @@ export declare type DownloadPauseState = {
      */
     resumeData?: string;
 };
-export declare type FileInfo = 
-/**
- * Object returned when file exist.
- */
-{
+export declare type FileInfo = {
     /**
      * Signifies that the requested file exist.
      */
-    exists: true;
+    exists: boolean;
     /**
      * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
      */
@@ -186,27 +182,19 @@ export declare type FileInfo =
     /**
      * The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
      */
-    size: number;
+    size?: number;
     /**
-     * Boolean set to `true` if this is a directory and `false` if it is a file.
+     * Boolean set to `true` if this is a directory, and `false` if it is a file or object do not exist.
      */
     isDirectory: boolean;
     /**
      * The last modification time of the file expressed in seconds since epoch.
      */
-    modificationTime: number;
+    modificationTime?: number;
     /**
      * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
      */
     md5?: string;
-} | 
-/**
- * Object returned when file do not exist.
- */
-{
-    exists: false;
-    uri: string;
-    isDirectory: false;
 };
 /**
  * These values can be used to define how file system data is read / written.

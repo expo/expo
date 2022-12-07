@@ -190,46 +190,32 @@ export type DownloadPauseState = {
   resumeData?: string;
 };
 
-/* eslint-disable */
-export type FileInfo =
+export type FileInfo = {
   /**
-   * Object returned when file exist.
+   * Signifies that the requested file exist.
    */
-  {
-    /**
-     * Signifies that the requested file exist.
-     */
-    exists: true;
-    /**
-     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
-     */
-    uri: string;
-    /**
-     * The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
-     */
-    size: number;
-    /**
-     * Boolean set to `true` if this is a directory and `false` if it is a file.
-     */
-    isDirectory: boolean;
-    /**
-     * The last modification time of the file expressed in seconds since epoch.
-     */
-    modificationTime: number;
-    /**
-     * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
-     */
-    md5?: string;
-  } |
+  exists: boolean;
   /**
-   * Object returned when file do not exist.
+   * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
    */
-  {
-    exists: false;
-    uri: string;
-    isDirectory: false;
-  };
-/* eslint-enable */
+  uri: string;
+  /**
+   * The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
+   */
+  size?: number;
+  /**
+   * Boolean set to `true` if this is a directory, and `false` if it is a file or object do not exist.
+   */
+  isDirectory: boolean;
+  /**
+   * The last modification time of the file expressed in seconds since epoch.
+   */
+  modificationTime?: number;
+  /**
+   * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+   */
+  md5?: string;
+};
 
 /**
  * These values can be used to define how file system data is read / written.

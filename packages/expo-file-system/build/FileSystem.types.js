@@ -28,7 +28,6 @@ export var FileSystemUploadType;
      */
     FileSystemUploadType[FileSystemUploadType["MULTIPART"] = 1] = "MULTIPART";
 })(FileSystemUploadType || (FileSystemUploadType = {}));
-/* eslint-enable */
 /**
  * These values can be used to define how file system data is read / written.
  */
