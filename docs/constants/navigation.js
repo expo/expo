@@ -126,7 +126,6 @@ const general = [
     makePage('guides/using-firebase.mdx'),
     makePage('guides/using-sentry.mdx'),
     makePage('guides/using-bugsnag.mdx'),
-    makePage('guides/using-clojurescript.mdx'),
     makePage('guides/using-graphql.mdx'),
     makePage('guides/using-styled-components.mdx'),
     makePage('guides/using-nextjs.mdx'),
