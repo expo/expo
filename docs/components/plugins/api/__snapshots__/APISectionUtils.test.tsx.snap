@@ -150,7 +150,7 @@ exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#appleauthenticationcredential"
+      href="#appleauthenticationcredential"
     >
       AppleAuthenticationCredential
     </a>
@@ -209,7 +209,7 @@ exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 <div>
   <a
     class="css-153g748-InternalLink"
-    href="/#speechsynthesisevent"
+    href="#speechsynthesisevent"
   >
     SpeechSynthesisEvent
   </a>
@@ -220,7 +220,7 @@ exports[`APISectionUtils.resolveTypeName custom type array 1`] = `
 <div>
   <a
     class="css-153g748-InternalLink"
-    href="/#appleauthenticationscope"
+    href="#appleauthenticationscope"
   >
     AppleAuthenticationScope
     []
@@ -248,7 +248,7 @@ exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#fontresource"
+      href="#fontresource"
     >
       FontResource
     </a>
@@ -272,7 +272,7 @@ exports[`APISectionUtils.resolveTypeName function 1`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#speecheventcallback"
+      href="#speecheventcallback"
     >
       SpeechEventCallback
     </a>
@@ -305,7 +305,7 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#speecheventcallback"
+      href="#speecheventcallback"
     >
       SpeechEventCallback
     </a>
@@ -345,7 +345,7 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 <div>
   <a
     class="css-153g748-InternalLink"
-    href="/#pagedinfo"
+    href="#pagedinfo"
   >
     PagedInfo
   </a>
@@ -353,7 +353,7 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#asset"
+      href="#asset"
     >
       Asset
     </a>
@@ -376,7 +376,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#pagedinfo"
+      href="#pagedinfo"
     >
       PagedInfo
     </a>
@@ -384,7 +384,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
     <span>
       <a
         class="css-153g748-InternalLink"
-        href="/#asset"
+        href="#asset"
       >
         Asset
       </a>
@@ -473,7 +473,7 @@ exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#sortbykey"
+      href="#sortbykey"
     >
       SortByKey
     </a>
@@ -491,7 +491,7 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#speecheventcallback"
+      href="#speecheventcallback"
     >
       SpeechEventCallback
     </a>
@@ -509,7 +509,7 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#resultseterror"
+      href="#resultseterror"
     >
       ResultSetError
     </a>
@@ -518,7 +518,7 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#resultset"
+      href="#resultset"
     >
       ResultSet
     </a>
@@ -545,7 +545,7 @@ exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = 
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#assetref"
+      href="#assetref"
     >
       AssetRef
       []
@@ -555,7 +555,7 @@ exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = 
   <span>
     <a
       class="css-153g748-InternalLink"
-      href="/#assetref"
+      href="#assetref"
     >
       AssetRef
     </a>

@@ -1,5 +1,6 @@
+import { MemoryRouter } from 'next-router-mock';
 import { NextRouter } from 'next/router';
-import React, { createContext, PropsWithChildren, useCallback, useContext } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext } from 'react';
 
 import navigation from '~/public/static/constants/navigation.json';
 
@@ -22,7 +23,7 @@ export type PageApiVersionContextType = {
 
 type Props = PropsWithChildren<{
   /** The router containing the current URL info of the page, possibly containing the API version */
-  router: NextRouter;
+  router: NextRouter | MemoryRouter;
 }>;
 
 export function PageApiVersionProvider(props: Props) {
