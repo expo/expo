@@ -3,12 +3,16 @@ import React from 'react';
 import { ImageContentFit, ImageContentPosition, ImageProps, ImageSource } from './Image.types';
 import { resolveContentFit, resolveContentPosition } from './utils';
 
-const resolveAssetSource = (source: ImageSource | string | undefined | null) => {
+const resolveAssetSource = (source: ImageSource | string | number | undefined | null) => {
   if (source === null || source === undefined) return undefined;
 
   if (typeof source === 'string') {
     return { uri: source };
   }
+  if (typeof source === 'number') {
+    return { uri: String(source) };
+  }
+
   return source;
 };
 
@@ -55,6 +59,12 @@ const getObjectPositionFromContentPosition = (contentPosition?: ImageContentPosi
     .join(' ');
 };
 
+const ensureIsArray = <T extends any>(source: T | T[] | undefined) => {
+  if (Array.isArray(source)) return source;
+  if (source === undefined) return [];
+  return [source];
+};
+
 export default function ExpoImage({
   source,
   defaultSource,
@@ -67,7 +77,7 @@ export default function ExpoImage({
   ...props
 }: ImageProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
-  const resolvedSource = resolveAssetSource(source as ImageSource | string);
+  const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
   return (
     <>
       <picture
@@ -75,10 +85,8 @@ export default function ExpoImage({
           overflow: 'hidden',
           ...style,
         }}>
-        <source srcSet={resolvedSource?.uri} />
         <img
-          src={resolvedSource?.uri}
-          alt="Flowers"
+          src={resolvedSources.at(0)?.uri}
           style={{
             width: '100%',
             height: '100%',
@@ -96,3 +104,5 @@ export default function ExpoImage({
     </>
   );
 }
+
+

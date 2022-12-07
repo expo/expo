@@ -7,6 +7,9 @@ const resolveAssetSource = (source) => {
     if (typeof source === 'string') {
         return { uri: source };
     }
+    if (typeof source === 'number') {
+        return { uri: String(source) };
+    }
     return source;
 };
 const getObjectFitFromContentFit = (contentFit) => {
@@ -50,16 +53,22 @@ const getObjectPositionFromContentPosition = (contentPosition) => {
     })
         .join(' ');
 };
+const ensureIsArray = (source) => {
+    if (Array.isArray(source))
+        return source;
+    if (source === undefined)
+        return [];
+    return [source];
+};
 export default function ExpoImage({ source, defaultSource, loadingIndicatorSource, contentPosition, onLoad, onLoadStart, onLoadEnd, onError, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
-    const resolvedSource = resolveAssetSource(source);
+    const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
     return (React.createElement(React.Fragment, null,
         React.createElement("picture", { style: {
                 overflow: 'hidden',
                 ...style,
             } },
-            React.createElement("source", { srcSet: resolvedSource?.uri }),
-            React.createElement("img", { src: resolvedSource?.uri, alt: "Flowers", style: {
+            React.createElement("img", { src: resolvedSources.at(0)?.uri, style: {
                     width: '100%',
                     height: '100%',
                     aspectRatio: String(aspectRatio),
