@@ -10,6 +10,11 @@
 
 ### 💡 Others
 
+- Bumped `@typescript-eslint/*` dependencies from 5.27.0 to 5.45.1, to add the TypeScript 4.9 support.
+- Bumped `eslint-plugin-prettier` from 4.0.0 to 4.2.1.
+- Bumped `eslint-plugin-react` from 7.30.0 to 7.31.11.
+- Bumped `eslint-plugin-react-hooks` from 4.5.0 to 4.6.0.
+
 ## 11.1.1 — 2022-10-25
 
 _This version does not introduce any user-facing changes._
