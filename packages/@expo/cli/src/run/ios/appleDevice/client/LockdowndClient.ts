@@ -27,6 +27,7 @@ export interface DeviceValues {
   BoardId: number;
   BuildVersion: string;
   ChipID: number;
+  ConnectionType: 'USB' | 'Network';
   DeviceClass: string;
   DeviceColor: string;
   DeviceName: string;
