@@ -8,6 +8,7 @@ private typealias SDWebImageContext = [SDWebImageContextOption: Any]
 public final class ImageView: ExpoView {
   let sdImageView = SDAnimatedImageView(frame: .zero)
   let imageManager = SDWebImageManager()
+  var loadingOptions = SDWebImageOptions()
 
   var sources: [ImageSource]?
 
@@ -101,10 +102,13 @@ public final class ImageView: ExpoView {
 
     onLoadStart([:])
 
-    imageManager.loadImage(with: source.uri,
-                           context: context,
-                           progress: imageLoadProgress(_:_:_:),
-                           completed: imageLoadCompleted(_:_:_:_:_:_:))
+    imageManager.loadImage(
+      with: source.uri,
+      options: loadingOptions,
+      context: context,
+      progress: imageLoadProgress(_:_:_:),
+      completed: imageLoadCompleted(_:_:_:_:_:_:)
+    )
   }
 
   // MARK: - Loading
