@@ -1,4 +1,4 @@
-export declare type FirebaseAnalyticsJSCodedEvent = {
+export type FirebaseAnalyticsJSCodedEvent = {
     [key: string]: any;
 };
 export interface FirebaseAnalyticsJSConfig {

@@ -90,7 +90,7 @@ export declare enum ApplicationReleaseType {
  * @platform ios
  */
 export declare function getIosApplicationReleaseTypeAsync(): Promise<ApplicationReleaseType>;
-export declare type PushNotificationServiceEnvironment = 'development' | 'production' | null;
+export type PushNotificationServiceEnvironment = 'development' | 'production' | null;
 /**
  * Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
  * service environment.

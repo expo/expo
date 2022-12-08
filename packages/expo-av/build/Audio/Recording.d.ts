@@ -57,7 +57,7 @@ export declare class Recording {
     _progressUpdateTimeoutVariable: number | null;
     _progressUpdateIntervalMillis: number;
     _options: RecordingOptions | null;
-    _cleanupForUnloadedRecorder: (finalStatus?: RecordingStatus | undefined) => Promise<RecordingStatus>;
+    _cleanupForUnloadedRecorder: (finalStatus?: RecordingStatus) => Promise<RecordingStatus>;
     _pollingLoop: () => Promise<void>;
     _disablePolling(): void;
     _enablePollingIfNecessaryAndPossible(): void;

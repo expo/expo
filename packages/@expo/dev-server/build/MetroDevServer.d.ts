@@ -8,29 +8,29 @@ import http from 'http';
 import type Metro from 'metro';
 import LogReporter from './LogReporter';
 import { createDevServerMiddleware } from './middleware/devServerMiddleware';
-export declare type MetroDevServerOptions = LoadOptions & {
+export type MetroDevServerOptions = LoadOptions & {
     logger: Log;
     quiet?: boolean;
     unversioned?: boolean;
 };
-export declare type BundleOptions = {
+export type BundleOptions = {
     entryPoint: string;
     platform: 'android' | 'ios' | 'web';
     dev?: boolean;
     minify?: boolean;
     sourceMapUrl?: string;
 };
-export declare type BundleAssetWithFileHashes = Metro.AssetData & {
+export type BundleAssetWithFileHashes = Metro.AssetData & {
     fileHashes: string[];
 };
-export declare type BundleOutput = {
+export type BundleOutput = {
     code: string;
     map: string;
     hermesBytecodeBundle?: Uint8Array;
     hermesSourcemap?: string;
     assets: readonly BundleAssetWithFileHashes[];
 };
-export declare type MessageSocket = {
+export type MessageSocket = {
     broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 export declare function runMetroDevServerAsync(projectRoot: string, options: MetroDevServerOptions): Promise<{

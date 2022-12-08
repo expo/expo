@@ -1,4 +1,4 @@
-export declare type Localization = {
+export type Localization = {
     /**
      * Three-character ISO 4217 currency code. Returns `null` on web.
      *
@@ -64,7 +64,7 @@ export declare type Localization = {
      */
     timezone: string;
 };
-export declare type Locale = {
+export type Locale = {
     /**
      * An [IETF BCP 47 language tag](https://en.wikipedia.org/wiki/IETF_language_tag) with a region code.
      * @example `'en-US'`, `'es-419'`, `'pl-PL'`.
@@ -170,7 +170,7 @@ export declare enum CalendarIdentifier {
     /** Civil (algorithmic) Arabic calendar */
     ROC = "roc"
 }
-export declare type Calendar = {
+export type Calendar = {
     /**
      * The calendar identifier, one of [Unicode calendar types](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/Locale/calendar).
      *

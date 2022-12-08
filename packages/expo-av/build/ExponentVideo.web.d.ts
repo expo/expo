@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ViewProps } from 'react-native';
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import { VideoFullscreenUpdateEvent, VideoReadyForDisplayEvent } from './Video.types';
-declare type ExponentVideoProps = {
+type ExponentVideoProps = {
     source: AVPlaybackNativeSource | null;
     resizeMode?: object;
     status?: AVPlaybackStatusToSet;
@@ -31,7 +31,7 @@ declare type ExponentVideoProps = {
     translateY?: number;
     rotation?: number;
 } & ViewProps;
-export declare type NaturalSize = {
+export type NaturalSize = {
     width: number;
     height: number;
     orientation: 'portrait' | 'landscape';

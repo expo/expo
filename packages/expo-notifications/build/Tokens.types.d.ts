@@ -13,12 +13,12 @@ export interface WebDevicePushToken {
         };
     };
 }
-declare type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
-declare type ImplicitlySupportedDevicePushToken = {
+type ExplicitlySupportedDevicePushToken = NativeDevicePushToken | WebDevicePushToken;
+type ImplicitlySupportedDevicePushToken = {
     type: Exclude<typeof Platform.OS, ExplicitlySupportedDevicePushToken['type']>;
     data: any;
 };
-export declare type DevicePushToken = ExplicitlySupportedDevicePushToken | ImplicitlySupportedDevicePushToken;
+export type DevicePushToken = ExplicitlySupportedDevicePushToken | ImplicitlySupportedDevicePushToken;
 export interface ExpoPushToken {
     type: 'expo';
     data: string;

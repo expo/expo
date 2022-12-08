@@ -12,11 +12,11 @@ import { MarkerObject } from './Marker';
 import { OverlayObject } from './Overlay';
 import { PolygonObject } from './Polygon';
 import { PolylineObject } from './Polyline';
-export declare type MapTypes = 'normal' | 'hybrid' | 'satellite' | 'terrain';
+export type MapTypes = 'normal' | 'hybrid' | 'satellite' | 'terrain';
 /**
  * Prop for managing map type.
  */
-export declare type MapType = {
+export type MapType = {
     /**
      * Type of map (one of normal, hybrid, satellite, terrain').
      *
@@ -27,7 +27,7 @@ export declare type MapType = {
 /**
  * Internal prop for managing markers displayed on the map.
  */
-export declare type Markers = {
+export type Markers = {
     /**
      * Array of {@link MarkerObject}.
      */
@@ -36,7 +36,7 @@ export declare type Markers = {
 /**
  * Internal prop for managing polygons displayed on the map.
  */
-export declare type Polygons = {
+export type Polygons = {
     /**
      * Array of {@link PolygonObject}.
      */
@@ -45,7 +45,7 @@ export declare type Polygons = {
 /**
  * Internal prop for managing polylines displayed on the map.
  */
-export declare type Polylines = {
+export type Polylines = {
     /**
      * Array of {@link PolylineObject}.
      */
@@ -54,7 +54,7 @@ export declare type Polylines = {
 /**
  * Internal prop for managing overlays displayed on the map.
  */
-export declare type Overlays = {
+export type Overlays = {
     /**
      * Array of {@link OverlayObject}.
      */
@@ -63,7 +63,7 @@ export declare type Overlays = {
 /**
  * Internal prop for managing circles displayed on the map.
  */
-export declare type Circles = {
+export type Circles = {
     /**
      * Array of {@link CircleObject}.
      */
@@ -72,7 +72,7 @@ export declare type Circles = {
 /**
  * Internal prop for managing clusters displayed on the map.
  */
-export declare type Clusters = {
+export type Clusters = {
     /**
      * Array of {@link ClusterObject}.
      */
@@ -81,7 +81,7 @@ export declare type Clusters = {
 /**
  * Internal prop for managing provided KMLs
  */
-export declare type KMLs = {
+export type KMLs = {
     /**
      * Array of {@link KMLObject}
      */
@@ -90,7 +90,7 @@ export declare type KMLs = {
 /**
  * Internal prop for managing provided KMLs
  */
-export declare type GeoJsons = {
+export type GeoJsons = {
     /**
      * Array of {@link GeoJsonObject}
      */
@@ -99,7 +99,7 @@ export declare type GeoJsons = {
 /**
  * Prop for managing Google Maps styling settings.
  */
-export declare type GoogleMapsStyling = {
+export type GoogleMapsStyling = {
     /**
      * Valid Google Maps style JSON string,
      * please use https://mapstyle.withgoogle.com to generate style JSONs.
@@ -111,7 +111,7 @@ export declare type GoogleMapsStyling = {
 /**
  * Props for managing map gestures settings.
  */
-export declare type Gestures = {
+export type Gestures = {
     /**
      * If `true` rotate gestures are enabled.
      *
@@ -140,7 +140,7 @@ export declare type Gestures = {
 /**
  * Props for managing map controls settings.
  */
-export declare type Controls = {
+export type Controls = {
     /**
      * If `true` zoom controls are visible.
      *
@@ -185,7 +185,7 @@ export declare type Controls = {
 /**
  * Props for managing traffic layer.
  */
-export declare type Traffic = {
+export type Traffic = {
     /**
      * If `true` traffic data is displayed on map.
      *
@@ -196,7 +196,7 @@ export declare type Traffic = {
 /**
  * Props for callback events.
  */
-export declare type Callbacks = {
+export type Callbacks = {
     /**
      * Callback to call when the map is loaded.
      *
@@ -304,11 +304,11 @@ export declare type Callbacks = {
      */
     onLocationChangeEventPriority?: LocationChangePriority;
 };
-export declare type POICategoryType = 'airport' | 'atm' | 'bank' | 'beach' | 'cafe' | 'hospital' | 'hotel' | 'museum' | 'pharmacy' | 'store';
+export type POICategoryType = 'airport' | 'atm' | 'bank' | 'beach' | 'cafe' | 'hospital' | 'hotel' | 'museum' | 'pharmacy' | 'store';
 /**
  * Props for POI handling.
  */
-export declare type POI = {
+export type POI = {
     /**
      * If 'true' search bar for searching pois is enabled.
      *
@@ -346,20 +346,20 @@ export declare type POI = {
      */
     clickablePOIs: boolean;
 };
-export declare type AppleMapsPOI = POI;
-export declare type GoogleMapsPOI = Omit<POI, 'enablePOISearching' | 'enablePOIFilter'>;
-export declare type Heatmaps = {
+export type AppleMapsPOI = POI;
+export type GoogleMapsPOI = Omit<POI, 'enablePOISearching' | 'enablePOIFilter'>;
+export type Heatmaps = {
     /**
      * Array of {@link HeatmapObject}.
      */
     heatmaps: HeatmapObject[];
 };
-export declare type GoogleMapsControls = Controls;
-export declare type ZoomLevels = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22;
+export type GoogleMapsControls = Controls;
+export type ZoomLevels = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19 | 20 | 21 | 22;
 /**
  * Prop for setting camera position.
  */
-export declare type CameraPosition = {
+export type CameraPosition = {
     /**
      * Camera position object
      *
@@ -373,24 +373,24 @@ export declare type CameraPosition = {
      */
     initialCameraPosition: CameraMove;
 };
-export declare type AppleMapsControls = Omit<Controls, 'showMapToolbar' | 'showZoomControls'>;
+export type AppleMapsControls = Omit<Controls, 'showMapToolbar' | 'showZoomControls'>;
 /**
  * Props for Google Maps implementation.
  */
-export declare type NativeExpoGoogleMapsViewProps = ViewProps & React.RefAttributes<ExpoMap> & PropsWithChildren<MapType & GoogleMapsStyling & Gestures & Markers & Polygons & Polylines & GoogleMapsControls & CameraPosition & Circles & Clusters & Traffic & KMLs & GeoJsons & GoogleMapsPOI & Overlays & Heatmaps & Callbacks>;
+export type NativeExpoGoogleMapsViewProps = ViewProps & React.RefAttributes<ExpoMap> & PropsWithChildren<MapType & GoogleMapsStyling & Gestures & Markers & Polygons & Polylines & GoogleMapsControls & CameraPosition & Circles & Clusters & Traffic & KMLs & GeoJsons & GoogleMapsPOI & Overlays & Heatmaps & Callbacks>;
 /**
  * Props for Apple Maps implementation.
  */
-export declare type NativeExpoAppleMapsViewProps = ViewProps & React.RefAttributes<ExpoMap> & PropsWithChildren<MapType & Gestures & Markers & Polygons & Polylines & AppleMapsControls & CameraPosition & Circles & Clusters & Traffic & KMLs & GeoJsons & AppleMapsPOI>;
-export declare type ExpoMapRef = {
+export type NativeExpoAppleMapsViewProps = ViewProps & React.RefAttributes<ExpoMap> & PropsWithChildren<MapType & Gestures & Markers & Polygons & Polylines & AppleMapsControls & CameraPosition & Circles & Clusters & Traffic & KMLs & GeoJsons & AppleMapsPOI>;
+export type ExpoMapRef = {
     getSearchCompletions: () => Promise<void>;
     moveCamera: () => Promise<CameraPosition>;
 };
-export declare type Providers = 'google' | 'apple';
+export type Providers = 'google' | 'apple';
 /**
  * Prop for managing map provider.
  */
-export declare type Provider = {
+export type Provider = {
     /**
      * Provider you want to use for your map, please note `apple` provider is only avaliable on Apple devices.
      *
@@ -403,7 +403,7 @@ export declare type Provider = {
  *
  * All of the ExpoMap props are optional.
  */
-export declare type ExpoMapViewProps = ViewProps & PropsWithChildren<Partial<Provider & MapType & Controls & GoogleMapsStyling & Gestures & CameraPosition & Traffic & POI & KMLs & Heatmaps & Callbacks>>;
-export declare type DefaultNativeExpoMapViewProps = MapType & Controls & Gestures & CameraPosition & Traffic & POI;
-export declare type ExpoMapState = Markers & Polygons & Polylines & Circles & Clusters & KMLs & GeoJsons & Overlays & Heatmaps;
+export type ExpoMapViewProps = ViewProps & PropsWithChildren<Partial<Provider & MapType & Controls & GoogleMapsStyling & Gestures & CameraPosition & Traffic & POI & KMLs & Heatmaps & Callbacks>>;
+export type DefaultNativeExpoMapViewProps = MapType & Controls & Gestures & CameraPosition & Traffic & POI;
+export type ExpoMapState = Markers & Polygons & Polylines & Circles & Clusters & KMLs & GeoJsons & Overlays & Heatmaps;
 //# sourceMappingURL=Map.types.d.ts.map

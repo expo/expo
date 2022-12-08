@@ -1,6 +1,6 @@
 import { Subscription } from 'expo-modules-core';
 import { ClipboardImage, ContentType, GetImageOptions, GetStringOptions, SetStringOptions } from './Clipboard.types';
-declare type ClipboardEvent = {
+type ClipboardEvent = {
     /**
      * @deprecated Returns empty string. Use [`getStringAsync()`](#getstringasyncoptions) instead to retrieve clipboard content.
      */

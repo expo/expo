@@ -30,15 +30,6 @@ function extractMissingDependencyError(errorOutput) {
 }
 exports.extractMissingDependencyError = extractMissingDependencyError;
 class CocoaPodsPackageManager {
-    constructor({ cwd, silent }) {
-        this.silent = !!silent;
-        this.options = {
-            cwd,
-            // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
-            // Later we'll also pipe the stdout/stderr to the terminal when silent is false.
-            stdio: 'pipe',
-        };
-    }
     static getPodProjectRoot(projectRoot) {
         if (CocoaPodsPackageManager.isUsingPods(projectRoot))
             return projectRoot;
@@ -133,6 +124,15 @@ class CocoaPodsPackageManager {
         catch {
             return false;
         }
+    }
+    constructor({ cwd, silent }) {
+        this.silent = !!silent;
+        this.options = {
+            cwd,
+            // We use pipe by default instead of inherit so that we can capture stderr/stdout and process it for errors.
+            // Later we'll also pipe the stdout/stderr to the terminal when silent is false.
+            stdio: 'pipe',
+        };
     }
     get name() {
         return 'CocoaPods';

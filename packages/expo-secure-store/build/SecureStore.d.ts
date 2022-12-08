@@ -1,4 +1,4 @@
-export declare type KeychainAccessibilityConstant = number;
+export type KeychainAccessibilityConstant = number;
 /**
  * The data in the keychain item cannot be accessed after a restart until the device has been
  * unlocked once by the user. This may be useful if you need to access the item when the phone
@@ -33,7 +33,7 @@ export declare const WHEN_UNLOCKED: KeychainAccessibilityConstant;
  * a backup.
  */
 export declare const WHEN_UNLOCKED_THIS_DEVICE_ONLY: KeychainAccessibilityConstant;
-export declare type SecureStoreOptions = {
+export type SecureStoreOptions = {
     /**
      * - iOS: The item's service, equivalent to `kSecAttrService`
      * - Android: Equivalent of the public/private key pair `Alias`

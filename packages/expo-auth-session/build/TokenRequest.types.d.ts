@@ -3,7 +3,7 @@
  *
  * @see [Section 7.1](https://tools.ietf.org/html/rfc6749#section-7.1)
  */
-export declare type TokenType = 'bearer' | 'mac';
+export type TokenType = 'bearer' | 'mac';
 /**
  * A hint about the type of the token submitted for revocation. If not included then the server should attempt to deduce the token type.
  *

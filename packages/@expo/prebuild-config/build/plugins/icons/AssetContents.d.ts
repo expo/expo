@@ -1,9 +1,9 @@
-export declare type ContentsJsonImageIdiom = 'iphone' | 'ipad' | 'ios-marketing' | 'universal';
-export declare type ContentsJsonImageAppearance = {
+export type ContentsJsonImageIdiom = 'iphone' | 'ipad' | 'ios-marketing' | 'universal';
+export type ContentsJsonImageAppearance = {
     appearance: 'luminosity';
     value: 'dark';
 };
-export declare type ContentsJsonImageScale = '1x' | '2x' | '3x';
+export type ContentsJsonImageScale = '1x' | '2x' | '3x';
 export interface ContentsJsonImage {
     appearances?: ContentsJsonImageAppearance[];
     idiom: ContentsJsonImageIdiom;

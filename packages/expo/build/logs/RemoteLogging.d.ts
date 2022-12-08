@@ -1,16 +1,16 @@
 import { EventSubscription } from 'fbemitter';
-export declare type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-export declare type LogEntryFields = {
+export type LogLevel = 'debug' | 'info' | 'warn' | 'error';
+export type LogEntryFields = {
     shouldHide?: boolean;
     groupDepth?: number;
     groupCollapsed?: boolean;
 };
-export declare type LogData = string | LogErrorData;
-export declare type LogErrorData = {
+export type LogData = string | LogErrorData;
+export type LogErrorData = {
     message: string;
     stack: string;
 };
-declare type TransportErrorListener = (event: {
+type TransportErrorListener = (event: {
     error: Error;
     response?: Response;
 }) => void;

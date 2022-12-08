@@ -1,5 +1,5 @@
 import { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription } from 'expo-modules-core';
-export declare type PedometerResult = {
+export type PedometerResult = {
     /**
      * Number of steps taken between the given dates.
      */
@@ -8,7 +8,7 @@ export declare type PedometerResult = {
 /**
  * Callback function providing event result as an argument.
  */
-export declare type PedometerUpdateCallback = (result: PedometerResult) => void;
+export type PedometerUpdateCallback = (result: PedometerResult) => void;
 /**
  * Subscribe to pedometer updates.
  * @param callback A callback that is invoked when new step count data is available. The callback is

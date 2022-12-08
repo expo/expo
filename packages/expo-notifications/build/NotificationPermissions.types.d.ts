@@ -49,7 +49,7 @@ export interface IosNotificationPermissionsRequest {
 }
 export interface AndroidNotificationPermissionRequest {
 }
-export declare type NativeNotificationPermissionsRequest = IosNotificationPermissionsRequest | AndroidNotificationPermissionRequest;
+export type NativeNotificationPermissionsRequest = IosNotificationPermissionsRequest | AndroidNotificationPermissionRequest;
 export interface NotificationPermissionsRequest {
     ios?: IosNotificationPermissionsRequest;
     android?: AndroidNotificationPermissionRequest;

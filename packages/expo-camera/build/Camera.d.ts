@@ -153,10 +153,10 @@ export default class Camera extends React.Component<CameraProps> {
             message: string;
         };
     }) => void;
-    _onObjectDetected: (callback?: Function | undefined) => ({ nativeEvent }: {
+    _onObjectDetected: (callback?: Function) => ({ nativeEvent }: {
         nativeEvent: any;
     }) => void;
-    _setReference: (ref?: React.Component<{}, {}, any> | undefined) => void;
+    _setReference: (ref?: React.Component) => void;
     render(): JSX.Element;
 }
 export declare const Constants: ConstantsType, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync, getCameraPermissionsAsync: typeof Camera.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof Camera.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof Camera.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof Camera.requestMicrophonePermissionsAsync;

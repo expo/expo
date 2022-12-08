@@ -1,7 +1,7 @@
 /**
  * Basic point type for representing a coordinate on a map.
  */
-export declare type Point = {
+export type Point = {
     /**
      * The latitude of the point in degrees. Use decimal degrees as opposed to degrees/minutes/seconds.
      * @required
@@ -16,7 +16,7 @@ export declare type Point = {
 /**
  * Type for representing width and height on a map using latitude and longitude.
  */
-export declare type LatLngDelta = {
+export type LatLngDelta = {
     /**
      * The north-to-south distance.
      * @required
@@ -31,7 +31,7 @@ export declare type LatLngDelta = {
 /**
  * Generic object that associates numerical data with a georgaphic coordinate.
  */
-export declare type PointWithData = Point & {
+export type PointWithData = Point & {
     /**
      * Numerical data associated with the point. (optional)
      * @default 1
@@ -43,7 +43,7 @@ export declare type PointWithData = Point & {
  * PatternItem with type `stroke` and length 0 will represent a dot.
  * Use an array of PatternItem to define a pattern.
  */
-export declare type PatternItem = {
+export type PatternItem = {
     /**
      * The type of the pattern item.
      * * `'stroke'` - rendered line segment
@@ -57,7 +57,7 @@ export declare type PatternItem = {
      */
     length: number;
 };
-export declare type CameraPosition = {
+export type CameraPosition = {
     /**
      * The location that the camera is pointing at.
      * @required
@@ -98,7 +98,7 @@ export declare type CameraPosition = {
  * tilt and bearing properties.Instead the camera will move to a smallest view containing a rectangle
  * created around the center point by the deltas.
  */
-export declare type CameraMove = {
+export type CameraMove = {
     /**
      * Location to which the camera should animate. This will be in the center of the view
      */
@@ -131,7 +131,7 @@ export declare type CameraMove = {
 /**
  * Type describing points of interest on the map
  */
-export declare type PointOfInterest = {
+export type PointOfInterest = {
     /**
      * Position of the point of interest
      * @required
@@ -151,7 +151,7 @@ export declare type PointOfInterest = {
 /**
  * Type describing a marker (pin) placed on the map
  */
-export declare type Marker = {
+export type Marker = {
     /**
      * Id given to the marker
      */
@@ -162,7 +162,7 @@ export declare type Marker = {
      */
     position: Point;
 };
-export declare type MapCluster = {
+export type MapCluster = {
     /**
      * ID of the cluster
      */
@@ -173,7 +173,7 @@ export declare type MapCluster = {
      */
     position: Point;
 };
-export declare type UserLocation = {
+export type UserLocation = {
     /**
      * Current position of the user represented by
      * {@link Point}
@@ -208,7 +208,7 @@ export declare type UserLocation = {
      */
     timestamp: number;
 };
-export declare type Color = 'red' | 'blue' | 'green' | 'black' | 'white' | 'gray' | 'cyan' | 'magenta' | 'yellow' | 'lightgray' | 'darkgray' | 'aqua' | 'fuchsia' | 'lime' | 'maroon' | 'navy' | 'olive' | 'purple' | 'silver' | 'teal';
+export type Color = 'red' | 'blue' | 'green' | 'black' | 'white' | 'gray' | 'cyan' | 'magenta' | 'yellow' | 'lightgray' | 'darkgray' | 'aqua' | 'fuchsia' | 'lime' | 'maroon' | 'navy' | 'olive' | 'purple' | 'silver' | 'teal';
 /**
  * Possible power priorities for OnLocationChange event
  */

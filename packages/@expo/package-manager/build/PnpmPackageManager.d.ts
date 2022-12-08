@@ -1,4 +1,5 @@
 /// <reference types="node" />
+/// <reference types="node" />
 import { SpawnOptions } from '@expo/spawn-async';
 import { Transform } from 'stream';
 import { Logger } from './PackageManager';

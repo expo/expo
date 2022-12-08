@@ -1,7 +1,7 @@
 import { ConfigPlugin, ExportedConfig, ExportedConfigWithProps, ModPlatform } from '../Plugin.types';
 import { BaseModOptions } from './withMod';
-export declare type ForwardedBaseModOptions = Partial<Pick<BaseModOptions, 'saveToInternal' | 'skipEmptyMod'>>;
-export declare type BaseModProviderMethods<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions> = {
+export type ForwardedBaseModOptions = Partial<Pick<BaseModOptions, 'saveToInternal' | 'skipEmptyMod'>>;
+export type BaseModProviderMethods<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions> = {
     getFilePath: (config: ExportedConfigWithProps<ModType>, props: Props) => Promise<string> | string;
     read: (filePath: string, config: ExportedConfigWithProps<ModType>, props: Props) => Promise<ModType> | ModType;
     write: (filePath: string, config: ExportedConfigWithProps<ModType>, props: Props) => Promise<void> | void;
@@ -13,7 +13,7 @@ export declare type BaseModProviderMethods<ModType, Props extends ForwardedBaseM
      */
     isIntrospective?: boolean;
 };
-export declare type CreateBaseModProps<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions> = {
+export type CreateBaseModProps<ModType, Props extends ForwardedBaseModOptions = ForwardedBaseModOptions> = {
     methodName: string;
     platform: ModPlatform;
     modName: string;

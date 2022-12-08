@@ -3,7 +3,7 @@
  * responsible for coordinating loading assets, handling errors, and updating state to unmount
  * the `AppLoading` component.
  */
-export declare type AppLoadingProps = {
+export type AppLoadingProps = {
     /**
      * A function that returns a `Promise`, and the `Promise` should fulfil when the app is done
      * loading required data and assets. You can do this process manually if you prefer.

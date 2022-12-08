@@ -1,4 +1,4 @@
-export declare type QueryResult = InAppPurchase | IAPItemDetails;
+export type QueryResult = InAppPurchase | IAPItemDetails;
 /**
  * The response type for queries and purchases.
  */
@@ -252,7 +252,7 @@ export interface IAPItemDetails {
      */
     subscriptionPeriod?: string;
 }
-export declare type IAPPurchaseHistoryOptions = {
+export type IAPPurchaseHistoryOptions = {
     /**
      * A boolean that indicates whether or not you want to make a network request
      * to sync expired/consumed purchases and those on other devices.

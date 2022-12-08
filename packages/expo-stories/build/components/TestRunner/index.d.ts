@@ -1,10 +1,10 @@
 import React from 'react';
-declare type Props = {
+type Props = {
     selectedModules: {
         test: any;
     }[];
 };
-declare type State = {
+type State = {
     portalChildShouldBeVisible: boolean;
     state: any;
     testPortal: React.ReactElement<any> | null;

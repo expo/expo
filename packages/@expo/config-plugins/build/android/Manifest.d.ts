@@ -1,19 +1,19 @@
-export declare type StringBoolean = 'true' | 'false';
-declare type ManifestMetaDataAttributes = AndroidManifestAttributes & {
+export type StringBoolean = 'true' | 'false';
+type ManifestMetaDataAttributes = AndroidManifestAttributes & {
     'android:value'?: string;
     'android:resource'?: string;
 };
-declare type AndroidManifestAttributes = {
+type AndroidManifestAttributes = {
     'android:name': string | 'android.intent.action.VIEW';
     'tools:node'?: string | 'remove';
 };
-declare type ManifestAction = {
+type ManifestAction = {
     $: AndroidManifestAttributes;
 };
-declare type ManifestCategory = {
+type ManifestCategory = {
     $: AndroidManifestAttributes;
 };
-declare type ManifestData = {
+type ManifestData = {
     $: {
         [key: string]: string | undefined;
         'android:host'?: string;
@@ -21,14 +21,14 @@ declare type ManifestData = {
         'android:scheme'?: string;
     };
 };
-declare type ManifestReceiver = {
+type ManifestReceiver = {
     $: AndroidManifestAttributes & {
         'android:exported'?: StringBoolean;
         'android:enabled'?: StringBoolean;
     };
     'intent-filter'?: ManifestIntentFilter[];
 };
-export declare type ManifestIntentFilter = {
+export type ManifestIntentFilter = {
     $?: {
         'android:autoVerify'?: StringBoolean;
         'data-generated'?: StringBoolean;
@@ -37,19 +37,19 @@ export declare type ManifestIntentFilter = {
     data?: ManifestData[];
     category?: ManifestCategory[];
 };
-export declare type ManifestMetaData = {
+export type ManifestMetaData = {
     $: ManifestMetaDataAttributes;
 };
-declare type ManifestServiceAttributes = AndroidManifestAttributes & {
+type ManifestServiceAttributes = AndroidManifestAttributes & {
     'android:enabled'?: StringBoolean;
     'android:exported'?: StringBoolean;
     'android:permission'?: string;
 };
-declare type ManifestService = {
+type ManifestService = {
     $: ManifestServiceAttributes;
     'intent-filter'?: ManifestIntentFilter[];
 };
-declare type ManifestApplicationAttributes = {
+type ManifestApplicationAttributes = {
     'android:name': string | '.MainApplication';
     'android:icon'?: string;
     'android:roundIcon'?: string;
@@ -60,7 +60,7 @@ declare type ManifestApplicationAttributes = {
     'android:usesCleartextTraffic'?: StringBoolean;
     [key: string]: string | undefined;
 };
-export declare type ManifestActivity = {
+export type ManifestActivity = {
     $: ManifestApplicationAttributes & {
         'android:exported'?: StringBoolean;
         'android:launchMode'?: string;
@@ -70,12 +70,12 @@ export declare type ManifestActivity = {
     };
     'intent-filter'?: ManifestIntentFilter[];
 };
-export declare type ManifestUsesLibrary = {
+export type ManifestUsesLibrary = {
     $: AndroidManifestAttributes & {
         'android:required'?: StringBoolean;
     };
 };
-export declare type ManifestApplication = {
+export type ManifestApplication = {
     $: ManifestApplicationAttributes;
     activity?: ManifestActivity[];
     service?: ManifestService[];
@@ -83,21 +83,21 @@ export declare type ManifestApplication = {
     'meta-data'?: ManifestMetaData[];
     'uses-library'?: ManifestUsesLibrary[];
 };
-declare type ManifestPermission = {
+type ManifestPermission = {
     $: AndroidManifestAttributes & {
         'android:protectionLevel'?: string | 'signature';
     };
 };
-export declare type ManifestUsesPermission = {
+export type ManifestUsesPermission = {
     $: AndroidManifestAttributes;
 };
-declare type ManifestUsesFeature = {
+type ManifestUsesFeature = {
     $: AndroidManifestAttributes & {
         'android:glEsVersion'?: string;
         'android:required': StringBoolean;
     };
 };
-export declare type AndroidManifest = {
+export type AndroidManifest = {
     manifest: {
         $: {
             'xmlns:android': string;

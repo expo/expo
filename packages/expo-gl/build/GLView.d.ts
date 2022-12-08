@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
-export declare type WebGLObject = {
+export type WebGLObject = {
     id: number;
 };
 /**

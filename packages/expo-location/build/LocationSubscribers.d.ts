@@ -1,5 +1,5 @@
 import { LocationCallback, LocationHeadingCallback } from './Location.types';
-declare type EventObject = {
+type EventObject = {
     watchId: number;
     [key: string]: any;
 };

@@ -1,4 +1,4 @@
-export declare type FirebaseOptions = {
+export type FirebaseOptions = {
     /**
      * Unique identifier of the Firebase app.
      */

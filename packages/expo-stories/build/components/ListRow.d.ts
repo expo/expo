@@ -1,6 +1,6 @@
 /// <reference types="react" />
 import { TouchableOpacityProps, TextProps } from 'react-native';
-declare type ListRowProps = TouchableOpacityProps & {
+type ListRowProps = TouchableOpacityProps & {
     style?: Pick<TouchableOpacityProps, 'style'>;
     labelProps?: TextProps;
     label?: string;

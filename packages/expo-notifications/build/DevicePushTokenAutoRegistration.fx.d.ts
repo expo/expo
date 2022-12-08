@@ -2,7 +2,7 @@ import 'abort-controller/polyfill';
 /**
  * Encapsulates device server registration data
  */
-export declare type DevicePushTokenRegistration = {
+export type DevicePushTokenRegistration = {
     isEnabled: boolean;
 };
 /**

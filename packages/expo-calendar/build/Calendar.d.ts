@@ -2,7 +2,7 @@ import { PermissionResponse, PermissionStatus, PermissionHookOptions } from 'exp
 /**
  * @platform ios
  */
-export declare type RecurringEventOptions = {
+export type RecurringEventOptions = {
     /**
      * Whether or not future events in the recurring series should also be updated. If `true`, will
      * apply the given changes to the recurring instance specified by `instanceStartDate` and all
@@ -21,7 +21,7 @@ export declare type RecurringEventOptions = {
  * A calendar record upon which events (or, on iOS, reminders) can be stored. Settings here apply to
  * the calendar as a whole and how its events are displayed in the OS calendar app.
  */
-export declare type Calendar = {
+export type Calendar = {
     /**
      * Internal ID that represents this calendar on the device.
      */
@@ -118,7 +118,7 @@ export declare type Calendar = {
 /**
  * A source account that owns a particular calendar. Expo apps will typically not need to interact with `Source` objects.
  */
-export declare type Source = {
+export type Source = {
     /**
      * Internal ID that represents this source on the device.
      * @platform ios
@@ -144,7 +144,7 @@ export declare type Source = {
 /**
  * An event record, or a single instance of a recurring event. On iOS, used in the Calendar app.
  */
-export declare type Event = {
+export type Event = {
     /**
      * Internal ID that represents this event on the device.
      */
@@ -276,7 +276,7 @@ export declare type Event = {
  * A reminder record, used in the iOS Reminders app. No direct analog on Android.
  * @platform ios
  */
-export declare type Reminder = {
+export type Reminder = {
     /**
      * Internal ID that represents this reminder on the device.
      */
@@ -342,7 +342,7 @@ export declare type Reminder = {
 /**
  * A person or entity that is associated with an event by being invited or fulfilling some other role.
  */
-export declare type Attendee = {
+export type Attendee = {
     /**
      * Internal ID that represents this attendee on the device.
      * @platform android
@@ -386,7 +386,7 @@ export declare type Attendee = {
 /**
  * A method for having the OS automatically remind the user about an calendar item.
  */
-export declare type Alarm = {
+export type Alarm = {
     /**
      * Date object or string representing an absolute time the alarm should occur.
      * Overrides `relativeOffset` and `structuredLocation` if specified alongside either.
@@ -406,7 +406,7 @@ export declare type Alarm = {
      */
     method?: string;
 };
-export declare type AlarmLocation = {
+export type AlarmLocation = {
     /**
      * @platform ios
      */
@@ -449,7 +449,7 @@ export declare enum MonthOfTheYear {
  *
  * Not all of the combinations make sense. For example, when frequency is `DAILY`, setting `daysOfTheMonth` makes no sense.
  */
-export declare type RecurrenceRule = {
+export type RecurrenceRule = {
     /**
      * How often the calendar item should recur.
      * Possible values: [`Frequency`](#calendarfrequency).
@@ -513,7 +513,7 @@ export declare type RecurrenceRule = {
 /**
  * @platform ios
  */
-export declare type DaysOfTheWeek = {
+export type DaysOfTheWeek = {
     /**
      * Sunday to Saturday - `DayOfTheWeek` enum.
      */

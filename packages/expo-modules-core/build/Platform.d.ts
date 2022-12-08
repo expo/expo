@@ -1,6 +1,6 @@
 import { PlatformOSType } from 'react-native';
-export declare type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'default';
-export declare type PlatformSelect = <T>(specifics: {
+export type PlatformSelectOSType = PlatformOSType | 'native' | 'electron' | 'default';
+export type PlatformSelect = <T>(specifics: {
     [platform in PlatformSelectOSType]?: T;
 }) => T;
 declare const Platform: {

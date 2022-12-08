@@ -16,7 +16,7 @@ import type { ExpoConfig } from '@expo/config-types';
 /**
  * Source config can be either expo config or generic config
  */
-export declare type BuildPropertiesConfig = ExpoConfig | Record<string, any>;
+export type BuildPropertiesConfig = ExpoConfig | Record<string, any>;
 export interface ConfigToPropertyRuleType<SourceConfigType extends BuildPropertiesConfig> {
     /** Property name in `android/gradle.properties` or `ios/Podfile.properties.json` */
     propName: string;

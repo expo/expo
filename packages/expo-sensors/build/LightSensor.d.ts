@@ -1,6 +1,6 @@
 import DeviceSensor from './DeviceSensor';
 import type { Listener, Subscription } from './DeviceSensor';
-export declare type LightSensorMeasurement = {
+export type LightSensorMeasurement = {
     /**
      * Ambient light level registered by the device measured in lux (lx).
      */

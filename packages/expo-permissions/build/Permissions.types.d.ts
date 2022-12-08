@@ -1,5 +1,5 @@
 import { PermissionResponse as EXPermissionResponse, PermissionStatus, PermissionExpiration } from 'expo-modules-core';
-export declare type PermissionType = 'camera' | 'cameraRoll' | 'mediaLibrary' | 'mediaLibraryWriteOnly' | 'audioRecording' | 'location' | 'locationForeground' | 'locationBackground' | 'userFacingNotifications' | 'notifications' | 'contacts' | 'calendar' | 'reminders' | 'motion' | 'systemBrightness';
+export type PermissionType = 'camera' | 'cameraRoll' | 'mediaLibrary' | 'mediaLibraryWriteOnly' | 'audioRecording' | 'location' | 'locationForeground' | 'locationBackground' | 'userFacingNotifications' | 'notifications' | 'contacts' | 'calendar' | 'reminders' | 'motion' | 'systemBrightness';
 export interface PermissionResponse extends EXPermissionResponse {
     permissions: PermissionMap;
 }
@@ -16,7 +16,7 @@ export interface PermissionInfo extends EXPermissionResponse {
 }
 export { PermissionStatus };
 export { PermissionExpiration };
-export declare type PermissionDetailsLocationAndroid = {
+export type PermissionDetailsLocationAndroid = {
     accuracy: 'fine' | 'coarse' | 'none';
 };
 //# sourceMappingURL=Permissions.types.d.ts.map

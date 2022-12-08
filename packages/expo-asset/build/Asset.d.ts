@@ -1,5 +1,5 @@
 import { AssetMetadata } from './AssetSources';
-export declare type AssetDescriptor = {
+export type AssetDescriptor = {
     name: string;
     type: string;
     hash?: string | null;
@@ -7,7 +7,7 @@ export declare type AssetDescriptor = {
     width?: number | null;
     height?: number | null;
 };
-declare type DownloadPromiseCallbacks = {
+type DownloadPromiseCallbacks = {
     resolve: () => void;
     reject: (error: Error) => void;
 };

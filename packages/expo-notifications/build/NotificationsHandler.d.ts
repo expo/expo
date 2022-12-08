@@ -7,7 +7,7 @@ export declare class NotificationTimeoutError extends CodedError {
     };
     constructor(notificationId: string, notification: Notification);
 }
-export declare type NotificationHandlingError = NotificationTimeoutError | Error;
+export type NotificationHandlingError = NotificationTimeoutError | Error;
 export interface NotificationHandler {
     handleNotification: (notification: Notification) => Promise<NotificationBehavior>;
     handleSuccess?: (notificationId: string) => void;

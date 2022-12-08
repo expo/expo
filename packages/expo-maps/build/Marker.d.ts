@@ -3,7 +3,7 @@ import { Point } from './Common.types';
 /**
  * Marker specific props.
  */
-export declare type BaseMarkerOptions = {
+export type BaseMarkerOptions = {
     /**
      * Id of the marker or cluster, should be unique.
      * If no id is specified then marker-related events won't fire for that particular marker or cluster.
@@ -59,7 +59,7 @@ export declare type BaseMarkerOptions = {
      */
     opacity?: number;
 };
-export declare type MarkerOptions = {
+export type MarkerOptions = {
     /**
      * If 'true' marker is draggable, clustered markers can't be dragged.
      *
@@ -78,13 +78,13 @@ export declare type MarkerOptions = {
 /**
  * Props of Marker component of Expo Maps library.
  */
-export declare type MarkerProps = MarkerOptions & Point;
+export type MarkerProps = MarkerOptions & Point;
 /**
  * Internal JSON object for representing markers in Expo Maps library.
  *
  * See {@link MarkerProps} for more details.
  */
-export declare type MarkerObject = {
+export type MarkerObject = {
     type: 'marker';
 } & MarkerOptions & Point;
 /**

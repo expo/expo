@@ -1,5 +1,5 @@
 import { LogData, LogLevel } from './RemoteLogging';
-declare type SerializedData = {
+type SerializedData = {
     body: LogData[];
     includesStack: boolean;
 };

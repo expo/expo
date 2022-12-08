@@ -1,9 +1,9 @@
 import { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
-export declare type CheckboxEvent = NativeSyntheticEvent<{
+export type CheckboxEvent = NativeSyntheticEvent<{
     target: number;
     value: boolean;
 }>;
-export declare type CheckboxProps = ViewProps & {
+export type CheckboxProps = ViewProps & {
     /**
      * Value indicating if the checkbox should be rendered as checked or not. Default value is `false`.
      */
@@ -27,7 +27,7 @@ export declare type CheckboxProps = ViewProps & {
      */
     onValueChange?: (value: boolean) => void;
 };
-export declare type CheckboxComponent = React.FC<CheckboxProps> & {
+export type CheckboxComponent = React.FC<CheckboxProps> & {
     /**
      * @deprecated
      */

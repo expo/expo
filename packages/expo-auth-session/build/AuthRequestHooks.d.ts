@@ -16,7 +16,7 @@ import { DiscoveryDocument, IssuerOrDiscovery } from './Discovery';
  */
 export declare function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): DiscoveryDocument | null;
 export declare function useLoadedAuthRequest(config: AuthRequestConfig, discovery: DiscoveryDocument | null, AuthRequestInstance: typeof AuthRequest): AuthRequest | null;
-declare type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
+type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
 export declare function useAuthRequestResult(request: AuthRequest | null, discovery: DiscoveryDocument | null, customOptions?: AuthRequestPromptOptions): [AuthSessionResult | null, PromptMethod];
 /**
  * Load an authorization request for a code. When the prompt method completes then the response will be fulfilled.

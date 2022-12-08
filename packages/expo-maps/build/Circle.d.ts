@@ -3,7 +3,7 @@ import { Point } from './Common.types';
 /**
  * Props of Circle component of Expo Maps library.
  */
-export declare type CircleProps = {
+export type CircleProps = {
     /**
      * The center position of the circle.
      * @required
@@ -49,7 +49,7 @@ export declare type CircleProps = {
  *
  * See {@link CircleProps} for more detail.
  */
-export declare type CircleObject = {
+export type CircleObject = {
     type: 'circle';
     center: Point;
     radius: number;

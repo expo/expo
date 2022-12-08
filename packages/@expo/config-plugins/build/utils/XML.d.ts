@@ -1,4 +1,4 @@
-export declare type XMLValue = boolean | number | string | null | XMLArray | XMLObject;
+export type XMLValue = boolean | number | string | null | XMLArray | XMLObject;
 export interface XMLArray extends Array<XMLValue> {
 }
 export interface XMLObject {

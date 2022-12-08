@@ -1,12 +1,12 @@
 import { XMLObject } from '../utils/XML';
-export declare type ResourceGroupXML = {
+export type ResourceGroupXML = {
     $: {
         name: string;
         parent: string;
     };
     item: ResourceItemXML[];
 };
-export declare type ResourceXML = {
+export type ResourceXML = {
     resources: {
         $?: {
             'xmlns:tools'?: string;
@@ -16,7 +16,7 @@ export declare type ResourceXML = {
         style?: ResourceGroupXML[];
     };
 };
-export declare type ResourceItemXML = {
+export type ResourceItemXML = {
     _: string;
     $: {
         name: string;
@@ -27,7 +27,7 @@ export declare type ResourceItemXML = {
 /**
  * Name of the resource folder.
  */
-export declare type ResourceKind = 'values' | 'values-night' | 'values-v23' | 'values-night-v23' | 'drawable';
+export type ResourceKind = 'values' | 'values-night' | 'values-v23' | 'values-night-v23' | 'drawable';
 /**
  * Read an XML file while providing a default fallback for resource files.
  *
