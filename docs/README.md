@@ -55,7 +55,8 @@ metadata: goes here
 
 These metadata items include:
 
-- `title`: Title of the page shown as the heading and in search results
+- `title`: Title of the page shown as the heading and in search results.
+- `description`: Description of the page shown in search results and open graph descriptions when the page is shared on social media sites.
 - `hideFromSearch`: Whether to hide the page from Algolia search results. Defaults to `false`.
 - `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
