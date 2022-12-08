@@ -53,6 +53,14 @@ public final class ImageModule: Module {
         view.imageTintColor = tintColor ?? .clear
       }
 
+      Prop("priority") { (view, priority: ImagePriority?) in
+        view.loadingOptions.remove([.lowPriority, .highPriority])
+
+        if let priority = priority?.toSDWebImageOptions() {
+          view.loadingOptions.insert(priority)
+        }
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
