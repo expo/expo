@@ -1,4 +1,4 @@
-import { ParsedQs } from 'qs';
+import type { ParsedQs } from 'qs';
 export declare type QueryParams = ParsedQs;
 export declare type ParsedURL = {
     scheme: string | null;
