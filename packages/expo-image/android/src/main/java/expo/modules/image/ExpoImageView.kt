@@ -39,6 +39,7 @@ import expo.modules.kotlin.views.ExpoView
 import jp.wasabeef.glide.transformations.BlurTransformation
 import java.lang.ref.WeakReference
 import kotlin.math.abs
+import kotlin.math.min
 
 @SuppressLint("ViewConstructor")
 class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
@@ -330,7 +331,7 @@ class ExpoImageView(
     return RequestOptions()
       .apply {
         blurRadius?.let {
-          transform(BlurTransformation(it + 1, 4))
+          transform(BlurTransformation(min(it, 25), 4))
         }
         fadeDuration?.let {
           alpha = 0f
