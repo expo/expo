@@ -3,7 +3,7 @@ import { Color, PatternItem } from './Common.types';
 /**
  * GeoJson specific props.
  */
-export declare type GeoJsonProps = {
+export type GeoJsonProps = {
     /**
      * JSON string containing GeoJSON
      */
@@ -86,7 +86,7 @@ export declare type GeoJsonProps = {
  *
  * See {@link GeoJsonProps} for more detail.
  */
-export declare type GeoJsonObject = {
+export type GeoJsonObject = {
     type: 'geojson';
     defaultStyle?: {
         polygon?: {

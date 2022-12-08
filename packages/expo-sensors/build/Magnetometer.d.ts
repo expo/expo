@@ -3,7 +3,7 @@ import type { Listener, Subscription } from './DeviceSensor';
 /**
  * Each of these keys represents the strength of magnetic field along that particular axis measured in microteslas (`μT`).
  */
-export declare type MagnetometerMeasurement = {
+export type MagnetometerMeasurement = {
     /**
      * Value representing strength of magnetic field recorded in X axis.
      */

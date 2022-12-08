@@ -1,4 +1,4 @@
-export declare type AssetMetadata = {
+export type AssetMetadata = {
     hash: string;
     name: string;
     type: string;
@@ -10,7 +10,7 @@ export declare type AssetMetadata = {
     fileHashes?: string[];
     fileUris?: string[];
 };
-export declare type AssetSource = {
+export type AssetSource = {
     uri: string;
     hash: string;
 };

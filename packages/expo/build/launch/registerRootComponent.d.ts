@@ -1,6 +1,6 @@
 import 'expo/build/Expo.fx';
 import * as React from 'react';
-declare type InitialProps = {
+type InitialProps = {
     exp: {
         notification?: any;
         manifestString?: string;

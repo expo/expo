@@ -2,11 +2,11 @@ import { PermissionResponse } from 'expo-modules-core';
 /**
  * Alias for `PermissionResponse` type exported by `expo-modules-core`.
  */
-export declare type CameraPermissionResponse = PermissionResponse;
+export type CameraPermissionResponse = PermissionResponse;
 /**
  * Extends `PermissionResponse` type exported by `expo-modules-core` and contains additional iOS-specific field.
  */
-export declare type MediaLibraryPermissionResponse = PermissionResponse & {
+export type MediaLibraryPermissionResponse = PermissionResponse & {
     /**
      * @platform ios
      */
@@ -198,11 +198,11 @@ export declare enum UIImagePickerPresentationStyle {
  * @hidden
  * @deprecated Use `ImagePickerAsset` instead
  */
-export declare type ImageInfo = ImagePickerAsset;
+export type ImageInfo = ImagePickerAsset;
 /**
  * Represents an asset (image or video) returned by the image picker or camera.
  */
-export declare type ImagePickerAsset = {
+export type ImagePickerAsset = {
     /**
      * URI to the local image or video file (usable as the source of an `Image` element, in the case of
      * an image) and `width` and `height` specify the dimensions of the media.
@@ -267,7 +267,7 @@ export declare type ImagePickerAsset = {
      */
     duration?: number | null;
 };
-export declare type ImagePickerErrorResult = {
+export type ImagePickerErrorResult = {
     /**
      * The error code.
      */
@@ -281,7 +281,7 @@ export declare type ImagePickerErrorResult = {
      */
     exception?: string;
 };
-export declare type ImagePickerResult = {
+export type ImagePickerResult = {
     /**
      * An array of picked assets or `null` when the request was canceled.
      */
@@ -343,14 +343,14 @@ export declare type ImagePickerResult = {
 /**
  * @hidden
  */
-export declare type ImagePickerSuccessResult = {
+export type ImagePickerSuccessResult = {
     canceled: false;
     assets: ImagePickerAsset[];
 };
 /**
  * @hidden
  */
-export declare type ImagePickerCanceledResult = {
+export type ImagePickerCanceledResult = {
     canceled: true;
     assets: null;
 };
@@ -358,13 +358,13 @@ export declare type ImagePickerCanceledResult = {
  * @hidden
  * @deprecated Use `ImagePickerResult` instead.
  */
-export declare type ImagePickerCancelledResult = ImagePickerCanceledResult;
+export type ImagePickerCancelledResult = ImagePickerCanceledResult;
 /**
  * @hidden
  * @deprecated `ImagePickerMultipleResult` has been deprecated in favor of `ImagePickerResult`.
  */
-export declare type ImagePickerMultipleResult = ImagePickerResult;
-export declare type ImagePickerOptions = {
+export type ImagePickerMultipleResult = ImagePickerResult;
+export type ImagePickerOptions = {
     /**
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
      * rotate the image and on iOS simply crop it.
@@ -472,7 +472,7 @@ export declare type ImagePickerOptions = {
      */
     presentationStyle?: UIImagePickerPresentationStyle;
 };
-export declare type OpenFileBrowserOptions = {
+export type OpenFileBrowserOptions = {
     /**
      * Choose what type of media to pick.
      * @default ImagePicker.MediaTypeOptions.Images
@@ -493,7 +493,7 @@ export declare type OpenFileBrowserOptions = {
  * @hidden
  * @deprecated Use `ImagePickerResult` or `OpenFileBrowserOptions` instead.
  */
-export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
+export type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
     allowsMultipleSelection: true;
 } ? ImagePickerResult : ImagePickerResult;
 //# sourceMappingURL=ImagePicker.types.d.ts.map

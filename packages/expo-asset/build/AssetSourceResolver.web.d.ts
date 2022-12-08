@@ -1,4 +1,4 @@
-declare type PackagerAsset = {
+type PackagerAsset = {
     __packager_asset: boolean;
     fileSystemLocation: string;
     httpServerLocation: string;
@@ -9,7 +9,7 @@ declare type PackagerAsset = {
     name: string;
     type: string;
 };
-export declare type ResolvedAssetSource = {
+export type ResolvedAssetSource = {
     __packager_asset: boolean;
     width?: number;
     height?: number;

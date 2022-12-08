@@ -1,7 +1,7 @@
 import { AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-declare type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
-declare type dpiMap = Record<DPIString, {
+type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
+type dpiMap = Record<DPIString, {
     folderName: string;
     scale: number;
 }>;
