@@ -1,9 +1,8 @@
 import React from 'react';
-import { ImageContentFit } from './Image.types';
 import { resolveContentFit, resolveContentPosition } from './utils';
 const resolveAssetSource = (source) => {
-    if (source === null || source === undefined)
-        return undefined;
+    if (source == null)
+        return null;
     if (typeof source === 'string') {
         return { uri: source };
     }
@@ -12,26 +11,11 @@ const resolveAssetSource = (source) => {
     }
     return source;
 };
-const getObjectFitFromContentFit = (contentFit) => {
-    switch (contentFit) {
-        case ImageContentFit.CONTAIN:
-            return 'contain';
-        case ImageContentFit.COVER:
-            return 'cover';
-        case ImageContentFit.FILL:
-            return 'fill';
-        case ImageContentFit.SCALE_DOWN:
-            return 'scale-down';
-        case ImageContentFit.NONE:
-            return 'none';
-        default:
-            return 'fill';
-    }
-};
 const ensureUnit = (value) => {
     const trimmedValue = String(value).trim();
-    if (trimmedValue.endsWith('%'))
+    if (trimmedValue.endsWith('%')) {
         return trimmedValue;
+    }
     return `${trimmedValue}px`;
 };
 const getObjectPositionFromContentPosition = (contentPosition) => {
@@ -75,7 +59,7 @@ export default function ExpoImage({ source, defaultSource, loadingIndicatorSourc
                     backgroundColor: backgroundColor?.toString(),
                     transform: transform?.toString(),
                     borderColor: borderColor?.toString(),
-                    objectFit: getObjectFitFromContentFit(resolveContentFit(props.contentFit, props.resizeMode)),
+                    objectFit: resolveContentFit(props.contentFit, props.resizeMode),
                     objectPosition: getObjectPositionFromContentPosition(contentPosition),
                 } }))));
 }

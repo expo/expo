@@ -2,7 +2,7 @@ import { ImageContentFit, ImageResizeMode, } from './Image.types';
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
 /**
- * If the `contentFit` is not provided, it's resolved from the the equivalent `resizeMode` prop
+ * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
  * that we support to provide compatibility with React Native Image.
  */
 export function resolveContentFit(contentFit, resizeMode) {

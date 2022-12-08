@@ -1,6 +1,6 @@
 import { ImageContentFit, ImageContentPosition, ImageContentPositionObject, ImageResizeMode } from './Image.types';
 /**
- * If the `contentFit` is not provided, it's resolved from the the equivalent `resizeMode` prop
+ * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
  * that we support to provide compatibility with React Native Image.
  */
 export declare function resolveContentFit(contentFit?: ImageContentFit, resizeMode?: ImageResizeMode): ImageContentFit;
