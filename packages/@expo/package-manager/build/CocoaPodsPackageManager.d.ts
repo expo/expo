@@ -1,7 +1,7 @@
 import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import { Ora } from 'ora';
 import { PackageManager } from './PackageManager';
-export declare type CocoaPodsErrorCode = 'NON_INTERACTIVE' | 'NO_CLI' | 'COMMAND_FAILED';
+export type CocoaPodsErrorCode = 'NON_INTERACTIVE' | 'NO_CLI' | 'COMMAND_FAILED';
 export declare class CocoaPodsError extends Error {
     code: CocoaPodsErrorCode;
     cause?: Error | undefined;

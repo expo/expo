@@ -3,7 +3,7 @@ import { CameraPosition, MapCluster, Marker, Point, PointOfInterest, UserLocatio
 /**
  * Type of an argument of MarkerClick listener.
  */
-export declare type MarkerClickEvent = {
+export type MarkerClickEvent = {
     /**
      * Id of the marker that was clicked.
      */
@@ -12,7 +12,7 @@ export declare type MarkerClickEvent = {
 /**
  * Type of an argument of MarkerDragEnded listener.
  */
-export declare type MarkerDragEndedEvent = {
+export type MarkerDragEndedEvent = {
     /**
      * Id of the marker that was dragged.
      */
@@ -29,7 +29,7 @@ export declare type MarkerDragEndedEvent = {
 /**
  * Type of an argument of MarkerDragStarted listener.
  */
-export declare type MarkerDragStartedEvent = {
+export type MarkerDragStartedEvent = {
     /**
      * Id of the marker that was dragged.
      */
@@ -38,7 +38,7 @@ export declare type MarkerDragStartedEvent = {
 /**
  * Represents data returned on click event.
  */
-export declare type OnMapPressEvent = {
+export type OnMapPressEvent = {
     /**
      * Coordinates the place where the user clicked.
      * Represented by {@link Point}
@@ -48,19 +48,19 @@ export declare type OnMapPressEvent = {
 /**
  * Type used for marker related events. eq. onMarkerClick, onMarkerDrag etc. contains marker's ID and position
  */
-export declare type MarkerEvent = {
+export type MarkerEvent = {
     nativeEvent: Marker;
 };
 /**
  * Represents data returned when a cluster press event is called
  */
-export declare type ClusterPressEvent = {
+export type ClusterPressEvent = {
     nativeEvent: MapCluster;
 };
 /**
  * Represents data returned on RegionChangeEvent
  */
-export declare type OnRegionChangeEvent = {
+export type OnRegionChangeEvent = {
     /**
      * Information on cameraPosition.
      * Represented by {@link CameraPosition}
@@ -70,7 +70,7 @@ export declare type OnRegionChangeEvent = {
 /**
  * Represents data returned on PoiClickEvent
  */
-export declare type OnPoiClickEvent = {
+export type OnPoiClickEvent = {
     /**
      * Information on the clicked point of interest.
      * Represented by {@link PointOfInterest}
@@ -80,19 +80,19 @@ export declare type OnPoiClickEvent = {
 /**
  * Event returned when the location button is pressed
  */
-export declare type OnLocationButtonPressEvent = {
+export type OnLocationButtonPressEvent = {
     nativeEvent: UserLocation;
 };
 /**
  * Event returned when the current location dot is pressed
  */
-export declare type OnLocationDotPressEvent = {
+export type OnLocationDotPressEvent = {
     nativeEvent: UserLocation;
 };
 /**
  * Event returned when the user changes their location
  */
-export declare type OnLocationChangeEvent = {
+export type OnLocationChangeEvent = {
     nativeEvent: UserLocation;
 };
 /**

@@ -1,4 +1,4 @@
-export declare type LanguageOptions = {
+export type LanguageOptions = {
     isTS: boolean;
     isModern: boolean;
     isReact: boolean;

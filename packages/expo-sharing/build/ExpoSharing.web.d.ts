@@ -1,4 +1,4 @@
-declare type ShareOptions = {
+type ShareOptions = {
     title?: string;
     text?: string;
     url?: string;
