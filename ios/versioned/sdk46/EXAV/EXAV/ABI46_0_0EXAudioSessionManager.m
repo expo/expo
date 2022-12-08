@@ -168,6 +168,9 @@ ABI46_0_0EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   // compact doesn't work, that's why we need the `|| !pointer` above
   // http://www.openradar.me/15396578
   [_foregroundedModules compact];
+
+  // Any possible failures are silent
+  [self _updateSessionConfiguration];
 }
 
 - (void)moduleDidForeground:(id)module
