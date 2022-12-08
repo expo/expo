@@ -54,13 +54,24 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
 
 Every quarter there is a new Expo SDK release that typically updates to the latest stable version of React Native and includes a variety of bug fixes, features, and improvements to the Expo SDK.
 
-| Expo SDK Version | React Native Version | Minimum Android version | Minimum iOS version | `compileSdkVersion` |
-| ---------------- | -------------------- | ----------------------- | ------------------- | ------------------- |
-| 45.0.0           | 0.68.2               | 5                       | 12                  | 31                  |
-| 44.0.0           | 0.64.3               | 5                       | 12                  | 30                  |
-| 43.0.0           | 0.64.3               | 5                       | 12                  | 30                  |
-| 42.0.0           | 0.63.3               | 5                       | 11                  | 30                  |
+| Expo SDK Version | React Native Version |
+| ---------------- | -------------------- |
+| 45.0.0           | 0.68.2               |
+| 44.0.0           | 0.64.3               |
+| 43.0.0           | 0.64.3               |
+| 42.0.0           | 0.63.3               |
 
 ### Support for other React Native versions
 
 Packages in the Expo SDK are intended to support the target React Native version for that SDK. Typically, they will not support older versions of React Native, but they may. When a new version of React Native is released, the latest versions of the Expo SDK packages are typically updated to support it. However, this may take weeks or more, depending on the extent of the changes in the release.
+
+## Support for Android and iOS versions
+
+Each version of Expo SDK supports a minimum OS version of Android and iOS. For Android, the `compileSdkVersion` is defined which tells the [Gradle](https://developer.android.com/studio/build) which Android SDK version to use to compile the app. This also means that you can use the Android API features included in that SDK version and from the previous versions.
+
+| Expo SDK version | Android version | `compileSdkVersion` | iOS version |
+| ---------------- | --------------- | ------------------- | ----------- |
+| 45.0.0           | 5+              | 31                  | 12+         |
+| 44.0.0           | 5+              | 30                  | 12+         |
+| 43.0.0           | 5+              | 30                  | 12+         |
+| 42.0.0           | 5+              | 30                  | 11+         |
