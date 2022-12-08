@@ -95,7 +95,7 @@ Object {
       "endLine": 4,
       "line": 4,
       "message": "Prefer using nullish coalescing operator (\`??\`) instead of a logical or (\`||\`), as it is a safer operator.",
-      "messageId": "preferNullish",
+      "messageId": "preferNullishOverOr",
       "nodeType": "Punctuator",
       "ruleId": "@typescript-eslint/prefer-nullish-coalescing",
       "severity": 1,
