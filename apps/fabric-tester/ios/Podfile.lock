@@ -18,6 +18,12 @@ PODS:
     - ExpoModulesCore
   - ExpoBlur (12.0.1):
     - ExpoModulesCore
+  - ExpoImage (0.2.3):
+    - ExpoModulesCore
+    - SDWebImage (~> 5.14.2)
+    - SDWebImageAVIFCoder (~> 0.9.3)
+    - SDWebImageSVGCoder (~> 1.6.1)
+    - SDWebImageWebPCoder (~> 0.9.1)
   - ExpoKeepAwake (11.0.1):
     - ExpoModulesCore
   - ExpoLinearGradient (12.0.1):
@@ -41,7 +47,25 @@ PODS:
   - fmt (6.2.1)
   - glog (0.3.5)
   - hermes-engine (0.70.5)
+  - libaom (2.0.2):
+    - libvmaf
+  - libavif (0.10.1):
+    - libavif/libaom (= 0.10.1)
+  - libavif/core (0.10.1)
+  - libavif/libaom (0.10.1):
+    - libaom (>= 2.0.0)
+    - libavif/core
   - libevent (2.1.12)
+  - libvmaf (2.2.0)
+  - libwebp (1.2.4):
+    - libwebp/demux (= 1.2.4)
+    - libwebp/mux (= 1.2.4)
+    - libwebp/webp (= 1.2.4)
+  - libwebp/demux (1.2.4):
+    - libwebp/webp
+  - libwebp/mux (1.2.4):
+    - libwebp/demux
+  - libwebp/webp (1.2.4)
   - RCT-Folly (2021.07.22.00):
     - boost
     - DoubleConversion
@@ -663,6 +687,17 @@ PODS:
     - React-jsi (= 0.70.5)
     - React-logger (= 0.70.5)
     - React-perflogger (= 0.70.5)
+  - SDWebImage (5.14.2):
+    - SDWebImage/Core (= 5.14.2)
+  - SDWebImage/Core (5.14.2)
+  - SDWebImageAVIFCoder (0.9.3):
+    - libavif (>= 0.9.1)
+    - SDWebImage (~> 5.10)
+  - SDWebImageSVGCoder (1.6.1):
+    - SDWebImage/Core (~> 5.6)
+  - SDWebImageWebPCoder (0.9.1):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.13)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -676,6 +711,7 @@ DEPENDENCIES:
   - EXFont (from `../../../packages/expo-font/ios`)
   - Expo (from `../../../packages/expo`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
+  - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
@@ -724,7 +760,15 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - fmt
+    - libaom
+    - libavif
     - libevent
+    - libvmaf
+    - libwebp
+    - SDWebImage
+    - SDWebImageAVIFCoder
+    - SDWebImageSVGCoder
+    - SDWebImageWebPCoder
 
 EXTERNAL SOURCES:
   boost:
@@ -747,6 +791,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo"
   ExpoBlur:
     :path: "../../../packages/expo-blur/ios"
+  ExpoImage:
+    :path: "../../../packages/expo-image/ios"
   ExpoKeepAwake:
     :path: "../../../packages/expo-keep-awake/ios"
   ExpoLinearGradient:
@@ -839,6 +885,7 @@ SPEC CHECKSUMS:
   EXFont: 319606bfe48c33b5b5063fb0994afdc496befe80
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
   ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
+  ExpoImage: da2c9a0f17c5b00727619f0f0777c1a0b9da8c07
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
   ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
   ExpoModulesCore: acaecea3545503433c4ce834cec5cccbcf15fc68
@@ -848,7 +895,11 @@ SPEC CHECKSUMS:
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   hermes-engine: 7fe5fc6ef707b7fdcb161b63898ec500e285653d
+  libaom: 9bb51e0f8f9192245e3ca2a1c9e4375d9cbccc52
+  libavif: e242998ccec1c83bcba0bbdc256f460ad5077348
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  libvmaf: 8d61aabc2f4ed3e6591cf7406fa00a223ec11289
+  libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
   RCTRequired: 21229f84411088e5d8538f21212de49e46cc83e2
   RCTTypeSafety: 62eed57a32924b09edaaf170a548d1fc96223086
@@ -880,6 +931,10 @@ SPEC CHECKSUMS:
   React-rncore: e2856a5f65ec840ffe2dfdc14ac84e1ee1a18c25
   React-runtimeexecutor: 7401c4a40f8728fd89df4a56104541b760876117
   ReactCommon: c9246996e73bf75a2c6c3ff15f1e16707cdc2da9
+  SDWebImage: b9a731e1d6307f44ca703b3976d18c24ca561e84
+  SDWebImageAVIFCoder: 6337ea93faf8de93edf3433d75be6055add74552
+  SDWebImageSVGCoder: 6fc109f9c2a82ab44510fff410b88b1a6c271ee8
+  SDWebImageWebPCoder: 18503de6621dd2c420d680e33d46bf8e1d5169b0
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7
 
 PODFILE CHECKSUM: aa6c14a9f707ab53740c5eb14d47ddf491641fb1
