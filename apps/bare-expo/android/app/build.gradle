@@ -305,7 +305,7 @@ dependencies {
     androidTestImplementation(project(":detox"))
 
     // LeakCanary 2 dependency
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
+//    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
 }
 
 if (isNewArchitectureEnabled() || findProperty("buildReactNativeFromSource") == "true") {
