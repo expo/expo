@@ -6,7 +6,7 @@ const DATA: number[] = Array(1000).fill(0);
 const WINDOW_SIZE = Dimensions.get('window');
 const COLUMNS_COUNT = 4;
 const IMAGE_SIZE = Math.ceil(WINDOW_SIZE.width / COLUMNS_COUNT);
-const IMAGE_PIXEL_SIZE = IMAGE_SIZE * WINDOW_SIZE.scale;
+const IMAGE_PIXEL_SIZE = Math.ceil(IMAGE_SIZE * WINDOW_SIZE.scale);
 
 function renderItem({ index }: ListRenderItemInfo<number>) {
   function renderImage(_: any, column: number) {
