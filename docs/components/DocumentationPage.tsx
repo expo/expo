@@ -38,6 +38,7 @@ const STYLES_DOCUMENT = css`
 type Props = React.PropsWithChildren<{
   router: NextRouter;
   title?: string;
+  description?: string;
   sourceCodeUrl?: string;
   tocVisible: boolean;
   packageName?: string;
@@ -189,6 +190,11 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
       ? `${this.props.title} - Expo Documentation`
       : `Expo Documentation`;
 
+    const description =
+      this.props.description !== ''
+        ? `${this.props.description}`
+        : `Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.`;
+
     const pageContent = (
       <>
         {this.props.title && <H1>{this.props.title}</H1>}
@@ -216,6 +222,7 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
         sidebarScrollPosition={sidebarScrollPosition}>
         <Head title={this.props.title}>
           {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
+          <meta name="description" content={description} />
           <meta property="og:title" content={title} />
           <meta property="og:type" content="website" />
           <meta property="og:image" content="https://docs.expo.dev/static/images/og.png" />
@@ -226,18 +233,12 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
           />
           <meta property="og:locale" content="en_US" />
           <meta property="og:site_name" content="Expo Documentation" />
-          <meta
-            property="og:description"
-            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
-          />
+          <meta property="og:description" content={description} />
 
           <meta name="twitter:site" content="@expo" />
           <meta name="twitter:card" content="summary" />
           <meta property="twitter:title" content={title} />
-          <meta
-            name="twitter:description"
-            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
-          />
+          <meta name="twitter:description" content={description} />
           <meta
             property="twitter:image"
             content="https://docs.expo.dev/static/images/twitter.png"
