@@ -304,6 +304,7 @@ class ExpoImageView(
         .downsample(DownsampleStrategy.NONE)
         .addListener(GlideRequestListener(expoImageViewWrapper))
         .encodeQuality(100)
+        .skipMemoryCache(true)
         .apply(propOptions)
         .into(object : DrawableImageViewTarget(this) {
           override fun getSize(cb: SizeReadyCallback) {
