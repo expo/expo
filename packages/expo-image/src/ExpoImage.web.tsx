@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { ImageContentPosition, ImageProps, ImageSource } from './Image.types';
+import { ImageContentPosition, ImageProps, ImageSource, PositionValue } from './Image.types';
 import { resolveContentFit, resolveContentPosition } from './utils';
 
 function resolveAssetSource(source?: ImageSource | string | number | null) {
@@ -14,7 +14,7 @@ function resolveAssetSource(source?: ImageSource | string | number | null) {
   }
 
   return source;
-};
+}
 
 function ensureUnit(value: string | number) {
   const trimmedValue = String(value).trim();
@@ -22,20 +22,23 @@ function ensureUnit(value: string | number) {
     return trimmedValue;
   }
   return `${trimmedValue}px`;
-};
+}
 
 function getObjectPositionFromContentPosition(contentPosition?: ImageContentPosition) {
-  const resolvedPosition =
-    typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition;
+  const resolvedPosition = (
+    typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition
+  ) as { top?: PositionValue; bottom?: PositionValue; left?: PositionValue; right?: PositionValue };
+
   if (!resolvedPosition) {
     return null;
   }
-  if (!('top' in resolvedPosition || 'bottom' in resolvedPosition)) {
-    (resolvedPosition as any).top = '50%';
+  if (resolvedPosition.top == null || resolvedPosition.bottom == null) {
+    resolvedPosition.top = '50%';
   }
-  if (!('left' in resolvedPosition || 'right' in resolvedPosition)) {
-    (contentPosition as any).left = '50%';
+  if (resolvedPosition.left == null || resolvedPosition.right == null) {
+    resolvedPosition.left = '50%';
   }
+
   return ['top', 'bottom', 'left', 'right']
     .map((key) => {
       if (key in resolvedPosition) {
@@ -44,7 +47,7 @@ function getObjectPositionFromContentPosition(contentPosition?: ImageContentPosi
       return '';
     })
     .join(' ');
-};
+}
 
 const ensureIsArray = <T extends any>(source: T | T[] | undefined) => {
   if (Array.isArray(source)) {
