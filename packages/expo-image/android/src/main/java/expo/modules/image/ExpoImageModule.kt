@@ -169,8 +169,8 @@ class ExpoImageModule : Module() {
         view.imageView.priority = priority
       }
 
-      Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy ->
-        view.imageView.cachePolicy = cachePolicy
+      Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy? ->
+        view.imageView.cachePolicy = cachePolicy ?: CachePolicy.DISK
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->
