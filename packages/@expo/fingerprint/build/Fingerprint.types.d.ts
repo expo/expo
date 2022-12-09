@@ -1,5 +1,5 @@
 /// <reference types="node" />
-export declare type FingerprintSource = HashSource & {
+export type FingerprintSource = HashSource & {
     /**
      * Hash value of the `source`.
      * If the source is excluding by `Options.dirExcludes`, the value will be null.
@@ -16,7 +16,7 @@ export interface Fingerprint {
      */
     hash: string;
 }
-export declare type Platform = 'android' | 'ios';
+export type Platform = 'android' | 'ios';
 export interface Options {
     /**
      * Only get native files from the given platforms. Default is `['android', 'ios']`.
@@ -71,7 +71,7 @@ export interface HashSourceContents {
      */
     reasons: string[];
 }
-export declare type HashSource = HashSourceFile | HashSourceDir | HashSourceContents;
+export type HashSource = HashSourceFile | HashSourceDir | HashSourceContents;
 export interface HashResult {
     id: string;
     hex: string;
