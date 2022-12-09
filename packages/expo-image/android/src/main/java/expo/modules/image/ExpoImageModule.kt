@@ -165,8 +165,8 @@ class ExpoImageModule : Module() {
         view.imageView.isFocusable = accessible
       }
 
-      Prop("priority") { view: ExpoImageViewWrapper, priority: Priority ->
-        view.imageView.priority = priority
+      Prop("priority") { view: ExpoImageViewWrapper, priority: Priority? ->
+        view.imageView.priority = priority ?: Priority.NORMAL
       }
 
       Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy? ->
