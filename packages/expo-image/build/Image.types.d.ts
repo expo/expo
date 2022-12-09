@@ -222,6 +222,7 @@ export declare enum ImageCacheType {
 export declare enum ImageCachePolicy {
     NONE = "none",
     DISK = "disk",
+    MEMORY = "memory",
     MEMORY_AND_DISK = "memoryAndDisk"
 }
 export declare enum ImagePriority {

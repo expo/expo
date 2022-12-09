@@ -258,6 +258,7 @@ export enum ImageCacheType {
 export enum ImageCachePolicy {
   NONE = 'none',
   DISK = 'disk',
+  MEMORY = 'memory',
   MEMORY_AND_DISK = 'memoryAndDisk',
 }
 

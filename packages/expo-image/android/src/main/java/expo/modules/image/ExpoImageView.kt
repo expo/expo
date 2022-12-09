@@ -333,10 +333,10 @@ class ExpoImageView(
       .apply {
         priority(this@ExpoImageView.priority.toGlidePriority())
 
-        if (cachePolicy != CachePolicy.MEMORY_AND_DISK) {
+        if (cachePolicy != CachePolicy.MEMORY_AND_DISK && cachePolicy != CachePolicy.MEMORY) {
           skipMemoryCache(true)
         }
-        if (cachePolicy == CachePolicy.NONE) {
+        if (cachePolicy == CachePolicy.NONE || cachePolicy == CachePolicy.MEMORY) {
           diskCacheStrategy(DiskCacheStrategy.NONE)
         }
 

@@ -91,6 +91,7 @@ export var ImageCachePolicy;
 (function (ImageCachePolicy) {
     ImageCachePolicy["NONE"] = "none";
     ImageCachePolicy["DISK"] = "disk";
+    ImageCachePolicy["MEMORY"] = "memory";
     ImageCachePolicy["MEMORY_AND_DISK"] = "memoryAndDisk";
 })(ImageCachePolicy || (ImageCachePolicy = {}));
 export var ImagePriority;
