@@ -89,7 +89,7 @@ export default function ExpoImage({
             transform: transform?.toString(),
             borderColor: borderColor?.toString(),
             objectFit: resolveContentFit(props.contentFit, props.resizeMode),
-            objectPosition: getObjectPositionFromContentPosition(contentPosition),
+            objectPosition: getObjectPositionFromContentPosition(contentPosition) || undefined,
           }}
         />
       </picture>
