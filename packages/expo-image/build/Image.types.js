@@ -87,6 +87,13 @@ export var ImageCacheType;
     ImageCacheType["DISK"] = "disk";
     ImageCacheType["MEMORY"] = "memory";
 })(ImageCacheType || (ImageCacheType = {}));
+export var ImageCachePolicy;
+(function (ImageCachePolicy) {
+    ImageCachePolicy["NONE"] = "none";
+    ImageCachePolicy["DISK"] = "disk";
+    ImageCachePolicy["MEMORY"] = "memory";
+    ImageCachePolicy["MEMORY_AND_DISK"] = "memoryAndDisk";
+})(ImageCachePolicy || (ImageCachePolicy = {}));
 export var ImagePriority;
 (function (ImagePriority) {
     ImagePriority["LOW"] = "low";

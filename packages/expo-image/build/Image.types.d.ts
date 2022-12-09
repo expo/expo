@@ -75,6 +75,12 @@ export type ImageProps = AccessibilityProps & {
      */
     priority?: ImagePriority | null;
     /**
+     * Determines whether to cache the image and where: on the disk, in the memory or both.
+     * > Note: Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
+     * @default ImageCachePolicy.DISK
+     */
+    cachePolicy?: ImageCachePolicy | null;
+    /**
      * Called when the image starts to load.
      */
     onLoadStart?: () => void;
@@ -213,6 +219,12 @@ export declare enum ImageCacheType {
     NONE = "none",
     DISK = "disk",
     MEMORY = "memory"
+}
+export declare enum ImageCachePolicy {
+    NONE = "none",
+    DISK = "disk",
+    MEMORY = "memory",
+    MEMORY_AND_DISK = "memoryAndDisk"
 }
 export declare enum ImagePriority {
     LOW = "low",
