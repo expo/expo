@@ -3,7 +3,7 @@ import React from 'react';
 import { ImageContentPosition, ImageProps, ImageSource } from './Image.types';
 import { resolveContentFit, resolveContentPosition } from './utils';
 
-const resolveAssetSource = (source: ImageSource | string | number | undefined | null) => {
+function resolveAssetSource(source?: ImageSource | string | number | null) {
   if (source == null) return null;
 
   if (typeof source === 'string') {
@@ -16,7 +16,7 @@ const resolveAssetSource = (source: ImageSource | string | number | undefined | 
   return source;
 };
 
-const ensureUnit = (value: string | number) => {
+function ensureUnit(value: string | number) {
   const trimmedValue = String(value).trim();
   if (trimmedValue.endsWith('%')) {
     return trimmedValue;
@@ -24,10 +24,12 @@ const ensureUnit = (value: string | number) => {
   return `${trimmedValue}px`;
 };
 
-const getObjectPositionFromContentPosition = (contentPosition?: ImageContentPosition) => {
+function getObjectPositionFromContentPosition(contentPosition?: ImageContentPosition) {
   const resolvedPosition =
     typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition;
-  if (!resolvedPosition) return undefined;
+  if (!resolvedPosition) {
+    return null;
+  }
   if (!('top' in resolvedPosition || 'bottom' in resolvedPosition)) {
     (resolvedPosition as any).top = '50%';
   }
@@ -45,8 +47,12 @@ const getObjectPositionFromContentPosition = (contentPosition?: ImageContentPosi
 };
 
 const ensureIsArray = <T extends any>(source: T | T[] | undefined) => {
-  if (Array.isArray(source)) return source;
-  if (source === undefined) return [];
+  if (Array.isArray(source)) {
+    return source;
+  }
+  if (source == null) {
+    return [];
+  }
   return [source];
 };
 
