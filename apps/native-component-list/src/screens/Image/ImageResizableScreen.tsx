@@ -37,7 +37,7 @@ const WINDOW_DIMENSIONS = Dimensions.get('window');
 const MAX_WIDTH = WINDOW_DIMENSIONS.width - 2 * PADDING;
 const MAX_HEIGHT = WINDOW_DIMENSIONS.height - 330;
 
-export const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
+const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
   const width = useSharedValue(300);
   const height = useSharedValue(300);
 
