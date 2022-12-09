@@ -1,6 +1,6 @@
 import React from 'react';
 import { resolveContentFit, resolveContentPosition } from './utils';
-const resolveAssetSource = (source) => {
+function resolveAssetSource(source) {
     if (source == null)
         return null;
     if (typeof source === 'string') {
@@ -10,23 +10,24 @@ const resolveAssetSource = (source) => {
         return { uri: String(source) };
     }
     return source;
-};
-const ensureUnit = (value) => {
+}
+function ensureUnit(value) {
     const trimmedValue = String(value).trim();
     if (trimmedValue.endsWith('%')) {
         return trimmedValue;
     }
     return `${trimmedValue}px`;
-};
-const getObjectPositionFromContentPosition = (contentPosition) => {
-    const resolvedPosition = typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition;
-    if (!resolvedPosition)
-        return undefined;
-    if (!('top' in resolvedPosition || 'bottom' in resolvedPosition)) {
+}
+function getObjectPositionFromContentPosition(contentPosition) {
+    const resolvedPosition = (typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition);
+    if (!resolvedPosition) {
+        return null;
+    }
+    if (resolvedPosition.top == null || resolvedPosition.bottom == null) {
         resolvedPosition.top = '50%';
     }
-    if (!('left' in resolvedPosition || 'right' in resolvedPosition)) {
-        contentPosition.left = '50%';
+    if (resolvedPosition.left == null || resolvedPosition.right == null) {
+        resolvedPosition.left = '50%';
     }
     return ['top', 'bottom', 'left', 'right']
         .map((key) => {
@@ -36,12 +37,14 @@ const getObjectPositionFromContentPosition = (contentPosition) => {
         return '';
     })
         .join(' ');
-};
+}
 const ensureIsArray = (source) => {
-    if (Array.isArray(source))
+    if (Array.isArray(source)) {
         return source;
-    if (source === undefined)
+    }
+    if (source == null) {
         return [];
+    }
     return [source];
 };
 export default function ExpoImage({ source, defaultSource, loadingIndicatorSource, contentPosition, onLoad, onLoadStart, onLoadEnd, onError, ...props }) {
@@ -60,7 +63,7 @@ export default function ExpoImage({ source, defaultSource, loadingIndicatorSourc
                     transform: transform?.toString(),
                     borderColor: borderColor?.toString(),
                     objectFit: resolveContentFit(props.contentFit, props.resizeMode),
-                    objectPosition: getObjectPositionFromContentPosition(contentPosition),
+                    objectPosition: getObjectPositionFromContentPosition(contentPosition) || undefined,
                 } }))));
 }
 //# sourceMappingURL=ExpoImage.web.js.map
