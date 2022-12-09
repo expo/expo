@@ -65,11 +65,13 @@ export type ImageProps = AccessibilityProps & {
    * @deprecated Deprecated in favor of the more powerful `contentFit` and `contentPosition` props.
    */
   resizeMode?: ImageResizeMode;
+
   /**
    * Object that describes how the image view should transition the contents on props change.
    * @platform ios
    */
   transition?: ImageTransition | null;
+
   /**
    * Priorities for completing loads. If more than one load is queued at a time,
    * the load with the higher priority will be started first.
@@ -78,23 +80,35 @@ export type ImageProps = AccessibilityProps & {
    * @platform android
    */
   priority?: ImagePriority | null;
+
+  /**
+   * Determines whether to cache the image and where: on the disk, in the memory or both.
+   * > Note: Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
+   * @default ImageCachePolicy.DISK
+   */
+  cachePolicy?: ImageCachePolicy | null;
+
   /**
    * Called when the image starts to load.
    */
   onLoadStart?: () => void;
+
   /**
    * Called when the image load completes successfully.
    */
   onLoad?: (event: ImageLoadEventData) => void;
+
   /**
    * Called when the image is loading. Can be called multiple times before the image has finished loading.
    * The event object provides details on how many bytes were loaded so far and what's the expected total size.
    */
   onProgress?: (event: ImageProgressEventData) => void;
+
   /**
    * Called on an image fetching error.
    */
   onError?: (event: ImageErrorEventData) => void;
+
   /**
    * Called when the image load either succeeds or fails.
    */
@@ -240,6 +254,13 @@ export enum ImageCacheType {
   NONE = 'none',
   DISK = 'disk',
   MEMORY = 'memory',
+}
+
+export enum ImageCachePolicy {
+  NONE = 'none',
+  DISK = 'disk',
+  MEMORY = 'memory',
+  MEMORY_AND_DISK = 'memoryAndDisk',
 }
 
 export enum ImagePriority {

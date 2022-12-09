@@ -1,8 +1,8 @@
 package expo.modules.image.enums
 
-import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 
-enum class Priority(val value: String) : Record {
+enum class Priority(val value: String) : Enumerable {
   LOW("low"),
   NORMAL("normal"),
   HIGH("high");
