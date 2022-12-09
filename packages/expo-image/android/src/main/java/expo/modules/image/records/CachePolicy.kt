@@ -1,8 +1,8 @@
 package expo.modules.image.records
 
-import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.Enumerable
 
-enum class CachePolicy(val value: String) : Record {
+enum class CachePolicy(val value: String) : Enumerable {
   NONE("none"),
   DISK("disk"),
   MEMORY("memory"),

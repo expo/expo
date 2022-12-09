@@ -75,7 +75,8 @@ export declare type ImageProps = AccessibilityProps & {
      */
     priority?: ImagePriority | null;
     /**
-     * Sets internal cache policy. It tells if the asset should be stored in the memory, the disk, or the cache should be disabled.
+     * Determines whether to cache the image and where: on the disk, in the memory or both.
+     * > Note: Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
      * @default ImageCachePolicy.DISK
      */
     cachePolicy?: ImageCachePolicy | null;
