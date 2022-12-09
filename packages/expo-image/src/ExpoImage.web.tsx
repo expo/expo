@@ -1,6 +1,12 @@
 import React from 'react';
 
-import { ImageContentPosition, ImageProps, ImageSource, PositionValue } from './Image.types';
+import {
+  ImageContentPosition,
+  ImageContentPositionObject,
+  ImageProps,
+  ImageSource,
+  PositionValue,
+} from './Image.types';
 import { resolveContentFit, resolveContentPosition } from './utils';
 
 function resolveAssetSource(source?: ImageSource | string | number | null) {
@@ -24,10 +30,12 @@ function ensureUnit(value: string | number) {
   return `${trimmedValue}px`;
 }
 
+type KeysOfUnion<T> = T extends T ? keyof T : never;
+
 function getObjectPositionFromContentPosition(contentPosition?: ImageContentPosition) {
   const resolvedPosition = (
     typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition
-  ) as { top?: PositionValue; bottom?: PositionValue; left?: PositionValue; right?: PositionValue };
+  ) as Record<KeysOfUnion<ImageContentPositionObject>, PositionValue>;
 
   if (!resolvedPosition) {
     return null;
