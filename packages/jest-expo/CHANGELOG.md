@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Renamed `ExponentMediaLibrary` to `ExpoMediaLibrary` ([#20232](https://github.com/expo/expo/pull/20232) by [@alanhughes](https://github.com/alanjhughes))
+- Added [i18n-js](https://github.com/fnando/i18n) to Jest's `transformIgnorePatters`. ([#20424](https://github.com/expo/expo/pull/20424) by [@fnando](https://github.com/fnando))
 
 ## 47.0.1 — 2022-10-30
 
