@@ -134,8 +134,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   [self _reset];
   if (_localManifest) {
     [self _beginRequestWithLocalManifest];
+// ENG-7047: no home updates or remote manifests in release builds
+#if DEBUG
   } else if (_manifestUrl) {
     [self _beginRequestWithRemoteManifest];
+#endif
   } else {
     [self _finishWithError:RCTErrorWithMessage(@"Can't load app with no remote url nor local manifest.")];
   }
@@ -147,8 +150,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   _shouldUseCacheOnly = YES;
   if (_localManifest) {
     [self _beginRequestWithLocalManifest];
+// ENG-7047: no home updates or remote manifests in release builds
+#if DEBUG
   } else if (_manifestUrl) {
     [self _beginRequestWithRemoteManifest];
+#endif
   } else {
     [self _finishWithError:RCTErrorWithMessage(@"Can't load app with no remote url nor local manifest.")];
   }
@@ -186,6 +192,8 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   [self _fetchCachedManifest];
 }
 
+// ENG-7047: no home updates or remote manifests in release builds
+#if DEBUG
 - (void)_beginRequestWithRemoteManifest
 {
   // if we're in dev mode, don't try loading cached manifest
@@ -197,6 +205,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     [self _fetchCachedManifest];
   }
 }
+#endif
 
 - (void)_fetchCachedManifest
 {
@@ -212,6 +221,9 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   BOOL shouldCheckForUpdate = YES;
   NSTimeInterval fallbackToCacheTimeout = kEXAppLoaderDefaultTimeout;
+
+// ENG-7047: no home updates or remote manifests in release builds
+#if DEBUG
 
   // in case check for dev mode failed before, check again
   if (manifest.isUsingDeveloperTool) {
@@ -259,6 +271,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
       ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled)) {
     shouldCheckForUpdate = NO;
   }
+
+// ENG-7047: no home updates or remote manifests in release builds
+#else
+  shouldCheckForUpdate = NO;
+#endif // DEBUG
 
   if (shouldCheckForUpdate) {
     [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeout:fallbackToCacheTimeout]];
