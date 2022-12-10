@@ -35,7 +35,7 @@ class ExpoImage extends React.PureComponent {
         const { source, style, defaultSource, loadingIndicatorSource, ...props } = this.props;
         const resolvedSource = Image.resolveAssetSource(source ?? {});
         const resolvedStyle = StyleSheet.flatten([style]);
-        const resolvedPlaceholder = Image.resolveAssetSource(defaultSource ?? loadingIndicatorSource ?? {});
+        const resolvedPlaceholder = Image.resolveAssetSource(props.placeholder ?? defaultSource ?? loadingIndicatorSource ?? {});
         const contentFit = resolveContentFit(props.contentFit, props.resizeMode);
         const contentPosition = resolveContentPosition(props.contentPosition);
         // If both are specified, we default to use default source
@@ -104,7 +104,7 @@ class ExpoImage extends React.PureComponent {
         const borderTopColor = processColor(resolvedStyle.borderTopColor);
         // @ts-ignore
         const borderBottomColor = processColor(resolvedStyle.borderBottomColor);
-        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: Array.isArray(resolvedSource) ? resolvedSource : [resolvedSource], style: resolvedStyle, defaultSource: resolvedPlaceholder, contentFit: contentFit, contentPosition: contentPosition, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, 
+        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, source: Array.isArray(resolvedSource) ? resolvedSource : [resolvedSource], style: resolvedStyle, placeholder: resolvedPlaceholder, contentFit: contentFit, contentPosition: contentPosition, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, 
             // @ts-ignore
             tintColor: tintColor, borderColor: borderColor, borderLeftColor: borderLeftColor, borderRightColor: borderRightColor, borderTopColor: borderTopColor, borderBottomColor: borderBottomColor, borderStartColor: borderStartColor, borderEndColor: borderEndColor, backgroundColor: backgroundColor }));
     }

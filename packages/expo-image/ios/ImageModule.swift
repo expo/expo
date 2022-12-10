@@ -24,13 +24,12 @@ public final class ImageModule: Module {
         "onLoad"
       )
 
-      Prop("source") { (view, sourceSet: Either<ImageSource, [ImageSource]>) in
-        if let source: ImageSource = sourceSet.get() {
-          view.sources = [source]
-        }
-        if let sources: [ImageSource] = sourceSet.get() {
-          view.sources = sources
-        }
+      Prop("source") { (view, sources: [ImageSource]?) in
+        view.sources = sources
+      }
+
+      Prop("placeholder") { (view, placeholders: [ImageSource]?) in
+        view.placeholderSources = placeholders ?? []
       }
 
       Prop("contentFit") { (view, contentFit: ContentFit?) in

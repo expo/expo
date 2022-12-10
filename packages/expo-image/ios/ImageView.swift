@@ -12,11 +12,9 @@ public final class ImageView: ExpoView {
 
   var sources: [ImageSource]?
 
-  var contentFit: ContentFit = .cover {
-    didSet {
-      sdImageView.contentMode = contentFit.toContentMode()
-    }
-  }
+  var pendingOperation: SDWebImageCombinedOperation?
+
+  var contentFit: ContentFit = .cover
 
   var contentPosition: ContentPosition = .center
 
@@ -65,28 +63,29 @@ public final class ImageView: ExpoView {
   public override func didMoveToWindow() {
     if window == nil {
       // Cancel pending requests when the view is unmounted.
-      imageManager.cancelAll()
+      cancelPendingOperation()
     } else if !bounds.isEmpty {
       // Reload the image after mounting the view with non-empty bounds.
       reload()
+    } else {
+      loadPlaceholderIfNecessary()
     }
   }
 
   // MARK: - Implementation
 
   func reload() {
+    if isViewEmpty {
+      displayPlaceholderIfNecessary()
+    }
     guard let source = bestSource else {
-      renderImage(nil)
+      displayPlaceholderIfNecessary()
       return
     }
     var context = SDWebImageContext()
 
     // Cancel currently running load requests.
-    // Each ImageView instance has its own image manager,
-    // so it doesn't affect other views.
-    if imageManager.isRunning {
-      imageManager.cancelAll()
-    }
+    cancelPendingOperation()
 
     // Modify URL request to add headers.
     if let headers = source.headers {
@@ -102,7 +101,7 @@ public final class ImageView: ExpoView {
 
     onLoadStart([:])
 
-    imageManager.loadImage(
+    pendingOperation = imageManager.loadImage(
       with: source.uri,
       options: loadingOptions,
       context: context,
@@ -159,8 +158,74 @@ public final class ImageView: ExpoView {
       applyContentPosition(contentSize: idealSize, containerSize: frame.size)
       renderImage(image)
     } else {
-      renderImage(nil)
+      displayPlaceholderIfNecessary()
     }
+  }
+
+  // MARK: - Placeholder
+
+  /**
+   A list of sources that the placeholder can be loaded from.
+   */
+  var placeholderSources: [ImageSource] = [] {
+    didSet {
+      loadPlaceholderIfNecessary()
+    }
+  }
+
+  /**
+   A placeholder image to use when the proper image is unset.
+   */
+  var placeholderImage: UIImage?
+
+  /**
+   Same as `bestSource`, but for placeholders.
+   */
+  var bestPlaceholder: ImageSource? {
+    return getBestSource(from: placeholderSources, forSize: bounds.size, scale: screenScale) ?? placeholderSources.first
+  }
+
+  /**
+   Loads a placeholder from the best source provided in `placeholder` prop.
+   A placeholder should be a local asset to has more time to show before the proper image is loaded,
+   but remote assets are also supported – for the bundler and to cache them on the disk to load faster next time.
+   - Note: Placeholders are not being resized nor transformed, so try to keep them small.
+   */
+  func loadPlaceholderIfNecessary() {
+    // Exit early if placeholder is not set or there is already an image attached to the view.
+    // The placeholder is only used until the first image is loaded.
+    guard let placeholder = bestPlaceholder, isViewEmpty || !hasAnySource else {
+      return
+    }
+    var context = SDWebImageContext()
+
+    context[.imageScaleFactor] = placeholder.scale
+
+    // Cache placeholders on the disk. Should we let the user choose whether
+    // to cache them or apply the same policy as with the proper image?
+    // Basically they are also cached in memory as the `placeholderImage` property,
+    // so just `disk` policy sounds like a good idea.
+    context[.queryCacheType] = SDImageCacheType.disk.rawValue
+    context[.storeCacheType] = SDImageCacheType.disk.rawValue
+
+    imageManager.loadImage(with: placeholder.uri, context: context, progress: nil) { [weak self] placeholder, _, _, _, finished, _ in
+      guard let self = self, let placeholder = placeholder, finished else {
+        return
+      }
+      self.placeholderImage = placeholder
+      self.displayPlaceholderIfNecessary()
+    }
+  }
+
+  /**
+   Displays a placeholder if necessary – the placeholder can only be displayed when no image has been displayed yet or the sources are unset.
+   */
+  private func displayPlaceholderIfNecessary() {
+    guard isViewEmpty || !hasAnySource, let placeholder = placeholderImage else {
+      return
+    }
+    // The placeholder should always use `scale-down` content fitting (which maps to `UIView.ContentMode.center`).
+    setImage(placeholder, contentFit: .scaleDown)
   }
 
   // MARK: - Processing
@@ -197,43 +262,54 @@ public final class ImageView: ExpoView {
   private func renderImage(_ image: UIImage?) {
     if let transition = transition, transition.duration > 0 {
       let options = transition.toAnimationOptions()
-      UIView.transition(with: sdImageView, duration: transition.duration, options: options) { [weak sdImageView] in
-        sdImageView?.image = image
+      UIView.transition(with: sdImageView, duration: transition.duration, options: options) { [weak self] in
+        if let self = self {
+          self.setImage(image, contentFit: self.contentFit)
+        }
       }
     } else {
-      sdImageView.image = image
+      setImage(image, contentFit: contentFit)
     }
+  }
+
+  private func setImage(_ image: UIImage?, contentFit: ContentFit) {
+    sdImageView.contentMode = contentFit.toContentMode()
+    sdImageView.image = image
   }
 
   // MARK: - Helpers
 
+  func cancelPendingOperation() {
+    pendingOperation?.cancel()
+    pendingOperation = nil
+  }
+
   /**
-   The image source that fits best into the view bounds, that is the one with the closest number of pixels.
-   May be `nil` if there are no sources available or the view bounds size is zero.
+   A scale of the screen where the view is presented,
+   or the main scale if the view is not mounted yet.
+   */
+  var screenScale: Double {
+    return window?.screen.scale as? Double ?? UIScreen.main.scale
+  }
+
+  /**
+   The image source that fits best into the view bounds.
    */
   var bestSource: ImageSource? {
-    guard let sources = sources, !sources.isEmpty else {
-      return nil
-    }
-    if bounds.isEmpty, window == nil {
-      return nil
-    }
-    if sources.count == 1 {
-      return sources.first
-    }
-    let scale = window?.screen.scale ?? UIScreen.main.scale
-    var bestSource: ImageSource?
-    var bestFit = Double.infinity
-    let targetPixelCount = bounds.width * bounds.height * scale * scale
+    return getBestSource(from: sources, forSize: bounds.size, scale: screenScale)
+  }
 
-    for source in sources {
-      let fit = abs(1 - (source.pixelCount / targetPixelCount))
+  /**
+   A bool value whether the image view doesn't render any image.
+   */
+  var isViewEmpty: Bool {
+    return sdImageView.image == nil
+  }
 
-      if fit < bestFit {
-        bestSource = source
-        bestFit = fit
-      }
-    }
-    return bestSource
+  /**
+   A bool value whether there is any source to load from.
+   */
+  var hasAnySource: Bool {
+    return sources?.isEmpty == false
   }
 }
