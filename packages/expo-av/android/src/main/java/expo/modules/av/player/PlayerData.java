@@ -204,7 +204,7 @@ public abstract class PlayerData implements AudioEventHandler {
       && status.getString(STATUS_ANDROID_IMPLEMENTATION_KEY_PATH).equals(MediaPlayerData.IMPLEMENTATION_NAME)) {
       return new MediaPlayerData(avModule, context, uri, requestHeaders);
     } else {
-      return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension, requestHeaders);
+      return new SimpleExoPlayerData(avModule, context, uri, uriOverridingExtension, requestHeaders, source.toBundle());
     }
   }
 

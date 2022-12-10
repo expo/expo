@@ -209,7 +209,8 @@ class Video extends React.Component {
         return this.props.usePoster && this.state.showPoster ? (React.createElement(PosterComponent, { style: [_STYLES.poster, this.props.posterStyle], source: this.props.posterSource })) : null;
     };
     render() {
-        const source = getNativeSourceFromSource(this.props.source) || undefined;
+        // When the source is null the video will be unloaded
+        const source = getNativeSourceFromSource(this.props.source);
         let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
         if (this.props.resizeMode) {
             const resizeMode = this.props.resizeMode;

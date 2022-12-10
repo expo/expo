@@ -46,6 +46,8 @@ import expo.modules.av.AVManagerInterface;
 import expo.modules.av.AudioFocusNotAcquiredException;
 import expo.modules.av.player.datasource.DataSourceFactoryProvider;
 
+import com.google.android.exoplayer2.DefaultLoadControl;
+
 class SimpleExoPlayerData extends PlayerData
   implements Player.Listener, MediaSourceEventListener {
 
@@ -62,10 +64,43 @@ class SimpleExoPlayerData extends PlayerData
   private boolean mIsLoading = true;
   private final Context mReactContext;
 
-  SimpleExoPlayerData(final AVManagerInterface avModule, final Context context, final Uri uri, final String overridingExtension, final Map<String, Object> requestHeaders) {
+  private final String STATUS_MIN_BUFFER_KEY_PATH = "minBufferMs";
+  private final String STATUS_MAX_BUFFER_KEY_PATH = "maxBufferMs";
+  private final String STATUS_BUFFER_FOR_PLAYBACK_KEY_PATH = "bufferForPlaybackMs";
+  private final String STATUS_BUFFER_FOR_PLAYBACK_AFTER_AFTER_REBUFFER_KEY_PATH = "bufferForPlaybackAfterRebufferMs";
+
+  private int mMinBufferMs = 15000;
+  private int mMaxBufferMs = 50000;
+  private int mBufferForPlaybackMs = 2500;
+  private int mBufferForPlaybackAfterRebufferMs = 5000;
+
+  SimpleExoPlayerData(
+    final AVManagerInterface avModule, 
+    final Context context,
+    final Uri uri, 
+    final String overridingExtension,
+    final Map<String, Object> requestHeaders,
+    final Bundle source
+    ) {
     super(avModule, uri, requestHeaders);
     mReactContext = context;
     mOverridingExtension = overridingExtension;
+
+  
+    // Buffer Related Config
+    if (source.containsKey(STATUS_MAX_BUFFER_KEY_PATH)) {
+      mMaxBufferMs = (int) source.getDouble(STATUS_MAX_BUFFER_KEY_PATH);
+    }
+    if (source.containsKey(STATUS_MIN_BUFFER_KEY_PATH)) {
+      mMinBufferMs = (int) source.getDouble(STATUS_MIN_BUFFER_KEY_PATH);
+    }
+    if (source.containsKey(STATUS_BUFFER_FOR_PLAYBACK_KEY_PATH)) {
+      mBufferForPlaybackMs = (int) source.getDouble(STATUS_BUFFER_FOR_PLAYBACK_KEY_PATH);
+    }
+    if (source.containsKey(STATUS_BUFFER_FOR_PLAYBACK_AFTER_AFTER_REBUFFER_KEY_PATH)) {
+      mBufferForPlaybackAfterRebufferMs = (int) source.getDouble(
+          STATUS_BUFFER_FOR_PLAYBACK_AFTER_AFTER_REBUFFER_KEY_PATH);
+    }
   }
 
   @Override
@@ -85,8 +120,15 @@ class SimpleExoPlayerData extends PlayerData
     final BandwidthMeter bandwidthMeter = new DefaultBandwidthMeter.Builder(context).build();
     final TrackSelector trackSelector = new DefaultTrackSelector(context, new AdaptiveTrackSelection.Factory());
 
+    DefaultLoadControl loadControl = new DefaultLoadControl.Builder().setBufferDurationsMs(
+            mMinBufferMs,
+            mMaxBufferMs,
+            mBufferForPlaybackMs,
+            mBufferForPlaybackAfterRebufferMs).build();
+
     // Create the player
     mSimpleExoPlayer = new SimpleExoPlayer.Builder(context)
+        .setLoadControl(loadControl)
         .setTrackSelector(trackSelector)
         .setBandwidthMeter(bandwidthMeter)
         .build();

@@ -488,19 +488,28 @@ static NSString *const EXAVFullScreenViewControllerClassName = @"AVFullScreenVie
 
 - (void)setSource:(NSDictionary *)source
 {
-  if (![source isEqualToDictionary:_lastSetSource]) {
-    EX_WEAKIFY(self);
-    // ? Why dispatch to _exAV.methodQueue rather than remain on the main thread?
-    // ? Can lead to race conditions with Imperative API being sent on the main thread.
-    // ? I've made Imperative API dispatch to _exAV.methodQueue since I do not know
-    // ? the reason for it, but ultimately I believe Prop setters should run on the main thread
-    // ? rather than move Imperative API methods to _exAV.methodQueue.
-    dispatch_async(_exAV.methodQueue, ^{
-      EX_ENSURE_STRONGIFY(self);
-      self.lastSetSource = source;
-      [self setSource:source withStatus:nil resolver:nil rejecter:nil];
-    });
-  }
+    // `null` from JS is sent as NSNull, not nil.
+    if ([source isEqual:[NSNull null]]) {
+        source = nil;
+    }
+    BOOL shouldUpdateSource = NO;
+    // Handle the fact that we can declaratiley unload the video now.
+    if ((source == nil || _lastSetSource == nil) && source != _lastSetSource) {
+        shouldUpdateSource = YES;
+    }
+    
+    if (source != nil && _lastSetSource != nil && ![source isEqualToDictionary:_lastSetSource]) {
+        shouldUpdateSource = YES;
+    }
+    
+    if (shouldUpdateSource) {
+        EX_WEAKIFY(self);
+        dispatch_async(_exAV.methodQueue, ^{
+          EX_ENSURE_STRONGIFY(self);
+          self.lastSetSource = source;
+          [self setSource:source withStatus:nil resolver:nil rejecter:nil];
+        });
+    }
 }
 
 - (NSDictionary *)source

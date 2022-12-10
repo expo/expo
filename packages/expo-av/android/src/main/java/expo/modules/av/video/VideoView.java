@@ -327,6 +327,12 @@ public class VideoView extends FrameLayout implements AudioEventHandler, Fullscr
   }
 
   public void setSource(final ReadableArguments source) {
+    // Allow unloading via props
+    if (source == null) {
+      mLastSource = null;
+      setSource(null, null, null);
+    }
+
     if (mLastSource == null || !equalBundles(mLastSource.toBundle(), source.toBundle())) {
       mLastSource = source;
       setSource(source, null, null);
