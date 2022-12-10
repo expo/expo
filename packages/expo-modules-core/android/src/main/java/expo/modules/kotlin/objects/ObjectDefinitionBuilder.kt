@@ -138,7 +138,7 @@ open class ObjectDefinitionBuilder {
       syncFunctions[name] = it
     }
   }
-  
+
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4> Function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4) -> R
@@ -147,7 +147,7 @@ open class ObjectDefinitionBuilder {
       syncFunctions[name] = it
     }
   }
-  
+
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5> Function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5) -> R
@@ -165,7 +165,7 @@ open class ObjectDefinitionBuilder {
       syncFunctions[name] = it
     }
   }
-  
+
   inline fun <reified R, reified P0, reified P1, reified P2, reified P3, reified P4, reified P5, reified P6, reified P7> Function(
     name: String,
     crossinline body: (p0: P0, p1: P1, p2: P2, p3: P3, p4: P4, p5: P5, p6: P6, p7: P7) -> R
@@ -174,7 +174,7 @@ open class ObjectDefinitionBuilder {
       syncFunctions[name] = it
     }
   }
-  
+
   @JvmName("AsyncFunctionWithoutArgs")
   inline fun AsyncFunction(
     name: String,
