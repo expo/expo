@@ -122,6 +122,35 @@ func resize(image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
   }
 }
 
+/**
+ The image source that fits best into the given size, that is the one with the closest number of pixels.
+ May be `nil` if there are no sources available or the size is zero.
+ */
+func getBestSource(from sources: [ImageSource]?, forSize size: CGSize, scale: Double = 1.0) -> ImageSource? {
+  guard let sources = sources, !sources.isEmpty else {
+    return nil
+  }
+  if size.width <= 0 || size.height <= 0 {
+    return nil
+  }
+  if sources.count == 1 {
+    return sources.first
+  }
+  var bestSource: ImageSource?
+  var bestFit = Double.infinity
+  let targetPixelCount = size.width * size.height * scale * scale
+
+  for source in sources {
+    let fit = abs(1 - (source.pixelCount / targetPixelCount))
+
+    if fit < bestFit {
+      bestSource = source
+      bestFit = fit
+    }
+  }
+  return bestSource
+}
+
 extension CGSize {
   /**
    Multiplies a size with a scalar.

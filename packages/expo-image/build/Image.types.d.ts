@@ -35,6 +35,10 @@ export type ImageProps = AccessibilityProps & {
     source?: ImageSource | RequireSource | (ImageSource | RequireSource)[];
     /**
      * A static image to display while loading the image source.
+     */
+    placeholder?: ImageSource | ImageSource[] | number;
+    /**
+     * A static image to display while loading the image source.
      * @platform android
      */
     defaultSource?: ImageSource | null;

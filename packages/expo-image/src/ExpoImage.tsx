@@ -57,7 +57,7 @@ class ExpoImage extends React.PureComponent<ImageProps> {
     const resolvedSource = Image.resolveAssetSource((source as ImageSource | number) ?? {});
     const resolvedStyle = StyleSheet.flatten([style]);
     const resolvedPlaceholder = Image.resolveAssetSource(
-      defaultSource ?? loadingIndicatorSource ?? {}
+      props.placeholder ?? defaultSource ?? loadingIndicatorSource ?? {}
     );
     const contentFit = resolveContentFit(props.contentFit, props.resizeMode);
     const contentPosition = resolveContentPosition(props.contentPosition);
@@ -144,7 +144,7 @@ class ExpoImage extends React.PureComponent<ImageProps> {
         {...resolvedStyle}
         source={Array.isArray(resolvedSource) ? resolvedSource : [resolvedSource]}
         style={resolvedStyle}
-        defaultSource={resolvedPlaceholder}
+        placeholder={resolvedPlaceholder}
         contentFit={contentFit}
         contentPosition={contentPosition}
         onLoadStart={this.onLoadStart}
