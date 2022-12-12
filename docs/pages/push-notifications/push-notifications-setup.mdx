@@ -186,11 +186,11 @@ After sending the notification from the tool, you should see the notification on
 
 ## Get Credentials for development builds
 
-For Android and iOS, there are different requirements to setup your credentials.
+For Android and iOS, there are different requirements to set up your credentials.
 
 ### Android
 
-For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get your own credentials and setup your Expo project. It is required for all Android apps using Expo SDK (unless you are running your project in Expo Go).
+For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get your credentials and set up your Expo project. It is required for all Android apps using Expo SDK (unless you are testing your project in Expo Go).
 
 > **warning** FCM is not currently available for `expo-notifications` on iOS.
 
@@ -230,7 +230,7 @@ For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get you
     }
    ```
 
-6. Firebase also creates an API key in the Google Cloud Platform Credentials console with a name like **Android key (auto created by Firebase)**. This is could be a different key than found in **google-services.json**.
+6. Firebase also creates an API key in the Google Cloud Platform Credentials console with a name like **Android key (auto-created by Firebase)**. This is could be a different key than found in **google-services.json**.
 
 7. To be sure that both the `current_key` and the **Android key** in the Credentials console are the same, go to the [Google Cloud API Credentials console](https://console.cloud.google.com/apis/credentials) and click on **Show key** to verify their value. It will be marked as **unrestricted**.
 
