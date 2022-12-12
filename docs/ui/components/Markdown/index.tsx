@@ -22,8 +22,6 @@ type ComponentProps = PropsWithChildren<{
   style?: React.CSSProperties;
 }>;
 
-const paragraphMarginBottom = '1.5ch';
-
 const markdownStyles: Record<string, Config | null> = {
   h1: {
     Component: createPermalinkedComponent(H1, { baseNestingLevel: 1 }),
@@ -63,18 +61,18 @@ const markdownStyles: Record<string, Config | null> = {
   },
   p: {
     Component: P,
-    style: { marginBottom: paragraphMarginBottom },
+    style: { marginBottom: '1.5ch' },
   },
   strong: {
     Component: BOLD,
   },
   ul: {
     Component: UL,
-    style: { paddingBottom: paragraphMarginBottom, paddingLeft: `1ch` },
+    style: { paddingBottom: '0.5ch', paddingLeft: `1ch` },
   },
   ol: {
     Component: OL,
-    style: { paddingBottom: paragraphMarginBottom, paddingLeft: `1ch` },
+    style: { paddingBottom: '0.5ch', paddingLeft: `1ch` },
   },
   li: {
     Component: LI,
