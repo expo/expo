@@ -6,7 +6,7 @@ import { createPermalinkedComponent } from '~/common/create-permalinked-componen
 import { Code as PrismCodeBlock } from '~/components/base/code';
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { H1, H2, H3, H4, H5, A, CODE, P, BOLD, UL, OL, LI } from '~/ui/components/Text';
+import { H1, H2, H3, H4, H5, A, CODE, P, BOLD, UL, OL, LI, KBD } from '~/ui/components/Text';
 
 type Config = ConfigStyles & {
   Component: ComponentType<React.PropsWithChildren<ComponentProps>> | string;
@@ -115,6 +115,9 @@ const markdownStyles: Record<string, Config | null> = {
   },
   td: {
     Component: Cell,
+  },
+  kbd: {
+    Component: KBD,
   },
 };
 

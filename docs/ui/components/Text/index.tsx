@@ -69,6 +69,10 @@ const listStyle = css({
   marginLeft: '1.5rem',
 });
 
+const codeStyle = css({
+  borderRadius: borderRadius.small,
+});
+
 export const kbdStyle = css({
   fontFamily: typography.fontFaces.medium,
   color: theme.text.secondary,
@@ -90,7 +94,10 @@ export const H4 = createTextComponent(TextElement.H4, css(typography.headers.def
 export const H5 = createTextComponent(TextElement.H5, css(typography.headers.default.h5));
 export const H6 = createTextComponent(TextElement.H6, css(typography.headers.default.h6));
 export const P = createTextComponent(TextElement.P, css(typography.body.paragraph));
-export const CODE = createTextComponent(TextElement.CODE, css(typography.utility.inlineCode));
+export const CODE = createTextComponent(
+  TextElement.CODE,
+  css([typography.utility.inlineCode, codeStyle])
+);
 export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
 export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));
 export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
