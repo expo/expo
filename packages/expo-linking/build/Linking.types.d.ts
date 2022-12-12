@@ -1,6 +1,6 @@
-import { ParsedQs } from 'qs';
-export declare type QueryParams = ParsedQs;
-export declare type ParsedURL = {
+import type { ParsedQs } from 'qs';
+export type QueryParams = ParsedQs;
+export type ParsedURL = {
     scheme: string | null;
     hostname: string | null;
     /**
@@ -12,7 +12,7 @@ export declare type ParsedURL = {
      */
     queryParams: QueryParams | null;
 };
-export declare type CreateURLOptions = {
+export type CreateURLOptions = {
     /**
      * URI protocol `<scheme>://` that must be built into your native app.
      */
@@ -26,13 +26,13 @@ export declare type CreateURLOptions = {
      */
     isTripleSlashed?: boolean;
 };
-export declare type EventType = {
+export type EventType = {
     url: string;
     nativeEvent?: MessageEvent;
 };
-export declare type URLListener = (event: EventType) => void;
-export declare type NativeURLListener = (nativeEvent: MessageEvent) => void;
-export declare type SendIntentExtras = {
+export type URLListener = (event: EventType) => void;
+export type NativeURLListener = (nativeEvent: MessageEvent) => void;
+export type SendIntentExtras = {
     key: string;
     value: string | number | boolean;
 };

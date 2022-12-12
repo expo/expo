@@ -1,7 +1,7 @@
 import { SpawnOptions } from '@expo/spawn-async';
 import { Logger, PackageManager } from './PackageManager';
 import { PnpmPackageManager } from './PnpmPackageManager';
-export declare type NodePackageManager = 'yarn' | 'npm' | 'pnpm';
+export type NodePackageManager = 'yarn' | 'npm' | 'pnpm';
 /**
  * Disable various postinstall scripts
  * - https://github.com/opencollective/opencollective-postinstall/pull/9
@@ -55,7 +55,7 @@ export declare class YarnPackageManager implements PackageManager {
     cleanAsync(): Promise<void>;
     private _runAsync;
 }
-export declare type CreateForProjectOptions = Partial<Record<NodePackageManager, boolean>> & {
+export type CreateForProjectOptions = Partial<Record<NodePackageManager, boolean>> & {
     log?: Logger;
     silent?: boolean;
 };

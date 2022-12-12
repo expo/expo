@@ -3,15 +3,18 @@ import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import URL from 'url-parse';
 
-import { PackagerAsset } from './AssetRegistry';
 import AssetSourceResolver from './AssetSourceResolver';
-import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';
+import { manifestBaseUrl, getManifest, getManifest2 } from './PlatformUtils';
 
 // @docsMissing
-export type AssetMetadata = Pick<
-  PackagerAsset,
-  'httpServerLocation' | 'name' | 'hash' | 'type' | 'scales' | 'width' | 'height'
-> & {
+export type AssetMetadata = {
+  hash: string;
+  name: string;
+  type: string;
+  width?: number;
+  height?: number;
+  scales: number[];
+  httpServerLocation: string;
   uri?: string;
   fileHashes?: string[];
   fileUris?: string[];

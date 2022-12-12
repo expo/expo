@@ -4,62 +4,46 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = void 0;
-
 function _spawnAsync() {
   const data = _interopRequireDefault(require("@expo/spawn-async"));
-
   _spawnAsync = function () {
     return data;
   };
-
   return data;
 }
-
 function _open() {
   const data = _interopRequireDefault(require("open"));
-
   _open = function () {
     return data;
   };
-
   return data;
 }
-
 function _path() {
   const data = _interopRequireDefault(require("path"));
-
   _path = function () {
     return data;
   };
-
   return data;
 }
-
 function _LaunchBrowser() {
   const data = require("./LaunchBrowser.types");
-
   _LaunchBrowser = function () {
     return data;
   };
-
   return data;
 }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 const IS_WSL = require('is-wsl') && !require('is-docker')();
+
 /**
  * Browser implementation for Windows and WSL
  *
  * To minimize the difference between Windows and WSL, the implementation wraps all spawn calls through powershell.
  */
-
 class LaunchBrowserImplWindows {
   constructor() {
     _defineProperty(this, "_appId", void 0);
-
     _defineProperty(this, "MAP", {
       [_LaunchBrowser().LaunchBrowserTypes.CHROME]: {
         appId: 'chrome',
@@ -71,10 +55,8 @@ class LaunchBrowserImplWindows {
       }
     });
   }
-
   async isSupportedBrowser(browserType) {
     let result = false;
-
     try {
       const {
         status
@@ -85,13 +67,10 @@ class LaunchBrowserImplWindows {
     } catch {
       result = false;
     }
-
     return result;
   }
-
   async createTempBrowserDir(baseDirName) {
     let tmpDir;
-
     if (IS_WSL) {
       // On WSL, the browser is actually launched in host, the `temp-dir` returns the linux /tmp path where host browsers cannot reach into.
       // We should get the temp path through the `$TEMP` windows environment variable.
@@ -102,7 +81,6 @@ class LaunchBrowserImplWindows {
       return _path().default.join(tmpDir, baseDirName);
     }
   }
-
   async launchAsync(browserType, args) {
     const appId = this.MAP[browserType].appId;
     await _open().default.openApp(appId, {
@@ -111,7 +89,6 @@ class LaunchBrowserImplWindows {
     this._appId = appId;
     return this;
   }
-
   async close() {
     if (this._appId != null) {
       try {
@@ -123,12 +100,9 @@ class LaunchBrowserImplWindows {
           stdio: 'ignore'
         });
       } catch {}
-
       this._appId = undefined;
     }
   }
-
 }
-
 exports.default = LaunchBrowserImplWindows;
 //# sourceMappingURL=LaunchBrowserImplWindows.js.map

@@ -1,1 +1,1 @@
-export * from '@react-native/assets/registry';
+export * from 'react-native/Libraries/Image/AssetRegistry';

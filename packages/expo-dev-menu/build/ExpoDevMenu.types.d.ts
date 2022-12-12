@@ -1,8 +1,8 @@
-export declare type ExpoDevMenuItem = {
+export type ExpoDevMenuItem = {
     name: string;
     callback: () => void;
 };
-export declare type ExpoDevMenu = {
+export type ExpoDevMenu = {
     openMenu(): any;
     addDevMenuCallbacks(names: string[]): any;
 };

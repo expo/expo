@@ -1,4 +1,4 @@
-export declare type LocalAuthenticationResult = {
+export type LocalAuthenticationResult = {
     success: true;
 } | {
     success: false;
@@ -34,7 +34,7 @@ export declare enum SecurityLevel {
      */
     BIOMETRIC = 2
 }
-export declare type LocalAuthenticationOptions = {
+export type LocalAuthenticationOptions = {
     /**
      * A message that is shown alongside the TouchID or FaceID prompt.
      */

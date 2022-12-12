@@ -1,5 +1,5 @@
 declare const _default: Readonly<{
-    name: string;
+    name: "DevLoadingView";
     startObserving(): void;
     stopObserving(): void;
     addListener(): void;

@@ -1,11 +1,11 @@
 import { Video } from 'expo-av';
 import { BlurView } from 'expo-blur';
 import { Camera, CameraType } from 'expo-camera';
+import { Image, ImageContentFit } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useRef, useState } from 'react';
 import {
   Button,
-  Image,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -31,6 +31,7 @@ export default class App extends React.PureComponent {
             isFabricEnabled: {isFabricEnabled + ''}
           </Text>
 
+          <ImageExample />
           <LinearGradientExample />
           {Platform.OS === 'ios' && <BlurExample />}
           <VideoExample />
@@ -39,6 +40,20 @@ export default class App extends React.PureComponent {
       </SafeAreaView>
     );
   }
+}
+
+export function ImageExample() {
+  const [seed] = useState(100 + Math.round(Math.random() * 100));
+
+  return (
+    <View style={styles.exampleContainer}>
+      <Image
+        style={styles.image}
+        contentFit={ImageContentFit.COVER}
+        source={{ uri: `https://picsum.photos/id/${seed}/1000/1000` }}
+      />
+    </View>
+  );
 }
 
 export function LinearGradientExample() {
@@ -186,6 +201,10 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     borderStyle: 'solid',
     borderColor: '#242c39',
+  },
+  image: {
+    flex: 1,
+    height: 200,
   },
   gradient: {
     height: 200,

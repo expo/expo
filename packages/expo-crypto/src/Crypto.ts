@@ -1,5 +1,5 @@
 import { toByteArray } from 'base64-js';
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError, UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
 
 import { CryptoDigestAlgorithm, CryptoEncoding, CryptoDigestOptions, Digest } from './Crypto.types';
 import ExpoCrypto from './ExpoCrypto';
@@ -141,4 +141,24 @@ export async function digestStringAsync(
   assertEncoding(options.encoding);
 
   return await ExpoCrypto.digestStringAsync(algorithm, data, options);
+}
+
+/**
+ * The `getRandomValues()` method of `Crypto` fills a provided `TypedArray` with cryptographically secure random values.
+ *
+ * @param typedArray An integer based [`TypedArray`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray) to fill with cryptographically secure random values. It modifies the input array in place.
+ * @return The input array filled with cryptographically secure random values.
+ *
+ * @example
+ * ```ts
+ * const byteArray = new Uint8Array(16);
+ * Crypto.getRandomValues(byteArray);
+ * console.log('Your lucky bytes: ' + byteArray);
+ * ```
+ */
+export function getRandomValues<T extends IntBasedTypedArray | UintBasedTypedArray>(
+  typedArray: T
+): T {
+  ExpoCrypto.getRandomValues(typedArray);
+  return typedArray;
 }

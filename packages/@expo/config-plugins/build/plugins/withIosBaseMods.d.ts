@@ -13,7 +13,7 @@ declare const defaultProviders: {
     entitlements: import("./createBaseMod").BaseModProviderMethods<JSONObject, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     podfileProperties: import("./createBaseMod").BaseModProviderMethods<Record<string, JSONValue>, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
 };
-declare type IosDefaultProviders = typeof defaultProviders;
+type IosDefaultProviders = typeof defaultProviders;
 export declare function withIosBaseMods(config: ExportedConfig, { providers, ...props }?: ForwardedBaseModOptions & {
     providers?: Partial<IosDefaultProviders>;
 }): ExportedConfig;

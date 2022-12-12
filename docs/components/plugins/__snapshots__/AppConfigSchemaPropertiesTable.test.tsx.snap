@@ -12,7 +12,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       >
         <a
           class="css-ah3byb"
-          href="/#name"
+          href="#name"
         >
           <span
             class="css-s3qkfm"
@@ -130,7 +130,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       >
         <a
           class="css-ah3byb"
-          href="/#androidnavigationbar"
+          href="#androidnavigationbar"
         >
           <span
             class="css-s3qkfm"
@@ -291,7 +291,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             <a
               class="css-ah3byb"
-              href="/#visible"
+              href="#visible"
             >
               <span
                 class="css-s3qkfm"
@@ -417,7 +417,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               >
                 <a
                   class="css-ah3byb"
-                  href="/#always"
+                  href="#always"
                 >
                   <span
                     class="css-s3qkfm"
@@ -502,7 +502,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             <a
               class="css-ah3byb"
-              href="/#backgroundcolor"
+              href="#backgroundcolor"
             >
               <span
                 class="css-s3qkfm"
@@ -600,7 +600,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       >
         <a
           class="css-ah3byb"
-          href="/#intentfilters"
+          href="#intentfilters"
         >
           <span
             class="css-s3qkfm"
@@ -754,7 +754,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             <a
               class="css-ah3byb"
-              href="/#autoverify"
+              href="#autoverify"
             >
               <span
                 class="css-s3qkfm"
@@ -837,7 +837,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           >
             <a
               class="css-ah3byb"
-              href="/#data"
+              href="#data"
             >
               <span
                 class="css-s3qkfm"
@@ -913,7 +913,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               >
                 <a
                   class="css-ah3byb"
-                  href="/#host"
+                  href="#host"
                 >
                   <span
                     class="css-s3qkfm"

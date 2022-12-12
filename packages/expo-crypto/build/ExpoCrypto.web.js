@@ -1,5 +1,6 @@
 import { CodedError } from 'expo-modules-core';
 import { CryptoEncoding } from './Crypto.types';
+const getCrypto = () => window.crypto ?? window.msCrypto;
 export default {
     get name() {
         return 'ExpoCrypto';
@@ -21,13 +22,14 @@ export default {
     },
     getRandomBytes(length) {
         const array = new Uint8Array(length);
-        // @ts-ignore
-        return (window.crypto ?? window.msCrypto).getRandomValues(array);
+        return getCrypto().getRandomValues(array);
     },
     async getRandomBytesAsync(length) {
         const array = new Uint8Array(length);
-        // @ts-ignore
-        return (window.crypto ?? window.msCrypto).getRandomValues(array);
+        return getCrypto().getRandomValues(array);
+    },
+    getRandomValues(typedArray) {
+        return getCrypto().getRandomValues(typedArray);
     },
 };
 function hexString(buffer) {

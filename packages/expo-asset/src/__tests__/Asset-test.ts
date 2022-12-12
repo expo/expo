@@ -1,5 +1,3 @@
-const { Platform } = require('expo-modules-core');
-
 jest.mock('expo-file-system', () => {
   const FileSystem = jest.requireActual('expo-file-system');
   return {
@@ -12,9 +10,11 @@ jest.mock('expo-file-system', () => {
   };
 });
 
-jest.mock('@react-native/assets/registry', () => ({
-  getAssetByID: jest.fn(),
-}));
+jest.mock('react-native/Libraries/Image/AssetRegistry', () => {
+  return {
+    getAssetByID: jest.fn(),
+  };
+});
 
 jest.mock('react-native/Libraries/Image/resolveAssetSource', () => {
   return {
@@ -27,7 +27,7 @@ jest.mock('../ImageAssets', () => {
   const ImageAssets = jest.requireActual('../ImageAssets');
   return {
     ...ImageAssets,
-    getImageInfoAsync: jest.fn(async () => ({ width: 1, height: 1 })),
+    getImageInfoAsync: jest.fn(),
   };
 });
 
@@ -44,17 +44,15 @@ afterEach(() => {
   jest.resetModules();
 });
 
-if (Platform.OS !== 'web') {
-  describe(`source resolution with React Native`, () => {
-    it(`automatically registers a source resolver`, () => {
-      require('../index');
-      const {
-        setCustomSourceTransformer,
-      } = require('react-native/Libraries/Image/resolveAssetSource');
-      expect(setCustomSourceTransformer).toHaveBeenCalledTimes(1);
-    });
+describe(`source resolution with React Native`, () => {
+  it(`automatically registers a source resolver`, () => {
+    require('../index');
+    const {
+      setCustomSourceTransformer,
+    } = require('react-native/Libraries/Image/resolveAssetSource');
+    expect(setCustomSourceTransformer).toHaveBeenCalledTimes(1);
   });
-}
+});
 
 it(`creates assets from metadata`, () => {
   const { Asset } = require('../index');
@@ -103,22 +101,20 @@ it(`interns assets by URI`, () => {
   expect(asset1).toBe(asset2);
 });
 
-if (Platform.OS !== 'web') {
-  it(`creates assets from virtual modules`, () => {
-    const { Asset } = require('../index');
+it(`creates assets from virtual modules`, () => {
+  const { Asset } = require('../index');
 
-    const { getAssetByID } = require('@react-native/assets/registry');
-    getAssetByID.mockReturnValueOnce(mockImageMetadata);
+  const { getAssetByID } = require('react-native/Libraries/Image/AssetRegistry');
+  getAssetByID.mockReturnValueOnce(mockImageMetadata);
 
-    const asset = Asset.fromModule(1);
-    expect(asset.hash).toBe('cafecafecafecafecafecafecafecafe');
-  });
-}
+  const asset = Asset.fromModule(1);
+  expect(asset.hash).toBe('cafecafecafecafecafecafecafecafe');
+});
 
 it(`throws when creating an asset from a missing module`, () => {
   const { Asset } = require('../index');
 
-  const { getAssetByID } = require('@react-native/assets/registry');
+  const { getAssetByID } = require('react-native/Libraries/Image/AssetRegistry');
   getAssetByID.mockReturnValueOnce(undefined);
 
   expect(() => Asset.fromModule(2)).toThrowError();
@@ -138,10 +134,7 @@ it(`downloads uncached assets`, async () => {
   expect(asset.downloading).toBe(false);
   expect(asset.downloaded).toBe(true);
   expect(asset.localUri).toBe(
-    Platform.select({
-      web: 'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe',
-      default: 'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png',
-    })
+    'file:///Caches/Expo.app/ExponentAsset-cafecafecafecafecafecafecafecafe.png'
   );
 });
 
@@ -154,22 +147,7 @@ it(`throws when the file's checksum does not match`, async () => {
 
   FileSystem.getInfoAsync.mockReturnValueOnce({ exists: false });
   FileSystem.downloadAsync.mockReturnValueOnce({ md5: 'deadf00ddeadf00ddeadf00ddeadf00d' });
-  if (Platform.OS === 'web') {
-    expect(await asset.downloadAsync()).toEqual(
-      expect.objectContaining({
-        downloaded: true,
-        downloading: false,
-        hash: 'cafecafecafecafecafecafecafecafe',
-        height: 1,
-        localUri: 'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe',
-        name: undefined,
-        type: 'png',
-        uri: 'https://classic-assets.eascdn.net/~assets/cafecafecafecafecafecafecafecafe',
-      })
-    );
-  } else {
-    await expect(asset.downloadAsync()).rejects.toThrowError('failed MD5 integrity check');
-  }
+  await expect(asset.downloadAsync()).rejects.toThrowError('failed MD5 integrity check');
 });
 
 it(`uses the local filesystem's cache directory for downloads`, async () => {
@@ -186,21 +164,20 @@ it(`uses the local filesystem's cache directory for downloads`, async () => {
   expect(FileSystem.downloadAsync).not.toHaveBeenCalled();
 });
 
-if (Platform.OS !== 'web') {
-  it(`coalesces downloads`, async () => {
-    const FileSystem = require('expo-file-system');
-    const { Asset } = require('../index');
+it(`coalesces downloads`, async () => {
+  const FileSystem = require('expo-file-system');
+  const { Asset } = require('../index');
 
-    const asset = Asset.fromMetadata(mockImageMetadata);
-    FileSystem.getInfoAsync.mockReturnValue({ exists: false });
-    FileSystem.downloadAsync.mockReturnValue({ md5: mockImageMetadata.hash });
+  const asset = Asset.fromMetadata(mockImageMetadata);
+  FileSystem.getInfoAsync.mockReturnValue({ exists: false });
+  FileSystem.downloadAsync.mockReturnValue({ md5: mockImageMetadata.hash });
 
-    await Promise.all([asset.downloadAsync(), asset.downloadAsync()]);
-    expect(FileSystem.getInfoAsync).toHaveBeenCalledTimes(1);
-    expect(FileSystem.downloadAsync).toHaveBeenCalledTimes(1);
-  });
-}
+  await Promise.all([asset.downloadAsync(), asset.downloadAsync()]);
+  expect(FileSystem.getInfoAsync).toHaveBeenCalledTimes(1);
+  expect(FileSystem.downloadAsync).toHaveBeenCalledTimes(1);
+});
 
+const { Platform } = require('expo-modules-core');
 if (Platform.OS === 'web') {
   describe('web', () => {
     it(`fetches images to determine the dimensions`, async () => {
@@ -252,11 +229,6 @@ describe('embedding', () => {
       type: 'png',
       fileHashes: ['test1'],
     });
-    expect(asset.localUri).toBe(
-      Platform.select({
-        web: null,
-        default: 'file:///Expo.app/asset_test1.png',
-      })
-    );
+    expect(asset.localUri).toBe('file:///Expo.app/asset_test1.png');
   });
 });

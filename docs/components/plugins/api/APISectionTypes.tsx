@@ -22,7 +22,7 @@ import {
   getCommentOrSignatureComment,
   getTagData,
   renderParams,
-  renderTableHeadRow,
+  ParamsTableHeadRow,
   renderDefaultValue,
   renderIndexSignature,
   STYLES_APIBOX,
@@ -57,7 +57,7 @@ const renderTypeDeclarationTable = ({
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
     <CommentTextBlock comment={comment} />
     <Table>
-      {renderTableHeadRow()}
+      <ParamsTableHeadRow />
       <tbody>
         {children?.map(renderTypePropertyRow)}
         {indexSignature?.parameters && indexSignature.parameters.map(renderTypePropertyRow)}

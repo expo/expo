@@ -3,7 +3,7 @@ import DeviceSensor from './DeviceSensor';
 /**
  * The altitude data returned from the native sensors.
  */
-export declare type BarometerMeasurement = {
+export type BarometerMeasurement = {
     /**
      * Measurement in hectopascals (`hPa`).
      */

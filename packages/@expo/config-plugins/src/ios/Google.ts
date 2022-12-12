@@ -39,15 +39,10 @@ function readGoogleServicesInfoPlist(
   return plist.parse(contents);
 }
 
-export function getGoogleSignInReservedClientId(
+export function getGoogleSignInReversedClientId(
   config: Pick<ExpoConfig, 'ios'>,
   modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>
 ): string | null {
-  const reservedClientId = config.ios?.config?.googleSignIn?.reservedClientId ?? null;
-  if (reservedClientId) {
-    return reservedClientId;
-  }
-
   const googleServicesFileRelativePath = getGoogleServicesFile(config);
   if (googleServicesFileRelativePath === null) {
     return null;
@@ -62,18 +57,18 @@ export function getGoogleServicesFile(config: Pick<ExpoConfig, 'ios'>) {
   return config.ios?.googleServicesFile ?? null;
 }
 
-export function setGoogleSignInReservedClientId(
+export function setGoogleSignInReversedClientId(
   config: Pick<ExpoConfig, 'ios'>,
   infoPlist: InfoPlist,
   modRequest: Pick<ModProps<InfoPlist>, 'projectRoot'>
 ): InfoPlist {
-  const reservedClientId = getGoogleSignInReservedClientId(config, modRequest);
+  const reversedClientId = getGoogleSignInReversedClientId(config, modRequest);
 
-  if (reservedClientId === null) {
+  if (reversedClientId === null) {
     return infoPlist;
   }
 
-  return appendScheme(reservedClientId, infoPlist);
+  return appendScheme(reversedClientId, infoPlist);
 }
 
 export function setGoogleConfig(
@@ -81,7 +76,7 @@ export function setGoogleConfig(
   infoPlist: InfoPlist,
   modRequest: ModProps<InfoPlist>
 ): InfoPlist {
-  infoPlist = setGoogleSignInReservedClientId(config, infoPlist, modRequest);
+  infoPlist = setGoogleSignInReversedClientId(config, infoPlist, modRequest);
   return infoPlist;
 }
 

@@ -1,6 +1,25 @@
-import { PackagerAsset } from '@react-native/assets/registry';
-import { Platform } from 'expo-modules-core';
-import { PixelRatio } from 'react-native';
+import { Platform, UnavailabilityError } from 'expo-modules-core';
+import invariant from 'invariant';
+import { Dimensions } from 'react-native';
+
+type PackagerAsset = {
+  __packager_asset: boolean;
+  fileSystemLocation: string;
+  httpServerLocation: string;
+  width?: number;
+  height?: number;
+  scales: number[];
+  hash: string;
+  name: string;
+  type: string;
+};
+
+function getBasePath({ httpServerLocation }: PackagerAsset): string {
+  if (httpServerLocation[0] === '/') {
+    return httpServerLocation.substr(1);
+  }
+  return httpServerLocation;
+}
 
 export type ResolvedAssetSource = {
   __packager_asset: boolean;
@@ -10,18 +29,20 @@ export type ResolvedAssetSource = {
   scale: number;
 };
 
-// Returns the Metro dev server-specific asset location.
+function getScale(): number {
+  return Dimensions.get('window').scale;
+}
+
 function getScaledAssetPath(asset): string {
-  const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
+  const scale = AssetSourceResolver.pickScale(asset.scales, getScale());
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
-  const type = !asset.type ? '' : `.${asset.type}`;
-  return asset.httpServerLocation + '/' + asset.name + scaleSuffix + type;
+  const assetDir = getBasePath(asset);
+  return assetDir + '/' + asset.name + scaleSuffix + (asset.type ? `.${asset.type}` : '');
 }
 
 export default class AssetSourceResolver {
-  serverUrl: string;
+  serverUrl?: string | null;
   // where the jsbundle is being run from
-  // NOTE(EvanBacon): Never defined on web.
   jsbundleUrl?: string | null;
   // the asset to resolve
   asset: PackagerAsset;
@@ -31,46 +52,54 @@ export default class AssetSourceResolver {
     jsbundleUrl: string | undefined | null,
     asset: PackagerAsset
   ) {
-    if (!serverUrl) {
-      throw new Error('Web assets require a server URL');
-    }
-
     this.serverUrl = serverUrl;
-    this.jsbundleUrl = null;
+    this.jsbundleUrl = jsbundleUrl;
     this.asset = asset;
   }
-
-  // Always true for web runtimes
   isLoadedFromServer(): boolean {
-    return true;
+    return !!this.serverUrl;
   }
-
-  // Always false for web runtimes
   isLoadedFromFileSystem(): boolean {
-    return false;
+    return !!(this.jsbundleUrl && this.jsbundleUrl.startsWith('file://'));
   }
-
   defaultAsset(): ResolvedAssetSource {
-    return this.assetServerURL();
-  }
+    if (this.isLoadedFromServer()) {
+      return this.assetServerURL();
+    }
 
-  /**
-   * @returns absolute remote URL for the hosted asset.
-   */
+    return this.scaledAssetURLNearBundle();
+  }
   assetServerURL(): ResolvedAssetSource {
-    const fromUrl = new URL(getScaledAssetPath(this.asset), this.serverUrl);
-    fromUrl.searchParams.set('platform', Platform.OS);
-    fromUrl.searchParams.set('hash', this.asset.hash);
-    return this.fromSource(fromUrl.toString());
+    invariant(!!this.serverUrl, 'need server to load from');
+    return this.fromSource(
+      this.serverUrl +
+        getScaledAssetPath(this.asset) +
+        '?platform=' +
+        Platform.OS +
+        '&hash=' +
+        this.asset.hash
+    );
   }
-
+  scaledAssetPath(): ResolvedAssetSource {
+    return this.fromSource(getScaledAssetPath(this.asset));
+  }
+  scaledAssetURLNearBundle(): ResolvedAssetSource {
+    const path = this.jsbundleUrl || '';
+    return this.fromSource(path + getScaledAssetPath(this.asset));
+  }
+  resourceIdentifierWithoutScale(): ResolvedAssetSource {
+    throw new UnavailabilityError('react-native', 'resourceIdentifierWithoutScale()');
+  }
+  drawableFolderInBundle(): ResolvedAssetSource {
+    throw new UnavailabilityError('react-native', 'drawableFolderInBundle()');
+  }
   fromSource(source: string): ResolvedAssetSource {
     return {
       __packager_asset: true,
-      width: this.asset.width ?? undefined,
-      height: this.asset.height ?? undefined,
+      width: this.asset.width,
+      height: this.asset.height,
       uri: source,
-      scale: AssetSourceResolver.pickScale(this.asset.scales, PixelRatio.get()),
+      scale: AssetSourceResolver.pickScale(this.asset.scales, getScale()),
     };
   }
 

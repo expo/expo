@@ -1,5 +1,5 @@
 /// <reference types="react" />
-export declare type RootStackParamList = {
+export type RootStackParamList = {
     ['Story Files']: undefined;
     ['Selected Stories']: {
         title: string;
@@ -10,7 +10,7 @@ export declare type RootStackParamList = {
         selectedStoryIds: string[];
     };
 };
-export declare type StoryConfig = {
+export type StoryConfig = {
     storyConfig: {
         id: string;
         name: string;
@@ -20,12 +20,12 @@ export declare type StoryConfig = {
         title: string;
     };
 };
-export declare type File = {
+export type File = {
     id: string;
     title: string;
     storyIds: string[];
 };
-export declare type Story = {
+export type Story = {
     id: string;
     name: string;
     file: {
@@ -34,5 +34,5 @@ export declare type Story = {
     };
     component: React.FunctionComponent;
 };
-export declare type StoriesExport = Record<string, StoryConfig>;
+export type StoriesExport = Record<string, StoryConfig>;
 //# sourceMappingURL=types.d.ts.map

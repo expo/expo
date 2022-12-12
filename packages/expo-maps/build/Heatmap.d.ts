@@ -4,13 +4,13 @@ import { PointWithData } from './Common.types';
 /**
  * Props of Heatmap component of Expo Maps library.
  */
-export declare type HeatmapProps = {
+export type HeatmapProps = {
     points: PointWithData[];
 } & HeatmapOptions;
 /**
  * Configuration options for the heatmap.
  */
-export declare type HeatmapOptions = {
+export type HeatmapOptions = {
     /**
      * The radius of Gaussian blur applied to the points in pixels (optional).
      * @default 20
@@ -35,7 +35,7 @@ export declare type HeatmapOptions = {
  *
  * See {@link ClusterProps} for more detail.
  */
-export declare type HeatmapObject = {
+export type HeatmapObject = {
     type: 'heatmap';
     points: PointWithData[];
     radius?: number;

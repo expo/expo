@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config-types';
-export declare type SplashScreenConfig = {
+export type SplashScreenConfig = {
     xxxhdpi: string | null;
     xxhdpi: string | null;
     xhdpi: string | null;

@@ -8,6 +8,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
@@ -185,7 +186,7 @@ In addition to the required config fields above, you can also provide these **op
 
 #### Add the Config Plugin
 
-Add `expo.plugins` to your project's `app.json` (or `app.config.js`) file:
+Add `expo.plugins` to your project's **app.json** (or **app.config.js**) file:
 
 ```json app.json
 {
@@ -212,36 +213,63 @@ With `expo-updates`, release builds of both iOS and Android apps will create and
 
 - Your `release` will automatically be set to Sentry's expected value- `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android).
 - Your `dist` will automatically be set to Sentry's expected value: `${buildNumber}` (iOS) or `${versionCode}` (Android).
-- The configuration for build time sourcemaps comes from the `ios/sentry.properties` and `android/sentry.properties` files. For more information, refer to [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). Manual configuration is only required for bare projects, the [sentry-expo config plugin handles it otherwise](#add-the-config-plugin).
-- Configuration for `expo publish` and `npx expo export` for projects is done via `app.json`, whether using bare workflow or not.
+- The configuration for build time sourcemaps comes from the **android/sentry.properties** and **ios/sentry.properties** files. For more information, see [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). Manual configuration is only required for bare projects, the [sentry-expo config plugin handles it otherwise](#add-the-config-plugin).
+- Configuration for `expo publish` and `npx expo export` for projects is done via **app.json**, whether using bare workflow or not.
 
 Skipping or misconfiguring either of these can lead to invalid sourcemaps, and you won't see human-readable stacktraces in your errors.
 
-### Self-hosting updates
+### Uploading sourcemaps for updates
 
-If you're self-hosting your updates (this means you run `npx expo export` instead of `expo publish`), you need to:
+> This requires SDK 47, with `sentry-expo@6.0.0` or above and `expo-updates@0.15.5` or above.
 
-- replace `hooks.postPublish` in your **app.json** file with `hooks.postExport` (everything else stays the same)
-- add the `RewriteFrames` integration to your `Sentry.init` call like so:
+If you're using EAS Update, or if you're self-hosting your updates (this means you run `npx expo export` manually), you need to take the following steps to upload the sourcemaps for your update to Sentry:
+
+- Run `eas update`. This will generate a **dist** folder in your project root, which contains your JavaScript bundles and sourcemaps. This command will also output the 'Android update ID' and 'iOS update ID' that we'll need in the next step.
+- Copy or rename the bundle names in the **dist/bundles** folder to match **index.android.bundle** (Android) or **main.jsbundle** (iOS).
+- Next, you can use the Sentry CLI to upload your bundles and sourcemaps:
+  - `release name` should be set to `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android), so for example `com.domain.myapp@1.0.0+1`.
+  - `dist` should be set to the Update ID that `eas update` generated.
+
+<Tabs>
+<Tab label="Android">
+<Terminal cmd={[
+  "$ node_modules/@sentry/cli/bin/sentry-cli releases \\",
+  "    files <release name> \\",
+  "    upload-sourcemaps \\",
+  "    --dist <Android Update ID> \\",
+  "    --rewrite \\",
+  "    dist/bundles/index.android.bundle dist/bundles/android-<hash>.map",
+]} />
+</Tab>
+<Tab label="iOS">
+<Terminal cmd={[
+  "$ node_modules/@sentry/cli/bin/sentry-cli releases \\",
+  "    files <release name> \\",
+  "    upload-sourcemaps \\",
+  "    --dist <iOS Update ID> \\",
+  "    --rewrite \\",
+  "    dist/bundles/main.jsbundle dist/bundles/ios-<hash>.map",
+]} />
+</Tab>
+</Tabs>
+
+For more information, see Sentry's [instructions for uploading the bundle and sourcemaps](https://docs.sentry.io/platforms/react-native/sourcemaps/#3-upload-the-bundle-and-source-maps).
+
+The steps above define a new 'dist' on Sentry, under the same release as your full app build, and associate the sourcemaps with this new dist. If you want to customize this behavior, you can pass in your own values for `release` and `dist` when you initialize Sentry in your code. For example:
 
 ```js
+import * as Sentry from 'sentry-expo';
+import * as Updates from 'expo-updates';
+
 Sentry.init({
-  dsn: SENTRY_DSN,
-  enableInExpoDevelopment: true,
-  integrations: [
-    new RewriteFrames({
-      iteratee: frame => {
-        if (frame.filename) {
-          // the values depend on what names you give the bundle files you are uploading to Sentry
-          frame.filename =
-            Platform.OS === 'android' ? 'app:///index.android.bundle' : 'app:///main.jsbundle';
-        }
-        return frame;
-      },
-    }),
-  ],
+  dsn: 'YOUR DSN',
+  release: 'my release name',
+  dist: 'my dist'
 });
 ```
+
+These values should match the values you pass to the `sentry-cli` when uploading your sourcemaps.
+
 
 ### Testing Sentry
 

@@ -42,7 +42,7 @@
   "expo-firebase-core": "~6.0.0",
   "expo-firebase-recaptcha": "~2.3.1",
   "expo-font": "~11.0.1",
-  "expo-gl": "~12.0.0",
+  "expo-gl": "~12.1.0",
   "expo-google-app-auth": "~8.3.0",
   "expo-haptics": "~12.0.1",
   "expo-image-loader": "~4.0.0",
@@ -100,10 +100,10 @@
   "react-native-svg": "13.4.0",
   "react-native-view-shot": "3.4.0",
   "react-native-webview": "11.23.1",
-  "sentry-expo": "~5.0.0",
+  "sentry-expo": "~6.0.0",
   "unimodules-app-loader": "~4.0.0",
   "unimodules-image-loader-interface": "~6.1.0",
   "@shopify/react-native-skia": "0.1.157",
   "@shopify/flash-list": "1.3.1",
-  "@sentry/react-native": "4.2.2"
+  "@sentry/react-native": "4.9.0"
 }

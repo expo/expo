@@ -328,11 +328,14 @@ If "update 2" turned out to be a bad update, we can re-publish "update 1" with a
 
 <Terminal
   cmd={[
-    '# eas update --branch [branch-name] --republish --group [update-group-id]',
+    '# eas update:republish --group [update-group-id]',
+    '',
+    '# eas update:republish --branch [branch-name]',
     '',
     '',
     '# Example',
-    '$ eas update --branch production --republish --group abc1',
+    '$ eas update:republish --group abc1',
+    '$ eas update:republish --branch production'
   ]}
 />
 
