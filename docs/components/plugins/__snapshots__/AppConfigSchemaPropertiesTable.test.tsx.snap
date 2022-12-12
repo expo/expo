@@ -11,7 +11,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#name"
         >
           <span
@@ -70,8 +70,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
       <br />
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         Name of your app.
       </p>
@@ -112,8 +111,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1gk6nru-Collapsible"
         >
           <p
-            class="css-6jxvia-P"
-            data-text="true"
+            class="css-1a1x0ox-TextComponent"
           >
             Edit the 'Display Name' field in Xcode
           </p>
@@ -129,7 +127,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#androidnavigationbar"
         >
           <span
@@ -188,8 +186,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
       <br />
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         Configuration for the bottom navigation bar on Android.
       </p>
@@ -230,8 +227,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1gk6nru-Collapsible"
         >
           <p
-            class="css-6jxvia-P"
-            data-text="true"
+            class="css-1a1x0ox-TextComponent"
           >
             Set this property using AppConstants.java.
           </p>
@@ -274,8 +270,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1gk6nru-Collapsible"
         >
           <p
-            class="css-6jxvia-P"
-            data-text="true"
+            class="css-1a1x0ox-TextComponent"
           >
             Set this property using just Xcode
           </p>
@@ -290,7 +285,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             data-heading="true"
           >
             <a
-              class="css-ah3byb"
+              class="css-1y48vg3"
               href="#visible"
             >
               <span
@@ -358,8 +353,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </p>
           <br />
           <p
-            class="css-6jxvia-P"
-            data-text="true"
+            class="css-1a1x0ox-TextComponent"
           >
             Determines how and when the navigation bar is shown.
           </p>
@@ -400,8 +394,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-1gk6nru-Collapsible"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 Set this property using Xcode.
               </p>
@@ -416,7 +409,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 data-heading="true"
               >
                 <a
-                  class="css-ah3byb"
+                  class="css-1y48vg3"
                   href="#always"
                 >
                   <span
@@ -484,8 +477,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </p>
               <br />
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 Test sub-sub-property
               </p>
@@ -501,7 +493,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             data-heading="true"
           >
             <a
-              class="css-ah3byb"
+              class="css-1y48vg3"
               href="#backgroundcolor"
             >
               <span
@@ -569,16 +561,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </p>
           <br />
           <p
-            class="css-6jxvia-P"
-            data-text="true"
+            class="css-1a1x0ox-TextComponent"
           >
             Specifies the background color of the navigation bar.
           </p>
           
 
           <p
-            class="css-6jxvia-P"
-            data-text="true"
+            class="css-1a1x0ox-TextComponent"
           >
             6 character long hex color string, eg: 
             <code
@@ -599,7 +589,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#intentfilters"
         >
           <span
@@ -658,8 +648,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </p>
       <br />
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         Configuration for setting an array of custom intent filters in Android manifest.
       </p>
@@ -700,15 +689,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-1gk6nru-Collapsible"
         >
           <p
-            class="css-6jxvia-P"
-            data-text="true"
+            class="css-1a1x0ox-TextComponent"
           >
             This is set in AndroidManifest.xml directly.
           </p>
         </div>
       </details>
       <blockquote
-        class="css-1xjn6jt-Callout"
+        class="css-u8n1yk-Callout"
         data-testid="callout-container"
       >
         <div
@@ -753,7 +741,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             data-heading="true"
           >
             <a
-              class="css-ah3byb"
+              class="css-1y48vg3"
               href="#autoverify"
             >
               <span
@@ -821,8 +809,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </p>
           <br />
           <p
-            class="css-6jxvia-P"
-            data-text="true"
+            class="css-1a1x0ox-TextComponent"
           >
             You may also use an intent filter to set your app as the default handler for links
           </p>
@@ -836,7 +823,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             data-heading="true"
           >
             <a
-              class="css-ah3byb"
+              class="css-1y48vg3"
               href="#data"
             >
               <span
@@ -912,7 +899,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                 data-heading="true"
               >
                 <a
-                  class="css-ah3byb"
+                  class="css-1y48vg3"
                   href="#host"
                 >
                   <span
