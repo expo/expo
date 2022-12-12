@@ -14,6 +14,22 @@ export class Image extends React.Component {
         }
         return await ExpoImageModule.prefetch(url);
     }
+    /**
+     * Asynchronously clears all images stored in memory.
+     * @return A promise resolving to `true` when the operation succeeds.
+     * It may resolve to `false` on Android when the activity is no longer available.
+     */
+    static async clearMemoryCache() {
+        return await ExpoImageModule.clearMemoryCache();
+    }
+    /**
+     * Asynchronously clears all images from the disk cache.
+     * @return A promise resolving to `true` when the operation succeeds.
+     * It may resolve to `false` on Android when the activity is no longer available.
+     */
+    static async clearDiskCache() {
+        return await ExpoImageModule.clearDiskCache();
+    }
     render() {
         const { style, resizeMode: resizeModeProp, ...restProps } = this.props;
         const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten([style]) || {};
