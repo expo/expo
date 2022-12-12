@@ -38,6 +38,7 @@
 /packages/expo-font                             @tsapeta
 /packages/expo-gl                               @tsapeta @wkozyra95
 /packages/expo-haptics                          @barthap
+/packages/expo-image                            @lukmccall @tsapeta
 /packages/expo-image-manipulator                @barthap
 /packages/expo-image-picker                     @barthap @lukmccall
 /packages/expo-in-app-purchases                 @ide
