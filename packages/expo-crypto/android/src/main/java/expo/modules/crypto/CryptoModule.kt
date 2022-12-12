@@ -19,7 +19,9 @@ class CryptoModule : Module() {
     Function("getRandomBase64String", this@CryptoModule::getRandomBase64String)
     AsyncFunction("getRandomBase64StringAsync", this@CryptoModule::getRandomBase64String)
     Function("getRandomValues", this@CryptoModule::getRandomValues)
-    Function("randomUUID", this@CryptoModule::randomUUID)
+    Function("randomUUID") {
+      return UUID.randomUUID().toString()
+    }
   }
 
   private fun getRandomBase64String(randomByteCount: Int): String {
@@ -50,9 +52,5 @@ class CryptoModule : Module() {
     val array = ByteArray(typedArray.byteLength)
     secureRandom.nextBytes(array)
     typedArray.write(array, typedArray.byteOffset, typedArray.byteLength)
-  }
-
-  private fun randomUUID(): String {
-    return UUID.randomUUID().toString()
   }
 }
