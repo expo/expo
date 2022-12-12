@@ -1,6 +1,5 @@
 import { css, SerializedStyles } from '@emotion/react';
 import { theme, typography, spacing, borderRadius } from '@expo/styleguide';
-import React from 'react';
 
 import { LinkBase, LinkProps } from './Link';
 import { TextComponentProps, TextElement } from './types';
@@ -38,11 +37,8 @@ const baseTextStyle = css({
 });
 
 const link = css({
-  textDecoration: 'none',
   cursor: 'pointer',
-
-  // transform prevents a 1px shift on hover on Safari
-  transform: 'translate3d(0,0,0)',
+  textDecoration: 'none',
 
   ':hover': {
     transition: durations.hover,
@@ -50,8 +46,41 @@ const link = css({
   },
 });
 
+const linkStyled = css({
+  ...typography.utility.anchor,
+
+  // note(Cedric): transform prevents a 1px shift on hover on Safari
+  transform: 'translate3d(0,0,0)',
+
+  ':hover': {
+    textDecoration: 'underline',
+
+    code: {
+      textDecoration: 'inherit',
+    },
+  },
+
+  'span, code, strong, em, b, i': {
+    color: theme.link.default,
+  },
+});
+
 const listStyle = css({
   marginLeft: '1.5rem',
+});
+
+export const kbdStyle = css({
+  fontFamily: typography.fontFaces.medium,
+  color: theme.text.secondary,
+  padding: `0 ${spacing[1]}px`,
+  boxShadow: `0 0.1rem 0 1px ${theme.border.default}`,
+  borderRadius: borderRadius.small,
+  position: 'relative',
+  display: 'inline-flex',
+  margin: 0,
+  minWidth: 22,
+  justifyContent: 'center',
+  top: -1,
 });
 
 export const H1 = createTextComponent(TextElement.H1, css(typography.headers.default.h1));
@@ -72,30 +101,15 @@ export const DEMI = createTextComponent(TextElement.SPAN, css(typography.utility
 export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
 export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
 export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre));
-
-export const kbdStyle = css({
-  fontFamily: typography.fontFaces.medium,
-  color: theme.text.secondary,
-  padding: `0 ${spacing[1]}px`,
-  boxShadow: `0 0.1rem 0 1px ${theme.border.default}`,
-  borderRadius: borderRadius.small,
-  position: 'relative',
-  display: 'inline-flex',
-  margin: 0,
-  minWidth: 22,
-  justifyContent: 'center',
-  top: -1,
-});
+export const KBD = createTextComponent(TextElement.KBD, css([typography.utility.pre, kbdStyle]));
 
 const isExternalLink = (href?: string) => href?.includes('://');
-
-export const KBD = createTextComponent(TextElement.KBD, css([typography.utility.pre, kbdStyle]));
 
 export const A = (props: LinkProps & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;
   return (
     <LinkBase
-      css={[link, isStyled && css(typography.utility.anchor)]}
+      css={[link, !isStyled && linkStyled]}
       openInNewTab={isExternalLink(props.href)}
       {...rest}
     />
