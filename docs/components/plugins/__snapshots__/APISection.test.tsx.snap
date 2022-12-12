@@ -988,7 +988,7 @@ in here.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -997,7 +997,7 @@ in here.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -1006,7 +1006,7 @@ in here.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
                 class="css-1a1x0ox-TextComponent"
@@ -1461,7 +1461,7 @@ value depending on the state of the credential.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -1470,7 +1470,7 @@ value depending on the state of the credential.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -1484,7 +1484,7 @@ value depending on the state of the credential.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
                 class="css-1a1x0ox-TextComponent"
@@ -1727,7 +1727,7 @@ refresh operation.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -1742,7 +1742,7 @@ refresh operation.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -1756,7 +1756,7 @@ refresh operation.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
                 class="css-1a1x0ox-TextComponent"
@@ -2035,7 +2035,7 @@ sign-in operation.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -2044,7 +2044,7 @@ sign-in operation.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2058,7 +2058,7 @@ sign-in operation.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
                 class="css-1a1x0ox-TextComponent"
@@ -2377,7 +2377,7 @@ sign-out operation.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -2386,7 +2386,7 @@ sign-out operation.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2397,7 +2397,7 @@ sign-out operation.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               -
             </td>
@@ -2718,7 +2718,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2727,7 +2727,7 @@ for more details.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2742,7 +2742,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A short-lived session token used by your app for proof of authorization when interacting with
@@ -2760,7 +2760,7 @@ the app's server counterpart. Unlike
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2769,7 +2769,7 @@ the app's server counterpart. Unlike
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2784,7 +2784,7 @@ the app's server counterpart. Unlike
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The user's email address. Might not be present if you didn't request the 
@@ -2804,7 +2804,7 @@ an Apple domain.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2813,7 +2813,7 @@ an Apple domain.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2833,7 +2833,7 @@ an Apple domain.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The user's name. May be 
@@ -2864,7 +2864,7 @@ your app.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2873,7 +2873,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2888,7 +2888,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A JSON Web Token (JWT) that securely communicates information about the user to your app.
@@ -2899,7 +2899,7 @@ your app.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2908,7 +2908,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2922,7 +2922,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A value that indicates whether the user appears to the system to be a real person.
@@ -2933,7 +2933,7 @@ your app.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2942,7 +2942,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2957,7 +2957,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that your app provided as 
@@ -2989,7 +2989,7 @@ will be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2998,7 +2998,7 @@ will be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3007,7 +3007,7 @@ will be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An identifier associated with the authenticated user. You can use this to check if the user is
@@ -3121,7 +3121,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3130,7 +3130,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3145,7 +3145,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3154,7 +3154,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3163,7 +3163,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3178,7 +3178,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3187,7 +3187,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3196,7 +3196,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3211,7 +3211,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3220,7 +3220,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3229,7 +3229,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3244,7 +3244,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3253,7 +3253,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3262,7 +3262,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3277,7 +3277,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3286,7 +3286,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3295,7 +3295,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3310,7 +3310,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3472,7 +3472,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3487,7 +3487,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3502,7 +3502,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3535,7 +3535,7 @@ requests they will be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3550,7 +3550,7 @@ requests they will be
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3559,7 +3559,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -3582,7 +3582,7 @@ OAuth 2.0 protocol
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3591,7 +3591,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3600,7 +3600,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3762,7 +3762,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3777,7 +3777,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3786,7 +3786,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
@@ -3807,7 +3807,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3822,7 +3822,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3837,7 +3837,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3870,7 +3870,7 @@ requests they will be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3885,7 +3885,7 @@ requests they will be
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3894,7 +3894,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4070,7 +4070,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -4085,7 +4085,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -4094,7 +4094,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4117,7 +4117,7 @@ OAuth 2.0 protocol
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -4126,7 +4126,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -4135,7 +4135,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -4232,7 +4232,7 @@ OAuth 2.0 protocol
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -4241,7 +4241,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -4253,7 +4253,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A method to unsubscribe the listener.
@@ -7050,7 +7050,7 @@ Same as
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -7065,7 +7065,7 @@ Same as
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -7084,7 +7084,7 @@ Same as
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               -
             </td>
@@ -7815,7 +7815,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -7824,7 +7824,7 @@ This can be used to quickly create specific permission hooks in every module.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -7833,7 +7833,7 @@ This can be used to quickly create specific permission hooks in every module.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
                 class="css-1a1x0ox-TextComponent"
@@ -7846,7 +7846,7 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -7861,7 +7861,7 @@ This can be used to quickly create specific permission hooks in every module.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -7870,7 +7870,7 @@ This can be used to quickly create specific permission hooks in every module.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
                 class="css-1a1x0ox-TextComponent"
@@ -8243,7 +8243,7 @@ code.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8252,7 +8252,7 @@ code.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8261,7 +8261,7 @@ code.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Indicates if user can be asked again for specific permission.
@@ -8274,7 +8274,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8283,7 +8283,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8297,7 +8297,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Determines time when the permission expires.
@@ -8308,7 +8308,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8317,7 +8317,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8326,7 +8326,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A convenience boolean that indicates if the permission is granted.
@@ -8337,7 +8337,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8346,7 +8346,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8360,7 +8360,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Determines the status of the permission.
@@ -8506,7 +8506,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8515,7 +8515,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8529,7 +8529,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The origin point of the bounding box.
@@ -8540,7 +8540,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8549,7 +8549,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8563,7 +8563,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The size of the bounding box.
@@ -8679,7 +8679,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8694,7 +8694,7 @@ in order to enable/disable the permission.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8703,7 +8703,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -8800,7 +8800,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8809,7 +8809,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8823,7 +8823,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -8926,7 +8926,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8935,7 +8935,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8944,7 +8944,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The 
@@ -8961,7 +8961,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8970,7 +8970,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8979,7 +8979,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The 
@@ -9086,7 +9086,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-29opv4-Row"
             >
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 <span
                   class="css-7r3rok-TextComponent"
@@ -9095,7 +9095,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 </span>
               </td>
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 <code
                   class="inline css-ov7own-InlineCode"
@@ -9109,7 +9109,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 </code>
               </td>
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 -
               </td>
@@ -9207,7 +9207,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9216,7 +9216,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9230,7 +9230,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The 
@@ -9263,7 +9263,7 @@ For some types, they will represent the area used by the scanner.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9272,7 +9272,7 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9287,7 +9287,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Corner points of the bounding box.
@@ -9318,7 +9318,7 @@ you don't get this value.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9327,7 +9327,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9336,7 +9336,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The information encoded in the bar code.
@@ -9347,7 +9347,7 @@ you don't get this value.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9356,7 +9356,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9365,7 +9365,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The barcode type.
@@ -9464,7 +9464,7 @@ you don't get this value.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9473,7 +9473,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9482,7 +9482,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The height value.
@@ -9493,7 +9493,7 @@ you don't get this value.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9502,7 +9502,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9511,7 +9511,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The width value.
@@ -10217,7 +10217,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -10226,7 +10226,7 @@ exports[`APISection expo-pedometer 1`] = `
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -10242,7 +10242,7 @@ exports[`APISection expo-pedometer 1`] = `
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
                 class="css-1a1x0ox-TextComponent"
@@ -10255,7 +10255,7 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -10264,7 +10264,7 @@ exports[`APISection expo-pedometer 1`] = `
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -10280,7 +10280,7 @@ exports[`APISection expo-pedometer 1`] = `
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
                 class="css-1a1x0ox-TextComponent"
@@ -10885,7 +10885,7 @@ available on this device.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <span
                 class="css-7r3rok-TextComponent"
@@ -10894,7 +10894,7 @@ available on this device.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -10908,7 +10908,7 @@ available on this device.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
                 class="css-1a1x0ox-TextComponent"
@@ -11238,7 +11238,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11247,7 +11247,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11256,7 +11256,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -11265,7 +11265,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11274,7 +11274,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11288,7 +11288,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -11297,7 +11297,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11306,7 +11306,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11315,7 +11315,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -11324,7 +11324,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11333,7 +11333,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11347,7 +11347,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -11491,7 +11491,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11500,7 +11500,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11509,7 +11509,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Number of steps taken between the given dates.
@@ -11610,7 +11610,7 @@ provided with a single argument that is
               class="css-29opv4-Row"
             >
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 <span
                   class="css-7r3rok-TextComponent"
@@ -11619,7 +11619,7 @@ provided with a single argument that is
                 </span>
               </td>
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 <code
                   class="inline css-ov7own-InlineCode"
@@ -11633,7 +11633,7 @@ provided with a single argument that is
                 </code>
               </td>
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 -
               </td>
@@ -11809,7 +11809,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11818,7 +11818,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11830,7 +11830,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A method to unsubscribe the listener.
