@@ -6,11 +6,10 @@ import { InlineCode } from '../base/code';
 
 import { createPermalinkedComponent } from '~/common/create-permalinked-component';
 import { HeadingType } from '~/common/headingManager';
-import { PDIVHEADER } from '~/components/base/paragraph';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { CALLOUT } from '~/ui/components/Text';
+import { P, CALLOUT } from '~/ui/components/Text';
 
 type PropertyMeta = {
   regexHuman?: string;
@@ -53,16 +52,18 @@ type AppConfigSchemaProps = {
   schema: Record<string, Property>;
 };
 
-const Anchor = createPermalinkedComponent(PDIVHEADER, {
+const Anchor = createPermalinkedComponent(P, {
   baseNestingLevel: 3,
   sidebarType: HeadingType.InlineCode,
 });
 
 const PropertyName = ({ name, nestingLevel }: { name: string; nestingLevel: number }) => (
-  <Anchor level={nestingLevel} data-testid={name} data-heading="true">
+  <Anchor level={nestingLevel} data-testid={name} data-heading="true" css={propertyNameStyle}>
     <InlineCode css={typography.fontSizes[16]}>{name}</InlineCode>
   </Anchor>
 );
+
+const propertyNameStyle = css({ marginBottom: spacing[4] });
 
 export function formatSchema(rawSchema: [string, Property][]) {
   const formattedSchema: FormattedProperty[] = [];
@@ -140,7 +141,7 @@ const AppConfigSchemaPropertiesTable = ({ schema }: AppConfigSchemaProps) => {
   const formattedSchema = formatSchema(rawSchema);
 
   return (
-    <div>
+    <>
       {formattedSchema.map((formattedProperty, index) => (
         <AppConfigProperty
           {...formattedProperty}
@@ -148,7 +149,7 @@ const AppConfigSchemaPropertiesTable = ({ schema }: AppConfigSchemaProps) => {
           nestingLevel={0}
         />
       ))}
-    </div>
+    </>
   );
 };
 
