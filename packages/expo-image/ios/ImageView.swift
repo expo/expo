@@ -8,7 +8,10 @@ private typealias SDWebImageContext = [SDWebImageContextOption: Any]
 public final class ImageView: ExpoView {
   let sdImageView = SDAnimatedImageView(frame: .zero)
   let imageManager = SDWebImageManager()
-  var loadingOptions = SDWebImageOptions()
+  var loadingOptions: SDWebImageOptions = [
+    .retryFailed, // Don't blacklist URLs that failed downloading
+    .handleCookies // Handle cookies stored in the shared `HTTPCookieStore`
+  ]
 
   var sources: [ImageSource]?
 
@@ -23,6 +26,8 @@ public final class ImageView: ExpoView {
   var blurRadius: CGFloat = 0.0
 
   var imageTintColor: UIColor = .clear
+
+  var cachePolicy: ImageCachePolicy = .disk
 
   // MARK: - Events
 
@@ -98,6 +103,15 @@ public final class ImageView: ExpoView {
     // otherwise they would be saved in cache with scale = 1.0 which may result in
     // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
     context[.imageScaleFactor] = source.scale
+
+    // Set which cache can be used to query and store the downloaded image.
+    // We want to store only original images (without transformations).
+    // TODO: Don't cache non-network requests (e.g. data URIs, local files)
+    let sdCacheType = cachePolicy.toSdCacheType().rawValue
+    context[.originalQueryCacheType] = sdCacheType
+    context[.originalStoreCacheType] = sdCacheType
+    context[.queryCacheType] = SDImageCacheType.none.rawValue
+    context[.storeCacheType] = SDImageCacheType.none.rawValue
 
     onLoadStart([:])
 

@@ -60,6 +60,10 @@ public final class ImageModule: Module {
         }
       }
 
+      Prop("cachePolicy") { (view, cachePolicy: ImageCachePolicy?) in
+        view.cachePolicy = cachePolicy ?? .disk
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
