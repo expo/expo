@@ -21,7 +21,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="inline css-1cjswoo-PropertyName"
+            class="css-sejz18-PropertyName"
           >
             name
           </code>
@@ -62,7 +62,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-lz3xyk-TextComponent"
       >
         string
       </code>
@@ -137,7 +137,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="inline css-1cjswoo-PropertyName"
+            class="css-sejz18-PropertyName"
           >
             androidNavigationBar
           </code>
@@ -178,7 +178,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-lz3xyk-TextComponent"
       >
         object
       </code>
@@ -295,7 +295,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="inline css-1cjswoo-PropertyName"
+                class="css-sejz18-PropertyName"
               >
                 visible
               </code>
@@ -336,7 +336,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             enum
           </code>
@@ -419,7 +419,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="inline css-1cjswoo-PropertyName"
+                    class="css-sejz18-PropertyName"
                   >
                     always
                   </code>
@@ -460,7 +460,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 boolean
               </code>
@@ -503,7 +503,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="inline css-1cjswoo-PropertyName"
+                class="css-sejz18-PropertyName"
               >
                 backgroundColor
               </code>
@@ -544,7 +544,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             string
           </code>
@@ -599,7 +599,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="inline css-1cjswoo-PropertyName"
+            class="css-sejz18-PropertyName"
           >
             intentFilters
           </code>
@@ -640,7 +640,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-lz3xyk-TextComponent"
       >
         array
       </code>
@@ -751,7 +751,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="inline css-1cjswoo-PropertyName"
+                class="css-sejz18-PropertyName"
               >
                 autoVerify
               </code>
@@ -792,7 +792,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             boolean
           </code>
@@ -833,7 +833,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="inline css-1cjswoo-PropertyName"
+                class="css-sejz18-PropertyName"
               >
                 data
               </code>
@@ -874,7 +874,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             array || object
           </code>
@@ -909,7 +909,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="inline css-1cjswoo-PropertyName"
+                    class="css-sejz18-PropertyName"
                   >
                     host
                   </code>
@@ -950,7 +950,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>

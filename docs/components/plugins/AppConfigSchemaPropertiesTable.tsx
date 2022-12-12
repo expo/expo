@@ -2,14 +2,12 @@ import { css } from '@emotion/react';
 import { borderRadius, breakpoints, spacing, theme, typography } from '@expo/styleguide';
 import ReactMarkdown from 'react-markdown';
 
-import { InlineCode } from '../base/code';
-
 import { createPermalinkedComponent } from '~/common/create-permalinked-component';
 import { HeadingType } from '~/common/headingManager';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { P, CALLOUT } from '~/ui/components/Text';
+import { P, CALLOUT, CODE } from '~/ui/components/Text';
 
 type PropertyMeta = {
   regexHuman?: string;
@@ -59,7 +57,7 @@ const Anchor = createPermalinkedComponent(P, {
 
 const PropertyName = ({ name, nestingLevel }: { name: string; nestingLevel: number }) => (
   <Anchor level={nestingLevel} data-testid={name} data-heading="true" css={propertyNameStyle}>
-    <InlineCode css={typography.fontSizes[16]}>{name}</InlineCode>
+    <CODE css={typography.fontSizes[16]}>{name}</CODE>
   </Anchor>
 );
 
@@ -167,7 +165,7 @@ const AppConfigProperty = ({
   <APIBox css={boxStyle}>
     <PropertyName name={name} nestingLevel={nestingLevel} />
     <CALLOUT theme="secondary" data-text="true">
-      Type: <InlineCode>{type || 'undefined'}</InlineCode>
+      Type: <CODE>{type || 'undefined'}</CODE>
       {nestingLevel > 0 && (
         <>
           &emsp;&bull;&emsp;Path:{' '}

@@ -958,7 +958,7 @@ in here.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -1431,7 +1431,7 @@ value depending on the state of the credential.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -1697,7 +1697,7 @@ refresh operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2005,7 +2005,7 @@ sign-in operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2347,7 +2347,7 @@ sign-out operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2688,7 +2688,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3091,7 +3091,7 @@ may be
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3442,7 +3442,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3732,7 +3732,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -4040,7 +4040,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -4202,7 +4202,7 @@ OAuth 2.0 protocol
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -7020,7 +7020,7 @@ Same as
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -7785,7 +7785,7 @@ This can be used to quickly create specific permission hooks in every module.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8213,7 +8213,7 @@ code.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8476,7 +8476,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8649,7 +8649,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8770,7 +8770,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8896,7 +8896,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9056,7 +9056,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="css-rufzkc-Table"
       >
         <table
-          class="css-1goywt6-Table"
+          class="css-10cc7jf-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
@@ -9177,7 +9177,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9434,7 +9434,7 @@ you don't get this value.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -10187,7 +10187,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -10855,7 +10855,7 @@ available on this device.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11208,7 +11208,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11461,7 +11461,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11580,7 +11580,7 @@ provided with a single argument that is
         class="css-rufzkc-Table"
       >
         <table
-          class="css-1goywt6-Table"
+          class="css-10cc7jf-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
@@ -11779,7 +11779,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"

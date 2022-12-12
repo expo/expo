@@ -71,6 +71,7 @@ const listStyle = css({
 
 const codeStyle = css({
   borderRadius: borderRadius.small,
+  verticalAlign: 'initial',
 });
 
 export const kbdStyle = css({
