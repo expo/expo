@@ -170,6 +170,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderColor: Colors.tintColor,
+    borderStyle: 'solid',
     borderWidth: 1,
   },
   description: {
