@@ -187,7 +187,7 @@ public final class ImageView: ExpoView {
 
   /**
    Loads a placeholder from the best source provided in `placeholder` prop.
-   A placeholder should be a local asset to has more time to show before the proper image is loaded,
+   A placeholder should be a local asset to have more time to show before the proper image is loaded,
    but remote assets are also supported – for the bundler and to cache them on the disk to load faster next time.
    - Note: Placeholders are not being resized nor transformed, so try to keep them small.
    */

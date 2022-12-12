@@ -5,7 +5,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import Button from '../../components/Button';
 import { Colors } from '../../constants';
 
-const generateSeed = () => 1 + Math.round(Math.random() * 2137);
+const generateSeed = () => 1 + Math.round(Math.random() * 10);
 
 export default function ImagePlaceholderScreen() {
   const [source, setSource] = useState<ImageSource | null>(null);
