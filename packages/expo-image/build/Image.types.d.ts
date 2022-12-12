@@ -1,5 +1,5 @@
 import { AccessibilityProps, ImageStyle as RNImageStyle } from 'react-native';
-export declare type ImageSource = {
+export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,
      * which could be an http address, a local file path, or the name of a static image resource.
@@ -22,12 +22,12 @@ export declare type ImageSource = {
      */
     height?: number;
 };
-export declare type ImageStyle = RNImageStyle & {
+export type ImageStyle = RNImageStyle & {
     resizeMode?: ImageResizeMode;
     elevation?: number;
 };
-declare type RequireSource = number | string;
-export declare type ImageProps = AccessibilityProps & {
+type RequireSource = number | string;
+export type ImageProps = AccessibilityProps & {
     style?: ImageStyle;
     /**
      * The image source (either a remote URL or a local file resource).
@@ -137,11 +137,11 @@ export declare enum ImageContentFit {
 /**
  * @docsMissing
  */
-export declare type PositionValue = number | `${number}%` | `${number}` | 'center';
+export type PositionValue = number | `${number}%` | `${number}` | 'center';
 /**
  * @docsMissing
  */
-export declare type ImageContentPositionObject = {
+export type ImageContentPositionObject = {
     top?: PositionValue;
     right?: PositionValue;
 } | {
@@ -158,11 +158,11 @@ export declare type ImageContentPositionObject = {
  * A stringified and shorthand form of the `contentPosition` prop. This specifies the edges to which to align the image content.
  * If only one keyword is provided, the other dimension is then set to 50%, so the image is placed in the middle of the edge specified.
  */
-export declare type ImageContentPositionString = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'top center' | 'top right' | 'top left' | 'right center' | 'right top' | 'right bottom' | 'bottom center' | 'bottom right' | 'bottom left' | 'left center' | 'left top' | 'left bottom';
+export type ImageContentPositionString = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'top center' | 'top right' | 'top left' | 'right center' | 'right top' | 'right bottom' | 'bottom center' | 'bottom right' | 'bottom left' | 'left center' | 'left top' | 'left bottom';
 /**
  * @docsMissing
  */
-export declare type ImageContentPosition = ImageContentPositionString | ImageContentPositionObject;
+export type ImageContentPosition = ImageContentPositionString | ImageContentPositionObject;
 /**
  * @deprecated The resize mode is deprecated in favor of `ImageContentFit` and `contentFit` prop.
  */
@@ -195,7 +195,7 @@ export declare enum ImageResizeMode {
      */
     CENTER = "center"
 }
-export declare type ImageTransition = {
+export type ImageTransition = {
     duration?: number;
     timing?: ImageTransitionTiming;
     effect?: ImageTransitionEffect;
@@ -232,7 +232,7 @@ export declare enum ImagePriority {
     NORMAL = "normal",
     HIGH = "high"
 }
-export declare type ImageLoadEventData = {
+export type ImageLoadEventData = {
     cacheType: ImageCacheType;
     source: {
         url: string;
@@ -241,11 +241,11 @@ export declare type ImageLoadEventData = {
         mediaType: string | null;
     };
 };
-export declare type ImageProgressEventData = {
+export type ImageProgressEventData = {
     loaded: number;
     total: number;
 };
-export declare type ImageErrorEventData = {
+export type ImageErrorEventData = {
     error: string;
 };
 export {};
