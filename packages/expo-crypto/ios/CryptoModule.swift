@@ -17,7 +17,9 @@ public class CryptoModule: Module {
 
     Function("getRandomValues", getRandomValues)
 
-    Function("randomUUID", randomUUID)
+    Function("randomUUID") {
+      UUID().uuidString
+    }
   }
 }
 
@@ -62,10 +64,6 @@ private func getRandomValues(array: TypedArray) throws -> TypedArray {
     throw FailedGeneratingRandomBytesException(status)
   }
   return array
-}
-
-private func randomUUID() throws -> String {
-  return UUID().uuidString
 }
 
 private class LossyConversionException: Exception {

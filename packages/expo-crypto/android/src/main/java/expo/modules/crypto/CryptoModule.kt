@@ -20,7 +20,7 @@ class CryptoModule : Module() {
     AsyncFunction("getRandomBase64StringAsync", this@CryptoModule::getRandomBase64String)
     Function("getRandomValues", this@CryptoModule::getRandomValues)
     Function("randomUUID") {
-      return UUID.randomUUID().toString()
+      UUID.randomUUID().toString()
     }
   }
 
