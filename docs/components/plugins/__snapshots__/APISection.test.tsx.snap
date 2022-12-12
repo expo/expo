@@ -250,11 +250,11 @@ not appear on the screen.
       <div
         class="css-19syq17-Callout"
       >
-        <span
+        <strong
           class="css-7r3rok-TextComponent"
         >
           See: 
-        </span>
+        </strong>
         <span>
           <a
             class="css-dqmbnf-A"
@@ -990,11 +990,11 @@ in here.
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 user
-              </span>
+              </strong>
             </td>
             <td
               class="css-zstkv9-Cell"
@@ -1070,11 +1070,11 @@ This should come from the user field of an
         <p
           class="css-1a1x0ox-TextComponent"
         >
-          <span
+          <strong
             class="css-7r3rok-TextComponent"
           >
             Note:
-          </span>
+          </strong>
            This method must be tested on a real device. On the iOS simulator it always throws an error.
         </p>
         
@@ -1463,11 +1463,11 @@ value depending on the state of the credential.
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 options
-              </span>
+              </strong>
             </td>
             <td
               class="css-zstkv9-Cell"
@@ -1729,11 +1729,11 @@ refresh operation.
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 options
-              </span>
+              </strong>
               <br />
               <span
                 class="css-1g95u6x"
@@ -2037,11 +2037,11 @@ sign-in operation.
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 options
-              </span>
+              </strong>
             </td>
             <td
               class="css-zstkv9-Cell"
@@ -2379,11 +2379,11 @@ sign-out operation.
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 listener
-              </span>
+              </strong>
             </td>
             <td
               class="css-zstkv9-Cell"
@@ -2664,11 +2664,11 @@ which contains all of the pertinent user and credential information.
       <div
         class="css-19syq17-Callout"
       >
-        <span
+        <strong
           class="css-7r3rok-TextComponent"
         >
           See: 
-        </span>
+        </strong>
         <span>
           <a
             class="css-dqmbnf-A"
@@ -3418,11 +3418,11 @@ You must include the ID string of the user whose credentials you'd like to refre
       <div
         class="css-19syq17-Callout"
       >
-        <span
+        <strong
           class="css-7r3rok-TextComponent"
         >
           See: 
-        </span>
+        </strong>
         <span>
           <a
             class="css-dqmbnf-A"
@@ -3708,11 +3708,11 @@ None of these options are required.
       <div
         class="css-19syq17-Callout"
       >
-        <span
+        <strong
           class="css-7r3rok-TextComponent"
         >
           See: 
-        </span>
+        </strong>
         <span>
           <a
             class="css-dqmbnf-A"
@@ -4016,11 +4016,11 @@ You must include the ID string of the user to sign out.
       <div
         class="css-19syq17-Callout"
       >
-        <span
+        <strong
           class="css-7r3rok-TextComponent"
         >
           See: 
-        </span>
+        </strong>
         <span>
           <a
             class="css-dqmbnf-A"
@@ -4820,12 +4820,12 @@ OAuth 2.0 protocol
     <div
       class="css-181x4m0"
     >
-      <span
+      <strong
         class="css-7r3rok-TextComponent"
       >
         Only for:
          
-      </span>
+      </strong>
       <div
         class="css-u7asze-PlatformTag"
       >
@@ -5022,11 +5022,11 @@ OAuth 2.0 protocol
       <div
         class="css-19syq17-Callout"
       >
-        <span
+        <strong
           class="css-7r3rok-TextComponent"
         >
           See: 
-        </span>
+        </strong>
         <span>
           <a
             class="css-dqmbnf-A"
@@ -5785,11 +5785,11 @@ You will still need to handle null values for any fields you request.
       <div
         class="css-19syq17-Callout"
       >
-        <span
+        <strong
           class="css-7r3rok-TextComponent"
         >
           See: 
-        </span>
+        </strong>
         <span>
           <a
             class="css-dqmbnf-A"
@@ -6029,11 +6029,11 @@ for more details.
       <div
         class="css-19syq17-Callout"
       >
-        <span
+        <strong
           class="css-7r3rok-TextComponent"
         >
           See: 
-        </span>
+        </strong>
         <span>
           <a
             class="css-dqmbnf-A"
@@ -6691,11 +6691,11 @@ provided with an
             <p
               class="css-1a1x0ox-TextComponent"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 Note:
-              </span>
+              </strong>
                Passing 
               <code
                 class="inline css-ov7own-InlineCode"
@@ -7052,11 +7052,11 @@ Same as
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 options
-              </span>
+              </strong>
               <br />
               <span
                 class="css-1g95u6x"
@@ -7817,11 +7817,11 @@ This can be used to quickly create specific permission hooks in every module.
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 url
-              </span>
+              </strong>
             </td>
             <td
               class="css-zstkv9-Cell"
@@ -7848,11 +7848,11 @@ This can be used to quickly create specific permission hooks in every module.
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 barCodeTypes
-              </span>
+              </strong>
               <br />
               <span
                 class="css-1g95u6x"
@@ -7913,11 +7913,11 @@ the platform.
                   <p
                     class="css-1a1x0ox-TextComponent"
                   >
-                    <span
+                    <strong
                       class="css-7r3rok-TextComponent"
                     >
                       Note:
-                    </span>
+                    </strong>
                      Only QR codes are supported on iOS.
                   </p>
                   
@@ -9088,11 +9088,11 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               <td
                 class="css-zstkv9-Cell"
               >
-                <span
+                <strong
                   class="css-7r3rok-TextComponent"
                 >
                   params
-                </span>
+                </strong>
               </td>
               <td
                 class="css-zstkv9-Cell"
@@ -10219,11 +10219,11 @@ exports[`APISection expo-pedometer 1`] = `
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 start
-              </span>
+              </strong>
             </td>
             <td
               class="css-zstkv9-Cell"
@@ -10257,11 +10257,11 @@ exports[`APISection expo-pedometer 1`] = `
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 end
-              </span>
+              </strong>
             </td>
             <td
               class="css-zstkv9-Cell"
@@ -10887,11 +10887,11 @@ available on this device.
             <td
               class="css-zstkv9-Cell"
             >
-              <span
+              <strong
                 class="css-7r3rok-TextComponent"
               >
                 callback
-              </span>
+              </strong>
             </td>
             <td
               class="css-zstkv9-Cell"
@@ -11612,11 +11612,11 @@ provided with a single argument that is
               <td
                 class="css-zstkv9-Cell"
               >
-                <span
+                <strong
                   class="css-7r3rok-TextComponent"
                 >
                   result
-                </span>
+                </strong>
               </td>
               <td
                 class="css-zstkv9-Cell"

@@ -103,7 +103,10 @@ export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.l
 export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
 export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.footnote));
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
-export const BOLD = createTextComponent(TextElement.SPAN, css(typography.utility.weight.semiBold));
+export const BOLD = createTextComponent(
+  TextElement.STRONG,
+  css(typography.utility.weight.semiBold)
+);
 export const DEMI = createTextComponent(TextElement.SPAN, css(typography.utility.weight.medium));
 export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
 export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));

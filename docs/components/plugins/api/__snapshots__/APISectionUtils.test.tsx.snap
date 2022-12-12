@@ -24,11 +24,11 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
   <p
     class="css-1a1x0ox-TextComponent"
   >
-    <span
+    <strong
       class="css-7r3rok-TextComponent"
     >
       Android only.
-    </span>
+    </strong>
      Gets the referrer URL of the installed app with the 
     <a
       class="css-dqmbnf-A"
