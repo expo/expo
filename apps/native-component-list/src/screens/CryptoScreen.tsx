@@ -54,6 +54,11 @@ const GET_RANDOM_VALUES: FunctionDescription = {
   actions: Crypto.getRandomValues,
 };
 
+const RANDOM_UUID: FunctionDescription = {
+  name: 'randomUUID',
+  actions: Crypto.randomUUID,
+};
+
 const DIGEST_STRING: FunctionDescription = {
   name: 'digestString',
   parameters: [
@@ -94,6 +99,7 @@ const FUNCTIONS_DESCRIPTIONS = [
   GET_RANDOM_BYTES_ASYNC,
   DIGEST_STRING,
   GET_RANDOM_VALUES,
+  RANDOM_UUID,
 ];
 
 function CryptoScreen() {
