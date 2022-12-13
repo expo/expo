@@ -1,6 +1,5 @@
 import ReactMarkdown from 'react-markdown';
 
-import { InlineCode } from '~/components/base/code';
 import { H2, H2Nested, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
@@ -18,6 +17,7 @@ import {
   STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
+import { CODE } from '~/ui/components/Text';
 
 export type APISectionNamespacesProps = {
   data: GeneratedData[];
@@ -43,7 +43,7 @@ const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolea
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <InlineCode>{name}</InlineCode>
+        <CODE>{name}</CODE>
       </H3Code>
       <CommentTextBlock comment={comment} />
       {returnComment && (

@@ -37,7 +37,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       target="_blank"
     >
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         Install Referrer API
       </code>

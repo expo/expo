@@ -1,7 +1,3 @@
-import React from 'react';
-
-import { InlineCode } from '~/components/base/code';
-import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
@@ -10,8 +6,10 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getTagNamesList,
+  STYLE_APIBOX_NO_SPACING,
   STYLES_APIBOX,
 } from '~/components/plugins/api/APISectionUtils';
+import { BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];
@@ -26,17 +24,21 @@ const renderConstant = (
     <APISectionDeprecationNote comment={comment} />
     <APISectionPlatformTags comment={comment} prefix="Only for:" />
     <H3Code tags={getTagNamesList(comment)}>
-      <InlineCode>
+      <CODE>
         {apiName ? `${apiName}.` : ''}
         {name}
-      </InlineCode>
+      </CODE>
     </H3Code>
     {type && (
       <P>
-        <B>Type:</B> <APIDataType typeDefinition={type} />
+        <BOLD>Type:</BOLD> <APIDataType typeDefinition={type} />
       </P>
     )}
-    <CommentTextBlock comment={comment} includePlatforms={false} />
+    {comment && (
+      <div css={STYLE_APIBOX_NO_SPACING}>
+        <CommentTextBlock comment={comment} includePlatforms={false} beforeContent={<br />} />
+      </div>
+    )}
   </div>
 );
 

@@ -3,11 +3,10 @@ import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
-import { paragraph } from '~/components/base/typography';
 import { Tag } from '~/ui/components/Tag';
 
 const STYLES_LINK = css`
-  ${paragraph}
+  ${typography.body.paragraph}
   color: ${theme.text.secondary};
   transition: 50ms ease color;
   font-size: 14px;

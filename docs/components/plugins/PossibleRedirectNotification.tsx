@@ -1,8 +1,7 @@
 import * as React from 'react';
 
-import { P } from '~/components/base/paragraph';
 import { CONTAINER_STYLE } from '~/components/plugins/VersionedRedirectNotification';
-import { A } from '~/ui/components/Text';
+import { A, P } from '~/ui/components/Text';
 
 const PossibleRedirectNotification = ({ newUrl }: React.PropsWithChildren<{ newUrl: string }>) => {
   const [targetId, setTargetId] = React.useState<string | null>(null);
