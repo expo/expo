@@ -1,7 +1,7 @@
 import React from 'react';
 import { ImageTransitionEffect, ImageTransitionTiming, } from './Image.types';
 import { resolveContentFit, resolveContentPosition } from './utils';
-const resolveAssetSource = (source) => {
+function resolveAssetSource(source) {
     if (source == null)
         return null;
     if (typeof source === 'string') {
@@ -11,14 +11,16 @@ const resolveAssetSource = (source) => {
         return { uri: String(source) };
     }
     return source;
-};
-const ensureUnit = (value) => {
+}
+;
+function ensureUnit(value) {
     const trimmedValue = String(value).trim();
     if (trimmedValue.endsWith('%')) {
         return trimmedValue;
     }
     return `${trimmedValue}px`;
-};
+}
+;
 function getObjectPositionFromContentPosition(contentPosition) {
     const resolvedPosition = (typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition);
     if (!resolvedPosition) {
@@ -39,7 +41,7 @@ function getObjectPositionFromContentPosition(contentPosition) {
     })
         .join(' ');
 }
-const ensureIsArray = (source) => {
+function ensureIsArray(source) {
     if (Array.isArray(source)) {
         return source;
     }
@@ -47,8 +49,9 @@ const ensureIsArray = (source) => {
         return [];
     }
     return [source];
-};
-const useImageState = (source) => {
+}
+;
+function useImageState(source) {
     const [imageState, setImageState] = React.useState(source ? 'loading' : 'empty');
     React.useEffect(() => {
         setImageState((prevState) => prevState === 'empty' ? (source ? 'loading' : 'empty') : prevState);
@@ -58,7 +61,8 @@ const useImageState = (source) => {
         onLoad,
     }), [onLoad]);
     return [imageState, handlers];
-};
+}
+;
 const getCSSTiming = (timing) => {
     return {
         [ImageTransitionTiming.EASE_IN]: 'ease-in',
@@ -139,7 +143,7 @@ export default function ExpoImage({ source, placeholder, loadingIndicatorSource,
             overflow: 'hidden',
             position: 'relative',
         } },
-        React.createElement("img", { src: resolveAssetSource(placeholder)?.uri, style: {
+        React.createElement("img", { src: ensureIsArray(source).map(resolveAssetSource)?.[0]?.uri, style: {
                 width: '100%',
                 height: '100%',
                 position: 'absolute',

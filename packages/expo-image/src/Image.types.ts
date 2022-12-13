@@ -42,19 +42,19 @@ export type ImageProps = AccessibilityProps & {
   /**
    * A static image to display while loading the image source.
    */
-  placeholder?: RequireSource;
+  placeholder?: ImageSource;
 
   /**
    * A static image to display while loading the image source.
    * @platform android
    */
-  defaultSource?: RequireSource | null;
+  defaultSource?: ImageSource | null;
   /**
    * Similarly to `source`, this property represents the resource used to render the loading indicator for the image.
    * The loading indicator is displayed until image is ready to be displayed, typically after the image is downloaded.
    * @platform android
    */
-  loadingIndicatorSource?: RequireSource | null;
+  loadingIndicatorSource?: ImageSource | null;
 
   /**
    * Determines how the image should be resized to fit its container.
