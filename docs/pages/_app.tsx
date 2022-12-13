@@ -3,13 +3,12 @@ import { MDXProvider } from '@mdx-js/react';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 import { AppProps } from 'next/app';
-import React from 'react';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
-import * as markdownComponents from '~/common/translate-markdown';
 import { useNProgress } from '~/common/use-nprogress';
 import DocumentationElements from '~/components/page-higher-order/DocumentationElements';
 import { AnalyticsProvider } from '~/providers/Analytics';
+import { markdownComponents } from '~/ui/components/Markdown';
 
 import '@expo/styleguide/dist/expo-theme.css';
 import 'tippy.js/dist/tippy.css';
@@ -22,7 +21,11 @@ Sentry.init({
   environment: isDev ? 'development' : 'production',
   denyUrls: isDev
     ? undefined
-    : [/https:\/\/docs-expo-dev\.translate\.goog/, /https:\/\/translated\.turbopages\.org/],
+    : [
+        /https:\/\/docs-expo-dev\.translate\.goog/,
+        /https:\/\/translated\.turbopages\.org/,
+        /https:\/\/docs\.expo\.dev\/index\.html/,
+      ],
   integrations: [new BrowserTracing()],
   tracesSampleRate: 1.0,
 });

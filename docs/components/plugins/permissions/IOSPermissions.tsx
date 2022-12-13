@@ -1,17 +1,21 @@
-import React from 'react';
+import { useMemo } from 'react';
 
 import { IOSPermission, iosPermissions, PermissionReference } from './data';
 
-import Permalink from '~/components/Permalink';
-import { InlineCode } from '~/components/base/code';
+import { createPermalinkedComponent } from '~/common/create-permalinked-component';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { P, CODE } from '~/ui/components/Text';
 
 type IOSPermissionsProps = {
   permissions: PermissionReference<IOSPermission>[];
 };
 
+const PermissionPermalink = createPermalinkedComponent(P, {
+  baseNestingLevel: 4,
+});
+
 export function IOSPermissions(props: IOSPermissionsProps) {
-  const list = React.useMemo(() => getPermissions(props.permissions), [props.permissions]);
+  const list = useMemo(() => getPermissions(props.permissions), [props.permissions]);
 
   return (
     <Table>
@@ -25,11 +29,9 @@ export function IOSPermissions(props: IOSPermissionsProps) {
         {list.map(permission => (
           <Row key={permission.name}>
             <Cell>
-              <Permalink id={`permission-${permission.name.toLowerCase()}`}>
-                <span>
-                  <InlineCode>{permission.name}</InlineCode>
-                </span>
-              </Permalink>
+              <PermissionPermalink id={`permission-${permission.name.toLowerCase()}`}>
+                <CODE>{permission.name}</CODE>
+              </PermissionPermalink>
             </Cell>
             <Cell>{permission.description}</Cell>
           </Row>

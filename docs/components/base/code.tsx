@@ -203,9 +203,10 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
   render() {
     // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
     // which results in this nesting mess, we should fix it in the future
-    const child = this.props.className
-      ? this
-      : (React.Children.toArray(this.props.children)[0] as JSX.Element);
+    const child =
+      this.props.className && this.props.className.startsWith('language')
+        ? this
+        : (React.Children.toArray(this.props.children)[0] as JSX.Element);
 
     const value = this.parseValue(child?.props?.children?.toString() || '');
     let html = value.value;

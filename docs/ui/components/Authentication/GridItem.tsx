@@ -19,7 +19,7 @@ export const GridItem = ({
   protocol = [],
   href = `#${title.toLowerCase().replaceAll(' ', '-')}`,
 }: GridItemProps) => (
-  <A href={href} css={itemStyle}>
+  <A href={href} css={itemStyle} isStyled>
     <Icon title={title} image={image} />
     <RawH4 css={titleStyle}>{title}</RawH4>
     {(protocol || []).length && (

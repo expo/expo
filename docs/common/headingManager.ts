@@ -41,6 +41,7 @@ export type AdditionalProps = {
   sidebarDepth?: number;
   sidebarType?: HeadingType;
   tags?: string[];
+  style?: React.CSSProperties;
 };
 
 type Metadata = Partial<PageMetadata> & { headings: (RemarkHeading & { _processed?: boolean })[] };

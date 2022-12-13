@@ -8,7 +8,9 @@ type Options = {
   sidebarType?: HeadingType;
 };
 
-type PermalinkedComponentProps = React.PropsWithChildren<{ level?: number } & AdditionalProps>;
+type PermalinkedComponentProps = React.PropsWithChildren<
+  { level?: number; id?: string } & AdditionalProps
+>;
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -17,7 +19,7 @@ export const createPermalinkedComponent = (
   options?: Options
 ) => {
   const { baseNestingLevel, sidebarType = HeadingType.Text } = options || {};
-  return ({ children, level, ...props }: PermalinkedComponentProps) => {
+  return ({ children, level, id, ...props }: PermalinkedComponentProps) => {
     const cleanChildren = React.Children.map(children, child => {
       if (React.isValidElement(child) && child?.props?.href) {
         isDev &&
@@ -31,7 +33,7 @@ export const createPermalinkedComponent = (
     });
     const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;
     return (
-      <Permalink nestingLevel={nestingLevel} additionalProps={{ ...props, sidebarType }}>
+      <Permalink nestingLevel={nestingLevel} additionalProps={{ ...props, sidebarType }} id={id}>
         <BaseComponent>{cleanChildren}</BaseComponent>
       </Permalink>
     );

@@ -11,6 +11,7 @@ import { LinkBase } from '~/ui/components/Text';
 type BaseProps = React.PropsWithChildren<{
   component: any;
   className?: string;
+  style?: React.CSSProperties;
 }>;
 
 type EnhancedProps = React.PropsWithChildren<{
@@ -89,7 +90,10 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
     const permalinkKey = props.id ?? heading?.slug;
 
     return (
-      <PermalinkBase component={component} data-components-heading>
+      <PermalinkBase
+        component={component}
+        data-components-heading
+        style={props.additionalProps?.style}>
         <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey} ref={heading?.ref}>
           <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>

@@ -1,9 +1,5 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
 import NextLink from 'next/link';
 import { CSSProperties, forwardRef, PropsWithChildren, MouseEvent } from 'react';
-
-import { durations } from '~/ui/foundations/durations';
 
 export type LinkProps = PropsWithChildren<{
   target?: string;
@@ -29,7 +25,6 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(p
       href={href ?? ''}
       ref={ref}
       aria-label={props.ariaLabel}
-      css={props.isStyled ? linkStyle : undefined}
       className={props.className}
       title={props.title}
       style={props.style}
@@ -41,17 +36,4 @@ export const LinkBase = forwardRef<HTMLAnchorElement, LinkProps>(function Link(p
       {props.children}
     </NextLink>
   );
-});
-
-const linkStyle = css({
-  textDecoration: 'none',
-  cursor: 'pointer',
-  opacity: 1,
-  ':hover': {
-    transition: durations.hover,
-    opacity: 0.8,
-  },
-  ':visited': {
-    color: theme.link.default,
-  },
 });

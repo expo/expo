@@ -97,6 +97,10 @@ const linkStyle = css({
   display: 'inline-flex',
   alignItems: 'center',
   marginBottom: spacing[1],
+
+  ':visited': {
+    color: theme.text.secondary,
+  },
 });
 
 const iconStyle = css({

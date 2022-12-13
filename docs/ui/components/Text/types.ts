@@ -15,6 +15,7 @@ export enum TextElement {
   UL = 'ul',
   OL = 'ol',
   PRE = 'pre',
+  STRONG = 'strong',
   KBD = 'kbd',
 }
 
