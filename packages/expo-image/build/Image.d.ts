@@ -2,10 +2,11 @@ import React from 'react';
 import { ImageProps } from './Image.types';
 export declare class Image extends React.Component<ImageProps> {
     /**
-     * **Available on @Android only.** Caching the image that can be later used in ImageView
-     * @return an empty promise.
+     * Preloads images at the given urls that can be later used in the image view.
+     * Preloaded images are always cached on the disk, so make sure to use
+     * `disk` (default) or `memoryAndDisk` cache policy.
      */
-    static prefetch(url: string): Promise<void>;
+    static prefetch(urls: string | string[]): void;
     /**
      * Asynchronously clears all images stored in memory.
      * @return A promise resolving to `true` when the operation succeeds.
