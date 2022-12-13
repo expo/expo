@@ -1,6 +1,6 @@
 ---
 title: Limitations
-sidebar_title: Limitations
+description: Learn about the limitations of Expo and related services.
 ---
 
 import { InlineCode } from '~/components/base/code';
@@ -43,7 +43,7 @@ For more information on what current limitations exist with EAS, see the followi
 
 ### Bare workflow
 
-Similar to [development builds](/development/introduction), bare workflow also provides access to the underlying native projects and any native code. It's a "bare" native project where you can make direct changes to the project's native **android/** and **ios/** directories rather than continuously generating them on demand using the [Expo config and prebuild](/workflow/prebuild).
+Similar to [development builds](/development/introduction), the bare workflow also provides access to the underlying native projects and any native code. It's a "bare" native project where you can make direct changes to the project's native **android/** and **ios/** directories rather than continuously generating them on demand using the [Expo config and prebuild](/workflow/prebuild).
 
 EAS Build is compatible with bare workflow projects if you check in the native directories, but no longer runs prebuild, as that could overwrite any manual customizations you've made to the native project files. You'll have to configure the native directories on your own with native tools such as Android Studio or Xcode.
 
@@ -58,7 +58,6 @@ Like any other tool, it too has its own limitations:
 
 **We strongly recommend any projects that require additional libraries with native code to migrate to [development builds](/development/introduction). It's like creating a version of Expo Go that is specifically customized to your app's needs.**
 
-## Up next
+## Next step
 
-- If you have heard enough and want to get to coding, see [Installation](/get-started/installation).
-- If you have some unanswered questions, continue to the [Common Questions](/introduction/faq) page.
+To start developing your project, see [Installation](/get-started/installation) to get started. If you have unanswered questions, see [Common Questions](/introduction/faq).

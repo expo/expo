@@ -1,12 +1,15 @@
 ---
-title: Publishing Websites
+title: Publish websites
+description: Different ways to publish the Expo web app with third-party services.
 ---
+
+import { Terminal } from '~/ui/components/Snippet';
 
 ## Creating a Build
 
 - Bundle the project for production - `npx expo export:web` (`expo build:web` in the legacy Expo CLI).
-  - Creates a production ready static bundle in the `web-build/` directory. Don't edit this folder directly.
-  - Uses webpack to [optimize the project][webpack-optimize].
+  - Creates a production-ready static bundle in the `web-build/` directory. Don't edit this folder directly.
+  - Uses webpack to [optimize the project](https://webpack.js.org/configuration/optimization/).
   - If you make any changes to your project, you'll need to re-build for production.
   - For more help use `npx expo export:web --help`
     {/* - To speed up builds you can skip the PWA asset generation with `expo build:web --no-pwa` */}
@@ -16,24 +19,17 @@ title: Publishing Websites
 
 - Serving your site in a subfolder? Add the path to your **package.json**:
 
-```js
-/* package.json */
+```js package.json
 {
     "homepage": "/webapp"
 }
 ```
 
-[webpack-optimize]: https://webpack.js.org/configuration/optimization/
-
 ### Serving Locally
 
-- [Serve CLI][serve-cli]: Quickly test how it works in production - `npx serve web-build`
+- [Serve CLI](https://www.npmjs.com/package/serve): Quickly test how it works in production - `npx serve web-build`
 - Open [`http://localhost:5000`](http://localhost:5000)
 - **This is `http` only, so permissions, camera, location, and many other things won't work.**
-
-[serve-cli]: https://www.npmjs.com/package/serve
-
----
 
 ## AWS Amplify Console
 
@@ -65,12 +61,11 @@ The [AWS Amplify Console](https://console.amplify.aws) provides a Git-based work
 - Run `vercel`
 - You should see a URL that you can use to view your project online.
 
-Paste that URL into your browser when the build is complete, and you will see your deployed app!
+Paste that URL into your browser when the build is complete, and you will see your deployed app.
 
 ## Surge
 
-Install the [Surge](https://surge.sh/) CLI if you haven’t already by running `npm install -g surge`.
-Run the `surge` command, then promptly log in or create a new account.
+Install the [Surge](https://surge.sh/) CLI if you haven't already by running `npm install -g surge`. Run the `surge` command, then promptly log in or create a new account.
 
 When asked about the project path, make sure to specify the `web-build` folder, for example:
 
@@ -114,11 +109,7 @@ Learn more about [GitHub Pages](https://pages.github.com/).
 
 > We'll use `yarn` but you can use `npm` if you want.
 
-Before starting, be sure to [create a new repo on GitHub](https://github.com/new)
-
-**TL;DR:**
-
-Run the following in your root dir:
+Before starting, be sure to [create a new repo on GitHub](https://github.com/new). Then, run the following in your root directory:
 
 ```sh
 git init
@@ -128,24 +119,21 @@ yarn add -D gh-pages
 
 Add the following to your **package.json**:
 
-```js
-/* package.json */
+```json package.json
 {
-    "homepage": "http://evanbacon.github.io/expo-gh-pages",
-    "scripts": {
-        "deploy": "gh-pages -d web-build",
-        "predeploy": "expo export:web"
-    }
+  "homepage": "http://evanbacon.github.io/expo-gh-pages",
+  "scripts": {
+    "deploy": "gh-pages -d web-build",
+    "predeploy": "expo export:web"
+  }
 }
 ```
 
 > In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`.
 
-Finally deploy with:
+Finally, deploy with:
 
-```sh
-yarn deploy
-```
+<Terminal cmd={['$ yarn deploy']} />
 
 ---
 
@@ -155,40 +143,40 @@ Here are the formal instructions for deploying to GitHub Pages:
 
 - This is probably already done, but if not then you'll want to run `git init` and set the remote.
 
-  ```
+  ```sh
   $ git init
   Initialized empty Git repository in /path/to/expo-gh-pages/.git/
   ```
 
-2. **Add the GitHub repository as a "remote" in your local git repository**
+2. **Add the GitHub repository as a "remote" in your local git repository**.
 
-   ```
+   ```sh
    $ git remote add origin https://github.com/evanbacon/expo-gh-pages.git
    ```
 
    - This will make it so the `gh-pages` package knows where you want it to deploy your app.
    - It will also make it so git knows where you want it to push your source code (i.e. the commits on your `master` branch).
 
-3. **Install the `gh-pages` package as a "dev-dependency" of the app**
+3. **Install the `gh-pages` package as a `dev-dependency` of the app**.
 
    ```sh
    yarn add -D gh-pages
    ```
 
-4. **Configure your **package.json** for web hosting**
+4. **Configure your **package.json** for web hosting**.
 
-   - At the top level, add a `homepage` property. Set it's value to the string `http://{username on github, without the curly brackets}.github.io/{repo-name}`. For example: If my GitHub name is `evanbacon` and my GitHub repository is `expo-gh-pages`, I'll asign the following:
+   - At the top level, add a `homepage` property. Set its value to the string `http://{username on GitHub, without the curly brackets}.github.io/{repo-name}`. For example: If my GitHub name is `evanbacon` and my GitHub repository is `expo-gh-pages`, I'll asign the following:
 
    ```js
-   /* ... */
+   /* @hide ... */ /* @end */
    "homepage": "http://evanbacon.github.io/expo-gh-pages"
    ```
 
    - In the existing `scripts` property, add a `predeploy` property and a `deploy` property, each having the values shown below:
 
-   ```js
+   ```json package.json
    "scripts": {
-     /* ... */
+    /* @hide ... */ /* @end */
      "deploy": "gh-pages -d web-build",
      "predeploy": "expo export:web"
    }
@@ -196,9 +184,9 @@ Here are the formal instructions for deploying to GitHub Pages:
 
    > In projects running SDK 45 or lower, use `expo build:web` instead of `expo export:web`. `predeploy` is automatically run before `deploy`.
 
-5. **Generate a _production build_ of your app, and deploy it to GitHub Pages.** (2 minutes)
+5. **Generate a _production build_ of your app, and deploy it to GitHub Pages**.
 
-   ```
+   ```sh
    $ yarn deploy
    ```
 
@@ -214,9 +202,9 @@ Learn more about [Firebase Hosting](https://console.firebase.google.com/).
 
 - Create a firebase project with the [Firebase Console](https://console.firebase.google.com).
 
-- Install the Firebase CLI if you haven’t already by following these [instructions](https://firebase.google.com/docs/hosting).
+- Install the Firebase CLI if you haven't already by following these [instructions](https://firebase.google.com/docs/hosting).
 - Run the `firebase login` command, then promptly log in.
-- Run the `firebase init` command, select your project and hosting.
+- Run the `firebase init` command, and select your project and hosting.
 
 - When asked about the public path, make sure to specify the `web-build` folder.
 
@@ -226,9 +214,9 @@ Learn more about [Firebase Hosting](https://console.firebase.google.com/).
 
 In the existing `scripts` property, add a `predeploy` property and a `deploy` property, each having the values shown below:
 
-```js
+```json package.json
 "scripts": {
-  /* ... */
+  /* @hide ... */ /* @end */
   "predeploy": "expo export:web",
   "deploy-hosting": "npm run predeploy && firebase deploy --only hosting",
 }
@@ -238,15 +226,15 @@ In the existing `scripts` property, add a `predeploy` property and a `deploy` pr
 
 Run the `npm run deploy-hosting` command to deploy.
 
-Open the url from the console output to check your deployment, e.g. https://PROJECTNAME.firebaseapp.com
+Open the URL from the console output to check your deployment, for example, https://PROJECTNAME.firebaseapp.com
 
-In case you want to change the header for hosting add the following config in `hosting` section in firebase.json:
+In case you want to change the header for hosting add the following config in `hosting` section in **firebase.json**:
 
-```js
+```json firebase.json
   "hosting": [
     {
       /* ... */
- "headers": [
+  "headers": [
         {
           "source": "/**",
           "headers": [

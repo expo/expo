@@ -1,5 +1,6 @@
 ---
 title: Linking
+description: Learn how to use Linking to handle a URL based on the URL scheme.
 ---
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
@@ -7,7 +8,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 
-URLs are the most powerful way to launch native applications. Native operating systems like macOS, iOS, Android, Windows, etc. have built-in link handling which chooses an app to handle a URL based on the _URL scheme_. The most common _URL schemes_ are `https` and `http` which are delegated to web browsers like Chrome, or Safari. Native apps, like the ones built with React Native, can implement any _URL scheme_, and the JavaScript React layer can handle the URL used to launch the corresponding native app.
+URLs are the most powerful way to launch native applications. Native operating systems like macOS, iOS, Android, Windows, and so on, have built-in link handling which chooses an app to handle a URL based on the _URL scheme_. The most common _URL schemes_ are `https` and `http` which are delegated to web browsers like Chrome, or Safari. Native apps, like the ones built with React Native, can implement any _URL scheme_, and the JavaScript React layer can handle the URL used to launch the corresponding native app.
 
 ## Linking from your app
 
@@ -191,7 +192,7 @@ You can test it to ensure it works like this:
 
 ### Linking to Expo Go
 
-[Expo Go][expo-go] uses the `exp://` scheme, but if we link to `exp://` without any address afterwards, it will open the app to the home screen.
+[Expo Go][expo-go] uses the `exp://` scheme, however, if we link to `exp://` without any address afterward, it will open the app to the home screen.
 
 In development, your app will live at a url like `exp://127.0.0.1:19000`. When published, an experience will be hosted at a URL like `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]`, where `u.expo.dev/[project-id]` is the hosted URL that Expo Go fetches from.
 
@@ -261,7 +262,7 @@ You can open a URL like:
 
 You can _also_ open a URL by searching for it on the device's native browser. For example, opening Safari on iOS and typing `exp://` then searching will prompt you to open [Expo Go][expo-go] (if installed).
 
-## Next
+## Next steps
 
 <BoxLink
   title="Deep linking"

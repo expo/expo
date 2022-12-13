@@ -1,5 +1,6 @@
 ---
 title: Bundling with webpack
+description: Learn about different webpack bundler configurations that can be customized.
 ---
 
 When you run `npx expo start --web` or `expo export:web` the CLI will check to see if your project has a **webpack.config.js** in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
@@ -15,9 +16,7 @@ If you create a new webpack config or make any changes to it you'll need to rest
 
 ## Example
 
-**webpack.config.js**
-
-```ts
+```js webpack.config.js
 const createExpoWebpackConfigAsync = require('@expo/webpack-config');
 
 // Expo CLI will await this method so you can optionally return a promise.
@@ -80,7 +79,7 @@ The reason it automatically includes the polyfill is because `react-native-web` 
 You can also use `npx expo customize` to generate the static project files: **index.html**, **serve.json**, and so on.
 These can be used to customize your project in a more familiar way.
 
-All of the files you select from the terminal prompt will be copied to a **web/** directory in your project's root directory. Think of this directory as **public/** in Create React App. We use "web" instead of "public" because Expo webpack is web-only, the static directory does not work for Android or iOS apps. For mobile platforms, we similarly put platform-specific project files in `/android` and `/ios` directories.
+All of the files you select from the terminal prompt will be copied to a **web/** directory in your project's root directory. Think of this directory as **public/** in Create React App. We use "web" instead of "public" because Expo webpack is web-only, the static directory does not work for Android or iOS apps. For mobile platforms, we similarly put platform-specific project files in **android** and **ios** directories.
 
 Deleting any of these files will cause Expo webpack to fallback to their respective default copies.
 
