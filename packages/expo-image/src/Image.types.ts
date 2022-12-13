@@ -1,6 +1,6 @@
 import { AccessibilityProps, ImageStyle as RNImageStyle } from 'react-native';
 
-export type ImageSource = {
+export type ImageUriSource = {
   /**
    * A string representing the resource identifier for the image,
    * which could be an http address, a local file path, or the name of a static image resource.
@@ -28,31 +28,33 @@ export type ImageStyle = RNImageStyle & {
 };
 
 // number on native platforms, string or number on web
-type RequireSource = number | string;
+export type RequireSource = number | string;
+
+export type ImageSource = ImageUriSource | RequireSource | (ImageUriSource | RequireSource)[];
 
 export type ImageProps = AccessibilityProps & {
   style?: ImageStyle;
   /**
    * The image source (either a remote URL or a local file resource).
    */
-  source?: ImageSource | RequireSource | (ImageSource | RequireSource)[];
+  source?: ImageSource;
 
   /**
    * A static image to display while loading the image source.
    */
-  placeholder?: ImageSource | ImageSource[] | number;
+  placeholder?: RequireSource;
 
   /**
    * A static image to display while loading the image source.
    * @platform android
    */
-  defaultSource?: ImageSource | null;
+  defaultSource?: RequireSource | null;
   /**
    * Similarly to `source`, this property represents the resource used to render the loading indicator for the image.
    * The loading indicator is displayed until image is ready to be displayed, typically after the image is downloaded.
    * @platform android
    */
-  loadingIndicatorSource?: ImageSource | null;
+  loadingIndicatorSource?: RequireSource | null;
 
   /**
    * Determines how the image should be resized to fit its container.
