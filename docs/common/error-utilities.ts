@@ -247,6 +247,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+  '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
 
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
@@ -281,4 +282,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/branch/':
     'https://github.com/expo/config-plugins/tree/main/packages/react-native-branch',
   '/versions/latest/sdk/appstate/': '/versions/latest/react-native/appstate/',
+  '/versions/latest/sdk/google/': '/guides/authentication/',
 };
