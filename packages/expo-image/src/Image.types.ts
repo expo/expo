@@ -79,7 +79,13 @@ export type ImageProps = AccessibilityProps & {
    * Object that describes how the image view should transition the contents on props change.
    * @platform ios
    */
-  transition?: ImageTransition | null;
+  transition?: ImageTransition | number | null;
+
+  /**
+   * Fade animation duration in milliseconds.
+   * @deprecated This prop is deprecated, use [`transition`](#transition) instead.
+   */
+  fadeDuration?: number;
 
   /**
    * Priorities for completing loads. If more than one load is queued at a time,

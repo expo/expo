@@ -3,11 +3,13 @@ import {
   ImageContentPosition,
   ImageContentPositionObject,
   ImageContentPositionString,
+  ImageProps,
   ImageResizeMode,
 } from './Image.types';
 
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
+let loggedFadeDurationDeprecationWarning = false;
 
 /**
  * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
@@ -84,4 +86,25 @@ export function resolveContentPosition(
     return contentPositionObject;
   }
   return contentPosition;
+}
+
+/**
+ * If `transition` or `fadeDuration` is a number, it's resolved to a cross dissolve transition with the given duration.
+ * When `fadeDuration` is used, it logs an appropriate deprecation warning.
+ */
+export function resolveTransition(
+  transition?: ImageProps['transition'],
+  fadeDuration?: ImageProps['fadeDuration']
+): ImageProps['transition'] {
+  if (typeof transition === 'number') {
+    return { duration: transition };
+  }
+  if (!transition && typeof fadeDuration === 'number') {
+    if (!loggedFadeDurationDeprecationWarning) {
+      console.warn('[expo-image]: Prop "fadeDuration" is deprecated, use "transition" instead');
+      loggedFadeDurationDeprecationWarning = true;
+    }
+    return { duration: fadeDuration };
+  }
+  return transition;
 }

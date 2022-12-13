@@ -60,6 +60,13 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImagePlaceholderScreen'));
     },
   },
+  {
+    name: 'Transitions',
+    route: 'image/transitions',
+    getComponent() {
+      return optionalRequire(() => require('./ImageTransitionsScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {
