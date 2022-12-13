@@ -59,7 +59,7 @@ enum ImageTransitionEffect: UInt, EnumArgument {
 
 struct ImageTransition: Record {
   @Field
-  var duration: Double = 0.1
+  var duration: Double = 100
 
   @Field
   var timing: ImageTransitionTiming = .easeInOut
