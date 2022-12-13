@@ -20,7 +20,6 @@ function ensureUnit(value) {
     }
     return `${trimmedValue}px`;
 }
-;
 function getObjectPositionFromContentPosition(contentPosition) {
     const resolvedPosition = (typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition);
     if (!resolvedPosition) {
@@ -50,7 +49,6 @@ function ensureIsArray(source) {
     }
     return [source];
 }
-;
 function useImageState(source) {
     const [imageState, setImageState] = React.useState(source ? 'loading' : 'empty');
     React.useEffect(() => {
@@ -62,7 +60,6 @@ function useImageState(source) {
     }), [onLoad]);
     return [imageState, handlers];
 }
-;
 const getCSSTiming = (timing) => {
     return {
         [ImageTransitionTiming.EASE_IN]: 'ease-in',
