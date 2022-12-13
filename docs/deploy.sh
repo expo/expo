@@ -152,6 +152,8 @@ redirects[eas-update/bare-react-native]=bare/updating-your-app
 redirects[worfkflow/publishing]=archive/classic-updates/publishing
 redirects[classic/building-standalone-apps/]=archive/classic-updates/building-standalone-apps/
 redirects[classic/turtle-cli/]=archive/classic-updates/turtle-cli/
+redirects[archive/classic-updates/getting-started/]=eas-update/getting-started/
+redirects[archived/]=archive/
 
 # Old tutorial pages
 redirects[introduction/walkthrough]=tutorial/introduction/
@@ -167,6 +169,8 @@ redirects[versions/latest/sdk/appearance]=versions/latest/react-native/appearanc
 redirects[versions/latest/sdk/app-loading]=versions/latest/sdk/splash-screen/
 redirects[versions/latest/sdk/app-auth]=guides/authentication/
 redirects[versions/latest/sdk/google-sign-in]=guides/authentication/
+redirects[versions/latest/sdk/google]=guides/authentication/
+redirects[versions/latest/sdk/amplitude/]=guides/using-analytics/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
