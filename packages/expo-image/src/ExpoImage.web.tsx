@@ -198,7 +198,7 @@ export default function ExpoImage({
         position: 'relative',
       }}>
       <img
-        src={ensureIsArray(source).map(resolveAssetSource)?.[0]?.uri}
+        src={ensureIsArray(placeholder).map(resolveAssetSource)?.[0]?.uri}
         style={{
           width: '100%',
           height: '100%',

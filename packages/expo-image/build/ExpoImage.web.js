@@ -140,7 +140,7 @@ export default function ExpoImage({ source, placeholder, loadingIndicatorSource,
             overflow: 'hidden',
             position: 'relative',
         } },
-        React.createElement("img", { src: ensureIsArray(source).map(resolveAssetSource)?.[0]?.uri, style: {
+        React.createElement("img", { src: ensureIsArray(placeholder).map(resolveAssetSource)?.[0]?.uri, style: {
                 width: '100%',
                 height: '100%',
                 position: 'absolute',
