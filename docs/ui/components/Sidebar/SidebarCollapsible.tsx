@@ -1,19 +1,20 @@
 import { css } from '@emotion/react';
 import { theme, iconSize, spacing, ChevronDownIcon, borderRadius, shadows } from '@expo/styleguide';
 import { useRouter } from 'next/router';
-import React, { useEffect, useRef, useState } from 'react';
+import type { PropsWithChildren } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { ButtonBase } from '../Button';
 import { CALLOUT } from '../Text';
 
-import stripVersionFromPath from '~/common/stripVersionFromPath';
+import { stripVersionFromPath } from '~/common/utilities';
 import { NavigationRoute } from '~/types/common';
 
 if (typeof window !== 'undefined' && !window.hasOwnProperty('sidebarState')) {
   window.sidebarState = {};
 }
 
-type Props = React.PropsWithChildren<{
+type Props = PropsWithChildren<{
   info: NavigationRoute;
 }>;
 
