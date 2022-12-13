@@ -69,6 +69,10 @@ public final class ImageModule: Module {
       }
     }
 
+    Function("prefetch") { (urls: [URL]) in
+      SDWebImagePrefetcher.shared.prefetchURLs(urls)
+    }
+
     AsyncFunction("clearMemoryCache") { () -> Bool in
       SDImageCache.shared.clearMemory()
       return true
