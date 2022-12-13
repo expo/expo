@@ -1,6 +1,7 @@
 ---
 title: Using Sentry
 maxHeadingDepth: 4
+description: A guide on installing and configuring Sentry for crash reporting.
 ---
 
 import { ConfigReactNative, ConfigClassic } from '~/components/plugins/ConfigSection';
@@ -191,8 +192,7 @@ Add `expo.plugins` to your project's **app.json** (or **app.config.js**) file:
 ```json app.json
 {
   "expo": {
-    /* @hide ... your existing configuration */ /* @end */
-    "plugins": ["sentry-expo"]
+    /* @hide ... your existing configuration */ /* @end */ "plugins": ["sentry-expo"]
   }
 }
 ```
@@ -231,26 +231,30 @@ If you're using EAS Update, or if you're self-hosting your updates (this means y
   - `dist` should be set to the Update ID that `eas update` generated.
 
 <Tabs>
-<Tab label="Android">
-<Terminal cmd={[
-  "$ node_modules/@sentry/cli/bin/sentry-cli releases \\",
-  "    files <release name> \\",
-  "    upload-sourcemaps \\",
-  "    --dist <Android Update ID> \\",
-  "    --rewrite \\",
-  "    dist/bundles/index.android.bundle dist/bundles/android-<hash>.map",
-]} />
-</Tab>
-<Tab label="iOS">
-<Terminal cmd={[
-  "$ node_modules/@sentry/cli/bin/sentry-cli releases \\",
-  "    files <release name> \\",
-  "    upload-sourcemaps \\",
-  "    --dist <iOS Update ID> \\",
-  "    --rewrite \\",
-  "    dist/bundles/main.jsbundle dist/bundles/ios-<hash>.map",
-]} />
-</Tab>
+  <Tab label="Android">
+    <Terminal
+      cmd={[
+        '$ node_modules/@sentry/cli/bin/sentry-cli releases \\',
+        '    files <release name> \\',
+        '    upload-sourcemaps \\',
+        '    --dist <Android Update ID> \\',
+        '    --rewrite \\',
+        '    dist/bundles/index.android.bundle dist/bundles/android-<hash>.map',
+      ]}
+    />
+  </Tab>
+  <Tab label="iOS">
+    <Terminal
+      cmd={[
+        '$ node_modules/@sentry/cli/bin/sentry-cli releases \\',
+        '    files <release name> \\',
+        '    upload-sourcemaps \\',
+        '    --dist <iOS Update ID> \\',
+        '    --rewrite \\',
+        '    dist/bundles/main.jsbundle dist/bundles/ios-<hash>.map',
+      ]}
+    />
+  </Tab>
 </Tabs>
 
 For more information, see Sentry's [instructions for uploading the bundle and sourcemaps](https://docs.sentry.io/platforms/react-native/sourcemaps/#3-upload-the-bundle-and-source-maps).
@@ -264,12 +268,11 @@ import * as Updates from 'expo-updates';
 Sentry.init({
   dsn: 'YOUR DSN',
   release: 'my release name',
-  dist: 'my dist'
+  dist: 'my dist',
 });
 ```
 
 These values should match the values you pass to the `sentry-cli` when uploading your sourcemaps.
-
 
 ### Testing Sentry
 

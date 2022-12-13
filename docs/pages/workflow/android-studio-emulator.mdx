@@ -1,5 +1,6 @@
 ---
 title: Android Studio Emulator
+description: Learn how to set up the Android Emulator to test your app on a virtual Android device.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
@@ -50,6 +51,7 @@ in `~/.bash_profile` (or `~/.zshenv` if you use Zsh) - for example:`export ANDRO
 [ -d "$HOME/Library/Android/sdk" ] && ANDROID_HOME=$HOME/Library/Android/sdk || ANDROID_HOME=$HOME/Android/Sdk
 echo "export ANDROID_HOME=$ANDROID_HOME" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
+
 </Step>
 
 <Step label="6">
@@ -59,6 +61,7 @@ Copy and paste this line to do this automatically for Bash and Zsh:
 ```bash
 echo "export PATH=$ANDROID_HOME/platform-tools:\$PATH" >> ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
+
 </Step>
 
 <Step label="7">
@@ -67,6 +70,7 @@ Reload the path environment variables by running:
 ```bash
 source ~/`[[ $SHELL == *"zsh" ]] && echo '.zshenv' || echo '.bash_profile'`
 ```
+
 </Step>
 
 <Step label="8">

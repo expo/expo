@@ -1,5 +1,6 @@
 ---
-title: Light and Dark modes
+title: Light and dark modes
+description: Learn how to support light and dark modes in your app.
 ---
 
 import { SnackInline } from '~/ui/components/Snippet';
@@ -11,17 +12,15 @@ Regardless of whether you are personally on team light or team dark, it's becomi
 
 ## Configuration
 
-Both managed and bare projects for iOS and Android require additional configuration to support switching between light and dark mode. No additional configuration is required for web.
+Both managed and bare projects for Android and iOS require additional configuration to support switching between light and dark modes. No additional configuration is required for the web.
 
 ### Managed projects
 
-Configure your supported appearance styles in **app.json**/**app.config.js** with the `userInterfaceStyle` key. You can also configure specific platform to support different appearance styles by setting either `android.userInterfaceStyle` or `ios.userInterfaceStyle` to preferred value.
+Configure your supported appearance styles in **app.json**/**app.config.js** with the `userInterfaceStyle` key. You can also configure specific platforms to support different appearance styles by setting either `android.userInterfaceStyle` or `ios.userInterfaceStyle` to the preferred value.
 
-The available options are: `automatic` (follow system appearance settings and notify about any change user makes), `light` (restrict app to support light theme only), and `dark` (restrict app to support dark theme only). If this key is absent, the app will default to the `light` style.
+The available options are `automatic` (follow system appearance settings and notify about any change user makes), `light` (restrict the app to support light theme only), and `dark` (restrict the app to support dark theme only). If this key is absent, the app will default to the `light` style. Here is an example configuration:
 
-Example **app.json** configuration:
-
-```json
+```json app.json
 {
   "expo": {
     "userInterfaceStyle": "automatic"
@@ -36,10 +35,6 @@ In EAS Build and development builds you'll need to install the native module `ex
 ```
 
 ### Bare projects
-
-#### iOS configuration
-
-You can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app **Info.plist**. Use `Automatic` to support both light and dark modes.
 
 #### Android configuration
 
@@ -71,6 +66,10 @@ public class MainActivity extends ReactActivity {
 }
 ```
 
+#### iOS configuration
+
+You can configure supported styles with the [UIUserInterfaceStyle](https://developer.apple.com/documentation/bundleresources/information_property_list/uiuserinterfacestyle) key in your app **Info.plist**. Use `Automatic` to support both light and dark modes.
+
 ## Detecting the color scheme
 
 To detect the color scheme in our application, we can use `Appearance` and/or `useColorScheme` from `react-native`:
@@ -93,11 +92,11 @@ function MyComponent() {
 }
 ```
 
-In some cases, you may find it helpful to get the current color scheme imperatively with `Appearance.getColorScheme()` and/or listen to changes with `Appearance.addChangeListener`. [Read more](https://reactnative.dev/docs/appearance).
+In some cases, you may find it helpful to get the current color scheme imperatively with [`Appearance.getColorScheme()` and/or listen to changes with `Appearance.addChangeListener`](https://reactnative.dev/docs/appearance).
 
 ## Example
 
-> Don't forget to configure your project to support automatic color scheme as described above in [Configuration](#configuration).
+> Don't forget to configure your project to support the automatic color scheme as described above in [Configuration](#configuration).
 
 <SnackInline label="useColorScheme example" dependencies={['expo-status-bar']}>
 
@@ -148,7 +147,7 @@ const styles = StyleSheet.create({
 
 While you're developing, you may want to change your simulator's or device's appearance.
 
-- If working with an iOS emulator locally, you can use the `command` + `shift` + `a` shortcut to toggle between light and dark mode.
+- If working with an iOS emulator locally, you can use the <kbd>Cmd ⌘</kbd> + <kbd>Shift</kbd> + <kbd>A</kbd> shortcut to toggle between light and dark mode.
 - If using an Android Emulator, you can run `adb shell "cmd uimode night yes"` to enable dark mode, and `adb shell "cmd uimode night no"` to disable dark mode.
 - If using a real device or an Android Emulator, you can toggle the system dark mode setting in the device's settings.
 - [Snack](https://snack.expo.dev) is locked to light mode.

@@ -1,22 +1,23 @@
 ---
 title: Common development errors
+description: A list of common development errors that are encountered by developers using Expo.
 ---
 
-Here you will find a list of errors that are commonly encountered by developers using Expo. For each error, the first bullet provides an explanation for why the error occurs and the second bullet contains debugging suggestions. If there is an error you think belongs here, we welcome and encourage you to [create a PR!](https://github.com/expo/expo/pulls)
+This page outlines a list of errors that are commonly encountered by developers using Expo. For each error, the first bullet provides an explanation for why the error occurs and the second bullet contains debugging suggestions. If there is an error you think belongs here, we welcome and encourage you to [create a PR](https://github.com/expo/expo/pulls)!
 
-### expo command not found
+### `expo` command not found
 
 > **info** This applies to the [legacy `expo-cli`](/archived/expo-cli) package which is no longer used in Expo SDK 46 and greater.
 
 - Either you do not have `expo-cli` installed or it is not properly configured in your `$PATH`.
 
-- [Install expo-cli](../get-started/installation.mdx) if you have not already. Otherwise, check how to set your `$PATH` based on your OS.
+- [Install expo-cli](/get-started/installation) if you have not already. Otherwise, check how to set your `$PATH` based on your OS.
 
 ### Metro bundler ECONNREFUSED 127.0.0.1:19001
 
 - An error is preventing the connection to your local development server.
 
-- Run `rm -rf .expo` to clear your local state. Check for firewalls or [proxies](../guides/troubleshooting-proxies.mdx) affecting the network you are currently connected to.
+- Run `rm -rf .expo` to clear your local state. Check for firewalls or [proxies](/guides/troubleshooting-proxies) affecting the network you are currently connected to.
 
 ### Module AppRegistry is not a registered callable module (calling runApplication)
 
@@ -34,13 +35,13 @@ Here you will find a list of errors that are commonly encountered by developers 
 
 - The SDK version you are running has been deprecated and is no longer supported.
 
-- [Upgrade your project](../workflow/upgrading-expo-sdk-walkthrough.mdx) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo Go app.
+- [Upgrade your project](/workflow/upgrading-expo-sdk-walkthrough) to a supported SDK version. If you are using a supported version and see this message, you'll need to update your Expo Go app.
 
 ### React Native version mismatch
 
 - The development server running in your terminal is bundling a different version of React Native than the app in your device or simulator.
 
-- [Align your versions of react-native](../troubleshooting/react-native-version-mismatch) by checking the versions in your **app.json** and **package.json**
+- [Align your versions of react-native](/troubleshooting/react-native-version-mismatch) by checking the versions in your **app.json** and **package.json**
 
 ### Application has not been registered
 

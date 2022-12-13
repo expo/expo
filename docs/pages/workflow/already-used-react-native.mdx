@@ -1,17 +1,18 @@
 ---
-title: Already used React Native?
+title: Already used React Native
+description: If you are familiar with React Native, this guide will help you understand the key differences between Expo and React Native.
 ---
 
 import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { Terminal } from '~/ui/components/Snippet';
 
-This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
+This guide is intended to give developers who have already used React Native a quick outline of some of the key concepts, resources, and differences they will encounter when using Expo.
 
-You can use just about every part of the [Expo SDK](/versions/latest/) in any vanilla React Native app - we call using the Expo tools in this context the "bare" workflow. See more about that [here](../bare/hello-world.mdx). It's basically no different than using libraries in your React Native app, we just offer a lot of well-tested, consistent, and increasingly comprehensive libraries that give you access to the underlying native APIs.
+You can use just about every part of the [Expo SDK](/versions/latest/) in any vanilla React Native app - we call using the Expo tools in this context the ["bare" workflow](/bare/hello-world). It's no different than using libraries in your React Native app, we just offer a lot of well-tested, consistent, and increasingly comprehensive libraries that give you access to the underlying native APIs.
 
 ## Expo managed workflow
 
-The Expo managed workflow provides a _shared native runtime_ so you don't write native code, you focus on writing your React app in JavaScript. You don't have to worry about iOS or Android specific settings, or even opening up Xcode. Managed Expo projects have their own workflow including Expo CLI (a command line interface) to make developing and deploying easy.
+The Expo managed workflow provides a _shared native runtime_ so you don't write native code, you focus on writing your React app in JavaScript. You don't have to worry about Android or iOS specific settings, or even opening up Xcode. Managed Expo projects have their own workflow including Expo CLI (a command line interface) to make developing and deploying easy.
 
 - If you've ever upgraded React Native or a native module you'll appreciate Expo's ability to seamlessly do this for you by only changing the version number.
 
@@ -35,13 +36,13 @@ Since you write your code in JavaScript, we bundle it up and serve it from S3. E
 
 ## Developing in Expo
 
-Apps are served from Expo CLI through a tunnel service by default (we currently use [ngrok](https://ngrok.com) for this) -- this means that you don't have to have your device connected to your computer, or to even be in the same room or country (or planet? I guess it should work from space) as the development machine and you can still live reload, use hot module reloading, enable remote JS debugging, and all of those things you can do normally with React Native. One caveat to this is that using a tunnel is a bit slower than using your LAN address or localhost, so if you can, you should use LAN or localhost. [See how to configure this in Expo CLI](/workflow/expo-cli.mdx#develop).
+Apps are served from Expo CLI through a tunnel service by default (we currently use [ngrok](https://ngrok.com) for this) -- this means that you don't have to have your device connected to your computer, or to even be in the same room or country (or planet? I guess it should work from space) as the development machine and you can still live reload, use hot module reloading, enable remote JS debugging, and all of those things you can do normally with React Native. One caveat to this is that using a tunnel is a bit slower than using your LAN address or localhost, so if you can, you should use LAN or localhost. [See how to configure this in Expo CLI](/workflow/expo-cli#develop).
 
 - Expo streams your device logs to Expo CLI so you don't need to run `adb logcat` or the iOS equivalent -- the `console.log / warn /error` messages from any device that is connected to your app will show up automatically in your terminal.
 
 ## What Expo can't do
 
-- See [Why not Expo?](../introduction/why-not-expo.mdx) for more information.
+- See [Why not Expo?](/introduction/why-not-expo) for more information.
 
 ## Deploying to the App / Play Store
 
