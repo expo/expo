@@ -272,7 +272,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/tutorial/text/': '/tutorial/introduction/',
 
   // Redirects for removed /archived pages
-  '/archived/': '/',
+  '/archived/': '/archive/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
