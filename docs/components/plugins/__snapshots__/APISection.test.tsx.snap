@@ -7,7 +7,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#component"
     >
       <span
@@ -57,7 +57,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationbutton"
       >
         <span
@@ -120,7 +120,7 @@ exports[`APISection expo-apple-authentication 1`] = `
         &lt;
         <span>
           <a
-            class="css-153g748-InternalLink"
+            class="css-dqmbnf-A"
             href="#appleauthenticationbuttonprops"
           >
             AppleAuthenticationButtonProps
@@ -130,8 +130,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </code>
     </p>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
 your screen. The App Store Guidelines require you to use this component to start the
@@ -139,12 +138,11 @@ authentication process instead of a custom button. Limited customization of the 
 available via the provided properties.
     </p>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       You should only attempt to render this if 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#isavailableasync"
       >
         <code
@@ -172,8 +170,7 @@ a warning in development mode (
     
 
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       The properties of this component extend from 
       <code
@@ -220,14 +217,13 @@ button.
     
 
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Make sure to attach height and width via the style props as without these styles, the button will
 not appear on the screen.
     </p>
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -255,13 +251,13 @@ not appear on the screen.
         class="css-19syq17-Callout"
       >
         <strong
-          class="css-1qx481h-B"
+          class="css-7r3rok-TextComponent"
         >
           See: 
         </strong>
         <span>
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
             rel="noopener noreferrer"
             target="_blank"
@@ -279,7 +275,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#props"
       >
         <span
@@ -330,7 +326,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#buttonstyle"
           >
             <span
@@ -390,7 +386,7 @@ for more details.
             class="inline css-ov7own-InlineCode"
           >
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#appleauthenticationbuttonstyle"
             >
               AppleAuthenticationButtonStyle
@@ -398,8 +394,7 @@ for more details.
           </code>
         </p>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           The Apple-defined color scheme to use to display the button.
         </p>
@@ -412,7 +407,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#buttontype"
           >
             <span
@@ -472,7 +467,7 @@ for more details.
             class="inline css-ov7own-InlineCode"
           >
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#appleauthenticationbuttontype"
             >
               AppleAuthenticationButtonType
@@ -480,8 +475,7 @@ for more details.
           </code>
         </p>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
         </p>
@@ -494,7 +488,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#cornerradius"
           >
             <span
@@ -562,8 +556,7 @@ for more details.
           </code>
         </p>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           The border radius to use when rendering the button. This works similarly to
 
@@ -583,7 +576,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#style"
           >
             <span
@@ -651,7 +644,7 @@ for more details.
             &lt;
             <span>
               <a
-                class="css-ccg2mn-ExternalLink"
+                class="css-dqmbnf-A"
                 href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -661,7 +654,7 @@ for more details.
               &lt;
               <span>
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="/versions/latest/react-native/view-style-props"
                 >
                   ViewStyle
@@ -683,8 +676,7 @@ for more details.
           </code>
         </p>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           The custom style to apply to the button. Should not include 
           <code
@@ -710,7 +702,7 @@ properties.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#onpress"
           >
             <span
@@ -776,12 +768,11 @@ properties.
           </code>
         </p>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           The method to call when the user presses the button. You should call 
           <a
-            class="css-153g748-InternalLink"
+            class="css-dqmbnf-A"
             href="#isavailableasync"
           >
             <code
@@ -799,7 +790,7 @@ in here.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#inherited-props"
         >
           <span
@@ -852,7 +843,7 @@ in here.
             class="inline css-ov7own-InlineCode"
           >
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="/versions/latest/react-native/view#props"
             >
               ViewProps
@@ -867,7 +858,7 @@ in here.
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#methods"
     >
       <span
@@ -917,7 +908,7 @@ in here.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#getcredentialstateasyncuser"
       >
         <span
@@ -967,7 +958,7 @@ in here.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -997,16 +988,16 @@ in here.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 user
               </strong>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -1015,16 +1006,15 @@ in here.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 The unique identifier for the user whose credential state you'd like to check.
 This should come from the user field of an 
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationcredentialstate"
                 >
                   <code
@@ -1041,15 +1031,14 @@ This should come from the user field of an
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
     </p>
     
 
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -1079,11 +1068,10 @@ This should come from the user field of an
         
 
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           <strong
-            class="css-1qx481h-B"
+            class="css-7r3rok-TextComponent"
           >
             Note:
           </strong>
@@ -1102,7 +1090,7 @@ This should come from the user field of an
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns"
         >
           <span
@@ -1174,7 +1162,7 @@ This should come from the user field of an
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1184,7 +1172,7 @@ This should come from the user field of an
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#appleauthenticationcredentialstate"
             >
               AppleAuthenticationCredentialState
@@ -1195,12 +1183,11 @@ This should come from the user field of an
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       A promise that fulfills with an 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationcredentialstate"
       >
         <code
@@ -1221,7 +1208,7 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#isavailableasync"
       >
         <span
@@ -1268,8 +1255,7 @@ value depending on the state of the credential.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Determine if the current device's operating system supports Apple authentication.
     </p>
@@ -1282,7 +1268,7 @@ value depending on the state of the credential.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-1"
         >
           <span
@@ -1354,7 +1340,7 @@ value depending on the state of the credential.
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1370,8 +1356,7 @@ value depending on the state of the credential.
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       A promise that fulfills with 
       <code
@@ -1396,7 +1381,7 @@ value depending on the state of the credential.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#refreshasyncoptions"
       >
         <span
@@ -1446,7 +1431,7 @@ value depending on the state of the credential.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -1476,22 +1461,22 @@ value depending on the state of the credential.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 options
               </strong>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationrefreshoptions"
                 >
                   AppleAuthenticationRefreshOptions
@@ -1499,15 +1484,14 @@ value depending on the state of the credential.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 An 
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationrefreshoptions"
                 >
                   <code
@@ -1524,8 +1508,7 @@ value depending on the state of the credential.
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       An operation that refreshes the logged-in user’s credentials.
 Calling this method will show the sign in modal before actually refreshing the user credentials.
@@ -1539,7 +1522,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-2"
         >
           <span
@@ -1611,7 +1594,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1621,7 +1604,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
@@ -1632,12 +1615,11 @@ Calling this method will show the sign in modal before actually refreshing the u
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       A promise that fulfills with an 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -1665,7 +1647,7 @@ refresh operation.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#signinasyncoptions"
       >
         <span
@@ -1715,7 +1697,7 @@ refresh operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -1745,10 +1727,10 @@ refresh operation.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 options
               </strong>
@@ -1760,13 +1742,13 @@ refresh operation.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationsigninoptions"
                 >
                   AppleAuthenticationSignInOptions
@@ -1774,15 +1756,14 @@ refresh operation.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 An optional 
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationsigninoptions"
                 >
                   <code
@@ -1799,15 +1780,13 @@ refresh operation.
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Sends a request to the operating system to initiate the Apple authentication flow, which will
 present a modal to the user over your app and allow them to sign in.
     </p>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       You can request access to the user's full name and email address in this method, which allows you
 to personalize your UI for signed in users. However, users can deny access to either or both
@@ -1816,14 +1795,13 @@ of these options at runtime.
     
 
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Additionally, you will only receive Apple Authentication Credentials the first time users sign
 into your app, so you must store it for later use. It's best to store this information either
 server-side, or using 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="./securestore"
       >
         SecureStore
@@ -1831,7 +1809,7 @@ server-side, or using
       , so that the data persists across app installs.
 You can use 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -1852,7 +1830,7 @@ the user, since this remains the same for apps released by the same developer.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-3"
         >
           <span
@@ -1924,7 +1902,7 @@ the user, since this remains the same for apps released by the same developer.
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1934,7 +1912,7 @@ the user, since this remains the same for apps released by the same developer.
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
@@ -1945,12 +1923,11 @@ the user, since this remains the same for apps released by the same developer.
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       A promise that fulfills with an 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -1978,7 +1955,7 @@ sign-in operation.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#signoutasyncoptions"
       >
         <span
@@ -2028,7 +2005,7 @@ sign-in operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2058,22 +2035,22 @@ sign-in operation.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 options
               </strong>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationsignoutoptions"
                 >
                   AppleAuthenticationSignOutOptions
@@ -2081,15 +2058,14 @@ sign-in operation.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 An 
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationsignoutoptions"
                 >
                   <code
@@ -2106,21 +2082,19 @@ sign-in operation.
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       An operation that ends the authenticated session.
 Calling this method will show the sign in modal before actually signing the user out.
     </p>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       It is not recommended to use this method to sign out the user as it works counterintuitively.
 Instead of using this method it is recommended to simply clear all the user's data collected
 from using 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="./#signinasync"
       >
         <code
@@ -2131,7 +2105,7 @@ from using
       </a>
        or 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="./#refreshasync"
       >
         <code
@@ -2151,7 +2125,7 @@ from using
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-4"
         >
           <span
@@ -2223,7 +2197,7 @@ from using
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -2233,7 +2207,7 @@ from using
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
@@ -2244,12 +2218,11 @@ from using
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       A promise that fulfills with an 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -2274,7 +2247,7 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#event-subscriptions"
     >
       <span
@@ -2324,7 +2297,7 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#addrevokelistenerlistener"
       >
         <span
@@ -2374,7 +2347,7 @@ sign-out operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2404,16 +2377,16 @@ sign-out operation.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 listener
               </strong>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2424,7 +2397,7 @@ sign-out operation.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               -
             </td>
@@ -2441,7 +2414,7 @@ sign-out operation.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-5"
         >
           <span
@@ -2513,7 +2486,7 @@ sign-out operation.
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-153g748-InternalLink"
+            class="css-dqmbnf-A"
             href="#subscription"
           >
             Subscription
@@ -2527,7 +2500,7 @@ sign-out operation.
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#types"
     >
       <span
@@ -2577,7 +2550,7 @@ sign-out operation.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationcredential"
       >
         <span
@@ -2624,12 +2597,11 @@ sign-out operation.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       The object type returned from a successful call to 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
@@ -2641,7 +2613,7 @@ sign-out operation.
       ,
 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
@@ -2652,7 +2624,7 @@ sign-out operation.
       </a>
       , or 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
@@ -2665,7 +2637,7 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -2693,13 +2665,13 @@ which contains all of the pertinent user and credential information.
         class="css-19syq17-Callout"
       >
         <strong
-          class="css-1qx481h-B"
+          class="css-7r3rok-TextComponent"
         >
           See: 
         </strong>
         <span>
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential"
             rel="noopener noreferrer"
             target="_blank"
@@ -2716,7 +2688,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2746,7 +2718,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2755,7 +2727,7 @@ for more details.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2770,7 +2742,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A short-lived session token used by your app for proof of authorization when interacting with
@@ -2788,7 +2760,7 @@ the app's server counterpart. Unlike
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2797,7 +2769,7 @@ the app's server counterpart. Unlike
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2812,7 +2784,7 @@ the app's server counterpart. Unlike
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The user's email address. Might not be present if you didn't request the 
@@ -2832,7 +2804,7 @@ an Apple domain.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2841,14 +2813,14 @@ an Apple domain.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <span>
                   <a
-                    class="css-153g748-InternalLink"
+                    class="css-dqmbnf-A"
                     href="#appleauthenticationfullname"
                   >
                     AppleAuthenticationFullName
@@ -2861,7 +2833,7 @@ an Apple domain.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The user's name. May be 
@@ -2892,7 +2864,7 @@ your app.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2901,7 +2873,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2916,7 +2888,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A JSON Web Token (JWT) that securely communicates information about the user to your app.
@@ -2927,7 +2899,7 @@ your app.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2936,13 +2908,13 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationuserdetectionstatus"
                 >
                   AppleAuthenticationUserDetectionStatus
@@ -2950,7 +2922,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A value that indicates whether the user appears to the system to be a real person.
@@ -2961,7 +2933,7 @@ your app.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -2970,7 +2942,7 @@ your app.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -2985,7 +2957,7 @@ your app.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that your app provided as 
@@ -3017,7 +2989,7 @@ will be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3026,7 +2998,7 @@ will be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3035,7 +3007,7 @@ will be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An identifier associated with the authenticated user. You can use this to check if the user is
@@ -3057,7 +3029,7 @@ developers.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationfullname"
       >
         <span
@@ -3104,8 +3076,7 @@ developers.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       An object representing the tokenized portions of the user's full name. Any of all of the fields
 may be 
@@ -3120,7 +3091,7 @@ may be
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3150,7 +3121,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3159,7 +3130,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3174,7 +3145,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3183,7 +3154,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3192,7 +3163,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3207,7 +3178,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3216,7 +3187,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3225,7 +3196,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3240,7 +3211,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3249,7 +3220,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3258,7 +3229,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3273,7 +3244,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3282,7 +3253,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3291,7 +3262,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3306,7 +3277,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3315,7 +3286,7 @@ may be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3324,7 +3295,7 @@ may be
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3339,7 +3310,7 @@ may be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3356,7 +3327,7 @@ may be
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationrefreshoptions"
       >
         <span
@@ -3403,12 +3374,11 @@ may be
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       The options you can supply when making a call to 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
@@ -3421,7 +3391,7 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -3449,13 +3419,13 @@ You must include the ID string of the user whose credentials you'd like to refre
         class="css-19syq17-Callout"
       >
         <strong
-          class="css-1qx481h-B"
+          class="css-7r3rok-TextComponent"
         >
           See: 
         </strong>
         <span>
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
             target="_blank"
@@ -3472,7 +3442,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3502,7 +3472,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3517,13 +3487,13 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationscope"
                 >
                   AppleAuthenticationScope
@@ -3532,7 +3502,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3565,7 +3535,7 @@ requests they will be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3580,7 +3550,7 @@ requests they will be
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3589,7 +3559,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -3597,7 +3567,7 @@ successful authentication. This can be used to verify that the response was from
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
                 <a
-                  class="css-ccg2mn-ExternalLink"
+                  class="css-dqmbnf-A"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -3612,7 +3582,7 @@ OAuth 2.0 protocol
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3621,7 +3591,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3630,7 +3600,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -3647,7 +3617,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationsigninoptions"
       >
         <span
@@ -3694,12 +3664,11 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       The options you can supply when making a call to 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
@@ -3712,7 +3681,7 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -3740,13 +3709,13 @@ None of these options are required.
         class="css-19syq17-Callout"
       >
         <strong
-          class="css-1qx481h-B"
+          class="css-7r3rok-TextComponent"
         >
           See: 
         </strong>
         <span>
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
             target="_blank"
@@ -3763,7 +3732,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3793,7 +3762,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3808,7 +3777,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3817,13 +3786,13 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
 
                 <a
-                  class="css-ccg2mn-ExternalLink"
+                  class="css-dqmbnf-A"
                   href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -3838,7 +3807,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3853,13 +3822,13 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#appleauthenticationscope"
                 >
                   AppleAuthenticationScope
@@ -3868,7 +3837,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3901,7 +3870,7 @@ requests they will be
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -3916,7 +3885,7 @@ requests they will be
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -3925,7 +3894,7 @@ requests they will be
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -3933,7 +3902,7 @@ successful authentication. This can be used to verify that the response was from
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
                 <a
-                  class="css-ccg2mn-ExternalLink"
+                  class="css-dqmbnf-A"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -3956,7 +3925,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationsignoutoptions"
       >
         <span
@@ -4003,12 +3972,11 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       The options you can supply when making a call to 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
@@ -4021,7 +3989,7 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -4049,13 +4017,13 @@ You must include the ID string of the user to sign out.
         class="css-19syq17-Callout"
       >
         <strong
-          class="css-1qx481h-B"
+          class="css-7r3rok-TextComponent"
         >
           See: 
         </strong>
         <span>
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
             target="_blank"
@@ -4072,7 +4040,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -4102,7 +4070,7 @@ for more details.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -4117,7 +4085,7 @@ for more details.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -4126,7 +4094,7 @@ for more details.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4134,7 +4102,7 @@ successful authentication. This can be used to verify that the response was from
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
                 <a
-                  class="css-ccg2mn-ExternalLink"
+                  class="css-dqmbnf-A"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -4149,7 +4117,7 @@ OAuth 2.0 protocol
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -4158,7 +4126,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -4167,7 +4135,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -4184,7 +4152,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#subscription"
       >
         <span
@@ -4234,7 +4202,7 @@ OAuth 2.0 protocol
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -4264,7 +4232,7 @@ OAuth 2.0 protocol
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -4273,7 +4241,7 @@ OAuth 2.0 protocol
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -4285,7 +4253,7 @@ OAuth 2.0 protocol
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A method to unsubscribe the listener.
@@ -4301,7 +4269,7 @@ OAuth 2.0 protocol
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#enums"
     >
       <span
@@ -4351,7 +4319,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationbuttonstyle"
       >
         <span
@@ -4398,12 +4366,11 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       An enum whose values control which pre-defined color scheme to use when rendering an 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationappleauthenticationbutton"
       >
         <code
@@ -4426,7 +4393,7 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#white"
           >
             <span
@@ -4482,8 +4449,7 @@ OAuth 2.0 protocol
          ＝ 0
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         White button with black text.
       </p>
@@ -4500,7 +4466,7 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#white_outline"
           >
             <span
@@ -4556,8 +4522,7 @@ OAuth 2.0 protocol
          ＝ 1
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         White button with a black outline and black text.
       </p>
@@ -4574,7 +4539,7 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#black"
           >
             <span
@@ -4630,8 +4595,7 @@ OAuth 2.0 protocol
          ＝ 2
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         Black button with white text.
       </p>
@@ -4645,7 +4609,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationbuttontype"
       >
         <span
@@ -4692,12 +4656,11 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       An enum whose values control which pre-defined text to use when rendering an 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationappleauthenticationbutton"
       >
         <code
@@ -4720,7 +4683,7 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#sign_in"
           >
             <span
@@ -4776,8 +4739,7 @@ OAuth 2.0 protocol
          ＝ 0
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         "Sign in with Apple"
       </p>
@@ -4794,7 +4756,7 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#continue"
           >
             <span
@@ -4850,8 +4812,7 @@ OAuth 2.0 protocol
          ＝ 1
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         "Continue with Apple"
       </p>
@@ -4860,7 +4821,7 @@ OAuth 2.0 protocol
       class="css-181x4m0"
     >
       <strong
-        class="css-1qx481h-B"
+        class="css-7r3rok-TextComponent"
       >
         Only for:
          
@@ -4901,7 +4862,7 @@ OAuth 2.0 protocol
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#sign_up"
           >
             <span
@@ -4957,8 +4918,7 @@ OAuth 2.0 protocol
          ＝ 2
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         "Sign up with Apple"
       </p>
@@ -4972,7 +4932,7 @@ OAuth 2.0 protocol
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationcredentialstate"
       >
         <span
@@ -5019,12 +4979,11 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       An enum whose values specify state of the credential when checked with 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationgetcredentialstateasyncuser"
       >
         <code
@@ -5036,7 +4995,7 @@ OAuth 2.0 protocol
       .
     </p>
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -5064,13 +5023,13 @@ OAuth 2.0 protocol
         class="css-19syq17-Callout"
       >
         <strong
-          class="css-1qx481h-B"
+          class="css-7r3rok-TextComponent"
         >
           See: 
         </strong>
         <span>
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
             rel="noopener noreferrer"
             target="_blank"
@@ -5095,7 +5054,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#revoked"
           >
             <span
@@ -5163,7 +5122,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#authorized"
           >
             <span
@@ -5231,7 +5190,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#not_found"
           >
             <span
@@ -5299,7 +5258,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#transferred"
           >
             <span
@@ -5364,7 +5323,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationoperation"
       >
         <span
@@ -5422,7 +5381,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#implicit"
           >
             <span
@@ -5478,8 +5437,7 @@ for more details.
          ＝ 0
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         An operation that depends on the particular kind of credential provider.
       </p>
@@ -5496,7 +5454,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#login"
           >
             <span
@@ -5564,7 +5522,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#refresh"
           >
             <span
@@ -5632,7 +5590,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#logout"
           >
             <span
@@ -5697,7 +5655,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationscope"
       >
         <span
@@ -5744,12 +5702,11 @@ for more details.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       An enum whose values specify scopes you can request when calling 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
@@ -5761,7 +5718,7 @@ for more details.
       .
     </p>
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -5791,8 +5748,7 @@ for more details.
         
 
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           Note that it is possible that you will not be granted all of the scopes which you request.
 You will still need to handle null values for any fields you request.
@@ -5802,7 +5758,7 @@ You will still need to handle null values for any fields you request.
       </div>
     </blockquote>
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -5830,13 +5786,13 @@ You will still need to handle null values for any fields you request.
         class="css-19syq17-Callout"
       >
         <strong
-          class="css-1qx481h-B"
+          class="css-7r3rok-TextComponent"
         >
           See: 
         </strong>
         <span>
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
             rel="noopener noreferrer"
             target="_blank"
@@ -5861,7 +5817,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#full_name"
           >
             <span
@@ -5929,7 +5885,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#email"
           >
             <span
@@ -5994,7 +5950,7 @@ for more details.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#appleauthenticationuserdetectionstatus"
       >
         <span
@@ -6041,13 +5997,12 @@ for more details.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       An enum whose values specify the system's best guess for how likely the current user is a real person.
     </p>
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -6075,13 +6030,13 @@ for more details.
         class="css-19syq17-Callout"
       >
         <strong
-          class="css-1qx481h-B"
+          class="css-7r3rok-TextComponent"
         >
           See: 
         </strong>
         <span>
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
             rel="noopener noreferrer"
             target="_blank"
@@ -6106,7 +6061,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#unsupported"
           >
             <span
@@ -6162,8 +6117,7 @@ for more details.
          ＝ 0
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         The system does not support this determination and there is no data.
       </p>
@@ -6180,7 +6134,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#unknown"
           >
             <span
@@ -6236,8 +6190,7 @@ for more details.
          ＝ 1
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         The system has not determined whether the user might be a real person.
       </p>
@@ -6254,7 +6207,7 @@ for more details.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#likely_real"
           >
             <span
@@ -6310,8 +6263,7 @@ for more details.
          ＝ 2
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         The user appears to be a real person.
       </p>
@@ -6327,7 +6279,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#component"
     >
       <span
@@ -6377,7 +6329,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodescanner"
       >
         <span
@@ -6440,7 +6392,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         &lt;
         <span>
           <a
-            class="css-153g748-InternalLink"
+            class="css-dqmbnf-A"
             href="#barcodescannerprops"
           >
             BarCodeScannerProps
@@ -6454,7 +6406,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#props"
       >
         <span
@@ -6505,7 +6457,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#barcodetypes"
           >
             <span
@@ -6573,8 +6525,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </code>
         </p>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           An array of bar code types. Usage: 
           <code
@@ -6591,7 +6542,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </code>
            is one of these 
           <a
-            class="css-153g748-InternalLink"
+            class="css-dqmbnf-A"
             href="#supported-formats"
           >
             listed above
@@ -6601,8 +6552,7 @@ code types. It is recommended to provide only the bar code formats you expect to
 minimize battery usage.
         </p>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           For example: 
           <code
@@ -6621,7 +6571,7 @@ minimize battery usage.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#onbarcodescanned"
           >
             <span
@@ -6686,7 +6636,7 @@ minimize battery usage.
             class="inline css-ov7own-InlineCode"
           >
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#barcodescannedcallback"
             >
               BarCodeScannedCallback
@@ -6694,13 +6644,12 @@ minimize battery usage.
           </code>
         </p>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           A callback that is invoked when a bar code has been successfully scanned. The callback is
 provided with an 
           <a
-            class="css-153g748-InternalLink"
+            class="css-dqmbnf-A"
             href="#barcodescannerresult"
           >
             BarCodeScannerResult
@@ -6710,7 +6659,7 @@ provided with an
         
 
         <blockquote
-          class="css-1xjn6jt-Callout"
+          class="css-u8n1yk-Callout"
           data-testid="callout-container"
         >
           <div
@@ -6740,11 +6689,10 @@ provided with an
             
 
             <p
-              class="css-6jxvia-P"
-              data-text="true"
+              class="css-1a1x0ox-TextComponent"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 Note:
               </strong>
@@ -6777,7 +6725,7 @@ data has been retrieved.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#type"
           >
             <span
@@ -6869,8 +6817,7 @@ data has been retrieved.
           </span>
         </p>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           Camera facing. Use one of 
           <code
@@ -6905,7 +6852,7 @@ Same as
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#inherited-props"
         >
           <span
@@ -6958,7 +6905,7 @@ Same as
             class="inline css-ov7own-InlineCode"
           >
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="/versions/latest/react-native/view#props"
             >
               ViewProps
@@ -6973,7 +6920,7 @@ Same as
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#hooks"
     >
       <span
@@ -7023,7 +6970,7 @@ Same as
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#usepermissionsoptions"
       >
         <span
@@ -7073,7 +7020,7 @@ Same as
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -7103,10 +7050,10 @@ Same as
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 options
               </strong>
@@ -7118,13 +7065,13 @@ Same as
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#permissionhookoptions"
                 >
                   PermissionHookOptions
@@ -7137,7 +7084,7 @@ Same as
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               -
             </td>
@@ -7146,8 +7093,7 @@ Same as
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Create a new permission hook with the permission methods built-in.
 This can be used to quickly create specific permission hooks in every module.
@@ -7244,7 +7190,7 @@ This can be used to quickly create specific permission hooks in every module.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns"
         >
           <span
@@ -7323,7 +7269,7 @@ This can be used to quickly create specific permission hooks in every module.
             </span>
             <span>
               <a
-                class="css-153g748-InternalLink"
+                class="css-dqmbnf-A"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7336,7 +7282,7 @@ This can be used to quickly create specific permission hooks in every module.
             &lt;
             <span>
               <a
-                class="css-153g748-InternalLink"
+                class="css-dqmbnf-A"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7350,7 +7296,7 @@ This can be used to quickly create specific permission hooks in every module.
             &lt;
             <span>
               <a
-                class="css-153g748-InternalLink"
+                class="css-dqmbnf-A"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7368,7 +7314,7 @@ This can be used to quickly create specific permission hooks in every module.
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#methods"
     >
       <span
@@ -7418,7 +7364,7 @@ This can be used to quickly create specific permission hooks in every module.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodescannergetpermissionsasync"
       >
         <span
@@ -7465,8 +7411,7 @@ This can be used to quickly create specific permission hooks in every module.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Checks user's permissions for accessing the camera.
     </p>
@@ -7479,7 +7424,7 @@ This can be used to quickly create specific permission hooks in every module.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-1"
         >
           <span
@@ -7551,7 +7496,7 @@ This can be used to quickly create specific permission hooks in every module.
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7561,7 +7506,7 @@ This can be used to quickly create specific permission hooks in every module.
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -7572,12 +7517,11 @@ This can be used to quickly create specific permission hooks in every module.
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Return a promise that fulfills to an object of type 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#permissionresponse"
       >
         <code
@@ -7597,7 +7541,7 @@ This can be used to quickly create specific permission hooks in every module.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodescannerrequestpermissionsasync"
       >
         <span
@@ -7644,14 +7588,12 @@ This can be used to quickly create specific permission hooks in every module.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Asks the user to grant permissions for accessing the camera.
     </p>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       On iOS this will require apps to specify the 
       <code
@@ -7676,7 +7618,7 @@ This can be used to quickly create specific permission hooks in every module.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-2"
         >
           <span
@@ -7748,7 +7690,7 @@ This can be used to quickly create specific permission hooks in every module.
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7758,7 +7700,7 @@ This can be used to quickly create specific permission hooks in every module.
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -7769,12 +7711,11 @@ This can be used to quickly create specific permission hooks in every module.
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Return a promise that fulfills to an object of type 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#permissionresponse"
       >
         <code
@@ -7794,7 +7735,7 @@ This can be used to quickly create specific permission hooks in every module.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodescannerscanfromurlasyncurl-barcodetypes"
       >
         <span
@@ -7844,7 +7785,7 @@ This can be used to quickly create specific permission hooks in every module.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -7874,16 +7815,16 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 url
               </strong>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -7892,11 +7833,10 @@ This can be used to quickly create specific permission hooks in every module.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 URL to get the image from.
               </p>
@@ -7906,10 +7846,10 @@ This can be used to quickly create specific permission hooks in every module.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 barCodeTypes
               </strong>
@@ -7921,7 +7861,7 @@ This can be used to quickly create specific permission hooks in every module.
               </span>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -7930,11 +7870,10 @@ This can be used to quickly create specific permission hooks in every module.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 An array of bar code types. Defaults to all supported bar code types on
 the platform.
@@ -7942,7 +7881,7 @@ the platform.
               
 
               <blockquote
-                class="css-1xjn6jt-Callout"
+                class="css-u8n1yk-Callout"
                 data-testid="callout-container"
               >
                 <div
@@ -7972,11 +7911,10 @@ the platform.
                   
 
                   <p
-                    class="css-6jxvia-P"
-                    data-text="true"
+                    class="css-1a1x0ox-TextComponent"
                   >
                     <strong
-                      class="css-1qx481h-B"
+                      class="css-7r3rok-TextComponent"
                     >
                       Note:
                     </strong>
@@ -7992,8 +7930,7 @@ the platform.
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Scan bar codes from the image given by the URL.
     </p>
@@ -8006,7 +7943,7 @@ the platform.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-3"
         >
           <span
@@ -8078,7 +8015,7 @@ the platform.
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -8088,7 +8025,7 @@ the platform.
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#barcodescannerresult"
             >
               BarCodeScannerResult
@@ -8100,8 +8037,7 @@ the platform.
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       A possibly empty array of objects of the 
       <code
@@ -8119,7 +8055,7 @@ code.
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#interfaces"
     >
       <span
@@ -8169,7 +8105,7 @@ code.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#permissionresponse"
       >
         <span
@@ -8216,8 +8152,7 @@ code.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       An object obtained by permissions get and request functions.
     </p>
@@ -8230,7 +8165,7 @@ code.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#permissionresponse--properties"
         >
           <span
@@ -8278,7 +8213,7 @@ code.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8308,7 +8243,7 @@ code.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8317,7 +8252,7 @@ code.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8326,7 +8261,7 @@ code.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Indicates if user can be asked again for specific permission.
@@ -8339,7 +8274,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8348,13 +8283,13 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#permissionexpiration"
                 >
                   PermissionExpiration
@@ -8362,7 +8297,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Determines time when the permission expires.
@@ -8373,7 +8308,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8382,7 +8317,7 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8391,7 +8326,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A convenience boolean that indicates if the permission is granted.
@@ -8402,7 +8337,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8411,13 +8346,13 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#permissionstatus"
                 >
                   PermissionStatus
@@ -8425,7 +8360,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Determines the status of the permission.
@@ -8441,7 +8376,7 @@ in order to enable/disable the permission.
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#types"
     >
       <span
@@ -8491,7 +8426,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodebounds"
       >
         <span
@@ -8541,7 +8476,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8571,7 +8506,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8580,13 +8515,13 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#barcodepoint"
                 >
                   BarCodePoint
@@ -8594,7 +8529,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The origin point of the bounding box.
@@ -8605,7 +8540,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8614,13 +8549,13 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#barcodesize"
                 >
                   BarCodeSize
@@ -8628,7 +8563,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The size of the bounding box.
@@ -8647,7 +8582,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodeevent"
       >
         <span
@@ -8701,7 +8636,7 @@ in order to enable/disable the permission.
         class="inline css-ov7own-InlineCode"
       >
         <a
-          class="css-153g748-InternalLink"
+          class="css-dqmbnf-A"
           href="#barcodescannerresult"
         >
           BarCodeScannerResult
@@ -8714,7 +8649,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8744,7 +8679,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8759,7 +8694,7 @@ in order to enable/disable the permission.
               </span>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -8768,7 +8703,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -8785,7 +8720,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodeeventcallbackarguments"
       >
         <span
@@ -8835,7 +8770,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8865,7 +8800,7 @@ in order to enable/disable the permission.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -8874,13 +8809,13 @@ in order to enable/disable the permission.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#barcodeevent"
                 >
                   BarCodeEvent
@@ -8888,7 +8823,7 @@ in order to enable/disable the permission.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -8905,7 +8840,7 @@ in order to enable/disable the permission.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodepoint"
       >
         <span
@@ -8952,8 +8887,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
 are using the barcode scanner view, these values are adjusted to the dimensions of the view).
@@ -8962,7 +8896,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8992,7 +8926,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9001,7 +8935,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9010,7 +8944,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The 
@@ -9027,7 +8961,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9036,7 +8970,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9045,7 +8979,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The 
@@ -9070,7 +9004,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodescannedcallback"
       >
         <span
@@ -9122,7 +9056,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="css-rufzkc-Table"
       >
         <table
-          class="css-1goywt6-Table"
+          class="css-10cc7jf-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
@@ -9152,22 +9086,22 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-29opv4-Row"
             >
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 <strong
-                  class="css-1qx481h-B"
+                  class="css-7r3rok-TextComponent"
                 >
                   params
                 </strong>
               </td>
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 <code
                   class="inline css-ov7own-InlineCode"
                 >
                   <a
-                    class="css-153g748-InternalLink"
+                    class="css-dqmbnf-A"
                     href="#barcodeevent"
                   >
                     BarCodeEvent
@@ -9175,7 +9109,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 </code>
               </td>
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 -
               </td>
@@ -9193,7 +9127,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodescannerresult"
       >
         <span
@@ -9243,7 +9177,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9273,7 +9207,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9282,13 +9216,13 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#barcodebounds"
                 >
                   BarCodeBounds
@@ -9296,12 +9230,12 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The 
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#barcodebounds"
                 >
                   BarCodeBounds
@@ -9329,7 +9263,7 @@ For some types, they will represent the area used by the scanner.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9338,13 +9272,13 @@ For some types, they will represent the area used by the scanner.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#barcodepoint"
                 >
                   BarCodePoint
@@ -9353,7 +9287,7 @@ For some types, they will represent the area used by the scanner.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Corner points of the bounding box.
@@ -9384,7 +9318,7 @@ you don't get this value.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9393,7 +9327,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9402,7 +9336,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The information encoded in the bar code.
@@ -9413,7 +9347,7 @@ you don't get this value.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9422,7 +9356,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9431,7 +9365,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The barcode type.
@@ -9450,7 +9384,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#barcodesize"
       >
         <span
@@ -9500,7 +9434,7 @@ you don't get this value.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9530,7 +9464,7 @@ you don't get this value.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9539,7 +9473,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9548,7 +9482,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The height value.
@@ -9559,7 +9493,7 @@ you don't get this value.
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -9568,7 +9502,7 @@ you don't get this value.
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -9577,7 +9511,7 @@ you don't get this value.
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 The width value.
@@ -9596,7 +9530,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#permissionhookoptions"
       >
         <span
@@ -9671,7 +9605,7 @@ you don't get this value.
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#enums"
     >
       <span
@@ -9721,7 +9655,7 @@ you don't get this value.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#permissionstatus"
       >
         <span
@@ -9779,7 +9713,7 @@ you don't get this value.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#denied"
           >
             <span
@@ -9835,8 +9769,7 @@ you don't get this value.
          ＝ "denied"
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         User has denied the permission.
       </p>
@@ -9853,7 +9786,7 @@ you don't get this value.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#granted"
           >
             <span
@@ -9909,8 +9842,7 @@ you don't get this value.
          ＝ "granted"
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         User has granted the permission.
       </p>
@@ -9927,7 +9859,7 @@ you don't get this value.
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#undetermined"
           >
             <span
@@ -9983,8 +9915,7 @@ you don't get this value.
          ＝ "undetermined"
       </code>
       <p
-        class="css-6jxvia-P"
-        data-text="true"
+        class="css-1a1x0ox-TextComponent"
       >
         User hasn't granted or denied the permission yet.
       </p>
@@ -10000,7 +9931,7 @@ exports[`APISection expo-pedometer 1`] = `
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#methods"
     >
       <span
@@ -10050,7 +9981,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#getpermissionsasync"
       >
         <span
@@ -10105,7 +10036,7 @@ exports[`APISection expo-pedometer 1`] = `
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns"
         >
           <span
@@ -10177,7 +10108,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -10187,7 +10118,7 @@ exports[`APISection expo-pedometer 1`] = `
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -10206,7 +10137,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#getstepcountasyncstart-end"
       >
         <span
@@ -10256,7 +10187,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -10286,22 +10217,22 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 start
               </strong>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-ccg2mn-ExternalLink"
+                  class="css-dqmbnf-A"
                   href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -10311,11 +10242,10 @@ exports[`APISection expo-pedometer 1`] = `
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 A date indicating the start of the range over which to measure steps.
               </p>
@@ -10325,22 +10255,22 @@ exports[`APISection expo-pedometer 1`] = `
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 end
               </strong>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-ccg2mn-ExternalLink"
+                  class="css-dqmbnf-A"
                   href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -10350,11 +10280,10 @@ exports[`APISection expo-pedometer 1`] = `
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 A date indicating the end of the range over which to measure steps.
               </p>
@@ -10364,8 +10293,7 @@ exports[`APISection expo-pedometer 1`] = `
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Get the step count between two dates.
     </p>
@@ -10378,7 +10306,7 @@ exports[`APISection expo-pedometer 1`] = `
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-1"
         >
           <span
@@ -10450,7 +10378,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -10460,7 +10388,7 @@ exports[`APISection expo-pedometer 1`] = `
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#pedometerresult"
             >
               PedometerResult
@@ -10471,12 +10399,11 @@ exports[`APISection expo-pedometer 1`] = `
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Returns a promise that fulfills with a 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#pedometerresult"
       >
         <code
@@ -10490,12 +10417,11 @@ exports[`APISection expo-pedometer 1`] = `
     
 
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       As 
       <a
-        class="css-ccg2mn-ExternalLink"
+        class="css-dqmbnf-A"
         href="https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc"
         rel="noopener noreferrer"
         target="_blank"
@@ -10507,7 +10433,7 @@ exports[`APISection expo-pedometer 1`] = `
     
 
     <blockquote
-      class="css-1xjn6jt-Callout"
+      class="css-u8n1yk-Callout"
       data-testid="callout-container"
     >
       <div
@@ -10537,8 +10463,7 @@ exports[`APISection expo-pedometer 1`] = `
         
 
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           Only the past seven days worth of data is stored and available for you to retrieve. Specifying
 a start date that is more than seven days in the past returns only the available data.
@@ -10556,7 +10481,7 @@ a start date that is more than seven days in the past returns only the available
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#isavailableasync"
       >
         <span
@@ -10603,8 +10528,7 @@ a start date that is more than seven days in the past returns only the available
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Returns whether the pedometer is enabled on the device.
     </p>
@@ -10617,7 +10541,7 @@ a start date that is more than seven days in the past returns only the available
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-2"
         >
           <span
@@ -10689,7 +10613,7 @@ a start date that is more than seven days in the past returns only the available
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -10705,8 +10629,7 @@ a start date that is more than seven days in the past returns only the available
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Returns a promise that fulfills with a 
       <code
@@ -10726,7 +10649,7 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#requestpermissionsasync"
       >
         <span
@@ -10781,7 +10704,7 @@ available on this device.
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-3"
         >
           <span
@@ -10853,7 +10776,7 @@ available on this device.
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-ccg2mn-ExternalLink"
+            class="css-dqmbnf-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -10863,7 +10786,7 @@ available on this device.
           &lt;
           <span>
             <a
-              class="css-153g748-InternalLink"
+              class="css-dqmbnf-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -10882,7 +10805,7 @@ available on this device.
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#watchstepcountcallback"
       >
         <span
@@ -10932,7 +10855,7 @@ available on this device.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -10962,22 +10885,22 @@ available on this device.
             class="css-29opv4-Row"
           >
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 callback
               </strong>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#pedometerupdatecallback"
                 >
                   PedometerUpdateCallback
@@ -10985,16 +10908,15 @@ available on this device.
               </code>
             </td>
             <td
-              class="css-4ul8tm-Cell"
+              class="css-zstkv9-Cell"
             >
               <p
-                class="css-6jxvia-P"
-                data-text="true"
+                class="css-1a1x0ox-TextComponent"
               >
                 A callback that is invoked when new step count data is available. The callback is
 provided with a single argument that is 
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#pedometerresult"
                 >
                   <code
@@ -11011,8 +10933,7 @@ provided with a single argument that is
       </table>
     </div>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Subscribe to pedometer updates.
     </p>
@@ -11025,7 +10946,7 @@ provided with a single argument that is
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#returns-4"
         >
           <span
@@ -11097,7 +11018,7 @@ provided with a single argument that is
           class="inline css-ov7own-InlineCode"
         >
           <a
-            class="css-153g748-InternalLink"
+            class="css-dqmbnf-A"
             href="#subscription"
           >
             Subscription
@@ -11106,12 +11027,11 @@ provided with a single argument that is
       </li>
     </ul>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-1a1x0ox-TextComponent"
     >
       Returns a 
       <a
-        class="css-153g748-InternalLink"
+        class="css-dqmbnf-A"
         href="#subscription"
       >
         <code
@@ -11135,7 +11055,7 @@ provided with a single argument that is
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#interfaces"
     >
       <span
@@ -11185,7 +11105,7 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#permissionresponse"
       >
         <span
@@ -11240,7 +11160,7 @@ provided with a single argument that is
         data-heading="true"
       >
         <a
-          class="css-ah3byb"
+          class="css-1y48vg3"
           href="#permissionresponse--properties"
         >
           <span
@@ -11288,7 +11208,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11318,7 +11238,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11327,7 +11247,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11336,7 +11256,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -11345,7 +11265,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11354,13 +11274,13 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#permissionexpiration"
                 >
                   PermissionExpiration
@@ -11368,7 +11288,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -11377,7 +11297,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11386,7 +11306,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11395,7 +11315,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -11404,7 +11324,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11413,13 +11333,13 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
               >
                 <a
-                  class="css-153g748-InternalLink"
+                  class="css-dqmbnf-A"
                   href="#permissionstatus"
                 >
                   PermissionStatus
@@ -11427,7 +11347,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               -
             </td>
@@ -11441,7 +11361,7 @@ provided with a single argument that is
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#types"
     >
       <span
@@ -11491,7 +11411,7 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#pedometerresult"
       >
         <span
@@ -11541,7 +11461,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11571,7 +11491,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11580,7 +11500,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11589,7 +11509,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 Number of steps taken between the given dates.
@@ -11608,7 +11528,7 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#pedometerupdatecallback"
       >
         <span
@@ -11660,7 +11580,7 @@ provided with a single argument that is
         class="css-rufzkc-Table"
       >
         <table
-          class="css-1goywt6-Table"
+          class="css-10cc7jf-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
@@ -11690,22 +11610,22 @@ provided with a single argument that is
               class="css-29opv4-Row"
             >
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 <strong
-                  class="css-1qx481h-B"
+                  class="css-7r3rok-TextComponent"
                 >
                   result
                 </strong>
               </td>
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 <code
                   class="inline css-ov7own-InlineCode"
                 >
                   <a
-                    class="css-153g748-InternalLink"
+                    class="css-dqmbnf-A"
                     href="#pedometerresult"
                   >
                     PedometerResult
@@ -11713,7 +11633,7 @@ provided with a single argument that is
                 </code>
               </td>
               <td
-                class="css-4ul8tm-Cell"
+                class="css-zstkv9-Cell"
               >
                 -
               </td>
@@ -11731,7 +11651,7 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#permissionexpiration"
       >
         <span
@@ -11809,7 +11729,7 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#subscription"
       >
         <span
@@ -11859,7 +11779,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-1goywt6-Table"
+        class="css-10cc7jf-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11889,7 +11809,7 @@ provided with a single argument that is
             class="css-29opv4-Row"
           >
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <strong
                 class="css-1qx481h-B"
@@ -11898,7 +11818,7 @@ provided with a single argument that is
               </strong>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <code
                 class="inline css-ov7own-InlineCode"
@@ -11910,7 +11830,7 @@ provided with a single argument that is
               </code>
             </td>
             <td
-              class="css-1i3ovdz-Cell"
+              class="css-18p3734-Cell"
             >
               <span>
                 A method to unsubscribe the listener.
@@ -11926,7 +11846,7 @@ provided with a single argument that is
     data-heading="true"
   >
     <a
-      class="css-ah3byb"
+      class="css-1y48vg3"
       href="#enums"
     >
       <span
@@ -11976,7 +11896,7 @@ provided with a single argument that is
       data-heading="true"
     >
       <a
-        class="css-ah3byb"
+        class="css-1y48vg3"
         href="#permissionstatus"
       >
         <span
@@ -12034,7 +11954,7 @@ provided with a single argument that is
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#denied"
           >
             <span
@@ -12102,7 +12022,7 @@ provided with a single argument that is
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#granted"
           >
             <span
@@ -12170,7 +12090,7 @@ provided with a single argument that is
           data-heading="true"
         >
           <a
-            class="css-ah3byb"
+            class="css-1y48vg3"
             href="#undetermined"
           >
             <span

@@ -2,18 +2,22 @@
 title: Create a modal
 ---
 
-import { SnackInline, Terminal } from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
-import { LinkBase } from '~/ui/components/Text';
+import { A } from '~/ui/components/Text';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app. In general, modals are used to draw a user's attention toward critical information or guide them to take action. For example, in the <LinkBase href="/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component" openInNewTab>second chapter</LinkBase>, we used `alert()` to display a placeholder when a button is pressed. That's how a modal component displays an overlay.
+React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app.
+In general, modals are used to draw a user's attention toward critical information or guide them to take action.
+For example, in the <A href="/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component" openInNewTab>second chapter</A>,
+we used `alert()` to display a placeholder when a button is pressed. That's how a modal component displays an overlay.
 
 In this chapter, we'll create a modal that shows an emoji picker list.
 
 ## Step 1: Declare a state variable to show buttons
 
-Before implementing the modal, we are going to add three new buttons. These buttons will only be visible when the user picks an image from the media library or decides to use the placeholder image. One of these buttons will trigger the emoji picker modal.
+Before implementing the modal, we are going to add three new buttons. These buttons will only be visible when the user picks an image from the media library
+or decides to use the placeholder image. One of these buttons will trigger the emoji picker modal.
 
 Declare a state variable called `showAppOptions` in **App.js**. We'll use this variable to show or hide buttons that open the modal alongside a few other options.
 
@@ -422,7 +426,7 @@ Here is the result after this step:
 
 ## Step 4: Display a list of emoji
 
-Let's implement a horizontal list of emoji in the modal's content. We'll use is the <LinkBase href="https://reactnative.dev/docs/flatlist" openInNewTab>`<FlatList>`</LinkBase> component from React Native for it.
+Let's implement a horizontal list of emoji in the modal's content. We'll use is the [`<FlatList>`](https://reactnative.dev/docs/flatlist) component from React Native for it.
 
 Create a file named **EmojiList.js** file in the **components** directory and add the following code:
 
@@ -479,9 +483,11 @@ const styles = StyleSheet.create({
 });
 ```
 
-The `<FlatList>` component above renders all the emoji images using a `<Image>` component wrapped with a `<Pressable>` component. Later, we will improve it so that the user can tap an emoji on the screen to make it appear as a sticker on the image.
+The `<FlatList>` component above renders all the emoji images using a `<Image>` component wrapped with a `<Pressable>` component.
+Later, we will improve it so that the user can tap an emoji on the screen to make it appear as a sticker on the image.
 
-The `<FlatList>` component takes an array of items, which in the above snippet is provided by the `emoji` array variable as the value of the `data` prop. Then, the `renderItem` prop takes the item from the `data` and returns the item in the list. Finally, we add `<Image>` and the `<Pressable>` components to display this item.
+The `<FlatList>` component takes an array of items, which in the above snippet is provided by the `emoji` array variable as the value of the `data` prop.
+Then, the `renderItem` prop takes the item from the `data` and returns the item in the list. Finally, we add `<Image>` and the `<Pressable>` components to display this item.
 
 The `horizontal` prop renders the list horizontally instead of vertically. The `showsHorizontalScrollIndicator` checks the platform using `Platform` module from React Native and displays the horizontal scroll bar only on the web.
 
