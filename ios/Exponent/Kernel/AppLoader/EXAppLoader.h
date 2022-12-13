@@ -52,7 +52,7 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
 @property (nonatomic, weak) id<EXAppFetcherDataSource> dataSource;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url;
-- (instancetype)initWithLocalManifest:(EXManifestsManifest * _Nonnull)manifest;
+- (instancetype)initWithLocalManifest:(EXManifestsManifest * _Nonnull)manifest forceNoRemoteFetch:(BOOL)forceNoRemoteFetch;
 
 /**
  *  Begin a new request.

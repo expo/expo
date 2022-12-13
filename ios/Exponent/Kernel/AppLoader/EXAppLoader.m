@@ -39,6 +39,8 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 @property (nonatomic, assign) BOOL hasFinished;
 @property (nonatomic, assign) BOOL shouldUseCacheOnly;
 
+@property (nonatomic, assign) BOOL forceNoRemoteFetch;
+
 @end
 
 @implementation EXAppLoader
@@ -52,10 +54,11 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   return self;
 }
 
-- (instancetype)initWithLocalManifest:(EXManifestsManifest *)manifest
+- (instancetype)initWithLocalManifest:(EXManifestsManifest *)manifest forceNoRemoteFetch:(BOOL)forceNoRemoteFetch
 {
   if (self = [super init]) {
     _localManifest = manifest;
+    _forceNoRemoteFetch = forceNoRemoteFetch;
   }
   return self;
 }
@@ -257,6 +260,10 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   // these checks need to be here because they need to happen after the dev mode check above.
   if (_shouldUseCacheOnly ||
       ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled)) {
+    shouldCheckForUpdate = NO;
+  }
+  
+  if (_forceNoRemoteFetch) {
     shouldCheckForUpdate = NO;
   }
 
