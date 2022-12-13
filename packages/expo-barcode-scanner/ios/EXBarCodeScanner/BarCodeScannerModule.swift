@@ -41,12 +41,14 @@ public final class BarCodeScannerModule: Module {
       )
     }
 
-    AsyncFunction("scanFromURLAsync") { (url: URL, _: [String], promise: Promise) in
+    AsyncFunction("scanFromURLAsync") {
+      (url: URL, _: [String], promise: Promise) in
       guard let imageLoader = appContext?.imageLoader else {
         throw ImageLoaderNotFound()
       }
 
-      imageLoader.loadImage(for: url) { error, image in
+      imageLoader.loadImage(for: url) {
+        error, image in
         if error != nil {
           promise.reject(FailedToLoadImage())
           return
@@ -68,22 +70,7 @@ public final class BarCodeScannerModule: Module {
 
         let ciImage = CIImage(cgImage: cgImage)
         let features = detector.features(in: ciImage)
-        var result = [[AnyHashable: Any]?]()
-
-        for feature in features {
-          do {
-            let qrCodefeature = try feature as! CIQRCodeFeature
-            let item = EXBarCodeScannerUtils.ciQRCodeFeature(
-              toDicitionary: qrCodefeature,
-              barCodeType: AVMetadataObject.ObjectType.qr.rawValue
-            )
-            result.append(item)
-          } catch {
-            log.error("Failed to cast feature")
-          }
-        }
-
-        promise.resolve(result)
+        promise.resolve(self.getResultFrom(features))
       }
     }
 
@@ -100,5 +87,24 @@ public final class BarCodeScannerModule: Module {
         view.barCodeTypes = barcodeTypes
       }
     }
+  }
+
+  private func getResultFrom(_ features: [CIFeature]) -> [[AnyHashable: Any]?] {
+    var result = [[AnyHashable: Any]?]()
+
+    for feature in features {
+      do {
+        let qrCodeFeature = try feature as! CIQRCodeFeature
+        let item = EXBarCodeScannerUtils.ciQRCodeFeature(
+          toDicitionary: qrCodeFeature,
+          barCodeType: AVMetadataObject.ObjectType.qr.rawValue
+        )
+        result.append(item)
+      } catch {
+        log.error("Failed to cast feature")
+      }
+    }
+
+    return result
   }
 }
