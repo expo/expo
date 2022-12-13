@@ -88,18 +88,6 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
 }
 
 async function updateReactNativePackageAsync() {
-  // Workaround for react-native-gradle-plugin
-  const gradlePluginRoot = path.join(EXPO_DIR, 'node_modules', 'react-native-gradle-plugin');
-  await transformFileAsync(
-    path.join(gradlePluginRoot, 'src/main/kotlin/com/facebook/react/ReactExtension.kt'),
-    [
-      {
-        find: 'internal val reactNativeDir:',
-        replaceWith: 'val reactNativeDir:',
-      },
-    ]
-  );
-
   const reactNativeRoot = path.join(EXPO_DIR, 'node_modules', 'react-native');
   // Workaround duplicated libc++_shared.so from linked fbjni
   await transformFileAsync(path.join(reactNativeRoot, 'ReactAndroid', 'build.gradle'), [
@@ -108,10 +96,37 @@ async function updateReactNativePackageAsync() {
       replaceWith: '$1\n        pickFirst("**/libc++_shared.so")',
     },
   ]);
+
+  // Workaround for CallbackWrapper.h not found
+  await transformFileAsync(
+    path.join(
+      reactNativeRoot,
+      'ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleUtils.h'
+    ),
+    [
+      {
+        find: '#include <ReactCommon/CallbackWrapper.h>',
+        replaceWith: `\
+#if __has_include(<ReactCommon/CallbackWrapper.h>)
+#include <ReactCommon/CallbackWrapper.h>
+#else
+#include <React/bridging/CallbackWrapper.h>
+#endif`,
+      },
+    ]
+  );
 }
 
 async function patchReanimatedAsync(nightlyVersion: string) {
   const root = path.join(EXPO_DIR, 'node_modules', 'react-native-reanimated');
+
+  await transformFileAsync(path.join(root, 'RNReanimated.podspec'), [
+    // C++17 for std::optional from react-native
+    {
+      find: /^(\s*"FRAMEWORK_SEARCH_PATHS" => "\\"\$\{PODS_CONFIGURATION_BUILD_DIR\}\/React-hermes\\"",)$/gm,
+      replaceWith: '$1\n    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",',
+    },
+  ]);
 
   await transformFileAsync(path.join(root, 'scripts', 'reanimated_utils.rb'), [
     // Add REACT_NATIVE_OVERRIDE_VERSION support
@@ -124,6 +139,7 @@ async function patchReanimatedAsync(nightlyVersion: string) {
       replaceWith: `result[:react_native_minor_version] = result[:react_native_version].split('.')[1].to_i`,
     },
   ]);
+
   await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
     // Add REACT_NATIVE_OVERRIDE_VERSION support
     {
@@ -155,6 +171,8 @@ async function patchReanimatedAsync(nightlyVersion: string) {
       find: /^(task unpackReactNativeAAR \{[\s\S]*?^\})/gm,
       replaceWith: `
 def reactNativeIsNightly = reactProperties.getProperty("VERSION_NAME").startsWith("0.0.0-")
+
+apply plugin: "de.undercouch.download"
 
 def downloadReactNativeNightlyAAR = { buildType, version, downloadFile ->
   def classifier = buildType == 'Debug' ? 'debug' : 'release'
@@ -312,6 +330,10 @@ async function updateExpoModulesAsync() {
           find: /\b(com.facebook.fbjni:fbjni):0\.2\.2/g,
           replaceWith: '$1:0.3.0',
         },
+        {
+          find: /ndkVersion = ['"]21\.4\.7075529['"]/g,
+          replaceWith: '',
+        },
       ])
     )
   );
@@ -327,6 +349,10 @@ async function updateBareExpoAsync(nightlyVersion: string) {
                     substitute module("com.facebook.react:hermes-engine") using module("com.facebook.react:hermes-android:${nightlyVersion}-SNAPSHOT")
             }`,
     },
+  ]);
+
+  await transformFileAsync(path.join(root, 'android', 'settings.gradle'), [
+    { find: /react-native-gradle-plugin/g, replaceWith: '@react-native/gradle-plugin' },
   ]);
 
   await transformFileAsync(path.join(root, 'ios', 'BareExpo', 'AppDelegate.mm'), [
