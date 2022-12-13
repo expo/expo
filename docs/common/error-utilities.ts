@@ -271,6 +271,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/tutorial/sharing/': '/tutorial/introduction/',
   '/tutorial/text/': '/tutorial/introduction/',
 
+  // Redirects for removed /archived pages
+  '/archived/': '/',
+
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
   '/versions/latest/sdk/taskmanager/': '/versions/latest/sdk/task-manager/',
@@ -283,4 +286,5 @@ const RENAMED_PAGES: Record<string, string> = {
     'https://github.com/expo/config-plugins/tree/main/packages/react-native-branch',
   '/versions/latest/sdk/appstate/': '/versions/latest/react-native/appstate/',
   '/versions/latest/sdk/google/': '/guides/authentication/',
+  '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
 };
