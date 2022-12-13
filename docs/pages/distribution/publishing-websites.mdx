@@ -3,6 +3,8 @@ title: Publish websites
 description: Different ways to publish the Expo web app with third-party services.
 ---
 
+import { Terminal } from '~/ui/components/Snippet';
+
 ## Creating a Build
 
 - Bundle the project for production - `npx expo export:web` (`expo build:web` in the legacy Expo CLI).
@@ -119,11 +121,11 @@ Add the following to your **package.json**:
 
 ```json package.json
 {
-    "homepage": "http://evanbacon.github.io/expo-gh-pages",
-    "scripts": {
-        "deploy": "gh-pages -d web-build",
-        "predeploy": "expo export:web"
-    }
+  "homepage": "http://evanbacon.github.io/expo-gh-pages",
+  "scripts": {
+    "deploy": "gh-pages -d web-build",
+    "predeploy": "expo export:web"
+  }
 }
 ```
 
@@ -131,9 +133,7 @@ Add the following to your **package.json**:
 
 Finally, deploy with:
 
-```sh
-yarn deploy
-```
+<Terminal cmd={['$ yarn deploy']} />
 
 ---
 

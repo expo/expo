@@ -191,52 +191,49 @@ This does not work in Expo Go, as Expo Go resets RTL preferences when opening th
 label="Overriding RTL settings"
 dependencies={['expo-updates', 'expo-constants']}
 >
+
 ```jsx
 import { Text, View, StyleSheet, I18nManager, Platform } from 'react-native';
 import Constants from 'expo-constants';
 
-import * as Updates from "expo-updates";
+import * as Updates from 'expo-updates';
 
 export default function App() {
+  const shouldBeRTL = true;
 
-const shouldBeRTL = true;
+  if (shouldBeRTL !== I18nManager.isRTL && Platform.OS !== 'web') {
+    I18nManager.allowRTL(shouldBeRTL);
+    I18nManager.forceRTL(shouldBeRTL);
+    Updates.reloadAsync();
+  }
 
-    if(shouldBeRTL !== I18nManager.isRTL && Platform.OS !== "web"){
-      I18nManager.allowRTL(shouldBeRTL)
-      I18nManager.forceRTL(shouldBeRTL)
-      Updates.reloadAsync()
-    }
-
-return (
-<View style={styles.container} >
-<Text style={styles.paragraph}>
-{I18nManager.isRTL ? " RTL":" LTR"}
-</Text>
-</View>
-);
+  return (
+    <View style={styles.container}>
+      <Text style={styles.paragraph}>{I18nManager.isRTL ? ' RTL' : ' LTR'}</Text>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-container: {
-flex: 1,
-justifyContent: 'center',
-paddingTop: Constants.statusBarHeight,
-padding: 8,
-},
-paragraph: {
-fontSize: 18,
-fontWeight: 'bold',
-textAlign:"left",
-width:"50%",
-backgroundColor:"pink"
-},
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingTop: Constants.statusBarHeight,
+    padding: 8,
+  },
+  paragraph: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'left',
+    width: '50%',
+    backgroundColor: 'pink',
+  },
 });
+```
 
-````
 </SnackInline>
 
 </Collapsible>
-
 
 ## Making your app behave correctly on RTL locales
 
@@ -258,15 +255,11 @@ To make `react-native-web` automatically adapt to locale direction, add a `dir` 
 
 ```tsx App.tsx
 import { View } from 'react-native';
-import { getLocales } from "expo-localization";
+import { getLocales } from 'expo-localization';
 // ...
 
-return (
-  <View dir={getLocales()[0].textDirection || "ltr"}>
-    //...
-  </View>
-);
-````
+return <View dir={getLocales()[0].textDirection || 'ltr'}>//...</View>;
+```
 
 > **warning** `textDirection` is not available on Firefox and older browser versions. [Detect it manually](https://stackoverflow.com/a/15726039) if needed.
 
