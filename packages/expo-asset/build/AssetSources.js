@@ -3,7 +3,7 @@ import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
 import URL from 'url-parse';
 import AssetSourceResolver from './AssetSourceResolver';
-import { manifestBaseUrl, getManifest, getManifest2 } from './PlatformUtils';
+import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';
 // Fast lookup check if asset map has any overrides in the manifest
 const assetMapOverride = getManifest().assetMapOverride;
 /**

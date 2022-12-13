@@ -34,7 +34,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/asset/",
   "jest": {
-    "preset": "expo-module-scripts/ios"
+    "preset": "expo-module-scripts"
   },
   "dependencies": {
     "blueimp-md5": "^2.10.0",
@@ -47,6 +47,7 @@
   },
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
+    "@types/react-native__assets": "~1.0.0",
     "@types/url-parse": "^1.4.1",
     "expo-module-scripts": "^3.0.0"
   }

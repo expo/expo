@@ -1,4 +1,6 @@
 /* global Image:true */
+import { Platform } from 'expo-modules-core';
+
 import * as ImageAssets from '../ImageAssets';
 
 describe('isImageType', () => {
@@ -17,6 +19,10 @@ describe('isImageType', () => {
 });
 
 describe('getImageInfoAsync', () => {
+  // Skip in Node.js
+  if (!Platform.isDOMAvailable) {
+    return;
+  }
   let originalImage: any;
 
   beforeAll(() => {
