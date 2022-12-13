@@ -33,7 +33,7 @@ function ensureUnit(value: string | number) {
     return trimmedValue;
   }
   return `${trimmedValue}px`;
-};
+}
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 
@@ -70,7 +70,7 @@ function ensureIsArray(source?: ImageSource): (ImageUriSource | RequireSource)[]
     return [];
   }
   return [source];
-};
+}
 
 type ImageState = 'empty' | 'loading' | 'loaded' | 'error';
 function useImageState(source: ImageSource | undefined) {
@@ -92,7 +92,7 @@ function useImageState(source: ImageSource | undefined) {
     [onLoad]
   );
   return [imageState, handlers] as [ImageState, { onLoad: () => void }];
-};
+}
 
 const getCSSTiming = (timing?: ImageTransitionTiming) => {
   return {
@@ -166,7 +166,7 @@ const useTransition = (
   }
 
   return { placeholder: {}, image: {} };
-};
+}
 
 export default function ExpoImage({
   source,
