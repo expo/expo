@@ -117,7 +117,7 @@ yarn add -D gh-pages
 
 Add the following to your **package.json**:
 
-```js package.json
+```json package.json
 {
     "homepage": "http://evanbacon.github.io/expo-gh-pages",
     "scripts": {
@@ -174,7 +174,7 @@ Here are the formal instructions for deploying to GitHub Pages:
 
    - In the existing `scripts` property, add a `predeploy` property and a `deploy` property, each having the values shown below:
 
-   ```js package.json
+   ```json package.json
    "scripts": {
     /* @hide ... */ /* @end */
      "deploy": "gh-pages -d web-build",
@@ -214,7 +214,7 @@ Learn more about [Firebase Hosting](https://console.firebase.google.com/).
 
 In the existing `scripts` property, add a `predeploy` property and a `deploy` property, each having the values shown below:
 
-```js package.json
+```json package.json
 "scripts": {
   /* @hide ... */ /* @end */
   "predeploy": "expo export:web",
@@ -230,7 +230,7 @@ Open the URL from the console output to check your deployment, for example, http
 
 In case you want to change the header for hosting add the following config in `hosting` section in **firebase.json**:
 
-```js firebase.json
+```json firebase.json
   "hosting": [
     {
       /* ... */
