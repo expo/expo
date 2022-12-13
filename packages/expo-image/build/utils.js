@@ -1,6 +1,7 @@
 import { ImageContentFit, ImageResizeMode, } from './Image.types';
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
+let loggedFadeDurationDeprecationWarning = false;
 /**
  * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
  * that we support to provide compatibility with React Native Image.
@@ -65,5 +66,22 @@ export function resolveContentPosition(contentPosition) {
         return contentPositionObject;
     }
     return contentPosition;
+}
+/**
+ * If `transition` or `fadeDuration` is a number, it's resolved to a cross dissolve transition with the given duration.
+ * When `fadeDuration` is used, it logs an appropriate deprecation warning.
+ */
+export function resolveTransition(transition, fadeDuration) {
+    if (typeof transition === 'number') {
+        return { duration: transition };
+    }
+    if (!transition && typeof fadeDuration === 'number') {
+        if (!loggedFadeDurationDeprecationWarning) {
+            console.warn('[expo-image]: Prop "fadeDuration" is deprecated, use "transition" instead');
+            loggedFadeDurationDeprecationWarning = true;
+        }
+        return { duration: fadeDuration };
+    }
+    return transition;
 }
 //# sourceMappingURL=utils.js.map
