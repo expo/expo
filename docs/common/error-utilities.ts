@@ -247,6 +247,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+  '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
 
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
@@ -270,6 +271,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/tutorial/sharing/': '/tutorial/introduction/',
   '/tutorial/text/': '/tutorial/introduction/',
 
+  // Redirects for removed /archived pages
+  '/archived/': '/archive/',
+
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
   '/versions/latest/sdk/taskmanager/': '/versions/latest/sdk/task-manager/',
@@ -281,4 +285,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/branch/':
     'https://github.com/expo/config-plugins/tree/main/packages/react-native-branch',
   '/versions/latest/sdk/appstate/': '/versions/latest/react-native/appstate/',
+  '/versions/latest/sdk/google/': '/guides/authentication/',
+  '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
 };
