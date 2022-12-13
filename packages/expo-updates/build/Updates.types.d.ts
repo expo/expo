@@ -21,15 +21,15 @@ export declare enum UpdateEventType {
 /**
  * @hidden
  */
-export declare type ClassicManifest = typeof Constants.manifest;
+export type ClassicManifest = typeof Constants.manifest;
 /**
  * @hidden
  */
-export declare type Manifest = ClassicManifest | typeof Constants.manifest2;
+export type Manifest = ClassicManifest | typeof Constants.manifest2;
 /**
  * The successful result of checking for a new update.
  */
-declare type UpdateCheckResultSuccess = {
+type UpdateCheckResultSuccess = {
     /**
      * Signifies that an update is available.
      */
@@ -42,7 +42,7 @@ declare type UpdateCheckResultSuccess = {
 /**
  * The failed result of checking for a new update.
  */
-declare type UpdateCheckResultFailure = {
+type UpdateCheckResultFailure = {
     /**
      * Signifies that the app is already running the latest available update.
      */
@@ -55,11 +55,11 @@ declare type UpdateCheckResultFailure = {
 /**
  * The result of checking for a new update.
  */
-export declare type UpdateCheckResult = UpdateCheckResultSuccess | UpdateCheckResultFailure;
+export type UpdateCheckResult = UpdateCheckResultSuccess | UpdateCheckResultFailure;
 /**
  * The successful result of fetching a new update.
  */
-declare type UpdateFetchResultSuccess = {
+type UpdateFetchResultSuccess = {
     /**
      * Signifies that the fetched bundle is new (that is, a different version than what's currently
      * running).
@@ -73,7 +73,7 @@ declare type UpdateFetchResultSuccess = {
 /**
  * The failed result of fetching a new update.
  */
-declare type UpdateFetchResultFailure = {
+type UpdateFetchResultFailure = {
     /**
      * Signifies that the fetched bundle is the same as version which is currently running.
      */
@@ -86,11 +86,11 @@ declare type UpdateFetchResultFailure = {
 /**
  * The result of fetching a new update.
  */
-export declare type UpdateFetchResult = UpdateFetchResultSuccess | UpdateFetchResultFailure;
+export type UpdateFetchResult = UpdateFetchResultSuccess | UpdateFetchResultFailure;
 /**
  * An object that is passed into each event listener when an auto-update check occurs.
  */
-export declare type UpdateEvent = {
+export type UpdateEvent = {
     /**
      * Type of the event.
      */
@@ -108,7 +108,7 @@ export declare type UpdateEvent = {
 /**
  * An object representing a single log entry from expo-updates logging on the client.
  */
-export declare type UpdatesLogEntry = {
+export type UpdatesLogEntry = {
     /**
      * The time the log was written, in milliseconds since Jan 1 1970 UTC.
      */
@@ -167,6 +167,6 @@ export declare enum UpdatesLogEntryLevel {
 /**
  * @hidden
  */
-export declare type LocalAssets = Record<string, string>;
+export type LocalAssets = Record<string, string>;
 export {};
 //# sourceMappingURL=Updates.types.d.ts.map

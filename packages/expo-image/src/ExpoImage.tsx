@@ -7,7 +7,9 @@ import {
   ImageLoadEventData,
   ImageProgressEventData,
   ImageProps,
+  ImageSource,
 } from './Image.types';
+import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
 
 const NativeExpoImage = requireNativeViewManager('ExpoImage');
 
@@ -52,11 +54,14 @@ class ExpoImage extends React.PureComponent<ImageProps> {
 
   render() {
     const { source, style, defaultSource, loadingIndicatorSource, ...props } = this.props;
-    const resolvedSource = Image.resolveAssetSource(source ?? {});
+    const resolvedSource = Image.resolveAssetSource((source as ImageSource | number) ?? {});
     const resolvedStyle = StyleSheet.flatten([style]);
     const resolvedPlaceholder = Image.resolveAssetSource(
-      defaultSource ?? loadingIndicatorSource ?? {}
+      props.placeholder ?? defaultSource ?? loadingIndicatorSource ?? {}
     );
+    const contentFit = resolveContentFit(props.contentFit, props.resizeMode);
+    const contentPosition = resolveContentPosition(props.contentPosition);
+    const transition = resolveTransition(props.transition, props.fadeDuration);
 
     // If both are specified, we default to use default source
     if (defaultSource && loadingIndicatorSource) {
@@ -138,9 +143,12 @@ class ExpoImage extends React.PureComponent<ImageProps> {
       <NativeExpoImage
         {...props}
         {...resolvedStyle}
-        source={resolvedSource}
+        source={Array.isArray(resolvedSource) ? resolvedSource : [resolvedSource]}
         style={resolvedStyle}
-        defaultSource={resolvedPlaceholder}
+        placeholder={resolvedPlaceholder}
+        contentFit={contentFit}
+        contentPosition={contentPosition}
+        transition={transition}
         onLoadStart={this.onLoadStart}
         onLoad={this.onLoad}
         onProgress={this.onProgress}

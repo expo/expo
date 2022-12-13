@@ -1,16 +1,18 @@
 ---
 title: Create a new app
+description: Learn how to create a new Expo project and run it on your device.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
 Before creating a new Expo app, you have to make sure that:
 
 - Expo CLI is working on your development machine
-- Expo Go app is installed on your iOS or Android physical device or emulator
+- Expo Go app is installed on your Android or iOS physical device or emulator/simulator
 
-> If you need help making these tools work on your end, go back to the [Installation](/get-started/installation) guide before proceeding.
+> If you need help making these tools work on your end, go back to the [Installation](/get-started/installation) before proceeding.
 
 ## Initializing the project
 
@@ -35,7 +37,7 @@ Start the development server by running the following command:
 
 <Terminal cmd={['$ npx expo start']} />
 
-When you run `npx expo start` (or `yarn expo start`), Expo CLI starts [Metro Bundler](/guides/customizing-metro). This bundler is an HTTP server that compiles the JavaScript code of your app using [Babel](https://babeljs.io/) and serves it to the Expo app. Learn more about how [Expo Development Server](/workflow/expo-cli#develop) works.
+When you run `npx expo start` (or `yarn expo start`), Expo CLI starts [Metro Bundler](/guides/customizing-metro). This bundler is an HTTP server that compiles the JavaScript code of your app using [Babel](https://babeljs.io/) and serves it to the Expo app. For more information, see how [Expo Development Server](/workflow/expo-cli#develop) works.
 
 ## Opening the app on your phone/tablet
 
@@ -44,7 +46,7 @@ To open the app:
 - On your Android device, press "Scan QR Code" on the "Home" tab of the Expo Go app and scan the QR code you see in the terminal.
 - On your iPhone or iPad, open the default Apple "Camera" app and scan the QR code you see in the terminal.
 
-You can open the project on multiple devices simultaneously. Go ahead and try it on an iPhone and Android phone at the same time if you have both handy.
+You can open the project on multiple devices simultaneously. Go ahead and try it on both phones at the same time if you have them handy.
 
 <Collapsible summary="Is the app not loading on your device?">
 
@@ -76,15 +78,19 @@ Open **App.js** file in your code editor and change the text to "Hello, world!".
 
 Expo Go is configured by default to automatically reload the app whenever a file is changed, but let's make sure to go over the steps to enable it in case somehow things aren't working.
 
-- Make sure the you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
+- Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
 - Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>m</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>d</kbd> for iOS .
+- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>m</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>d</kbd> for iOS.
 - If you see `Enable Fast Refresh`, press it. If you see `Disable Fast Refresh`, dismiss the developer menu. Now try making another change.
 
-  ![In-app developer menu](/static/images/developer-menu.png)
+  <ImageSpotlight
+    alt="Developer menu in Expo Go app."
+    src="/static/images/get-started/developer-menu.png"
+    style={{ maxWidth: 720 }}
+  />
 
 </Collapsible>
 
-## Up next
+## Next steps
 
 Let's face it. You are going to make mistakes and typos and you are going to get warnings and errors in your app. So [let's learn a little bit about how to read and interpret errors](/get-started/errors).

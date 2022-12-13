@@ -14,6 +14,12 @@ public class CryptoModule: Module {
     AsyncFunction("getRandomBase64StringAsync", getRandomBase64String)
 
     Function("getRandomBase64String", getRandomBase64String)
+
+    Function("getRandomValues", getRandomValues)
+
+    Function("randomUUID") {
+      UUID().uuidString
+    }
   }
 }
 
@@ -45,6 +51,19 @@ private func digestString(algorithm: DigestAlgorithm, str: String, options: Dige
   case .base64:
     return Data(digest).base64EncodedString()
   }
+}
+
+private func getRandomValues(array: TypedArray) throws -> TypedArray {
+  let status = SecRandomCopyBytes(
+    kSecRandomDefault,
+    array.byteLength,
+    array.rawPointer
+  )
+
+  guard status == errSecSuccess else {
+    throw FailedGeneratingRandomBytesException(status)
+  }
+  return array
 }
 
 private class LossyConversionException: Exception {

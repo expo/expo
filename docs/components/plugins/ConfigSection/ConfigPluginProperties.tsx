@@ -1,10 +1,9 @@
 import React, { PropsWithChildren } from 'react';
 
-import { InlineCode } from '~/components/base/code';
-import { P } from '~/components/base/paragraph';
 import { H3 } from '~/components/plugins/Headings';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { P, CODE } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<{
   properties: PluginProperty[];
@@ -26,9 +25,9 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
         {properties.map(property => (
           <Row key={property.name}>
             <Cell fitContent>
-              <InlineCode>{property.name}</InlineCode>
+              <CODE>{property.name}</CODE>
             </Cell>
-            <Cell>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</Cell>
+            <Cell>{!property.default ? '-' : <CODE>{property.default}</CODE>}</Cell>
             <Cell>
               {!!property.platform && (
                 <APISectionPlatformTags

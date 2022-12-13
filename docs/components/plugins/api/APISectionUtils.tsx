@@ -8,9 +8,7 @@ import { APIDataType } from './APIDataType';
 
 import { Code, InlineCode } from '~/components/base/code';
 import { H4 } from '~/components/base/headings';
-import Link from '~/components/base/link';
 import { LI, UL, OL } from '~/components/base/list';
-import { B, P } from '~/components/base/paragraph';
 import {
   CommentData,
   MethodDefinitionData,
@@ -24,7 +22,8 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
-import { A } from '~/ui/components/Text';
+import { Tag } from '~/ui/components/Tag';
+import { BOLD, P, A } from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -67,10 +66,10 @@ export const mdComponents: MDComponents = {
         console.warn(getInvalidLinkMessage(href));
       }
     }
-    return <Link href={href}>{children}</Link>;
+    return <A href={href}>{children}</A>;
   },
-  p: ({ children }) => (children ? <P>{children}</P> : null),
-  strong: ({ children }) => <B>{children}</B>,
+  p: ({ children }) => (children ? <P css={{ marginBottom: spacing[4] }}>{children}</P> : null),
+  strong: ({ children }) => <BOLD>{children}</BOLD>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
   table: ({ children }) => <Table>{children}</Table>,
   thead: ({ children }) => <TableHead>{children}</TableHead>,
@@ -86,7 +85,7 @@ export const mdInlineComponents: MDComponents = {
 
 export const mdInlineComponentsNoValidation: MDComponents = {
   ...mdInlineComponents,
-  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+  a: ({ href, children }) => <A href={href}>{children}</A>,
 };
 
 const nonLinkableTypes = [
@@ -162,12 +161,12 @@ const renderWithLink = (name: string, type?: string) => {
   return nonLinkableTypes.includes(replacedName) ? (
     replacedName + (type === 'array' ? '[]' : '')
   ) : (
-    <Link
+    <A
       href={hardcodedTypeLinks[replacedName] || `#${replacedName.toLowerCase()}`}
       key={`type-link-${replacedName}`}>
       {replacedName}
       {type === 'array' && '[]'}
-    </Link>
+    </A>
   );
 };
 
@@ -360,7 +359,7 @@ export const renderParamRow = ({
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <B>{parseParamName(name)}</B>
+        <BOLD>{parseParamName(name)}</BOLD>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
@@ -377,7 +376,7 @@ export const renderParamRow = ({
   );
 };
 
-export const renderTableHeadRow = () => (
+export const ParamsTableHeadRow = () => (
   <TableHead>
     <Row>
       <HeaderCell>Name</HeaderCell>
@@ -389,7 +388,7 @@ export const renderTableHeadRow = () => (
 
 export const renderParams = (parameters: MethodParamData[]) => (
   <Table>
-    {renderTableHeadRow()}
+    <ParamsTableHeadRow />
     <tbody>{parameters?.map(renderParamRow)}</tbody>
   </Table>
 );
@@ -400,7 +399,7 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <B>Default:</B> <InlineCode>{defaultValue}</InlineCode>
+      <BOLD>Default:</BOLD> <InlineCode>{defaultValue}</InlineCode>
     </div>
   ) : undefined;
 
@@ -508,6 +507,15 @@ export const getMethodName = (
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
+const PARAM_TAGS_REGEX = /@tag-\S*/g;
+
+const getParamTags = (shortText?: string) => {
+  if (!shortText || !shortText.includes('@tag-')) {
+    return undefined;
+  }
+  return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
+};
+
 export const CommentTextBlock = ({
   comment,
   components = mdComponents,
@@ -517,9 +525,13 @@ export const CommentTextBlock = ({
   includePlatforms = true,
   emptyCommentFallback,
 }: CommentTextBlockProps) => {
+  const paramTags = getParamTags(comment?.shortText?.trim());
+
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(comment.shortText)}
+      {parseCommentContent(
+        paramTags ? comment.shortText.replaceAll(PARAM_TAGS_REGEX, '') : comment.shortText
+      )}
     </ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
@@ -537,7 +549,7 @@ export const CommentTextBlock = ({
     <React.Fragment key={'example-' + index}>
       {components !== mdComponents ? (
         <div css={STYLES_EXAMPLE_IN_TABLE}>
-          <B>Example</B>
+          <BOLD>Example</BOLD>
         </div>
       ) : (
         <div css={STYLES_NESTED_SECTION_HEADER}>
@@ -551,7 +563,7 @@ export const CommentTextBlock = ({
   const see = getTagData('see', comment);
   const seeText = see && (
     <Callout>
-      <B>See: </B>
+      <BOLD>See: </BOLD>
       <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
     </Callout>
   );
@@ -562,6 +574,14 @@ export const CommentTextBlock = ({
     <>
       {!withDash && includePlatforms && hasPlatforms && (
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      )}
+      {paramTags && (
+        <>
+          <BOLD>Only for:&ensp;</BOLD>
+          {paramTags.map(tag => (
+            <Tag key={tag} name={tag.split('-')[1]} />
+          ))}
+        </>
       )}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}

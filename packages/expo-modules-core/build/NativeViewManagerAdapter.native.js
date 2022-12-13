@@ -16,13 +16,13 @@ export function requireNativeViewManager(viewName) {
     const ReactNativeComponent = requireNativeComponent(reactNativeViewName);
     const proxiedPropsNames = viewManagerConfig?.propsNames ?? [];
     // Define a component for universal-module authors to access their native view manager
-    function NativeComponentAdapter(props, ref) {
+    const NativeComponentAdapter = React.forwardRef((props, ref) => {
         const nativeProps = omit(props, proxiedPropsNames);
         const proxiedProps = pick(props, proxiedPropsNames);
         return React.createElement(ReactNativeComponent, { ...nativeProps, proxiedProperties: proxiedProps, ref: ref });
-    }
+    });
     NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
-    return React.forwardRef(NativeComponentAdapter);
+    return NativeComponentAdapter;
 }
 function omit(props, propNames) {
     const copied = { ...props };

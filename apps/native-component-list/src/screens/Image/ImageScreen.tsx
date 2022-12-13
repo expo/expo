@@ -33,10 +33,38 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Content fit and position',
+    route: 'image/content-fit',
+    getComponent() {
+      return optionalRequire(() => require('./ImageContentFitScreen'));
+    },
+  },
+  {
     name: 'Events',
     route: 'image/events',
     getComponent() {
       return optionalRequire(() => require('./ImageEventsScreen'));
+    },
+  },
+  {
+    name: 'Prioritizing images',
+    route: 'image/priority',
+    getComponent() {
+      return optionalRequire(() => require('./ImagePriorityScreen'));
+    },
+  },
+  {
+    name: 'Placeholder',
+    route: 'image/placeholder',
+    getComponent() {
+      return optionalRequire(() => require('./ImagePlaceholderScreen'));
+    },
+  },
+  {
+    name: 'Transitions',
+    route: 'image/transitions',
+    getComponent() {
+      return optionalRequire(() => require('./ImageTransitionsScreen'));
     },
   },
 ];

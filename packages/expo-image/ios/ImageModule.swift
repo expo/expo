@@ -24,17 +24,20 @@ public final class ImageModule: Module {
         "onLoad"
       )
 
-      Prop("source") { (view, sourceSet: Either<ImageSource, [ImageSource]>) in
-        if let source: ImageSource = sourceSet.get() {
-          view.sources = [source]
-        }
-        if let sources: [ImageSource] = sourceSet.get() {
-          view.sources = sources
-        }
+      Prop("source") { (view, sources: [ImageSource]?) in
+        view.sources = sources
       }
 
-      Prop("resizeMode") { (view, resizeMode: ImageResizeMode) in
-        view.resizeMode = resizeMode
+      Prop("placeholder") { (view, placeholders: [ImageSource]?) in
+        view.placeholderSources = placeholders ?? []
+      }
+
+      Prop("contentFit") { (view, contentFit: ContentFit?) in
+        view.contentFit = contentFit ?? .cover
+      }
+
+      Prop("contentPosition") { (view, contentPosition: ContentPosition?) in
+        view.contentPosition = contentPosition ?? .center
       }
 
       Prop("transition") { (view, transition: ImageTransition?) in
@@ -49,17 +52,36 @@ public final class ImageModule: Module {
         view.imageTintColor = tintColor ?? .clear
       }
 
+      Prop("priority") { (view, priority: ImagePriority?) in
+        view.loadingOptions.remove([.lowPriority, .highPriority])
+
+        if let priority = priority?.toSDWebImageOptions() {
+          view.loadingOptions.insert(priority)
+        }
+      }
+
+      Prop("cachePolicy") { (view, cachePolicy: ImageCachePolicy?) in
+        view.cachePolicy = cachePolicy ?? .disk
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
     }
 
-    Function("clearMemoryCache") {
-      SDImageCache.shared.clearMemory()
+    Function("prefetch") { (urls: [URL]) in
+      SDWebImagePrefetcher.shared.prefetchURLs(urls)
     }
 
-    Function("clearDiskCache") {
-      SDImageCache.shared.clearDisk()
+    AsyncFunction("clearMemoryCache") { () -> Bool in
+      SDImageCache.shared.clearMemory()
+      return true
+    }
+
+    AsyncFunction("clearDiskCache") { (promise: Promise) in
+      SDImageCache.shared.clearDisk {
+        promise.resolve(true)
+      }
     }
   }
 

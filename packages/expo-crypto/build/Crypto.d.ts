@@ -1,3 +1,4 @@
+import { UintBasedTypedArray, IntBasedTypedArray } from 'expo-modules-core';
 import { CryptoDigestAlgorithm, CryptoDigestOptions, Digest } from './Crypto.types';
 export * from './Crypto.types';
 /**
@@ -36,4 +37,30 @@ export declare function getRandomBytesAsync(byteCount: number): Promise<Uint8Arr
  * ```
  */
 export declare function digestStringAsync(algorithm: CryptoDigestAlgorithm, data: string, options?: CryptoDigestOptions): Promise<Digest>;
+/**
+ * The `getRandomValues()` method of `Crypto` fills a provided `TypedArray` with cryptographically secure random values.
+ *
+ * @param typedArray An integer based [`TypedArray`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/TypedArray) to fill with cryptographically secure random values. It modifies the input array in place.
+ * @return The input array filled with cryptographically secure random values.
+ *
+ * @example
+ * ```ts
+ * const byteArray = new Uint8Array(16);
+ * Crypto.getRandomValues(byteArray);
+ * console.log('Your lucky bytes: ' + byteArray);
+ * ```
+ */
+export declare function getRandomValues<T extends IntBasedTypedArray | UintBasedTypedArray>(typedArray: T): T;
+/**
+ * The `randomUUID()` method returns a unique identifier based on the V4 UUID spec (RFC4122).
+ * It uses cryptographically secure random values to generate the UUID.
+ *
+ * @return A string containing a newly generated UUIDv4 identifier
+ * @example
+ * ```ts
+ * const UUID = Crypto.randomUUID();
+ * console.log('Your UUID: ' + UUID);
+ * ```
+ */
+export declare function randomUUID(): any;
 //# sourceMappingURL=Crypto.d.ts.map

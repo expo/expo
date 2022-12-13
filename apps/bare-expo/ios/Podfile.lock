@@ -25,8 +25,6 @@ PODS:
     - ExpoModulesCore
   - EXContacts (11.0.1):
     - ExpoModulesCore
-  - EXDevice (5.0.0):
-    - ExpoModulesCore
   - EXDocumentPicker (11.0.1):
     - ExpoModulesCore
   - EXErrorRecovery (4.0.1):
@@ -151,7 +149,9 @@ PODS:
     - ExpoModulesCore
   - ExpoCrypto (12.0.0):
     - ExpoModulesCore
-  - ExpoGL (12.0.0):
+  - ExpoDevice (5.0.0):
+    - ExpoModulesCore
+  - ExpoGL (12.1.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.0.1):
@@ -186,6 +186,8 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoRandom (13.0.0):
     - ExpoModulesCore
+  - ExpoSMS (11.0.0):
+    - ExpoModulesCore
   - ExpoStoreReview (6.0.0):
     - ExpoModulesCore
   - ExpoSystemUI (2.0.1):
@@ -208,8 +210,6 @@ PODS:
   - EXSensors (12.0.1):
     - ExpoModulesCore
   - EXSharing (11.0.1):
-    - ExpoModulesCore
-  - EXSMS (11.0.0):
     - ExpoModulesCore
   - EXSpeech (11.0.0):
     - ExpoModulesCore
@@ -706,7 +706,6 @@ DEPENDENCIES:
   - EXCamera (from `../../../packages/expo-camera/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
-  - EXDevice (from `../../../packages/expo-device/ios`)
   - EXDocumentPicker (from `../../../packages/expo-document-picker/ios`)
   - EXErrorRecovery (from `../../../packages/expo-error-recovery/ios`)
   - EXFaceDetector (from `../../../packages/expo-face-detector/ios`)
@@ -733,6 +732,7 @@ DEPENDENCIES:
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
+  - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoGL (from `../../../packages/expo-gl`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
@@ -746,6 +746,7 @@ DEPENDENCIES:
   - ExpoMaps (from `../../../packages/expo-maps/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
   - ExpoRandom (from `../../../packages/expo-random/ios`)
+  - ExpoSMS (from `../../../packages/expo-sms/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
@@ -757,7 +758,6 @@ DEPENDENCIES:
   - EXSecureStore (from `../../../packages/expo-secure-store/ios`)
   - EXSensors (from `../../../packages/expo-sensors/ios`)
   - EXSharing (from `../../../packages/expo-sharing/ios`)
-  - EXSMS (from `../../../packages/expo-sms/ios`)
   - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - EXSQLite (from `../../../packages/expo-sqlite/ios`)
@@ -883,9 +883,6 @@ EXTERNAL SOURCES:
   EXContacts:
     inhibit_warnings: false
     :path: "../../../packages/expo-contacts/ios"
-  EXDevice:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-device/ios"
   EXDocumentPicker:
     inhibit_warnings: false
     :path: "../../../packages/expo-document-picker/ios"
@@ -957,6 +954,9 @@ EXTERNAL SOURCES:
   ExpoCrypto:
     inhibit_warnings: false
     :path: "../../../packages/expo-crypto/ios"
+  ExpoDevice:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-device/ios"
   ExpoGL:
     inhibit_warnings: false
     :path: "../../../packages/expo-gl"
@@ -996,6 +996,9 @@ EXTERNAL SOURCES:
   ExpoRandom:
     inhibit_warnings: false
     :path: "../../../packages/expo-random/ios"
+  ExpoSMS:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-sms/ios"
   ExpoStoreReview:
     inhibit_warnings: false
     :path: "../../../packages/expo-store-review/ios"
@@ -1029,9 +1032,6 @@ EXTERNAL SOURCES:
   EXSharing:
     inhibit_warnings: false
     :path: "../../../packages/expo-sharing/ios"
-  EXSMS:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-sms/ios"
   EXSpeech:
     inhibit_warnings: false
     :path: "../../../packages/expo-speech/ios"
@@ -1167,7 +1167,6 @@ SPEC CHECKSUMS:
   EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
   EXConstants: d9bff28e1d37cd1c05133e6955e9ba8f2a702947
   EXContacts: ef197934926d31c2a58092e081ca9e7c402f13fd
-  EXDevice: 734a55d8935ea8e075d12df1919a0497153bf55c
   EXDocumentPicker: 067af3535841bd1298d772c0eaa6d262ba9d38a4
   EXErrorRecovery: ae43433feb0608a64dc5b1c8363b3e7769a9ea24
   EXFaceDetector: 0bb666598a78ae4a787689a45a58ddb68e3bd86e
@@ -1185,14 +1184,15 @@ SPEC CHECKSUMS:
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
   expo-dev-client: d723d52ccfbe2eb47ee24d1ac0cf5b39001589c2
   expo-dev-launcher: 953f564f7d006f1af50b119cacb48cafcad40c73
-  expo-dev-menu: 9e3dddd191ef96d9b60cff56f707e02223200bf1
+  expo-dev-menu: 330211ba6e93b8195b43aa9e84555ec861131af4
   expo-dev-menu-interface: c8ad2dc7bb9513c6668c0b0fdf2391727a3d19a7
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
   ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
-  ExpoGL: 75d4259b4907dbf725b5dd9309602304f29e52b3
+  ExpoDevice: f3c8baaea11ae02095ecb474dcfd48d80ee5bf8f
+  ExpoGL: 1f734be738a52713e6ec7abe4fd970f0946a2a0b
   ExpoHaptics: 5a56d30a87ea213dd00b09566dc4b441a4dff97f
   ExpoImage: da2c9a0f17c5b00727619f0f0777c1a0b9da8c07
   ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
@@ -1205,6 +1205,7 @@ SPEC CHECKSUMS:
   ExpoMaps: da84a66611924dd53beaa2d2801cbd677758796a
   ExpoModulesCore: e47e5d3e3f8fbc03b6c41cfc1d54421381201dd5
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
+  ExpoSMS: 9cd247733eb868bb39f25a8ba0d37167c632468a
   ExpoStoreReview: ff6d631f2949eb7e4b2d14146ef6af25a16d770d
   ExpoSystemUI: c844dec5e49e677bcd6bfe15cc305b02127b1124
   ExpoTrackingTransparency: 8d02327d4414009f03a43e6b2dbad52265996936
@@ -1216,7 +1217,6 @@ SPEC CHECKSUMS:
   EXSecureStore: daec0117c922a67c658cb229152a9e252e5c1750
   EXSensors: 535beac36b78487d53c630eb627d7528bcc610b3
   EXSharing: e4c5ebc5b36828f1e0dff1415b2b28b23dc770b8
-  EXSMS: 9b0da8ca484165b7f1ebbd5cfedd670b5abf87fd
   EXSpeech: b1e02f7d9d4e9731133da25ee4b26cc0740707ed
   EXSplashScreen: 20052670daff7650fa01140a178d0af1a914584b
   EXSQLite: 13c91c389b3c6241ddcf5c47eaa43289721193fe

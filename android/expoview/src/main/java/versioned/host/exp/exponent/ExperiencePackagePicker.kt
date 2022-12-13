@@ -16,7 +16,7 @@ import expo.modules.contacts.ContactsPackage
 import expo.modules.core.interfaces.Package
 import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
-import expo.modules.documentpicker.DocumentPickerPackage
+import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
 import expo.modules.errorrecovery.ErrorRecoveryPackage
 import expo.modules.facedetector.FaceDetectorPackage
@@ -29,7 +29,7 @@ import expo.modules.haptics.HapticsModule
 import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorPackage
 import expo.modules.imagepicker.ImagePickerModule
-import expo.modules.intentlauncher.IntentLauncherPackage
+import expo.modules.intentlauncher.IntentLauncherModule
 import expo.modules.keepawake.KeepAwakePackage
 import expo.modules.kotlin.ModulesProvider
 import expo.modules.kotlin.modules.Module
@@ -39,7 +39,7 @@ import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationPackage
 import expo.modules.mailcomposer.MailComposerPackage
 import expo.modules.manifests.core.Manifest
-import expo.modules.medialibrary.MediaLibraryPackage
+import expo.modules.medialibrary.MediaLibraryModule
 import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
@@ -50,12 +50,13 @@ import expo.modules.screencapture.ScreenCapturePackage
 import expo.modules.screenorientation.ScreenOrientationPackage
 import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
-import expo.modules.sharing.SharingPackage
-import expo.modules.sms.SMSPackage
+import expo.modules.sharing.SharingModule
+import expo.modules.sms.SMSModule
 import expo.modules.speech.SpeechPackage
 import expo.modules.splashscreen.SplashScreenPackage
 import expo.modules.sqlite.SQLitePackage
 import expo.modules.storereview.StoreReviewModule
+import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
@@ -73,7 +74,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    DocumentPickerPackage(),
     ErrorRecoveryPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
@@ -83,23 +83,19 @@ object ExperiencePackagePicker : ModulesProvider {
     GLPackage(),
     ImageLoaderPackage(),
     ImageManipulatorPackage(),
-    IntentLauncherPackage(),
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
     LocationPackage(),
     MailComposerPackage(),
-    MediaLibraryPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
     PrintPackage(),
-    SMSPackage(),
     SQLitePackage(),
     ScreenCapturePackage(),
     ScreenOrientationPackage(),
     SecureStorePackage(),
     SensorsPackage(),
-    SharingPackage(),
     SpeechPackage(),
     SplashScreenPackage(),
     SystemUIPackage(),
@@ -129,14 +125,20 @@ object ExperiencePackagePicker : ModulesProvider {
     ClipboardModule::class.java,
     CryptoModule::class.java,
     DeviceModule::class.java,
+    DocumentPickerModule::class.java,
     EASClientModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
+    IntentLauncherModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
+    MediaLibraryModule::class.java,
     NetworkModule::class.java,
     RandomModule::class.java,
+    SMSModule::class.java,
+    SharingModule::class.java,
     StoreReviewModule::class.java,
+    SystemUIModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,
   )

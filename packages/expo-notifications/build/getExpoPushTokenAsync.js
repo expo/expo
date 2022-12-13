@@ -10,7 +10,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
     const deviceId = options.deviceId || (await getDeviceIdAsync());
     const experienceId = options.experienceId || Constants.expoConfig?.originalFullName || Constants.manifest?.id;
     const projectId = options.projectId ||
-        Constants.manifest2?.extra?.eas?.projectId ||
+        Constants.expoConfig?.extra?.eas?.projectId ||
         Constants.manifest?.projectId;
     if (!experienceId && !projectId) {
         throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId or projectId found. If one or the other can't be inferred from the manifest (eg. in bare workflow), you have to pass one in yourself.");

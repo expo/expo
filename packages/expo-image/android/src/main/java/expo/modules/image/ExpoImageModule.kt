@@ -9,7 +9,10 @@ import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
 import expo.modules.core.errors.ModuleDestroyedException
-import expo.modules.image.enums.ImageResizeMode
+import expo.modules.image.enums.ContentFit
+import expo.modules.image.enums.Priority
+import expo.modules.image.records.CachePolicy
+import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -79,12 +82,16 @@ class ExpoImageModule : Module() {
         "onLoad"
       )
 
-      Prop("source") { view: ExpoImageViewWrapper, sourceMap: SourceMap? ->
-        view.imageView.sourceMap = sourceMap
+      Prop("source") { view: ExpoImageViewWrapper, sources: List<SourceMap> ->
+        view.imageView.sources = sources
       }
 
-      Prop("resizeMode") { view: ExpoImageViewWrapper, resizeMode: ImageResizeMode ->
-        view.imageView.resizeMode = resizeMode
+      Prop("contentFit") { view: ExpoImageViewWrapper, contentFit: ContentFit? ->
+        view.imageView.contentFit = contentFit ?: ContentFit.Cover
+      }
+
+      Prop("contentPosition") { view: ExpoImageViewWrapper, contentPosition: ContentPosition? ->
+        view.imageView.contentPosition = contentPosition ?: ContentPosition.center
       }
 
       Prop("blurRadius") { view: ExpoImageViewWrapper, blurRadius: Int ->
@@ -156,6 +163,14 @@ class ExpoImageModule : Module() {
 
       Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean ->
         view.imageView.isFocusable = accessible
+      }
+
+      Prop("priority") { view: ExpoImageViewWrapper, priority: Priority? ->
+        view.imageView.priority = priority ?: Priority.NORMAL
+      }
+
+      Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy? ->
+        view.imageView.cachePolicy = cachePolicy ?: CachePolicy.DISK
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->

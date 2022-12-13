@@ -55,7 +55,8 @@ metadata: goes here
 
 These metadata items include:
 
-- `title`: Title of the page shown as the heading and in search results
+- `title`: Title of the page shown as the heading and in search results.
+- `description`: Description of the page shown in search results and open graph descriptions when the page is shared on social media sites.
 - `hideFromSearch`: Whether to hide the page from Algolia search results. Defaults to `false`.
 - `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
@@ -102,11 +103,13 @@ You can add your own client-side redirect rules in `common/error-utilities.ts`.
 We use Algolia as a main search results provider for our docs. Besides the query, results are also filtered based on the `version` tag which represents the user current location. The tag set in the `components/DocumentationPage.tsx` head.
 
 In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
+
 - all unversioned pages use the version tag `none`,
 - all versioned pages use the SDK version (e.g. `v46.0.0` or `v47.0.0`),
 - all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
 
 Currently, the base results for Expo docs are combined with other results from multiple sources, like:
+
 - manually defined paths for Expo dashboard located in `ui/components/CommandMenu/expoEntries.ts`,
 - public Algolia index for React Native website,
 - React Native directory public API, see the directory [README.md](https://github.com/react-native-community/directory#i-dont-like-your-website-can-i-hit-an-api-instead-and-build-my-own-better-stuff) for more details.

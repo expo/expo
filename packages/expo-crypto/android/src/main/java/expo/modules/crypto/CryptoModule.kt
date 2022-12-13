@@ -3,8 +3,10 @@ package expo.modules.crypto
 import android.util.Base64
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.typedarray.TypedArray
 import java.security.MessageDigest
 import java.security.SecureRandom
+import java.util.UUID
 
 class CryptoModule : Module() {
   private val secureRandom by lazy { SecureRandom() }
@@ -16,6 +18,10 @@ class CryptoModule : Module() {
     AsyncFunction("digestStringAsync", this@CryptoModule::digestString)
     Function("getRandomBase64String", this@CryptoModule::getRandomBase64String)
     AsyncFunction("getRandomBase64StringAsync", this@CryptoModule::getRandomBase64String)
+    Function("getRandomValues", this@CryptoModule::getRandomValues)
+    Function("randomUUID") {
+      UUID.randomUUID().toString()
+    }
   }
 
   private fun getRandomBase64String(randomByteCount: Int): String {
@@ -40,5 +46,11 @@ class CryptoModule : Module() {
         }
       }
     }
+  }
+
+  private fun getRandomValues(typedArray: TypedArray) {
+    val array = ByteArray(typedArray.byteLength)
+    secureRandom.nextBytes(array)
+    typedArray.write(array, typedArray.byteOffset, typedArray.byteLength)
   }
 }

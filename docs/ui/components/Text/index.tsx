@@ -1,6 +1,5 @@
 import { css, SerializedStyles } from '@emotion/react';
 import { theme, typography, spacing, borderRadius } from '@expo/styleguide';
-import React from 'react';
 
 import { LinkBase, LinkProps } from './Link';
 import { TextComponentProps, TextElement } from './types';
@@ -38,11 +37,8 @@ const baseTextStyle = css({
 });
 
 const link = css({
-  textDecoration: 'none',
   cursor: 'pointer',
-
-  // transform prevents a 1px shift on hover on Safari
-  transform: 'translate3d(0,0,0)',
+  textDecoration: 'none',
 
   ':hover': {
     transition: durations.hover,
@@ -50,28 +46,33 @@ const link = css({
   },
 });
 
+const linkStyled = css({
+  ...typography.utility.anchor,
+
+  // note(Cedric): transform prevents a 1px shift on hover on Safari
+  transform: 'translate3d(0,0,0)',
+
+  ':hover': {
+    textDecoration: 'underline',
+
+    code: {
+      textDecoration: 'inherit',
+    },
+  },
+
+  'span, code, strong, em, b, i': {
+    color: theme.link.default,
+  },
+});
+
 const listStyle = css({
   marginLeft: '1.5rem',
 });
 
-export const H1 = createTextComponent(TextElement.H1, css(typography.headers.default.h1));
-export const H2 = createTextComponent(TextElement.H2, css(typography.headers.default.h2));
-export const H3 = createTextComponent(TextElement.H4, css(typography.headers.default.h3));
-export const H4 = createTextComponent(TextElement.H4, css(typography.headers.default.h4));
-export const H5 = createTextComponent(TextElement.H5, css(typography.headers.default.h5));
-export const H6 = createTextComponent(TextElement.H6, css(typography.headers.default.h6));
-export const P = createTextComponent(TextElement.P, css(typography.body.paragraph));
-export const CODE = createTextComponent(TextElement.CODE, css(typography.utility.inlineCode));
-export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
-export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));
-export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
-export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.footnote));
-export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
-export const BOLD = createTextComponent(TextElement.SPAN, css(typography.utility.weight.semiBold));
-export const DEMI = createTextComponent(TextElement.SPAN, css(typography.utility.weight.medium));
-export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
-export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
-export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre));
+const codeStyle = css({
+  borderRadius: borderRadius.small,
+  verticalAlign: 'initial',
+});
 
 export const kbdStyle = css({
   fontFamily: typography.fontFaces.medium,
@@ -87,15 +88,39 @@ export const kbdStyle = css({
   top: -1,
 });
 
-const isExternalLink = (href?: string) => href?.includes('://');
-
+export const H1 = createTextComponent(TextElement.H1, css(typography.headers.default.h1));
+export const H2 = createTextComponent(TextElement.H2, css(typography.headers.default.h2));
+export const H3 = createTextComponent(TextElement.H4, css(typography.headers.default.h3));
+export const H4 = createTextComponent(TextElement.H4, css(typography.headers.default.h4));
+export const H5 = createTextComponent(TextElement.H5, css(typography.headers.default.h5));
+export const H6 = createTextComponent(TextElement.H6, css(typography.headers.default.h6));
+export const P = createTextComponent(TextElement.P, css(typography.body.paragraph));
+export const CODE = createTextComponent(
+  TextElement.CODE,
+  css([typography.utility.inlineCode, codeStyle])
+);
+export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
+export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));
+export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
+export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.footnote));
+export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
+export const BOLD = createTextComponent(
+  TextElement.STRONG,
+  css(typography.utility.weight.semiBold)
+);
+export const DEMI = createTextComponent(TextElement.SPAN, css(typography.utility.weight.medium));
+export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
+export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
+export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre));
 export const KBD = createTextComponent(TextElement.KBD, css([typography.utility.pre, kbdStyle]));
+
+const isExternalLink = (href?: string) => href?.includes('://');
 
 export const A = (props: LinkProps & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;
   return (
     <LinkBase
-      css={[link, isStyled && css(typography.utility.anchor)]}
+      css={[link, !isStyled && linkStyled]}
       openInNewTab={isExternalLink(props.href)}
       {...rest}
     />

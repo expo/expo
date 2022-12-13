@@ -1,10 +1,21 @@
-import { ImageResizeMode, Image } from 'expo-image';
+import { ImageContentFit, ImageContentPosition, Image } from 'expo-image';
 import React from 'react';
-import { Dimensions, Image as RNImage, ScrollView, StyleSheet, Text, View } from 'react-native';
+import {
+  Dimensions,
+  Image as RNImage,
+  ImageResizeMode,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { PanGestureHandler, PanGestureHandlerGestureEvent } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedGestureHandler,
+  useAnimatedProps,
   useAnimatedStyle,
+  useDerivedValue,
   useSharedValue,
 } from 'react-native-reanimated';
 
@@ -48,22 +59,39 @@ const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
     };
   }, [width, height]);
 
+  const text = useDerivedValue(() => `${Math.round(width.value)}x${Math.round(height.value)}`);
+  const animatedProps = useAnimatedProps(() => {
+    return {
+      text: text.value,
+      // Here we use any because the text prop is not available in the type
+    } as any;
+  });
+  const AnimatedTextInput = Animated.createAnimatedComponent(TextInput);
+
   return (
-    <View style={styles.resizableView}>
-      <Text style={styles.hintText}>
-        Move the handle above to resize the image canvas and see how it lays out in different
-        components, sizes and resize modes
-      </Text>
+    <View>
+      <AnimatedTextInput
+        editable={false}
+        value={text.value}
+        underlineColorAndroid="transparent"
+        style={styles.sizeText}
+        {...{ animatedProps }}
+      />
+      <View style={styles.resizableView}>
+        <Text style={styles.hintText}>
+          Move the handle above to resize the image canvas and see how it lays out in different
+          components, sizes and resize modes
+        </Text>
+        <Animated.View style={[styles.canvas, canvasStyle]}>
+          {children}
 
-      <Animated.View style={[styles.canvas, canvasStyle]}>
-        {children}
-
-        <PanGestureHandler onGestureEvent={panGestureEvent}>
-          <Animated.View style={styles.resizeHandle}>
-            <View style={styles.resizeHandleChild} />
-          </Animated.View>
-        </PanGestureHandler>
-      </Animated.View>
+          <PanGestureHandler onGestureEvent={panGestureEvent}>
+            <Animated.View style={styles.resizeHandle}>
+              <View style={styles.resizeHandleChild} />
+            </Animated.View>
+          </PanGestureHandler>
+        </Animated.View>
+      </View>
     </View>
   );
 };
@@ -80,35 +108,75 @@ const parameters: FunctionParameter[] = [
     values: [
       { name: '1500x1000', value: '1500/1000' },
       { name: '1000x1500', value: '1000/1500' },
+      { name: '300x300', value: '300/300' },
       { name: '100x100', value: '100/100' },
     ],
   },
   {
-    name: 'Resize mode',
+    name: 'Content fit',
     type: 'enum',
     values: [
-      { name: 'cover', value: ImageResizeMode.COVER },
-      { name: 'contain', value: ImageResizeMode.CONTAIN },
-      { name: 'center', value: ImageResizeMode.CENTER },
-      { name: 'repeat', value: ImageResizeMode.REPEAT },
-      { name: 'stretch', value: ImageResizeMode.STRETCH },
+      { name: 'cover', value: ImageContentFit.COVER },
+      { name: 'contain', value: ImageContentFit.CONTAIN },
+      { name: 'fill', value: ImageContentFit.FILL },
+      { name: 'none', value: ImageContentFit.NONE },
+      { name: 'scale-down', value: ImageContentFit.SCALE_DOWN },
     ],
   },
+  {
+    name: 'Content position',
+    type: 'enum',
+    values: [
+      { name: 'top 50%, left 50%', value: { top: '50%', left: '50%' } },
+      { name: 'top 0, right 0', value: { top: 0, right: 0 } },
+      { name: 'top 100, left 50', value: { top: 100, left: 50 } },
+      { name: 'bottom 10%, right 25%', value: { bottom: '10%', right: '25%' } },
+      { name: 'bottom 0, right 10', value: { bottom: 0, right: 10 } },
+    ],
+  },
+  {
+    name: 'Use responsive sources',
+    type: 'boolean',
+    initial: false,
+  },
 ];
+
+function mapContentFitToResizeMode(contentFit: ImageContentFit): ImageResizeMode {
+  switch (contentFit) {
+    case ImageContentFit.COVER:
+    case ImageContentFit.CONTAIN:
+      return contentFit;
+    case ImageContentFit.FILL:
+      return 'stretch';
+    case ImageContentFit.NONE:
+    case ImageContentFit.SCALE_DOWN:
+      return 'center';
+  }
+}
 
 export default function ImageResizableScreen() {
   const [seed] = React.useState(1 + Math.round(Math.random() * 10));
   const [args, updateArgument] = useArguments(parameters);
-  const [showReactNativeComponent, size, resizeMode] = args as [boolean, string, ImageResizeMode];
+  const [showReactNativeComponent, size, contentFit, contentPosition, useResponsiveSources] =
+    args as [boolean, string, ImageContentFit, ImageContentPosition, boolean];
   const ImageComponent: React.ElementType = showReactNativeComponent ? RNImage : Image;
+  const source = useResponsiveSources
+    ? [
+        { uri: `https://picsum.photos/id/238/800/800`, width: 800, height: 800 },
+        { uri: `https://picsum.photos/id/237/500/500`, width: 500, height: 500 },
+        { uri: `https://picsum.photos/id/236/300/300`, width: 300, height: 300 },
+      ]
+    : { uri: `https://picsum.photos/seed/${seed}/${size}` };
 
   return (
     <ScrollView style={styles.container}>
       <ResizableView>
         <ImageComponent
           style={styles.image}
-          source={{ uri: `https://picsum.photos/seed/${seed}/${size}` }}
-          resizeMode={resizeMode}
+          source={source}
+          contentFit={contentFit}
+          contentPosition={contentPosition}
+          resizeMode={mapContentFitToResizeMode(contentFit)}
         />
       </ResizableView>
 
@@ -168,6 +236,13 @@ const styles = StyleSheet.create({
     right: 10,
     left: 10,
     bottom: 16,
+  },
+  sizeText: {
+    position: 'absolute',
+    zIndex: 1,
+    top: -PADDING + 8,
+    right: PADDING - 4,
+    color: Colors.secondaryText,
   },
   image: {
     flex: 1,
