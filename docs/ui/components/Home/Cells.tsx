@@ -58,7 +58,7 @@ export const APIGridCell = ({
   xl = 3,
 }: APIGridCellProps) => (
   <CustomCol css={cellWrapperStyle} md={md} sm={sm} lg={lg} xl={xl}>
-    <A href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} className={className}>
+    <A href={link} css={[cellStyle, cellAPIStyle, cellHoverStyle]} className={className} isStyled>
       <div css={cellIconWrapperStyle}>{icon}</div>
       <div css={cellTitleWrapperStyle}>
         {title}
