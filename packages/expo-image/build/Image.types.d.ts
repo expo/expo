@@ -26,12 +26,17 @@ export type ImageStyle = RNImageStyle & {
     resizeMode?: ImageResizeMode;
     elevation?: number;
 };
+type RequireSource = number | string;
 export type ImageProps = AccessibilityProps & {
     style?: ImageStyle;
     /**
      * The image source (either a remote URL or a local file resource).
      */
-    source?: ImageSource | number;
+    source?: ImageSource | RequireSource | (ImageSource | RequireSource)[];
+    /**
+     * A static image to display while loading the image source.
+     */
+    placeholder?: ImageSource | ImageSource[] | number;
     /**
      * A static image to display while loading the image source.
      * @platform android
@@ -65,7 +70,12 @@ export type ImageProps = AccessibilityProps & {
      * Object that describes how the image view should transition the contents on props change.
      * @platform ios
      */
-    transition?: ImageTransition | null;
+    transition?: ImageTransition | number | null;
+    /**
+     * Fade animation duration in milliseconds.
+     * @deprecated This prop is deprecated, use [`transition`](#transition) instead.
+     */
+    fadeDuration?: number;
     /**
      * Priorities for completing loads. If more than one load is queued at a time,
      * the load with the higher priority will be started first.
@@ -74,6 +84,12 @@ export type ImageProps = AccessibilityProps & {
      * @platform android
      */
     priority?: ImagePriority | null;
+    /**
+     * Determines whether to cache the image and where: on the disk, in the memory or both.
+     * > Note: Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
+     * @default ImageCachePolicy.DISK
+     */
+    cachePolicy?: ImageCachePolicy | null;
     /**
      * Called when the image starts to load.
      */
@@ -214,6 +230,12 @@ export declare enum ImageCacheType {
     DISK = "disk",
     MEMORY = "memory"
 }
+export declare enum ImageCachePolicy {
+    NONE = "none",
+    DISK = "disk",
+    MEMORY = "memory",
+    MEMORY_AND_DISK = "memoryAndDisk"
+}
 export declare enum ImagePriority {
     LOW = "low",
     NORMAL = "normal",
@@ -235,4 +257,5 @@ export type ImageProgressEventData = {
 export type ImageErrorEventData = {
     error: string;
 };
+export {};
 //# sourceMappingURL=Image.types.d.ts.map

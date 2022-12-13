@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.DrawableImageViewTarget
@@ -27,6 +28,7 @@ import expo.modules.image.enums.Priority
 import expo.modules.image.events.GlideRequestListener
 import expo.modules.image.events.OkHttpProgressListener
 import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
+import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
@@ -217,6 +219,8 @@ class ExpoImageView(
 
   internal var priority: Priority = Priority.NORMAL
 
+  internal var cachePolicy: CachePolicy = CachePolicy.DISK
+
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
     val isInvalidated = outlineProvider.setBorderRadius(borderRadius, position)
     if (isInvalidated) {
@@ -280,10 +284,7 @@ class ExpoImageView(
     if (sourceToLoad != loadedSource || propsChanged) {
       propsChanged = false
       loadedSource = sourceToLoad
-      val options = bestSource.createOptions(context).apply {
-        priority(this@ExpoImageView.priority.toGlidePriority())
-      }
-
+      val options = bestSource.createOptions(context)
       val propOptions = createPropOptions()
 
       if (sourceToLoad is GlideUrlModel) {
@@ -330,6 +331,15 @@ class ExpoImageView(
   private fun createPropOptions(): RequestOptions {
     return RequestOptions()
       .apply {
+        priority(this@ExpoImageView.priority.toGlidePriority())
+
+        if (cachePolicy != CachePolicy.MEMORY_AND_DISK && cachePolicy != CachePolicy.MEMORY) {
+          skipMemoryCache(true)
+        }
+        if (cachePolicy == CachePolicy.NONE || cachePolicy == CachePolicy.MEMORY) {
+          diskCacheStrategy(DiskCacheStrategy.NONE)
+        }
+
         blurRadius?.let {
           transform(BlurTransformation(min(it, 25), 4))
         }

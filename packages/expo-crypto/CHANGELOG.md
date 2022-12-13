@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Added a `randomUUID` method to get a random UUIDv4 string. ([#20274](https://github.com/expo/expo/pull/20274) by [@aleqsio](https://github.com/aleqsio))
 - Added a `getRandomValues` method to fill typed arrays. ([#20257](https://github.com/expo/expo/pull/20257) by [@aleqsio](https://github.com/aleqsio))
 - Ported over `getRandomBytes`, `getRandomBytesAsync` methods from `expo-random`. ([#20217](https://github.com/expo/expo/pull/20217) by [@aleqsio](https://github.com/aleqsio))
 

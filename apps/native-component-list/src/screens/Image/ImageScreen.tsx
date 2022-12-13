@@ -53,6 +53,20 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImagePriorityScreen'));
     },
   },
+  {
+    name: 'Placeholder',
+    route: 'image/placeholder',
+    getComponent() {
+      return optionalRequire(() => require('./ImagePlaceholderScreen'));
+    },
+  },
+  {
+    name: 'Transitions',
+    route: 'image/transitions',
+    getComponent() {
+      return optionalRequire(() => require('./ImageTransitionsScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {

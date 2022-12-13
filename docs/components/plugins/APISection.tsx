@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { P } from '~/components/base/paragraph';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
