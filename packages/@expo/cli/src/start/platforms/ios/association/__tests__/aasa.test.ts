@@ -1,6 +1,7 @@
-import { generateAasaForProject, getUserDefinedAasaFile } from '../aasa';
-
 import { vol } from 'memfs';
+import path from 'path';
+
+import { generateAasaForProject, getUserDefinedAasaFile } from '../aasa';
 
 describe(getUserDefinedAasaFile, () => {
   afterEach(() => {
@@ -33,7 +34,6 @@ describe(getUserDefinedAasaFile, () => {
 });
 
 const originalFs = jest.requireActual('fs');
-import path from 'path';
 
 describe(generateAasaForProject, () => {
   afterEach(() => {
