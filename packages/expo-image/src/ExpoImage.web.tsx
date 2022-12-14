@@ -74,7 +74,7 @@ function ensureIsArray(source?: ImageSource): (ImageUriSource | RequireSource)[]
 
 type ImageState = 'empty' | 'loading' | 'loaded' | 'error';
 
-function useImageState(source: ImageSource | undefined) {
+function useImageState(source?: ImageSource) {
   const [imageState, setImageState] = React.useState<ImageState>(source ? 'loading' : 'empty');
   React.useEffect(() => {
     setImageState((prevState) =>
@@ -107,7 +107,7 @@ function getCSSTiming(timing?: ImageTransitionTiming) {
 }
 
 function getTransitionObjectFromTransition(
-  transition: number | ImageTransition | null | undefined
+  transition?: number | ImageTransition | null
 ) {
   if (transition == null) {
     return {
