@@ -48,11 +48,11 @@ export function AnalyticsProvider(props: AnalyticsProps) {
         strategy="lazyOnload"
         src={`https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`}
       />
-      <Script id="gtm-init" strategy="lazyOnload">{`
+      <Script id="ga4-init" strategy="lazyOnload">{`
         window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '${GA4_MEASUREMENT_ID}', { 'transport_type': 'beacon', 'anonymize_ip': true });
+        function ga4tag(){dataLayer.push(arguments);}
+        ga4tag('js', new Date());
+        ga4tag('config', '${GA4_MEASUREMENT_ID}', { 'transport_type': 'beacon', 'anonymize_ip': true });
       `}</Script>
       {props.children}
     </>
@@ -68,7 +68,7 @@ export function reportPageView(url: string) {
 }
 
 export function reportPageViewForGA4(url: string) {
-  window?.gtag?.('config', GA4_MEASUREMENT_ID, {
+  window?.ga4tag?.('config', GA4_MEASUREMENT_ID, {
     page_path: url,
     transport_type: 'beacon',
     anonymize_ip: true,
