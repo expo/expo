@@ -1,5 +1,5 @@
 diff --git a/apps/bare-expo/android/app/build.gradle b/apps/bare-expo/android/app/build.gradle
-index 7264bf9de8..01b7b0bcb2 100644
+index 7264bf9de8..2952db7a06 100644
 --- a/apps/bare-expo/android/app/build.gradle
 +++ b/apps/bare-expo/android/app/build.gradle
 @@ -1,112 +1,82 @@
@@ -196,7 +196,15 @@ index 7264bf9de8..01b7b0bcb2 100644
   */
  def reactNativeArchitectures() {
      def value = project.getProperties().get("reactNativeArchitectures")
-@@ -162,70 +125,9 @@ android {
+@@ -149,6 +112,7 @@ android {
+         jvmTarget = JavaVersion.VERSION_11.majorVersion
+     }
+ 
++    namespace "dev.expo.payments"
+     defaultConfig {
+         applicationId 'dev.expo.payments'
+         minSdkVersion rootProject.ext.minSdkVersion
+@@ -162,70 +126,9 @@ android {
          testBuildType System.getProperty('testBuildType', 'debug')
          testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
          missingDimensionStrategy 'detox', 'full'
@@ -268,7 +276,7 @@ index 7264bf9de8..01b7b0bcb2 100644
          abi {
              reset()
              enable enableSeparateBuildPerCPUArchitecture
-@@ -275,32 +177,22 @@ android {
+@@ -275,32 +178,22 @@ android {
  }
  
  dependencies {
@@ -308,7 +316,7 @@ index 7264bf9de8..01b7b0bcb2 100644
  
      androidTestImplementation(project(":detox"))
  
-@@ -308,7 +200,7 @@ dependencies {
+@@ -308,7 +201,7 @@ dependencies {
  //    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.7'
  }
  
@@ -317,7 +325,7 @@ index 7264bf9de8..01b7b0bcb2 100644
      // If new architecture is enabled, we let you build RN from source
      // Otherwise we fallback to a prebuilt .aar bundled in the NPM package.
      // This will be applied to all the imported transtitive dependency.
-@@ -324,13 +216,6 @@ if (isNewArchitectureEnabled() || findProperty("buildReactNativeFromSource") ==
+@@ -324,13 +217,6 @@ if (isNewArchitectureEnabled() || findProperty("buildReactNativeFromSource") ==
      }
  }
  
@@ -331,7 +339,7 @@ index 7264bf9de8..01b7b0bcb2 100644
  class ExecuteSetupAndroidProject implements Plugin<Project> {
      @Override
      void apply(Project target) {
-@@ -350,26 +235,4 @@ apply plugin: ExecuteSetupAndroidProject
+@@ -350,26 +236,4 @@ apply plugin: ExecuteSetupAndroidProject
  apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json')"].execute(null, rootDir).text.trim(), "../native_modules.gradle")
  applyNativeModulesAppBuildGradle(project)
  
@@ -359,7 +367,7 @@ index 7264bf9de8..01b7b0bcb2 100644
 -    }
 -}
 diff --git a/apps/bare-expo/android/build.gradle b/apps/bare-expo/android/build.gradle
-index 184f37912c..a49d3f3a4e 100644
+index 184f37912c..b13e815fa7 100644
 --- a/apps/bare-expo/android/build.gradle
 +++ b/apps/bare-expo/android/build.gradle
 @@ -4,8 +4,8 @@ import groovy.json.JsonSlurper
@@ -410,7 +418,7 @@ index 184f37912c..a49d3f3a4e 100644
          }
      }
  
-@@ -86,19 +75,6 @@ allprojects {
+@@ -86,19 +75,7 @@ allprojects {
          }
  
          google()
@@ -427,6 +435,7 @@ index 184f37912c..a49d3f3a4e 100644
 -                includeGroup "com.facebook.react"
 -            }
 -        }
++        mavenCentral()
          maven { url 'https://jitpack.io' }
      }
  }
@@ -458,3 +467,48 @@ index ca16a00bc0..6e64fbd158 100644
    include(":ReactAndroid")
    project(":ReactAndroid").projectDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../ReactAndroid");
    include(":ReactAndroid:hermes-engine")
+diff --git a/apps/bare-expo/ios/BareExpo/AppDelegate.mm b/apps/bare-expo/ios/BareExpo/AppDelegate.mm
+index 5f7dcf90ee..7666f07be7 100644
+--- a/apps/bare-expo/ios/BareExpo/AppDelegate.mm
++++ b/apps/bare-expo/ios/BareExpo/AppDelegate.mm
+@@ -44,7 +44,13 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
+ 
+ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+ {
+-  RCTAppSetupPrepareApp(application);
++
++#if RCT_NEW_ARCH_ENABLED
++  RCTAppSetupPrepareApp(application, YES);
++#else
++  RCTAppSetupPrepareApp(application, NO);
++#endif
++
+ 
+ #if DEBUG
+   BOOL useDevClient = NO;
+diff --git a/apps/bare-expo/package.json b/apps/bare-expo/package.json
+index 999cf1d241..f97f4bda33 100644
+--- a/apps/bare-expo/package.json
++++ b/apps/bare-expo/package.json
+@@ -70,6 +70,7 @@
+     "@react-native-picker/picker": "2.4.8",
+     "@react-native-segmented-control/segmented-control": "2.4.0",
+     "@shopify/flash-list": "1.3.1",
++    "@shopify/react-native-skia": "0.1.157",
+     "expo": "~47.0.0-alpha.1",
+     "expo-camera": "~13.0.0-beta.1",
+     "expo-dev-client": "~2.0.0",
+@@ -79,11 +80,13 @@
+     "expo-notifications": "~0.17.0",
+     "expo-random": "~13.0.0",
+     "expo-splash-screen": "~0.17.0",
++    "lottie-react-native": "5.1.4",
+     "native-component-list": "*",
+     "react": "18.1.0",
+     "react-dom": "18.0.0",
+     "react-native": "0.70.5",
+     "react-native-gesture-handler": "~2.8.0",
++    "react-native-maps": "1.3.2",
+     "react-native-pager-view": "6.0.1",
+     "react-native-reanimated": "~2.12.0",
+     "react-native-safe-area-context": "4.4.1",
