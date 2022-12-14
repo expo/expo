@@ -73,6 +73,7 @@ function ensureIsArray(source?: ImageSource): (ImageUriSource | RequireSource)[]
 }
 
 type ImageState = 'empty' | 'loading' | 'loaded' | 'error';
+
 function useImageState(source: ImageSource | undefined) {
   const [imageState, setImageState] = React.useState<ImageState>(source ? 'loading' : 'empty');
   React.useEffect(() => {
@@ -94,14 +95,16 @@ function useImageState(source: ImageSource | undefined) {
   return [imageState, handlers] as [ImageState, { onLoad: () => void }];
 }
 
-const getCSSTiming = (timing?: ImageTransitionTiming) => {
-  return {
-    [ImageTransitionTiming.EASE_IN]: 'ease-in',
-    [ImageTransitionTiming.EASE_OUT]: 'ease-out',
-    [ImageTransitionTiming.EASE_IN_OUT]: 'ease-in-out',
-    [ImageTransitionTiming.LINEAR]: 'linear',
-  }[timing || ImageTransitionTiming.LINEAR];
-};
+function getCSSTiming(timing?: ImageTransitionTiming) {
+  return (
+    {
+      [ImageTransitionTiming.EASE_IN]: 'ease-in',
+      [ImageTransitionTiming.EASE_OUT]: 'ease-out',
+      [ImageTransitionTiming.EASE_IN_OUT]: 'ease-in-out',
+      [ImageTransitionTiming.LINEAR]: 'linear',
+    }[timing || ImageTransitionTiming.LINEAR] ?? 'linear'
+  );
+}
 
 function getTransitionObjectFromTransition(
   transition: number | ImageTransition | null | undefined
@@ -147,7 +150,8 @@ const useTransition = (
         ...commonStyles,
       },
     };
-  } else if (effect === ImageTransitionEffect.FLIP_FROM_TOP) {
+  }
+  if (effect === ImageTransitionEffect.FLIP_FROM_TOP) {
     const commonStyles = {
       transition: `transform ${duration}ms`,
       transformOrigin: 'top',
@@ -219,7 +223,7 @@ export default function ExpoImage({
           left: 0,
           right: 0,
           objectFit: resolveContentFit(props.contentFit, props.resizeMode),
-          objectPosition: getObjectPositionFromContentPosition(contentPosition) || undefined,
+          objectPosition: getObjectPositionFromContentPosition(contentPosition) || '50% 50%',
           ...imageStyle,
         }}
         onLoad={handlers.onLoad}

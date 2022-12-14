@@ -60,14 +60,14 @@ function useImageState(source) {
     }), [onLoad]);
     return [imageState, handlers];
 }
-const getCSSTiming = (timing) => {
-    return {
+function getCSSTiming(timing) {
+    return ({
         [ImageTransitionTiming.EASE_IN]: 'ease-in',
         [ImageTransitionTiming.EASE_OUT]: 'ease-out',
         [ImageTransitionTiming.EASE_IN_OUT]: 'ease-in-out',
         [ImageTransitionTiming.LINEAR]: 'linear',
-    }[timing || ImageTransitionTiming.LINEAR];
-};
+    }[timing || ImageTransitionTiming.LINEAR] ?? 'linear');
+}
 function getTransitionObjectFromTransition(transition) {
     if (transition == null) {
         return {
@@ -107,7 +107,7 @@ const useTransition = (transition, state) => {
             },
         };
     }
-    else if (effect === ImageTransitionEffect.FLIP_FROM_TOP) {
+    if (effect === ImageTransitionEffect.FLIP_FROM_TOP) {
         const commonStyles = {
             transition: `transform ${duration}ms`,
             transformOrigin: 'top',
@@ -157,7 +157,7 @@ export default function ExpoImage({ source, placeholder, loadingIndicatorSource,
                 left: 0,
                 right: 0,
                 objectFit: resolveContentFit(props.contentFit, props.resizeMode),
-                objectPosition: getObjectPositionFromContentPosition(contentPosition) || undefined,
+                objectPosition: getObjectPositionFromContentPosition(contentPosition) || '50% 50%',
                 ...imageStyle,
             }, onLoad: handlers.onLoad })));
 }
