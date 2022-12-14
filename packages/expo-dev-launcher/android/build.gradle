@@ -40,7 +40,7 @@ android {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 9
-    versionName "1.3.1"
+    versionName "2.0.2"
   }
 
   lintOptions {
@@ -192,6 +192,17 @@ def getNodeModulesPackageVersion(packageName, overridePropName) {
 }
 
 def getRNVersion() {
+  if (System.getenv("REACT_NATIVE_OVERRIDE_VERSION")) {
+    def version = System.getenv("REACT_NATIVE_OVERRIDE_VERSION")
+    def coreVersion = version.split("-")[0]
+    def (major, minor, patch) = coreVersion.tokenize('.').collect { it.toInteger() }
+    return versionToNumber(
+        major,
+        minor,
+        patch
+    )
+  }
+
   return getNodeModulesPackageVersion("react-native", "reactNativeVersion")
 }
 

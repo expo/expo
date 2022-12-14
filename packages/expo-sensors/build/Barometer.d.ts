@@ -2,10 +2,8 @@ import type { Listener, Subscription } from './DeviceSensor';
 import DeviceSensor from './DeviceSensor';
 /**
  * The altitude data returned from the native sensors.
- * @platform android
- * @platform ios
  */
-export declare type BarometerMeasurement = {
+export type BarometerMeasurement = {
     /**
      * Measurement in hectopascals (`hPa`).
      */

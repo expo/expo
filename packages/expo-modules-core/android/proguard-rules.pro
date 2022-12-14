@@ -15,7 +15,19 @@
 -keep class * implements expo.modules.kotlin.records.Record {
   *;
 }
-
-keepclassmembers enum * implements expo.modules.kotlin.records.EnumArgument { 
+-keepclassmembers enum * implements expo.modules.kotlin.types.Enumerable {
   *; 
+}
+
+-keepclassmembers class * implements expo.modules.kotlin.views.ExpoView {
+  public <init>(android.content.Context);
+  public <init>(android.content.Context, expo.modules.kotlin.AppContext);
+}
+
+-keepclassmembers class * {
+  expo.modules.kotlin.viewevent.ViewEventCallback *;
+}
+
+-keepclassmembers class * {
+  expo.modules.kotlin.viewevent.ViewEventDelegate *;
 }

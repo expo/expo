@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Fix loading Metro web assets from origins other than `/`. ([#20258](https://github.com/expo/expo/pull/20258) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+- Remove unused web features. ([#20258](https://github.com/expo/expo/pull/20258) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 8.6.2 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
 
 ## 8.6.1 — 2022-07-19
 

@@ -118,6 +118,7 @@ export type InterfaceDefinitionData = {
 
 export type ClassDefinitionData = InterfaceDefinitionData & {
   type?: TypeDefinitionData;
+  isSensor: boolean;
 };
 
 // Methods section
@@ -125,6 +126,14 @@ export type ClassDefinitionData = InterfaceDefinitionData & {
 export type MethodDefinitionData = {
   name: string;
   signatures: MethodSignatureData[];
+  getSignature?: MethodSignatureData[];
+  setSignatures?: MethodSignatureData[];
+  kind: TypeDocKind;
+};
+
+export type AccessorDefinitionData = {
+  name: string;
+  getSignature?: MethodSignatureData[];
   kind: TypeDocKind;
 };
 
@@ -180,6 +189,7 @@ export type TypeDeclarationContentData = {
   signatures?: TypeSignaturesData[];
   parameters?: PropData[];
   children?: PropData[];
+  comment?: CommentData;
 };
 
 export type TypeSignaturesData = {

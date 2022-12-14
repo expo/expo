@@ -1,5 +1,5 @@
 import { SpawnOptions } from '@expo/spawn-async';
-export declare type Logger = (...args: any[]) => void;
+export type Logger = (...args: any[]) => void;
 export interface PackageManager {
     installAsync(): Promise<void>;
     addWithParametersAsync(names: string[], parameters: string[]): Promise<void>;

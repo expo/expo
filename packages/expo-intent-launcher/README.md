@@ -4,7 +4,7 @@ Provides a way to launch Android intents, e.g. opening a specific activity.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/intent-launcher.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/intent-launcher.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/intent-launcher/)
 
 # Installation in managed Expo projects

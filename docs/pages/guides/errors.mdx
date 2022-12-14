@@ -1,5 +1,6 @@
 ---
-title: Error Handling
+title: Error handling
+description: An overview of different error-handling techniques available.
 ---
 
 This guide details a few strategies for reporting and recovering from errors in your project.
@@ -18,6 +19,6 @@ We recommend using [Sentry](/guides/using-sentry) to track JavaScript errors in 
 
 ## Native errors
 
-You can compile your project locally to use the first-party native debuggers (Xcode/Android Studio). To learn more, visit the [native debugging guide](/workflow/debugging#native-debugging).
+You can compile your project locally to use first-party native debuggers (Xcode/Android Studio). To learn more, visit the [native debugging guide](/workflow/debugging#native-debugging).
 
 Unlike the browser, there are a few circumstances where it's possible to crash the native app by writing invalid JavaScript. Usually these are in areas where it would be performance-prohibitive to add native validation to your code, e.g. the part of the React Native bridge that converts JS objects into typed native values. If you encounter an inexplicable native crash, double check that your parameters are of the right type. These types of issues can be mitigated by [using TypeScript](/guides/typescript).

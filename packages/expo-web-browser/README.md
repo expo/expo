@@ -4,7 +4,7 @@ Provides access to the system's web browser and supports handling redirects. On 
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/webbrowser.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/webbrowser.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/webbrowser/)
 
 # Installation in managed Expo projects

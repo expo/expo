@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -15,8 +23,6 @@
 ### ⚠️ Notices
 
 - Changed `requireAuthentication` option to also require biometrics on iOS (matches Android behavior) ([#18591](https://github.com/expo/expo/pull/18591) by [@stefan-schweiger](https://github.com/stefan-schweiger))
-
-### 💡 Others
 
 ## 11.3.0 — 2022-07-07
 

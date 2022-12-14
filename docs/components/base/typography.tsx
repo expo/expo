@@ -20,8 +20,3 @@ export const h4 = css({
   ...typography.headers.default.h4,
   color: theme.text.default,
 });
-
-export const paragraph = css({
-  ...typography.body.paragraph,
-  color: theme.text.default,
-});

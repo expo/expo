@@ -13,7 +13,8 @@ class DocumentDetailsReader(private val context: Context) {
       .query(uri, null, null, null, null)
       ?.use { cursor ->
         cursor.moveToFirst()
-        val name = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME))
+        val columnIndex = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+        val name = cursor.getString(columnIndex)
         val uriString = uri.toString()
         val size = cursor.getColumnIndex(OpenableColumns.SIZE).let { sizeColumnIndex ->
           if (!cursor.isNull(sizeColumnIndex)) {

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { TouchableOpacityProps, TextProps } from 'react-native';
-declare type ButtonProps = TouchableOpacityProps & {
+type ButtonProps = TouchableOpacityProps & {
     style?: Pick<TouchableOpacityProps, 'style'>;
     children?: React.ReactNode;
     labelProps?: TextProps;

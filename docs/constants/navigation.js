@@ -43,13 +43,14 @@ const general = [
       makeGroup(
         'Tutorial',
         [
-          makePage('tutorial/planning.mdx'),
-          makePage('tutorial/text.mdx'),
-          makePage('tutorial/image.mdx'),
-          makePage('tutorial/button.mdx'),
+          makePage('tutorial/introduction.mdx'),
+          makePage('tutorial/create-your-first-app.mdx'),
+          makePage('tutorial/build-a-screen.mdx'),
           makePage('tutorial/image-picker.mdx'),
-          makePage('tutorial/sharing.mdx'),
-          // makePage('tutorial/platform-differences.mdx'),
+          makePage('tutorial/create-a-modal.mdx'),
+          makePage('tutorial/gestures.mdx'),
+          makePage('tutorial/screenshot.mdx'),
+          makePage('tutorial/platform-differences.mdx'),
           makePage('tutorial/configuration.mdx'),
           makePage('tutorial/follow-up.mdx'),
         ],
@@ -78,10 +79,11 @@ const general = [
     makePage('workflow/expo-cli.mdx'),
     makePage('workflow/expo-go.mdx'),
     makePage('workflow/using-libraries.mdx'),
-    makePage('workflow/logging.mdx'),
     makePage('workflow/development-mode.mdx'),
-    makePage('workflow/ios-simulator.mdx'),
+    makePage('workflow/logging.mdx'),
+    makePage('workflow/prebuild.mdx'),
     makePage('workflow/android-studio-emulator.mdx'),
+    makePage('workflow/ios-simulator.mdx'),
     makePage('workflow/run-on-device.mdx'),
     makePage('workflow/debugging.mdx'),
     makePage('workflow/configuration.mdx'),
@@ -103,26 +105,33 @@ const general = [
   ]),
   makeSection('Development builds', [
     makePage('development/introduction.mdx'),
-    makePage('development/getting-started.mdx'),
-    makePage('development/build.mdx'),
+    makePage('development/create-development-builds.mdx'),
+    makePage('development/use-development-builds.mdx'),
     makePage('development/installation.mdx'),
     makePage('development/development-workflows.mdx'),
-    makePage('development/extensions.mdx'),
-    makePage('development/compatibility.mdx'),
-    makePage('development/upgrading.mdx'),
-    makePage('development/troubleshooting.mdx'),
+  ]),
+  makeSection('Expo Modules API', [
+    makePage('modules/overview.mdx'),
+    makePage('modules/get-started.mdx'),
+    makePage('modules/native-module-tutorial.mdx'),
+    makePage('modules/native-view-tutorial.mdx'),
+    makePage('modules/existing-library.mdx'),
+    makePage('modules/module-api.mdx'),
+    makePage('modules/android-lifecycle-listeners.mdx'),
+    makePage('modules/appdelegate-subscribers.mdx'),
+    makePage('modules/autolinking.mdx'),
+    makePage('modules/module-config.mdx'),
   ]),
   makeSection('Integrations', [
     makePage('guides/using-firebase.mdx'),
-    makePage('guides/setup-native-firebase.mdx'),
     makePage('guides/using-sentry.mdx'),
     makePage('guides/using-bugsnag.mdx'),
-    makePage('guides/using-clojurescript.mdx'),
     makePage('guides/using-graphql.mdx'),
     makePage('guides/using-styled-components.mdx'),
     makePage('guides/using-nextjs.mdx'),
     makePage('guides/typescript.mdx'),
     makePage('guides/using-flipper.mdx'),
+    makePage('guides/using-analytics.mdx'),
   ]),
   makeSection('Assorted guides', [
     makePage('guides/routing-and-navigation.mdx'),
@@ -146,6 +155,7 @@ const general = [
     makePage('guides/using-hermes.mdx'),
     makePage('guides/adopting-prebuild.mdx'),
     makePage('guides/ios-developer-mode.mdx'),
+    makePage('guides/localization.mdx'),
   ]),
   makeSection('Expo accounts', [
     makePage('accounts/account-types.mdx'),
@@ -185,14 +195,6 @@ const general = [
     makePage('ui-programming/react-native-toast.mdx'),
     makePage('ui-programming/react-native-styling-buttons.mdx'),
     makePage('guides/userinterface.mdx'),
-  ]),
-  makeSection('Expo Modules API', [
-    makePage('modules/overview.mdx'),
-    makePage('modules/get-started.mdx'),
-    makePage('modules/module-api.mdx'),
-    makePage('modules/android-lifecycle-listeners.mdx'),
-    makePage('modules/appdelegate-subscribers.mdx'),
-    makePage('modules/module-config.mdx'),
   ]),
   makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
   makeSection('Technical specs', [
@@ -237,8 +239,10 @@ const eas = [
         makePage('build-reference/eas-json.mdx'),
         makePage('build-reference/migrating.mdx'),
         makePage('build-reference/npm-hooks.mdx'),
-        makePage('build-reference/how-tos.mdx'),
         makePage('build-reference/private-npm-packages.mdx'),
+        makePage('build-reference/git-submodules.mdx'),
+        makePage('build-reference/npm-cache-with-yarn.mdx'),
+        makePage('build-reference/build-with-monorepos.mdx'),
         makePage('build-reference/variables.mdx'),
         makePage('build-reference/apk.mdx'),
         makePage('build-reference/simulators.mdx'),
@@ -287,6 +291,7 @@ const eas = [
         makePage('eas-update/runtime-versions.mdx'),
         makePage('eas-update/environment-variables.mdx'),
         makePage('eas-update/expo-dev-client.mdx'),
+        makePage('eas-update/code-signing.mdx'),
         makePage('eas-update/known-issues.mdx'),
         makePage('eas-update/rollouts.mdx'),
         makePage('eas-update/faq.mdx'),
@@ -357,7 +362,16 @@ const versionsReference = VERSIONS.reduce(
         expanded: true,
       }),
       makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
-      makeSection('React Native', sortLegacyReactNative(version), { expanded: true }),
+      makeSection(
+        'React Native',
+        [
+          make('page', {
+            href: 'https://reactnative.dev/docs/components-and-apis',
+            sidebarTitle: 'Visit documentation',
+          }),
+        ],
+        { expanded: true }
+      ),
     ],
   }),
   {}
@@ -460,136 +474,4 @@ function sortAlphabetical(pages) {
     const bTitle = b.sidebarTitle || b.name;
     return aTitle.localeCompare(bTitle);
   });
-}
-
-/**
- * Sort the list of React Native pages by legacy custom sorting.
- */
-function sortLegacyReactNative(version) {
-  const pages = pagesFromDir(`versions/${version}/react-native`);
-
-  const components = [
-    'ActivityIndicator',
-    'Button',
-    'DatePickerIOS',
-    'DrawerLayoutAndroid',
-    'FlatList',
-    'Image',
-    'ImageBackground',
-    'InputAccessoryView',
-    'KeyboardAvoidingView',
-    'ListView',
-    'MaskedViewIOS',
-    'Modal',
-    'NavigatorIOS',
-    'Picker',
-    'PickerIOS',
-    'Pressable',
-    'ProgressBarAndroid',
-    'ProgressViewIOS',
-    'RefreshControl',
-    'SafeAreaView',
-    'ScrollView',
-    'SectionList',
-    'SegmentedControl',
-    'SegmentedControlIOS',
-    'Slider',
-    'SnapshotViewIOS',
-    'StatusBar',
-    'Switch',
-    'TabBarIOS.Item',
-    'TabBarIOS',
-    'Text',
-    'TextInput',
-    'ToolbarAndroid',
-    'TouchableHighlight',
-    'TouchableNativeFeedback',
-    'TouchableOpacity',
-    'TouchableWithoutFeedback',
-    'View',
-    'ViewPagerAndroid',
-    'VirtualizedList',
-    'WebView',
-  ];
-
-  const apis = [
-    'AccessibilityInfo',
-    'ActionSheetIOS',
-    'Alert',
-    'AlertIOS',
-    'Animated',
-    'Animated.Value',
-    'Animated.ValueXY',
-    'Appearance',
-    'AppState',
-    'AsyncStorage',
-    'BackAndroid',
-    'BackHandler',
-    'Clipboard',
-    'DatePickerAndroid',
-    'Dimensions',
-    'DynamicColorIOS',
-    'Easing',
-    'ImageStore',
-    'InteractionManager',
-    'Keyboard',
-    'LayoutAnimation',
-    'ListViewDataSource',
-    'NetInfo',
-    'PanResponder',
-    'PixelRatio',
-    'Platform',
-    'PlatformColor',
-    'Settings',
-    'Share',
-    'StatusBarIOS',
-    'StyleSheet',
-    'Systrace',
-    'TimePickerAndroid',
-    'ToastAndroid',
-    'Transforms',
-    'Vibration',
-    'VibrationIOS',
-  ];
-
-  const hooks = ['useColorScheme', 'useWindowDimensions'];
-
-  const props = [
-    'Image Style Props',
-    'Layout Props',
-    'Shadow Props',
-    'Text Style Props',
-    'View Style Props',
-  ];
-
-  const types = [
-    'LayoutEvent Object Type',
-    'PressEvent Object Type',
-    'React Node Object Type',
-    'Rect Object Type',
-    'ViewToken Object Type',
-  ];
-
-  return [
-    makeGroup(
-      'Components',
-      pages.filter(page => components.includes(page.name))
-    ),
-    makeGroup(
-      'Props',
-      pages.filter(page => props.includes(page.name))
-    ),
-    makeGroup(
-      'APIs',
-      pages.filter(page => apis.includes(page.name))
-    ),
-    makeGroup(
-      'Hooks',
-      pages.filter(page => hooks.includes(page.name))
-    ),
-    makeGroup(
-      'Types',
-      pages.filter(page => types.includes(page.name))
-    ),
-  ];
 }

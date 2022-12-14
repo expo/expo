@@ -146,7 +146,7 @@ function ContactDetailView({
     for (const key of Object.keys(contact)) {
       const value = (contact as any)[key];
       if (Array.isArray(value) && value.length > 0) {
-        const data = value.map((item) => {
+        const data: DetailListItem[] = value.map((item) => {
           let transform: Partial<DetailListItem> = {};
           switch (key) {
             case Contacts.Fields.Relationships:
@@ -220,7 +220,7 @@ function ContactDetailView({
           };
         });
         items.push({
-          title: ContactUtils.parseKey(key),
+          title: ContactUtils.parseKey(key) ?? 'unknown',
           data,
         });
       }
@@ -264,8 +264,8 @@ function ContactDetailView({
       aspect: [4, 3],
     });
 
-    if (!result.cancelled) {
-      _setNewPhoto(result.uri);
+    if (!result.canceled) {
+      _setNewPhoto(result.assets[0].uri);
     }
   };
 

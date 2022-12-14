@@ -1,18 +1,18 @@
-import { withGradleProperties } from '@expo/config-plugins/build/plugins/android-plugins';
-import { withPodfileProperties } from '@expo/config-plugins/build/plugins/ios-plugins';
+import { AndroidConfig, withGradleProperties, withPodfileProperties } from 'expo/config-plugins';
 
 import type { PluginConfigType } from '../pluginConfig';
 import { withBuildProperties } from '../withBuildProperties';
 import { compileMockModWithResultsAsync } from './mockMods';
 
-jest.mock('@expo/config-plugins', () => {
-  const plugins = jest.requireActual('@expo/config-plugins');
+jest.mock('expo/config-plugins', () => {
+  const plugins = jest.requireActual('expo/config-plugins');
   return {
     ...plugins,
     withDangerousMod: jest.fn().mockImplementation((config) => config),
   };
 });
 
+// These two mocks are for the internal imports in `createBuildGradlePropsConfigPlugin`
 jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');
   return {
@@ -20,7 +20,6 @@ jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
     withGradleProperties: jest.fn().mockImplementation((config) => config),
   };
 });
-
 jest.mock('@expo/config-plugins/build/plugins/ios-plugins', () => {
   const plugins = jest.requireActual('@expo/config-plugins/build/plugins/ios-plugins');
   return {
@@ -36,7 +35,10 @@ describe(withBuildProperties, () => {
       ios: { useFrameworks: 'static' },
     };
 
-    const { modResults: androidModResults } = await compileMockModWithResultsAsync(
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync<
+      AndroidConfig.Properties.PropertiesItem[],
+      PluginConfigType
+    >(
       {},
       {
         plugin: withBuildProperties,

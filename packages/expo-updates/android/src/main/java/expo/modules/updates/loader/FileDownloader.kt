@@ -255,7 +255,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
             override fun onCompleted(isValid: Boolean) {
               if (isValid) {
                 try {
-                  checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, true, configuration, callback)
+                  checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, true, configuration, logger, callback)
                 } catch (e: Exception) {
                   callback.onFailure("Failed to parse manifest data", e)
                 }
@@ -271,7 +271,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
           }
         )
       } else {
-        checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, false, configuration, callback)
+        checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, false, configuration, logger, callback)
       }
     } catch (e: Exception) {
       val message = "Failed to parse manifest data: ${e.localizedMessage}"
@@ -410,6 +410,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       certificateChainFromManifestResponse: String?,
       isVerified: Boolean,
       configuration: UpdatesConfiguration,
+      logger: UpdatesLogger,
       callback: ManifestDownloadCallback
     ) {
       if (configuration.expectsSignedManifest) {
@@ -448,10 +449,12 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
               }
             }
 
+            logger.info("Update code signature verified successfully")
             preManifest.put("isVerified", true)
           }
         }
       } catch (e: Exception) {
+        logger.error(e.message!!, UpdatesErrorCode.UpdateCodeSigningError)
         callback.onFailure(e.message!!, e)
         return
       }

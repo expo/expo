@@ -129,7 +129,7 @@ On iOS versions earlier than 12.2, if you aren't taken to the `Installing Profil
 
 #### iOS 12.2+
 
-On iOS versions 12.2 or later, a window will popup saying `Profile Downloaded`. Close the popup, go to the `Settings` app and navigate to the `Profile Downloaded` option to download the device enrollment challenge.
+On iOS versions 12.2 or later, a window will pop up saying `Profile Downloaded`. Close the popup, go to the `Settings` app and navigate to the `Profile Downloaded` option to download the device enrollment challenge.
 
 ![UDID Workflow](/static/images/adhoc-builds-udid2.png)
 
@@ -170,7 +170,7 @@ The administrator of the Apple Enterprise account will need to make you an App M
 
 ![Apple Development Portal Permissions](/static/images/adhoc-builds-apple-org.png)
 
-## App crashes / App icon is blacked out
+## App crashes/App icon is blacked out
 
 If your app icon is blacked out like [this](/static/images/adhoc-builds-black-icon.jpg) or if it crashes at the splash screen like [this](/static/video/adhoc-builds/adhoc-builds-app-crash.mp4), check that your ad hoc provisioning profile is still valid. You can do this by navigating to the Apple Development Portal [profile list](https://developer.apple.com/account/resources/profiles/list). the Expo Go app ad hoc profile should be prefixed with `*[expo]` for a bundle identifier that starts with `dev.expo.client`.
 
@@ -197,7 +197,7 @@ Revoking an existing distribution certificate associated with an app is safe if:
 Revoking an existing distribution certificate associated with an app is **NOT** safe if:
 
 - Your app is distributed through the App Store and you are on an Apple Enterprise account.
-- Your app is distributed ad hoc (distributed outside of the App Store for testing purposes).
+- Your app is distributed ad hoc (distributed outside the App Store for testing purposes).
 
 An App Store app gets re-signed with an Apple certificate when it goes on the store with non-Enterprise accounts. Revoking the certificate therefore won't affect it. Enterprise apps and apps distributed ad hoc use the original certificate, which means revoking it will cause the app to stop functioning on all devices it is installed on.
 

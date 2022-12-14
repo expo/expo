@@ -7,8 +7,8 @@ import * as AndroidPaths from './android/Paths';
 import { ResourceXML } from './android/Resources';
 import { ExpoPlist, InfoPlist } from './ios/IosConfig.types';
 import { AppDelegateProjectFile } from './ios/Paths';
-declare type OptionalPromise<T> = Promise<T> | T;
-declare type Plist = JSONObject;
+type OptionalPromise<T> = Promise<T> | T;
+type Plist = JSONObject;
 export interface ModProps<T = any> {
     /**
      * Project root directory for the universal app.
@@ -60,10 +60,10 @@ export interface ExportedConfigWithProps<Data = any> extends ExportedConfig {
 /**
  * A helper type to get the properties of a plugin.
  */
-export declare type PluginParameters<T extends ConfigPlugin<any>> = T extends (config: any, props: infer P) => any ? P : never;
-export declare type ConfigPlugin<Props = void> = (config: ExpoConfig, props: Props) => ExpoConfig;
-export declare type StaticPlugin<T = any> = [string | ConfigPlugin<T>, T];
-export declare type Mod<Props = any> = ((config: ExportedConfigWithProps<Props>) => OptionalPromise<ExportedConfigWithProps<Props>>) & {
+export type PluginParameters<T extends ConfigPlugin<any>> = T extends (config: any, props: infer P) => any ? P : never;
+export type ConfigPlugin<Props = void> = (config: ExpoConfig, props: Props) => ExpoConfig;
+export type StaticPlugin<T = any> = [string | ConfigPlugin<T>, T];
+export type Mod<Props = any> = ((config: ExportedConfigWithProps<Props>) => OptionalPromise<ExportedConfigWithProps<Props>>) & {
     /**
      * Indicates that the mod provides data upstream to other mods.
      * This mod should always be the last one added.
@@ -159,5 +159,5 @@ export interface ModConfig {
         podfileProperties?: Mod<Record<string, string>>;
     };
 }
-export declare type ModPlatform = keyof ModConfig;
+export type ModPlatform = keyof ModConfig;
 export { XcodeProject, InfoPlist, ExpoPlist, AndroidManifest };

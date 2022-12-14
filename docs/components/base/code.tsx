@@ -49,33 +49,6 @@ const STYLES_CODE_BLOCK = css`
   }
 `;
 
-const STYLES_INLINE_CODE = css`
-  ${typography.body.code};
-  color: ${theme.text.default};
-  white-space: pre-wrap;
-  display: inline;
-  padding: ${spacing[0.5]}px ${spacing[1]}px;
-  max-width: 100%;
-  word-wrap: break-word;
-  background-color: ${theme.background.secondary};
-  border: 1px solid ${theme.border.default};
-  border-radius: ${borderRadius.small}px;
-  vertical-align: middle;
-  overflow-x: auto;
-
-  /* Disable Safari from adding border when used within a (perma)link */
-  a & {
-    border-color: ${theme.border.default};
-  }
-
-  h2 &,
-  h3 &,
-  h4 & {
-    position: relative;
-    top: -2px;
-  }
-`;
-
 const STYLES_CODE_CONTAINER_BLOCK = css`
   border: 1px solid ${theme.border.default};
   padding: 16px;
@@ -197,15 +170,16 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
   }
 
   private cleanCopyValue(value: string) {
-    return value.replace(/ *(\/\*|#|<!--)+\s@.+(\*\/|-->)\r?\n/g, '');
+    return value.replace(/ *(\/\*|#|<!--)+\s@.+(\*\/|-->|#)\r?\n/g, '');
   }
 
   render() {
     // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
     // which results in this nesting mess, we should fix it in the future
-    const child = this.props.className
-      ? this
-      : (React.Children.toArray(this.props.children)[0] as JSX.Element);
+    const child =
+      this.props.className && this.props.className.startsWith('language')
+        ? this
+        : (React.Children.toArray(this.props.children)[0] as JSX.Element);
 
     const value = this.parseValue(child?.props?.children?.toString() || '');
     let html = value.value;
@@ -227,7 +201,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
       }
 
       html = Prism.highlight(html, grammar, lang as Language);
-      if (['properties', 'ruby'].includes(lang)) {
+      if (['properties', 'ruby', 'bash'].includes(lang)) {
         html = this.replaceHashCommentsWithAnnotations(html);
       } else if (['xml', 'html'].includes(lang)) {
         html = this.replaceXmlCommentsWithAnnotations(html);
@@ -263,14 +237,6 @@ const remapLanguages: Record<string, string> = {
   sh: 'bash',
   rb: 'ruby',
 };
-
-type InlineCodeProps = React.PropsWithChildren<{ className?: string }>;
-
-export const InlineCode = ({ children, className }: InlineCodeProps) => (
-  <code css={STYLES_INLINE_CODE} className={className ? `inline ${className}` : 'inline'}>
-    {children}
-  </code>
-);
 
 const codeBlockContainerStyle = {
   margin: 0,

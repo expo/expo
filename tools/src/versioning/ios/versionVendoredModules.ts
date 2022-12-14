@@ -167,6 +167,10 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: `Is${prefix}ReactRootView`,
       },
       {
+        find: `UIView+${prefix}React.h`,
+        replaceWith: `${prefix}UIView+React.h`,
+      },
+      {
         // Prefix only unindented `@objc` (notice `^` and `m` flag in the pattern). Method names shouldn't get prefixed.
         paths: '*.swift',
         find: /^@objc\(([^)]+)\)/gm,

@@ -26,11 +26,11 @@ export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps
   const isExternal = Boolean(href && href.startsWith('http'));
   const ArrowIcon = isExternal ? ArrowUpRightIcon : ArrowRightIcon;
   return (
-    <A href={href} css={tileContainerStyle} data-testid={testID} openInNewTab={isExternal}>
+    <A href={href} css={tileContainerStyle} data-testid={testID} openInNewTab={isExternal} isStyled>
       <div css={tileContentWrapperStyle}>
         {Icon && (
           <div css={tileIconBackgroundStyle}>
-            <Icon />
+            <Icon width={iconSize.regular} />
           </div>
         )}
         <div>

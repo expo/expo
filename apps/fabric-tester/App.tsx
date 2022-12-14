@@ -1,11 +1,11 @@
 import { Video } from 'expo-av';
 import { BlurView } from 'expo-blur';
 import { Camera, CameraType } from 'expo-camera';
+import { Image, ImageContentFit } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useRef, useState } from 'react';
 import {
   Button,
-  Image,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -13,6 +13,7 @@ import {
   View,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from 'react-native';
 
 function randomColor() {
@@ -30,14 +31,29 @@ export default class App extends React.PureComponent {
             isFabricEnabled: {isFabricEnabled + ''}
           </Text>
 
+          <ImageExample />
           <LinearGradientExample />
-          {/* <BlueExample /> */}
+          {Platform.OS === 'ios' && <BlurExample />}
           <VideoExample />
           <CameraExample />
         </ScrollView>
       </SafeAreaView>
     );
   }
+}
+
+export function ImageExample() {
+  const [seed] = useState(100 + Math.round(Math.random() * 100));
+
+  return (
+    <View style={styles.exampleContainer}>
+      <Image
+        style={styles.image}
+        contentFit={ImageContentFit.COVER}
+        source={{ uri: `https://picsum.photos/id/${seed}/1000/1000` }}
+      />
+    </View>
+  );
 }
 
 export function LinearGradientExample() {
@@ -61,13 +77,13 @@ export function LinearGradientExample() {
   );
 }
 
-export function BlueExample() {
-  const uri = 'https://s3.amazonaws.com/exp-icon-assets/ExpoEmptyManifest_192.png';
-  const text = 'Hello, my container is blurring contents underneath!';
+export function BlurExample() {
+  const uri = 'https://source.unsplash.com/random';
+  const text = "Hello, I'm blurring contents underneath!";
 
   return (
     <View style={[styles.exampleContainer, styles.blurExample]}>
-      <Image style={[StyleSheet.absoluteFill, styles.image]} source={{ uri }} />
+      <Image style={styles.blurImage} source={{ uri }} />
       <BlurView intensity={100} style={styles.blurContainer}>
         <Text style={styles.text}>{text}</Text>
       </BlurView>
@@ -186,19 +202,19 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderColor: '#242c39',
   },
+  image: {
+    flex: 1,
+    height: 200,
+  },
   gradient: {
     height: 200,
   },
   blurExample: {
-    height: 640,
-    marginTop: 64,
-    flexDirection: 'column',
-    alignSelf: 'stretch',
+    height: 200,
   },
-  image: {
-    width: '100%',
-    height: '100%',
+  blurImage: {
     resizeMode: 'cover',
+    ...StyleSheet.absoluteFillObject,
   },
   blurContainer: {
     flex: 1,

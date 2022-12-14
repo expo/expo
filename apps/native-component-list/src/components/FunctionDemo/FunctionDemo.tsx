@@ -54,7 +54,7 @@ type Props = {
   /**
    * Rendering function to render some additional components based on the function's result.
    */
-  renderAdditionalResult?: (result: unknown) => JSX.Element | void;
+  renderAdditionalResult?: (result: any) => JSX.Element | void;
 };
 
 /**
@@ -241,7 +241,7 @@ function initialArgumentsFromParameters(parameters: FunctionParameter[]) {
  * Hook that handles function arguments' values.
  * Initial value is constructed based on the description of each parameter.
  */
-function useArguments(
+export function useArguments(
   parameters: FunctionParameter[]
 ): [FunctionArgument[], OnArgumentChangeCallback] {
   const [args, setArgs] = useState(initialArgumentsFromParameters(parameters));

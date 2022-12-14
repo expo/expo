@@ -16,9 +16,9 @@ type NativeSensorModule = any;
 
 /**
  * A base class for subscribable sensors. The events emitted by this class are measurements
- * specified by the parameter type `M`.
+ * specified by the parameter type `Measurement`.
  */
-export default class DeviceSensor<M> {
+export default class DeviceSensor<Measurement> {
   _nativeModule: NativeSensorModule;
   _nativeEmitter: EventEmitter;
   _nativeEventName: string;
@@ -31,7 +31,7 @@ export default class DeviceSensor<M> {
     this._listenerCount = 0;
   }
 
-  addListener(listener: Listener<M>): Subscription {
+  addListener(listener: Listener<Measurement>): Subscription {
     const subscription = this._nativeEmitter.addListener(this._nativeEventName, listener);
     subscription.remove = () => this.removeSubscription(subscription);
     this._listenerCount++;
@@ -129,4 +129,5 @@ const defaultPermissionsResponse: PermissionResponse = {
   status: PermissionStatus.GRANTED,
 };
 
-export { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription };
+export { PermissionStatus };
+export type { Subscription, PermissionResponse, PermissionExpiration };

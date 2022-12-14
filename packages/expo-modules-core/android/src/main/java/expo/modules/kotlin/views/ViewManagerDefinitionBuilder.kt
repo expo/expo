@@ -67,6 +67,52 @@ class ViewManagerDefinitionBuilder {
   }
 
   /**
+   * Creates a view prop group that defines its name and setter.
+   */
+  inline fun <reified ViewType : View, reified PropType> PropGroup(
+    vararg names: String,
+    noinline body: (view: ViewType, name: String, prop: PropType) -> Unit
+  ) {
+    for (name in names) {
+      props[name] = ConcreteViewProp<ViewType, PropType>(
+        name,
+        typeOf<PropType>().toAnyType()
+      ) { view, prop -> body(view, name, prop) }
+    }
+  }
+
+  /**
+   * Creates a view prop group that defines its name and setter with the custom mapping.
+   */
+  inline fun <reified ViewType : View, reified PropType, reified CustomValue> PropGroup(
+    vararg propInfo: Pair<String, CustomValue>,
+    noinline body: (view: ViewType, value: CustomValue, prop: PropType) -> Unit
+  ) {
+    for ((name, value) in propInfo) {
+      props[name] = ConcreteViewProp<ViewType, PropType>(
+        name,
+        typeOf<PropType>().toAnyType()
+      ) { view, prop -> body(view, value, prop) }
+    }
+  }
+
+  /**
+   * Creates a view prop group that defines its name and setter with the index mapping.
+   */
+  @JvmName("PropGroupIndexed")
+  inline fun <reified ViewType : View, reified PropType> PropGroup(
+    vararg names: String,
+    noinline body: (view: ViewType, value: Int, prop: PropType) -> Unit
+  ) {
+    names.forEachIndexed { index, name ->
+      props[name] = ConcreteViewProp<ViewType, PropType>(
+        name,
+        typeOf<PropType>().toAnyType()
+      ) { view, prop -> body(view, index, prop) }
+    }
+  }
+
+  /**
    * Defines prop names that should be treated as callbacks.
    */
   fun Events(vararg callbacks: String) {

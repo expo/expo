@@ -4,11 +4,25 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+- Remove deprecated and legacy contact fields constants. ([#20269](https://github.com/expo/expo/pull/20269) by [@Simek](https://github.com/Simek))
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+- Simplify exported types. ([#20269](https://github.com/expo/expo/pull/20269) by [@Simek](https://github.com/Simek))
+
+## 11.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 11.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

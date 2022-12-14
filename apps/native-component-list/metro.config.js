@@ -30,6 +30,7 @@ module.exports = {
 
   resolver: {
     ...baseConfig.resolver,
+    assetExts: [...baseConfig.resolver.assetExts, 'kml'],
     blockList: [
       ...baseConfig.resolver.blockList,
 

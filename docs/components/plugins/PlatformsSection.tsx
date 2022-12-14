@@ -1,23 +1,20 @@
 import { css } from '@emotion/react';
 import { StatusWaitingIcon, theme } from '@expo/styleguide';
-import * as React from 'react';
 
 import { H4 } from '~/components/base/headings';
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
+import { A } from '~/ui/components/Text';
 
 const STYLES_TITLE = css`
   margin-bottom: 1rem;
 `;
 
 const STYLES_LINK = css`
-  text-decoration: none;
   display: grid;
   grid-template-columns: 20px auto;
-  text-align: left;
   grid-gap: 8px;
-  color: ${theme.link.default};
 `;
 
 const platforms = [
@@ -40,9 +37,9 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
   } else if (typeof isSupported === 'object') {
     return {
       children: (
-        <a css={STYLES_LINK} target="_blank" href={isSupported.pending}>
+        <A css={STYLES_LINK} href={isSupported.pending}>
           <StatusWaitingIcon color={theme.status.info} /> Pending
-        </a>
+        </A>
       ),
       title: `${title} support is pending`,
     };

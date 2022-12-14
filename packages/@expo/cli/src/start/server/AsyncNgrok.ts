@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import crypto from 'crypto';
 import * as path from 'path';
 import slugify from 'slugify';
@@ -9,7 +10,7 @@ import { delayAsync, resolveWithTimeout } from '../../utils/delay';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
 import { isNgrokClientError, NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
-import { startAdbReverseAsync } from '../platforms/android/adbReverse';
+import { hasAdbReverseAsync, startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
 
 const debug = require('debug')('expo:start:server:ngrok') as typeof console.log;
@@ -71,13 +72,17 @@ export class AsyncNgrok {
       prefersGlobalInstall: true,
     });
 
-    // Ensure ADB reverse is running.
-    if (!(await startAdbReverseAsync([this.port]))) {
-      // TODO: Better error message.
-      throw new CommandError(
-        'NGROK_ADB',
-        `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android device(s).`
-      );
+    // NOTE(EvanBacon): If the user doesn't have ADB installed,
+    // then skip attempting to reverse the port.
+    if (hasAdbReverseAsync()) {
+      // Ensure ADB reverse is running.
+      if (!(await startAdbReverseAsync([this.port]))) {
+        // TODO: Better error message.
+        throw new CommandError(
+          'NGROK_ADB',
+          `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android device(s).`
+        );
+      }
     }
 
     this.serverUrl = await this._connectToNgrokAsync({ timeout });
@@ -161,10 +166,9 @@ export class AsyncNgrok {
         onStatusChange(status) {
           if (status === 'closed') {
             Log.error(
-              'We noticed your tunnel is having issues. ' +
-                'This may be due to intermittent problems with ngrok. ' +
-                'If you have trouble connecting to your app, try to restart the project, ' +
-                'or switch the host to `lan`.'
+              chalk.red(
+                'Tunnel connection has been closed. This is often related to intermittent connection problems with the Ngrok servers. Restart the dev server to try connecting to Ngrok again.'
+              )
             );
           } else if (status === 'connected') {
             Log.log('Tunnel connected.');

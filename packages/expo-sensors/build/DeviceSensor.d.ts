@@ -2,19 +2,19 @@ import { PermissionResponse, PermissionStatus, EventEmitter, Subscription, Permi
 /**
  * @hidden
  */
-export declare type Listener<E> = (event: E) => void;
-declare type NativeSensorModule = any;
+export type Listener<E> = (event: E) => void;
+type NativeSensorModule = any;
 /**
  * A base class for subscribable sensors. The events emitted by this class are measurements
- * specified by the parameter type `M`.
+ * specified by the parameter type `Measurement`.
  */
-export default class DeviceSensor<M> {
+export default class DeviceSensor<Measurement> {
     _nativeModule: NativeSensorModule;
     _nativeEmitter: EventEmitter;
     _nativeEventName: string;
     _listenerCount: number;
     constructor(nativeSensorModule: NativeSensorModule, nativeEventName: string);
-    addListener(listener: Listener<M>): Subscription;
+    addListener(listener: Listener<Measurement>): Subscription;
     /**
      * Returns boolean which signifies if sensor has any listeners registered.
      */
@@ -57,5 +57,6 @@ export default class DeviceSensor<M> {
      */
     requestPermissionsAsync(): Promise<PermissionResponse>;
 }
-export { PermissionExpiration, PermissionResponse, PermissionStatus, Subscription };
+export { PermissionStatus };
+export type { Subscription, PermissionResponse, PermissionExpiration };
 //# sourceMappingURL=DeviceSensor.d.ts.map

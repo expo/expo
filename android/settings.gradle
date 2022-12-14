@@ -21,7 +21,8 @@ useExpoModules([
         'expo-dev-menu-interface',
         'expo-dev-menu',
         'expo-dev-launcher',
-        'expo-dev-client'
+        'expo-dev-client',
+        'expo-maps'
     ],
     searchPaths: [
       'enabled-modules'
@@ -52,6 +53,7 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 
 [
     // ADD_NEW_SUPPORTED_ABIS_HERE
+    "abi47_0_0",
     "abi46_0_0",
     "abi45_0_0",
 ].forEach({ abiVariant ->
@@ -66,11 +68,13 @@ useExpoModules([
         'expo-dev-menu-interface',
         'expo-dev-menu',
         'expo-dev-launcher',
-        'expo-dev-client'
+        'expo-dev-client',
+        'expo-maps'
     ]
 ])
 
 useVendoredModulesForSettingsGradle('unversioned')
+useVendoredModulesForSettingsGradle('sdk47')
 useVendoredModulesForSettingsGradle('sdk46')
 
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE

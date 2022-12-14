@@ -8,14 +8,7 @@ import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-import {
-  SocialGrid,
-  SocialGridItem,
-  CreateAppButton,
-} from '~/components/plugins/AuthSessionElements';
 import { Terminal } from '~/ui/components/Snippet';
-import { SnackInline} from '~/ui/components/Snippet';
-import { InlineCode } from '~/components/base/code';
 
 `AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.mdx), [Crypto](crypto.mdx), and [Random](random.mdx). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
 
@@ -54,9 +47,7 @@ You can test it to ensure it works like this:
 
 ### Usage in standalone apps
 
-**app.json**
-
-```json
+```json app.json
 {
   "expo": {
     "scheme": "mycoolredirect"
@@ -103,7 +94,7 @@ If you are authenticating with a popular social provider, when you are ready to 
 
 **Never put any secret keys inside of your app, there is no secure way to do this!** Instead, you should store your secret key(s) on a server and expose an endpoint that makes API calls for your client and passes the data back.
 
-# API
+## API
 
 ```js
 import * as AuthSession from 'expo-auth-session';

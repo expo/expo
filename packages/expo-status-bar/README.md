@@ -7,7 +7,7 @@ Provides the same interface as the React Native [StatusBar API](https://reactnat
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/status-bar.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/status-bar.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/status-bar/)
 
 # Installation in managed Expo projects

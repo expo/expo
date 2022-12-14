@@ -114,7 +114,7 @@ export default () => (
   <NavigationContainer linking={linking}>
     <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
       {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-      {Search && <Switch.Screen name="search" component={Search} />}
+      {Search && <Switch.Screen name="searchNavigator" component={Search} />}
       <Switch.Screen name="main" component={TabNavigator} />
     </Switch.Navigator>
   </NavigationContainer>

@@ -2,7 +2,7 @@ import './ErrorRecovery.fx';
 /** @deprecated This package only works with the deprecated classic Expo build service. */
 export declare const recoveredProps: ErrorRecoveryProps | null;
 /** @deprecated This package only works with the deprecated classic Expo build service. */
-export declare type ErrorRecoveryProps = Record<string, any>;
+export type ErrorRecoveryProps = Record<string, any>;
 /**
  * @deprecated This package only works with the deprecated classic Expo build service.
  *

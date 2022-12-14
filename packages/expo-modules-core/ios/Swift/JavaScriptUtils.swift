@@ -28,10 +28,16 @@ internal func cast(_ value: Any, toType type: AnyDynamicType) throws -> Any {
  of function's arguments (without an owner and promise). Rethrows exceptions thrown by `cast(_:toType:)`.
  */
 internal func cast(arguments: [Any], forFunction function: AnyFunction) throws -> [Any] {
-  if arguments.count != function.argumentsCount {
-    throw InvalidArgsNumberException((received: arguments.count, expected: function.argumentsCount))
-  }
+  let requiredArgumentsCount = function.requiredArgumentsCount
   let argumentTypeOffset = function.takesOwner ? 1 : 0
+
+  if arguments.count < requiredArgumentsCount || arguments.count > function.argumentsCount {
+    throw InvalidArgsNumberException((
+      received: arguments.count,
+      expected: function.argumentsCount,
+      required: requiredArgumentsCount
+    ))
+  }
   return try arguments.enumerated().map { index, argument in
     let argumentType = function.dynamicArgumentTypes[index + argumentTypeOffset]
 
@@ -44,26 +50,44 @@ internal func cast(arguments: [Any], forFunction function: AnyFunction) throws -
 }
 
 /**
- Prepends the owner to the array of arguments if the given function can take it.
+ Ensures the provided array of arguments matches the number of arguments expected by the function.
+ - If the function takes the owner, it's added to the beginning.
+ - If the array is still too small, missing arguments are very likely to be optional so it puts `nil` in their place.
  */
 internal func concat(arguments: [Any], withOwner owner: AnyObject?, forFunction function: AnyFunction) -> [Any] {
+  var result = arguments
+
   if function.takesOwner, let owner = try? function.dynamicArgumentTypes.first?.cast(owner) {
-    return [owner] + arguments
+    result = [owner] + arguments
   }
-  return arguments
+  if arguments.count < function.argumentsCount {
+    result += Array(repeating: Any?.none as Any, count: function.argumentsCount - arguments.count)
+  }
+  return result
 }
 
 // MARK: - Exceptions
 
-internal class InvalidArgsNumberException: GenericException<(received: Int, expected: Int)> {
+internal class InvalidArgsNumberException: GenericException<(received: Int, expected: Int, required: Int)> {
   override var reason: String {
-    "Received \(param.received) arguments, but \(param.expected) was expected"
+    if param.required < param.expected {
+      return "Received \(param.received) arguments, but \(param.expected) was expected and at least \(param.required) is required"
+    } else {
+      return "Received \(param.received) arguments, but \(param.expected) was expected"
+    }
   }
 }
 
 internal class ArgumentCastException: GenericException<(index: Int, type: AnyDynamicType)> {
   override var reason: String {
-    "Argument at index '\(param.index)' couldn't be cast to type \(param.type.description)"
+    "The \(formatOrdinalNumber(param.index + 1)) argument cannot be cast to type \(param.type.description)"
+  }
+
+  func formatOrdinalNumber(_ number: Int) -> String {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .ordinal
+    formatter.locale = Locale(identifier: "en_US")
+    return formatter.string(from: NSNumber(value: number)) ?? ""
   }
 }
 

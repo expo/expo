@@ -4,11 +4,25 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
 
+- Migrated Android codebase to use the new Expo modules API. ([#20232](https://github.com/expo/expo/pull/20232) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
+
+- Renamed the module on iOS to match the name used on Android. ([#20283](https://github.com/expo/expo/pull/20283) by [@alanhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 15.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fix promise rejection on M1 iOS Simulator due to `UTTypeCreatePreferredIdentifierForTag` not working as expected. ([#19669](https://github.com/expo/expo/pull/19669) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

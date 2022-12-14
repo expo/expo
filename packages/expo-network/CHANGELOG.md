@@ -4,13 +4,19 @@
 
 ### 🛠 Breaking changes
 
-- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🎉 New features
+
+- Migrated Android implementation to Expo Modules API. ([#20083](https://github.com/expo/expo/pull/20083) by [@alanhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 5.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
 
 ## 4.3.0 — 2022-07-07
 

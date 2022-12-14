@@ -31,9 +31,11 @@ export default function DocumentationElements(props: DocumentationElementsProps)
             <DocumentationPage
               router={router}
               title={props.meta.title || ''}
+              description={props.meta.description || ''}
               sourceCodeUrl={props.meta.sourceCodeUrl}
               tocVisible={!props.meta.hideTOC}
-              hideFromSearch={props.meta.hideFromSearch}>
+              hideFromSearch={props.meta.hideFromSearch}
+              packageName={props.meta.packageName}>
               {props.children}
             </DocumentationPage>
           </PageApiVersionProvider>

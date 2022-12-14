@@ -103,7 +103,8 @@ redirects[guides/adhoc-builds]=archived/adhoc-builds/
 # clients is now development
 redirects[clients/distribution-for-ios]=development/build/
 redirects[clients/distribution-for-android]=development/build/
-redirects[clients/compatibility]=development/compatibility/
+redirects[clients/compatibility]=development/introduction/
+redirects[development/compatibility]=development/introduction/
 redirects[clients/development-workflows]=development/development-workflows/
 redirects[clients/eas-build]=development/eas-build/
 redirects[clients/extending-the-dev-menu]=development/extending-the-dev-menu/
@@ -121,13 +122,20 @@ redirects[eas-metadata]=eas/metadata/
 redirects[eas-metadata/introduction]=eas/metadata/
 redirects[eas-metadata/getting-started]=eas/metadata/getting-started/
 
-redirects[introduction/walkthrough]=tutorial/planning/
+# Development builds
+redirects[development/build]=development/create-development-builds/
+redirects[development/getting-started]=development/create-development-builds/
+redirects[development/troubleshooting]=development/introduction/
+redirects[development/upgrading]=development/introduction/
+redirects[development/extensions]=development/development-workflows/
+redirects[development/develop-your-project]=development/use-development-builds/
 
 # Guides that have been deleted
 redirects[guides/using-gatsby]=guides/
 redirects[guides/testing-on-devices]=workflow/run-on-device
 redirects[distribution/uploading-apps]=submit/introduction
 redirects[distribution/uploading-apps]=submit/introduction
+redirects[guides/setup-native-firebase/]=guides/using-firebase
 
 # We should change this redirect to a more general EAS guide later
 redirects[guides/setting-up-continuous-integration]=build/building-on-ci
@@ -144,6 +152,25 @@ redirects[eas-update/bare-react-native]=bare/updating-your-app
 redirects[worfkflow/publishing]=archive/classic-updates/publishing
 redirects[classic/building-standalone-apps/]=archive/classic-updates/building-standalone-apps/
 redirects[classic/turtle-cli/]=archive/classic-updates/turtle-cli/
+redirects[archive/classic-updates/getting-started/]=eas-update/getting-started/
+redirects[archived/]=archive/
+
+# Old tutorial pages
+redirects[introduction/walkthrough]=tutorial/introduction/
+redirects[tutorial/planning]=tutorial/introduction/
+redirects[tutorial/sharing]=tutorial/introduction/
+redirects[tutorial/text]=tutorial/introduction/
+
+# Removed API reference docs
+redirects[versions/latest/sdk/facebook]=guides/authentication/
+redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
+redirects[versions/latest/sdk/videothumbnails]=versions/latest/sdk/video-thumbnails/
+redirects[versions/latest/sdk/appearance]=versions/latest/react-native/appearance/
+redirects[versions/latest/sdk/app-loading]=versions/latest/sdk/splash-screen/
+redirects[versions/latest/sdk/app-auth]=guides/authentication/
+redirects[versions/latest/sdk/google-sign-in]=guides/authentication/
+redirects[versions/latest/sdk/google]=guides/authentication/
+redirects[versions/latest/sdk/amplitude/]=guides/using-analytics/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
