@@ -10,7 +10,7 @@ import java.lang.ref.WeakReference
 /**
  * A custom target to provide a smooth transition between multiple drawables.
  * It contains two separate targets that are operating on a single view.
- * Only of them is the active one, and the other one is doing the background operation.
+ * Only one of them is active, and the other one is doing the background operation.
  * When the background one finishes, we can swap them and clean the previously active.
  * In that way, we only clean the image view when we have another image to show.
  */
@@ -73,7 +73,7 @@ class ViewConnectedTarget(
     }
 
     // The background target shouldn't be running, because it means that we have
-    // to target running at the same time. That situation isn't allowed and if we end up here
+    // two target running at the same time. That situation isn't allowed and if we end up here
     // we are trying our best to restore the correct state.
     if (bgTarget?.state == State.RUNNING) {
       clearBgTarget()
@@ -84,7 +84,7 @@ class ViewConnectedTarget(
 
   override fun onLoadFailed(errorDrawable: Drawable?) {
     // When the load failed we clear the image only if
-    // background task isn't active. When it's we know
+    // background task isn't active. When it wis we know
     // that the previous image is displayed.
     if (bgTarget?.state != State.ACTIVE) {
       imageView?.setImageDrawable(errorDrawable)
