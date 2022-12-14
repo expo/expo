@@ -1,14 +1,14 @@
 import { css } from '@emotion/react';
 import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
+import type { ComponentProps, ComponentType } from 'react';
 import { Fragment } from 'react';
-import type { ComponentProps } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import { APIDataType } from './APIDataType';
 
+import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
-import { H4 } from '~/components/base/headings';
 import {
   CommentData,
   MethodDefinitionData,
@@ -23,7 +23,19 @@ import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 import { Tag } from '~/ui/components/Tag';
-import { LI, UL, OL, CODE, BOLD, P, A } from '~/ui/components/Text';
+import {
+  A,
+  BOLD,
+  CODE,
+  H4,
+  LI,
+  OL,
+  P,
+  RawH3,
+  RawH4,
+  UL,
+  createPermalinkedComponent,
+} from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -553,7 +565,7 @@ export const CommentTextBlock = ({
         </div>
       ) : (
         <div css={STYLES_NESTED_SECTION_HEADER}>
-          <H4>Example</H4>
+          <RawH4>Example</RawH4>
         </div>
       )}
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
@@ -594,6 +606,20 @@ export const CommentTextBlock = ({
     </>
   );
 };
+
+export const getAPISectionHeader = (exposeInSidebar?: boolean) =>
+  exposeInSidebar ? createPermalinkedComponent(RawH4, { baseNestingLevel: 2 }) : H4;
+
+const getMonospaceHeader = (element: ComponentType<any>) => {
+  const level = parseInt(element?.displayName?.replace(/\D/g, '') ?? '0', 10);
+  return createPermalinkedComponent(element, {
+    baseNestingLevel: level !== 0 ? level : undefined,
+    sidebarType: HeadingType.InlineCode,
+  });
+};
+
+export const H3Code = getMonospaceHeader(RawH3);
+export const H4Code = getMonospaceHeader(RawH4);
 
 export const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') return name;
@@ -640,8 +666,8 @@ export const STYLES_APIBOX = css({
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
-  paddingBottom: 0,
   marginBottom: spacing[4],
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   h4: {
     marginTop: 0,

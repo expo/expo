@@ -1,6 +1,5 @@
 import ReactMarkdown from 'react-markdown';
 
-import { H2, H2Nested, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
   GeneratedData,
@@ -10,14 +9,16 @@ import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDe
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
 import {
   CommentTextBlock,
+  getAPISectionHeader,
   getTagData,
   getTagNamesList,
   mdComponents,
   STYLES_APIBOX,
   STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { CODE } from '~/ui/components/Text';
+import { H2, H4, CODE } from '~/ui/components/Text';
 
 export type APISectionNamespacesProps = {
   data: GeneratedData[];
@@ -32,7 +33,7 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
 
 const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
   const { name, comment, children } = namespace;
-  const Header = exposeInSidebar ? H2Nested : H4;
+  const Header = getAPISectionHeader(exposeInSidebar);
 
   const methods = children
     ?.filter(child => isMethod(child))
