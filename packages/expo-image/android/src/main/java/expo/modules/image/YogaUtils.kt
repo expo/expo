@@ -18,5 +18,3 @@ inline fun Float.ifYogaDefinedUse(transformFun: (current: Float) -> Float) =
 
 fun makeYogaUndefinedIfNegative(value: Float) =
   if (!YogaConstants.isUndefined(value) && value < 0) YogaConstants.UNDEFINED else value
-
-fun isYogaPositive(value: Float) = !YogaConstants.isUndefined(value) && value > 0

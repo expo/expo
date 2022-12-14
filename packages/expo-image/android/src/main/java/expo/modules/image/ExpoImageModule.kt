@@ -185,6 +185,7 @@ class ExpoImageModule : Module() {
 }
 
 // TODO(@lukmccall): Remove when the same functionality will be defined by the expo-modules-core in SDK 48
+@Suppress("FunctionName")
 private inline fun <reified T : View, reified PropType, reified CustomValueType> ViewDefinitionBuilder<T>.PropGroup(
   vararg props: Pair<String, CustomValueType>,
   noinline body: (view: T, value: CustomValueType, prop: PropType) -> Unit
