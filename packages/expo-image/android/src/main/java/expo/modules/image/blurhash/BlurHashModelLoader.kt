@@ -17,10 +17,10 @@ class BlurHashModelLoader : ModelLoader<String, Bitmap> {
   ): ModelLoader.LoadData<Bitmap> {
     val uri = Uri.parse(model)
 
-    val blurHash = uri.host
-    val blurHashWidth = getPath(uri, 0, 16, String::toInt)
-    val blurHashHeight = getPath(uri, 1, 16, String::toInt)
-    val blurHashPunch = getPath(uri, 2, 1f, String::toFloat)
+    val blurHash = getPath(uri, 0, null) { it }
+    val blurHashWidth = getPath(uri, 1, 16) { it.toInt() }
+    val blurHashHeight = getPath(uri, 2, 16) { it.toInt() }
+    val blurHashPunch = getPath(uri, 3, 1f) { it.toFloat() }
 
     return ModelLoader.LoadData(
       ObjectKey(model),
