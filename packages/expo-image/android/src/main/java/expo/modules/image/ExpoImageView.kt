@@ -272,7 +272,7 @@ class ExpoImageView(
   // region ViewManager Lifecycle methods
   internal fun onAfterUpdateTransaction() {
     val bestSource = bestSource
-    val sourceToLoad = bestSource?.createGlideModel()
+    val sourceToLoad = bestSource?.createGlideModel(context)
 
     if (bestSource == null || sourceToLoad == null) {
       requestManager.clear(this)
@@ -296,7 +296,7 @@ class ExpoImageView(
 
       expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
 
-      val defaultSourceToLoad = defaultSourceMap?.createGlideModel()
+      val defaultSourceToLoad = defaultSourceMap?.createGlideModel(context)
       requestManager
         .asDrawable()
         .load(sourceToLoad.glideData)

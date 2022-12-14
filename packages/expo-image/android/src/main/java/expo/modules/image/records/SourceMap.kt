@@ -8,9 +8,10 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ApplicationVersionSignature
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
-import expo.modules.image.GlideDataUrlModel
+import expo.modules.image.GlideRawModel
 import expo.modules.image.GlideModel
 import expo.modules.image.GlideOptions
+import expo.modules.image.GlideUriModel
 import expo.modules.image.GlideUrlModel
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
@@ -22,16 +23,45 @@ data class SourceMap(
   @Field val scale: Double = 1.0,
   @Field val headers: Map<String, String>? = null
 ) : Record {
+  private var parsedUri: Uri? = null
 
-  private fun isDataUrl() = uri?.startsWith("data:")
+  private fun isDataUrl() = parsedUri?.scheme?.startsWith("data") ?: false
 
-  internal fun createGlideModel(): GlideModel? {
+  private fun isContentUrl() = parsedUri?.scheme?.startsWith("content") ?: false
+
+  private fun isResourceUri() = parsedUri?.scheme?.startsWith("android.resource") ?: false
+
+  private fun isLocalResourceUri() = parsedUri?.scheme?.startsWith("res") ?: false
+
+  private fun isLocalFileUri() = parsedUri?.scheme?.startsWith("file") ?: false
+
+  internal fun createGlideModel(context: Context): GlideModel? {
     if (uri == null) {
       return null
     }
 
-    if (isDataUrl() == true) {
-      return GlideDataUrlModel(uri)
+    if (parsedUri == null) {
+      parsedUri = computeUri(context)
+    }
+
+    if (isContentUrl() || isDataUrl()) {
+      return GlideRawModel(uri)
+    }
+
+    if (isResourceUri()) {
+      return GlideUriModel(parsedUri!!)
+    }
+
+    if (isLocalResourceUri()) {
+      return GlideUriModel(
+        // Convert `res:/` scheme to `android.resource://`.
+        // Otherwise, glide can't understand the Uri.
+        Uri.parse(parsedUri!!.toString().replace("res:/", "android.resource://" + context.packageName + "/"))
+      )
+    }
+
+    if (isLocalFileUri()) {
+      return GlideRawModel(parsedUri!!.toString())
     }
 
     return GlideUrlModel(GlideUrl(uri, getCustomHeaders()))
@@ -40,13 +70,17 @@ data class SourceMap(
   internal fun createOptions(context: Context): RequestOptions {
     return RequestOptions()
       .apply {
+        if (parsedUri == null) {
+          parsedUri = computeUri(context)
+        }
+
         // Override the size for local assets. This ensures that
         // resizeMode "center" displays the image in the correct size.
         if (width != 0 && height != 0) {
           override((width * scale).toInt(), (height * scale).toInt())
         }
 
-        if (isResourceUri(context)) {
+        if (isResourceUri()) {
           // Every local resource (drawable) in Android has its own unique numeric id, which are
           // generated at build time. Although these ids are unique, they are not guaranteed unique
           // across builds. The underlying glide implementation caches these resources. To make
@@ -72,10 +106,6 @@ data class SourceMap(
         }
       }
       .build()
-  }
-
-  private fun isResourceUri(context: Context): Boolean {
-    return "android.resource" == computeUri(context)?.scheme
   }
 
   private fun computeUri(context: Context): Uri? {
