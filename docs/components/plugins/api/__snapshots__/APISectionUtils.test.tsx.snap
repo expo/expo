@@ -4,6 +4,7 @@ exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 <div>
   <p
     class="css-1a1x0ox-TextComponent"
+    data-text="true"
   >
     This is the basic comment.
   </p>
@@ -23,6 +24,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
   <p
     class="css-1a1x0ox-TextComponent"
+    data-text="true"
   >
     <strong
       class="css-7r3rok-TextComponent"
@@ -38,6 +40,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
     >
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         Install Referrer API
       </code>

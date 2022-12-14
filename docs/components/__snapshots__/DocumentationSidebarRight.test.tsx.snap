@@ -8,6 +8,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
   >
     <p
       class="css-xqbzh-TextComponent"
+      data-text="true"
     >
       On this page
     </p>
