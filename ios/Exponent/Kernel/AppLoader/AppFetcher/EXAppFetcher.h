@@ -4,7 +4,7 @@
 #import "EXResourceLoader.h"
 #import <EXManifests/EXManifestsManifest.h>
 
-@class EXAppLoader;
+@class EXAbstractLoader;
 @class EXAppFetcher;
 
 NS_ASSUME_NONNULL_BEGIN
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) id<EXAppFetcherDataSource> dataSource;
 @property (nonatomic, weak) id<EXAppFetcherCacheDataSource> cacheDataSource;
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader;
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)appLoader;
 - (void)start;
 
 - (void)fetchJSBundleWithManifest:(EXManifestsManifest *)manifest

@@ -4,7 +4,7 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXUserNotificationManager.h"
 #import "EXKernel.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"

@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 
 #import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <EXUpdates/EXUpdatesConfig.h>
@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Private header that should only be used by EXUpdatesManager kernel service
  */
 
-@interface EXAppLoader ()
+@interface EXAbstractLoader ()
 
 @property (nonatomic, readonly, nullable) EXUpdatesConfig *config;
 @property (nonatomic, readonly, nullable) EXUpdatesSelectionPolicy *selectionPolicy;

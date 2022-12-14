@@ -23,7 +23,7 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
   return self;
 }
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)customAppLoader appManager:(EXReactAppManager *)customAppManager
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)customAppLoader appManager:(EXReactAppManager *)customAppManager
 {
   if (self = [super init]) {
     _appManager = customAppManager;

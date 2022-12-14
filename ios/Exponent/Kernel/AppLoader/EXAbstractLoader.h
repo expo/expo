@@ -8,7 +8,7 @@
 #import <EXManifests/EXManifestsManifest.h>
 
 @class EXKernelAppRecord;
-@class EXAppLoader;
+@class EXAbstractLoader;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,15 +29,20 @@ typedef enum EXAppLoaderRemoteUpdateStatus {
 
 @protocol EXAppLoaderDelegate <NSObject>
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest;
-- (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress;
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data;
-- (void)appLoader:(EXAppLoader *)appLoader didFailWithError:(NSError *)error;
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error;
+- (void)appLoader:(EXAbstractLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest;
+- (void)appLoader:(EXAbstractLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress;
+- (void)appLoader:(EXAbstractLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data;
+- (void)appLoader:(EXAbstractLoader *)appLoader didFailWithError:(NSError *)error;
+- (void)appLoader:(EXAbstractLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error;
 
 @end
 
-@interface EXAppLoader : NSObject <EXAppFetcherDelegate, EXAppFetcherDevelopmentModeDelegate, EXAppFetcherWithTimeoutDelegate, EXAppFetcherCacheDataSource>
+/**
+ Class with stub methods to load apps.
+ It has two subclasses: EXHomeLoader (for loading the home app), and
+ EXAppLoaderExpoUpdates (for loading and displaying apps in the home UI)
+ */
+@interface EXAbstractLoader : NSObject <EXAppFetcherDelegate, EXAppFetcherDevelopmentModeDelegate, EXAppFetcherWithTimeoutDelegate, EXAppFetcherCacheDataSource>
 
 @property (nonatomic, readonly) NSURL *manifestUrl;
 @property (nonatomic, readonly) EXManifestsManifest * _Nullable manifest; // possibly optimistic

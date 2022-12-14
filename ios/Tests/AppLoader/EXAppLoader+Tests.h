@@ -1,9 +1,9 @@
-#import "EXAppLoader.h"
+#import "EXHomeLoader.h"
 #import <EXManifests/EXManifestsManifest.h>
 
 #pragma mark - private/internal methods in App Loader & App Fetchers
 
-@interface EXAppLoader (EXAppLoaderTests)
+@interface EXHomeLoader (EXAppLoaderTests)
 
 @property (nonatomic, readonly) EXAppFetcher * _Nullable appFetcher;
 

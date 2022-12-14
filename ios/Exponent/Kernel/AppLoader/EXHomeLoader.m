@@ -8,7 +8,7 @@
 #import "EXAppFetcherDevelopmentMode.h"
 #import "EXAppFetcherCacheOnly.h"
 #import "EXAppFetcherWithTimeout.h"
-#import "EXAppLoader+Updates.h"
+#import "EXHomeLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 NSTimeInterval const kEXAppLoaderDefaultTimeout = 30;
 NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
-@interface EXAppLoader ()
+@interface EXHomeLoader()
 
 @property (nonatomic, strong) NSURL * _Nullable manifestUrl;
 @property (nonatomic, strong) EXManifestsManifest * _Nullable localManifest; // used by Home. TODO: ben: clean up
@@ -39,23 +39,37 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 @property (nonatomic, assign) BOOL hasFinished;
 @property (nonatomic, assign) BOOL shouldUseCacheOnly;
 
+@property (nonatomic, assign) BOOL shouldShowRemoteUpdateStatus;
+@property (nonatomic, assign) BOOL isUpToDate;
+
 @end
 
-@implementation EXAppLoader
+@implementation EXHomeLoader
+
+@synthesize manifestUrl;
+@synthesize cachedManifest;
+@synthesize shouldShowRemoteUpdateStatus;
+@synthesize isUpToDate;
 
 - (instancetype)initWithManifestUrl:(NSURL *)url
 {
+// ENG-7047: no home updates or remote manifests in release builds
+#if DEBUG
   if (self = [super init]) {
-    _manifestUrl = url;
-    _httpManifestUrl = [EXAppLoader _httpUrlFromManifestUrl:_manifestUrl];
+    self.manifestUrl = url;
+    self.httpManifestUrl = [EXHomeLoader _httpUrlFromManifestUrl:self.manifestUrl];
   }
   return self;
+#else
+  [self doesNotRecognizeSelector:_cmd];
+  return self;
+#endif
 }
 
 - (instancetype)initWithLocalManifest:(EXManifestsManifest *)manifest
 {
   if (self = [super init]) {
-    _localManifest = manifest;
+    self.localManifest = manifest;
   }
   return self;
 }
@@ -64,25 +78,25 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)_reset
 {
-  _confirmedManifest = nil;
-  _cachedManifest = nil;
-  _error = nil;
-  _appFetcher = nil;
-  _previousAppFetcherWaitingForBundle = nil;
-  _hasFinished = NO;
-  _shouldUseCacheOnly = NO;
-  _manifestResource = nil;
-  _shouldShowRemoteUpdateStatus = NO;
-  _isUpToDate = YES;
+  self.confirmedManifest = nil;
+  self.cachedManifest = nil;
+  self.error = nil;
+  self.appFetcher = nil;
+  self.previousAppFetcherWaitingForBundle = nil;
+  self.hasFinished = NO;
+  self.shouldUseCacheOnly = NO;
+  self.manifestResource = nil;
+  self.shouldShowRemoteUpdateStatus = NO;
+  self.isUpToDate = YES;
 }
 
 - (EXAppLoaderStatus)status
 {
-  if (_error || (_appFetcher && _appFetcher.error)) {
+  if (self.error || (self.appFetcher && self.appFetcher.error)) {
     return kEXAppLoaderStatusError;
-  } else if (_appFetcher && _appFetcher.bundle && _confirmedManifest) {
+  } else if (self.appFetcher && self.appFetcher.bundle && self.confirmedManifest) {
     return kEXAppLoaderStatusHasManifestAndBundle;
-  } else if (_cachedManifest || (_appFetcher && _appFetcher.manifest)) {
+  } else if (self.cachedManifest || (self.appFetcher && self.appFetcher.manifest)) {
     return kEXAppLoaderStatusHasManifest;
   }
   return kEXAppLoaderStatusNew;
@@ -90,23 +104,23 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (EXManifestsManifest * _Nullable)manifest
 {
-  if (_confirmedManifest) {
-    return _confirmedManifest;
+  if (self.confirmedManifest) {
+    return self.confirmedManifest;
   }
   // remote manifest
-  if (_appFetcher && _appFetcher.manifest) {
-    return _appFetcher.manifest;
+  if (self.appFetcher && self.appFetcher.manifest) {
+    return self.appFetcher.manifest;
   }
-  if (_cachedManifest) {
-    return _cachedManifest;
+  if (self.cachedManifest) {
+    return self.cachedManifest;
   }
   return nil;
 }
 
 - (NSData * _Nullable)bundle
 {
-  if (_appFetcher) {
-    return _appFetcher.bundle;
+  if (self.appFetcher) {
+    return self.appFetcher.bundle;
   }
   return nil;
 }
@@ -119,12 +133,12 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
                                  userInfo:@{}];
   }
   RCTAssert([self supportsBundleReload], @"Tried to force a bundle reload on a non-development bundle");
-  [(EXAppFetcherDevelopmentMode *)_appFetcher forceBundleReload];
+  [(EXAppFetcherDevelopmentMode *)self.appFetcher forceBundleReload];
 }
 
 - (BOOL)supportsBundleReload
 {
-  return (_appFetcher && [_appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]]);
+  return (self.appFetcher && [self.appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]]);
 }
 
 #pragma mark - public
@@ -132,10 +146,13 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)request
 {
   [self _reset];
-  if (_localManifest) {
+  if (self.localManifest) {
     [self _beginRequestWithLocalManifest];
-  } else if (_manifestUrl) {
+// ENG-7047: no home updates or remote manifests in release builds
+#if DEBUG
+  } else if (self.manifestUrl) {
     [self _beginRequestWithRemoteManifest];
+#endif
   } else {
     [self _finishWithError:RCTErrorWithMessage(@"Can't load app with no remote url nor local manifest.")];
   }
@@ -144,11 +161,14 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)requestFromCache
 {
   [self _reset];
-  _shouldUseCacheOnly = YES;
-  if (_localManifest) {
+  self.shouldUseCacheOnly = YES;
+  if (self.localManifest) {
     [self _beginRequestWithLocalManifest];
-  } else if (_manifestUrl) {
+// ENG-7047: no home updates or remote manifests in release builds
+#if DEBUG
+  } else if (self.manifestUrl) {
     [self _beginRequestWithRemoteManifest];
+#endif
   } else {
     [self _finishWithError:RCTErrorWithMessage(@"Can't load app with no remote url nor local manifest.")];
   }
@@ -156,9 +176,9 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)writeManifestToCache
 {
-  if (_manifestResource) {
-    [_manifestResource writeToCache];
-    _manifestResource = nil;
+  if (self.manifestResource) {
+    [self.manifestResource writeToCache];
+    self.manifestResource = nil;
   }
 }
 
@@ -181,15 +201,17 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)_beginRequestWithLocalManifest
 {
-  _confirmedManifest = _localManifest;
-  _cachedManifest = _localManifest;
+  self.confirmedManifest = self.localManifest;
+  self.cachedManifest = self.localManifest;
   [self _fetchCachedManifest];
 }
 
+// ENG-7047: no home updates or remote manifests in release builds
+#if DEBUG
 - (void)_beginRequestWithRemoteManifest
 {
   // if we're in dev mode, don't try loading cached manifest
-  if ([_httpManifestUrl.host isEqualToString:@"localhost"]
+  if ([self.httpManifestUrl.host isEqualToString:@"localhost"]
       || ([EXEnvironment sharedEnvironment].isDetached && [EXEnvironment sharedEnvironment].isDebugXCodeScheme)) {
     // we can't pre-detect if this person is using a developer tool, but using localhost is a pretty solid indicator.
     [self _startAppFetcher:[[EXAppFetcherDevelopmentMode alloc] initWithAppLoader:self]];
@@ -197,6 +219,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
     [self _fetchCachedManifest];
   }
 }
+#endif
 
 - (void)_fetchCachedManifest
 {
@@ -212,6 +235,9 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 {
   BOOL shouldCheckForUpdate = YES;
   NSTimeInterval fallbackToCacheTimeout = kEXAppLoaderDefaultTimeout;
+
+// ENG-7047: no home updates or remote manifests in release builds
+#if DEBUG
 
   // in case check for dev mode failed before, check again
   if (manifest.isUsingDeveloperTool) {
@@ -255,10 +281,15 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
   // if remote updates are disabled, or we're using `reloadFromCache`, don't check for an update.
   // these checks need to be here because they need to happen after the dev mode check above.
-  if (_shouldUseCacheOnly ||
+  if (self.shouldUseCacheOnly ||
       ([EXEnvironment sharedEnvironment].isDetached && ![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled)) {
     shouldCheckForUpdate = NO;
   }
+
+// ENG-7047: no home updates or remote manifests in release builds
+#else
+  shouldCheckForUpdate = NO;
+#endif // DEBUG
 
   if (shouldCheckForUpdate) {
     [self _startAppFetcher:[[EXAppFetcherWithTimeout alloc] initWithAppLoader:self timeout:fallbackToCacheTimeout]];
@@ -269,23 +300,23 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)_startAppFetcher:(EXAppFetcher *)appFetcher
 {
-  _appFetcher = appFetcher;
-  _appFetcher.delegate = self;
-  _appFetcher.dataSource = _dataSource;
-  _appFetcher.cacheDataSource = self;
-  if ([_appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]]) {
-    ((EXAppFetcherDevelopmentMode *)_appFetcher).developmentModeDelegate = self;
-  } else if ([_appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]]) {
-    ((EXAppFetcherWithTimeout *)_appFetcher).withTimeoutDelegate = self;
+  self.appFetcher = appFetcher;
+  self.appFetcher.delegate = self;
+  self.appFetcher.dataSource = self.dataSource;
+  self.appFetcher.cacheDataSource = self;
+  if ([self.appFetcher isKindOfClass:[EXAppFetcherDevelopmentMode class]]) {
+    ((EXAppFetcherDevelopmentMode *)self.appFetcher).developmentModeDelegate = self;
+  } else if ([self.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]]) {
+    ((EXAppFetcherWithTimeout *)self.appFetcher).withTimeoutDelegate = self;
   }
-  [_appFetcher start];
+  [self.appFetcher start];
 }
 
 - (void)_finishWithError:(NSError * _Nullable)err
 {
-  _error = err;
-  if (_delegate) {
-    [_delegate appLoader:self didFailWithError:err];
+  self.error = err;
+  if (self.delegate) {
+    [self.delegate appLoader:self didFailWithError:err];
   }
 }
 
@@ -293,7 +324,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (BOOL)isCacheUpToDateWithAppFetcher:(EXAppFetcher *)appFetcher
 {
-  if (_localManifest) {
+  if (self.localManifest) {
     // local manifest won't give us sufficient information to tell
     return NO;
   }
@@ -311,37 +342,37 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)appFetcher:(EXAppFetcher *)appFetcher didSwitchToAppFetcher:(EXAppFetcher *)newAppFetcher retainingCurrent:(BOOL)shouldRetain
 {
   if (shouldRetain) {
-    _previousAppFetcherWaitingForBundle = appFetcher;
+    self.previousAppFetcherWaitingForBundle = appFetcher;
   }
   [self _startAppFetcher:newAppFetcher];
 }
 
 - (void)appFetcher:(EXAppFetcher *)appFetcher didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
-  if (_delegate) {
-    [_delegate appLoader:self didLoadOptimisticManifest:manifest];
+  if (self.delegate) {
+    [self.delegate appLoader:self didLoadOptimisticManifest:manifest];
   }
 }
 
 - (void)appFetcher:(EXAppFetcher *)appFetcher didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)bundle
 {
-  _confirmedManifest = manifest;
-  if (_delegate) {
-    [_delegate appLoader:self didFinishLoadingManifest:manifest bundle:bundle];
+  self.confirmedManifest = manifest;
+  if (self.delegate) {
+    [self.delegate appLoader:self didFinishLoadingManifest:manifest bundle:bundle];
   }
 }
 
 - (void)appFetcher:(EXAppFetcher *)appFetcher didFailWithError:(NSError *)error
 {
   // don't nullify appFetcher - we need to use its state to record the circumstances of the error
-  _error = error;
-  if (_delegate) {
-    [_delegate appLoader:self didFailWithError:error];
+  self.error = error;
+  if (self.delegate) {
+    [self.delegate appLoader:self didFailWithError:error];
   }
-  if (appFetcher == _previousAppFetcherWaitingForBundle) {
+  if (appFetcher == self.previousAppFetcherWaitingForBundle) {
     // previous app fetcher errored while trying to fetch a new bundle
     // so we can deallocate it now
-    _previousAppFetcherWaitingForBundle = nil;
+    self.previousAppFetcherWaitingForBundle = nil;
   }
 }
 
@@ -349,8 +380,8 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)appFetcher:(EXAppFetcher *)appFetcher didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
-  if (_delegate) {
-    [_delegate appLoader:self didLoadBundleWithProgress:progress];
+  if (self.delegate) {
+    [self.delegate appLoader:self didLoadBundleWithProgress:progress];
   }
 }
 
@@ -358,13 +389,13 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 
 - (void)appFetcher:(EXAppFetcher *)appFetcher didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
-  if (_delegate) {
-    [_delegate appLoader:self didResolveUpdatedBundleWithManifest:manifest isFromCache:isFromCache error:error];
+  if (self.delegate) {
+    [self.delegate appLoader:self didResolveUpdatedBundleWithManifest:manifest isFromCache:isFromCache error:error];
   }
-  if (appFetcher == _previousAppFetcherWaitingForBundle) {
+  if (appFetcher == self.previousAppFetcherWaitingForBundle) {
     // we no longer need to retain the previous app fetcher
     // as the only reason to retain is to wait for it to finish downloading the new bundle
-    _previousAppFetcherWaitingForBundle = nil;
+    self.previousAppFetcherWaitingForBundle = nil;
   }
 }
 
@@ -373,18 +404,18 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
 - (void)fetchManifestWithCacheBehavior:(EXManifestCacheBehavior)manifestCacheBehavior success:(void (^)(EXManifestsManifest *))success failure:(void (^)(NSError *))failure
 {
   // if we're using a localManifest, just return it immediately
-  if (_localManifest) {
-    success(_localManifest);
+  if (self.localManifest) {
+    success(self.localManifest);
     return;
   }
 
-  if (!([_httpManifestUrl.scheme isEqualToString:@"http"] || [_httpManifestUrl.scheme isEqualToString:@"https"])) {
-    NSURLComponents *components = [NSURLComponents componentsWithURL:_httpManifestUrl resolvingAgainstBaseURL:NO];
+  if (!([self.httpManifestUrl.scheme isEqualToString:@"http"] || [self.httpManifestUrl.scheme isEqualToString:@"https"])) {
+    NSURLComponents *components = [NSURLComponents componentsWithURL:self.httpManifestUrl resolvingAgainstBaseURL:NO];
     components.scheme = @"http";
-    _httpManifestUrl = [components URL];
+    self.httpManifestUrl = [components URL];
   }
 
-  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:_httpManifestUrl originalUrl:_manifestUrl];
+  EXManifestResource *manifestResource = [[EXManifestResource alloc] initWithManifestUrl:self.httpManifestUrl originalUrl:self.manifestUrl];
 
   EXCachedResourceBehavior cachedResourceBehavior = EXCachedResourceNoCache;
   if (manifestCacheBehavior == EXManifestOnlyCache) {
@@ -392,7 +423,7 @@ NSTimeInterval const kEXJSBundleTimeout = 60 * 5;
   } else if (manifestCacheBehavior == EXManifestPrepareToCache) {
     // in this case, we don't want to use the cache but will prepare to write the resulting manifest
     // to the cache later, after the bundle is finished downloading, so we save the reference
-    _manifestResource = manifestResource;
+    self.manifestResource = manifestResource;
   }
   [manifestResource loadResourceWithBehavior:cachedResourceBehavior progressBlock:nil successBlock:^(NSData * _Nonnull data) {
     NSError *error;
