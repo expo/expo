@@ -5,6 +5,7 @@ import React, { PropsWithChildren, useEffect } from 'react';
 
 /** The global analytics measurement ID */
 const MEASUREMENT_ID = 'UA-107832480-3';
+const GA4_MEASUREMENT_ID = 'G-YKNPYCMLWY';
 
 type AnalyticsProps = PropsWithChildren<object>;
 
@@ -22,6 +23,13 @@ export function AnalyticsProvider(props: AnalyticsProps) {
     };
   }, []);
 
+  useEffect(function didMount() {
+    events.on('routeChangeComplete', reportPageViewForGA4);
+    return function didUnmount() {
+      events.off('routeChangeComplete', reportPageViewForGA4);
+    };
+  }, []);
+
   return (
     <>
       <Script
@@ -35,6 +43,17 @@ export function AnalyticsProvider(props: AnalyticsProps) {
         gtag('js', new Date());
         gtag('config', '${MEASUREMENT_ID}', { 'transport_type': 'beacon', 'anonymize_ip': true });
       `}</Script>
+      <Script
+        id="gtm-script"
+        strategy="lazyOnload"
+        src={`https://www.googletagmanager.com/gtag/js?id=${GA4_MEASUREMENT_ID}`}
+      />
+      <Script id="gtm-init" strategy="lazyOnload">{`
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '${GA4_MEASUREMENT_ID}', { 'transport_type': 'beacon', 'anonymize_ip': true });
+      `}</Script>
       {props.children}
     </>
   );
@@ -42,6 +61,14 @@ export function AnalyticsProvider(props: AnalyticsProps) {
 
 export function reportPageView(url: string) {
   window?.gtag?.('config', MEASUREMENT_ID, {
+    page_path: url,
+    transport_type: 'beacon',
+    anonymize_ip: true,
+  });
+}
+
+export function reportPageViewForGA4(url: string) {
+  window?.gtag?.('config', GA4_MEASUREMENT_ID, {
     page_path: url,
     transport_type: 'beacon',
     anonymize_ip: true,
