@@ -35,6 +35,8 @@ data class SourceMap(
 
   private fun isLocalFileUri() = parsedUri?.scheme?.startsWith("file") ?: false
 
+  private fun isBlurhash() = parsedUri?.scheme?.startsWith("blurhash") ?: false
+
   internal fun createGlideModel(context: Context): GlideModel? {
     if (uri == null) {
       return null
@@ -44,7 +46,7 @@ data class SourceMap(
       parsedUri = computeUri(context)
     }
 
-    if (isContentUrl() || isDataUrl()) {
+    if (isContentUrl() || isDataUrl() || isBlurhash()) {
       return GlideRawModel(uri)
     }
 
