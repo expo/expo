@@ -5,7 +5,7 @@ import Text from '../primitives/Text';
 function createHeadingComponent(level) {
     const nativeProps = Platform.select({
         web: {
-            'aria-level': `${level}`,
+            accessibilityLevel: level,
         },
         default: {},
     });
