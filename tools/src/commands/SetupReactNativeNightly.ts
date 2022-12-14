@@ -2,14 +2,18 @@ import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
+import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
 
-import { EXPO_DIR } from '../Constants';
+import { EXPO_DIR, EXPOTOOLS_DIR } from '../Constants';
 import logger from '../Logger';
 import { getPackageViewAsync } from '../Npm';
 import { transformFileAsync } from '../Transforms';
+import { applyPatchAsync } from '../Utils';
 import { installAsync as workspaceInstallAsync } from '../Workspace';
+
+const PATCHES_ROOT = path.join(EXPOTOOLS_DIR, 'src', 'react-native-nightlies', 'patches');
 
 export default (program: Command) => {
   program
@@ -120,94 +124,7 @@ async function updateReactNativePackageAsync() {
 async function patchReanimatedAsync(nightlyVersion: string) {
   const root = path.join(EXPO_DIR, 'node_modules', 'react-native-reanimated');
 
-  await transformFileAsync(path.join(root, 'RNReanimated.podspec'), [
-    // C++17 for std::optional from react-native
-    {
-      find: /^(\s*"FRAMEWORK_SEARCH_PATHS" => "\\"\$\{PODS_CONFIGURATION_BUILD_DIR\}\/React-hermes\\"",)$/gm,
-      replaceWith: '$1\n    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",',
-    },
-  ]);
-
-  await transformFileAsync(path.join(root, 'scripts', 'reanimated_utils.rb'), [
-    // Add REACT_NATIVE_OVERRIDE_VERSION support
-    {
-      find: `result[:react_native_version] = react_native_json['version']`,
-      replaceWith: `result[:react_native_version] = ENV["REACT_NATIVE_OVERRIDE_VERSION"] ? ENV["REACT_NATIVE_OVERRIDE_VERSION"] : react_native_json['version']`,
-    },
-    {
-      find: `result[:react_native_minor_version] = react_native_json['version'].split('.')[1].to_i`,
-      replaceWith: `result[:react_native_minor_version] = result[:react_native_version].split('.')[1].to_i`,
-    },
-  ]);
-
   await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
-    // Add REACT_NATIVE_OVERRIDE_VERSION support
-    {
-      find: `def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")`,
-      replaceWith: `def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")`,
-    },
-    // Workaround $minor is undefined
-    {
-      find: /\$minor/g,
-      replaceWith: '$rnMinorVersion',
-    },
-    // BUILD_FROM_SOURCE
-    {
-      find: /^(boolean BUILD_FROM_SOURCE)\s*=.*/gm,
-      replaceWith: '$1 = true',
-    },
-    // duplicated class from jni, because ReactAndroid now uses fbjni rather than fbjni-java-only
-    {
-      find: 'implementation "com.facebook.fbjni:fbjni-java-only:',
-      replaceWith: 'compileOnly "com.facebook.fbjni:fbjni:',
-    },
-    {
-      // no-op tasks
-      find: /\b(task (prepareHermes).*\{)$/gm,
-      replaceWith: `$1\n    return`,
-    },
-    {
-      // download nightly react-native aar
-      find: /^(task unpackReactNativeAAR \{[\s\S]*?^\})/gm,
-      replaceWith: `
-def reactNativeIsNightly = reactProperties.getProperty("VERSION_NAME").startsWith("0.0.0-")
-
-apply plugin: "de.undercouch.download"
-
-def downloadReactNativeNightlyAAR = { buildType, version, downloadFile ->
-  def classifier = buildType == 'Debug' ? 'debug' : 'release'
-  download.run {
-    src("https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.facebook.react&a=react-native&c=\${classifier}&e=aar&v=\${version}-SNAPSHOT")
-    onlyIfNewer(true)
-    overwrite(false)
-    dest(downloadFile)
-  }
-}
-
-task unpackReactNativeAAR {
-  def buildType = resolveBuildType()
-  def rnAAR
-  if (reactNativeIsNightly) {
-    def downloadFile = file("\${downloadsDir}/react-native-nightly.aar")
-    downloadReactNativeNightlyAAR(buildType, reactProperties.getProperty("VERSION_NAME"), downloadFile)
-    rnAAR = downloadFile
-  } else {
-    def rnAarMatcher = "**/react-native/**/*\${buildType}.aar"
-    if (REACT_NATIVE_MINOR_VERSION < 69) {
-      rnAarMatcher = "**/**/*.aar"
-    }
-    rnAAR = fileTree("$reactNativeRootDir/android").matching({ it.include rnAarMatcher }).singleFile
-  }
-  def file = rnAAR.absoluteFile
-  def packageName = file.name.tokenize('-')[0]
-  copy {
-    from zipTree(file)
-    into "$reactNativeRootDir/ReactAndroid/src/main/jni/first-party/$packageName/"
-    include "jni/**/*.so"
-  }
-}
-      `,
-    },
     {
       // add prefab support, setup task dependencies and hermes-engine dependencies
       transform: (text: string) =>
@@ -225,41 +142,9 @@ task unpackReactNativeAAR {
     },
   ]);
 
-  await transformFileAsync(path.join(root, 'android', 'CMakeLists.txt'), [
-    {
-      // Remove this after reanimated support react-native 0.71
-      find: /(\s*"\$\{REACT_NATIVE_DIR\}\/ReactAndroid\/src\/main\/jni")/g,
-      replaceWith: '$1\n        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"',
-    },
-    {
-      // find hermes from prefab
-      find: /(string\(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_HERMES=1"\))/g,
-      replaceWith: `find_package(hermes-engine REQUIRED CONFIG)\n    $1`,
-    },
-    {
-      // find hermes from prefab
-      find: /"\$\{BUILD_DIR\}\/.+\/libhermes\.so"/g,
-      replaceWith: `hermes-engine::libhermes`,
-    },
-  ]);
-
-  // Workaround for UIImplementationProvider breaking change, that would break reanimated layout animation somehow
-  await transformFileAsync(
-    path.join(
-      root,
-      'android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java'
-    ),
-    [
-      {
-        find: /^class ReaUiImplementationProvider extends UIImplementationProvider \{[\s\S]*?^\}/gm,
-        replaceWith: '',
-      },
-      {
-        find: `new ReaUiImplementationProvider(),`,
-        replaceWith: '',
-      },
-    ]
-  );
+  const patchFile = path.join(PATCHES_ROOT, 'react-native-reanimated+2.12.0.patch');
+  const patchContent = await fs.readFile(patchFile, 'utf8');
+  await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
 }
 
 async function patchSkiaAsync(nightlyVersion: string) {
@@ -337,23 +222,25 @@ async function updateExpoModulesAsync() {
       ])
     )
   );
+
+  await transformFileAsync(
+    path.join(EXPO_DIR, 'packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp'),
+    [
+      {
+        // Workaround build error for CallbackWrapper interface change:
+        // https://github.com/facebook/react-native/commit/229a1ded15772497fd632c299b336566d001e37d
+        find: 'auto weakWrapper = react::CallbackWrapper::createWeak(strongLongLiveObjectCollection,',
+        replaceWith: 'auto weakWrapper = react::CallbackWrapper::createWeak(',
+      },
+    ]
+  );
 }
 
 async function updateBareExpoAsync(nightlyVersion: string) {
   const root = path.join(EXPO_DIR, 'apps', 'bare-expo');
-  await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
-    {
-      find: 'resolutionStrategy.force "com.facebook.react:react-native:${reactNativeVersion}"',
-      replaceWith: `resolutionStrategy.dependencySubstitution {
-                    substitute module("com.facebook.react:react-native") using module("com.facebook.react:react-android:${nightlyVersion}-SNAPSHOT")
-                    substitute module("com.facebook.react:hermes-engine") using module("com.facebook.react:hermes-android:${nightlyVersion}-SNAPSHOT")
-            }`,
-    },
-  ]);
-
-  await transformFileAsync(path.join(root, 'android', 'settings.gradle'), [
-    { find: /react-native-gradle-plugin/g, replaceWith: '@react-native/gradle-plugin' },
-  ]);
+  const patchFile = path.join(PATCHES_ROOT, 'bare-expo.patch');
+  const patchContent = await fs.readFile(patchFile, 'utf8');
+  await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
 
   await transformFileAsync(path.join(root, 'ios', 'BareExpo', 'AppDelegate.mm'), [
     {
