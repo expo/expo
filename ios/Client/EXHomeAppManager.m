@@ -3,7 +3,7 @@
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
 #import "EXAppFetcher.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXHomeModule.h"
 #import "EXKernelUtil.h"
