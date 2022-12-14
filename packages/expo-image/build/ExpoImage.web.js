@@ -12,7 +12,6 @@ function resolveAssetSource(source) {
     }
     return source;
 }
-;
 function ensureUnit(value) {
     const trimmedValue = String(value).trim();
     if (trimmedValue.endsWith('%')) {

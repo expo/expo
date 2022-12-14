@@ -25,7 +25,7 @@ function resolveAssetSource(source?: ImageUriSource | RequireSource | null) {
   }
 
   return source;
-};
+}
 
 function ensureUnit(value: string | number) {
   const trimmedValue = String(value).trim();
@@ -170,7 +170,7 @@ const useTransition = (
   }
 
   return { placeholder: {}, image: {} };
-}
+};
 
 export default function ExpoImage({
   source,
