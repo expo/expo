@@ -5,9 +5,17 @@ import ExpoModulesCore
 
 private typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
+// swiftlint:disable:next type_body_length
 public final class ImageView: ExpoView {
   let sdImageView = SDAnimatedImageView(frame: .zero)
-  let imageManager = SDWebImageManager()
+
+  // Custom image manager doesn't use shared loaders managers by default,
+  // so make sure it is provided here.
+  let imageManager = SDWebImageManager(
+    cache: SDImageCache.shared,
+    loader: SDImageLoadersManager.shared
+  )
+
   var loadingOptions: SDWebImageOptions = [
     .retryFailed, // Don't blacklist URLs that failed downloading
     .handleCookies // Handle cookies stored in the shared `HTTPCookieStore`
@@ -133,6 +141,7 @@ public final class ImageView: ExpoView {
     ])
   }
 
+  // swiftlint:disable:next function_parameter_count
   private func imageLoadCompleted(
     _ image: UIImage?,
     _ data: Data?,
@@ -193,6 +202,14 @@ public final class ImageView: ExpoView {
   var placeholderImage: UIImage?
 
   /**
+   Content fit for the placeholder. `scale-down` seems to be the best choice for spinners
+   and that the placeholders are usually smaller than the proper image, but it doesn't
+   apply to blurhash that by default could use the same fitting as the proper image.
+   - ToDo: Add `placeholderContentFit` prop to control this.
+   */
+  var placeholderContentFit: ContentFit?
+
+  /**
    Same as `bestSource`, but for placeholders.
    */
   var bestPlaceholder: ImageSource? {
@@ -212,6 +229,7 @@ public final class ImageView: ExpoView {
       return
     }
     var context = SDWebImageContext()
+    let isBlurhash = placeholder.isBlurhash
 
     context[.imageScaleFactor] = placeholder.scale
 
@@ -227,6 +245,7 @@ public final class ImageView: ExpoView {
         return
       }
       self.placeholderImage = placeholder
+      self.placeholderContentFit = isBlurhash ? self.contentFit : .scaleDown
       self.displayPlaceholderIfNecessary()
     }
   }
@@ -238,8 +257,7 @@ public final class ImageView: ExpoView {
     guard isViewEmpty || !hasAnySource, let placeholder = placeholderImage else {
       return
     }
-    // The placeholder should always use `scale-down` content fitting (which maps to `UIView.ContentMode.center`).
-    setImage(placeholder, contentFit: .scaleDown)
+    setImage(placeholder, contentFit: placeholderContentFit ?? .scaleDown)
   }
 
   // MARK: - Processing
