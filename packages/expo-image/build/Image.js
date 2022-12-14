@@ -9,7 +9,7 @@ export class Image extends React.Component {
      * `disk` (default) or `memoryAndDisk` cache policy.
      */
     static prefetch(urls) {
-        return ExpoImageModule.prefetch(urls);
+        return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls]);
     }
     /**
      * Asynchronously clears all images stored in memory.
