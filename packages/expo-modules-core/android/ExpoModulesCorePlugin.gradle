@@ -160,8 +160,8 @@ class LegacyReactNativeLibsExtractionPlugin implements Plugin<Project> {
 
     project.afterEvaluate {
       if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-        nativeBuildDependsOn(project, project.tasks.named(":ReactAndroid:copyReleaseJniLibsProjectOnly"), ["Release", "RelWithDebInfo"])
-        nativeBuildDependsOn(project, project.tasks.named(":ReactAndroid:copyDebugJniLibsProjectOnly"), ["Debug"])
+        nativeBuildDependsOn(project, ":ReactAndroid:copyReleaseJniLibsProjectOnly", ["Release", "RelWithDebInfo"])
+        nativeBuildDependsOn(project, ":ReactAndroid:copyDebugJniLibsProjectOnly", ["Debug"])
       } else {
         nativeBuildDependsOn(project, extractReactNativeAARRelease, ["Release", "RelWithDebInfo"])
         nativeBuildDependsOn(project, extractReactNativeAARDebug, ["Debug"])
@@ -175,15 +175,27 @@ class LegacyReactNativeLibsExtractionPlugin implements Plugin<Project> {
       }
 
       if (isNewArchitectureEnabled) {
-        preDebugBuild.dependsOn(packageReactNdkDebugLibs)
-        preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
+        def preDebugBuild = project.tasks.named('preDebugBuild')
+        def preReleaseBuild = project.tasks.named('preReleaseBuild')
+        preDebugBuild.configure {
+          dependsOn(packageReactNdkDebugLibs)
+        }
+        preReleaseBuild.configure {
+          dependsOn(packageReactNdkReleaseLibs)
+        }
 
         // Due to a bug inside AGP, we have to explicitly set a dependency
         // between configureCMake* tasks and the preBuild tasks.
         // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
-        configureCMakeDebug.dependsOn(preDebugBuild)
-        configureCMakeRelWithDebInfo.dependsOn(preReleaseBuild)
-        reactNativeArchitectures().each { architecture ->
+        project.tasks.named('configureCMakeDebug').configure {
+          dependsOn(preDebugBuild)
+        }
+        project.tasks.named('configureCMakeRelWithDebInfo').configure {
+          dependsOn(preReleaseBuild)
+        }
+        def reactNativeArchitectures = project.getProperties().get("reactNativeArchitectures")?.split(",") ?: ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+
+        reactNativeArchitectures.each { architecture ->
           project.tasks.named("configureCMakeDebug[${architecture}]")?.configure {
             dependsOn("preDebugBuild")
           }
