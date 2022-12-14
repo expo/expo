@@ -5,9 +5,9 @@ import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.load.model.ModelLoaderFactory
 import com.bumptech.glide.load.model.MultiModelLoaderFactory
 
-class BlurHashModelLoaderFactory : ModelLoaderFactory<String, Bitmap> {
+class BlurhashModelLoaderFactory : ModelLoaderFactory<String, Bitmap> {
   override fun build(multiFactory: MultiModelLoaderFactory): ModelLoader<String, Bitmap> =
-    BlurHashModelLoader()
+    BlurhashModelLoader()
 
   override fun teardown() = Unit
 }

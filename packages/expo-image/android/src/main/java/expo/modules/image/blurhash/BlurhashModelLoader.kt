@@ -6,7 +6,7 @@ import com.bumptech.glide.load.Options
 import com.bumptech.glide.load.model.ModelLoader
 import com.bumptech.glide.signature.ObjectKey
 
-class BlurHashModelLoader : ModelLoader<String, Bitmap> {
+class BlurhashModelLoader : ModelLoader<String, Bitmap> {
   override fun handles(model: String): Boolean = model.startsWith("blurhash:")
 
   override fun buildLoadData(
@@ -17,14 +17,14 @@ class BlurHashModelLoader : ModelLoader<String, Bitmap> {
   ): ModelLoader.LoadData<Bitmap> {
     val uri = Uri.parse(model)
 
-    val blurHash = getPath(uri, 0, null) { it }
-    val blurHashWidth = getPath(uri, 1, 16) { it.toInt() }
-    val blurHashHeight = getPath(uri, 2, 16) { it.toInt() }
-    val blurHashPunch = getPath(uri, 3, 1f) { it.toFloat() }
+    val blurhash = getPath(uri, 0, null) { it }
+    val blurhashWidth = getPath(uri, 1, 16) { it.toInt() }
+    val blurhashHeight = getPath(uri, 2, 16) { it.toInt() }
+    val blurhashPunch = getPath(uri, 3, 1f) { it.toFloat() }
 
     return ModelLoader.LoadData(
       ObjectKey(model),
-      BlurHashFetcher(blurHash, blurHashWidth, blurHashHeight, blurHashPunch)
+      BlurHashFetcher(blurhash, blurhashWidth, blurhashHeight, blurhashPunch)
     )
   }
 

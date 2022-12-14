@@ -9,7 +9,7 @@ import kotlin.math.withSign
 /**
  * Copied from https://github.com/woltapp/blurhash.
  */
-object BlurHashDecoder {
+object BlurhashDecoder {
 
   // cache Math.cos() calculations to improve performance.
   // The number of calculations can be huge for many bitmaps: width * height * numCompX * numCompY * 2 * nBitmaps

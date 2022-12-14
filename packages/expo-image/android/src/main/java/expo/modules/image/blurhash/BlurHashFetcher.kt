@@ -6,8 +6,8 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.data.DataFetcher
 import expo.modules.kotlin.exception.CodedException
 
-class BlurHashDecodingFailure(blurHash: String?) : CodedException(
-  message = "Cannot decode provided BlurHash '$blurHash'"
+class BlurhashDecodingFailure(blurHash: String?) : CodedException(
+  message = "Cannot decode provided blurhash '$blurHash'"
 )
 
 class BlurHashFetcher(
@@ -22,9 +22,9 @@ class BlurHashFetcher(
   override fun getDataSource(): DataSource = DataSource.LOCAL
 
   override fun loadData(priority: Priority, callback: DataFetcher.DataCallback<in Bitmap>) {
-    val bitmap = BlurHashDecoder.decode(blurHash, width, height, punch)
+    val bitmap = BlurhashDecoder.decode(blurHash, width, height, punch)
     if (bitmap == null) {
-      callback.onLoadFailed(BlurHashDecodingFailure(blurHash))
+      callback.onLoadFailed(BlurhashDecodingFailure(blurHash))
       return
     }
     callback.onDataReady(bitmap)
