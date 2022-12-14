@@ -4,15 +4,13 @@ public final class BarCodeScannerModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoBarCodeScanner")
 
-    Constants {
-      return [
-        "Type": [
-          "front": EXCameraType.front.rawValue,
-          "back": EXCameraType.back.rawValue
-        ],
-        "BarCodeType": EXBarCodeScannerUtils.validBarCodeTypes()
-      ]
-    }
+    Constants([
+      "Type": [
+        "front": EXCameraType.front.rawValue,
+        "back": EXCameraType.back.rawValue
+      ],
+      "BarCodeType": EXBarCodeScannerUtils.validBarCodeTypes()
+    ])
 
     OnCreate {
       let permissionsManager = self.appContext?.permissions
@@ -41,14 +39,12 @@ public final class BarCodeScannerModule: Module {
       )
     }
 
-    AsyncFunction("scanFromURLAsync") {
-      (url: URL, _: [String], promise: Promise) in
+    AsyncFunction("scanFromURLAsync") { (url: URL, _: [String], promise: Promise) in
       guard let imageLoader = appContext?.imageLoader else {
         throw ImageLoaderNotFound()
       }
 
-      imageLoader.loadImage(for: url) {
-        error, image in
+      imageLoader.loadImage(for: url) { error, image in
         if error != nil {
           promise.reject(FailedToLoadImage())
           return
@@ -93,15 +89,12 @@ public final class BarCodeScannerModule: Module {
     var result = [[AnyHashable: Any]?]()
 
     for feature in features {
-      do {
-        let qrCodeFeature = try feature as! CIQRCodeFeature
+      if let qrCodeFeature = feature as? CIQRCodeFeature {
         let item = EXBarCodeScannerUtils.ciQRCodeFeature(
           toDicitionary: qrCodeFeature,
           barCodeType: AVMetadataObject.ObjectType.qr.rawValue
         )
         result.append(item)
-      } catch {
-        log.error("Failed to cast feature")
       }
     }
 
