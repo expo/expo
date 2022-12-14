@@ -82,8 +82,8 @@ class ExpoImageModule : Module() {
         "onLoad"
       )
 
-      Prop("source") { view: ExpoImageViewWrapper, sources: List<SourceMap> ->
-        view.imageView.sources = sources
+      Prop("source") { view: ExpoImageViewWrapper, sources: List<SourceMap>? ->
+        view.imageView.sources = sources ?: emptyList()
       }
 
       Prop("contentFit") { view: ExpoImageViewWrapper, contentFit: ContentFit? ->
@@ -157,8 +157,8 @@ class ExpoImageModule : Module() {
         view.imageView.setTintColor(color)
       }
 
-      Prop("defaultSource") { view: ExpoImageViewWrapper, defaultSource: SourceMap? ->
-        view.imageView.defaultSourceMap = defaultSource
+      Prop("placeholder") { view: ExpoImageViewWrapper, placeholder: List<SourceMap>? ->
+        view.imageView.placeholders = placeholder ?: emptyList()
       }
 
       Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean ->
