@@ -43,7 +43,7 @@ add_library(
 )
 
 if(IS_NEW_ARCHITECTURE_ENABLED)
-  add_subdirectory("${SRC_DIR}/fabric" fabric_binary_dir)
+  add_subdirectory("fabric")
   set(NEW_ARCHITECTURE_DEPENDENCIES "fabric")
   set(NEW_ARCHITECTURE_COMPILE_OPTIONS -DIS_NEW_ARCHITECTURE_ENABLED=1 -DRN_FABRIC_ENABLED=1)
 else()
