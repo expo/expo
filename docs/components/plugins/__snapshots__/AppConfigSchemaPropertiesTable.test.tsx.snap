@@ -3,7 +3,7 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="css-1lzbq05-AppConfigProperty"
+    class="css-18m3l03-AppConfigProperty"
   >
     <p
       class="  css-m3vzl4-TextComponent"
@@ -119,7 +119,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div />
   </div>
   <div
-    class="css-1lzbq05-AppConfigProperty"
+    class="css-18m3l03-AppConfigProperty"
   >
     <p
       class="  css-m3vzl4-TextComponent"
@@ -277,7 +277,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
     <div>
       <div
-        class="css-1lzbq05-AppConfigProperty"
+        class="css-18m3l03-AppConfigProperty"
       >
         <p
           class="  css-m3vzl4-TextComponent"
@@ -401,7 +401,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </details>
         <div>
           <div
-            class="css-1lzbq05-AppConfigProperty"
+            class="css-18m3l03-AppConfigProperty"
           >
             <p
               class="  css-m3vzl4-TextComponent"
@@ -485,7 +485,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="css-1lzbq05-AppConfigProperty"
+        class="css-18m3l03-AppConfigProperty"
       >
         <p
           class="  css-m3vzl4-TextComponent"
@@ -571,7 +571,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           6 character long hex color string, eg: 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             '#000000'
           </code>
@@ -581,7 +581,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="css-1lzbq05-AppConfigProperty"
+    class="css-18m3l03-AppConfigProperty"
   >
     <p
       class="  css-m3vzl4-TextComponent"
@@ -733,7 +733,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </blockquote>
     <div>
       <div
-        class="css-1lzbq05-AppConfigProperty"
+        class="css-18m3l03-AppConfigProperty"
       >
         <p
           class="  css-m3vzl4-TextComponent"
@@ -815,7 +815,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div />
       </div>
       <div
-        class="css-1lzbq05-AppConfigProperty"
+        class="css-18m3l03-AppConfigProperty"
       >
         <p
           class="  css-m3vzl4-TextComponent"
@@ -891,7 +891,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <br />
         <div>
           <div
-            class="css-1lzbq05-AppConfigProperty"
+            class="css-18m3l03-AppConfigProperty"
           >
             <p
               class="  css-m3vzl4-TextComponent"

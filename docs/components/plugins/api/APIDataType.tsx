@@ -1,8 +1,7 @@
-import React from 'react';
-
-import { CodeBlock, InlineCode } from '~/components/base/code';
+import { CodeBlock } from '~/components/base/code';
 import { TypeDefinitionData } from '~/components/plugins/api/APIDataTypes';
 import { resolveTypeName } from '~/components/plugins/api/APISectionUtils';
+import { CODE } from '~/ui/components/Text';
 
 const typeDefinitionContainsObject = (typDef: TypeDefinitionData) =>
   typDef.type === 'reflection' && typDef.declaration?.children;
@@ -28,6 +27,6 @@ export const APIDataType = ({ typeDefinition, inline = true }: APIDataTypeProps)
       {resolveTypeName(typeDefinition)}
     </CodeBlock>
   ) : (
-    <InlineCode key={typeDefinition.name}>{resolveTypeName(typeDefinition)}</InlineCode>
+    <CODE key={typeDefinition.name}>{resolveTypeName(typeDefinition)}</CODE>
   );
 };

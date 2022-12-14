@@ -1,8 +1,6 @@
 import { css } from '@emotion/react';
 import { palette, typography } from '@expo/styleguide';
 
-import { paragraph } from '~/components/base/typography';
-
 export const globalTippy = css`
   div.tippy-box {
     text-align: left;
@@ -16,7 +14,7 @@ export const globalTippy = css`
   }
 
   .tippy-box[data-theme~='expo'] .tippy-content {
-    ${paragraph};
+    ${typography.body.paragraph};
     color: ${palette.dark.gray[900]};
     font-family: ${typography.fontFaces.regular};
     font-weight: 400;

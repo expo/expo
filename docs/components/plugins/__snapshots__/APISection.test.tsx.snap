@@ -3,7 +3,7 @@
 exports[`APISection expo-apple-authentication 1`] = `
 <div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -50,7 +50,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -68,7 +68,7 @@ exports[`APISection expo-apple-authentication 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationButton
           </code>
@@ -104,17 +104,16 @@ exports[`APISection expo-apple-authentication 1`] = `
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-m3vzl4-TextComponent"
     >
       <strong
-        class="css-1qx481h-B"
+        class="css-7r3rok-TextComponent"
       >
         Type:
       </strong>
        
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-lz3xyk-TextComponent"
       >
         React.FC
         &lt;
@@ -146,7 +145,7 @@ available via the provided properties.
         href="#isavailableasync"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthentication.isAvailableAsync()
         </code>
@@ -154,14 +153,14 @@ available via the provided properties.
       
 resolves to 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         true
       </code>
       . This component will render nothing if it is not available, and you will get
 a warning in development mode (
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         __DEV__ === true
       </code>
@@ -174,40 +173,40 @@ a warning in development mode (
     >
       The properties of this component extend from 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         View
       </code>
       ; however, you should not attempt to set
 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         backgroundColor
       </code>
        or 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         borderRadius
       </code>
        with the 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         style
       </code>
        property. This will not work and is against
 the App Store Guidelines. Instead, you should use the 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         buttonStyle
       </code>
        property to choose one of the
 predefined color styles and the 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         cornerRadius
       </code>
@@ -271,7 +270,7 @@ for more details.
       </div>
     </blockquote>
     <h2
-      class="css-1ck3d9a-H2"
+      class="css-grnng4-H2"
       data-heading="true"
     >
       <a
@@ -319,7 +318,7 @@ for more details.
     </h2>
     <div>
       <div
-        class="css-18dzyrv"
+        class="css-16h0ecy"
       >
         <h3
           class="css-m417je-H3"
@@ -337,7 +336,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-1pk617c-InlineCode"
+                class="css-19pt3rj-TextComponent"
               >
                 buttonStyle
               </code>
@@ -373,8 +372,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           <span
             class="css-1lk0cux"
@@ -383,7 +381,7 @@ for more details.
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             <a
               class="css-dqmbnf-A"
@@ -400,7 +398,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-18dzyrv"
+        class="css-16h0ecy"
       >
         <h3
           class="css-m417je-H3"
@@ -418,7 +416,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-1pk617c-InlineCode"
+                class="css-19pt3rj-TextComponent"
               >
                 buttonType
               </code>
@@ -454,8 +452,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           <span
             class="css-1lk0cux"
@@ -464,7 +461,7 @@ for more details.
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             <a
               class="css-dqmbnf-A"
@@ -481,7 +478,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-18dzyrv"
+        class="css-16h0ecy"
       >
         <h3
           class="css-m417je-H3"
@@ -499,7 +496,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-1pk617c-InlineCode"
+                class="css-19pt3rj-TextComponent"
               >
                 cornerRadius
               </code>
@@ -535,8 +532,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           <span
             class="css-1lk0cux"
@@ -550,7 +546,7 @@ for more details.
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             number
           </code>
@@ -561,7 +557,7 @@ for more details.
           The border radius to use when rendering the button. This works similarly to
 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             style.borderRadius
           </code>
@@ -569,7 +565,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-18dzyrv"
+        class="css-16h0ecy"
       >
         <h3
           class="css-m417je-H3"
@@ -587,7 +583,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-1pk617c-InlineCode"
+                class="css-19pt3rj-TextComponent"
               >
                 style
               </code>
@@ -623,8 +619,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           <span
             class="css-1lk0cux"
@@ -638,7 +633,7 @@ for more details.
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             StyleProp
             &lt;
@@ -680,13 +675,13 @@ for more details.
         >
           The custom style to apply to the button. Should not include 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             backgroundColor
           </code>
            or 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             borderRadius
           </code>
@@ -695,7 +690,7 @@ properties.
         </p>
       </div>
       <div
-        class="css-18dzyrv"
+        class="css-16h0ecy"
       >
         <h3
           class="css-m417je-H3"
@@ -713,7 +708,7 @@ properties.
               class="css-6n7j50"
             >
               <code
-                class="inline css-1pk617c-InlineCode"
+                class="css-19pt3rj-TextComponent"
               >
                 onPress
               </code>
@@ -749,8 +744,7 @@ properties.
           </a>
         </h3>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           <span
             class="css-1lk0cux"
@@ -759,7 +753,7 @@ properties.
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             (
             ) =&gt;
@@ -776,7 +770,7 @@ properties.
             href="#isavailableasync"
           >
             <code
-              class="inline css-ov7own-InlineCode"
+              class="css-yrev4b-TextComponent"
             >
               AppleAuthentication.signInAsync
             </code>
@@ -833,14 +827,13 @@ in here.
         </a>
       </h3>
       <ul
-        class="css-ftstf7-UL"
-        data-text="true"
+        class="css-amssdi-TextComponent"
       >
         <li
-          class="docs-list-item css-1vg85kg-LI"
+          class="css-bn5qly-TextComponent"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             <a
               class="css-dqmbnf-A"
@@ -854,7 +847,7 @@ in here.
     </div>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -901,7 +894,7 @@ in here.
     </a>
   </h2>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -919,7 +912,7 @@ in here.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             getCredentialStateAsync(user)
           </code>
@@ -1000,7 +993,7 @@ in here.
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -1018,7 +1011,7 @@ This should come from the user field of an
                   href="#appleauthenticationcredentialstate"
                 >
                   <code
-                    class="inline css-ov7own-InlineCode"
+                    class="css-yrev4b-TextComponent"
                   >
                     AppleAuthenticationCredential
                   </code>
@@ -1030,6 +1023,7 @@ This should come from the user field of an
         </tbody>
       </table>
     </div>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -1134,11 +1128,10 @@ This should come from the user field of an
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -1159,7 +1152,7 @@ This should come from the user field of an
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -1182,6 +1175,7 @@ This should come from the user field of an
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -1191,7 +1185,7 @@ This should come from the user field of an
         href="#appleauthenticationcredentialstate"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthenticationCredentialState
         </code>
@@ -1201,7 +1195,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -1219,7 +1213,7 @@ value depending on the state of the credential.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             isAvailableAsync()
           </code>
@@ -1312,11 +1306,10 @@ value depending on the state of the credential.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -1337,7 +1330,7 @@ value depending on the state of the credential.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -1355,18 +1348,19 @@ value depending on the state of the credential.
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
       A promise that fulfills with 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         true
       </code>
        if the system supports Apple authentication, and 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         false
       </code>
@@ -1374,7 +1368,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -1392,7 +1386,7 @@ value depending on the state of the credential.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             refreshAsync(options)
           </code>
@@ -1473,7 +1467,7 @@ value depending on the state of the credential.
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -1495,7 +1489,7 @@ value depending on the state of the credential.
                   href="#appleauthenticationrefreshoptions"
                 >
                   <code
-                    class="inline css-ov7own-InlineCode"
+                    class="css-yrev4b-TextComponent"
                   >
                     AppleAuthenticationRefreshOptions
                   </code>
@@ -1507,6 +1501,7 @@ value depending on the state of the credential.
         </tbody>
       </table>
     </div>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -1566,11 +1561,10 @@ Calling this method will show the sign in modal before actually refreshing the u
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -1591,7 +1585,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -1614,6 +1608,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -1623,7 +1618,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         href="#appleauthenticationcredential"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthenticationCredential
         </code>
@@ -1631,7 +1626,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       
 object after a successful authentication, and rejects with 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         ERR_CANCELED
       </code>
@@ -1640,7 +1635,7 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -1658,7 +1653,7 @@ refresh operation.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             signInAsync(options)
           </code>
@@ -1745,7 +1740,7 @@ refresh operation.
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -1767,7 +1762,7 @@ refresh operation.
                   href="#appleauthenticationsigninoptions"
                 >
                   <code
-                    class="inline css-ov7own-InlineCode"
+                    class="css-yrev4b-TextComponent"
                   >
                     AppleAuthenticationSignInOptions
                   </code>
@@ -1779,6 +1774,7 @@ refresh operation.
         </tbody>
       </table>
     </div>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -1813,7 +1809,7 @@ You can use
         href="#appleauthenticationcredential"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthenticationCredential.user
         </code>
@@ -1874,11 +1870,10 @@ the user, since this remains the same for apps released by the same developer.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -1899,7 +1894,7 @@ the user, since this remains the same for apps released by the same developer.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -1922,6 +1917,7 @@ the user, since this remains the same for apps released by the same developer.
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -1931,7 +1927,7 @@ the user, since this remains the same for apps released by the same developer.
         href="#appleauthenticationcredential"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthenticationCredential
         </code>
@@ -1939,7 +1935,7 @@ the user, since this remains the same for apps released by the same developer.
       
 object after a successful authentication, and rejects with 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         ERR_CANCELED
       </code>
@@ -1948,7 +1944,7 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -1966,7 +1962,7 @@ sign-in operation.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             signOutAsync(options)
           </code>
@@ -2047,7 +2043,7 @@ sign-in operation.
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -2069,7 +2065,7 @@ sign-in operation.
                   href="#appleauthenticationsignoutoptions"
                 >
                   <code
-                    class="inline css-ov7own-InlineCode"
+                    class="css-yrev4b-TextComponent"
                   >
                     AppleAuthenticationSignOutOptions
                   </code>
@@ -2081,6 +2077,7 @@ sign-in operation.
         </tbody>
       </table>
     </div>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -2098,7 +2095,7 @@ from using
         href="./#signinasync"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           signInAsync
         </code>
@@ -2109,7 +2106,7 @@ from using
         href="./#refreshasync"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           refreshAsync
         </code>
@@ -2169,11 +2166,10 @@ from using
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -2194,7 +2190,7 @@ from using
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -2217,6 +2213,7 @@ from using
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -2226,7 +2223,7 @@ from using
         href="#appleauthenticationcredential"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthenticationCredential
         </code>
@@ -2234,7 +2231,7 @@ from using
       
 object after a successful authentication, and rejects with 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         ERR_CANCELED
       </code>
@@ -2243,7 +2240,7 @@ sign-out operation.
     </p>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -2290,7 +2287,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -2308,7 +2305,7 @@ sign-out operation.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             addRevokeListener(listener)
           </code>
@@ -2389,7 +2386,7 @@ sign-out operation.
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 () =&gt;
                  
@@ -2405,6 +2402,7 @@ sign-out operation.
         </tbody>
       </table>
     </div>
+    <br />
     <div
       class="css-1wdnwk5"
     >
@@ -2458,11 +2456,10 @@ sign-out operation.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -2483,7 +2480,7 @@ sign-out operation.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -2494,9 +2491,10 @@ sign-out operation.
         </code>
       </li>
     </ul>
+    <br />
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -2543,7 +2541,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -2561,7 +2559,7 @@ sign-out operation.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationCredential
           </code>
@@ -2605,7 +2603,7 @@ sign-out operation.
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -2617,7 +2615,7 @@ sign-out operation.
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthentication.refreshAsync()
         </code>
@@ -2628,7 +2626,7 @@ sign-out operation.
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthentication.signOutAsync()
         </code>
@@ -2721,7 +2719,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 authorizationCode
               </strong>
@@ -2730,7 +2728,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -2744,16 +2742,18 @@ for more details.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 A short-lived session token used by your app for proof of authorization when interacting with
 the app's server counterpart. Unlike 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   user
                 </code>
                 , this is ephemeral and will change each session.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -2763,7 +2763,7 @@ the app's server counterpart. Unlike
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 email
               </strong>
@@ -2772,7 +2772,7 @@ the app's server counterpart. Unlike
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -2786,10 +2786,12 @@ the app's server counterpart. Unlike
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The user's email address. Might not be present if you didn't request the 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   EMAIL
                 </code>
@@ -2797,7 +2799,7 @@ the app's server counterpart. Unlike
 also be null if this is not the first time the user has signed into your app. If the user chose
 to withhold their email address, this field will instead contain an obscured email address with
 an Apple domain.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -2807,7 +2809,7 @@ an Apple domain.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 fullName
               </strong>
@@ -2816,7 +2818,7 @@ an Apple domain.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   <a
@@ -2835,29 +2837,31 @@ an Apple domain.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The user's name. May be 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   null
                 </code>
                  or contain 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   null
                 </code>
                  values if you didn't request the 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   FULL_NAME
                 </code>
                 
 scope, if the user denied access, or if this is not the first time the user has signed into
 your app.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -2867,7 +2871,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 identityToken
               </strong>
@@ -2876,7 +2880,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -2890,9 +2894,11 @@ your app.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 A JSON Web Token (JWT) that securely communicates information about the user to your app.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -2902,7 +2908,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 realUserStatus
               </strong>
@@ -2911,7 +2917,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -2924,9 +2930,11 @@ your app.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 A value that indicates whether the user appears to the system to be a real person.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -2936,7 +2944,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 state
               </strong>
@@ -2945,7 +2953,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -2959,10 +2967,12 @@ your app.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 An arbitrary string that your app provided as 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   state
                 </code>
@@ -2970,19 +2980,19 @@ your app.
 credential. Used to verify that the response was from the request you made. Can be used to
 avoid replay attacks. If you did not provide 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   state
                 </code>
                  when making the sign-in request, this field
 will be 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   null
                 </code>
                 .
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -2992,7 +3002,7 @@ will be
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 user
               </strong>
@@ -3001,7 +3011,7 @@ will be
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -3009,12 +3019,14 @@ will be
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 An identifier associated with the authenticated user. You can use this to check if the user is
 still authenticated later. This is stable and can be shared across apps released under the same
 development team. The same user will have a different identifier for apps released by other
 developers.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -3022,7 +3034,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -3040,7 +3052,7 @@ developers.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationFullName
           </code>
@@ -3081,7 +3093,7 @@ developers.
       An object representing the tokenized portions of the user's full name. Any of all of the fields
 may be 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         null
       </code>
@@ -3124,7 +3136,7 @@ may be
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 familyName
               </strong>
@@ -3133,7 +3145,7 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -3157,7 +3169,7 @@ may be
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 givenName
               </strong>
@@ -3166,7 +3178,7 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -3190,7 +3202,7 @@ may be
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 middleName
               </strong>
@@ -3199,7 +3211,7 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -3223,7 +3235,7 @@ may be
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 namePrefix
               </strong>
@@ -3232,7 +3244,7 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -3256,7 +3268,7 @@ may be
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 nameSuffix
               </strong>
@@ -3265,7 +3277,7 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -3289,7 +3301,7 @@ may be
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 nickname
               </strong>
@@ -3298,7 +3310,7 @@ may be
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <span>
                   string
@@ -3320,7 +3332,7 @@ may be
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -3338,7 +3350,7 @@ may be
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationRefreshOptions
           </code>
@@ -3382,7 +3394,7 @@ may be
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthentication.refreshAsync()
         </code>
@@ -3475,7 +3487,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 requestedScopes
               </strong>
@@ -3490,7 +3502,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -3504,12 +3516,14 @@ for more details.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 Array of user information scopes to which your app is requesting access. Note that the user can
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   null
                 </code>
@@ -3517,18 +3531,18 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   null
                 </code>
                 . Defaults to 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   []
                 </code>
                  (no scopes).
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -3538,7 +3552,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 state
               </strong>
@@ -3553,7 +3567,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -3561,7 +3575,9 @@ requests they will be
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
 you made and avoid replay attacks. More information on this property is available in the
@@ -3575,7 +3591,7 @@ OAuth 2.0 protocol
                   RFC6749
                 </a>
                 .
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -3585,7 +3601,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 user
               </strong>
@@ -3594,7 +3610,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -3610,7 +3626,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -3628,7 +3644,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationSignInOptions
           </code>
@@ -3672,7 +3688,7 @@ OAuth 2.0 protocol
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -3765,7 +3781,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 nonce
               </strong>
@@ -3780,7 +3796,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -3788,7 +3804,9 @@ for more details.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
 
                 <a
@@ -3800,7 +3818,7 @@ for more details.
                   OpenID Connect specification
                 </a>
                 .
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -3810,7 +3828,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 requestedScopes
               </strong>
@@ -3825,7 +3843,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -3839,12 +3857,14 @@ for more details.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 Array of user information scopes to which your app is requesting access. Note that the user can
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   null
                 </code>
@@ -3852,18 +3872,18 @@ handle
 will only be provided to you the first time each user signs into your app; in subsequent
 requests they will be 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   null
                 </code>
                 . Defaults to 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   []
                 </code>
                  (no scopes).
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -3873,7 +3893,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 state
               </strong>
@@ -3888,7 +3908,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -3896,7 +3916,9 @@ requests they will be
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
 you made and avoid replay attacks. More information on this property is available in the
@@ -3910,7 +3932,7 @@ OAuth 2.0 protocol
                   RFC6749
                 </a>
                 .
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -3918,7 +3940,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -3936,7 +3958,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationSignOutOptions
           </code>
@@ -3980,7 +4002,7 @@ OAuth 2.0 protocol
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthentication.signOutAsync()
         </code>
@@ -4073,7 +4095,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 state
               </strong>
@@ -4088,7 +4110,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -4096,7 +4118,9 @@ for more details.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
 you made and avoid replay attacks. More information on this property is available in the
@@ -4110,7 +4134,7 @@ OAuth 2.0 protocol
                   RFC6749
                 </a>
                 .
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -4120,7 +4144,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 user
               </strong>
@@ -4129,7 +4153,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -4145,7 +4169,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -4163,7 +4187,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             Subscription
           </code>
@@ -4235,7 +4259,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 remove
               </strong>
@@ -4244,7 +4268,7 @@ OAuth 2.0 protocol
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 (
                 ) =&gt;
@@ -4255,9 +4279,11 @@ OAuth 2.0 protocol
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 A method to unsubscribe the listener.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -4265,7 +4291,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -4312,7 +4338,7 @@ OAuth 2.0 protocol
     </a>
   </h2>
   <div
-    class="css-k1r7bq"
+    class="css-1mvi0k3"
   >
     <h3
       class="css-m417je-H3"
@@ -4330,7 +4356,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationButtonStyle
           </code>
@@ -4374,7 +4400,7 @@ OAuth 2.0 protocol
         href="#appleauthenticationappleauthenticationbutton"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthenticationButton
         </code>
@@ -4382,7 +4408,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -4404,7 +4430,7 @@ OAuth 2.0 protocol
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 WHITE
               </code>
@@ -4441,7 +4467,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4455,7 +4481,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -4477,7 +4503,7 @@ OAuth 2.0 protocol
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 WHITE_OUTLINE
               </code>
@@ -4514,7 +4540,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4528,7 +4554,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -4550,7 +4576,7 @@ OAuth 2.0 protocol
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 BLACK
               </code>
@@ -4587,7 +4613,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4602,7 +4628,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-k1r7bq"
+    class="css-1mvi0k3"
   >
     <h3
       class="css-m417je-H3"
@@ -4620,7 +4646,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationButtonType
           </code>
@@ -4664,7 +4690,7 @@ OAuth 2.0 protocol
         href="#appleauthenticationappleauthenticationbutton"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthenticationButton
         </code>
@@ -4672,7 +4698,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -4694,7 +4720,7 @@ OAuth 2.0 protocol
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 SIGN_IN
               </code>
@@ -4731,7 +4757,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationButtonType
         .
@@ -4745,7 +4771,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -4767,7 +4793,7 @@ OAuth 2.0 protocol
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 CONTINUE
               </code>
@@ -4804,7 +4830,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationButtonType
         .
@@ -4818,7 +4844,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <strong
         class="css-7r3rok-TextComponent"
@@ -4873,7 +4899,7 @@ OAuth 2.0 protocol
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 SIGN_UP
               </code>
@@ -4910,7 +4936,7 @@ OAuth 2.0 protocol
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationButtonType
         .
@@ -4925,7 +4951,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-k1r7bq"
+    class="css-1mvi0k3"
   >
     <h3
       class="css-m417je-H3"
@@ -4943,7 +4969,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationCredentialState
           </code>
@@ -4987,7 +5013,7 @@ OAuth 2.0 protocol
         href="#appleauthenticationgetcredentialstateasyncuser"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthentication.getCredentialStateAsync()
         </code>
@@ -5043,7 +5069,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5065,7 +5091,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 REVOKED
               </code>
@@ -5102,7 +5128,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationCredentialState
         .
@@ -5111,7 +5137,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5133,7 +5159,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 AUTHORIZED
               </code>
@@ -5170,7 +5196,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationCredentialState
         .
@@ -5179,7 +5205,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5201,7 +5227,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 NOT_FOUND
               </code>
@@ -5238,7 +5264,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationCredentialState
         .
@@ -5247,7 +5273,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5269,7 +5295,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 TRANSFERRED
               </code>
@@ -5306,7 +5332,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationCredentialState
         .
@@ -5316,7 +5342,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-k1r7bq"
+    class="css-1mvi0k3"
   >
     <h3
       class="css-m417je-H3"
@@ -5334,7 +5360,7 @@ for more details.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationOperation
           </code>
@@ -5370,7 +5396,7 @@ for more details.
       </a>
     </h3>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5392,7 +5418,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 IMPLICIT
               </code>
@@ -5429,7 +5455,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationOperation
         .
@@ -5443,7 +5469,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5465,7 +5491,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 LOGIN
               </code>
@@ -5502,7 +5528,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationOperation
         .
@@ -5511,7 +5537,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5533,7 +5559,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 REFRESH
               </code>
@@ -5570,7 +5596,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationOperation
         .
@@ -5579,7 +5605,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5601,7 +5627,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 LOGOUT
               </code>
@@ -5638,7 +5664,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationOperation
         .
@@ -5648,7 +5674,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-k1r7bq"
+    class="css-1mvi0k3"
   >
     <h3
       class="css-m417je-H3"
@@ -5666,7 +5692,7 @@ for more details.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationScope
           </code>
@@ -5710,7 +5736,7 @@ for more details.
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -5806,7 +5832,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5828,7 +5854,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 FULL_NAME
               </code>
@@ -5865,7 +5891,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationScope
         .
@@ -5874,7 +5900,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -5896,7 +5922,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 EMAIL
               </code>
@@ -5933,7 +5959,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationScope
         .
@@ -5943,7 +5969,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-k1r7bq"
+    class="css-1mvi0k3"
   >
     <h3
       class="css-m417je-H3"
@@ -5961,7 +5987,7 @@ for more details.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             AppleAuthenticationUserDetectionStatus
           </code>
@@ -6050,7 +6076,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -6072,7 +6098,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 UNSUPPORTED
               </code>
@@ -6109,7 +6135,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6123,7 +6149,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -6145,7 +6171,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 UNKNOWN
               </code>
@@ -6182,7 +6208,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6196,7 +6222,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -6218,7 +6244,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 LIKELY_REAL
               </code>
@@ -6255,7 +6281,7 @@ for more details.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6275,7 +6301,7 @@ for more details.
 exports[`APISection expo-barcode-scanner 1`] = `
 <div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -6322,7 +6348,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -6340,7 +6366,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             BarCodeScanner
           </code>
@@ -6376,17 +6402,16 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-m3vzl4-TextComponent"
     >
       <strong
-        class="css-1qx481h-B"
+        class="css-7r3rok-TextComponent"
       >
         Type:
       </strong>
        
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-lz3xyk-TextComponent"
       >
         Component
         &lt;
@@ -6402,7 +6427,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </code>
     </p>
     <h2
-      class="css-1ck3d9a-H2"
+      class="css-grnng4-H2"
       data-heading="true"
     >
       <a
@@ -6450,7 +6475,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-        class="css-18dzyrv"
+        class="css-16h0ecy"
       >
         <h3
           class="css-m417je-H3"
@@ -6468,7 +6493,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="inline css-1pk617c-InlineCode"
+                class="css-19pt3rj-TextComponent"
               >
                 barCodeTypes
               </code>
@@ -6504,8 +6529,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </a>
         </h3>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           <span
             class="css-1lk0cux"
@@ -6519,7 +6543,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             string[]
           </code>
@@ -6529,14 +6553,14 @@ exports[`APISection expo-barcode-scanner 1`] = `
         >
           An array of bar code types. Usage: 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             BarCodeScanner.Constants.BarCodeType.&lt;codeType&gt;
           </code>
            where
 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             codeType
           </code>
@@ -6556,7 +6580,7 @@ minimize battery usage.
         >
           For example: 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
           </code>
@@ -6564,7 +6588,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-18dzyrv"
+        class="css-16h0ecy"
       >
         <h3
           class="css-m417je-H3"
@@ -6582,7 +6606,7 @@ minimize battery usage.
               class="css-6n7j50"
             >
               <code
-                class="inline css-1pk617c-InlineCode"
+                class="css-19pt3rj-TextComponent"
               >
                 onBarCodeScanned
               </code>
@@ -6618,8 +6642,7 @@ minimize battery usage.
           </a>
         </h3>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           <span
             class="css-1lk0cux"
@@ -6633,7 +6656,7 @@ minimize battery usage.
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             <a
               class="css-dqmbnf-A"
@@ -6698,13 +6721,13 @@ provided with an
               </strong>
                Passing 
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-yrev4b-TextComponent"
               >
                 undefined
               </code>
                to the 
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-yrev4b-TextComponent"
               >
                 onBarCodeScanned
               </code>
@@ -6718,7 +6741,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="css-18dzyrv"
+        class="css-16h0ecy"
       >
         <h3
           class="css-m417je-H3"
@@ -6736,7 +6759,7 @@ data has been retrieved.
               class="css-6n7j50"
             >
               <code
-                class="inline css-1pk617c-InlineCode"
+                class="css-19pt3rj-TextComponent"
               >
                 type
               </code>
@@ -6772,8 +6795,7 @@ data has been retrieved.
           </a>
         </h3>
         <p
-          class="css-6jxvia-P"
-          data-text="true"
+          class="css-1a1x0ox-TextComponent"
         >
           <span
             class="css-1lk0cux"
@@ -6787,7 +6809,7 @@ data has been retrieved.
           </span>
            
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             <span>
               'front'
@@ -6809,7 +6831,7 @@ data has been retrieved.
             </span>
              
             <code
-              class="inline css-ov7own-InlineCode"
+              class="css-lz3xyk-TextComponent"
             >
               Type.back
 
@@ -6821,26 +6843,26 @@ data has been retrieved.
         >
           Camera facing. Use one of 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             BarCodeScanner.Constants.Type
           </code>
           . Use either 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             Type.front
           </code>
            or 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             Type.back
           </code>
           .
 Same as 
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-yrev4b-TextComponent"
           >
             Camera.Constants.Type
           </code>
@@ -6895,14 +6917,13 @@ Same as
         </a>
       </h3>
       <ul
-        class="css-ftstf7-UL"
-        data-text="true"
+        class="css-amssdi-TextComponent"
       >
         <li
-          class="docs-list-item css-1vg85kg-LI"
+          class="css-bn5qly-TextComponent"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             <a
               class="css-dqmbnf-A"
@@ -6916,7 +6937,7 @@ Same as
     </div>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -6963,7 +6984,7 @@ Same as
     </a>
   </h2>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -6981,7 +7002,7 @@ Same as
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             usePermissions(options)
           </code>
@@ -7068,7 +7089,7 @@ Same as
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -7092,6 +7113,7 @@ Same as
         </tbody>
       </table>
     </div>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -7234,11 +7256,10 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -7259,7 +7280,7 @@ This can be used to quickly create specific permission hooks in every module.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           [
           <span>
@@ -7308,9 +7329,10 @@ This can be used to quickly create specific permission hooks in every module.
         </code>
       </li>
     </ul>
+    <br />
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -7357,7 +7379,7 @@ This can be used to quickly create specific permission hooks in every module.
     </a>
   </h2>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -7375,7 +7397,7 @@ This can be used to quickly create specific permission hooks in every module.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             BarCodeScanner.getPermissionsAsync()
           </code>
@@ -7468,11 +7490,10 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -7493,7 +7514,7 @@ This can be used to quickly create specific permission hooks in every module.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -7516,6 +7537,7 @@ This can be used to quickly create specific permission hooks in every module.
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -7525,7 +7547,7 @@ This can be used to quickly create specific permission hooks in every module.
         href="#permissionresponse"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           PermissionResponse
         </code>
@@ -7534,7 +7556,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -7552,7 +7574,7 @@ This can be used to quickly create specific permission hooks in every module.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             BarCodeScanner.requestPermissionsAsync()
           </code>
@@ -7597,13 +7619,13 @@ This can be used to quickly create specific permission hooks in every module.
     >
       On iOS this will require apps to specify the 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         NSCameraUsageDescription
       </code>
        entry in the 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         Info.plist
       </code>
@@ -7662,11 +7684,10 @@ This can be used to quickly create specific permission hooks in every module.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -7687,7 +7708,7 @@ This can be used to quickly create specific permission hooks in every module.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -7710,6 +7731,7 @@ This can be used to quickly create specific permission hooks in every module.
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -7719,7 +7741,7 @@ This can be used to quickly create specific permission hooks in every module.
         href="#permissionresponse"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           PermissionResponse
         </code>
@@ -7728,7 +7750,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -7746,7 +7768,7 @@ This can be used to quickly create specific permission hooks in every module.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             BarCodeScanner.scanFromURLAsync(url, barCodeTypes)
           </code>
@@ -7827,7 +7849,7 @@ This can be used to quickly create specific permission hooks in every module.
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -7864,7 +7886,7 @@ This can be used to quickly create specific permission hooks in every module.
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string[]
               </code>
@@ -7929,6 +7951,7 @@ the platform.
         </tbody>
       </table>
     </div>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -7987,11 +8010,10 @@ the platform.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -8012,7 +8034,7 @@ the platform.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -8036,12 +8058,13 @@ the platform.
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
       A possibly empty array of objects of the 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         BarCodeScannerResult
       </code>
@@ -8051,7 +8074,7 @@ code.
     </p>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -8098,7 +8121,7 @@ code.
     </a>
   </h2>
   <div
-    class="css-kyhipd"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -8116,7 +8139,7 @@ code.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             PermissionResponse
           </code>
@@ -8246,7 +8269,7 @@ code.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 canAskAgain
               </strong>
@@ -8255,7 +8278,7 @@ code.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 boolean
               </code>
@@ -8263,11 +8286,13 @@ code.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 Indicates if user can be asked again for specific permission.
 If not, one should be directed to the Settings app
 in order to enable/disable the permission.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -8277,7 +8302,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 expires
               </strong>
@@ -8286,7 +8311,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8299,9 +8324,11 @@ in order to enable/disable the permission.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 Determines time when the permission expires.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -8311,7 +8338,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 granted
               </strong>
@@ -8320,7 +8347,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 boolean
               </code>
@@ -8328,9 +8355,11 @@ in order to enable/disable the permission.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 A convenience boolean that indicates if the permission is granted.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -8340,7 +8369,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 status
               </strong>
@@ -8349,7 +8378,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8362,9 +8391,11 @@ in order to enable/disable the permission.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 Determines the status of the permission.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -8372,7 +8403,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -8419,7 +8450,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -8437,7 +8468,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             BarCodeBounds
           </code>
@@ -8509,7 +8540,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 origin
               </strong>
@@ -8518,7 +8549,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8531,9 +8562,11 @@ in order to enable/disable the permission.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The origin point of the bounding box.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -8543,7 +8576,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 size
               </strong>
@@ -8552,7 +8585,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8565,9 +8598,11 @@ in order to enable/disable the permission.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The size of the bounding box.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -8575,7 +8610,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -8593,7 +8628,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             BarCodeEvent
           </code>
@@ -8629,11 +8664,10 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-m3vzl4-TextComponent"
     >
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-lz3xyk-TextComponent"
       >
         <a
           class="css-dqmbnf-A"
@@ -8645,6 +8679,7 @@ in order to enable/disable the permission.
        
       extended by:
     </p>
+    <br />
     <div
       class="css-rufzkc-Table"
     >
@@ -8682,7 +8717,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 target
               </strong>
@@ -8697,7 +8732,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 number
               </code>
@@ -8713,7 +8748,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -8731,7 +8766,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             BarCodeEventCallbackArguments
           </code>
@@ -8803,7 +8838,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 nativeEvent
               </strong>
@@ -8812,7 +8847,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8833,7 +8868,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -8851,7 +8886,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             BarCodePoint
           </code>
@@ -8929,7 +8964,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 x
               </strong>
@@ -8938,7 +8973,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 number
               </code>
@@ -8946,15 +8981,17 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   x
                 </code>
                  coordinate value.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -8964,7 +9001,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 y
               </strong>
@@ -8973,7 +9010,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 number
               </code>
@@ -8981,15 +9018,17 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   y
                 </code>
                  coordinate value.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -8997,7 +9036,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -9015,7 +9054,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             BarCodeScannedCallback
             ()
@@ -9098,7 +9137,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 class="css-zstkv9-Cell"
               >
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-lz3xyk-TextComponent"
                 >
                   <a
                     class="css-dqmbnf-A"
@@ -9120,7 +9159,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -9138,7 +9177,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             BarCodeScannerResult
           </code>
@@ -9210,7 +9249,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 bounds
               </strong>
@@ -9219,7 +9258,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -9232,7 +9271,9 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The 
                 <a
                   class="css-dqmbnf-A"
@@ -9243,20 +9284,20 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                  object.
 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   bounds
                 </code>
                  in some case will be representing an empty rectangle.
 Moreover, 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   bounds
                 </code>
                  doesn't have to bound the whole barcode.
 For some types, they will represent the area used by the scanner.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -9266,7 +9307,7 @@ For some types, they will represent the area used by the scanner.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 cornerPoints
               </strong>
@@ -9275,7 +9316,7 @@ For some types, they will represent the area used by the scanner.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -9289,29 +9330,31 @@ For some types, they will represent the area used by the scanner.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 Corner points of the bounding box.
 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   cornerPoints
                 </code>
                  is not always available and may be empty. On iOS, for 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   code39
                 </code>
                  and 
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-yrev4b-TextComponent"
                 >
                   pdf417
                 </code>
                 
 you don't get this value.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -9321,7 +9364,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 data
               </strong>
@@ -9330,7 +9373,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -9338,9 +9381,11 @@ you don't get this value.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The information encoded in the bar code.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -9350,7 +9395,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 type
               </strong>
@@ -9359,7 +9404,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 string
               </code>
@@ -9367,9 +9412,11 @@ you don't get this value.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The barcode type.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -9377,7 +9424,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -9395,7 +9442,7 @@ you don't get this value.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             BarCodeSize
           </code>
@@ -9467,7 +9514,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 height
               </strong>
@@ -9476,7 +9523,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 number
               </code>
@@ -9484,9 +9531,11 @@ you don't get this value.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The height value.
-              </span>
+              </p>
             </td>
           </tr>
           <tr
@@ -9496,7 +9545,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 width
               </strong>
@@ -9505,7 +9554,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 number
               </code>
@@ -9513,9 +9562,11 @@ you don't get this value.
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 The width value.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -9523,7 +9574,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -9541,7 +9592,7 @@ you don't get this value.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             PermissionHookOptions
           </code>
@@ -9577,14 +9628,13 @@ you don't get this value.
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-m3vzl4-TextComponent"
     >
       Acceptable values are:
        
       <span>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           PermissionHookBehavior
         </code>
@@ -9592,7 +9642,7 @@ you don't get this value.
       </span>
       <span>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           Options
         </code>
@@ -9601,7 +9651,7 @@ you don't get this value.
     </p>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -9648,7 +9698,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="css-k1r7bq"
+    class="css-1mvi0k3"
   >
     <h3
       class="css-m417je-H3"
@@ -9666,7 +9716,7 @@ you don't get this value.
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             PermissionStatus
           </code>
@@ -9702,7 +9752,7 @@ you don't get this value.
       </a>
     </h3>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -9724,7 +9774,7 @@ you don't get this value.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 DENIED
               </code>
@@ -9761,7 +9811,7 @@ you don't get this value.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         PermissionStatus
         .
@@ -9775,7 +9825,7 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -9797,7 +9847,7 @@ you don't get this value.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 GRANTED
               </code>
@@ -9834,7 +9884,7 @@ you don't get this value.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         PermissionStatus
         .
@@ -9848,7 +9898,7 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -9870,7 +9920,7 @@ you don't get this value.
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 UNDETERMINED
               </code>
@@ -9907,7 +9957,7 @@ you don't get this value.
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         PermissionStatus
         .
@@ -9927,7 +9977,7 @@ you don't get this value.
 exports[`APISection expo-pedometer 1`] = `
 <div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -9974,7 +10024,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -9992,7 +10042,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             getPermissionsAsync()
           </code>
@@ -10080,11 +10130,10 @@ exports[`APISection expo-pedometer 1`] = `
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -10105,7 +10154,7 @@ exports[`APISection expo-pedometer 1`] = `
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -10128,9 +10177,10 @@ exports[`APISection expo-pedometer 1`] = `
         </code>
       </li>
     </ul>
+    <br />
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -10148,7 +10198,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             getStepCountAsync(start, end)
           </code>
@@ -10229,7 +10279,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -10267,7 +10317,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -10292,6 +10342,7 @@ exports[`APISection expo-pedometer 1`] = `
         </tbody>
       </table>
     </div>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -10350,11 +10401,10 @@ exports[`APISection expo-pedometer 1`] = `
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -10375,7 +10425,7 @@ exports[`APISection expo-pedometer 1`] = `
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -10398,6 +10448,7 @@ exports[`APISection expo-pedometer 1`] = `
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -10407,7 +10458,7 @@ exports[`APISection expo-pedometer 1`] = `
         href="#pedometerresult"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           PedometerResult
         </code>
@@ -10474,7 +10525,7 @@ a start date that is more than seven days in the past returns only the available
     </blockquote>
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -10492,7 +10543,7 @@ a start date that is more than seven days in the past returns only the available
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             isAvailableAsync()
           </code>
@@ -10585,11 +10636,10 @@ a start date that is more than seven days in the past returns only the available
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -10610,7 +10660,7 @@ a start date that is more than seven days in the past returns only the available
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -10628,12 +10678,13 @@ a start date that is more than seven days in the past returns only the available
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
       Returns a promise that fulfills with a 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         boolean
       </code>
@@ -10642,7 +10693,7 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -10660,7 +10711,7 @@ available on this device.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             requestPermissionsAsync()
           </code>
@@ -10748,11 +10799,10 @@ available on this device.
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -10773,7 +10823,7 @@ available on this device.
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -10796,9 +10846,10 @@ available on this device.
         </code>
       </li>
     </ul>
+    <br />
   </div>
   <div
-    class="css-18dzyrv"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -10816,7 +10867,7 @@ available on this device.
           class="css-6n7j50"
         >
           <code
-            class="inline css-1pk617c-InlineCode"
+            class="css-19pt3rj-TextComponent"
           >
             watchStepCount(callback)
           </code>
@@ -10897,7 +10948,7 @@ available on this device.
               class="css-zstkv9-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -10920,7 +10971,7 @@ provided with a single argument that is
                   href="#pedometerresult"
                 >
                   <code
-                    class="inline css-ov7own-InlineCode"
+                    class="css-yrev4b-TextComponent"
                   >
                     PedometerResult
                   </code>
@@ -10932,6 +10983,7 @@ provided with a single argument that is
         </tbody>
       </table>
     </div>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -10990,11 +11042,10 @@ provided with a single argument that is
       </h4>
     </div>
     <ul
-      class="css-n6fu3c-UL"
-      data-text="true"
+      class="css-s71ijc-TextComponent"
     >
       <li
-        class="docs-list-item css-1vg85kg-LI"
+        class="css-bn5qly-TextComponent"
       >
         <svg
           class="css-1a9xr20"
@@ -11015,7 +11066,7 @@ provided with a single argument that is
           />
         </svg>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           <a
             class="css-dqmbnf-A"
@@ -11026,6 +11077,7 @@ provided with a single argument that is
         </code>
       </li>
     </ul>
+    <br />
     <p
       class="css-1a1x0ox-TextComponent"
     >
@@ -11035,7 +11087,7 @@ provided with a single argument that is
         href="#subscription"
       >
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-yrev4b-TextComponent"
         >
           Subscription
         </code>
@@ -11043,7 +11095,7 @@ provided with a single argument that is
        that enables you to call
 
       <code
-        class="inline css-ov7own-InlineCode"
+        class="css-yrev4b-TextComponent"
       >
         remove()
       </code>
@@ -11051,7 +11103,7 @@ provided with a single argument that is
     </p>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -11098,7 +11150,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-kyhipd"
+    class="css-16h0ecy"
   >
     <h3
       class="css-m417je-H3"
@@ -11116,7 +11168,7 @@ provided with a single argument that is
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             PermissionResponse
           </code>
@@ -11241,7 +11293,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 canAskAgain
               </strong>
@@ -11250,7 +11302,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 boolean
               </code>
@@ -11268,7 +11320,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 expires
               </strong>
@@ -11277,7 +11329,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -11300,7 +11352,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 granted
               </strong>
@@ -11309,7 +11361,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 boolean
               </code>
@@ -11327,7 +11379,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 status
               </strong>
@@ -11336,7 +11388,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -11357,7 +11409,7 @@ provided with a single argument that is
     </div>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -11404,7 +11456,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -11422,7 +11474,7 @@ provided with a single argument that is
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             PedometerResult
           </code>
@@ -11494,7 +11546,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 steps
               </strong>
@@ -11503,7 +11555,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 number
               </code>
@@ -11511,9 +11563,11 @@ provided with a single argument that is
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 Number of steps taken between the given dates.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -11521,7 +11575,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -11539,7 +11593,7 @@ provided with a single argument that is
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             PedometerUpdateCallback
             ()
@@ -11622,7 +11676,7 @@ provided with a single argument that is
                 class="css-zstkv9-Cell"
               >
                 <code
-                  class="inline css-ov7own-InlineCode"
+                  class="css-lz3xyk-TextComponent"
                 >
                   <a
                     class="css-dqmbnf-A"
@@ -11644,7 +11698,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -11662,7 +11716,7 @@ provided with a single argument that is
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             PermissionExpiration
           </code>
@@ -11698,14 +11752,13 @@ provided with a single argument that is
       </a>
     </h3>
     <p
-      class="css-6jxvia-P"
-      data-text="true"
+      class="css-m3vzl4-TextComponent"
     >
       Acceptable values are:
        
       <span>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           'never'
         </code>
@@ -11713,7 +11766,7 @@ provided with a single argument that is
       </span>
       <span>
         <code
-          class="inline css-ov7own-InlineCode"
+          class="css-lz3xyk-TextComponent"
         >
           number
         </code>
@@ -11722,7 +11775,7 @@ provided with a single argument that is
     </p>
   </div>
   <div
-    class="css-kyhipd"
+    class="css-1tnn2a"
   >
     <h3
       class="css-m417je-H3"
@@ -11740,7 +11793,7 @@ provided with a single argument that is
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             Subscription
           </code>
@@ -11812,7 +11865,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <strong
-                class="css-1qx481h-B"
+                class="css-7r3rok-TextComponent"
               >
                 remove
               </strong>
@@ -11821,7 +11874,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 (
                 ) =&gt;
@@ -11832,9 +11885,11 @@ provided with a single argument that is
             <td
               class="css-18p3734-Cell"
             >
-              <span>
+              <p
+                class="css-1a1x0ox-TextComponent"
+              >
                 A method to unsubscribe the listener.
-              </span>
+              </p>
             </td>
           </tr>
         </tbody>
@@ -11842,7 +11897,7 @@ provided with a single argument that is
     </div>
   </div>
   <h2
-    class="css-1ck3d9a-H2"
+    class="css-grnng4-H2"
     data-heading="true"
   >
     <a
@@ -11889,7 +11944,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-k1r7bq"
+    class="css-1mvi0k3"
   >
     <h3
       class="css-m417je-H3"
@@ -11907,7 +11962,7 @@ provided with a single argument that is
           class="css-6n7j50"
         >
           <code
-            class="inline css-ov7own-InlineCode"
+            class="css-lz3xyk-TextComponent"
           >
             PermissionStatus
           </code>
@@ -11943,7 +11998,7 @@ provided with a single argument that is
       </a>
     </h3>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -11965,7 +12020,7 @@ provided with a single argument that is
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 DENIED
               </code>
@@ -12002,7 +12057,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         PermissionStatus
         .
@@ -12011,7 +12066,7 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -12033,7 +12088,7 @@ provided with a single argument that is
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 GRANTED
               </code>
@@ -12070,7 +12125,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         PermissionStatus
         .
@@ -12079,7 +12134,7 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-181x4m0"
+      class="css-16h0ecy"
     >
       <div
         class="css-1ow0rw3"
@@ -12101,7 +12156,7 @@ provided with a single argument that is
               class="css-6n7j50"
             >
               <code
-                class="inline css-ov7own-InlineCode"
+                class="css-lz3xyk-TextComponent"
               >
                 UNDETERMINED
               </code>
@@ -12138,7 +12193,7 @@ provided with a single argument that is
         </h4>
       </div>
       <code
-        class="inline css-1v964ss-InlineCode"
+        class="css-1bzxtqh-TextComponent"
       >
         PermissionStatus
         .
@@ -12153,8 +12208,7 @@ provided with a single argument that is
 exports[`APISection no data 1`] = `
 <div>
   <p
-    class="css-6jxvia-P"
-    data-text="true"
+    class="css-m3vzl4-TextComponent"
   >
     No API data file found, sorry!
   </p>

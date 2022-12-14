@@ -1,4 +1,3 @@
-import { P } from '~/components/base/paragraph';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
@@ -12,6 +11,7 @@ import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import { getComponentName, TypeDocKind } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
+import { P } from '~/ui/components/Text';
 
 const { LATEST_VERSION } = versions;
 

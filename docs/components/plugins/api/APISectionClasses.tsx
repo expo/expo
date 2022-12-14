@@ -1,7 +1,5 @@
 import ReactMarkdown from 'react-markdown';
 
-import { InlineCode } from '~/components/base/code';
-import { B, P } from '~/components/base/paragraph';
 import { H2, H2Nested, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
@@ -18,9 +16,11 @@ import {
   mdComponents,
   resolveTypeName,
   STYLES_APIBOX,
+  STYLES_APIBOX_NESTED,
   STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
+import { BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -72,22 +72,20 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
   const returnComment = getTagData('returns', comment);
 
   return (
-    <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
+    <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <InlineCode>{name}</InlineCode>
+        <CODE>{name}</CODE>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <P>
-          <B>Type: </B>
-          {type ? <InlineCode>{resolveTypeName(type)}</InlineCode> : 'Class'}
+          <BOLD>Type: </BOLD>
+          {type ? <CODE>{resolveTypeName(type)}</CODE> : 'Class'}
           {extendedTypes?.length && (
             <>
               <span> extends </span>
               {extendedTypes.map(extendedType => (
-                <InlineCode key={`extends-${extendedType.name}`}>
-                  {resolveTypeName(extendedType)}
-                </InlineCode>
+                <CODE key={`extends-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
               ))}
             </>
           )}
@@ -95,9 +93,9 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
             <>
               <span> implements </span>
               {implementedTypes.map(implementedType => (
-                <InlineCode key={`implements-${implementedType.name}`}>
+                <CODE key={`implements-${implementedType.name}`}>
                   {resolveTypeName(implementedType)}
-                </InlineCode>
+                </CODE>
               ))}
             </>
           )}

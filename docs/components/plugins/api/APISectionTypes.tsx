@@ -1,8 +1,5 @@
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 
-import { InlineCode } from '~/components/base/code';
-import { UL, LI } from '~/components/base/list';
-import { B, P } from '~/components/base/paragraph';
 import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   PropData,
@@ -13,7 +10,7 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import {
-  mdInlineComponents,
+  mdComponents,
   resolveTypeName,
   renderFlags,
   CommentTextBlock,
@@ -29,6 +26,7 @@ import {
   getTagNamesList,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
+import { UL, LI, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -41,7 +39,7 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   if (uniqueTypes.length === 1 && uniqueTypes.filter(Boolean).length === 1) {
     return (
       <>
-        <InlineCode>{uniqueTypes[0]}</InlineCode>
+        <CODE>{uniqueTypes[0]}</CODE>
         {' - '}
       </>
     );
@@ -49,12 +47,12 @@ const defineLiteralType = (types: TypeDefinitionData[]): JSX.Element | null => {
   return null;
 };
 
-const renderTypeDeclarationTable = ({
-  children,
-  indexSignature,
-  comment,
-}: TypeDeclarationContentData): JSX.Element => (
+const renderTypeDeclarationTable = (
+  { children, indexSignature, comment }: TypeDeclarationContentData,
+  index?: number
+): JSX.Element => (
   <Fragment key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}>
+    {index && index > 0 ? <br /> : undefined}
     <CommentTextBlock comment={comment} />
     <Table>
       <ParamsTableHeadRow />
@@ -81,7 +79,7 @@ const renderTypePropertyRow = ({
   return (
     <Row key={name}>
       <Cell fitContent>
-        <B>{name}</B>
+        <BOLD>{name}</BOLD>
         {renderFlags(flags, initValue)}
         {kind && renderIndexSignature(kind)}
       </Cell>
@@ -90,7 +88,7 @@ const renderTypePropertyRow = ({
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
           comment={commentData}
-          components={mdInlineComponents}
+          components={mdComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
@@ -111,10 +109,10 @@ const renderType = ({
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <InlineCode>
+          <CODE>
             {name}
             {type.declaration.signatures ? '()' : ''}
-          </InlineCode>
+          </CODE>
         </H3Code>
         <CommentTextBlock comment={comment} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration)}
@@ -138,23 +136,27 @@ const renderType = ({
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
-            <InlineCode>{name}</InlineCode>
+            <CODE>{name}</CODE>
           </H3Code>
           <CommentTextBlock comment={comment} />
           {type.type === 'intersection' ? (
-            <P>
-              {type.types
-                .filter(type => ['reference', 'union', 'intersection'].includes(type.type))
-                .map(validType => (
-                  <Fragment key={`nested-reference-type-${validType.name}`}>
-                    <InlineCode>{resolveTypeName(validType)}</InlineCode>{' '}
-                  </Fragment>
-                ))}
-              extended by:
-            </P>
+            <>
+              <P>
+                {type.types
+                  .filter(type => ['reference', 'union', 'intersection'].includes(type.type))
+                  .map(validType => (
+                    <Fragment key={`nested-reference-type-${validType.name}`}>
+                      <CODE>{resolveTypeName(validType)}</CODE>{' '}
+                    </Fragment>
+                  ))}
+                extended by:
+              </P>
+              <br />
+            </>
           ) : null}
           {propTypes.map(
-            propType => propType.declaration && renderTypeDeclarationTable(propType.declaration)
+            (propType, index) =>
+              propType.declaration && renderTypeDeclarationTable(propType.declaration, index)
           )}
         </div>
       );
@@ -163,7 +165,7 @@ const renderType = ({
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
           <H3Code tags={getTagNamesList(comment)}>
-            <InlineCode>{name}</InlineCode>
+            <CODE>{name}</CODE>
           </H3Code>
           <CommentTextBlock comment={comment} />
           <P>
@@ -171,7 +173,7 @@ const renderType = ({
             Acceptable values are:{' '}
             {literalTypes.map((lt, index) => (
               <span key={`${name}-literal-type-${index}`}>
-                <InlineCode>{resolveTypeName(lt)}</InlineCode>
+                <CODE>{resolveTypeName(lt)}</CODE>
                 {index + 1 !== literalTypes.length ? ', ' : '.'}
               </span>
             ))}
@@ -184,11 +186,11 @@ const renderType = ({
       <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <InlineCode>{name}</InlineCode>
+          <CODE>{name}</CODE>
         </H3Code>
         <UL>
           <LI>
-            <InlineCode>{resolveTypeName(type)}</InlineCode>
+            <CODE>{resolveTypeName(type)}</CODE>
           </LI>
         </UL>
         <CommentTextBlock comment={comment} />
@@ -199,12 +201,12 @@ const renderType = ({
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <InlineCode>{name}</InlineCode>
+          <CODE>{name}</CODE>
         </H3Code>
         <CommentTextBlock comment={comment} />
         <P>
-          <B>Type: </B>
-          <InlineCode>{type.name}</InlineCode>
+          <BOLD>Type: </BOLD>
+          <CODE>{type.name}</CODE>
         </P>
       </div>
     );
@@ -213,28 +215,28 @@ const renderType = ({
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
         <H3Code tags={getTagNamesList(comment)}>
-          <InlineCode>
+          <CODE>
             {name}&lt;{type.checkType.name}&gt;
-          </InlineCode>
+          </CODE>
         </H3Code>
         <CommentTextBlock comment={comment} />
         <P>
-          <B>Generic: </B>
-          <InlineCode>
+          <BOLD>Generic: </BOLD>
+          <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {resolveTypeName(typeParameter[0].type)}</>}
-          </InlineCode>
+          </CODE>
         </P>
         <P>
-          <B>Type: </B>
-          <InlineCode>
+          <BOLD>Type: </BOLD>
+          <CODE>
             {type.checkType.name}
             {typeParameter && <> extends {type.extendsType && resolveTypeName(type.extendsType)}</>}
             {' ? '}
             {type.trueType && resolveTypeName(type.trueType)}
             {' : '}
             {type.falseType && resolveTypeName(type.falseType)}
-          </InlineCode>
+          </CODE>
         </P>
       </div>
     );
