@@ -69,6 +69,7 @@ exports[`APISection expo-apple-authentication 1`] = `
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationButton
           </code>
@@ -105,6 +106,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </h3>
     <p
       class="css-m3vzl4-TextComponent"
+      data-text="true"
     >
       <strong
         class="css-7r3rok-TextComponent"
@@ -114,6 +116,7 @@ exports[`APISection expo-apple-authentication 1`] = `
        
       <code
         class="css-lz3xyk-TextComponent"
+        data-text="true"
       >
         React.FC
         &lt;
@@ -130,6 +133,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </p>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
 your screen. The App Store Guidelines require you to use this component to start the
@@ -138,6 +142,7 @@ available via the provided properties.
     </p>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       You should only attempt to render this if 
       <a
@@ -146,6 +151,7 @@ available via the provided properties.
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthentication.isAvailableAsync()
         </code>
@@ -154,6 +160,7 @@ available via the provided properties.
 resolves to 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         true
       </code>
@@ -161,6 +168,7 @@ resolves to
 a warning in development mode (
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         __DEV__ === true
       </code>
@@ -170,10 +178,12 @@ a warning in development mode (
 
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       The properties of this component extend from 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         View
       </code>
@@ -181,18 +191,21 @@ a warning in development mode (
 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         backgroundColor
       </code>
        or 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         borderRadius
       </code>
        with the 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         style
       </code>
@@ -200,6 +213,7 @@ a warning in development mode (
 the App Store Guidelines. Instead, you should use the 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         buttonStyle
       </code>
@@ -207,6 +221,7 @@ the App Store Guidelines. Instead, you should use the
 predefined color styles and the 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         cornerRadius
       </code>
@@ -217,6 +232,7 @@ button.
 
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Make sure to attach height and width via the style props as without these styles, the button will
 not appear on the screen.
@@ -337,6 +353,7 @@ for more details.
             >
               <code
                 class="css-19pt3rj-TextComponent"
+                data-text="true"
               >
                 buttonStyle
               </code>
@@ -373,6 +390,7 @@ for more details.
         </h3>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           <span
             class="css-1lk0cux"
@@ -382,6 +400,7 @@ for more details.
            
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             <a
               class="css-dqmbnf-A"
@@ -393,6 +412,7 @@ for more details.
         </p>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           The Apple-defined color scheme to use to display the button.
         </p>
@@ -417,6 +437,7 @@ for more details.
             >
               <code
                 class="css-19pt3rj-TextComponent"
+                data-text="true"
               >
                 buttonType
               </code>
@@ -453,6 +474,7 @@ for more details.
         </h3>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           <span
             class="css-1lk0cux"
@@ -462,6 +484,7 @@ for more details.
            
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             <a
               class="css-dqmbnf-A"
@@ -473,6 +496,7 @@ for more details.
         </p>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
         </p>
@@ -497,6 +521,7 @@ for more details.
             >
               <code
                 class="css-19pt3rj-TextComponent"
+                data-text="true"
               >
                 cornerRadius
               </code>
@@ -533,6 +558,7 @@ for more details.
         </h3>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           <span
             class="css-1lk0cux"
@@ -547,17 +573,20 @@ for more details.
            
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             number
           </code>
         </p>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           The border radius to use when rendering the button. This works similarly to
 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             style.borderRadius
           </code>
@@ -584,6 +613,7 @@ for more details.
             >
               <code
                 class="css-19pt3rj-TextComponent"
+                data-text="true"
               >
                 style
               </code>
@@ -620,6 +650,7 @@ for more details.
         </h3>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           <span
             class="css-1lk0cux"
@@ -634,6 +665,7 @@ for more details.
            
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             StyleProp
             &lt;
@@ -672,16 +704,19 @@ for more details.
         </p>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           The custom style to apply to the button. Should not include 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             backgroundColor
           </code>
            or 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             borderRadius
           </code>
@@ -709,6 +744,7 @@ properties.
             >
               <code
                 class="css-19pt3rj-TextComponent"
+                data-text="true"
               >
                 onPress
               </code>
@@ -745,6 +781,7 @@ properties.
         </h3>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           <span
             class="css-1lk0cux"
@@ -754,6 +791,7 @@ properties.
            
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             (
             ) =&gt;
@@ -763,6 +801,7 @@ properties.
         </p>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           The method to call when the user presses the button. You should call 
           <a
@@ -771,6 +810,7 @@ properties.
           >
             <code
               class="css-yrev4b-TextComponent"
+              data-text="true"
             >
               AppleAuthentication.signInAsync
             </code>
@@ -831,9 +871,11 @@ in here.
       >
         <li
           class="css-bn5qly-TextComponent"
+          data-text="true"
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             <a
               class="css-dqmbnf-A"
@@ -913,6 +955,7 @@ in here.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             getCredentialStateAsync(user)
           </code>
@@ -994,6 +1037,7 @@ in here.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -1003,6 +1047,7 @@ in here.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The unique identifier for the user whose credential state you'd like to check.
 This should come from the user field of an 
@@ -1012,6 +1057,7 @@ This should come from the user field of an
                 >
                   <code
                     class="css-yrev4b-TextComponent"
+                    data-text="true"
                   >
                     AppleAuthenticationCredential
                   </code>
@@ -1026,6 +1072,7 @@ This should come from the user field of an
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
     </p>
@@ -1063,6 +1110,7 @@ This should come from the user field of an
 
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           <strong
             class="css-7r3rok-TextComponent"
@@ -1080,7 +1128,6 @@ This should come from the user field of an
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -1132,6 +1179,7 @@ This should come from the user field of an
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -1153,6 +1201,7 @@ This should come from the user field of an
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -1178,6 +1227,7 @@ This should come from the user field of an
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       A promise that fulfills with an 
       <a
@@ -1186,6 +1236,7 @@ This should come from the user field of an
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthenticationCredentialState
         </code>
@@ -1214,6 +1265,7 @@ value depending on the state of the credential.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             isAvailableAsync()
           </code>
@@ -1250,6 +1302,7 @@ value depending on the state of the credential.
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Determine if the current device's operating system supports Apple authentication.
     </p>
@@ -1258,7 +1311,6 @@ value depending on the state of the credential.
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -1310,6 +1362,7 @@ value depending on the state of the credential.
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -1331,6 +1384,7 @@ value depending on the state of the credential.
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -1351,16 +1405,19 @@ value depending on the state of the credential.
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       A promise that fulfills with 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         true
       </code>
        if the system supports Apple authentication, and 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         false
       </code>
@@ -1387,6 +1444,7 @@ value depending on the state of the credential.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             refreshAsync(options)
           </code>
@@ -1468,6 +1526,7 @@ value depending on the state of the credential.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -1482,6 +1541,7 @@ value depending on the state of the credential.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An 
                 <a
@@ -1490,6 +1550,7 @@ value depending on the state of the credential.
                 >
                   <code
                     class="css-yrev4b-TextComponent"
+                    data-text="true"
                   >
                     AppleAuthenticationRefreshOptions
                   </code>
@@ -1504,6 +1565,7 @@ value depending on the state of the credential.
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       An operation that refreshes the logged-in user’s credentials.
 Calling this method will show the sign in modal before actually refreshing the user credentials.
@@ -1513,7 +1575,6 @@ Calling this method will show the sign in modal before actually refreshing the u
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -1565,6 +1626,7 @@ Calling this method will show the sign in modal before actually refreshing the u
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -1586,6 +1648,7 @@ Calling this method will show the sign in modal before actually refreshing the u
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -1611,6 +1674,7 @@ Calling this method will show the sign in modal before actually refreshing the u
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       A promise that fulfills with an 
       <a
@@ -1619,6 +1683,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthenticationCredential
         </code>
@@ -1627,6 +1692,7 @@ Calling this method will show the sign in modal before actually refreshing the u
 object after a successful authentication, and rejects with 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         ERR_CANCELED
       </code>
@@ -1654,6 +1720,7 @@ refresh operation.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             signInAsync(options)
           </code>
@@ -1741,6 +1808,7 @@ refresh operation.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -1755,6 +1823,7 @@ refresh operation.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An optional 
                 <a
@@ -1763,6 +1832,7 @@ refresh operation.
                 >
                   <code
                     class="css-yrev4b-TextComponent"
+                    data-text="true"
                   >
                     AppleAuthenticationSignInOptions
                   </code>
@@ -1777,12 +1847,14 @@ refresh operation.
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Sends a request to the operating system to initiate the Apple authentication flow, which will
 present a modal to the user over your app and allow them to sign in.
     </p>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       You can request access to the user's full name and email address in this method, which allows you
 to personalize your UI for signed in users. However, users can deny access to either or both
@@ -1792,6 +1864,7 @@ of these options at runtime.
 
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Additionally, you will only receive Apple Authentication Credentials the first time users sign
 into your app, so you must store it for later use. It's best to store this information either
@@ -1810,6 +1883,7 @@ You can use
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthenticationCredential.user
         </code>
@@ -1822,7 +1896,6 @@ the user, since this remains the same for apps released by the same developer.
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -1874,6 +1947,7 @@ the user, since this remains the same for apps released by the same developer.
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -1895,6 +1969,7 @@ the user, since this remains the same for apps released by the same developer.
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -1920,6 +1995,7 @@ the user, since this remains the same for apps released by the same developer.
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       A promise that fulfills with an 
       <a
@@ -1928,6 +2004,7 @@ the user, since this remains the same for apps released by the same developer.
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthenticationCredential
         </code>
@@ -1936,6 +2013,7 @@ the user, since this remains the same for apps released by the same developer.
 object after a successful authentication, and rejects with 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         ERR_CANCELED
       </code>
@@ -1963,6 +2041,7 @@ sign-in operation.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             signOutAsync(options)
           </code>
@@ -2044,6 +2123,7 @@ sign-in operation.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -2058,6 +2138,7 @@ sign-in operation.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An 
                 <a
@@ -2066,6 +2147,7 @@ sign-in operation.
                 >
                   <code
                     class="css-yrev4b-TextComponent"
+                    data-text="true"
                   >
                     AppleAuthenticationSignOutOptions
                   </code>
@@ -2080,12 +2162,14 @@ sign-in operation.
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       An operation that ends the authenticated session.
 Calling this method will show the sign in modal before actually signing the user out.
     </p>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       It is not recommended to use this method to sign out the user as it works counterintuitively.
 Instead of using this method it is recommended to simply clear all the user's data collected
@@ -2096,6 +2180,7 @@ from using
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           signInAsync
         </code>
@@ -2107,6 +2192,7 @@ from using
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           refreshAsync
         </code>
@@ -2118,7 +2204,6 @@ from using
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -2170,6 +2255,7 @@ from using
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -2191,6 +2277,7 @@ from using
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -2216,6 +2303,7 @@ from using
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       A promise that fulfills with an 
       <a
@@ -2224,6 +2312,7 @@ from using
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthenticationCredential
         </code>
@@ -2232,6 +2321,7 @@ from using
 object after a successful authentication, and rejects with 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         ERR_CANCELED
       </code>
@@ -2306,6 +2396,7 @@ sign-out operation.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             addRevokeListener(listener)
           </code>
@@ -2387,6 +2478,7 @@ sign-out operation.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 () =&gt;
                  
@@ -2408,7 +2500,6 @@ sign-out operation.
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -2460,6 +2551,7 @@ sign-out operation.
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -2481,6 +2573,7 @@ sign-out operation.
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -2560,6 +2653,7 @@ sign-out operation.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationCredential
           </code>
@@ -2596,6 +2690,7 @@ sign-out operation.
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       The object type returned from a successful call to 
       <a
@@ -2604,6 +2699,7 @@ sign-out operation.
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -2616,6 +2712,7 @@ sign-out operation.
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthentication.refreshAsync()
         </code>
@@ -2627,6 +2724,7 @@ sign-out operation.
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthentication.signOutAsync()
         </code>
@@ -2729,6 +2827,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -2744,11 +2843,13 @@ for more details.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 A short-lived session token used by your app for proof of authorization when interacting with
 the app's server counterpart. Unlike 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   user
                 </code>
@@ -2773,6 +2874,7 @@ the app's server counterpart. Unlike
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -2788,10 +2890,12 @@ the app's server counterpart. Unlike
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The user's email address. Might not be present if you didn't request the 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   EMAIL
                 </code>
@@ -2819,6 +2923,7 @@ an Apple domain.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   <a
@@ -2839,22 +2944,26 @@ an Apple domain.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The user's name. May be 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   null
                 </code>
                  or contain 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   null
                 </code>
                  values if you didn't request the 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   FULL_NAME
                 </code>
@@ -2881,6 +2990,7 @@ your app.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -2896,6 +3006,7 @@ your app.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 A JSON Web Token (JWT) that securely communicates information about the user to your app.
               </p>
@@ -2918,6 +3029,7 @@ your app.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -2932,6 +3044,7 @@ your app.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 A value that indicates whether the user appears to the system to be a real person.
               </p>
@@ -2954,6 +3067,7 @@ your app.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -2969,10 +3083,12 @@ your app.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An arbitrary string that your app provided as 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   state
                 </code>
@@ -2981,6 +3097,7 @@ credential. Used to verify that the response was from the request you made. Can 
 avoid replay attacks. If you did not provide 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   state
                 </code>
@@ -2988,6 +3105,7 @@ avoid replay attacks. If you did not provide
 will be 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   null
                 </code>
@@ -3012,6 +3130,7 @@ will be
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -3021,6 +3140,7 @@ will be
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An identifier associated with the authenticated user. You can use this to check if the user is
 still authenticated later. This is stable and can be shared across apps released under the same
@@ -3053,6 +3173,7 @@ developers.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationFullName
           </code>
@@ -3089,11 +3210,13 @@ developers.
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       An object representing the tokenized portions of the user's full name. Any of all of the fields
 may be 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         null
       </code>
@@ -3146,6 +3269,7 @@ may be
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -3179,6 +3303,7 @@ may be
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -3212,6 +3337,7 @@ may be
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -3245,6 +3371,7 @@ may be
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -3278,6 +3405,7 @@ may be
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -3311,6 +3439,7 @@ may be
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <span>
                   string
@@ -3351,6 +3480,7 @@ may be
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationRefreshOptions
           </code>
@@ -3387,6 +3517,7 @@ may be
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       The options you can supply when making a call to 
       <a
@@ -3395,6 +3526,7 @@ may be
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthentication.refreshAsync()
         </code>
@@ -3503,6 +3635,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -3518,12 +3651,14 @@ for more details.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 Array of user information scopes to which your app is requesting access. Note that the user can
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   null
                 </code>
@@ -3532,12 +3667,14 @@ will only be provided to you the first time each user signs into your app; in su
 requests they will be 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   null
                 </code>
                 . Defaults to 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   []
                 </code>
@@ -3568,6 +3705,7 @@ requests they will be
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -3577,6 +3715,7 @@ requests they will be
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
@@ -3611,6 +3750,7 @@ OAuth 2.0 protocol
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -3645,6 +3785,7 @@ OAuth 2.0 protocol
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationSignInOptions
           </code>
@@ -3681,6 +3822,7 @@ OAuth 2.0 protocol
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       The options you can supply when making a call to 
       <a
@@ -3689,6 +3831,7 @@ OAuth 2.0 protocol
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -3797,6 +3940,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -3806,6 +3950,7 @@ for more details.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
 
@@ -3844,6 +3989,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -3859,12 +4005,14 @@ for more details.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 Array of user information scopes to which your app is requesting access. Note that the user can
 choose to deny your app access to any scope at the time of logging in. You will still need to
 handle 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   null
                 </code>
@@ -3873,12 +4021,14 @@ will only be provided to you the first time each user signs into your app; in su
 requests they will be 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   null
                 </code>
                 . Defaults to 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   []
                 </code>
@@ -3909,6 +4059,7 @@ requests they will be
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -3918,6 +4069,7 @@ requests they will be
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
@@ -3959,6 +4111,7 @@ OAuth 2.0 protocol
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationSignOutOptions
           </code>
@@ -3995,6 +4148,7 @@ OAuth 2.0 protocol
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       The options you can supply when making a call to 
       <a
@@ -4003,6 +4157,7 @@ OAuth 2.0 protocol
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthentication.signOutAsync()
         </code>
@@ -4111,6 +4266,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -4120,6 +4276,7 @@ for more details.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
 successful authentication. This can be used to verify that the response was from the request
@@ -4154,6 +4311,7 @@ OAuth 2.0 protocol
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -4188,6 +4346,7 @@ OAuth 2.0 protocol
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             Subscription
           </code>
@@ -4269,6 +4428,7 @@ OAuth 2.0 protocol
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 (
                 ) =&gt;
@@ -4281,6 +4441,7 @@ OAuth 2.0 protocol
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 A method to unsubscribe the listener.
               </p>
@@ -4357,6 +4518,7 @@ OAuth 2.0 protocol
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationButtonStyle
           </code>
@@ -4393,6 +4555,7 @@ OAuth 2.0 protocol
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       An enum whose values control which pre-defined color scheme to use when rendering an 
       <a
@@ -4401,6 +4564,7 @@ OAuth 2.0 protocol
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthenticationButton
         </code>
@@ -4415,7 +4579,6 @@ OAuth 2.0 protocol
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -4431,6 +4594,7 @@ OAuth 2.0 protocol
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 WHITE
               </code>
@@ -4468,6 +4632,7 @@ OAuth 2.0 protocol
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4476,6 +4641,7 @@ OAuth 2.0 protocol
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         White button with black text.
       </p>
@@ -4488,7 +4654,6 @@ OAuth 2.0 protocol
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -4504,6 +4669,7 @@ OAuth 2.0 protocol
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 WHITE_OUTLINE
               </code>
@@ -4541,6 +4707,7 @@ OAuth 2.0 protocol
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4549,6 +4716,7 @@ OAuth 2.0 protocol
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         White button with a black outline and black text.
       </p>
@@ -4561,7 +4729,6 @@ OAuth 2.0 protocol
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -4577,6 +4744,7 @@ OAuth 2.0 protocol
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 BLACK
               </code>
@@ -4614,6 +4782,7 @@ OAuth 2.0 protocol
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationButtonStyle
         .
@@ -4622,6 +4791,7 @@ OAuth 2.0 protocol
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         Black button with white text.
       </p>
@@ -4647,6 +4817,7 @@ OAuth 2.0 protocol
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationButtonType
           </code>
@@ -4683,6 +4854,7 @@ OAuth 2.0 protocol
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       An enum whose values control which pre-defined text to use when rendering an 
       <a
@@ -4691,6 +4863,7 @@ OAuth 2.0 protocol
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthenticationButton
         </code>
@@ -4705,7 +4878,6 @@ OAuth 2.0 protocol
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -4721,6 +4893,7 @@ OAuth 2.0 protocol
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 SIGN_IN
               </code>
@@ -4758,6 +4931,7 @@ OAuth 2.0 protocol
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationButtonType
         .
@@ -4766,6 +4940,7 @@ OAuth 2.0 protocol
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         "Sign in with Apple"
       </p>
@@ -4778,7 +4953,6 @@ OAuth 2.0 protocol
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -4794,6 +4968,7 @@ OAuth 2.0 protocol
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 CONTINUE
               </code>
@@ -4831,6 +5006,7 @@ OAuth 2.0 protocol
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationButtonType
         .
@@ -4839,6 +5015,7 @@ OAuth 2.0 protocol
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         "Continue with Apple"
       </p>
@@ -4884,7 +5061,6 @@ OAuth 2.0 protocol
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -4900,6 +5076,7 @@ OAuth 2.0 protocol
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 SIGN_UP
               </code>
@@ -4937,6 +5114,7 @@ OAuth 2.0 protocol
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationButtonType
         .
@@ -4945,6 +5123,7 @@ OAuth 2.0 protocol
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         "Sign up with Apple"
       </p>
@@ -4970,6 +5149,7 @@ OAuth 2.0 protocol
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationCredentialState
           </code>
@@ -5006,6 +5186,7 @@ OAuth 2.0 protocol
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       An enum whose values specify state of the credential when checked with 
       <a
@@ -5014,6 +5195,7 @@ OAuth 2.0 protocol
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthentication.getCredentialStateAsync()
         </code>
@@ -5076,7 +5258,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5092,6 +5273,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 REVOKED
               </code>
@@ -5129,6 +5311,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationCredentialState
         .
@@ -5144,7 +5327,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5160,6 +5342,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 AUTHORIZED
               </code>
@@ -5197,6 +5380,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationCredentialState
         .
@@ -5212,7 +5396,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5228,6 +5411,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 NOT_FOUND
               </code>
@@ -5265,6 +5449,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationCredentialState
         .
@@ -5280,7 +5465,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5296,6 +5480,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 TRANSFERRED
               </code>
@@ -5333,6 +5518,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationCredentialState
         .
@@ -5361,6 +5547,7 @@ for more details.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationOperation
           </code>
@@ -5403,7 +5590,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5419,6 +5605,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 IMPLICIT
               </code>
@@ -5456,6 +5643,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationOperation
         .
@@ -5464,6 +5652,7 @@ for more details.
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         An operation that depends on the particular kind of credential provider.
       </p>
@@ -5476,7 +5665,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5492,6 +5680,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 LOGIN
               </code>
@@ -5529,6 +5718,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationOperation
         .
@@ -5544,7 +5734,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5560,6 +5749,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 REFRESH
               </code>
@@ -5597,6 +5787,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationOperation
         .
@@ -5612,7 +5803,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5628,6 +5818,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 LOGOUT
               </code>
@@ -5665,6 +5856,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationOperation
         .
@@ -5693,6 +5885,7 @@ for more details.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationScope
           </code>
@@ -5729,6 +5922,7 @@ for more details.
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       An enum whose values specify scopes you can request when calling 
       <a
@@ -5737,6 +5931,7 @@ for more details.
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           AppleAuthentication.signInAsync()
         </code>
@@ -5775,6 +5970,7 @@ for more details.
 
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           Note that it is possible that you will not be granted all of the scopes which you request.
 You will still need to handle null values for any fields you request.
@@ -5839,7 +6035,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5855,6 +6050,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 FULL_NAME
               </code>
@@ -5892,6 +6088,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationScope
         .
@@ -5907,7 +6104,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -5923,6 +6119,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 EMAIL
               </code>
@@ -5960,6 +6157,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationScope
         .
@@ -5988,6 +6186,7 @@ for more details.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             AppleAuthenticationUserDetectionStatus
           </code>
@@ -6024,6 +6223,7 @@ for more details.
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       An enum whose values specify the system's best guess for how likely the current user is a real person.
     </p>
@@ -6083,7 +6283,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -6099,6 +6298,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 UNSUPPORTED
               </code>
@@ -6136,6 +6336,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6144,6 +6345,7 @@ for more details.
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         The system does not support this determination and there is no data.
       </p>
@@ -6156,7 +6358,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -6172,6 +6373,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 UNKNOWN
               </code>
@@ -6209,6 +6411,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6217,6 +6420,7 @@ for more details.
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         The system has not determined whether the user might be a real person.
       </p>
@@ -6229,7 +6433,6 @@ for more details.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -6245,6 +6448,7 @@ for more details.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 LIKELY_REAL
               </code>
@@ -6282,6 +6486,7 @@ for more details.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         AppleAuthenticationUserDetectionStatus
         .
@@ -6290,6 +6495,7 @@ for more details.
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         The user appears to be a real person.
       </p>
@@ -6367,6 +6573,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             BarCodeScanner
           </code>
@@ -6403,6 +6610,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h3>
     <p
       class="css-m3vzl4-TextComponent"
+      data-text="true"
     >
       <strong
         class="css-7r3rok-TextComponent"
@@ -6412,6 +6620,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
        
       <code
         class="css-lz3xyk-TextComponent"
+        data-text="true"
       >
         Component
         &lt;
@@ -6494,6 +6703,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
             >
               <code
                 class="css-19pt3rj-TextComponent"
+                data-text="true"
               >
                 barCodeTypes
               </code>
@@ -6530,6 +6740,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         </h3>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           <span
             class="css-1lk0cux"
@@ -6544,16 +6755,19 @@ exports[`APISection expo-barcode-scanner 1`] = `
            
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             string[]
           </code>
         </p>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           An array of bar code types. Usage: 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             BarCodeScanner.Constants.BarCodeType.&lt;codeType&gt;
           </code>
@@ -6561,6 +6775,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             codeType
           </code>
@@ -6577,10 +6792,12 @@ minimize battery usage.
         </p>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           For example: 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             barCodeTypes={[BarCodeScanner.Constants.BarCodeType.qr]}
           </code>
@@ -6607,6 +6824,7 @@ minimize battery usage.
             >
               <code
                 class="css-19pt3rj-TextComponent"
+                data-text="true"
               >
                 onBarCodeScanned
               </code>
@@ -6643,6 +6861,7 @@ minimize battery usage.
         </h3>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           <span
             class="css-1lk0cux"
@@ -6657,6 +6876,7 @@ minimize battery usage.
            
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             <a
               class="css-dqmbnf-A"
@@ -6668,6 +6888,7 @@ minimize battery usage.
         </p>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           A callback that is invoked when a bar code has been successfully scanned. The callback is
 provided with an 
@@ -6713,6 +6934,7 @@ provided with an
 
             <p
               class="css-1a1x0ox-TextComponent"
+              data-text="true"
             >
               <strong
                 class="css-7r3rok-TextComponent"
@@ -6722,12 +6944,14 @@ provided with an
                Passing 
               <code
                 class="css-yrev4b-TextComponent"
+                data-text="true"
               >
                 undefined
               </code>
                to the 
               <code
                 class="css-yrev4b-TextComponent"
+                data-text="true"
               >
                 onBarCodeScanned
               </code>
@@ -6760,6 +6984,7 @@ data has been retrieved.
             >
               <code
                 class="css-19pt3rj-TextComponent"
+                data-text="true"
               >
                 type
               </code>
@@ -6796,6 +7021,7 @@ data has been retrieved.
         </h3>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           <span
             class="css-1lk0cux"
@@ -6810,6 +7036,7 @@ data has been retrieved.
            
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             <span>
               'front'
@@ -6832,6 +7059,7 @@ data has been retrieved.
              
             <code
               class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
               Type.back
 
@@ -6840,22 +7068,26 @@ data has been retrieved.
         </p>
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           Camera facing. Use one of 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             BarCodeScanner.Constants.Type
           </code>
           . Use either 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             Type.front
           </code>
            or 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             Type.back
           </code>
@@ -6863,6 +7095,7 @@ data has been retrieved.
 Same as 
           <code
             class="css-yrev4b-TextComponent"
+            data-text="true"
           >
             Camera.Constants.Type
           </code>
@@ -6921,9 +7154,11 @@ Same as
       >
         <li
           class="css-bn5qly-TextComponent"
+          data-text="true"
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             <a
               class="css-dqmbnf-A"
@@ -7003,6 +7238,7 @@ Same as
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             usePermissions(options)
           </code>
@@ -7090,6 +7326,7 @@ Same as
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -7116,6 +7353,7 @@ Same as
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Create a new permission hook with the permission methods built-in.
 This can be used to quickly create specific permission hooks in every module.
@@ -7208,7 +7446,6 @@ This can be used to quickly create specific permission hooks in every module.
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -7260,6 +7497,7 @@ This can be used to quickly create specific permission hooks in every module.
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -7281,6 +7519,7 @@ This can be used to quickly create specific permission hooks in every module.
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           [
           <span>
@@ -7398,6 +7637,7 @@ This can be used to quickly create specific permission hooks in every module.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             BarCodeScanner.getPermissionsAsync()
           </code>
@@ -7434,6 +7674,7 @@ This can be used to quickly create specific permission hooks in every module.
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Checks user's permissions for accessing the camera.
     </p>
@@ -7442,7 +7683,6 @@ This can be used to quickly create specific permission hooks in every module.
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -7494,6 +7734,7 @@ This can be used to quickly create specific permission hooks in every module.
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -7515,6 +7756,7 @@ This can be used to quickly create specific permission hooks in every module.
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -7540,6 +7782,7 @@ This can be used to quickly create specific permission hooks in every module.
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Return a promise that fulfills to an object of type 
       <a
@@ -7548,6 +7791,7 @@ This can be used to quickly create specific permission hooks in every module.
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           PermissionResponse
         </code>
@@ -7575,6 +7819,7 @@ This can be used to quickly create specific permission hooks in every module.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             BarCodeScanner.requestPermissionsAsync()
           </code>
@@ -7611,21 +7856,25 @@ This can be used to quickly create specific permission hooks in every module.
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Asks the user to grant permissions for accessing the camera.
     </p>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       On iOS this will require apps to specify the 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         NSCameraUsageDescription
       </code>
        entry in the 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         Info.plist
       </code>
@@ -7636,7 +7885,6 @@ This can be used to quickly create specific permission hooks in every module.
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -7688,6 +7936,7 @@ This can be used to quickly create specific permission hooks in every module.
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -7709,6 +7958,7 @@ This can be used to quickly create specific permission hooks in every module.
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -7734,6 +7984,7 @@ This can be used to quickly create specific permission hooks in every module.
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Return a promise that fulfills to an object of type 
       <a
@@ -7742,6 +7993,7 @@ This can be used to quickly create specific permission hooks in every module.
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           PermissionResponse
         </code>
@@ -7769,6 +8021,7 @@ This can be used to quickly create specific permission hooks in every module.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             BarCodeScanner.scanFromURLAsync(url, barCodeTypes)
           </code>
@@ -7850,6 +8103,7 @@ This can be used to quickly create specific permission hooks in every module.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -7859,6 +8113,7 @@ This can be used to quickly create specific permission hooks in every module.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 URL to get the image from.
               </p>
@@ -7887,6 +8142,7 @@ This can be used to quickly create specific permission hooks in every module.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string[]
               </code>
@@ -7896,6 +8152,7 @@ This can be used to quickly create specific permission hooks in every module.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 An array of bar code types. Defaults to all supported bar code types on
 the platform.
@@ -7934,6 +8191,7 @@ the platform.
 
                   <p
                     class="css-1a1x0ox-TextComponent"
+                    data-text="true"
                   >
                     <strong
                       class="css-7r3rok-TextComponent"
@@ -7954,6 +8212,7 @@ the platform.
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Scan bar codes from the image given by the URL.
     </p>
@@ -7962,7 +8221,6 @@ the platform.
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -8014,6 +8272,7 @@ the platform.
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -8035,6 +8294,7 @@ the platform.
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -8061,10 +8321,12 @@ the platform.
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       A possibly empty array of objects of the 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         BarCodeScannerResult
       </code>
@@ -8140,6 +8402,7 @@ code.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             PermissionResponse
           </code>
@@ -8176,6 +8439,7 @@ code.
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       An object obtained by permissions get and request functions.
     </p>
@@ -8184,7 +8448,6 @@ code.
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -8279,6 +8542,7 @@ code.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 boolean
               </code>
@@ -8288,6 +8552,7 @@ code.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 Indicates if user can be asked again for specific permission.
 If not, one should be directed to the Settings app
@@ -8312,6 +8577,7 @@ in order to enable/disable the permission.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8326,6 +8592,7 @@ in order to enable/disable the permission.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 Determines time when the permission expires.
               </p>
@@ -8348,6 +8615,7 @@ in order to enable/disable the permission.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 boolean
               </code>
@@ -8357,6 +8625,7 @@ in order to enable/disable the permission.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 A convenience boolean that indicates if the permission is granted.
               </p>
@@ -8379,6 +8648,7 @@ in order to enable/disable the permission.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8393,6 +8663,7 @@ in order to enable/disable the permission.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 Determines the status of the permission.
               </p>
@@ -8469,6 +8740,7 @@ in order to enable/disable the permission.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             BarCodeBounds
           </code>
@@ -8550,6 +8822,7 @@ in order to enable/disable the permission.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8564,6 +8837,7 @@ in order to enable/disable the permission.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The origin point of the bounding box.
               </p>
@@ -8586,6 +8860,7 @@ in order to enable/disable the permission.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8600,6 +8875,7 @@ in order to enable/disable the permission.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The size of the bounding box.
               </p>
@@ -8629,6 +8905,7 @@ in order to enable/disable the permission.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             BarCodeEvent
           </code>
@@ -8665,9 +8942,11 @@ in order to enable/disable the permission.
     </h3>
     <p
       class="css-m3vzl4-TextComponent"
+      data-text="true"
     >
       <code
         class="css-lz3xyk-TextComponent"
+        data-text="true"
       >
         <a
           class="css-dqmbnf-A"
@@ -8733,6 +9012,7 @@ in order to enable/disable the permission.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 number
               </code>
@@ -8767,6 +9047,7 @@ in order to enable/disable the permission.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             BarCodeEventCallbackArguments
           </code>
@@ -8848,6 +9129,7 @@ in order to enable/disable the permission.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -8887,6 +9169,7 @@ in order to enable/disable the permission.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             BarCodePoint
           </code>
@@ -8923,6 +9206,7 @@ in order to enable/disable the permission.
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
 are using the barcode scanner view, these values are adjusted to the dimensions of the view).
@@ -8974,6 +9258,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 number
               </code>
@@ -8983,10 +9268,12 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   x
                 </code>
@@ -9011,6 +9298,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 number
               </code>
@@ -9020,10 +9308,12 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   y
                 </code>
@@ -9055,6 +9345,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             BarCodeScannedCallback
             ()
@@ -9138,6 +9429,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               >
                 <code
                   class="css-lz3xyk-TextComponent"
+                  data-text="true"
                 >
                   <a
                     class="css-dqmbnf-A"
@@ -9178,6 +9470,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             BarCodeScannerResult
           </code>
@@ -9259,6 +9552,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -9273,6 +9567,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The 
                 <a
@@ -9285,6 +9580,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   bounds
                 </code>
@@ -9292,6 +9588,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
 Moreover, 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   bounds
                 </code>
@@ -9317,6 +9614,7 @@ For some types, they will represent the area used by the scanner.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -9332,23 +9630,27 @@ For some types, they will represent the area used by the scanner.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 Corner points of the bounding box.
 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   cornerPoints
                 </code>
                  is not always available and may be empty. On iOS, for 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   code39
                 </code>
                  and 
                 <code
                   class="css-yrev4b-TextComponent"
+                  data-text="true"
                 >
                   pdf417
                 </code>
@@ -9374,6 +9676,7 @@ you don't get this value.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -9383,6 +9686,7 @@ you don't get this value.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The information encoded in the bar code.
               </p>
@@ -9405,6 +9709,7 @@ you don't get this value.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 string
               </code>
@@ -9414,6 +9719,7 @@ you don't get this value.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The barcode type.
               </p>
@@ -9443,6 +9749,7 @@ you don't get this value.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             BarCodeSize
           </code>
@@ -9524,6 +9831,7 @@ you don't get this value.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 number
               </code>
@@ -9533,6 +9841,7 @@ you don't get this value.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The height value.
               </p>
@@ -9555,6 +9864,7 @@ you don't get this value.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 number
               </code>
@@ -9564,6 +9874,7 @@ you don't get this value.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 The width value.
               </p>
@@ -9593,6 +9904,7 @@ you don't get this value.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             PermissionHookOptions
           </code>
@@ -9629,12 +9941,14 @@ you don't get this value.
     </h3>
     <p
       class="css-m3vzl4-TextComponent"
+      data-text="true"
     >
       Acceptable values are:
        
       <span>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           PermissionHookBehavior
         </code>
@@ -9643,6 +9957,7 @@ you don't get this value.
       <span>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           Options
         </code>
@@ -9717,6 +10032,7 @@ you don't get this value.
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             PermissionStatus
           </code>
@@ -9759,7 +10075,6 @@ you don't get this value.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -9775,6 +10090,7 @@ you don't get this value.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 DENIED
               </code>
@@ -9812,6 +10128,7 @@ you don't get this value.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         PermissionStatus
         .
@@ -9820,6 +10137,7 @@ you don't get this value.
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         User has denied the permission.
       </p>
@@ -9832,7 +10150,6 @@ you don't get this value.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -9848,6 +10165,7 @@ you don't get this value.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 GRANTED
               </code>
@@ -9885,6 +10203,7 @@ you don't get this value.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         PermissionStatus
         .
@@ -9893,6 +10212,7 @@ you don't get this value.
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         User has granted the permission.
       </p>
@@ -9905,7 +10225,6 @@ you don't get this value.
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -9921,6 +10240,7 @@ you don't get this value.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 UNDETERMINED
               </code>
@@ -9958,6 +10278,7 @@ you don't get this value.
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         PermissionStatus
         .
@@ -9966,6 +10287,7 @@ you don't get this value.
       </code>
       <p
         class="css-1a1x0ox-TextComponent"
+        data-text="true"
       >
         User hasn't granted or denied the permission yet.
       </p>
@@ -10043,6 +10365,7 @@ exports[`APISection expo-pedometer 1`] = `
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             getPermissionsAsync()
           </code>
@@ -10082,7 +10405,6 @@ exports[`APISection expo-pedometer 1`] = `
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -10134,6 +10456,7 @@ exports[`APISection expo-pedometer 1`] = `
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -10155,6 +10478,7 @@ exports[`APISection expo-pedometer 1`] = `
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -10199,6 +10523,7 @@ exports[`APISection expo-pedometer 1`] = `
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             getStepCountAsync(start, end)
           </code>
@@ -10280,6 +10605,7 @@ exports[`APISection expo-pedometer 1`] = `
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -10296,6 +10622,7 @@ exports[`APISection expo-pedometer 1`] = `
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 A date indicating the start of the range over which to measure steps.
               </p>
@@ -10318,6 +10645,7 @@ exports[`APISection expo-pedometer 1`] = `
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -10334,6 +10662,7 @@ exports[`APISection expo-pedometer 1`] = `
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 A date indicating the end of the range over which to measure steps.
               </p>
@@ -10345,6 +10674,7 @@ exports[`APISection expo-pedometer 1`] = `
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Get the step count between two dates.
     </p>
@@ -10353,7 +10683,6 @@ exports[`APISection expo-pedometer 1`] = `
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -10405,6 +10734,7 @@ exports[`APISection expo-pedometer 1`] = `
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -10426,6 +10756,7 @@ exports[`APISection expo-pedometer 1`] = `
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -10451,6 +10782,7 @@ exports[`APISection expo-pedometer 1`] = `
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Returns a promise that fulfills with a 
       <a
@@ -10459,6 +10791,7 @@ exports[`APISection expo-pedometer 1`] = `
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           PedometerResult
         </code>
@@ -10469,6 +10802,7 @@ exports[`APISection expo-pedometer 1`] = `
 
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       As 
       <a
@@ -10515,6 +10849,7 @@ exports[`APISection expo-pedometer 1`] = `
 
         <p
           class="css-1a1x0ox-TextComponent"
+          data-text="true"
         >
           Only the past seven days worth of data is stored and available for you to retrieve. Specifying
 a start date that is more than seven days in the past returns only the available data.
@@ -10544,6 +10879,7 @@ a start date that is more than seven days in the past returns only the available
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             isAvailableAsync()
           </code>
@@ -10580,6 +10916,7 @@ a start date that is more than seven days in the past returns only the available
     </h3>
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Returns whether the pedometer is enabled on the device.
     </p>
@@ -10588,7 +10925,6 @@ a start date that is more than seven days in the past returns only the available
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -10640,6 +10976,7 @@ a start date that is more than seven days in the past returns only the available
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -10661,6 +10998,7 @@ a start date that is more than seven days in the past returns only the available
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -10681,10 +11019,12 @@ a start date that is more than seven days in the past returns only the available
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Returns a promise that fulfills with a 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         boolean
       </code>
@@ -10712,6 +11052,7 @@ available on this device.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             requestPermissionsAsync()
           </code>
@@ -10751,7 +11092,6 @@ available on this device.
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -10803,6 +11143,7 @@ available on this device.
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -10824,6 +11165,7 @@ available on this device.
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -10868,6 +11210,7 @@ available on this device.
         >
           <code
             class="css-19pt3rj-TextComponent"
+            data-text="true"
           >
             watchStepCount(callback)
           </code>
@@ -10949,6 +11292,7 @@ available on this device.
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -10963,6 +11307,7 @@ available on this device.
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 A callback that is invoked when new step count data is available. The callback is
 provided with a single argument that is 
@@ -10972,6 +11317,7 @@ provided with a single argument that is
                 >
                   <code
                     class="css-yrev4b-TextComponent"
+                    data-text="true"
                   >
                     PedometerResult
                   </code>
@@ -10986,6 +11332,7 @@ provided with a single argument that is
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Subscribe to pedometer updates.
     </p>
@@ -10994,7 +11341,6 @@ provided with a single argument that is
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -11046,6 +11392,7 @@ provided with a single argument that is
     >
       <li
         class="css-bn5qly-TextComponent"
+        data-text="true"
       >
         <svg
           class="css-1a9xr20"
@@ -11067,6 +11414,7 @@ provided with a single argument that is
         </svg>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           <a
             class="css-dqmbnf-A"
@@ -11080,6 +11428,7 @@ provided with a single argument that is
     <br />
     <p
       class="css-1a1x0ox-TextComponent"
+      data-text="true"
     >
       Returns a 
       <a
@@ -11088,6 +11437,7 @@ provided with a single argument that is
       >
         <code
           class="css-yrev4b-TextComponent"
+          data-text="true"
         >
           Subscription
         </code>
@@ -11096,6 +11446,7 @@ provided with a single argument that is
 
       <code
         class="css-yrev4b-TextComponent"
+        data-text="true"
       >
         remove()
       </code>
@@ -11169,6 +11520,7 @@ provided with a single argument that is
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             PermissionResponse
           </code>
@@ -11208,7 +11560,6 @@ provided with a single argument that is
     >
       <h4
         class="  css-uucypz-H4"
-        data-components-heading="true"
         data-heading="true"
       >
         <a
@@ -11303,6 +11654,7 @@ provided with a single argument that is
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 boolean
               </code>
@@ -11330,6 +11682,7 @@ provided with a single argument that is
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -11362,6 +11715,7 @@ provided with a single argument that is
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 boolean
               </code>
@@ -11389,6 +11743,7 @@ provided with a single argument that is
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 <a
                   class="css-dqmbnf-A"
@@ -11475,6 +11830,7 @@ provided with a single argument that is
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             PedometerResult
           </code>
@@ -11556,6 +11912,7 @@ provided with a single argument that is
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 number
               </code>
@@ -11565,6 +11922,7 @@ provided with a single argument that is
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 Number of steps taken between the given dates.
               </p>
@@ -11594,6 +11952,7 @@ provided with a single argument that is
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             PedometerUpdateCallback
             ()
@@ -11677,6 +12036,7 @@ provided with a single argument that is
               >
                 <code
                   class="css-lz3xyk-TextComponent"
+                  data-text="true"
                 >
                   <a
                     class="css-dqmbnf-A"
@@ -11717,6 +12077,7 @@ provided with a single argument that is
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             PermissionExpiration
           </code>
@@ -11753,12 +12114,14 @@ provided with a single argument that is
     </h3>
     <p
       class="css-m3vzl4-TextComponent"
+      data-text="true"
     >
       Acceptable values are:
        
       <span>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           'never'
         </code>
@@ -11767,6 +12130,7 @@ provided with a single argument that is
       <span>
         <code
           class="css-lz3xyk-TextComponent"
+          data-text="true"
         >
           number
         </code>
@@ -11794,6 +12158,7 @@ provided with a single argument that is
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             Subscription
           </code>
@@ -11875,6 +12240,7 @@ provided with a single argument that is
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 (
                 ) =&gt;
@@ -11887,6 +12253,7 @@ provided with a single argument that is
             >
               <p
                 class="css-1a1x0ox-TextComponent"
+                data-text="true"
               >
                 A method to unsubscribe the listener.
               </p>
@@ -11963,6 +12330,7 @@ provided with a single argument that is
         >
           <code
             class="css-lz3xyk-TextComponent"
+            data-text="true"
           >
             PermissionStatus
           </code>
@@ -12005,7 +12373,6 @@ provided with a single argument that is
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -12021,6 +12388,7 @@ provided with a single argument that is
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 DENIED
               </code>
@@ -12058,6 +12426,7 @@ provided with a single argument that is
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         PermissionStatus
         .
@@ -12073,7 +12442,6 @@ provided with a single argument that is
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -12089,6 +12457,7 @@ provided with a single argument that is
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 GRANTED
               </code>
@@ -12126,6 +12495,7 @@ provided with a single argument that is
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         PermissionStatus
         .
@@ -12141,7 +12511,6 @@ provided with a single argument that is
       >
         <h4
           class="  css-uucypz-H4"
-          data-components-heading="true"
           data-heading="true"
         >
           <a
@@ -12157,6 +12526,7 @@ provided with a single argument that is
             >
               <code
                 class="css-lz3xyk-TextComponent"
+                data-text="true"
               >
                 UNDETERMINED
               </code>
@@ -12194,6 +12564,7 @@ provided with a single argument that is
       </div>
       <code
         class="css-1bzxtqh-TextComponent"
+        data-text="true"
       >
         PermissionStatus
         .
@@ -12209,6 +12580,7 @@ exports[`APISection no data 1`] = `
 <div>
   <p
     class="css-m3vzl4-TextComponent"
+    data-text="true"
   >
     No API data file found, sorry!
   </p>
