@@ -16,9 +16,6 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.DrawableImageViewTarget
-import com.bumptech.glide.request.target.SizeReadyCallback
-import com.bumptech.glide.request.target.Target
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
@@ -104,6 +101,14 @@ class ExpoImageView(
   private val progressInterceptor = OkHttpClientProgressInterceptor
 
   private val outlineProvider = OutlineProvider(context)
+
+  private var target: ViewConnectedTarget = ViewConnectedTarget(
+    requestManager,
+    WeakReference(this)
+  ).also {
+    val bgTarget = ViewConnectedTarget(requestManager, WeakReference(this), it)
+    it.bgTarget = bgTarget
+  }
 
   private var propsChanged = false
   private var loadedSource: GlideModel? = null
@@ -297,7 +302,7 @@ class ExpoImageView(
       expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
 
       val defaultSourceToLoad = defaultSourceMap?.createGlideModel(context)
-      requestManager
+      val request = requestManager
         .asDrawable()
         .load(sourceToLoad.glideData)
         .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
@@ -306,18 +311,9 @@ class ExpoImageView(
         .addListener(GlideRequestListener(expoImageViewWrapper))
         .encodeQuality(100)
         .apply(propOptions)
-        .into(object : DrawableImageViewTarget(this) {
-          override fun getSize(cb: SizeReadyCallback) {
-            cb.onSizeReady(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-          }
 
-          override fun setResource(resource: Drawable?) {
-            super.setResource(resource)
-            if (resource != null) {
-              applyTransformationMatrix()
-            }
-          }
-        })
+      val newTarget = target.getUnusedTarget() ?: return
+      request.into(newTarget)
     }
   }
 
