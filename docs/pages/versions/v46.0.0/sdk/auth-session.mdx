@@ -48,9 +48,7 @@ You can test it to ensure it works like this:
 
 ### Usage in standalone apps
 
-**app.json**
-
-```json
+```json app.json
 {
   "expo": {
     "scheme": "mycoolredirect"
@@ -97,7 +95,7 @@ If you are authenticating with a popular social provider, when you are ready to 
 
 **Never put any secret keys inside of your app, there is no secure way to do this!** Instead, you should store your secret key(s) on a server and expose an endpoint that makes API calls for your client and passes the data back.
 
-# API
+## API
 
 ```js
 import * as AuthSession from 'expo-auth-session';

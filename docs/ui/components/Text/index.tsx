@@ -88,12 +88,16 @@ export const kbdStyle = css({
   top: -1,
 });
 
-export const H1 = createTextComponent(TextElement.H1, css(typography.headers.default.h1));
-export const H2 = createTextComponent(TextElement.H2, css(typography.headers.default.h2));
-export const H3 = createTextComponent(TextElement.H4, css(typography.headers.default.h3));
-export const H4 = createTextComponent(TextElement.H4, css(typography.headers.default.h4));
-export const H5 = createTextComponent(TextElement.H5, css(typography.headers.default.h5));
-export const H6 = createTextComponent(TextElement.H6, css(typography.headers.default.h6));
+const codeInHeaderStyle = { '& code': { fontSize: 'inherit' } };
+
+const { h1, h2, h3, h4, h5, h6 } = typography.headers.default;
+export const H1 = createTextComponent(TextElement.H1, css([h1, codeInHeaderStyle]));
+export const H2 = createTextComponent(TextElement.H2, css([h2, codeInHeaderStyle]));
+export const H3 = createTextComponent(TextElement.H3, css([h3, codeInHeaderStyle]));
+export const H4 = createTextComponent(TextElement.H4, css([h4, codeInHeaderStyle]));
+export const H5 = createTextComponent(TextElement.H5, css([h5, codeInHeaderStyle]));
+export const H6 = createTextComponent(TextElement.H6, css([h6, codeInHeaderStyle]));
+
 export const P = createTextComponent(TextElement.P, css(typography.body.paragraph));
 export const CODE = createTextComponent(
   TextElement.CODE,
