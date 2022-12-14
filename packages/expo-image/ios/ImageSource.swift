@@ -21,4 +21,8 @@ struct ImageSource: Record {
   var pixelCount: Double {
     return width * height * scale * scale
   }
+
+  var isBlurhash: Bool {
+    return uri?.scheme == "blurhash"
+  }
 }
