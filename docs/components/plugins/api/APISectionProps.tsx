@@ -1,8 +1,3 @@
-import React from 'react';
-
-import { InlineCode } from '~/components/base/code';
-import { LI, UL } from '~/components/base/list';
-import { P } from '~/components/base/paragraph';
 import { H2, H3, H3Code, H4, H4Code } from '~/components/plugins/Headings';
 import {
   DefaultPropsDefinitionData,
@@ -24,7 +19,9 @@ import {
   STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
   STYLES_SECONDARY,
+  STYLES_ELEMENT_SPACING,
 } from '~/components/plugins/api/APISectionUtils';
+import { LI, UL, P, CODE } from '~/ui/components/Text';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -50,7 +47,7 @@ const extractDefaultPropValue = (
 const renderInheritedProp = (ip: TypeDefinitionData) => {
   return (
     <LI key={`inherited-prop-${ip.name}-${ip.type}`}>
-      <InlineCode>{resolveTypeName(ip)}</InlineCode>
+      <CODE>{resolveTypeName(ip)}</CODE>
     </LI>
   );
 };
@@ -104,21 +101,19 @@ export const renderProp = (
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   const extractedComment = getCommentOrSignatureComment(comment, signatures);
   return (
-    <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
+    <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={extractedComment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <HeaderComponent tags={getTagNamesList(comment)}>
-        <InlineCode css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
-          {name}
-        </InlineCode>
+        <CODE css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>{name}</CODE>
       </HeaderComponent>
-      <P>
+      <P css={extractedComment && STYLES_ELEMENT_SPACING}>
         {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
         <span css={STYLES_SECONDARY}>Type:</span> {renderTypeOrSignatureType(type, signatures)}
         {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
           <span>
             <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
-            <InlineCode>{defaultValue}</InlineCode>
+            <CODE>{defaultValue}</CODE>
           </span>
         ) : null}
       </P>
