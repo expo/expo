@@ -9,6 +9,9 @@ import { durations } from '~/ui/foundations/durations';
 export { LinkBase } from './Link';
 export { AnchorContext } from './withAnchor';
 
+const CRAWLABLE_HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5'];
+const CRAWLABLE_TEXT = ['span', 'p', 'li', 'blockquote', 'code', 'pre'];
+
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
   function TextComponent(props: TextComponentProps) {
     const { testID, tag, weight: textWeight, theme: textTheme, ...rest } = props;
@@ -23,6 +26,8 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
           textTheme && { color: theme.text[textTheme] },
         ]}
         data-testid={testID}
+        data-heading={CRAWLABLE_HEADINGS.includes(TextElementTag) || undefined}
+        data-text={CRAWLABLE_TEXT.includes(TextElementTag) || undefined}
         {...rest}
       />
     );
