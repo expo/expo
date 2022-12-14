@@ -155,7 +155,17 @@ export async function openUrlAsync(
   }
 ) {
   return openAsync(
-    adbArgs(device.pid, 'shell', 'am', 'start', '-a', 'android.intent.action.VIEW', '-d', url)
+    adbArgs(
+      device.pid,
+      'shell',
+      'am',
+      'start',
+      '-a',
+      'android.intent.action.VIEW',
+      '-d',
+      // ADB requires ampersands to be escaped.
+      url.replace(/&/g, String.raw`\&`)
+    )
   );
 }
 
