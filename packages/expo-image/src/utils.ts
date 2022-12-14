@@ -44,7 +44,7 @@ export function resolveContentFit(
         }
     }
   }
-  return ImageContentFit.CONTAIN;
+  return ImageContentFit.COVER;
 }
 
 /**

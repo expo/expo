@@ -31,7 +31,7 @@ export function resolveContentFit(contentFit, resizeMode) {
                 }
         }
     }
-    return ImageContentFit.CONTAIN;
+    return ImageContentFit.COVER;
 }
 /**
  * It resolves a stringified form of the `contentPosition` prop to an object,
