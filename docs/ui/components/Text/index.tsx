@@ -171,9 +171,7 @@ const h5Style = {
   ...codeInHeaderStyle,
 };
 
-export const H1 = createPermalinkedComponent(createTextComponent(TextElement.H1, css(h1Style)), {
-  baseNestingLevel: 1,
-});
+export const H1 = createTextComponent(TextElement.H1, css(h1Style));
 export const RawH2 = createTextComponent(TextElement.H2, css(h2Style));
 export const H2 = createPermalinkedComponent(RawH2, { baseNestingLevel: 2 });
 export const RawH3 = createTextComponent(TextElement.H3, css(h3Style));
