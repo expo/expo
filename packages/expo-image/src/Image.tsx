@@ -11,7 +11,7 @@ export class Image extends React.Component<ImageProps> {
    * `disk` (default) or `memoryAndDisk` cache policy.
    */
   static prefetch(urls: string | string[]): void {
-    return ExpoImageModule.prefetch(urls);
+    return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls]);
   }
 
   /**

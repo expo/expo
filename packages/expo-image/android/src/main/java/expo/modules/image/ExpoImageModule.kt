@@ -1,6 +1,5 @@
 package expo.modules.image
 
-import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
@@ -8,46 +7,27 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
-import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.SourceMap
-import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.views.ViewDefinitionBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 
 class ExpoImageModule : Module() {
-  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
-
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
-    AsyncFunction("prefetch") { url: String, promise: Promise ->
-      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-      moduleCoroutineScope.launch {
-        try {
-          val glideUrl = GlideUrl(url)
-          val result = Glide.with(context)
-            .download(glideUrl)
-            .submit()
-            .awaitGet()
-          if (result != null) {
-            promise.resolve(null)
-          } else {
-            promise.reject(ImagePrefetchFailure("cannot download $url"))
-          }
-        } catch (e: Exception) {
-          promise.reject(ImagePrefetchFailure(e.message ?: e.toString()))
-        }
+    Function("prefetch") { urls: List<String> ->
+      val context = appContext.reactContext ?: return@Function
+      urls.forEach {
+        Glide
+          .with(context)
+          .download(GlideUrl(it))
+          .submit()
       }
     }
 
@@ -64,14 +44,6 @@ class ExpoImageModule : Module() {
       }
 
       return@AsyncFunction true
-    }
-
-    OnDestroy {
-      try {
-        moduleCoroutineScope.cancel(ModuleDestroyedException())
-      } catch (e: IllegalStateException) {
-        Log.w("ExpoImageModule", "No coroutines to cancel")
-      }
     }
 
     View(ExpoImageViewWrapper::class) {
