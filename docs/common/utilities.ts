@@ -31,18 +31,10 @@ export const generateSlug = (slugger: GithubSlugger, node: React.ReactNode, leng
   return slugger.slug(stringToSlug);
 };
 
-export const isVersionedUrl = (url: string) => {
-  return /https?:\/\/(.*)(\/versions\/.*)/.test(url);
-};
-
 export const replaceVersionInUrl = (url: string, replaceWith: string) => {
   const urlArr = url.split('/');
   urlArr[2] = replaceWith;
   return urlArr.join('/');
-};
-
-export const getVersionFromUrl = (url: string) => {
-  return url.split('/')[2];
 };
 
 /**
@@ -65,4 +57,11 @@ export const getUserFacingVersionString = (
   }
 
   return versionString;
+};
+
+export const stripVersionFromPath = (path: string) => {
+  if (!path) {
+    return path;
+  }
+  return path.replace(/\/versions\/[\w.]+/, '');
 };
