@@ -111,6 +111,8 @@ class ExpoImageView(
   }
 
   private var propsChanged = false
+  private var transformationMatrixChanged = false
+
   private var loadedSource: GlideModel? = null
 
   private val borderDrawableLazyHolder = lazy {
@@ -186,13 +188,13 @@ class ExpoImageView(
   internal var contentFit: ContentFit = ContentFit.Cover
     set(value) {
       field = value
-      propsChanged = true
+      transformationMatrixChanged = true
     }
 
   internal var contentPosition: ContentPosition = ContentPosition.center
     set(value) {
       field = value
-      propsChanged = true
+      transformationMatrixChanged = true
     }
 
   internal var priority: Priority = Priority.NORMAL
@@ -256,6 +258,8 @@ class ExpoImageView(
       requestManager.clear(this)
       setImageDrawable(null)
       loadedSource = null
+      transformationMatrixChanged = false
+      propsChanged = false
       return
     }
 
@@ -287,7 +291,17 @@ class ExpoImageView(
 
       val newTarget = target.getUnusedTarget() ?: return
       request.into(newTarget)
+    } else {
+      // In the case where the source didn't change, but the transformation matrix has to be
+      // recalculated, we can apply the new transformation right away.
+      // When the source and the matrix is different, we don't want to do anything.
+      // We don't want to changed the transformation of the currently displayed image.
+      // The new matrix will be applied when new resource is loaded.
+      if (transformationMatrixChanged) {
+        applyTransformationMatrix()
+      }
     }
+    transformationMatrixChanged = false
   }
 
   internal fun onDrop() {
