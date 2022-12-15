@@ -1,7 +1,6 @@
 import React from 'react';
 
 import {
-  ImageContentPosition,
   ImageContentPositionObject,
   ImageSource,
   ImageTransition,
@@ -10,7 +9,6 @@ import {
   ImageNativeProps,
   PositionValue,
 } from './Image.types';
-import { resolveContentPosition } from './utils';
 
 function ensureUnit(value: string | number) {
   const trimmedValue = String(value).trim();
@@ -22,18 +20,20 @@ function ensureUnit(value: string | number) {
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 
-function getObjectPositionFromContentPosition(contentPosition?: ImageContentPosition): string {
-  const resolvedPosition = (
-    typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition
-  ) as Record<KeysOfUnion<ImageContentPositionObject>, PositionValue>;
-
+function getObjectPositionFromContentPositionObject(
+  contentPosition?: ImageContentPositionObject
+): string {
+  const resolvedPosition = { ...contentPosition } as Record<
+    KeysOfUnion<ImageContentPositionObject>,
+    PositionValue
+  >;
   if (!resolvedPosition) {
     return '50% 50%';
   }
-  if (resolvedPosition.top == null || resolvedPosition.bottom == null) {
+  if (resolvedPosition.top == null && resolvedPosition.bottom == null) {
     resolvedPosition.top = '50%';
   }
-  if (resolvedPosition.left == null || resolvedPosition.right == null) {
+  if (resolvedPosition.left == null && resolvedPosition.right == null) {
     resolvedPosition.left = '50%';
   }
 
@@ -199,7 +199,7 @@ export default function ExpoImage({
           left: 0,
           right: 0,
           objectFit: contentFit,
-          objectPosition: getObjectPositionFromContentPosition(contentPosition) || '50% 50%',
+          objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
           ...imageStyle,
         }}
         onLoad={handlers.onLoad}

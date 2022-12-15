@@ -1,6 +1,5 @@
 import React from 'react';
 import { ImageTransitionEffect, ImageTransitionTiming, } from './Image.types';
-import { resolveContentPosition } from './utils';
 function ensureUnit(value) {
     const trimmedValue = String(value).trim();
     if (trimmedValue.endsWith('%')) {
@@ -8,15 +7,15 @@ function ensureUnit(value) {
     }
     return `${trimmedValue}px`;
 }
-function getObjectPositionFromContentPosition(contentPosition) {
-    const resolvedPosition = (typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition);
+function getObjectPositionFromContentPositionObject(contentPosition) {
+    const resolvedPosition = { ...contentPosition };
     if (!resolvedPosition) {
         return '50% 50%';
     }
-    if (resolvedPosition.top == null || resolvedPosition.bottom == null) {
+    if (resolvedPosition.top == null && resolvedPosition.bottom == null) {
         resolvedPosition.top = '50%';
     }
-    if (resolvedPosition.left == null || resolvedPosition.right == null) {
+    if (resolvedPosition.left == null && resolvedPosition.right == null) {
         resolvedPosition.left = '50%';
     }
     return (['top', 'bottom', 'left', 'right']
@@ -136,7 +135,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 left: 0,
                 right: 0,
                 objectFit: contentFit,
-                objectPosition: getObjectPositionFromContentPosition(contentPosition) || '50% 50%',
+                objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
                 ...imageStyle,
             }, onLoad: handlers.onLoad })));
 }
