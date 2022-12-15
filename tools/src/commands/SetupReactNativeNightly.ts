@@ -283,4 +283,12 @@ async function updateBareExpoAsync(nightlyVersion: string) {
 `,
     },
   ]);
+
+  // Try to workaround detox hanging on CI
+  await transformFileAsync(path.join(root, 'ios', 'Podfile.properties.json'), [
+    {
+      find: `"expo.jsEngine": "hermes"`,
+      replaceWith: `"expo.jsEngine": "jsc"`,
+    },
+  ]);
 }
