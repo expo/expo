@@ -259,10 +259,7 @@ export declare enum ImagePriority {
 }
 export type ImageLoadEventData = {
     cacheType: ImageCacheType;
-    source: {
-        url: string;
-        width: number;
-        height: number;
+    source: ImageSource & {
         mediaType: string | null;
     };
 };

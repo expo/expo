@@ -8,6 +8,7 @@ import {
   ImageTransitionTiming,
   ImageNativeProps,
   PositionValue,
+  ImageCacheType,
 } from './Image.types';
 
 function ensureUnit(value: string | number) {
@@ -157,14 +158,21 @@ export default function ExpoImage({
   contentPosition,
   onLoad,
   transition,
-  onLoadStart,
-  onLoadEnd,
   onError,
+  onLoadEnd,
+  priority,
   ...props
 }: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const [state, handlers] = useImageState(source);
   const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
+
+  const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
+
+  const fetchPriority =
+    { [ImagePriority.HIGH]: 'high', [ImagePriority.LOW]: 'low', [ImagePriority.NORMAL]: 'auto' }[
+      priority || ImagePriority.NORMAL
+    ] ?? 'auto';
 
   return (
     <div
@@ -179,6 +187,9 @@ export default function ExpoImage({
       }}>
       <img
         src={placeholder?.[0]?.uri}
+        // @ts-ignore
+        // eslint-disable-next-line react/no-unknown-property
+        fetchpriority={fetchPriority}
         style={{
           width: '100%',
           height: '100%',
@@ -202,7 +213,22 @@ export default function ExpoImage({
           objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
           ...imageStyle,
         }}
-        onLoad={handlers.onLoad}
+        onLoad={() => {
+          handlers.onLoad();
+          if (!resolvedSources[0]) return;
+          onLoad?.({
+            source: { ...resolvedSources[0], mediaType: null },
+            cacheType: ImageCacheType.NONE,
+          });
+          onLoadEnd?.();
+        }}
+        onError={(event) => {
+          onError?.({
+            error: `Failed to load image from url: ${resolvedSources[0]?.uri}`,
+          });
+          onLoadEnd?.();
+        }}
+
       />
     </div>
   );
