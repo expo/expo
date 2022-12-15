@@ -123,6 +123,30 @@ async function updateReactNativePackageAsync() {
       },
     ]
   );
+
+  // Workaround build error for React-bridging depending on butter
+  const bridgingFiles = await glob('ReactCommon/react/bridging/*.{h,cpp}', {
+    cwd: reactNativeRoot,
+    absolute: true,
+  });
+  await Promise.all(
+    bridgingFiles.map((file) =>
+      transformFileAsync(file, [
+        {
+          find: /<butter\/map\.h>/g,
+          replaceWith: '<map>',
+        },
+        {
+          find: /<butter\/function\.h>/g,
+          replaceWith: '<functional>',
+        },
+        {
+          find: /butter::(map|function)/g,
+          replaceWith: 'std::$1',
+        },
+      ])
+    )
+  );
 }
 
 async function patchReanimatedAsync(nightlyVersion: string) {
