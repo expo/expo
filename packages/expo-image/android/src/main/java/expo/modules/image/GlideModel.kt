@@ -33,3 +33,26 @@ class GlideUriModel(
 ) : GlideModel() {
   override val glideData: Uri = uri
 }
+
+class GlideBlurhashModel(
+  val uri: Uri,
+  val width: Int,
+  val height: Int
+) : GlideModel() {
+  override val glideData: GlideBlurhashModel = this
+
+  override fun equals(other: Any?): Boolean {
+    if (this === other) {
+      return true
+    }
+
+    return other is GlideBlurhashModel && uri == other.uri && width == other.width && height == other.height
+  }
+
+  override fun hashCode(): Int {
+    var result = uri.hashCode()
+    result = 31 * result + width
+    result = 31 * result + height
+    return result
+  }
+}
