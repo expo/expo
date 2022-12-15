@@ -1,6 +1,6 @@
 import React from 'react';
 import { ImageProps } from './Image.types';
-export declare class Image extends React.Component<ImageProps> {
+export declare class Image extends React.PureComponent<ImageProps> {
     /**
      * Preloads images at the given urls that can be later used in the image view.
      * Preloaded images are always cached on the disk, so make sure to use

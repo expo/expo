@@ -1,17 +1,5 @@
 import React from 'react';
 import { ImageTransitionEffect, ImageTransitionTiming, } from './Image.types';
-import { resolveContentFit, resolveContentPosition } from './utils';
-function resolveAssetSource(source) {
-    if (source == null)
-        return null;
-    if (typeof source === 'string') {
-        return { uri: source };
-    }
-    if (typeof source === 'number') {
-        return { uri: String(source) };
-    }
-    return source;
-}
 function ensureUnit(value) {
     const trimmedValue = String(value).trim();
     if (trimmedValue.endsWith('%')) {
@@ -19,40 +7,32 @@ function ensureUnit(value) {
     }
     return `${trimmedValue}px`;
 }
-function getObjectPositionFromContentPosition(contentPosition) {
-    const resolvedPosition = (typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition);
+function getObjectPositionFromContentPositionObject(contentPosition) {
+    const resolvedPosition = { ...contentPosition };
     if (!resolvedPosition) {
-        return null;
+        return '50% 50%';
     }
-    if (resolvedPosition.top == null || resolvedPosition.bottom == null) {
+    if (resolvedPosition.top == null && resolvedPosition.bottom == null) {
         resolvedPosition.top = '50%';
     }
-    if (resolvedPosition.left == null || resolvedPosition.right == null) {
+    if (resolvedPosition.left == null && resolvedPosition.right == null) {
         resolvedPosition.left = '50%';
     }
-    return ['top', 'bottom', 'left', 'right']
+    return (['top', 'bottom', 'left', 'right']
         .map((key) => {
         if (key in resolvedPosition) {
             return `${key} ${ensureUnit(resolvedPosition[key])}`;
         }
         return '';
     })
-        .join(' ');
-}
-function ensureIsArray(source) {
-    if (Array.isArray(source)) {
-        return source;
-    }
-    if (source == null) {
-        return [];
-    }
-    return [source];
+        .join(' ') || '50% 50%');
 }
 function useImageState(source) {
-    const [imageState, setImageState] = React.useState(source ? 'loading' : 'empty');
+    const hasAnySource = source && source.length > 0;
+    const [imageState, setImageState] = React.useState(hasAnySource ? 'loading' : 'empty');
     React.useEffect(() => {
-        setImageState((prevState) => prevState === 'empty' ? (source ? 'loading' : 'empty') : prevState);
-    }, [source]);
+        setImageState((prevState) => prevState === 'empty' ? (hasAnySource ? 'loading' : 'empty') : prevState);
+    }, [hasAnySource]);
     const onLoad = React.useCallback(() => setImageState((prevState) => (imageState === 'loading' ? 'loaded' : prevState)), []);
     const handlers = React.useMemo(() => ({
         onLoad,
@@ -125,11 +105,10 @@ const useTransition = (transition, state) => {
     }
     return { placeholder: {}, image: {} };
 };
-export default function ExpoImage({ source, placeholder, loadingIndicatorSource, contentPosition, onLoad, transition, onLoadStart, onLoadEnd, onError, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onLoadStart, onLoadEnd, onError, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const [state, handlers] = useImageState(source);
     const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
-    const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
     return (React.createElement("div", { style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
@@ -139,7 +118,7 @@ export default function ExpoImage({ source, placeholder, loadingIndicatorSource,
             overflow: 'hidden',
             position: 'relative',
         } },
-        React.createElement("img", { src: ensureIsArray(placeholder).map(resolveAssetSource)?.[0]?.uri, style: {
+        React.createElement("img", { src: placeholder?.[0]?.uri, style: {
                 width: '100%',
                 height: '100%',
                 position: 'absolute',
@@ -149,14 +128,14 @@ export default function ExpoImage({ source, placeholder, loadingIndicatorSource,
                 objectPosition: 'center',
                 ...placeholderStyle,
             } }),
-        React.createElement("img", { src: resolvedSources.at(0)?.uri, style: {
+        React.createElement("img", { src: source?.[0]?.uri, style: {
                 width: '100%',
                 height: '100%',
                 position: 'absolute',
                 left: 0,
                 right: 0,
-                objectFit: resolveContentFit(props.contentFit, props.resizeMode),
-                objectPosition: getObjectPositionFromContentPosition(contentPosition) || '50% 50%',
+                objectFit: contentFit,
+                objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
                 ...imageStyle,
             }, onLoad: handlers.onLoad })));
 }

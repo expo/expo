@@ -1,6 +1,6 @@
 import { AccessibilityProps, ImageStyle as RNImageStyle } from 'react-native';
 
-export type ImageUriSource = {
+export type ImageSource = {
   /**
    * A string representing the resource identifier for the image,
    * which could be an http address, a local file path, or the name of a static image resource.
@@ -20,6 +20,14 @@ export type ImageUriSource = {
    * will be used to set the default `<Image/>` component dimension
    */
   height?: number;
+
+  /**
+   * The blurhash string to use to generate the image. You can read more about the blurhash
+   * on [`woltapp/blurhash`](https://github.com/woltapp/blurhash) repo. Ignored when `uri` is provided.
+   * When using the blurhash, you should also provide `width` and `height` (higher values reduce performance),
+   * otherwise their default value is `16`.
+   */
+  blurhash?: string;
 };
 
 export type ImageStyle = RNImageStyle & {
@@ -27,22 +35,17 @@ export type ImageStyle = RNImageStyle & {
   elevation?: number;
 };
 
-// number on native platforms, string or number on web
-export type RequireSource = number | string;
-
-export type ImageSource = ImageUriSource | RequireSource | (ImageUriSource | RequireSource)[];
-
 export type ImageProps = AccessibilityProps & {
   style?: ImageStyle;
   /**
    * The image source (either a remote URL or a local file resource).
    */
-  source?: ImageSource;
+  source?: ImageSource | string | number | ImageSource[] | string[] | null;
 
   /**
    * A static image to display while loading the image source.
    */
-  placeholder?: ImageSource;
+  placeholder?: ImageSource | string | number | ImageSource[] | string[] | null;
 
   /**
    * A static image to display while loading the image source.
@@ -131,6 +134,17 @@ export type ImageProps = AccessibilityProps & {
    */
   onLoadEnd?: () => void;
 };
+
+/**
+ * It narrows down some props to types expected by the native/web side.
+ * @hidden
+ */
+export interface ImageNativeProps extends ImageProps {
+  source?: ImageSource[];
+  placeholder?: ImageSource[];
+  contentPosition?: ImageContentPositionObject;
+  transition?: ImageTransition | null;
+}
 
 /**
  * Determines how the image should be resized to fit its container.
