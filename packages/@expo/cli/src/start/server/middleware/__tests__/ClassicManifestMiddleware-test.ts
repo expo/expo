@@ -216,6 +216,30 @@ describe('_fetchComputedManifestStringAsync', () => {
   });
 });
 
+describe('_getManifestResponseAsync', () => {
+  // Regression
+  it('returns Exponent-Server header as json string', async () => {
+    const middleware = new ClassicManifestMiddleware('/', {
+      constructUrl: (options) => options?.hostname || 'localhost',
+    });
+
+    middleware._getManifestStringAsync = jest.fn(async () => {
+      return 'signed-manifest-lol';
+    });
+
+    const response = await middleware._getManifestResponseAsync({
+      acceptSignature: true,
+      hostname: 'localhost',
+      platform: 'android',
+    });
+
+    const header = response.headers.get('Exponent-Server');
+
+    expect(typeof header).toBe('string');
+    expect(() => JSON.parse(header as string)).not.toThrow();
+  });
+});
+
 describe(`_getManifestStringAsync`, () => {
   it(`uses anon ID for offline mode`, async () => {
     asMock(getUserAsync).mockImplementationOnce(async () => ({} as any));
