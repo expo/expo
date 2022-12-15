@@ -55,11 +55,13 @@ metadata: goes here
 
 These metadata items include:
 
-- `title`: Title of the page shown as the heading and in search results
+- `title`: Title of the page shown as the heading and in search results.
+- `description`: Description of the page shown in search results and open graph descriptions when the page is shared on social media sites.
 - `hideFromSearch`: Whether to hide the page from Algolia search results. Defaults to `false`.
 - `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
 - `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
+- `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
 
 ### Editing Code
 
@@ -96,15 +98,21 @@ Use these for more complex rules than one-to-one path-to-path redirect mapping. 
 
 You can add your own client-side redirect rules in `common/error-utilities.ts`.
 
-## Algolia Docsearch
+## Search
 
-We use Algolia Docsearch as the search engine for our docs. Right now, it's searching for any keywords with the proper `version` tag based on the current location. This is set in the `components/DocumentationPage` header.
+We use Algolia as a main search results provider for our docs. Besides the query, results are also filtered based on the `version` tag which represents the user current location. The tag set in the `components/DocumentationPage.tsx` head.
 
-In `components/plugins/AlgoliaSearch`, you can see the `facetFilters` set to `[['version:none', 'version:{currentVersion}']]`. Translated to English, this means "Search on all pages where `version` is `none`, or the currently selected version.".
+In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
 
-- All unversioned pages use the version tag `none`.
-- All versioned pages use the SDK version (e.g. `v40.0.0` or `v39.0.0`).
-- All `hideFromSearch: true` pages don't have the version tag.
+- all unversioned pages use the version tag `none`,
+- all versioned pages use the SDK version (e.g. `v46.0.0` or `v47.0.0`),
+- all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
+
+Currently, the base results for Expo docs are combined with other results from multiple sources, like:
+
+- manually defined paths for Expo dashboard located in `ui/components/CommandMenu/expoEntries.ts`,
+- public Algolia index for React Native website,
+- React Native directory public API, see the directory [README.md](https://github.com/react-native-community/directory#i-dont-like-your-website-can-i-hit-an-api-instead-and-build-my-own-better-stuff) for more details.
 
 ## Quirks
 
@@ -168,18 +176,6 @@ To render the app.json / app.config.js properties table, we currently store a lo
 
 If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync <SDK version integer>` or `yarn run schema-sync unversioned`.
 
-### Importing from the React Native docs
-
-You can import the React Native docs in an automated way into these docs.
-
-1. Update the react-native-website submodule here
-2. `yarn run import-react-native-docs`
-
-This will write all the relevant RN doc stuff into the unversioned version directory.
-You may need to tweak the script as the source docs change; the script hackily translates between the different forms of markdown that have different quirks.
-
-The React Native docs are actually versioned but we currently read off of main.
-
 ### Adding Images and Assets
 
 You can add images and assets to the `public/static` directory. They'll be served by the production and staging servers at `/static`.
@@ -234,7 +230,7 @@ The `Tabs` plugin is really useful for this, and this is how you'd use it in a m
 
 <!-- prettier-ignore -->
 ```jsx
-import { Tab, Tabs } from '~/components/plugins/Tabs';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 <Tabs>
 <Tab label="Add 1 One Way">

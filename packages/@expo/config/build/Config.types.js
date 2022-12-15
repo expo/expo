@@ -10,20 +10,15 @@ Object.defineProperty(exports, "ExpoConfig", {
   }
 });
 exports.ProjectPrivacy = void 0;
-
 function _configTypes() {
   const data = require("@expo/config-types");
-
   _configTypes = function () {
     return data;
   };
-
   return data;
 }
-
 let ProjectPrivacy;
 exports.ProjectPrivacy = ProjectPrivacy;
-
 (function (ProjectPrivacy) {
   ProjectPrivacy["PUBLIC"] = "public";
   ProjectPrivacy["UNLISTED"] = "unlisted";

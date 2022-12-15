@@ -15,6 +15,7 @@ export enum TextElement {
   UL = 'ul',
   OL = 'ol',
   PRE = 'pre',
+  STRONG = 'strong',
   KBD = 'kbd',
 }
 
@@ -27,18 +28,5 @@ export type TextComponentProps = HTMLAttributes<
   testID?: string;
   weight?: TextWeight;
   theme?: TextTheme;
-  tag?:
-    | 'code'
-    | 'h1'
-    | 'h2'
-    | 'h3'
-    | 'h4'
-    | 'h5'
-    | 'h6'
-    | 'li'
-    | 'p'
-    | 'span'
-    | 'ul'
-    | 'ol'
-    | 'pre';
+  tag?: `${TextElement}`;
 };

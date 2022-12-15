@@ -1,13 +1,11 @@
 import { css } from '@emotion/react';
 import { theme, spacing, UndoIcon, iconSize } from '@expo/styleguide';
-import React from 'react';
 import ReactMarkdown from 'react-markdown';
 
-import { InlineCode } from '~/components/base/code';
-import { LI, UL } from '~/components/base/list';
 import { H2, H3Code, H4, H4Code } from '~/components/plugins/Headings';
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
+  AccessorDefinitionData,
   MethodDefinitionData,
   MethodSignatureData,
   PropData,
@@ -28,6 +26,7 @@ import {
   STYLES_NOT_EXPOSED_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
+import { LI, UL, CODE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -43,31 +42,40 @@ export type RenderMethodOptions = {
 };
 
 export const renderMethod = (
-  method: MethodDefinitionData | PropData,
+  method: MethodDefinitionData | AccessorDefinitionData | PropData,
   { apiName, exposeInSidebar = true }: RenderMethodOptions = {}
 ): JSX.Element[] => {
-  const signatures = method.signatures || (method as PropData)?.type?.declaration?.signatures || [];
+  const signatures =
+    (method as MethodDefinitionData).signatures ||
+    (method as PropData)?.type?.declaration?.signatures ||
+    (method as AccessorDefinitionData)?.getSignature ||
+    [];
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   return signatures.map(
     ({ name, parameters, comment, type }: MethodSignatureData | TypeSignaturesData) => (
       <div
         key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
-        css={[STYLES_APIBOX, !exposeInSidebar && STYLES_APIBOX_NESTED]}>
+        css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <HeaderComponent tags={getTagNamesList(comment)}>
-          <InlineCode css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
+          <CODE css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
             {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
-          </InlineCode>
+          </CODE>
         </HeaderComponent>
-        {parameters && parameters.length > 0 && renderParams(parameters)}
+        {parameters && parameters.length > 0 && (
+          <>
+            {renderParams(parameters)}
+            <br />
+          </>
+        )}
         <CommentTextBlock comment={comment} includePlatforms={false} />
         {resolveTypeName(type) !== 'undefined' && (
           <>
             <div css={STYLES_NESTED_SECTION_HEADER}>
               <H4>Returns</H4>
             </div>
-            <UL hideBullets>
+            <UL css={STYLES_NO_BULLET_LIST}>
               <LI>
                 <UndoIcon
                   color={theme.icon.secondary}
@@ -77,9 +85,10 @@ export const renderMethod = (
                 <APIDataType typeDefinition={type} />
               </LI>
             </UL>
-            {comment?.returns && (
-              <ReactMarkdown components={mdComponents}>{comment.returns}</ReactMarkdown>
-            )}
+            <>
+              <br />
+              <ReactMarkdown components={mdComponents}>{comment?.returns ?? ''}</ReactMarkdown>
+            </>
           </>
         )}
       </div>
@@ -118,6 +127,7 @@ export const APIMethod = ({
   isReturnTypeReference = false,
   exposeInSidebar = false,
   parameters = [],
+  platforms = [],
 }: {
   exposeInSidebar?: boolean;
   name: string;
@@ -125,6 +135,7 @@ export const APIMethod = ({
   returnTypeName: string;
   isProperty: boolean;
   isReturnTypeReference: boolean;
+  platforms: ('Android' | 'iOS' | 'Web')[];
   parameters: {
     name: string;
     comment?: string;
@@ -148,6 +159,10 @@ export const APIMethod = ({
           parameters: parsedParameters,
           comment: {
             text: comment,
+            tags: platforms.map(text => ({
+              tag: 'platform',
+              text,
+            })),
           },
           type: { name: returnTypeName, type: isReturnTypeReference ? 'reference' : 'literal' },
         },
@@ -157,3 +172,8 @@ export const APIMethod = ({
     { exposeInSidebar }
   );
 };
+
+const STYLES_NO_BULLET_LIST = css({
+  listStyle: 'none',
+  marginLeft: spacing[2],
+});

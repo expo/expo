@@ -3,8 +3,8 @@ interface ProjectFile<L extends string = string> {
     language: L;
     contents: string;
 }
-declare type AppleLanguage = 'objc' | 'objcpp' | 'swift';
-export declare type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
+type AppleLanguage = 'objc' | 'objcpp' | 'swift';
+export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
 export declare function getAppDelegateHeaderFilePath(projectRoot: string): string;
 export declare function getAppDelegateFilePath(projectRoot: string): string;
 export declare function getAppDelegateObjcHeaderFilePath(projectRoot: string): string;

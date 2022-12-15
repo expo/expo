@@ -25,7 +25,14 @@ const EXPO_BETA = (0, getenv_1.boolish)('EXPO_BETA', false);
 const CWD = process.env.INIT_CWD || process.cwd();
 // Ignore some paths. Especially `package.json` as it is rendered
 // from `$package.json` file instead of the original one.
-const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
+const IGNORES_PATHS = [
+    '.DS_Store',
+    'build',
+    'node_modules',
+    'package.json',
+    '.npmignore',
+    '.gitignore',
+];
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
 /**
@@ -50,6 +57,18 @@ async function main(target, options) {
     await (0, utils_1.newStep)('Creating the module from template files', async (step) => {
         await createModuleFromTemplate(packagePath, targetDir, data);
         step.succeed('Created the module from template files');
+    });
+    await (0, utils_1.newStep)('Creating an empty Git repository', async (step) => {
+        try {
+            await (0, spawn_async_1.default)('git', ['init'], {
+                cwd: targetDir,
+                stdio: 'ignore',
+            });
+            step.succeed('Created an empty Git repository');
+        }
+        catch (e) {
+            step.fail(e.toString());
+        }
     });
     await (0, utils_1.newStep)('Installing module dependencies', async (step) => {
         await (0, packageManager_1.installDependencies)(packageManager, targetDir);
@@ -125,6 +144,12 @@ async function downloadPackageAsync(targetDir) {
         return path_1.default.join(targetDir, 'package');
     });
 }
+function handleSuffix(name, suffix) {
+    if (name.endsWith(suffix)) {
+        return name;
+    }
+    return `${name}${suffix}`;
+}
 /**
  * Creates the module based on the `ejs` template (e.g. `expo-module-template` package).
  */
@@ -135,7 +160,7 @@ async function createModuleFromTemplate(templatePath, targetPath, data) {
         const renderedRelativePath = ejs_1.default.render(file.replace(/^\$/, ''), data, {
             openDelimiter: '{',
             closeDelimiter: '}',
-            escape: (value) => value.replace('.', path_1.default.sep),
+            escape: (value) => value.replace(/\./g, path_1.default.sep),
         });
         const fromPath = path_1.default.join(templatePath, file);
         const toPath = path_1.default.join(targetPath, renderedRelativePath);
@@ -171,6 +196,8 @@ async function askForSubstitutionDataAsync(slug) {
             version: '0.1.0',
             description,
             package: projectPackage,
+            moduleName: handleSuffix(name, 'Module'),
+            viewName: handleSuffix(name, 'View'),
         },
         author: `${authorName} <${authorEmail}> (${authorUrl})`,
         license: 'MIT',

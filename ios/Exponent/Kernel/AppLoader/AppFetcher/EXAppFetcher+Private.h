@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppFetcher ()
 
-@property (nonatomic, weak) EXAppLoader *appLoader;
+@property (nonatomic, weak) EXAbstractLoader *appLoader;
 
 @property (nonatomic, strong) EXManifestsManifest * _Nullable manifest;
 @property (nonatomic, strong) NSData * _Nullable bundle;

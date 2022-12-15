@@ -127,7 +127,7 @@ Alias: `expo add`
 | `--dev-client`         | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]`    | Custom URI protocol to use with a development build                                                            |
 | `-a, --android`        | Opens your app in Expo Go on a connected Android device                                                        |
-| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
+| `-i, --ios`            | Opens your app in Expo Go in a currently running iOS Simulator on your computer                                |
 | `-w, --web`            | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]`    | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`             | Same as --host tunnel                                                                                          |
@@ -154,7 +154,7 @@ Alias: `expo r`
 | `--dev-client`                          | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]`                     | Custom URI protocol to use with a development build                                                            |
 | `-a, --android`                         | Opens your app in Expo Go on a connected Android device                                                        |
-| `-i, --ios`                             | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
+| `-i, --ios`                             | Opens your app in Expo Go in a currently running iOS Simulator on your computer                                |
 | `-w, --web`                             | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]`                     | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`                              | Same as --host tunnel                                                                                          |
@@ -168,7 +168,7 @@ Alias: `expo r`
 
 </Collapsible>
 
-<Collapsible summary={<><h4>expo start:web</h4>Start a Webpack dev server for the web app</>}>
+<Collapsible summary={<><h4>expo start:web</h4>Start a webpack dev server for the web app</>}>
 
 Alias: `expo web`
 
@@ -178,12 +178,12 @@ Alias: `expo web`
 | `--minify`                              | Minify code                                                                                                    |
 | `--https`                               | To start webpack with https protocol                                                                           |
 | `--force-manifest-type [manifest-type]` | Override auto detection of manifest type                                                                       |
-| `-p, --port [port]`                     | Port to start the Webpack bundler on. Default: 19006                                                           |
+| `-p, --port [port]`                     | Port to start the webpack bundler on. Default: 19006                                                           |
 | `-s, --send-to [dest]`                  | An email address to send a link to                                                                             |
 | `--dev-client`                          | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]`                     | Custom URI protocol to use with a development build                                                            |
 | `-a, --android`                         | Opens your app in Expo Go on a connected Android device                                                        |
-| `-i, --ios`                             | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
+| `-i, --ios`                             | Opens your app in Expo Go in a currently running iOS Simulator on your computer                                |
 | `-w, --web`                             | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]`                     | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`                              | Same as --host tunnel                                                                                          |
@@ -511,7 +511,7 @@ Alias: `expo u`
 | `--dev-client`      | Experimental: Starts the bundler for use with the expo-development-client                                      |
 | `--scheme [scheme]` | Custom URI protocol to use with a development build                                                            |
 | `-a, --android`     | Opens your app in Expo Go on a connected Android device                                                        |
-| `-i, --ios`         | Opens your app in Expo Go in a currently running iOS simulator on your computer                                |
+| `-i, --ios`         | Opens your app in Expo Go in a currently running iOS Simulator on your computer                                |
 | `-w, --web`         | Opens your app in a web browser                                                                                |
 | `-m, --host [mode]` | lan (default), tunnel, localhost. Type of host to use. "tunnel" allows you to view your link on other networks |
 | `--tunnel`          | Same as --host tunnel                                                                                          |
@@ -770,7 +770,7 @@ In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `
 
 ### Other Notes
 
-- Dev Tools UI has been deprecated in favor of the the CLI's Terminal UI, Flipper, and Remote Debugging.
+- Dev Tools UI has been deprecated in favor of the CLI's Terminal UI, Flipper, and Remote Debugging.
 - `npx expo install` now supports installing the correct version of `react-native`, `react`, `react-dom` automatically.
 - Tooling now supports `pnpm` along with Yarn and npm, the default is still Yarn.
 - Dropped the deprecated `--config` argument across all commands. Use `app.config.js` instead.

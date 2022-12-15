@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- Drop support for `.expo.*` extensions (deprecated in SDK 41). ([#19910](https://github.com/expo/expo/pull/19910) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Renamed `ExponentMediaLibrary` to `ExpoMediaLibrary` ([#20232](https://github.com/expo/expo/pull/20232) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 47.0.1 — 2022-10-30
 

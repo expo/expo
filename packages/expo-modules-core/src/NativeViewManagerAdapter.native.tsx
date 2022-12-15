@@ -17,7 +17,7 @@ type NativeExpoComponentProps = {
 /**
  * A drop-in replacement for `requireNativeComponent`.
  */
-export function requireNativeViewManager<P = any>(viewName: string): React.ComponentType<P> {
+export function requireNativeViewManager<P>(viewName: string): React.ComponentType<P> {
   const { viewManagersMetadata } = NativeModules.NativeUnimoduleProxy;
   const viewManagerConfig = viewManagersMetadata?.[viewName];
 
@@ -36,13 +36,13 @@ export function requireNativeViewManager<P = any>(viewName: string): React.Compo
   const proxiedPropsNames = viewManagerConfig?.propsNames ?? [];
 
   // Define a component for universal-module authors to access their native view manager
-  function NativeComponentAdapter(props, ref) {
+  const NativeComponentAdapter = React.forwardRef<any>((props, ref) => {
     const nativeProps = omit(props, proxiedPropsNames);
     const proxiedProps = pick(props, proxiedPropsNames);
     return <ReactNativeComponent {...nativeProps} proxiedProperties={proxiedProps} ref={ref} />;
-  }
+  }) as React.ComponentType<P>;
   NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
-  return React.forwardRef(NativeComponentAdapter);
+  return NativeComponentAdapter;
 }
 
 function omit(props: Record<string, any>, propNames: string[]) {

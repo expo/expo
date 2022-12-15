@@ -4,17 +4,38 @@
 
 ### 🛠 Breaking changes
 
+- Remove `EXPO_NO_DEFAULT_PORT` to skip extraneous tunnel port. ([#18475](https://github.com/expo/expo/pull/18475) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fix Expo Go download loading bar. ([#19817](https://github.com/expo/expo/pull/19817) by [@EvanBacon](https://github.com/EvanBacon))
+- Escape ampersands in URLs sent to adb. ([#20398](https://github.com/expo/expo/pull/20398) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix web assets not loading in Metro for web on Windows. ([#19935](https://github.com/expo/expo/pull/19935) by [@EvanBacon](https://github.com/EvanBacon))
+- Upgrade @expo/code-signing-certificates dependency. ([#20078](https://github.com/expo/expo/pull/20078) by [@wschurman](https://github.com/wschurman))
+- Fix getting UDID for network connected iOS devices. ([#20279](https://github.com/expo/expo/pull/20279) by [@Simek](https://github.com/Simek))
+- Send Exponent-Server header as JSON string for classic manifests. ([#20409](https://github.com/expo/expo/pull/20409) by [@byCedric](https://github.com/byCedric))
 - Fix `resolver.extraNodeModules` not working when running metro for web platform ([#19874](https://github.com/expo/expo/pull/19874) by [@c4605](https://github.com/bolasblack))
 - Fix `resolver.resolveRequest` not working when running metro for web platform ([#19874](https://github.com/expo/expo/pull/19874) by [@c4605](https://github.com/bolasblack))
 
 ### 💡 Others
 
 - Fix ngrok error message format. ([#19822](https://github.com/expo/expo/pull/19822) by [@EvanBacon](https://github.com/EvanBacon))
+- Tweak warning about metro config. ([#20066](https://github.com/expo/expo/pull/20066) by [@kbrandwijk](https://github.com/kbrandwijk))
+- Do not show `error.stack` for `ConfigError`s. ([#19248](https://github.com/expo/expo/pull/19248) by [@Simek](https://github.com/Simek))
+
+## 0.4.8 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fix Hermes debugger `TypeError: Only HTTP(S) protocols are supported` error when starting server with `--dev-client` parameter. ([#19919](https://github.com/expo/expo/pull/19919) by [@kudo](https://github.com/kudo))
+
+## 0.4.7 - 2022-11-07
+
+### 🐛 Bug fixes
+
+- Fix Expo Go download loading bar. ([#19817](https://github.com/expo/expo/pull/19817) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix Hermes debugger errors on Windows and Linux. ([#19872](https://github.com/expo/expo/pull/19872) by [@kudo](https://github.com/kudo))
 
 ## 0.4.6 — 2022-11-02
 

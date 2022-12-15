@@ -1,31 +1,36 @@
-import { StackNavigationProp } from '@react-navigation/stack';
+import { Image, ImageProps } from 'expo-image';
 import * as React from 'react';
-import { Animated, Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  Animated,
+  Dimensions,
+  ImageProps as RNImageProps,
+  StyleSheet,
+  Text,
+  View,
+  Image as RNImage,
+} from 'react-native';
 
 import { Colors } from '../../constants';
-import { getImageComponent, getSelectedCompareComponent } from './ImageComponents';
 import ImageTestView from './ImageTestView';
 import { resolveProps } from './resolveProps';
-import { ImageTest, Links } from './types';
+
+type ImageTest = {
+  name: string;
+  props: ImageProps | RNImageProps;
+  loadOnDemand?: boolean;
+  testInformation?: string;
+};
 
 type PropsType = {
-  navigation: StackNavigationProp<Links>;
   test: ImageTest;
-  tests: ImageTest[];
   animValue?: Animated.Value;
 };
 
-export default function ImageTestListItem({ test, animValue, tests, navigation }: PropsType) {
-  const onPress = () => {
-    navigation.push('ImageTest', {
-      test,
-      tests,
-    });
-  };
-
+export default function ImageTestListItem({ test, animValue }: PropsType) {
   const imageProps = resolveProps(test.props, animValue);
+
   return (
-    <TouchableOpacity style={styles.container} activeOpacity={0.5} onPress={onPress}>
+    <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>{test.name}</Text>
       </View>
@@ -33,18 +38,18 @@ export default function ImageTestListItem({ test, animValue, tests, navigation }
         <ImageTestView
           style={styles.image}
           imageProps={imageProps}
-          ImageComponent={getImageComponent()}
+          ImageComponent={Image}
           loadOnDemand={test.loadOnDemand}
         />
         <View style={styles.spacer} />
         <ImageTestView
           style={styles.image}
           imageProps={imageProps}
-          ImageComponent={getSelectedCompareComponent()}
+          ImageComponent={RNImage}
           loadOnDemand={test.loadOnDemand}
         />
       </View>
-    </TouchableOpacity>
+    </View>
   );
 }
 

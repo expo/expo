@@ -75,8 +75,7 @@ export const globalExtras = css`
     text-decoration: line-through;
   }
 
-  // TODO: investigate why some style is forcing nested ordered lists to have 1rem bottom margin!
-
+  // TODO(simek): investigate why some style is forcing nested ordered lists to have 1rem bottom margin!
   ul ul,
   ol ul {
     margin-bottom: 0 !important;

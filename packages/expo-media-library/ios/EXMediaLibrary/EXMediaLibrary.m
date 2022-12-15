@@ -42,7 +42,7 @@ NSString *const EXMediaLibraryShouldDownloadFromNetworkKey = @"shouldDownloadFro
 
 @implementation EXMediaLibrary
 
-EX_EXPORT_MODULE(ExponentMediaLibrary);
+EX_EXPORT_MODULE(ExpoMediaLibrary);
 
 - (instancetype) init
 {

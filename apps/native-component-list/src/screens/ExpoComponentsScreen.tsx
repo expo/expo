@@ -12,6 +12,7 @@ const screens = [
   'Checkbox',
   'DateTimePicker',
   'DrawerLayoutAndroid',
+  'ExpoMaps',
   'FlashList',
   'GL',
   'GestureHandlerList',

@@ -1,6 +1,6 @@
 import { ExpoConfig } from 'expo/config';
 import { AndroidConfig, ConfigPlugin } from 'expo/config-plugins';
-export declare type Props = {
+export type Props = {
     userInterfaceStyle?: ExpoConfig['userInterfaceStyle'];
 };
 export declare const withAndroidUserInterfaceStyle: ConfigPlugin<void>;

@@ -2,8 +2,8 @@
   "name": "<%- project.slug %>",
   "version": "<%- project.version %>",
   "description": "<%- project.description %>",
-  "main": "build/<%- project.name %>.js",
-  "types": "build/<%- project.name %>.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "expo-module build",
     "clean": "expo-module clean",
@@ -30,6 +30,8 @@
   "homepage": "<%- repo %>#readme",
   "dependencies": {},
   "devDependencies": {
+    "@types/react": "^18.0.25",
+    "@types/react-native": "^0.70.6",
     "expo-module-scripts": "^3.0.3",
     "expo-modules-core": "^1.0.0"
   },

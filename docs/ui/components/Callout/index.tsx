@@ -112,6 +112,11 @@ const containerStyle = css({
   code: {
     backgroundColor: theme.background.tertiary,
   },
+
+  // TODO(simek): remove after migration to new components is completed
+  p: {
+    marginBottom: `0 !important`,
+  },
 });
 
 const iconStyle = css({

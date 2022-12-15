@@ -2,8 +2,8 @@ import { CodeChallengeMethod } from './AuthRequest.types';
 /**
  * URL using the `https` scheme with no query or fragment component that the OP asserts as its Issuer Identifier.
  */
-export declare type Issuer = string;
-declare type ProviderMetadataEndpoints = {
+export type Issuer = string;
+type ProviderMetadataEndpoints = {
     issuer?: Issuer;
     /**
      * URL of the OP's OAuth 2.0 Authorization Endpoint.
@@ -28,7 +28,7 @@ declare type ProviderMetadataEndpoints = {
  * OpenID Providers have metadata describing their configuration.
  * [ProviderMetadata](https://openid.net/specs/openid-connect-discovery-1_0.html#ProviderMetadata)
  */
-export declare type ProviderMetadata = Record<string, string | boolean | string[]> & ProviderMetadataEndpoints & {
+export type ProviderMetadata = Record<string, string | boolean | string[]> & ProviderMetadataEndpoints & {
     /**
      * URL of the OP's JSON Web Key Set [JWK](https://openid.net/specs/openid-connect-discovery-1_0.html#JWK) document.
      */
@@ -180,7 +180,7 @@ export interface DiscoveryDocument {
      */
     discoveryDocument?: ProviderMetadata;
 }
-export declare type IssuerOrDiscovery = Issuer | DiscoveryDocument;
+export type IssuerOrDiscovery = Issuer | DiscoveryDocument;
 /**
  * Append the well known resources path and OpenID connect discovery document path to a URL
  * https://tools.ietf.org/html/rfc5785

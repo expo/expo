@@ -3,7 +3,7 @@ title: Authentication
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
-import { ASSETS, Grid, GridItem, Box, CreateAppButton } from '~/ui/components/Authentication';
+import { ASSETS, Grid, GridItem, Box } from '~/ui/components/Authentication';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
 Expo can be used to login to many popular providers on iOS, Android, and web! Most of these guides utilize the pure JS [`AuthSession` API](/versions/latest/sdk/auth-session), refer to those docs for more information on the API.
@@ -653,7 +653,7 @@ You must use the proxy service in the Expo Go app because `exp://` cannot be add
 
 #### Custom Apps
 
-For SDK 46 and above, we recommend using [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) module with [Development Builds](https://docs.expo.dev/development/introduction/).
+For SDK 46 and above, we recommend using [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) module with [development builds](https://docs.expo.dev/development/introduction/).
 
 You'll have to rebuild after adding the `react-native-fbsdk-next` as a config plugin to **app.json** or **app.config.js**:
 
@@ -1145,7 +1145,7 @@ export default function App() {
 
 [c-google]: https://console.developers.google.com/apis/credentials
 
-> Be sure to install the peerDependency `yarn add expo-application`
+> Be sure to install the peerDependency `npx expo install expo-application`
 
 There are 4 different types of client IDs you can provide:
 

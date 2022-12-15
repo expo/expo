@@ -12,12 +12,9 @@ const STYLES_TITLE = css`
 `;
 
 const STYLES_LINK = css`
-  text-decoration: none;
   display: grid;
   grid-template-columns: 20px auto;
-  text-align: left;
   grid-gap: 8px;
-  color: ${theme.link.default};
 `;
 
 const platforms = [

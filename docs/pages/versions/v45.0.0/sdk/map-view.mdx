@@ -6,7 +6,7 @@ packageName: 'react-native-maps'
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 import { Terminal } from '~/ui/components/Snippet';
 
 **`react-native-maps`** provides a Map component that uses Apple Maps or Google Maps on iOS and Google Maps on Android. Expo uses react-native-maps at [react-community/react-native-maps](https://github.com/react-community/react-native-maps). No setup required for use within the Expo Go app. See below for instructions on how to configure for deployment as a standalone app on Android and iOS.
@@ -24,9 +24,9 @@ See full documentation at [react-native-maps/react-native-maps](https://github.c
 <SnackInline label='MapView' dependencies={['react-native-maps']}>
 
 ```jsx
-import * as React from 'react';
+import React from 'react';
 import MapView from 'react-native-maps';
-import { StyleSheet, Text, View, Dimensions } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 
 export default function App() {
   return (
@@ -39,13 +39,10 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   map: {
-    width: Dimensions.get('window').width,
-    height: Dimensions.get('window').height,
+    width: '100%',
+    height: '100%',
   },
 });
 ```
@@ -54,15 +51,15 @@ const styles = StyleSheet.create({
 
 ## Configuration
 
-No additional configuration is necessary to use `react-native-maps` in Expo Go. However, once you want to deploy your standalone app you should follow instructions below.
+No additional configuration is necessary to use `react-native-maps` in Expo Go. However, once you want to deploy your standalone app you should follow the instructions below.
 
 ### Configuring for web
 
-> Web is experimental! We do not recommend using this library on web yet.
+> **warning** Web support is experimental! We do not recommend using this library on the web yet.
 
-To use this in web, add the following script to your **web/index.html**. This script may already be present, if this is the case, just replace the `API_KEY` with your Google Maps API key which you can obtain here: [Google Maps: Get API key](https://developers.google.com/maps/documentation/javascript/get-api-key)
+To use this on the web, add the following script to your **web/index.html**. This script may already be present. If this is the case, just replace the `API_KEY` with your Google Maps API key which you can obtain here: [Google Maps: Get API key](https://developers.google.com/maps/documentation/javascript/get-api-key)
 
-```html
+```html web/index.html
 <!DOCTYPE html>
 <html lang="en">
   <head>

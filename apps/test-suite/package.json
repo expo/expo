@@ -30,7 +30,7 @@
     "expo-device": "~5.0.0",
     "expo-eas-client": "~0.4.0",
     "expo-file-system": "~15.1.0",
-    "expo-gl": "~12.0.0",
+    "expo-gl": "~12.1.0",
     "expo-haptics": "~12.0.0",
     "expo-image-manipulator": "~11.0.0",
     "expo-keep-awake": "~11.0.0",
@@ -52,9 +52,8 @@
     "jasmine-core": "^2.4.1",
     "lodash": "^4.17.19",
     "react": "18.1.0",
-    "react-native": "0.70.4",
+    "react-native": "0.70.5",
     "react-native-gesture-handler": "~2.8.0",
-    "react-native-safe-area-view": "^0.14.8",
     "sinon": "^7.1.1"
   },
   "devDependencies": {

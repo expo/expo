@@ -24,7 +24,7 @@ export const dpiValues: dpiMap = {
   xxhdpi: { folderName: 'mipmap-xxhdpi', scale: 3 },
   xxxhdpi: { folderName: 'mipmap-xxxhdpi', scale: 4 },
 };
-const BASELINE_PIXEL_SIZE = 48;
+const BASELINE_PIXEL_SIZE = 108;
 export const ANDROID_RES_PATH = 'android/app/src/main/res/';
 const MIPMAP_ANYDPI_V26 = 'mipmap-anydpi-v26';
 const ICON_BACKGROUND = 'iconBackground';
@@ -32,11 +32,13 @@ const IC_LAUNCHER_PNG = 'ic_launcher.png';
 const IC_LAUNCHER_ROUND_PNG = 'ic_launcher_round.png';
 const IC_LAUNCHER_BACKGROUND_PNG = 'ic_launcher_background.png';
 const IC_LAUNCHER_FOREGROUND_PNG = 'ic_launcher_foreground.png';
+const IC_LAUNCHER_MONOCHROME_PNG = 'ic_launcher_monochrome.png';
 const IC_LAUNCHER_XML = 'ic_launcher.xml';
 const IC_LAUNCHER_ROUND_XML = 'ic_launcher_round.xml';
 
 export const withAndroidIcons: ConfigPlugin = (config) => {
-  const { foregroundImage, backgroundColor, backgroundImage } = getAdaptiveIcon(config);
+  const { foregroundImage, backgroundColor, backgroundImage, monochromeImage } =
+    getAdaptiveIcon(config);
   const icon = foregroundImage ?? getIcon(config);
 
   if (!icon) {
@@ -53,6 +55,7 @@ export const withAndroidIcons: ConfigPlugin = (config) => {
         icon,
         backgroundColor,
         backgroundImage,
+        monochromeImage,
         isAdaptive: !!config.android?.adaptiveIcon,
       });
       return config;
@@ -91,6 +94,7 @@ export function getAdaptiveIcon(config: ExpoConfig) {
     foregroundImage: config.android?.adaptiveIcon?.foregroundImage ?? null,
     backgroundColor: config.android?.adaptiveIcon?.backgroundColor ?? null,
     backgroundImage: config.android?.adaptiveIcon?.backgroundImage ?? null,
+    monochromeImage: config.android?.adaptiveIcon?.monochromeImage ?? null,
   };
 }
 
@@ -105,11 +109,13 @@ export async function setIconAsync(
     icon,
     backgroundColor,
     backgroundImage,
+    monochromeImage,
     isAdaptive,
   }: {
     icon: string | null;
     backgroundColor: string | null;
     backgroundImage: string | null;
+    monochromeImage: string | null;
     isAdaptive: boolean;
   }
 ) {
@@ -123,7 +129,7 @@ export async function setIconAsync(
   } else {
     await deleteIconNamedAsync(projectRoot, IC_LAUNCHER_ROUND_PNG);
   }
-  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, isAdaptive);
+  await configureAdaptiveIconAsync(projectRoot, icon, backgroundImage, monochromeImage, isAdaptive);
 
   return true;
 }
@@ -177,8 +183,16 @@ export async function configureAdaptiveIconAsync(
   projectRoot: string,
   foregroundImage: string,
   backgroundImage: string | null,
+  monochromeImage: string | null,
   isAdaptive: boolean
 ) {
+  if (monochromeImage) {
+    await generateMonochromeImageAsync(projectRoot, {
+      icon: monochromeImage,
+      imageCacheFolder: 'android-adaptive-monochrome',
+      outputImageFileName: IC_LAUNCHER_MONOCHROME_PNG,
+    });
+  }
   await generateMultiLayerImageAsync(projectRoot, {
     backgroundColor: 'transparent',
     backgroundImage,
@@ -190,7 +204,7 @@ export async function configureAdaptiveIconAsync(
   });
 
   // create ic_launcher.xml and ic_launcher_round.xml
-  const icLauncherXmlString = createAdaptiveIconXmlString(backgroundImage);
+  const icLauncherXmlString = createAdaptiveIconXmlString(backgroundImage, monochromeImage);
   await createAdaptiveIconXmlFiles(
     projectRoot,
     icLauncherXmlString,
@@ -207,13 +221,24 @@ function setBackgroundColor(backgroundColor: string | null, colors: ResourceXML)
   });
 }
 
-export const createAdaptiveIconXmlString = (backgroundImage: string | null) => {
+export const createAdaptiveIconXmlString = (
+  backgroundImage: string | null,
+  monochromeImage: string | null
+) => {
   const background = backgroundImage ? `@mipmap/ic_launcher_background` : `@color/iconBackground`;
+
+  const iconElements: string[] = [
+    `<background android:drawable="${background}"/>`,
+    '<foreground android:drawable="@mipmap/ic_launcher_foreground"/>',
+  ];
+
+  if (monochromeImage) {
+    iconElements.push('<monochrome android:drawable="@mipmap/ic_launcher_monochrome"/>');
+  }
 
   return `<?xml version="1.0" encoding="utf-8"?>
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
-    <background android:drawable="${background}"/>
-    <foreground android:drawable="@mipmap/ic_launcher_foreground"/>
+    ${iconElements.join('\n    ')}
 </adaptive-icon>`;
 };
 
@@ -299,6 +324,26 @@ async function generateMultiLayerImageAsync(
 
     await fs.ensureDir(dpiFolder);
     await fs.writeFile(path.resolve(dpiFolder, outputImageFileName), iconLayer);
+  });
+}
+
+async function generateMonochromeImageAsync(
+  projectRoot: string,
+  {
+    icon,
+    imageCacheFolder,
+    outputImageFileName,
+  }: { icon: string; imageCacheFolder: string; outputImageFileName: string }
+) {
+  await iterateDpiValues(projectRoot, async ({ dpiFolder, scale }) => {
+    const monochromeIcon = generateIconAsync(projectRoot, {
+      cacheType: imageCacheFolder,
+      src: icon,
+      scale,
+      backgroundColor: 'transparent',
+    });
+    await fs.ensureDir(dpiFolder);
+    await fs.writeFile(path.resolve(dpiFolder, outputImageFileName), monochromeIcon);
   });
 }
 

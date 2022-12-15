@@ -142,12 +142,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
-    },
-    name: 'FirebaseRecaptcha',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/FontScreen'));
     },
     name: 'Font',
@@ -269,6 +263,12 @@ export const Screens = [
       return optionalRequire(() => require('../screens/NetworkScreen'));
     },
     name: 'Network',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/CryptoScreen'));
+    },
+    name: 'Crypto',
   },
   {
     getComponent() {

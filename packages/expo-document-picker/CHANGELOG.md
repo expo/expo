@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
@@ -56,6 +58,7 @@ _This version does not introduce any user-facing changes._
 
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Handle nil MIME type. ([#16156](https://github.com/expo/expo/pull/16156) by [@brentvatne](https://github.com/brentvatne))
+- Fix incorrectly allowing multiple document selection ([#20363](https://github.com/expo/expo/pull/20363)) by [@alanhughes](https://github.com/alanjhughes)
 
 ## 10.1.1 - 2022-01-26
 

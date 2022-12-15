@@ -6,11 +6,13 @@ on:
     paths:
       - .github/workflows/cli.yml
       - packages/@expo/cli/**
+      - packages/@expo/fingerprint/**
       - yarn.lock
   pull_request:
     paths:
       - .github/workflows/cli.yml
       - packages/@expo/cli/**
+      - packages/@expo/fingerprint/**
       - yarn.lock
   schedule:
     - cron: 0 14 * * *
@@ -50,6 +52,9 @@ jobs:
       - name: E2E Test CLI
         run: yarn test:e2e
         working-directory: packages/@expo/cli
+      - name: E2E Test @expo/fingerprint
+        run: yarn test:e2e
+        working-directory: packages/@expo/fingerprint
       # - name: 🔔 Notify on Slack
       #   uses: 8398a7/action-slack@v3
       #   if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))

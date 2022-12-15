@@ -1,5 +1,6 @@
 ---
-title: Configuration with app.json / app.config.js
+title: Configuration with app.json/app.config.js
+description: Learn about what is Expo config and how you can dynamically use it by customizing it.
 ---
 
 import PossibleRedirectNotification from '~/components/plugins/PossibleRedirectNotification';
@@ -133,12 +134,11 @@ Or you can use any other mechanism that you are comfortable with for environment
 You can use autocomplete and doc-blocks with an Expo config in TypeScript. Create an **app.config.ts** with the following contents:
 
 ```ts app.config.ts
-// `@expo/config` is installed with the `expo` package
-// ensuring the versioning is correct.
-import { ExpoConfig, ConfigContext } from '@expo/config';
+import { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   ...config,
+  slug: 'my-app',
   name: 'My App',
 });
 ```

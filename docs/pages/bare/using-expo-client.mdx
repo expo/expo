@@ -1,19 +1,19 @@
 ---
 title: Custom native code in Expo Go
-sidebar_title: Using Expo Go
+description: Learn how to detect and disable unsupported native features in Expo Go.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { InlineCode } from '~/components/base/code';
+import { CODE } from '~/ui/components/Text';
 import { SnackInline } from '~/ui/components/Snippet';
 
-The [Expo Go][expo-go] app is capable of running most React Native apps regardless of how they are bootstrapped. Developing any React Native app in Expo Go is useful because you can distribute your project instantly to the members of your [organization](/accounts/account-types/#organizations), and no native build or provisioning is required.
+The [Expo Go][expo-go] app can be used to experiment with most React Native apps regardless of how they are bootstrapped.
 
-The main drawback of developing in Expo Go is that it is impossible to send custom native code over-the-air to the Expo Go app. This means you will need to do one of the following:
+The main drawback of iterating with Expo Go is that it is impossible to send custom native code over-the-air to the Expo Go app. This means you will need to do one of the following:
 
 1. Create a [development build](/development/introduction) to use custom native code, and distribute it with [internal distribution](/build/internal-distribution) or TestFlight.
-2. Conditionally disable unsupported native features and distribute with Expo Go.
+2. Conditionally disable unsupported native features in Expo Go.
 
 This guide will demonstrate achieving the second option by compatible library versions, detecting whether the code is running in an Expo Go app at run time, native module detection, and so on.
 
@@ -26,18 +26,18 @@ Inside any React Native app, start a [development server with Expo CLI](/workflo
 <BoxLink
   title={
     <>
-      Don't have <InlineCode>npx expo start</InlineCode>?
+      Don't have <CODE>npx expo start</CODE>?
     </>
   }
   href="/bare/installing-expo-modules"
   description={
     <>
-      Install and configure the <InlineCode>expo</InlineCode> package in your project.
+      Install and configure the <CODE>expo</CODE> package in your project.
     </>
   }
 />
 
-Then, launch your app in Expo Go by pressing <kbd>i</kbd> or <kbd>a</kbd> in the Terminal UI. Some features may cause your app to throw errors because certain native code is missing, continue reading to learn how you can conditionally skip unsupported APIs.
+Then, launch your project in Expo Go by pressing <kbd>i</kbd> or <kbd>a</kbd> in the Terminal UI. Some features may cause your app to throw errors because certain native code is missing, continue reading to learn how you can conditionally skip unsupported APIs.
 
 > Unlike `npx react-native start` the command `npx expo start` hosts an app manifest that dev clients like Expo Go can use to load arbitrary projects. Think of an app manifest like the `<head />` element of an `index.html` but for React Native apps. To view this manifest, visit the dev server URL in your web browser.
 
@@ -98,7 +98,7 @@ export default function App() {
 
 </SnackInline>
 
-If you run this code in the Expo Go app, you'll see the fallback view. If you are able to build this locally with the [Expo CLI run commands](/workflow/expo-cli#compiling) then you'll see the native blur hash view.
+If you run this code in the Expo Go app, you'll see the fallback view. If you can build this locally with the [Expo CLI run commands](/workflow/expo-cli#compiling) then you'll see the native blur hash view.
 
 ## Native module detection
 

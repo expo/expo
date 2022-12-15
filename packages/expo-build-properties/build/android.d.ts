@@ -1,4 +1,4 @@
-import { ConfigPlugin } from '@expo/config-plugins';
+import { ConfigPlugin } from 'expo/config-plugins';
 import type { PluginConfigType } from './pluginConfig';
 export declare const withAndroidBuildProperties: ConfigPlugin<PluginConfigType>;
 /**
@@ -6,10 +6,15 @@ export declare const withAndroidBuildProperties: ConfigPlugin<PluginConfigType>;
  */
 export declare const withAndroidProguardRules: ConfigPlugin<PluginConfigType>;
 /**
+ * Purge generated proguard contents from previous prebuild.
+ * This plugin only runs once in the prebuilding phase and should execute before any `withAndroidProguardRules` calls.
+ */
+export declare const withAndroidPurgeProguardRulesOnce: ConfigPlugin;
+/**
  * Update `newProguardRules` to original `proguard-rules.pro` contents if needed
  *
  * @param contents the original `proguard-rules.pro` contents
- * @param newProguardRules new proguard rules to add. If the value is null, the generated proguard rules will be cleanup
- * @returns return string when results is updated or return null when nothing changed.
+ * @param newProguardRules new proguard rules to add. If the value is null, the returned value will be original `contents`.
+ * @returns return updated contents
  */
-export declare function updateAndroidProguardRules(contents: string, newProguardRules: string | null): string | null;
+export declare function updateAndroidProguardRules(contents: string, newProguardRules: string | null, updateMode: 'append' | 'overwrite'): string;

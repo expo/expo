@@ -3,89 +3,73 @@ import path from 'path';
 
 import {
   getGoogleServicesFile,
-  getGoogleSignInReservedClientId,
-  setGoogleSignInReservedClientId,
+  getGoogleSignInReversedClientId,
+  setGoogleSignInReversedClientId,
 } from '../Google';
 import { appendScheme } from '../Scheme';
 
 jest.mock('fs');
-jest.mock('../Scheme');
+jest.mock('../Scheme', () => ({
+  appendScheme: jest.fn((...props) => jest.requireActual('../Scheme').appendScheme(...props)),
+}));
 
-const originalFs = jest.requireActual('fs');
+const googleServicesFixture = jest
+  .requireActual('fs')
+  .readFileSync(path.join(__dirname, 'fixtures/GoogleService-Info.plist'), 'utf-8');
 
-describe('ios google config', () => {
-  const projectRoot = '/testproject';
-
+describe(getGoogleSignInReversedClientId, () => {
   afterEach(() => vol.reset());
-
-  it(`returns null from all getters if no value provided`, () => {
-    expect(getGoogleSignInReservedClientId({}, { projectRoot: null })).toBe(null);
+  it(`returns null when no file is defined`, () => {
+    expect(getGoogleSignInReversedClientId({}, { projectRoot: '' })).toBe(null);
     expect(getGoogleServicesFile({})).toBe(null);
   });
+  it(`returns the REVERSED_CLIENT_ID from the linked file`, () => {
+    vol.fromJSON(
+      {
+        'path/to/GoogleService-Info.plist': googleServicesFixture,
+      },
+      '/'
+    );
 
-  it(`returns the correct values from all getters if a value is provided`, () => {
+    const config = {
+      ios: { googleServicesFile: './path/to/GoogleService-Info.plist' },
+    };
+
+    expect(getGoogleServicesFile(config)).toBe('./path/to/GoogleService-Info.plist');
+    expect(getGoogleSignInReversedClientId(config, { projectRoot: '/' })).toBe(
+      'com.googleusercontent.apps.1234567890123-abcdef'
+    );
+  });
+});
+
+describe(setGoogleSignInReversedClientId, () => {
+  afterEach(() => vol.reset());
+
+  it(`adds the reversed client id to scheme from GoogleService-Info.Plist`, () => {
+    vol.fromJSON(
+      {
+        'path/to/GoogleService-Info.plist': googleServicesFixture,
+      },
+      '/'
+    );
+
     expect(
-      getGoogleSignInReservedClientId(
+      setGoogleSignInReversedClientId(
         {
-          ios: { config: { googleSignIn: { reservedClientId: '000' } } },
+          ios: { googleServicesFile: './path/to/GoogleService-Info.plist' },
         },
-        { projectRoot: null }
+        {},
+        { projectRoot: '/' }
       )
-    ).toBe('000');
-    expect(
-      getGoogleServicesFile({ ios: { googleServicesFile: './path/to/GoogleService-Info.plist' } })
-    ).toBe('./path/to/GoogleService-Info.plist');
-  });
-
-  it(`adds the reserved client id to scheme if provided`, () => {
-    vol.fromJSON(
-      {
-        'path/to/GoogleService-Info.plist': originalFs.readFileSync(
-          path.join(__dirname, 'fixtures/GoogleService-Info.plist'),
-          'utf-8'
-        ),
-      },
-      projectRoot
-    );
-
-    const infoPlist = {};
-    setGoogleSignInReservedClientId(
-      {
-        ios: {
-          config: { googleSignIn: { reservedClientId: 'client-id-scheme' } },
-          googleServicesFile: './path/to/GoogleService-Info.plist',
-        },
-      },
-      infoPlist,
-      { projectRoot }
-    );
-
-    expect(appendScheme).toHaveBeenCalledWith('client-id-scheme', infoPlist);
-  });
-
-  it(`adds the reserved client id to scheme from GoogleService-Info.Plist`, () => {
-    vol.fromJSON(
-      {
-        'path/to/GoogleService-Info.plist': originalFs.readFileSync(
-          path.join(__dirname, 'fixtures/GoogleService-Info.plist'),
-          'utf-8'
-        ),
-      },
-      projectRoot
-    );
-
-    const infoPlist = {};
-    setGoogleSignInReservedClientId(
-      {
-        ios: { googleServicesFile: './path/to/GoogleService-Info.plist' },
-      },
-      infoPlist,
-      { projectRoot }
-    );
+    ).toEqual({
+      CFBundleURLTypes: [
+        { CFBundleURLSchemes: ['com.googleusercontent.apps.1234567890123-abcdef'] },
+      ],
+    });
 
     expect(appendScheme).toHaveBeenCalledWith(
       'com.googleusercontent.apps.1234567890123-abcdef',
-      infoPlist
+      {}
     );
   });
 });

@@ -1,5 +1,10 @@
 # expo-random
 
+## ⚠️ Deprecated
+
+This package is now deprecated in favor of `expo-crypto`, which provides the same functionality.
+To migrate, replace all imports from `expo-random` with imports from `expo-crypto`.
+
 Provides a native interface for creating strong random bytes. With `Random` you can generate random values to address use cases that other APIs like the web's `crypto.getRandomValues` and Node's `crypto.randomBytes` might address.
 
 # Installation in managed Expo projects
