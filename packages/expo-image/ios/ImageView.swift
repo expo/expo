@@ -7,6 +7,8 @@ private typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
 // swiftlint:disable:next type_body_length
 public final class ImageView: ExpoView {
+  static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
+
   let sdImageView = SDAnimatedImageView(frame: .zero)
 
   // Custom image manager doesn't use shared loaders managers by default,
@@ -120,6 +122,9 @@ public final class ImageView: ExpoView {
     context[.originalStoreCacheType] = sdCacheType
     context[.queryCacheType] = SDImageCacheType.none.rawValue
     context[.storeCacheType] = SDImageCacheType.none.rawValue
+
+    // Some loaders (e.g. blurhash) need access to the source.
+    context[ImageView.contextSourceKey] = source
 
     onLoadStart([:])
 
@@ -239,6 +244,9 @@ public final class ImageView: ExpoView {
     // so just `disk` policy sounds like a good idea.
     context[.queryCacheType] = SDImageCacheType.disk.rawValue
     context[.storeCacheType] = SDImageCacheType.disk.rawValue
+
+    // Some loaders (e.g. blurhash) need access to the source.
+    context[ImageView.contextSourceKey] = placeholder
 
     imageManager.loadImage(with: placeholder.uri, context: context, progress: nil) { [weak self] placeholder, _, _, _, finished, _ in
       guard let self = self, let placeholder = placeholder, finished else {
