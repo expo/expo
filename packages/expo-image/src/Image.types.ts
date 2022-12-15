@@ -136,11 +136,14 @@ export type ImageProps = AccessibilityProps & {
 };
 
 /**
+ * It narrows down some props to types expected by the native/web side.
  * @hidden
  */
 export interface ImageNativeProps extends ImageProps {
   source?: ImageSource[];
   placeholder?: ImageSource[];
+  contentPosition?: ImageContentPositionObject;
+  transition?: ImageTransition | null;
 }
 
 /**

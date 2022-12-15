@@ -65,7 +65,7 @@ export function resolveContentPosition(contentPosition) {
         }
         return contentPositionObject;
     }
-    return contentPosition;
+    return contentPosition ?? { top: '50%', left: '50%' };
 }
 /**
  * If `transition` or `fadeDuration` is a number, it's resolved to a cross dissolve transition with the given duration.
@@ -82,6 +82,6 @@ export function resolveTransition(transition, fadeDuration) {
         }
         return { duration: fadeDuration };
     }
-    return transition;
+    return transition ?? null;
 }
 //# sourceMappingURL=utils.js.map
