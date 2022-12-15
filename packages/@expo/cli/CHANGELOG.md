@@ -19,7 +19,7 @@
 
 - Fix ngrok error message format. ([#19822](https://github.com/expo/expo/pull/19822) by [@EvanBacon](https://github.com/EvanBacon))
 - Tweak warning about metro config. ([#20066](https://github.com/expo/expo/pull/20066) by [@kbrandwijk](https://github.com/kbrandwijk))
-- Avoid dependency on `uuid`. ([#20479](https://github.com/expo/expo/pull/20479) by [@LinusU](https://github.com/LinusU))
+- Remove `uuid` dependency. ([#20479](https://github.com/expo/expo/pull/20479) by [@LinusU](https://github.com/LinusU))
 
 ## 0.4.8 - 2022-11-08
 
