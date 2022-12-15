@@ -3,8 +3,10 @@ package expo.modules.image
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import com.bumptech.glide.RequestManager
+import com.bumptech.glide.request.ThumbnailRequestCoordinator
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import expo.modules.image.enums.ContentFit
 import java.lang.ref.WeakReference
 
 /**
@@ -41,6 +43,8 @@ class ViewConnectedTarget(
 
   private var state = State.FREE
 
+  var placeholderContentFit: ContentFit = ContentFit.ScaleDown
+
   /**
    * Gets the currently unused target.
    * We get the current target if it's free or running. Otherwise we get the background one.
@@ -70,6 +74,9 @@ class ViewConnectedTarget(
     // In that case, we should display the placeholder.
     if (bgTarget?.state == State.FREE) {
       imageView.setImageDrawable(placeholder)
+      if (placeholder != null) {
+        imageView.applyTransformationMatrix(placeholder, placeholderContentFit)
+      }
     }
 
     // The background target shouldn't be running, because it means that we have
@@ -96,10 +103,27 @@ class ViewConnectedTarget(
   override fun onResourceReady(resource: Drawable, transition: Transition<in Drawable>?) {
     val imageView = imageView
     // Image was deallocated - something went wrong.
-    // We are trying to clear the memory by removing targets form Glide's registry.
+    // We are trying to clear the memory by removing targets from Glide's registry.
     if (imageView == null) {
       clearBothTargets()
       return
+    }
+
+    var isPlaceholder = false
+    val request = request
+    if (request is ThumbnailRequestCoordinator) {
+      val fullRequest = request.getPrivateFullRequest()
+      // The thumbnail and full request are handled in the same way by Glide.
+      // Here we're checking if the provided resource is the final bitmap or it is a thumbnail.
+      if (fullRequest?.isComplete != true) {
+        // We know that we received a thumbnail.
+        // But if something is already displayed, we don't want to show the placeholder.
+        if (imageView.drawable != null) {
+          return
+        }
+
+        isPlaceholder = true
+      }
     }
 
     state = State.ACTIVE
@@ -109,7 +133,12 @@ class ViewConnectedTarget(
     }
 
     imageView.setImageDrawable(resource)
-    imageView.applyTransformationMatrix()
+    if (isPlaceholder) {
+      imageView.applyTransformationMatrix(resource, placeholderContentFit)
+    } else {
+      imageView.applyTransformationMatrix()
+    }
+
     if (resource is Animatable) {
       resource.start()
     }
@@ -121,7 +150,7 @@ class ViewConnectedTarget(
     }
   }
 
-  private fun clearBothTargets() {
+  fun clearBothTargets() {
     clearSelf()
     clearBgTarget()
   }

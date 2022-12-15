@@ -155,6 +155,18 @@ class ExpoImageView(
     }
   }
 
+  fun applyTransformationMatrix(drawable: Drawable, contentFit: ContentFit) {
+    val imageRect = RectF(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
+    val viewRect = RectF(0f, 0f, width.toFloat(), height.toFloat())
+
+    val matrix = contentFit.toMatrix(imageRect, viewRect)
+    val scaledImageRect = imageRect.transform(matrix)
+
+    imageMatrix = matrix.apply {
+      ContentPosition().apply(this, scaledImageRect, viewRect)
+    }
+  }
+
   private val borderDrawable
     get() = borderDrawableLazyHolder.value
 
@@ -255,7 +267,7 @@ class ExpoImageView(
     val sourceToLoad = bestSource?.createGlideModel(context)
 
     if (bestSource == null || sourceToLoad == null) {
-      requestManager.clear(this)
+      target.clearBothTargets()
       setImageDrawable(null)
       loadedSource = null
       transformationMatrixChanged = false
@@ -278,18 +290,29 @@ class ExpoImageView(
 
       expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
 
+      val newTarget = target.getUnusedTarget() ?: return
+
       val placeholder = bestPlaceholder?.createGlideModel(context)
       val request = requestManager
         .asDrawable()
         .load(sourceToLoad.glideData)
-        .apply { if (placeholder != null) thumbnail(requestManager.load(placeholder.glideData)) }
+        .apply {
+          if (placeholder != null) {
+            thumbnail(requestManager.load(placeholder.glideData))
+            val placeholderContentFit = if (bestPlaceholder?.isBlurhash() == true) {
+              contentFit
+            } else {
+              ContentFit.ScaleDown
+            }
+            newTarget.placeholderContentFit = placeholderContentFit
+          }
+        }
         .apply(options)
         .downsample(DownsampleStrategy.NONE)
         .addListener(GlideRequestListener(expoImageViewWrapper))
         .encodeQuality(100)
         .apply(propOptions)
 
-      val newTarget = target.getUnusedTarget() ?: return
       request.into(newTarget)
     } else {
       // In the case where the source didn't change, but the transformation matrix has to be

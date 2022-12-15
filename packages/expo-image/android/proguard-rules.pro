@@ -1,5 +1,6 @@
 # https://bumptech.github.io/glide/doc/download-setup.html#proguard
 
+-keep public class * implements com.bumptech.glide.module.LibraryGlideModule
 -keep public class * implements com.bumptech.glide.module.GlideModule
 -keep public class * extends com.bumptech.glide.module.AppGlideModule
 -keep public enum com.bumptech.glide.load.ImageHeaderParser$** {
@@ -18,3 +19,7 @@
 -keep public class com.bumptech.glide.integration.webp.WebpImage { *; }
 -keep public class com.bumptech.glide.integration.webp.WebpFrame { *; }
 -keep public class com.bumptech.glide.integration.webp.WebpBitmapFactory { *; }
+
+-keep public class com.bumptech.glide.requestThumbnailRequestCoordinator {
+  *;
+}
