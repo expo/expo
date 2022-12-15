@@ -71,7 +71,7 @@ When referencing a specific platform app store, use "Apple App Store" or "Google
 
 ### Referencing "apps"
 
-The words "app" or "application" are used interchangeably since we use both at different places. However, use "app" or "application" when generally referring to a .ipa, .apk or .aab file.
+The words "app" or "application" are used interchangeably since we use both at different places. However, use "app" or "application" when generally referring to an .ipa, .apk or .aab file.
 
 Use ".ipa" or ".apk" or ".aab" only when referring specifically to that extension.
 
@@ -93,7 +93,7 @@ Use external product names in the same way as they are used industry-wide. For e
 
 ### Referencing Bytes and Bits
 
-Always use the capital "B" for bytes. Write "bit" or a lowercase "b" for bits. For example:
+Always use a capital "B" for bytes. Write "bit" or a lowercase "b" for bits. For example:
 
 - byte units: kB, MB, GB, TB
 - bit units: kbit, Mbit, Gbit, Tbit
@@ -373,7 +373,7 @@ Standardize on the term URL. URI and IRI are just confusing. In practice, a sing
 - Most Expo APIs work with powers of two like kibibytes. Write "KiB", "MiB", and "GiB" to communicate clearly to developers. We do not need to explain that a KiB refers to 1,024 bytes.
 - Some APIs, especially those related to disk storage and transmission rates like baud rates, use powers of 10. Write "kB", "MB", and "GB" **and** be clear we're referring to 1,000 bytes, 1,000,000 bytes, and so on.
 - Typically write "kbit", "Mbit", and "Gbit" when referring to bits to remove ambiguity between bits and bytes. Both "kbit/s" and "kbps" are acceptable when describing rates.
-  Always use the capital "B" for bytes. Write "bit" or a lowercase "b" for bits.
+  Always use a capital "B" for bytes. Write "bit" or a lowercase "b" for bits.
 - Insert a space between the number and unit, like "10 MiB".
 - Decimal byte units: kB, MB, GB, TB
 - Binary byte units: kiB, MiB, GiB, TiB
