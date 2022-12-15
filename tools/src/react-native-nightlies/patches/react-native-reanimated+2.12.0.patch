@@ -40,7 +40,7 @@ index 65c8c1d..0e580bf 100644
  elseif(${JS_RUNTIME} STREQUAL "v8")
      string(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_V8=1")
 diff --git a/node_modules/react-native-reanimated/android/build.gradle b/node_modules/react-native-reanimated/android/build.gradle
-index a38b2a5..e4311d4 100644
+index a38b2a5..b923fd1 100644
 --- a/node_modules/react-native-reanimated/android/build.gradle
 +++ b/node_modules/react-native-reanimated/android/build.gradle
 @@ -197,7 +197,7 @@ def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
@@ -103,7 +103,7 @@ index a38b2a5..e4311d4 100644
      }
      implementation "com.facebook.react:react-native:+" // From node_modules
      implementation "androidx.transition:transition:1.1.0"
-@@ -955,20 +959,37 @@ dependencies {
+@@ -955,20 +959,40 @@ dependencies {
      extractSO(files(jscAAR))
  }
  
@@ -112,7 +112,8 @@ index a38b2a5..e4311d4 100644
 +task downloadReactNativeNightlyAAR(type: Download) {
 +  def classifier = resolveBuildType() == 'Debug' ? 'debug' : 'release'
 +  def downloadFile = file("${downloadsDir}/react-native-nightly.aar")
-+  src("https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.facebook.react&a=react-native&c=\${classifier}&e=aar&v=\${version}-SNAPSHOT")
++  def version = reactProperties.getProperty("VERSION_NAME")
++  src("https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.facebook.react&a=react-android&c=${classifier}&e=aar&v=${version}-SNAPSHOT")
 +  onlyIfNewer(true)
 +  overwrite(false)
 +  dest(downloadFile)
@@ -130,24 +131,24 @@ index a38b2a5..e4311d4 100644
 +    def rnAarMatcher = "**/react-native/**/*\${buildType}.aar"
      if (REACT_NATIVE_MINOR_VERSION < 69) {
 -        rnAarMatcher = "**/**/*.aar"
--    }
++      rnAarMatcher = "**/**/*.aar"
+     }
 -    def rnAAR = fileTree("$reactNativeRootDir/android").matching({ it.include rnAarMatcher }).singleFile
 -    def file = rnAAR.absoluteFile
 -    def packageName = file.name.tokenize('-')[0]
--    copy {
--        from zipTree(file)
--        into "$reactNativeRootDir/ReactAndroid/src/main/jni/first-party/$packageName/"
--        include "jni/**/*.so"
-+      rnAarMatcher = "**/**/*.aar"
-     }
 +    rnAAR = fileTree("$reactNativeRootDir/android").matching({ it.include rnAarMatcher }).singleFile
 +  }
 +  def file = rnAAR.absoluteFile
 +  def packageName = file.name.tokenize('-')[0]
-+  copy {
-+    from zipTree(file)
-+    into "$reactNativeRootDir/ReactAndroid/src/main/jni/first-party/$packageName/"
-+    include "jni/**/*.so"
++  doLast {
+     copy {
+-        from zipTree(file)
+-        into "$reactNativeRootDir/ReactAndroid/src/main/jni/first-party/$packageName/"
+-        include "jni/**/*.so"
++     from zipTree(file)
++      into "$reactNativeRootDir/ReactAndroid/src/main/jni/first-party/$packageName/"
++      include "jni/**/*.so"
+     }
 +  }
  }
  
