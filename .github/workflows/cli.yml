@@ -40,9 +40,6 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🚨 Lint CLI
-        run: yarn lint --max-warnings 0
-        working-directory: packages/@expo/cli
       - name: 🔎 Type Check CLI
         run: yarn typecheck
         working-directory: packages/@expo/cli
