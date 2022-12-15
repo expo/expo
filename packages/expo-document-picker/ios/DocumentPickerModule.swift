@@ -23,28 +23,10 @@ public class DocumentPickerModule: Module, PickingResultHandler {
         throw MissingViewControllerException()
       }
 
-      var documentPickerVC: UIDocumentPickerViewController
-
-      if #available(iOS 14.0, *) {
-        let utTypes = options.type.compactMap { $0.toUTType() }
-        documentPickerVC = UIDocumentPickerViewController(
-          forOpeningContentTypes: utTypes,
-          asCopy: true
-        )
-      } else {
-        let utiTypes = options.type.map { $0.toUTI() }
-        documentPickerVC = UIDocumentPickerViewController(
-          documentTypes: utiTypes,
-          in: UIDocumentPickerMode.import
-        )
-      }
-
+      let documentPickerVC = createDocumentPicker(with: options)
       let pickerDelegate = DocumentPickingDelegate(resultHandler: self)
-      pickingContext = PickingContext(
-        promise: promise,
-        options: options,
-        delegate: pickerDelegate
-      )
+
+      pickingContext = PickingContext(promise: promise, options: options, delegate: pickerDelegate)
 
       documentPickerVC.delegate = pickerDelegate
       documentPickerVC.presentationController?.delegate = pickerDelegate
@@ -61,14 +43,13 @@ public class DocumentPickerModule: Module, PickingResultHandler {
         documentPickerVC.popoverPresentationController?.sourceView = currentVc.view
         documentPickerVC.modalPresentationStyle = .pageSheet
       }
-
       currentVc.present(documentPickerVC, animated: true)
     }.runOnQueue(.main)
   }
 
   func didPickDocumentsAt(urls: [URL]) {
     guard let options = self.pickingContext?.options,
-            let promise = self.pickingContext?.promise else {
+    let promise = self.pickingContext?.promise else {
       log.error("Picking context has been lost.")
       return
     }
@@ -175,6 +156,22 @@ public class DocumentPickerModule: Module, PickingResultHandler {
         }
       }
       return nil
+    }
+  }
+
+  private func createDocumentPicker(with options: DocumentPickerOptions) -> UIDocumentPickerViewController {
+    if #available(iOS 14.0, *) {
+      let utTypes = options.type.compactMap { $0.toUTType() }
+      return UIDocumentPickerViewController(
+        forOpeningContentTypes: utTypes,
+        asCopy: true
+      )
+    } else {
+      let utiTypes = options.type.map { $0.toUTI() }
+      return UIDocumentPickerViewController(
+        documentTypes: utiTypes,
+        in: UIDocumentPickerMode.import
+      )
     }
   }
 }

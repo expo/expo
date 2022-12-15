@@ -53,14 +53,14 @@ internal enum MimeType: String, Enumerable {
       uti = kUTTypeText
     default:
       if let ref = UTTypeCreatePreferredIdentifierForTag(
-         kUTTagClassMIMEType,
-         self.rawValue as CFString,
-         nil
-       )?.takeRetainedValue() {
-         uti = ref
-       } else {
-         uti = kUTTypeItem
-       }
+        kUTTagClassMIMEType,
+        self.rawValue as CFString,
+        nil
+      )?.takeRetainedValue() {
+        uti = ref
+      } else {
+        uti = kUTTypeItem
+      }
     }
 
     return uti as String
