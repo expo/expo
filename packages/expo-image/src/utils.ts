@@ -5,6 +5,7 @@ import {
   ImageContentPositionString,
   ImageProps,
   ImageResizeMode,
+  ImageTransition,
 } from './Image.types';
 
 let loggedResizeModeDeprecationWarning = false;
@@ -44,7 +45,7 @@ export function resolveContentFit(
         }
     }
   }
-  return ImageContentFit.CONTAIN;
+  return ImageContentFit.COVER;
 }
 
 /**
@@ -53,7 +54,7 @@ export function resolveContentFit(
  */
 export function resolveContentPosition(
   contentPosition?: ImageContentPosition
-): ImageContentPositionObject | undefined {
+): ImageContentPositionObject {
   if (typeof contentPosition === 'string') {
     const contentPositionStringMappings: Record<
       ImageContentPositionString,
@@ -85,7 +86,7 @@ export function resolveContentPosition(
     }
     return contentPositionObject;
   }
-  return contentPosition;
+  return contentPosition ?? { top: '50%', left: '50%' };
 }
 
 /**
@@ -95,7 +96,7 @@ export function resolveContentPosition(
 export function resolveTransition(
   transition?: ImageProps['transition'],
   fadeDuration?: ImageProps['fadeDuration']
-): ImageProps['transition'] {
+): ImageTransition | null {
   if (typeof transition === 'number') {
     return { duration: transition };
   }
@@ -106,5 +107,5 @@ export function resolveTransition(
     }
     return { duration: fadeDuration };
   }
-  return transition;
+  return transition ?? null;
 }

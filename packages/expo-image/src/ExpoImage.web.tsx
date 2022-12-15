@@ -1,31 +1,14 @@
 import React from 'react';
 
 import {
-  ImageContentPosition,
   ImageContentPositionObject,
-  ImageProps,
   ImageSource,
   ImageTransition,
   ImageTransitionEffect,
   ImageTransitionTiming,
-  ImageUriSource,
+  ImageNativeProps,
   PositionValue,
-  RequireSource,
 } from './Image.types';
-import { resolveContentFit, resolveContentPosition } from './utils';
-
-function resolveAssetSource(source?: ImageUriSource | RequireSource | null) {
-  if (source == null) return null;
-
-  if (typeof source === 'string') {
-    return { uri: source };
-  }
-  if (typeof source === 'number') {
-    return { uri: String(source) };
-  }
-
-  return source;
-}
 
 function ensureUnit(value: string | number) {
   const trimmedValue = String(value).trim();
@@ -37,50 +20,47 @@ function ensureUnit(value: string | number) {
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 
-function getObjectPositionFromContentPosition(contentPosition?: ImageContentPosition) {
-  const resolvedPosition = (
-    typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition
-  ) as Record<KeysOfUnion<ImageContentPositionObject>, PositionValue>;
-
+function getObjectPositionFromContentPositionObject(
+  contentPosition?: ImageContentPositionObject
+): string {
+  const resolvedPosition = { ...contentPosition } as Record<
+    KeysOfUnion<ImageContentPositionObject>,
+    PositionValue
+  >;
   if (!resolvedPosition) {
-    return null;
+    return '50% 50%';
   }
-  if (resolvedPosition.top == null || resolvedPosition.bottom == null) {
+  if (resolvedPosition.top == null && resolvedPosition.bottom == null) {
     resolvedPosition.top = '50%';
   }
-  if (resolvedPosition.left == null || resolvedPosition.right == null) {
+  if (resolvedPosition.left == null && resolvedPosition.right == null) {
     resolvedPosition.left = '50%';
   }
 
-  return ['top', 'bottom', 'left', 'right']
-    .map((key) => {
-      if (key in resolvedPosition) {
-        return `${key} ${ensureUnit(resolvedPosition[key])}`;
-      }
-      return '';
-    })
-    .join(' ');
-}
-
-function ensureIsArray(source?: ImageSource): (ImageUriSource | RequireSource)[] {
-  if (Array.isArray(source)) {
-    return source;
-  }
-  if (source == null) {
-    return [];
-  }
-  return [source];
+  return (
+    ['top', 'bottom', 'left', 'right']
+      .map((key) => {
+        if (key in resolvedPosition) {
+          return `${key} ${ensureUnit(resolvedPosition[key])}`;
+        }
+        return '';
+      })
+      .join(' ') || '50% 50%'
+  );
 }
 
 type ImageState = 'empty' | 'loading' | 'loaded' | 'error';
 
-function useImageState(source?: ImageSource) {
-  const [imageState, setImageState] = React.useState<ImageState>(source ? 'loading' : 'empty');
+function useImageState(source?: ImageSource[]) {
+  const hasAnySource = source && source.length > 0;
+  const [imageState, setImageState] = React.useState<ImageState>(
+    hasAnySource ? 'loading' : 'empty'
+  );
   React.useEffect(() => {
     setImageState((prevState) =>
-      prevState === 'empty' ? (source ? 'loading' : 'empty') : prevState
+      prevState === 'empty' ? (hasAnySource ? 'loading' : 'empty') : prevState
     );
-  }, [source]);
+  }, [hasAnySource]);
 
   const onLoad = React.useCallback(
     () => setImageState((prevState) => (imageState === 'loading' ? 'loaded' : prevState)),
@@ -173,7 +153,7 @@ const useTransition = (
 export default function ExpoImage({
   source,
   placeholder,
-  loadingIndicatorSource,
+  contentFit,
   contentPosition,
   onLoad,
   transition,
@@ -181,12 +161,10 @@ export default function ExpoImage({
   onLoadEnd,
   onError,
   ...props
-}: ImageProps) {
+}: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const [state, handlers] = useImageState(source);
   const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
-
-  const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
 
   return (
     <div
@@ -200,7 +178,7 @@ export default function ExpoImage({
         position: 'relative',
       }}>
       <img
-        src={ensureIsArray(placeholder).map(resolveAssetSource)?.[0]?.uri}
+        src={placeholder?.[0]?.uri}
         style={{
           width: '100%',
           height: '100%',
@@ -213,15 +191,15 @@ export default function ExpoImage({
         }}
       />
       <img
-        src={resolvedSources.at(0)?.uri}
+        src={source?.[0]?.uri}
         style={{
           width: '100%',
           height: '100%',
           position: 'absolute',
           left: 0,
           right: 0,
-          objectFit: resolveContentFit(props.contentFit, props.resizeMode),
-          objectPosition: getObjectPositionFromContentPosition(contentPosition) || '50% 50%',
+          objectFit: contentFit,
+          objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
           ...imageStyle,
         }}
         onLoad={handlers.onLoad}
