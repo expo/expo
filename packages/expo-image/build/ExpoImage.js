@@ -35,7 +35,8 @@ class ExpoImage extends React.PureComponent {
         const { source, style, defaultSource, loadingIndicatorSource, ...props } = this.props;
         const resolvedSource = Image.resolveAssetSource(source ?? {});
         const resolvedStyle = StyleSheet.flatten([style]);
-        const resolvedPlaceholder = Image.resolveAssetSource(props.placeholder ?? defaultSource ?? loadingIndicatorSource ?? {});
+        const resolvedPlaceholder = Image.resolveAssetSource((props.placeholder ?? defaultSource ?? loadingIndicatorSource) ??
+            {});
         const contentFit = resolveContentFit(props.contentFit, props.resizeMode);
         const contentPosition = resolveContentPosition(props.contentPosition);
         const transition = resolveTransition(props.transition, props.fadeDuration);

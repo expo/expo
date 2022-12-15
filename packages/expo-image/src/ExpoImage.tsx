@@ -7,7 +7,7 @@ import {
   ImageLoadEventData,
   ImageProgressEventData,
   ImageProps,
-  ImageSource,
+  ImageUriSource,
 } from './Image.types';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
 
@@ -54,10 +54,11 @@ class ExpoImage extends React.PureComponent<ImageProps> {
 
   render() {
     const { source, style, defaultSource, loadingIndicatorSource, ...props } = this.props;
-    const resolvedSource = Image.resolveAssetSource((source as ImageSource | number) ?? {});
+    const resolvedSource = Image.resolveAssetSource((source as ImageUriSource | number) ?? {});
     const resolvedStyle = StyleSheet.flatten([style]);
     const resolvedPlaceholder = Image.resolveAssetSource(
-      props.placeholder ?? defaultSource ?? loadingIndicatorSource ?? {}
+      ((props.placeholder ?? defaultSource ?? loadingIndicatorSource) as ImageUriSource | number) ??
+        {}
     );
     const contentFit = resolveContentFit(props.contentFit, props.resizeMode);
     const contentPosition = resolveContentPosition(props.contentPosition);
