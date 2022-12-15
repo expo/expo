@@ -34,6 +34,8 @@ export function ProjectsSection({ apps, showMore, accountName }: Props) {
               id={project.id}
               // iconUrl will be an empty string if the project has no icon
               imageURL={project.iconUrl || undefined}
+              fullName={project.fullName}
+              updateBranches={project.updateBranches}
               name={project.name}
               subtitle={project.packageName || project.fullName}
               sdkVersion={project.sdkVersion}
