@@ -30,14 +30,9 @@ export type DocumentResult = {
      * Field indicating that the document pick has been cancelled.
      */
     type: 'cancel';
-} | {
-    /**
-     * Field indicating that the document pick has been successful.
-     */
+} | DocumentData | DocumentData[];
+export type DocumentData = {
     type: 'success';
-    result: Document[];
-};
-type Document = {
     /**
      * Document original name.
      */
@@ -61,5 +56,4 @@ type Document = {
     file?: File;
     output?: FileList | null;
 };
-export {};
 //# sourceMappingURL=types.d.ts.map

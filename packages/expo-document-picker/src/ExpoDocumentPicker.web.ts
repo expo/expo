@@ -40,17 +40,13 @@ export default {
             const uri = (target as any).result;
             resolve({
               type: 'success',
-              result: [
-                {
-                  uri,
-                  mimeType,
-                  name: targetFile.name,
-                  file: targetFile,
-                  lastModified: targetFile.lastModified,
-                  size: targetFile.size,
-                  output: input.files,
-                },
-              ],
+              uri,
+              mimeType,
+              name: targetFile.name,
+              file: targetFile,
+              lastModified: targetFile.lastModified,
+              size: targetFile.size,
+              output: input.files,
             });
           };
           // Read in the image file as a binary string.

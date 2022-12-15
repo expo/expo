@@ -1,4 +1,5 @@
 import * as DocumentPicker from 'expo-document-picker';
+import { DocumentData } from 'expo-document-picker/build/types';
 import React from 'react';
 import { Alert, FlatList, Image, Platform, Text, View } from 'react-native';
 
@@ -18,8 +19,10 @@ export default function DocumentPickerScreen() {
     });
     console.log(`Duration: ${Date.now() - time}ms`);
     console.log(`Results:`, result);
-    if (result.type === 'success') {
+    if (Array.isArray(result)) {
       setDocuments(result);
+    } else if (result.type === 'success') {
+      setDocuments([result]);
     } else {
       setTimeout(() => {
         if (Platform.OS === 'web') {
@@ -47,29 +50,32 @@ export default function DocumentPickerScreen() {
         title="Pick multiple"
       />
       <FlatList
-        data={documents?.type === 'success' ? documents.result : []}
+        data={Array.isArray(documents) ? documents : []}
         keyExtractor={(item) => item.uri}
         renderItem={({ item: document }) => {
-          console.log(document);
-          return (
-            <View>
-              {document.name!.match(/\.(png|jpg)$/gi) ? (
-                <Image
-                  source={{ uri: document.uri }}
-                  resizeMode="cover"
-                  style={{ width: 100, height: 100 }}
-                />
-              ) : null}
-              <Text>
-                {document.name} ({document.size! / 1000} KB)
-              </Text>
-              <Text>
-                URI: {document.uri} MimeType: {document.mimeType}
-              </Text>
-            </View>
-          );
+          return <DocumentView document={document} />;
         }}
       />
+    </View>
+  );
+}
+
+function DocumentView({ document }: { document: DocumentData }) {
+  return (
+    <View>
+      {document.name!.match(/\.(png|jpg)$/gi) ? (
+        <Image
+          source={{ uri: document.uri }}
+          resizeMode="cover"
+          style={{ width: 100, height: 100 }}
+        />
+      ) : null}
+      <Text>
+        {document.name} ({document.size! / 1000} KB)
+      </Text>
+      <Text>
+        URI: {document.uri} MimeType: {document.mimeType}
+      </Text>
     </View>
   );
 }

@@ -24,27 +24,10 @@ export type DocumentPickerOptions = {
 };
 
 // @needsAudit @docsMissing
-/**
- * First object represents the result when the document pick has been cancelled.
- * The second one represents the successful document pick result.
- */
-export type DocumentResult =
-  | {
-      /**
-       * Field indicating that the document pick has been cancelled.
-       */
-      type: 'cancel';
-    }
-  | {
-      /**
-       * Field indicating that the document pick has been successful.
-       */
-      type: 'success';
+export type DocumentResult = { type: 'cancel' } | DocumentData | DocumentData[];
 
-      result: Document[];
-    };
-
-type Document = {
+export type DocumentData = {
+  type: 'success';
   /**
    * Document original name.
    */
