@@ -101,21 +101,25 @@ async function updateReactNativePackageAsync() {
     },
   ]);
 
-  // Workaround for CallbackWrapper.h not found
+  // Update native ReactNativeVersion
+  const versions = (process.env.REACT_NATIVE_OVERRIDE_VERSION ?? '9999.9999.9999').split('.');
   await transformFileAsync(
     path.join(
       reactNativeRoot,
-      'ReactCommon/react/nativemodule/core/ReactCommon/TurboModuleUtils.h'
+      'ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java'
     ),
     [
       {
-        find: '#include <ReactCommon/CallbackWrapper.h>',
-        replaceWith: `\
-#if __has_include(<ReactCommon/CallbackWrapper.h>)
-#include <ReactCommon/CallbackWrapper.h>
-#else
-#include <React/bridging/CallbackWrapper.h>
-#endif`,
+        find: /("major", )\d+,/g,
+        replaceWith: `$1${versions[0]},`,
+      },
+      {
+        find: /("minor", )\d+,/g,
+        replaceWith: `$1${versions[1]},`,
+      },
+      {
+        find: /("patch", )\d+,/g,
+        replaceWith: `$1${versions[2]},`,
       },
     ]
   );
