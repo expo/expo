@@ -1,5 +1,5 @@
 import { AccessibilityProps, ImageStyle as RNImageStyle } from 'react-native';
-export type ImageSource = {
+export type ImageUriSource = {
     /**
      * A string representing the resource identifier for the image,
      * which could be an http address, a local file path, or the name of a static image resource.
@@ -26,17 +26,18 @@ export type ImageStyle = RNImageStyle & {
     resizeMode?: ImageResizeMode;
     elevation?: number;
 };
-type RequireSource = number | string;
+export type RequireSource = number | string;
+export type ImageSource = ImageUriSource | RequireSource | (ImageUriSource | RequireSource)[];
 export type ImageProps = AccessibilityProps & {
     style?: ImageStyle;
     /**
      * The image source (either a remote URL or a local file resource).
      */
-    source?: ImageSource | RequireSource | (ImageSource | RequireSource)[];
+    source?: ImageSource;
     /**
      * A static image to display while loading the image source.
      */
-    placeholder?: ImageSource | ImageSource[] | number;
+    placeholder?: ImageSource;
     /**
      * A static image to display while loading the image source.
      * @platform android
@@ -257,5 +258,4 @@ export type ImageProgressEventData = {
 export type ImageErrorEventData = {
     error: string;
 };
-export {};
 //# sourceMappingURL=Image.types.d.ts.map
