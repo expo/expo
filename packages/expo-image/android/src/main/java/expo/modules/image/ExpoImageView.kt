@@ -300,7 +300,7 @@ class ExpoImageView(
           if (placeholder != null) {
             thumbnail(requestManager.load(placeholder.glideData))
             val placeholderContentFit = if (bestPlaceholder?.isBlurhash() == true) {
-              ContentFit.Cover
+              contentFit
             } else {
               ContentFit.ScaleDown
             }
