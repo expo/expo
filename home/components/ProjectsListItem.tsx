@@ -24,10 +24,10 @@ type Props = {
   id: string;
   first: boolean;
   last: boolean;
-  updateBranches: CommonAppDataFragment['updateBranches'];
+  updateBranches: UpdateBranches;
 };
 
-function hasEASUpdates(updateBranches: CommonAppDataFragment['updateBranches']): boolean {
+function hasEASUpdates(updateBranches: UpdateBranches): boolean {
   return updateBranches.some((branch: UpdateBranch) => branch.updates.length > 0);
 }
 
