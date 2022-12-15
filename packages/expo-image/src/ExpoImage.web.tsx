@@ -106,9 +106,7 @@ function getCSSTiming(timing?: ImageTransitionTiming) {
   );
 }
 
-function getTransitionObjectFromTransition(
-  transition?: number | ImageTransition | null
-) {
+function getTransitionObjectFromTransition(transition?: number | ImageTransition | null) {
   if (transition == null) {
     return {
       timing: ImageTransitionTiming.LINEAR,
