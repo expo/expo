@@ -179,7 +179,7 @@ function findBestSourceForSize(
       .sort((a, b) => a.penalty - b.penalty)
       .sort((a, b) => Number(b.covers) - Number(a.covers))[0]?.source ?? null
   );
-};
+}
 
 function useSourceSelection(
   sources?: ImageSource[],
@@ -226,7 +226,7 @@ function useSourceSelection(
     }),
     [source]
   );
-};
+}
 
 export default function ExpoImage({
   source,

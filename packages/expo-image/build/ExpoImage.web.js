@@ -128,7 +128,6 @@ function findBestSourceForSize(sources, size) {
         .sort((a, b) => a.penalty - b.penalty)
         .sort((a, b) => Number(b.covers) - Number(a.covers))[0]?.source ?? null);
 }
-;
 function useSourceSelection(sources, sizeCalculation = 'live') {
     const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
     // null - not calculated yet, DOMRect - size available
@@ -162,7 +161,6 @@ function useSourceSelection(sources, sizeCalculation = 'live') {
         source,
     }), [source]);
 }
-;
 export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onLoadStart, onLoadEnd, onError, responsivePolicy, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const [state, handlers] = useImageState(source);
