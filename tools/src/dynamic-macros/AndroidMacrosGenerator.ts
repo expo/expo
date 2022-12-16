@@ -32,14 +32,12 @@ function formatJavaLiteral(value) {
 async function readExistingSourceAsync(filepath) {
   try {
     return await fs.readFile(filepath, 'utf8');
-  } catch (e) {
+  } catch {
     return null;
   }
 }
 
 export async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
-  let source;
-
   // android falls back to published dev home if local dev home
   // doesn't exist or had an error.
   const isLocalManifestEmpty =
@@ -63,7 +61,7 @@ export async function generateAndroidBuildConstantsFromMacrosAsync(macros) {
       `  public static final ${formatJavaType(value)} ${name} = ${formatJavaLiteral(value)};`
   );
 
-  source = `
+  const source = `
 package host.exp.exponent.generated;
 
 public class ExponentBuildConstants {

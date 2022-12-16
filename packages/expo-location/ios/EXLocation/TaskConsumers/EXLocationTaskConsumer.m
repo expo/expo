@@ -4,9 +4,9 @@
 #import <CoreLocation/CLErrorDomain.h>
 
 #import <ExpoModulesCore/EXUtilities.h>
+#import <ExpoModulesCore/EXTaskInterface.h>
 #import <EXLocation/EXLocation.h>
 #import <EXLocation/EXLocationTaskConsumer.h>
-#import <UMTaskManagerInterface/UMTaskInterface.h>
 
 @interface EXLocationTaskConsumer ()
 
@@ -33,14 +33,14 @@
   [self reset];
 }
 
-# pragma mark - UMTaskConsumerInterface
+# pragma mark - EXTaskConsumerInterface
 
 - (NSString *)taskType
 {
   return @"location";
 }
 
-- (void)didRegisterTask:(id<UMTaskInterface>)task
+- (void)didRegisterTask:(id<EXTaskInterface>)task
 {
   [EXUtilities performSynchronouslyOnMainThread:^{
     CLLocationManager *locationManager = [CLLocationManager new];

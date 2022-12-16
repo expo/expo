@@ -1,16 +1,26 @@
 package expo.modules.kotlin.modules
 
+import expo.modules.kotlin.ConcatIterator
+import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventName
-import expo.modules.kotlin.events.EventsDefinition
-import expo.modules.kotlin.methods.AnyMethod
+import expo.modules.kotlin.objects.ObjectDefinitionData
 import expo.modules.kotlin.views.ViewManagerDefinition
 
 class ModuleDefinitionData(
   val name: String,
-  val constantsProvider: () -> Map<String, Any?>,
-  val methods: Map<String, AnyMethod>,
+  val objectDefinition: ObjectDefinitionData,
   val viewManagerDefinition: ViewManagerDefinition? = null,
   val eventListeners: Map<EventName, EventListener> = emptyMap(),
-  val eventsDefinition: EventsDefinition? = null
-)
+  val registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null
+) {
+
+  val constantsProvider = objectDefinition.constantsProvider
+  val syncFunctions = objectDefinition.syncFunctions
+  val asyncFunctions = objectDefinition.asyncFunctions
+  val eventsDefinition = objectDefinition.eventsDefinition
+  val properties = objectDefinition.properties
+
+  val functions
+    get() = ConcatIterator(syncFunctions.values.iterator(), asyncFunctions.values.iterator())
+}

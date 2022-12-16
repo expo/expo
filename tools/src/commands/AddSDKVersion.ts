@@ -80,7 +80,9 @@ async function action(options: ActionOptions) {
       await IosVersioning.reinstallPodsAsync(options.reinstall, options.preventReinstall);
       return;
     case 'android':
-      return AndroidVersioning.addVersionAsync(sdkVersion);
+      await AndroidVersioning.addVersionAsync(sdkVersion);
+      await AndroidVersioning.versionVendoredModulesAsync(sdkNumber, null);
+      return;
     default:
       throw new Error(`Platform '${options.platform}' is not supported.`);
   }

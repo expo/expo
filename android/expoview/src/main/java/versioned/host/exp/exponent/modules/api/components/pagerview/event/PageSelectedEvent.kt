@@ -5,6 +5,7 @@ import com.facebook.react.bridge.WritableMap
 import com.facebook.react.uimanager.events.Event
 import com.facebook.react.uimanager.events.RCTEventEmitter
 
+
 /**
  * Event emitted by [ReactViewPager] when selected page changes.
  *
@@ -29,4 +30,5 @@ class PageSelectedEvent(viewTag: Int, private val mPosition: Int) : Event<PageSe
   companion object {
     const val EVENT_NAME = "topPageSelected"
   }
+
 }

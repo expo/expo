@@ -1,1 +1,0 @@
-../packages/expo-module-scripts/templates/scripts/source-login-scripts.sh

@@ -1,12 +1,11 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 import CoreGraphics
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class ConvertiblesSpec: QuickSpec {
+class ConvertiblesSpec: ExpoSpec {
   override func spec() {
     describe("URL") {
       it("converts from remote url") {
@@ -244,7 +243,17 @@ class ConvertiblesSpec: QuickSpec {
         testColorComponents(color, 0x99, 0xEE, 0xAA, 0x55)
       }
 
-      it("throws when hex string is invalid") {
+      it("converts from CSS named color") {
+        let papayawhip = try CGColor.convert(from: "papayawhip")
+        testColorComponents(papayawhip, 0xFF, 0xEF, 0xD5, 0xFF)
+      }
+
+      it("converts from transparent") {
+        let transparent = try CGColor.convert(from: "transparent")
+        expect(transparent.alpha) == .zero
+      }
+
+      it("throws when string is invalid") {
         testInvalidHexColor("")
         testInvalidHexColor("#21")
         testInvalidHexColor("ABCDEFGH")

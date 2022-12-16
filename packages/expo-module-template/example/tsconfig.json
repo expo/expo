@@ -1,0 +1,10 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "<%- project.slug %>": ["../src/index"],
+      "<%- project.slug %>/*": ["../src/*"]
+    }
+  }
+}

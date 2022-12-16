@@ -119,7 +119,7 @@ export default class AppleAuthenticationScreen extends React.Component<{}, State
       const user = (await this.getUserIdentifier())!;
       const credentialState = await AppleAuthentication.getCredentialStateAsync(user);
       this.setState({ credentialState });
-    } catch (e) {
+    } catch {
       // Obtaining a user or the credentials failed - fallback to not found.
       this.setState({ credentialState: AppleAuthenticationCredentialState.NOT_FOUND });
     }

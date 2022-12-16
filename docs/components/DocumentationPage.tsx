@@ -1,24 +1,23 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { breakpoints, theme } from '@expo/styleguide';
 import some from 'lodash/some';
 import Router, { NextRouter } from 'next/router';
 import * as React from 'react';
 
 import * as Utilities from '~/common/utilities';
 import * as WindowUtils from '~/common/window';
-import DocumentationFooter from '~/components/DocumentationFooter';
-import DocumentationHeader from '~/components/DocumentationHeader';
 import DocumentationNestedScrollLayout from '~/components/DocumentationNestedScrollLayout';
-import DocumentationSidebar from '~/components/DocumentationSidebar';
 import DocumentationSidebarRight, {
   SidebarRightComponentType,
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { H1 } from '~/components/base/headings';
-import navigation from '~/constants/navigation';
-import * as Constants from '~/constants/theme';
-import { usePageApiVersion } from '~/providers/page-api-version';
+import { PageApiVersionContextType, usePageApiVersion } from '~/providers/page-api-version';
+import navigation from '~/public/static/constants/navigation.json';
 import { NavigationRoute } from '~/types/common';
+import { Footer } from '~/ui/components/Footer';
+import { Header } from '~/ui/components/Header';
+import { Sidebar } from '~/ui/components/Sidebar';
 
 const STYLES_DOCUMENT = css`
   background: ${theme.background.default};
@@ -31,51 +30,43 @@ const STYLES_DOCUMENT = css`
     background-color: ${theme.border.default};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${breakpoints.medium + 124}px) {
     padding: 20px 16px 48px 16px;
-  }
-`;
-
-const HIDDEN_ON_MOBILE = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    display: none;
-  }
-`;
-
-const HIDDEN_ON_DESKTOP = css`
-  @media screen and (min-width: ${Constants.breakpoints.mobile}) {
-    display: none;
   }
 `;
 
 type Props = React.PropsWithChildren<{
   router: NextRouter;
-  title: string;
+  title?: string;
+  description?: string;
   sourceCodeUrl?: string;
   tocVisible: boolean;
+  packageName?: string;
   /** If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
-  version: string;
+  version: PageApiVersionContextType['version'];
 }>;
 
 type State = {
-  isMenuActive: boolean;
-  isMobileSearchActive: boolean;
+  isMobileMenuVisible: boolean;
 };
 
 class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   state = {
-    isMenuActive: false,
-    isMobileSearchActive: false,
+    isMobileMenuVisible: false,
   };
 
   private layoutRef = React.createRef<DocumentationNestedScrollLayout>();
   private sidebarRightRef = React.createRef<SidebarRightComponentType>();
 
   componentDidMount() {
-    Router.events.on('routeChangeStart', () => {
+    Router.events.on('routeChangeStart', url => {
       if (this.layoutRef.current) {
-        window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
+        if (this.getActiveTopLevelSection() !== this.getActiveTopLevelSection(url)) {
+          window.__sidebarScroll = 0;
+        } else {
+          window.__sidebarScroll = this.layoutRef.current.getSidebarScrollTop();
+        }
       }
     });
     window.addEventListener('resize', this.handleResize);
@@ -86,38 +77,22 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
   }
 
   private handleResize = () => {
-    if (WindowUtils.getViewportSize().width >= Constants.breakpoints.mobileValue) {
+    if (WindowUtils.getViewportSize().width >= breakpoints.medium + 124) {
+      this.setState({ isMobileMenuVisible: false });
       window.scrollTo(0, 0);
     }
   };
 
-  private handleShowMenu = () => {
-    this.setState({
-      isMenuActive: true,
-    });
-    this.handleHideSearch();
+  private pathStartsWith = (name: string, path: string = this.props.router.pathname) => {
+    return path.startsWith(`/${name}`);
   };
 
-  private handleHideMenu = () => {
-    this.setState({
-      isMenuActive: false,
-    });
+  private isArchivePath = () => {
+    return this.props.router.pathname.startsWith('/archive');
   };
 
-  private handleToggleSearch = () => {
-    this.setState(prevState => ({
-      isMobileSearchActive: !prevState.isMobileSearchActive,
-    }));
-  };
-
-  private handleHideSearch = () => {
-    this.setState({
-      isMobileSearchActive: false,
-    });
-  };
-
-  private isReferencePath = () => {
-    return this.props.router.pathname.startsWith('/versions');
+  private isReferencePath = (path?: string) => {
+    return this.pathStartsWith('versions', path);
   };
 
   private isGeneralPath = () => {
@@ -126,19 +101,8 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     );
   };
 
-  private isGettingStartedPath = () => {
-    return (
-      this.props.router.pathname === '/' ||
-      some(navigation.startingDirectories, name =>
-        this.props.router.pathname.startsWith(`/${name}`)
-      )
-    );
-  };
-
-  private isFeaturePreviewPath = () => {
-    return some(navigation.featurePreviewDirectories, name =>
-      this.props.router.pathname.startsWith(`/${name}`)
-    );
+  private isFeaturePreviewPath = (path?: string) => {
+    return navigation.featurePreview.some((name: string) => this.pathStartsWith(name, path));
   };
 
   private isPreviewPath = () => {
@@ -147,10 +111,8 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     );
   };
 
-  private isEasPath = () => {
-    return some(navigation.easDirectories, name =>
-      this.props.router.pathname.startsWith(`/${name}`)
-    );
+  private isEasPath = (path?: string) => {
+    return navigation.easDirectories.some(name => this.pathStartsWith(name, path));
   };
 
   private getCanonicalUrl = () => {
@@ -174,47 +136,44 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
 
   private getRoutes = (): NavigationRoute[] => {
     if (this.isReferencePath()) {
-      return navigation.reference[this.props.version];
+      return navigation.reference[this.props.version] as NavigationRoute[];
     } else {
-      return navigation[this.getActiveTopLevelSection()];
+      return navigation[this.getActiveTopLevelSection()] as NavigationRoute[];
     }
   };
 
-  private getActiveTopLevelSection = () => {
-    if (this.isReferencePath()) {
+  private getActiveTopLevelSection = (path?: string) => {
+    if (this.isReferencePath(path)) {
       return 'reference';
+    } else if (this.isEasPath(path)) {
+      return 'eas';
     } else if (this.isGeneralPath()) {
       return 'general';
-    } else if (this.isGettingStartedPath()) {
-      return 'starting';
-    } else if (this.isFeaturePreviewPath()) {
+    } else if (this.isFeaturePreviewPath(path)) {
       return 'featurePreview';
     } else if (this.isPreviewPath()) {
       return 'preview';
-    } else if (this.isEasPath()) {
-      return 'eas';
+    } else if (this.isArchivePath()) {
+      return 'archive';
     }
 
     return 'general';
   };
 
   render() {
-    const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
     const routes = this.getRoutes();
+    const sidebarActiveGroup = this.getActiveTopLevelSection();
+    const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
 
+    const sidebarElement = <Sidebar routes={routes} />;
     const headerElement = (
-      <DocumentationHeader
-        activeSection={this.getActiveTopLevelSection()}
-        isMenuActive={this.state.isMenuActive}
-        isMobileSearchActive={this.state.isMobileSearchActive}
-        isAlgoliaSearchHidden={this.state.isMenuActive}
-        onShowMenu={this.handleShowMenu}
-        onHideMenu={this.handleHideMenu}
-        onToggleSearch={this.handleToggleSearch}
+      <Header
+        sidebar={sidebarElement}
+        sidebarActiveGroup={sidebarActiveGroup}
+        isMobileMenuVisible={this.state.isMobileMenuVisible}
+        setMobileMenuVisible={isMobileMenuVisible => this.setState({ isMobileMenuVisible })}
       />
     );
-
-    const sidebarElement = <DocumentationSidebar router={this.props.router} routes={routes} />;
 
     const handleContentScroll = (contentScrollPosition: number) => {
       window.requestAnimationFrame(() => {
@@ -227,21 +186,44 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
     const sidebarRight = <DocumentationSidebarRight ref={this.sidebarRightRef} />;
 
     const algoliaTag = this.getAlgoliaTag();
+    const title = this.props.title
+      ? `${this.props.title} - Expo Documentation`
+      : `Expo Documentation`;
+
+    const description =
+      this.props.description !== ''
+        ? `${this.props.description}`
+        : `Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.`;
+
+    const pageContent = (
+      <>
+        {this.props.title && <H1>{this.props.title}</H1>}
+        {this.props.children}
+        {this.props.title && (
+          <Footer
+            title={this.props.title}
+            sourceCodeUrl={this.props.sourceCodeUrl}
+            packageName={this.props.packageName}
+          />
+        )}
+      </>
+    );
 
     return (
       <DocumentationNestedScrollLayout
         ref={this.layoutRef}
         header={headerElement}
         sidebar={sidebarElement}
+        sidebarActiveGroup={sidebarActiveGroup}
         sidebarRight={sidebarRight}
         tocVisible={this.props.tocVisible}
-        isMenuActive={this.state.isMenuActive}
-        isMobileSearchActive={this.state.isMobileSearchActive}
+        isMobileMenuVisible={this.state.isMobileMenuVisible}
         onContentScroll={handleContentScroll}
         sidebarScrollPosition={sidebarScrollPosition}>
-        <Head title={`${this.props.title} - Expo Documentation`}>
+        <Head title={this.props.title}>
           {algoliaTag !== null && <meta name="docsearch:version" content={algoliaTag} />}
-          <meta property="og:title" content={`${this.props.title} - Expo Documentation`} />
+          <meta name="description" content={description} />
+          <meta property="og:title" content={title} />
           <meta property="og:type" content="website" />
           <meta property="og:image" content="https://docs.expo.dev/static/images/og.png" />
           <meta property="og:image:url" content="https://docs.expo.dev/static/images/og.png" />
@@ -251,57 +233,26 @@ class DocumentationPageWithApiVersion extends React.Component<Props, State> {
           />
           <meta property="og:locale" content="en_US" />
           <meta property="og:site_name" content="Expo Documentation" />
-          <meta
-            property="og:description"
-            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
-          />
+          <meta property="og:description" content={description} />
 
           <meta name="twitter:site" content="@expo" />
           <meta name="twitter:card" content="summary" />
-          <meta property="twitter:title" content={`${this.props.title} - Expo Documentation`} />
-          <meta
-            name="twitter:description"
-            content="Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React."
-          />
+          <meta property="twitter:title" content={title} />
+          <meta name="twitter:description" content={description} />
           <meta
             property="twitter:image"
             content="https://docs.expo.dev/static/images/twitter.png"
           />
 
-          {(this.props.version === 'unversioned' || this.isPreviewPath()) && (
-            <meta name="robots" content="noindex" />
-          )}
+          {(this.props.version === 'unversioned' ||
+            this.isPreviewPath() ||
+            this.isArchivePath()) && <meta name="robots" content="noindex" />}
+
           {this.props.version !== 'unversioned' && (
             <link rel="canonical" href={this.getCanonicalUrl()} />
           )}
         </Head>
-
-        {!this.state.isMenuActive ? (
-          <div css={STYLES_DOCUMENT}>
-            <H1>{this.props.title}</H1>
-            {this.props.children}
-            <DocumentationFooter
-              router={this.props.router}
-              title={this.props.title}
-              sourceCodeUrl={this.props.sourceCodeUrl}
-            />
-          </div>
-        ) : (
-          <div>
-            <div css={[STYLES_DOCUMENT, HIDDEN_ON_MOBILE]}>
-              <H1>{this.props.title}</H1>
-              {this.props.children}
-              <DocumentationFooter
-                router={this.props.router}
-                title={this.props.title}
-                sourceCodeUrl={this.props.sourceCodeUrl}
-              />
-            </div>
-            <div css={HIDDEN_ON_DESKTOP}>
-              <DocumentationSidebar router={this.props.router} routes={routes} />
-            </div>
-          </div>
-        )}
+        <div css={STYLES_DOCUMENT}>{pageContent}</div>
       </DocumentationNestedScrollLayout>
     );
   }

@@ -78,7 +78,8 @@ export var AppleAuthenticationButtonType;
      */
     AppleAuthenticationButtonType[AppleAuthenticationButtonType["CONTINUE"] = 1] = "CONTINUE";
     /**
-     * "Sign up with Apple" *(requires iOS 13.2 or higher)*
+     * "Sign up with Apple"
+     * @platform ios 13.2+
      */
     AppleAuthenticationButtonType[AppleAuthenticationButtonType["SIGN_UP"] = 2] = "SIGN_UP";
 })(AppleAuthenticationButtonType || (AppleAuthenticationButtonType = {}));

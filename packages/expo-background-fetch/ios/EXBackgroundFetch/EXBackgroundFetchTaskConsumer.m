@@ -2,13 +2,13 @@
 
 #import <EXBackgroundFetch/EXBackgroundFetch.h>
 #import <EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h>
-#import <UMTaskManagerInterface/UMTaskInterface.h>
+#import <ExpoModulesCore/EXTaskInterface.h>
 
 @implementation EXBackgroundFetchTaskConsumer
 
-+ (BOOL)supportsLaunchReason:(UMTaskLaunchReason)launchReason
++ (BOOL)supportsLaunchReason:(EXTaskLaunchReason)launchReason
 {
-  return launchReason == UMTaskLaunchReasonBackgroundFetch;
+  return launchReason == EXTaskLaunchReasonBackgroundFetch;
 }
 
 - (NSString *)taskType
@@ -17,7 +17,7 @@
 }
 
 // Associating task to the consumer.
-- (void)didRegisterTask:(id<UMTaskInterface>)task
+- (void)didRegisterTask:(id<EXTaskInterface>)task
 {
   _task = task;
   [self updateMinimumInterval];

@@ -3,27 +3,29 @@ import { Asset } from 'expo-asset';
  * The different types of assets you can provide to the [`loadAsync()`](#loadAsync) function.
  * A font source can be a URI, a module ID, or an Expo Asset.
  */
-export declare type FontSource = string | number | Asset | FontResource;
+export type FontSource = string | number | Asset | FontResource;
 /**
  * An object used to dictate the resource that is loaded into the provided font namespace when used
  * with [`loadAsync`](#loadasync).
  */
-export declare type FontResource = {
-    uri: string | number;
+export type FontResource = {
+    uri?: string | number;
     /**
-     * _Web Only._ Sets the [`font-display`](#fontdisplay) property for a given typeface in the
-     * browser.
+     * Sets the [`font-display`](#fontdisplay) property for a given typeface in the browser.
+     * @platform web
      */
     display?: FontDisplay;
+    default?: string;
 };
 /**
- * __Web Only__. Sets the [font-display](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display)
+ * Sets the [font-display](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display)
  * for a given typeface. The default font value on web is `FontDisplay.AUTO`.
  * Even though setting the `fontDisplay` does nothing on native platforms, the default behavior
  * emulates `FontDisplay.SWAP` on flagship devices like iOS, Samsung, Pixel, etc. Default
  * functionality varies on One Plus devices. In the browser this value is set in the generated
  * `@font-face` CSS block and not as a style property meaning you cannot dynamically change this
  * value based on the element it's used in.
+ * @platform web
  */
 export declare enum FontDisplay {
     /**
@@ -59,5 +61,5 @@ export declare enum FontDisplay {
 /**
  * Object used to query fonts for unloading.
  */
-export declare type UnloadFontOptions = Pick<FontResource, 'display'>;
+export type UnloadFontOptions = Pick<FontResource, 'display'>;
 //# sourceMappingURL=Font.types.d.ts.map

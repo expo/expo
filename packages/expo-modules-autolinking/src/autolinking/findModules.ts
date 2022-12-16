@@ -12,12 +12,6 @@ import { mergeLinkingOptionsAsync, projectPackageJsonPath } from './mergeLinking
 const EXPO_MODULE_CONFIG_FILENAMES = ['unimodule.json', 'expo-module.config.json'];
 
 /**
- * Custom `require` that resolves from the current working dir instead of this script path.
- * **Requires Node v12.2.0**
- */
-const projectRequire = createRequire(projectPackageJsonPath);
-
-/**
  * Searches for modules to link based on given config.
  */
 export async function findModulesAsync(providedOptions: SearchOptions): Promise<SearchResults> {
@@ -130,13 +124,19 @@ function addRevisionToResults(
  * // Given the following file exists: /foo/myapp/modules/mymodule/expo-module.config.json
  * await findPackagesConfigPathsAsync('/foo/myapp/modules');
  * // returns ['mymodule/expo-module.config.json']
+ *
+ * await findPackagesConfigPathsAsync('/foo/myapp/modules/mymodule');
+ * // returns ['expo-module.config.json']
  * ```
  */
 async function findPackagesConfigPathsAsync(searchPath: string): Promise<string[]> {
   const bracedFilenames = '{' + EXPO_MODULE_CONFIG_FILENAMES.join(',') + '}';
-  const paths = await glob([`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`], {
-    cwd: searchPath,
-  });
+  const paths = await glob(
+    [`*/${bracedFilenames}`, `@*/*/${bracedFilenames}`, `./${bracedFilenames}`],
+    {
+      cwd: searchPath,
+    }
+  );
 
   // If the package has multiple configs (e.g. `unimodule.json` and `expo-module.config.json` during the transition time)
   // then we want to give `expo-module.config.json` the priority.
@@ -218,6 +218,11 @@ function filterToProjectDependencies(
           dependencyPackageJsonPath = path.join(dependencyResult.path, 'package.json');
         } else {
           try {
+            /**
+             * Custom `require` that resolves from the current working dir instead of this script path.
+             * **Requires Node v12.2.0**
+             */
+            const projectRequire = createRequire(packageJsonPath);
             dependencyPackageJsonPath = projectRequire.resolve(`${dependencyName}/package.json`);
           } catch (error: any) {
             // Some packages don't include package.json in its `exports` field,

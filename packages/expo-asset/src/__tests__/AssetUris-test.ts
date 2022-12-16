@@ -36,25 +36,25 @@ describe('getExtension', () => {
 
 describe('getManifestBaseUrl', () => {
   it(`returns a URL without the manifest's filename`, () => {
-    const manifestUrl = 'https://expo.io/@user/app/index.exp';
-    expect(AssetUris.getManifestBaseUrl(manifestUrl)).toBe('https://expo.io/@user/app/');
+    const manifestUrl = 'https://exp.host/@user/app/index.exp';
+    expect(AssetUris.getManifestBaseUrl(manifestUrl)).toBe('https://exp.host/@user/app/');
   });
 
   it(`returns the same URL when there is no filename`, () => {
-    const manifestUrl = 'https://expo.io/@user/app/';
-    expect(AssetUris.getManifestBaseUrl(manifestUrl)).toBe('https://expo.io/@user/app/');
+    const manifestUrl = 'https://exp.host/@user/app/';
+    expect(AssetUris.getManifestBaseUrl(manifestUrl)).toBe('https://exp.host/@user/app/');
   });
 
   it(`normalizes Expo client URI schemes`, () => {
-    const expUrl = 'exp://expo.io/@user/app/index.exp';
-    expect(AssetUris.getManifestBaseUrl(expUrl)).toBe('http://expo.io/@user/app/');
+    const expUrl = 'exp://exp.host/@user/app/index.exp';
+    expect(AssetUris.getManifestBaseUrl(expUrl)).toBe('http://exp.host/@user/app/');
 
-    const expsUrl = 'exps://expo.io/@user/app/index.exp';
-    expect(AssetUris.getManifestBaseUrl(expsUrl)).toBe('https://expo.io/@user/app/');
+    const expsUrl = 'exps://exp.host/@user/app/index.exp';
+    expect(AssetUris.getManifestBaseUrl(expsUrl)).toBe('https://exp.host/@user/app/');
   });
 
   it(`removes query parameters and fragments`, () => {
-    const manifestUrl = 'https://expo.io/@user/app/index.exp?query=test#hash';
-    expect(AssetUris.getManifestBaseUrl(manifestUrl)).toBe('https://expo.io/@user/app/');
+    const manifestUrl = 'https://exp.host/@user/app/index.exp?query=test#hash';
+    expect(AssetUris.getManifestBaseUrl(manifestUrl)).toBe('https://exp.host/@user/app/');
   });
 });

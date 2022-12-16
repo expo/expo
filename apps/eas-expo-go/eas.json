@@ -1,0 +1,95 @@
+{
+  "cli": {
+    "version": ">= 0.52.0",
+    "requireCommit": true
+  },
+  "build": {
+    "base": {
+      "credentialsSource": "local",
+      "android": {
+        "image": "ubuntu-20.04-jdk-11-ndk-r21e",
+        "cache": {
+          "customPaths": [
+            "../../android/prebuiltHermes"
+          ]
+        },
+        "env": {
+          "EAS_BUILD_PLATFORM": "android",
+          "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
+          "EXPO_ROOT_DIR": "/home/expo/workingdir/build"
+        }
+      },
+      "ios": {
+        "cache": {
+          "key": "sdk47-0.70.4",
+          "customPaths": [
+            "../../ios/Pods"
+          ]
+        },
+        "env": {
+          "EAS_BUILD_PLATFORM": "ios",
+          "EXPO_ROOT_DIR": "/Users/expo/workingdir/build"
+        }
+      }
+    },
+    "versioned-client": {
+      "extends": "base",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleVersionedDebug",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "scheme": "Expo Go \\(versioned\\)",
+        "simulator": true,
+        "buildConfiguration": "Release"
+      }
+    },
+    "versioned-client-signed": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client-signed"
+      },
+      "android": {
+        "withoutCredentials": false,
+        "gradleCommand": ":app:bundleVersionedRelease"
+      },
+      "ios": {
+        "credentialsSource": "remote",
+        "simulator": false
+      }
+    },
+    "versioned-client-signed-apk": {
+      "extends": "versioned-client-signed",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client-signed-apk"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleVersionedRelease"
+      }
+    },
+    "versioned-client-add-sdk": {
+      "extends": "versioned-client",
+      "env": {
+        "EAS_BUILD_PROFILE": "versioned-client-add-sdk"
+      }
+    },
+    "unversioned-client": {
+      "extends": "base",
+      "env": {
+        "EAS_BUILD_PROFILE": "unversioned-client"
+      },
+      "android": {
+        "gradleCommand": ":app:assembleUnversionedDebug",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "scheme": "Expo Go \\(unversioned\\)",
+        "simulator": true,
+        "buildConfiguration": "Release"
+      }
+    }
+  }
+}

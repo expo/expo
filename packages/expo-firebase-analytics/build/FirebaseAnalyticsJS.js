@@ -129,8 +129,8 @@ class FirebaseAnalyticsJS {
                 try {
                     await this.flushEventsPromise;
                 }
-                catch (err) {
-                    // nop
+                catch {
+                    // no-op
                 }
                 this.flushEventsPromise = this.flushEvents();
             }, options.debug ? 10 : options.maxCacheTime);

@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 2.3.1 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.3.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 2.2.0 — 2022-04-18
+
+_This version does not introduce any user-facing changes._
+
 ## 2.1.0 — 2021-12-03
 
 ### 🐛 Bug fixes

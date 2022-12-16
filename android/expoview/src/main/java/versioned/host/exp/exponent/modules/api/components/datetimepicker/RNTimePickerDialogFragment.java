@@ -8,6 +8,8 @@
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
+import host.exp.expoview.R;
+
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -15,10 +17,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.content.DialogInterface.OnClickListener;
-import android.os.Build;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
@@ -35,6 +37,7 @@ public class RNTimePickerDialogFragment extends DialogFragment {
   @Nullable
   private static OnClickListener mOnNeutralButtonActionListener;
 
+  @NonNull
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     final Bundle args = getArguments();
@@ -72,16 +75,12 @@ public class RNTimePickerDialogFragment extends DialogFragment {
     }
 
     if (display == RNTimePickerDisplay.CLOCK || display == RNTimePickerDisplay.SPINNER) {
-        String resourceName = display == RNTimePickerDisplay.CLOCK
-                ? "ClockTimePickerDialog"
-                : "SpinnerTimePickerDialog";
+        int theme = display == RNTimePickerDisplay.CLOCK
+              ? R.style.ClockTimePickerDialog
+              : R.style.SpinnerTimePickerDialog;
         return new RNDismissableTimePickerDialog(
                 activityContext,
-                activityContext.getResources().getIdentifier(
-                        resourceName,
-                        "style",
-                        activityContext.getPackageName()
-                ),
+                theme,
                 onTimeSetListener,
                 hour,
                 minute,
@@ -110,11 +109,17 @@ public class RNTimePickerDialogFragment extends DialogFragment {
     if (args != null && args.containsKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
       dialog.setButton(DialogInterface.BUTTON_NEUTRAL, args.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL), mOnNeutralButtonActionListener);
     }
+    if (args != null && args.containsKey(RNConstants.ARG_POSITIVE_BUTTON_LABEL)) {
+      dialog.setButton(DialogInterface.BUTTON_POSITIVE, args.getString(RNConstants.ARG_POSITIVE_BUTTON_LABEL), dialog);
+    }
+    if (args != null && args.containsKey(RNConstants.ARG_NEGATIVE_BUTTON_LABEL)) {
+      dialog.setButton(DialogInterface.BUTTON_NEGATIVE, args.getString(RNConstants.ARG_NEGATIVE_BUTTON_LABEL), dialog);
+    }
     return dialog;
   }
 
   @Override
-  public void onDismiss(DialogInterface dialog) {
+  public void onDismiss(@NonNull DialogInterface dialog) {
     super.onDismiss(dialog);
     if (mOnDismissListener != null) {
       mOnDismissListener.onDismiss(dialog);

@@ -1,12 +1,12 @@
 #import "DevMenuREAConcatNode.h"
-#import "DevMenuREAValueNode.h"
 #import "DevMenuREANodesManager.h"
+#import "DevMenuREAValueNode.h"
 
 @implementation DevMenuREAConcatNode {
   NSArray<NSNumber *> *_input;
 }
 
-- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _input = config[@"input"];

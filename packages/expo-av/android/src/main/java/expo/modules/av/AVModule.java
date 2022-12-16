@@ -98,6 +98,21 @@ public class AVModule extends ExportedModule {
   }
 
   @ExpoMethod
+  public void getAvailableInputs(final Promise promise) {
+    mAVManager.getAvailableInputs(promise);
+  }
+
+  @ExpoMethod
+  public void getCurrentInput(final Promise promise) {
+    mAVManager.getCurrentInput(promise);
+  }
+
+  @ExpoMethod
+  public void setInput(final String uid, final Promise promise) {
+    mAVManager.setInput(uid, promise);
+  }
+
+  @ExpoMethod
   public void startAudioRecording(final Promise promise) {
     mAVManager.startAudioRecording(promise);
   }

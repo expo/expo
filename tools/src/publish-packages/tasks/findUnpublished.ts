@@ -5,8 +5,8 @@ import { GitDirectory, GitFileLog, GitFileStatus } from '../../Git';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { filterAsync } from '../../Utils';
-import { prepareParcels } from './prepareParcels';
 import { CommandOptions, Parcel, PackageGitLogs, TaskArgs, ReleaseType } from '../types';
+import { prepareParcels } from './prepareParcels';
 
 /**
  * An array of directories treated as containing native code.
@@ -61,7 +61,7 @@ async function getPackageGitLogsAsync(
 
   const commits = await gitDir.logAsync({
     fromCommit,
-    toCommit: 'head',
+    toCommit: 'HEAD',
   });
 
   const gitFiles = await gitDir.logFilesAsync({

@@ -22,10 +22,9 @@ if (!exports.projectPackageJsonPath) {
  * - options provided to the CLI command
  */
 async function mergeLinkingOptionsAsync(providedOptions) {
-    var _a;
     const packageJson = require(exports.projectPackageJsonPath);
-    const baseOptions = (_a = packageJson.expo) === null || _a === void 0 ? void 0 : _a.autolinking;
-    const platformOptions = providedOptions.platform && (baseOptions === null || baseOptions === void 0 ? void 0 : baseOptions[providedOptions.platform]);
+    const baseOptions = packageJson.expo?.autolinking;
+    const platformOptions = providedOptions.platform && baseOptions?.[providedOptions.platform];
     const finalOptions = Object.assign({}, baseOptions, platformOptions, providedOptions);
     // Makes provided paths absolute or falls back to default paths if none was provided.
     finalOptions.searchPaths = await resolveSearchPathsAsync(finalOptions.searchPaths, process.cwd());
@@ -53,27 +52,28 @@ async function findDefaultPathsAsync(cwd) {
     while ((pkgJsonPath = await (0, find_up_1.default)('package.json', { cwd: dir }))) {
         dir = path_1.default.dirname(path_1.default.dirname(pkgJsonPath));
         paths.push(path_1.default.join(pkgJsonPath, '..', 'node_modules'));
+        // This stops the infinite loop when the package.json is placed at the root dir.
+        if (path_1.default.dirname(dir) === dir) {
+            break;
+        }
     }
     return paths;
 }
 /**
  * Finds the real path to custom native modules directory.
+ * - When {@link cwd} is inside the project directory, the path is searched relatively
+ * to the project root (directory with the `package.json` file).
+ * - When {@link cwd} is outside project directory (no `package.json` found), it is relative to
+ * the current working directory (the {@link cwd} param).
+ *
+ * @param nativeModulesDir path to custom native modules directory. Defaults to `"./modules"` if null.
+ * @param cwd current working directory
  * @returns resolved native modules directory or `null` if it is not found or doesn't exist.
  */
 async function resolveNativeModulesDirAsync(nativeModulesDir, cwd) {
-    // first try resolving the provided dir
-    if (nativeModulesDir) {
-        const nativeModulesDirPath = path_1.default.resolve(cwd, nativeModulesDir);
-        if (await fs_extra_1.default.pathExists(nativeModulesDirPath)) {
-            return nativeModulesDirPath;
-        }
-    }
-    // if not found, try to find it relative to the package.json
-    const up = await (0, find_up_1.default)('package.json', { cwd });
-    if (!up) {
-        return null;
-    }
-    const resolvedPath = path_1.default.join(up, '..', nativeModulesDir || 'modules');
+    const packageJsonPath = await (0, find_up_1.default)('package.json', { cwd });
+    const projectRoot = packageJsonPath != null ? path_1.default.join(packageJsonPath, '..') : cwd;
+    const resolvedPath = path_1.default.resolve(projectRoot, nativeModulesDir || 'modules');
     return fs_extra_1.default.existsSync(resolvedPath) ? resolvedPath : null;
 }
 //# sourceMappingURL=mergeLinkingOptions.js.map

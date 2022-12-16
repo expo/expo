@@ -20,6 +20,10 @@ import org.json.JSONObject
 import java.text.ParseException
 import java.util.*
 
+/**
+ * Class for manifests using the modern format defined in the Expo Updates specification
+ * (https://docs.expo.dev/technical-specs/expo-updates-0/). This is used by EAS Update.
+ */
 class NewUpdateManifest private constructor(
   override val manifest: NewManifest,
   private val mId: UUID,
@@ -68,7 +72,7 @@ class NewUpdateManifest private constructor(
           extraRequestHeaders = assetHeaders[mLaunchAsset.getString("key")]
           isLaunchAsset = true
           embeddedAssetFilename = EmbeddedLoader.BUNDLE_FILENAME
-          expectedHash = mLaunchAsset.getString("hash")
+          expectedHash = mLaunchAsset.getNullable("hash")
         }
       )
     } catch (e: JSONException) {
@@ -86,7 +90,7 @@ class NewUpdateManifest private constructor(
               url = Uri.parse(assetObject.getString("url"))
               extraRequestHeaders = assetHeaders[assetObject.getString("key")]
               embeddedAssetFilename = assetObject.getNullable("embeddedAssetFilename")
-              expectedHash = mLaunchAsset.getString("hash")
+              expectedHash = assetObject.getNullable("hash")
             }
           )
         } catch (e: JSONException) {

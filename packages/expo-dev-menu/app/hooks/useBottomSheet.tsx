@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Pressable } from 'react-native';
+import { View, StyleSheet, Pressable, useWindowDimensions } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 import { BottomSheet } from '../components/BottomSheet';
@@ -55,6 +55,8 @@ export function BottomSheetProvider({ children }: BottomSheetProviderProps) {
     outputRange: [0, 0.5],
   });
 
+  const { height: screenHeight } = useWindowDimensions();
+
   return (
     <BottomSheetContext.Provider value={{ collapse }}>
       <View style={styles.container}>
@@ -69,6 +71,7 @@ export function BottomSheetProvider({ children }: BottomSheetProviderProps) {
           />
         </Pressable>
         <BottomSheet
+          screenHeight={screenHeight}
           ref={bottomSheetRef}
           callbackNode={callbackNode.current}
           snapPoints={snapPoints}>

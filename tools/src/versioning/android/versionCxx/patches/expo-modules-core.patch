@@ -1,0 +1,24 @@
+diff --git a/packages/expo-modules-core/android/build.gradle b/packages/expo-modules-core/android/build.gradle
+index 5680407e0d..96130cef75 100644
+--- a/packages/expo-modules-core/android/build.gradle
++++ b/packages/expo-modules-core/android/build.gradle
+@@ -60,6 +60,10 @@ def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+ def REACT_NATIVE_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+   ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
+   : "${buildDir}/react-native-0*/jni"
++REACT_NATIVE_DIR = "${rootDir}/versioned-react-native"
++REACT_NATIVE_BUILD_FROM_SOURCE = false
++REACT_NATIVE_SO_DIR = "${buildDir}/reactandroid-{VERSIONED_ABI_NAME}-*/jni"
++def REACT_NATIVE_AAR_DIR = "${rootDir}/versioned-abis/expoview-{VERSIONED_ABI_NAME}/maven"
+ 
+ def reactProperties = new Properties()
+ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+@@ -334,7 +338,7 @@ task createNativeDepsDirectories() {
+ // JNI
+ def extractReactNativeAAR = { buildType ->
+   def suffix = buildType == 'Debug' ? '-debug' : '-release'
+-  def rnAARs = fileTree(REACT_NATIVE_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
++  def rnAARs = fileTree(REACT_NATIVE_AAR_DIR).matching { include "**/*.aar" }
+   if (rnAARs.isEmpty()) {
+     rnAARs = fileTree(REACT_NATIVE_DIR).matching { include "**/react-native/**/*.aar" }
+   }

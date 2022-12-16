@@ -1,143 +1,194 @@
 import * as React from 'react';
+import { Animated } from 'react-native';
 
-// utility function for capturing all push and pop stack events
-// components can subscribe to internal state to push and pop their own views depending on use case
-// e.g a modal stack, a screen stack, a toast stack, etc
+export type StackAction = 'pushstart' | 'pushend' | 'popstart' | 'popend';
+export type Status = 'pushing' | 'popping' | 'settled' | 'popped';
 
-export type IStackEvent = 'pushstart' | 'pushend' | 'popstart' | 'popend' | 'replace';
+export type StackItemComponent<T = any> = React.JSXElementConstructor<T>;
 
-export type StackItemStatus = 'pushing' | 'popping' | 'settled';
-
-export type ListenerFn<T> = ({
-  items,
-}: {
-  action: IStackEvent;
-  key: string;
-  items: StackItem<T>[];
-  getItemByKey: (key: string) => T | undefined;
-}) => void;
-
-export type StackItem<T> = T & { key: string; status: StackItemStatus };
-export type IReplaceOptions<T> = T & { replaceAmount?: number; key?: string };
-export type IPushOptions<T> = T & { key?: string };
-export interface IStack<T> {
-  push: (pushOptions: IPushOptions<T>) => Promise<string>;
-  pop: (amount?: number) => Promise<string[]>;
-  replace: (replaceOptions: IReplaceOptions<T>) => Promise<any>;
-  onPushEnd: (key: string) => void;
-  onPopEnd: (key: string) => void;
-  subscribe: (listener: ListenerFn<T>) => () => void;
-  getState: () => {
-    items: StackItem<T>[];
-    getItemByKey: (key: string) => T | undefined;
+export type StackEvent<T = any> = {
+  state: StackState<T>;
+  event: {
+    action: StackAction;
+    key: string;
   };
-}
+};
 
-const generateRouteKey = () => `${new Date().getTime()}`;
+const AValue = new Animated.Value(0);
 
-export function createAsyncStack<T>(): IStack<T> {
+export type StackItem<T = any> = {
+  key: string;
+  status: Status;
+  promise: Promise<StackItem<T>>;
+  pop: () => void;
+  onPushEnd: () => void;
+  onPopEnd: () => void;
+  data: T;
+  animatedValue: typeof AValue;
+};
+
+export type StackState<T = any> = {
+  items: StackItem<T>[];
+  lookup: Record<string, StackItem<T>>;
+  getItemByKey: (key: string) => StackItem<T> | null;
+};
+
+export type Stack<T> = {
+  push: (data?: T | undefined) => StackItem<T>;
+  pop: (amount?: number, startIndex?: number) => StackItem<any>[];
+  subscribe: (listener: (state: StackEvent<T>) => void) => () => void;
+  getState: () => StackState;
+};
+
+export function createAsyncStack<T = any>() {
   let keys: string[] = [];
   const lookup: Record<string, StackItem<T>> = {};
+  let count = 0;
 
-  const pushResolvers: Record<string, Function> = {};
+  const pushResolvers: Record<string, any> = {};
   const popResolvers: Record<string, Function> = {};
 
   let listeners: any[] = [];
 
-  function push(pushOptions: IPushOptions<T>) {
-    const key = pushOptions.key || generateRouteKey();
-
-    if (keys.includes(key)) {
-      return Promise.resolve(key);
-    }
+  function push(data?: T) {
+    count += 1;
+    const key = '' + count;
 
     keys.push(key);
 
-    lookup[key] = {
-      ...pushOptions,
-      key,
-      status: 'pushing',
-    };
-
-    const promise = new Promise<string>((resolve) => {
+    const promise = new Promise<StackItem<T>>((resolve) => {
       pushResolvers[key] = resolve;
     });
 
+    const item: StackItem<T> = {
+      key,
+      promise,
+      // @ts-ignore
+      data,
+      status: 'pushing' as Status,
+      pop: () => pop(`${key}`),
+      onPushEnd: () => onPushEnd(key),
+      onPopEnd: () => onPopEnd(key),
+      animatedValue: new Animated.Value(0),
+    };
+
+    if (data) {
+      item.data = data;
+    }
+
+    lookup[key] = item;
+
     emit('pushstart', key);
 
-    return promise;
+    return item;
   }
 
   function onPushEnd(key: string) {
     const item = lookup[key];
 
-    if (item) {
-      if (item.status === 'pushing') {
-        item.status = 'settled';
-      }
-
-      emit('pushend', key);
+    if (item.status === 'pushing') {
+      item.status = 'settled';
 
       const resolver = pushResolvers[key];
 
       if (resolver) {
-        resolver(key);
+        resolver(getItemByKey(key));
+        delete pushResolvers[key];
       }
+
+      emit('pushend', key);
     }
+
+    return item;
   }
 
-  function pop(amount = 1, startIndex = 0) {
-    const promises = [];
+  function pop(amount: number | string = 1) {
+    const items: StackItem[] = [];
+
+    if (typeof amount === 'string') {
+      const key = amount;
+      const item = lookup[key];
+
+      if (item) {
+        if (item.status === 'pushing') {
+          onPushEnd(key);
+        }
+
+        item.status = 'popping';
+
+        const promise = new Promise<StackItem<T>>((resolve) => {
+          popResolvers[key] = resolve;
+        });
+
+        item.promise = promise;
+
+        emit('popstart', key);
+        items.push(item);
+      }
+
+      return items;
+    }
 
     if (amount === -1) {
       // pop them all
       amount = keys.length;
     }
 
-    for (let i = 1; i <= amount; i++) {
-      const key = keys[keys.length - startIndex - i];
+    let startIndex = keys.length - 1;
+
+    for (let i = keys.length - 1; i >= 0; i--) {
+      const key = keys[i];
       const item = lookup[key];
 
-      if (item) {
-        item.status = 'popping';
-
-        const promise = new Promise((resolve) => {
-          popResolvers[key] = resolve;
-        });
-
-        promises.push(promise);
-        emit('popstart', key);
+      if (item && (item.status === 'settled' || item.status === 'pushing')) {
+        startIndex = i;
+        break;
       }
     }
 
-    return Promise.all(promises) as Promise<string[]>;
+    for (let i = startIndex; i > startIndex - amount; i--) {
+      const key = keys[i];
+      const item = lookup[key];
+
+      if (item) {
+        if (item.status === 'pushing') {
+          onPushEnd(key);
+        }
+
+        item.status = 'popping';
+
+        const promise = new Promise<StackItem<T>>((resolve) => {
+          popResolvers[key] = resolve;
+        });
+
+        item.promise = promise;
+
+        emit('popstart', key);
+        items.push(item);
+      }
+    }
+
+    return items;
   }
 
   function onPopEnd(key: string) {
+    const item = lookup[key];
     keys = keys.filter((k) => k !== key);
 
     const resolver = popResolvers[key];
 
     if (resolver) {
-      resolver(key);
+      resolver(getItemByKey(key));
+      delete popResolvers[key];
     }
 
-    delete popResolvers[key];
-    delete pushResolvers[key];
-
+    item.status = 'popped';
     emit('popend', key);
+
+    return item;
   }
 
-  async function replace(replaceOptions: IReplaceOptions<T>) {
-    const itemsToPop = replaceOptions.replaceAmount != null ? replaceOptions.replaceAmount : 1;
-
-    const promise2 = await push(replaceOptions);
-    const promise1 = await pop(itemsToPop, 1);
-
-    return Promise.all([promise2, promise1]);
-  }
-
-  function subscribe(listener: any) {
+  function subscribe(listener: (state: StackEvent<T>) => void) {
     listeners.push(listener);
 
     return () => {
@@ -145,10 +196,11 @@ export function createAsyncStack<T>(): IStack<T> {
     };
   }
 
-  function emit(action: IStackEvent, key: string) {
+  function emit(action: StackAction, key: string) {
     listeners.forEach((listener) => {
       const state = getState();
-      listener({ ...state, key, action });
+      const event = { key, action };
+      listener({ state, event });
     });
   }
 
@@ -156,38 +208,34 @@ export function createAsyncStack<T>(): IStack<T> {
     return lookup[key];
   }
 
-  function getState() {
+  function getState(): StackState {
     const items = keys.map((key) => lookup[key]);
 
     return {
       items,
+      lookup,
       getItemByKey,
     };
   }
 
   return {
     push,
-    onPushEnd,
     pop,
-    onPopEnd,
-    replace,
     subscribe,
     getState,
   };
 }
 
-export function useStackItems<T>(stack: IStack<T>) {
-  const [items, setItems] = React.useState(() => stack.getState().items);
+export function useStackItems<T>(stack: Stack<T>) {
+  const [items, setItems] = React.useState<StackItem<T>[]>(stack.getState().items);
 
   React.useEffect(() => {
-    const unsubscribe = stack.subscribe(({ items }) => {
-      setItems(items);
+    const unsubscribe = stack.subscribe(({ state }) => {
+      setItems(state.items);
     });
 
-    return () => {
-      unsubscribe && unsubscribe();
-    };
-  }, [stack]);
+    return () => unsubscribe();
+  }, []);
 
   return items;
 }

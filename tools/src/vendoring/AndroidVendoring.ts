@@ -17,4 +17,6 @@ export async function vendorAsync(
     targetDirectory,
     transforms: config?.transforms ?? {},
   });
+
+  await config.postCopyFilesHookAsync?.(sourceDirectory, targetDirectory);
 }

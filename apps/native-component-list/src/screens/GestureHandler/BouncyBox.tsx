@@ -11,7 +11,7 @@ import {
 
 const USE_NATIVE_DRIVER = true;
 
-class Snappable extends Component {
+class Snappable extends Component<{ children?: React.ReactNode }> {
   _dragX = new Animated.Value(0);
   _transX = this._dragX.interpolate({
     inputRange: [-100, -50, 0, 50, 100],
@@ -47,7 +47,7 @@ class Snappable extends Component {
   }
 }
 
-class Twistable extends Component {
+class Twistable extends Component<{ children?: React.ReactNode }> {
   _gesture = new Animated.Value(0);
 
   _rot = this._gesture

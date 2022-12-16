@@ -2,7 +2,7 @@
 
 ## 1. Checking packages
 
-- Run `et check-packages` to make sure every package build successfully, `build` folder is up to date and all unit tests pass. 
+- Run `et check-packages` to make sure every package build successfully, `build` folder is up to date and all unit tests pass.
 
 ## 2. React Native dev tools
 
@@ -17,7 +17,13 @@ Unversioned QA: Test in native-component-list.
   - Disable Fast Refresh, make and save a change, it shouldn't show up
   - Reload manually, your change should appear
   - Make and save another change, reenable Fast Refresh, your change should show up automatically
-- Debug Remote JS
+- Debug JS in-place (Hermes)
+  - Add `jsEngine` as `hermes` in _apps/native-component-list/app.json_
+  - Open JS debugger either pressing `j` by `expo-cli` terminal UI hotkey or from the dev-menu in Expo Go
+  - Add a breakpoint (maybe add a button to your app), ensure the breakpoint works
+  - Click Reload on the webpage, make sure it reloads the app
+- Debug Remote JS (JSC)
+  - Add `jsEngine` as `jsc` in _apps/native-component-list/app.json_
   - Start Remote JS debugging
   - Add a breakpoint (maybe add a button to your app), ensure the breakpoint works
   - Click Reload on the webpage, make sure it reloads the app
@@ -36,12 +42,14 @@ Unversioned QA: Test in native-component-list.
 - Go to `apps/test-suite`.
 - Update its `sdkVersion` in `app.json`. Use `UNVERSIONED` for unversioned QA and the new SDK version for versioned QA.
 - Run `expo start` and test each module.
+- Run `expo start --force-manifest-type=expo-updates` and sanity check one or two modules (mainly just checking that project opens).
 
 ## 4. Inspecting native-component-list examples
 
 - Go to `apps/native-component-list`.
 - Update its `sdkVersion` in `app.json`. Use `UNVERSIONED` for unversioned QA and the new SDK version for versioned QA.
 - Run `expo start` and check every example, including React Native components.
+- Run `expo start --force-manifest-type=expo-updates` and sanity check one or two examples (mainly just checking that project opens).
 
 ### 5. Smoke test Expo Home
 
@@ -55,4 +63,6 @@ Unversioned QA: Test in native-component-list.
 
 > Make sure to use the "Expo Go (versioned)" target on iOS.
 
-- Run `expo init -t blank@sdk-x` for each supported SDK version and ensure the project loads without crashing.
+- Run `expo init -t blank@sdk-x` for each supported SDK version.
+- Run `expo start` and ensure the project loads without crashing.
+- Run `expo start --force-manifest-type=expo-updates` and ensure the project loads without crashing.

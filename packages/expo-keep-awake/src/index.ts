@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import ExpoKeepAwake from './ExpoKeepAwake';
 import { KeepAwakeListener } from './KeepAwake.types';
 
-const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
+export const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 
 /**
  * Returns `true` on all platforms except [unsupported web browsers](https://caniuse.com/wake-lock).
@@ -22,23 +22,37 @@ export async function isAvailableAsync(): Promise<boolean> {
  * The optionally provided `tag` argument is used when activating and deactivating the keep-awake
  * feature. If unspecified, the default `tag` is used. See the documentation for `activateKeepAwakeAsync`
  * below to learn more about the `tag` argument.
- * @param tag *Optional*
- * @param listener *Optional* A callback that is invoked when the keep-awake state changes (web-only).
+ *
+ * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
+ * @param options *Optional*
+ *   - `suppressDeactivateWarnings` *Optional* -
+ *      The call will throw an unhandled promise rejection on Android
+ *      when the original Activity is dead or deactivated.
+ *      Set the value to true for suppressing the uncaught exception.
+ *   - `listener` *Optional* -
+ *      A callback that is invoked when the keep-awake state changes (web-only).
  */
 export function useKeepAwake(
   tag: string = ExpoKeepAwakeTag,
-  listener: KeepAwakeListener = () => {}
+  options?: {
+    listener?: KeepAwakeListener;
+    suppressDeactivateWarnings?: boolean;
+  }
 ): void {
   useEffect(() => {
     let isMounted = true;
     activateKeepAwakeAsync(tag).then(() => {
-      if (isMounted && ExpoKeepAwake.addListenerForTag) {
-        addListener(tag, listener);
+      if (isMounted && ExpoKeepAwake.addListenerForTag && options?.listener) {
+        addListener(tag, options.listener);
       }
     });
     return () => {
       isMounted = false;
-      deactivateKeepAwake(tag);
+      if (options?.suppressDeactivateWarnings) {
+        deactivateKeepAwake(tag).catch(() => {});
+      } else {
+        deactivateKeepAwake(tag);
+      }
     };
   }, [tag]);
 }
@@ -74,7 +88,7 @@ export function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void>
  * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
  */
 export async function activateKeepAwakeAsync(tag: string = ExpoKeepAwakeTag): Promise<void> {
-  if (ExpoKeepAwake.activate) await ExpoKeepAwake.activate(tag);
+  await ExpoKeepAwake.activate?.(tag);
 }
 
 // @needsAudit
@@ -84,8 +98,8 @@ export async function activateKeepAwakeAsync(tag: string = ExpoKeepAwakeTag): Pr
  * @param tag *Optional* - Tag to release the lock on screen sleep prevention. If not provided,
  * the default tag is used.
  */
-export function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): void {
-  if (ExpoKeepAwake.deactivate) ExpoKeepAwake.deactivate(tag);
+export async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
+  await ExpoKeepAwake.deactivate?.(tag);
 }
 
 /**

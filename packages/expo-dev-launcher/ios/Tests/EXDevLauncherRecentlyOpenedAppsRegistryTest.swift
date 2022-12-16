@@ -16,14 +16,23 @@ class EXDevLauncherRecentlyOpenedAppsRegistryTest: QuickSpec {
     }
 
     it("registry should update when apps are opened") {
-      appsRegistry.appWasOpened("http://localhost:1234", name: "app1")
-      appsRegistry.appWasOpened("http://localhost:9876", name: "app2")
+      let url1 = "http://localhost:1234"
+      let url2 = "http://localhost:9876"
+
+      appsRegistry.appWasOpened(url1, queryParams: [:], manifest: nil)
+      appsRegistry.appWasOpened(url2, queryParams: [:], manifest: nil)
 
       let openedApps = appsRegistry.recentlyOpenedApps()
 
       expect(openedApps.count).to(equal(2))
-      expect(openedApps["http://localhost:1234"] as? String).to(equal("app1"))
-      expect(openedApps["http://localhost:9876"] as? String).to(equal("app2"))
+      
+      expect(openedApps.filter { appEntry in
+        appEntry["url"] as! String == url1
+      }.count).to(equal(1))
+      
+      expect(openedApps.filter { appEntry in
+        appEntry["url"] as! String == url2
+      }.count).to(equal(1))
     }
 
     it("registry timestamp should be correct") {

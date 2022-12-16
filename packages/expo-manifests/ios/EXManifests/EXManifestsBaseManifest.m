@@ -119,6 +119,14 @@
   return [expoGoConfig nullableDictionaryForKey:@"developer"];
 }
 
+- (nullable NSString *)logUrl {
+  NSDictionary *expoGoConfig = self.expoGoConfigRootObject;
+  if (!expoGoConfig) {
+    return nil;
+  }
+  return [expoGoConfig nullableStringForKey:@"logUrl"];
+}
+
 - (nullable NSString *)facebookAppId {
   NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
   if (!expoClientConfig) {
@@ -142,6 +150,22 @@
   }
   NSNumber *enabledNumber = [expoClientConfig nullableNumberForKey:@"facebookAutoInitEnabled"];
   return enabledNumber != nil && [enabledNumber boolValue];
+}
+
+- (NSString *)jsEngine {
+  NSString *result = nil;
+  NSDictionary *expoClientConfig = self.expoClientConfigRootObject;
+  if (expoClientConfig) {
+    result = [[self class] getStringFromManifest:expoClientConfig
+                                         paths:@[
+                                           @[@"ios", @"jsEngine"],
+                                           @[@"jsEngine"],
+                                         ]];
+  }
+  if (!result) {
+    result = @"jsc";
+  }
+  return result;
 }
 
 # pragma mark - Derived Methods

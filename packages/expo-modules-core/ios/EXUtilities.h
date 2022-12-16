@@ -20,6 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable UIViewController *)currentViewController;
 - (nullable NSDictionary *)launchOptions;
 
++ (BOOL)catchException:(void(^)(void))tryBlock error:(__autoreleasing NSError **)error;
+
 @end
 
 NS_ASSUME_NONNULL_END

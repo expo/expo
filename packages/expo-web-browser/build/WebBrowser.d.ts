@@ -1,5 +1,5 @@
-import { WebBrowserAuthSessionResult, WebBrowserCompleteAuthSessionOptions, WebBrowserCompleteAuthSessionResult, WebBrowserCoolDownResult, WebBrowserCustomTabsResults, WebBrowserMayInitWithUrlResult, WebBrowserOpenOptions, WebBrowserRedirectResult, WebBrowserResult, WebBrowserResultType, WebBrowserWarmUpResult, WebBrowserWindowFeatures } from './WebBrowser.types';
-export { WebBrowserAuthSessionResult, WebBrowserCompleteAuthSessionOptions, WebBrowserCompleteAuthSessionResult, WebBrowserCoolDownResult, WebBrowserCustomTabsResults, WebBrowserMayInitWithUrlResult, WebBrowserOpenOptions, WebBrowserRedirectResult, WebBrowserResult, WebBrowserResultType, WebBrowserWarmUpResult, WebBrowserWindowFeatures, };
+import { WebBrowserAuthSessionResult, WebBrowserCompleteAuthSessionOptions, WebBrowserCompleteAuthSessionResult, WebBrowserCoolDownResult, WebBrowserCustomTabsResults, WebBrowserMayInitWithUrlResult, WebBrowserOpenOptions, WebBrowserRedirectResult, WebBrowserResult, WebBrowserResultType, WebBrowserWarmUpResult, WebBrowserWindowFeatures, WebBrowserPresentationStyle, AuthSessionOpenOptions } from './WebBrowser.types';
+export { WebBrowserAuthSessionResult, WebBrowserCompleteAuthSessionOptions, WebBrowserCompleteAuthSessionResult, WebBrowserCoolDownResult, WebBrowserCustomTabsResults, WebBrowserMayInitWithUrlResult, WebBrowserOpenOptions, WebBrowserRedirectResult, WebBrowserResult, WebBrowserResultType, WebBrowserWarmUpResult, WebBrowserWindowFeatures, WebBrowserPresentationStyle, AuthSessionOpenOptions, };
 /**
  * Returns a list of applications package names supporting Custom Tabs, Custom Tabs
  * service, user chosen and preferred one. This may not be fully reliable, since it uses
@@ -70,9 +70,8 @@ export declare function openBrowserAsync(url: string, browserParams?: WebBrowser
 export declare function dismissBrowser(): void;
 /**
  * # On iOS:
- * Opens the url with Safari in a modal using `SFAuthenticationSession` on iOS 11 and greater,
- * and falling back on a `SFSafariViewController`. The user will be asked whether to allow the app
- * to authenticate using the given url.
+ * Opens the url with Safari in a modal using `ASWebAuthenticationSession`. The user will be asked
+ * whether to allow the app to authenticate using the given url.
  *
  * # On Android:
  * This will be done using a "custom Chrome tabs" browser, [AppState](../react-native/appstate/),
@@ -87,7 +86,7 @@ export declare function dismissBrowser(): void;
  *
  * How this works on web:
  * - A crypto state will be created for verifying the redirect.
- *   - This means you need to run with `expo start:web --https`
+ *   - This means you need to run with `npx expo start --https`
  * - The state will be added to the window's `localstorage`. This ensures that auth cannot complete
  *   unless it's done from a page running with the same origin as it was started.
  *   Ex: if `openAuthSessionAsync` is invoked on `https://localhost:19006`, then `maybeCompleteAuthSession`
@@ -101,8 +100,9 @@ export declare function dismissBrowser(): void;
  * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
  *
  * @param url The url to open in the web browser. This should be a login page.
- * @param redirectUrl _Optional_ - The url to deep link back into your app. By default, this will be [`Constants.linkingUrl`](./constants/#expoconstantslinkinguri).
- * @param browserParams _Optional_ - An object with the same keys as [`WebBrowserOpenOptions`](#webbrowseropenoptions).
+ * @param redirectUrl _Optional_ - The url to deep link back into your app.
+ * On web, this defaults to the output of [`Linking.createURL("")`](./linking/#linkingcreateurlpath-namedparameters).
+ * @param options _Optional_ - An object extending the [`WebBrowserOpenOptions`](#webbrowseropenoptions).
  * If there is no native AuthSession implementation available (which is the case on Android)
  * these params will be used in the browser polyfill. If there is a native AuthSession implementation,
  * these params will be ignored.
@@ -113,7 +113,7 @@ export declare function dismissBrowser(): void;
  * - If the browser is closed using [`dismissBrowser`](#webbrowserdismissbrowser),
  * the Promise fulfills with `{ type: 'dismiss' }` object.
  */
-export declare function openAuthSessionAsync(url: string, redirectUrl: string, browserParams?: WebBrowserOpenOptions): Promise<WebBrowserAuthSessionResult>;
+export declare function openAuthSessionAsync(url: string, redirectUrl?: string | null, options?: AuthSessionOpenOptions): Promise<WebBrowserAuthSessionResult>;
 export declare function dismissAuthSession(): void;
 /**
  * Possibly completes an authentication session on web in a window popup. The method

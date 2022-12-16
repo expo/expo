@@ -103,7 +103,7 @@
                            @"numberOfPointers": @(numberOfTouches)}];
 }
 
-+ (RNGestureHandlerEventExtraData *)forEventType:(RNTouchEventType)eventType
++ (RNGestureHandlerEventExtraData *)forEventType:(RNGHTouchEventType)eventType
                              withChangedPointers:(NSArray<NSDictionary *> *)changedPointers
                                  withAllPointers:(NSArray<NSDictionary *> *)allPointers
                              withNumberOfTouches:(NSUInteger)numberOfTouches
@@ -111,7 +111,7 @@
     if (changedPointers == nil || allPointers == nil) {
         changedPointers = @[];
         allPointers = @[];
-        eventType = RNTouchEventTypeUndetermined;
+        eventType = RNGHTouchEventTypeUndetermined;
     }
   
     return [[RNGestureHandlerEventExtraData alloc]

@@ -1,13 +1,14 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXTaskManagerInterface.h>
+
 #import <EXBackgroundFetch/EXBackgroundFetch.h>
 #import <EXBackgroundFetch/EXBackgroundFetchTaskConsumer.h>
-#import <UMTaskManagerInterface/UMTaskManagerInterface.h>
 
 @interface EXBackgroundFetch ()
 
-@property (nonatomic, weak) id<UMTaskManagerInterface> taskManager;
+@property (nonatomic, weak) id<EXTaskManagerInterface> taskManager;
 
 @end
 
@@ -17,7 +18,7 @@ EX_EXPORT_MODULE(ExpoBackgroundFetch);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
+  _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXTaskManagerInterface)];
 }
 
 EX_EXPORT_METHOD_AS(getStatusAsync,

@@ -5,6 +5,7 @@ import expo.modules.updates.UpdatesConfiguration.CheckAutomaticallyConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import android.os.AsyncTask
 import android.net.ConnectivityManager
+import android.util.Base64
 import android.util.Log
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.Arguments
@@ -12,6 +13,7 @@ import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import org.apache.commons.io.FileUtils
+import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
 import java.lang.ClassCastException
@@ -27,6 +29,9 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.experimental.and
 
+/**
+ * Miscellaneous helper functions that are used by multiple classes in the library.
+ */
 object UpdatesUtils {
   private val TAG = UpdatesUtils::class.java.simpleName
 
@@ -47,6 +52,12 @@ object UpdatesUtils {
       }
     }
     return newMap
+  }
+
+  @Throws(Exception::class)
+  fun getStringListFromJSONString(stringifiedJSON: String): List<String> {
+    val jsonArray = JSONArray(stringifiedJSON)
+    return List(jsonArray.length()) { index -> jsonArray.getString(index) }
   }
 
   @Throws(Exception::class)
@@ -104,17 +115,28 @@ object UpdatesUtils {
   }
 
   @Throws(NoSuchAlgorithmException::class, IOException::class)
-  fun sha256AndWriteToFile(inputStream: InputStream, destination: File): ByteArray {
+  fun verifySHA256AndWriteToFile(inputStream: InputStream, destination: File, expectedBase64URLEncodedHash: String?): ByteArray {
     DigestInputStream(inputStream, MessageDigest.getInstance("SHA-256")).use { digestInputStream ->
       // write file atomically by writing it to a temporary path and then renaming
       // this protects us against partially written files if the process is interrupted
       val tmpFile = File(destination.absolutePath + ".tmp")
       FileUtils.copyInputStreamToFile(digestInputStream, tmpFile)
+
+      // this message digest must be read after the input stream has been consumed in order to get the hash correctly
+      val md = digestInputStream.messageDigest
+      val hash = md.digest()
+      // base64url - https://datatracker.ietf.org/doc/html/rfc4648#section-5
+      val hashBase64String = Base64.encodeToString(hash, Base64.URL_SAFE or Base64.NO_PADDING or Base64.NO_WRAP)
+      if (expectedBase64URLEncodedHash != null && expectedBase64URLEncodedHash != hashBase64String) {
+        throw IOException("File download was successful but base64url-encoded SHA-256 did not match expected; expected: $expectedBase64URLEncodedHash; actual: $hashBase64String")
+      }
+
+      // only rename after the hash has been verified
       if (!tmpFile.renameTo(destination)) {
         throw IOException("File download was successful, but failed to move from temporary to permanent location " + destination.absolutePath)
       }
-      val md = digestInputStream.messageDigest
-      return md.digest()
+
+      return hash
     }
   }
 

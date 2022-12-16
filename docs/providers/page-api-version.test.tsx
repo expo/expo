@@ -1,6 +1,7 @@
+import { jest } from '@jest/globals';
 import { act, renderHook } from '@testing-library/react-hooks';
-import Router from 'next/router';
-import React from 'react';
+import mockRouter from 'next-router-mock';
+import { PropsWithChildren } from 'react';
 
 import {
   PageApiVersionProvider,
@@ -10,13 +11,11 @@ import {
   replaceVersionInPath,
 } from './page-api-version';
 
-jest.mock('next/router');
+jest.mock('next/router', () => mockRouter);
 
-const mockedRouter = jest.mocked(Router);
-
-function renderContext(router = Router) {
+function renderContext(router = mockRouter) {
   return renderHook(usePageApiVersion, {
-    wrapper: props => (
+    wrapper: (props: PropsWithChildren<object>) => (
       <PageApiVersionProvider router={router}>{props.children}</PageApiVersionProvider>
     ),
   });
@@ -38,35 +37,32 @@ describe('PageApiVersionContext', () => {
 
 describe(PageApiVersionProvider, () => {
   it('uses sdk version from pathname', () => {
-    mockedRouter.pathname = '/versions/v44.0.0/sdk/notifications';
+    mockRouter.pathname = '/versions/v44.0.0/sdk/notifications';
     const { result } = renderContext();
     expect(result.current).toMatchObject({ version: 'v44.0.0', hasVersion: true });
   });
 
   it('uses unversioned version from pathname', () => {
-    mockedRouter.pathname = '/versions/unversioned/react-native/view-props';
+    mockRouter.pathname = '/versions/unversioned/react-native/view-props';
     const { result } = renderContext();
     expect(result.current).toMatchObject({ version: 'unversioned', hasVersion: true });
   });
 
   it('uses latest version from pathname', () => {
-    mockedRouter.pathname = '/versions/latest/sdk';
+    mockRouter.pathname = '/versions/latest/sdk';
     const { result } = renderContext();
     expect(result.current).toMatchObject({ version: 'latest', hasVersion: true });
   });
 
   it('updates router and version when setting version', () => {
-    mockedRouter.pathname = '/versions/latest/sdk';
-    mockedRouter.push.mockImplementation(url => {
-      mockedRouter.pathname = String(url);
-      return Promise.resolve(true);
-    });
+    mockRouter.pathname = '/versions/latest/sdk';
+    mockRouter.push = jest.fn<typeof mockRouter.push>();
 
     const { result, rerender } = renderContext();
     expect(result.current).toMatchObject({ version: 'latest', hasVersion: true });
     act(() => result.current.setVersion('unversioned'));
     rerender();
-    expect(result.current).toMatchObject({ version: 'unversioned', hasVersion: true });
+    expect(mockRouter.push).toBeCalledWith('/versions/unversioned/sdk');
   });
 });
 

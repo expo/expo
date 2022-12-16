@@ -4,7 +4,7 @@
 
 @interface EXScopedBranch ()
 
-@property (nonatomic, weak) EXModuleRegistry *moduleRegistry;
+@property (nonatomic, weak) EXModuleRegistry *exModuleRegistry;
 
 @end
 
@@ -29,10 +29,10 @@
   return self;
 }
 
-- (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
+- (void)setModuleRegistry:(EXModuleRegistry *)exModuleRegistry
 {
-  _moduleRegistry = moduleRegistry;
-  [(id<EXBranchScopedModuleDelegate>)[_moduleRegistry getSingletonModuleForName:@"BranchManager"] branchModuleDidInit:self];
+  _exModuleRegistry = exModuleRegistry;
+  [(id<EXBranchScopedModuleDelegate>)[_exModuleRegistry getSingletonModuleForName:@"BranchManager"] branchModuleDidInit:self];
 }
 
 - (void)setBridge:(RCTBridge *)bridge

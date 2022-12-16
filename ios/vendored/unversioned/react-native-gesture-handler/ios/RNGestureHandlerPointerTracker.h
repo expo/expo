@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-#import "RNTouchEventType.h"
+#import "RNGHTouchEventType.h"
 
 #define MAX_POINTERS_COUNT 12
 
@@ -8,7 +8,7 @@
 
 @interface RNGestureHandlerPointerTracker : NSObject
 
-@property (nonatomic) RNTouchEventType eventType;
+@property (nonatomic) RNGHTouchEventType eventType;
 @property (nonatomic) NSArray<NSDictionary *> *changedPointersData;
 @property (nonatomic) NSArray<NSDictionary *> *allPointersData;
 @property (nonatomic) int trackedPointersCount;

@@ -3,6 +3,8 @@ package expo.modules.kotlin
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ViewManager
+import expo.modules.adapters.react.NativeModulesProxy
+import expo.modules.kotlin.defaultmodules.NativeModulesProxyModuleName
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.views.GroupViewManagerWrapper
@@ -42,25 +44,27 @@ class KotlinInteropModuleRegistry(
 
   fun exportedModulesConstants(): Map<ModuleName, ModuleConstants> {
     return registry
-      .map { holder ->
+      // prevent infinite recursion - exclude NativeProxyModule constants
+      .filter { holder -> holder.name != NativeModulesProxyModuleName }
+      .associate { holder ->
         holder.name to holder.definition.constantsProvider()
       }
-      .toMap()
   }
 
   fun exportMethods(exportKey: (String, List<ModuleMethodInfo>) -> Unit = { _, _ -> }): Map<ModuleName, List<ModuleMethodInfo>> {
-    return registry
-      .map { holder ->
-        val methodsInfo = holder.definition.methods.map { (name, method) ->
+    return registry.associate { holder ->
+      val methodsInfo = holder
+        .definition
+        .asyncFunctions
+        .map { (name, method) ->
           mapOf(
             "name" to name,
             "argumentsCount" to method.argsCount
           )
         }
-        exportKey(holder.name, methodsInfo)
-        holder.name to methodsInfo
-      }
-      .toMap()
+      exportKey(holder.name, methodsInfo)
+      holder.name to methodsInfo
+    }
   }
 
   fun exportViewManagers(): List<ViewManager<*, *>> {
@@ -72,6 +76,16 @@ class KotlinInteropModuleRegistry(
           expo.modules.core.ViewManager.ViewManagerType.SIMPLE -> SimpleViewManagerWrapper(wrapperDelegate)
           expo.modules.core.ViewManager.ViewManagerType.GROUP -> GroupViewManagerWrapper(wrapperDelegate)
         }
+      }
+  }
+
+  fun viewManagersMetadata(): Map<String, Map<String, Any>> {
+    return registry
+      .filter { it.definition.viewManagerDefinition != null }
+      .associate { holder ->
+        holder.name to mapOf(
+          "propsNames" to (holder.definition.viewManagerDefinition?.propsNames ?: emptyList())
+        )
       }
   }
 
@@ -96,12 +110,16 @@ class KotlinInteropModuleRegistry(
       }
   }
 
-  fun exportedViewManagersNames(): List<String> =
-    registry
-      .filter { it.definition.viewManagerDefinition != null }
-      .map { it.definition.name }
-
   fun onDestroy() {
     appContext.onDestroy()
+    logger.info("✅ KotlinInteropModuleRegistry was destroyed")
+  }
+
+  fun installJSIInterop() {
+    appContext.installJSIInterop()
+  }
+
+  fun setLegacyModulesProxy(proxyModule: NativeModulesProxy) {
+    appContext.legacyModulesProxyHolder = WeakReference(proxyModule)
   }
 }

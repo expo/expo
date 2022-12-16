@@ -24,6 +24,7 @@
 @property (nonatomic) CGFloat activeOffsetYEnd;
 @property (nonatomic) CGFloat failOffsetYStart;
 @property (nonatomic) CGFloat failOffsetYEnd;
+@property (nonatomic) CGFloat activateAfterLongPress;
 
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
@@ -53,6 +54,7 @@
     _activeOffsetYEnd = NAN;
     _failOffsetYStart = NAN;
     _failOffsetYEnd = NAN;
+    _activateAfterLongPress = NAN;
     _hasCustomActivationCriteria = NO;
 #if !TARGET_OS_TV
     _realMinimumNumberOfTouches = self.minimumNumberOfTouches;
@@ -69,6 +71,13 @@
 - (void)setMinimumNumberOfTouches:(NSUInteger)minimumNumberOfTouches
 {
   _realMinimumNumberOfTouches = minimumNumberOfTouches;
+}
+
+- (void)activateAfterLongPress
+{
+  self.state = UIGestureRecognizerStateBegan;
+  // Send event in ACTIVE state because UIGestureRecognizerStateBegan is mapped to RNGestureHandlerStateBegan
+  [_gestureHandler handleGesture:self inState:RNGestureHandlerStateActive];
 }
 
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -89,6 +98,10 @@
   [super touchesBegan:touches withEvent:event];
   [self triggerAction];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+    
+  if (!isnan(_activateAfterLongPress)) {
+    [self performSelector:@selector(activateAfterLongPress) withObject:nil afterDelay:_activateAfterLongPress];
+  }
 }
 
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
@@ -140,6 +153,7 @@
 {
   [self triggerAction];
   [_gestureHandler.pointerTracker reset];
+  [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
   self.enabled = YES;
   [super reset];
 }
@@ -155,6 +169,12 @@
 - (BOOL)shouldFailUnderCustomCriteria
 {
   CGPoint trans = [self translationInView:self.view.window];
+  // Apple docs say that 10 units is the default allowable movement for UILongPressGestureRecognizer
+  if (!isnan(_activateAfterLongPress) && trans.x * trans.x + trans.y * trans.y > 100) {
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(activateAfterLongPress) object:nil];
+    return YES;
+  }
+    
   if (!isnan(_failOffsetXStart) && trans.x < _failOffsetXStart) {
     return YES;
   }
@@ -236,10 +256,13 @@
     recognizer.allowedScrollTypesMask = 0;
   }
 #endif
+#if !TARGET_OS_TV
   recognizer.minimumNumberOfTouches = 1;
   recognizer.maximumNumberOfTouches = NSUIntegerMax;
+#endif
   recognizer.minDistSq = NAN;
   recognizer.minVelocitySq = NAN;
+  recognizer.activateAfterLongPress = NAN;
 }
 
 - (void)configure:(NSDictionary *)config
@@ -280,6 +303,12 @@
   if (prop != nil) {
     CGFloat velocity = [RCTConvert CGFloat:prop];
     recognizer.minVelocitySq = velocity * velocity;
+  }
+    
+  prop = config[@"activateAfterLongPress"];
+  if (prop != nil) {
+    recognizer.activateAfterLongPress = [RCTConvert CGFloat:prop] / 1000.0;
+    recognizer.minDistSq = MAX(100, recognizer.minDistSq);
   }
   [recognizer updateHasCustomActivationCriteria];
 }

@@ -90,14 +90,15 @@ export declare enum ApplicationReleaseType {
  * @platform ios
  */
 export declare function getIosApplicationReleaseTypeAsync(): Promise<ApplicationReleaseType>;
+export type PushNotificationServiceEnvironment = 'development' | 'production' | null;
 /**
  * Gets the current [Apple Push Notification (APN)](https://developer.apple.com/documentation/bundleresources/entitlements/aps-environment?language=objc)
  * service environment.
  * @return Returns a promise fulfilled with the string, either `'development'` or `'production'`,
- * based on the current APN environment.
+ * based on the current APN environment, or `null` on the simulator as it does not support registering with APNs.
  * @platform ios
  */
-export declare function getIosPushNotificationServiceEnvironmentAsync(): Promise<string>;
+export declare function getIosPushNotificationServiceEnvironmentAsync(): Promise<PushNotificationServiceEnvironment>;
 /**
  * Gets the time the app was installed onto the device, not counting subsequent updates. If the app
  * is uninstalled and reinstalled, this method returns the time the app was reinstalled.

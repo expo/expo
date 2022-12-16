@@ -7,6 +7,8 @@
 
 package versioned.host.exp.exponent.modules.api.components.picker;
 
+import host.exp.expoview.R;
+
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.ColorStateList;
@@ -29,7 +31,6 @@ import com.facebook.react.modules.i18nmanager.I18nUtil;
 import com.facebook.react.uimanager.UIManagerModule;
 
 import javax.annotation.Nullable;
-import host.exp.expoview.R;
 
 public class ReactPicker extends AppCompatSpinner {
 
@@ -205,6 +206,12 @@ public class ReactPicker extends AppCompatSpinner {
       }
       mOldElementSize = elementSize;
     }
+  }
+
+  public void clearFocus() {
+    super.setFocusableInTouchMode(true);
+    super.setFocusable(true);
+    super.onDetachedFromWindow();
   }
 
   public void setOnSelectListener(@Nullable OnSelectListener onSelectListener) {

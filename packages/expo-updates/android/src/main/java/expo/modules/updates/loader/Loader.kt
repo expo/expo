@@ -15,6 +15,13 @@ import expo.modules.updates.manifest.UpdateManifest
 import java.io.File
 import java.util.*
 
+/**
+ * Abstract class responsible for loading an update's manifest, enumerating the assets required for
+ * it to launch, and loading them all onto disk and into SQLite.
+ *
+ * There are two sources from which an update can be loaded - a remote server given a URL, and the
+ * application package. These correspond to the two loader subclasses.
+ */
 abstract class Loader protected constructor(
   private val context: Context,
   private val configuration: UpdatesConfiguration,
@@ -71,6 +78,7 @@ abstract class Loader protected constructor(
   )
 
   protected abstract fun loadAsset(
+    context: Context,
     assetEntity: AssetEntity,
     updatesDirectory: File?,
     configuration: UpdatesConfiguration,
@@ -223,7 +231,7 @@ abstract class Loader protected constructor(
       }
 
       loadAsset(
-        assetEntity, updatesDirectory, configuration,
+        context, assetEntity, updatesDirectory, configuration,
         object : AssetDownloadCallback {
           override fun onFailure(e: Exception, assetEntity: AssetEntity) {
             val identifier = if (assetEntity.hash != null) "hash " + UpdatesUtils.bytesToHex(

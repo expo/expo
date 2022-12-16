@@ -5,6 +5,7 @@ import expo.modules.sensors.modules.AccelerometerModule
 import expo.modules.sensors.modules.BarometerModule
 import expo.modules.sensors.modules.DeviceMotionModule
 import expo.modules.sensors.modules.GyroscopeModule
+import expo.modules.sensors.modules.LightSensorModule
 import expo.modules.sensors.modules.MagnetometerModule
 import expo.modules.sensors.modules.MagnetometerUncalibratedModule
 import expo.modules.sensors.modules.PedometerModule
@@ -12,6 +13,7 @@ import expo.modules.sensors.services.AccelerometerService
 import expo.modules.sensors.services.BarometerService
 import expo.modules.sensors.services.GravitySensorService
 import expo.modules.sensors.services.GyroscopeService
+import expo.modules.sensors.services.LightSensorService
 import expo.modules.sensors.services.LinearAccelerationSensorService
 import expo.modules.sensors.services.MagnetometerService
 import expo.modules.sensors.services.MagnetometerUncalibratedService
@@ -28,6 +30,7 @@ class SensorsPackage : BasePackage() {
       BarometerService(context),
       GravitySensorService(context),
       GyroscopeService(context),
+      LightSensorService(context),
       LinearAccelerationSensorService(context),
       MagnetometerService(context),
       MagnetometerUncalibratedService(context),
@@ -41,6 +44,7 @@ class SensorsPackage : BasePackage() {
       AccelerometerModule(context),
       BarometerModule(context),
       GyroscopeModule(context),
+      LightSensorModule(context),
       DeviceMotionModule(context),
       MagnetometerModule(context),
       MagnetometerUncalibratedModule(context),

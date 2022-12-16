@@ -1,20 +1,29 @@
+import { MemoryRouter } from 'next-router-mock';
 import { NextRouter } from 'next/router';
-import React, { createContext, PropsWithChildren, useCallback, useContext } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext } from 'react';
+
+import navigation from '~/public/static/constants/navigation.json';
 
 export const PageApiVersionContext = createContext({
   /** The version selected in the URL, or the default version */
   version: 'latest',
   /** If the current URL has a version defined */
   hasVersion: false,
-  /** Change the URL to the selecte version  */
-  setVersion: (newVersion: string): void => {
+  /** Change the URL to the select version  */
+  setVersion: newVersion => {
     throw new Error('PageApiVersionContext not found');
   },
-});
+} as PageApiVersionContextType);
+
+export type PageApiVersionContextType = {
+  version: keyof typeof navigation.reference;
+  hasVersion: boolean;
+  setVersion: (newVersion: string) => void;
+};
 
 type Props = PropsWithChildren<{
   /** The router containing the current URL info of the page, possibly containing the API version */
-  router: NextRouter;
+  router: NextRouter | MemoryRouter;
 }>;
 
 export function PageApiVersionProvider(props: Props) {
@@ -50,8 +59,10 @@ export function isVersionedPath(path: string) {
  * Find the version within the pathname of the URL.
  * This only accepts pathnames, without hashes or query strings.
  */
-export function getVersionFromPath(path: string) {
-  return !isVersionedPath(path) ? null : path.split('/', 3).pop()!;
+export function getVersionFromPath(path: string): PageApiVersionContextType['version'] | null {
+  return !isVersionedPath(path)
+    ? null
+    : (path.split('/', 3).pop()! as PageApiVersionContextType['version']);
 }
 
 /**

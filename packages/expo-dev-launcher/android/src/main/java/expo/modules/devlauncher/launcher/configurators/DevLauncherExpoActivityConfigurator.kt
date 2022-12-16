@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Build
+import android.util.Log
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowManager
@@ -15,6 +16,8 @@ import androidx.core.view.ViewCompat
 import com.facebook.react.ReactActivity
 import expo.modules.devlauncher.helpers.RGBAtoARGB
 import expo.modules.devlauncher.helpers.isValidColor
+import expo.modules.devlauncher.launcher.manifest.DevLauncherNavigationBarStyle
+import expo.modules.devlauncher.launcher.manifest.DevLauncherNavigationBarVisibility
 import expo.modules.devlauncher.launcher.manifest.DevLauncherOrientation
 import expo.modules.devlauncher.launcher.manifest.DevLauncherStatusBarStyle
 import expo.modules.manifests.core.Manifest
@@ -30,11 +33,13 @@ class DevLauncherExpoActivityConfigurator(
     val color = Color.parseColor(manifest.getPrimaryColor())
     val icon = BitmapFactory.decodeResource(context.resources, context.applicationInfo.icon)
 
-    activity.setTaskDescription(ActivityManager.TaskDescription(
-      manifest.getName(),
-      icon,
-      color
-    ))
+    activity.setTaskDescription(
+      ActivityManager.TaskDescription(
+        manifest.getName(),
+        icon,
+        color
+      )
+    )
   }
 
   fun applyOrientation(activity: ReactActivity) {
@@ -128,7 +133,8 @@ class DevLauncherExpoActivityConfigurator(
           defaultInsets.systemWindowInsetLeft,
           0,
           defaultInsets.systemWindowInsetRight,
-          defaultInsets.systemWindowInsetBottom)
+          defaultInsets.systemWindowInsetBottom
+        )
       }
     } else {
       decorView.setOnApplyWindowInsetsListener(null)
@@ -143,5 +149,56 @@ class DevLauncherExpoActivityConfigurator(
       .addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
     activity
       .window.statusBarColor = color
+  }
+
+  fun applyNavigationBarConfiguration(activity: ReactActivity) {
+    val navBarOptions = manifest.getAndroidNavigationBarOptions() ?: return
+
+    // Set background color of navigation bar
+    val navBarColor = navBarOptions.optString("backgroundColor")
+    if (isValidColor(navBarColor)) {
+      try {
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+        activity.window.navigationBarColor = Color.parseColor(navBarColor)
+      } catch (e: Throwable) {
+        Log.e(TAG, "Failed to configure androidNavigationBar.backgroundColor", e)
+      }
+    }
+
+    // Set icon color of navigation bar
+    val navBarAppearance = navBarOptions.optString("barStyle")
+    if (navBarAppearance != "" && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+      try {
+        activity.window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION)
+        activity.window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS)
+        if (navBarAppearance == DevLauncherNavigationBarStyle.DARK) {
+          val decorView = activity.window.decorView
+          var flags = decorView.systemUiVisibility
+          flags = flags or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
+          decorView.systemUiVisibility = flags
+        }
+      } catch (e: Throwable) {
+        Log.e(TAG, "Failed to configure androidNavigationBar.barStyle", e)
+      }
+    }
+
+    // Set visibility of navigation bar
+    val navBarVisible = navBarOptions.optString("visible")
+    if (navBarVisible != "") {
+      // Hide both the navigation bar and the status bar. The Android docs recommend, "you should
+      // design your app to hide the status bar whenever you hide the navigation bar."
+      val decorView = activity.window.decorView
+      val flags = decorView.systemUiVisibility or when (navBarVisible) {
+        DevLauncherNavigationBarVisibility.LEANBACK -> (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN)
+        DevLauncherNavigationBarVisibility.IMMERSIVE -> (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE)
+        DevLauncherNavigationBarVisibility.STICKY_IMMERSIVE -> (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY)
+        else -> 0
+      }
+      decorView.systemUiVisibility = flags
+    }
+  }
+
+  companion object {
+    private val TAG = DevLauncherExpoActivityConfigurator::class.java.simpleName
   }
 }

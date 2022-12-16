@@ -23,11 +23,11 @@ class OkHttpV1ExpoResponse(private val okHttpResponse: Response) : ExpoResponse 
 
   override val isSuccessful: Boolean = okHttpResponse.isSuccessful
 
-  override fun body(): ExpoBody = OkHttpV1ExpoBody(okHttpResponse.body()!!)
+  override fun body(): ExpoBody = OkHttpV1ExpoBody(okHttpResponse.body!!)
 
-  override fun code(): Int = okHttpResponse.code()
+  override fun code(): Int = okHttpResponse.code
 
-  override fun headers(): ExpoHeaders = OkHttpV1ExpoHeaders(okHttpResponse.headers())
+  override fun headers(): ExpoHeaders = OkHttpV1ExpoHeaders(okHttpResponse.headers)
 
-  override fun networkResponse(): ExpoResponse? = okHttpResponse.networkResponse()?.let { OkHttpV1ExpoResponse(it) }
+  override fun networkResponse(): ExpoResponse? = okHttpResponse.networkResponse?.let { OkHttpV1ExpoResponse(it) }
 }

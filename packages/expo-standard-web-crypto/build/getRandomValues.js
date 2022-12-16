@@ -28,7 +28,7 @@ export default function getRandomValues(values) {
         // NOTE: Consider implementing `fillRandomBytes` to populate the given TypedArray directly
         randomBytes = getRandomBytes(values.byteLength);
     }
-    catch (e) {
+    catch {
         // TODO: rethrow the error if it's not due to a lack of synchronous methods
         console.warn(`Random.getRandomBytes is not supported; falling back to insecure Math.random`);
         return getRandomValuesInsecure(values);

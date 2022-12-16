@@ -2,6 +2,9 @@
   "name": "expo-dev-menu",
   "platforms": ["ios", "android"],
   "ios": {
-    "podspecPath": "expo-dev-menu.podspec"
+    "podspecPath": "expo-dev-menu.podspec",
+    "swiftModuleName": "EXDevMenu",
+    "reactDelegateHandlers": ["ExpoDevMenuReactDelegateHandler"],
+    "debugOnly": true
   }
 }

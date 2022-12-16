@@ -1,11 +1,11 @@
-import ApiV2HttpClient from './ApiV2HttpClient';
+import { APIV2Client } from './APIV2Client';
 
-export async function signOutAsync(sessionSecret: string | null): Promise<void> {
+async function signOutAsync(sessionSecret: string | null): Promise<void> {
   if (!sessionSecret) {
     return;
   }
-  const api = new ApiV2HttpClient();
-  await api.postAsync('auth/logout');
+  const api = new APIV2Client();
+  await api.sendAuthenticatedApiV2Request('auth/logout');
 }
 
 export default {

@@ -53,7 +53,7 @@ async function createTestEventAsync(calendarId, customArgs = {}) {
 async function createTestAttendeeAsync(eventId) {
   return await Calendar.createAttendeeAsync(eventId, {
     name: 'Guest',
-    email: 'guest@expo.io',
+    email: 'guest@expo.dev',
     role: Calendar.AttendeeRole.ATTENDEE,
     status: Calendar.AttendeeStatus.ACCEPTED,
     type: Calendar.AttendeeType.PERSON,

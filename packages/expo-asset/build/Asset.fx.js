@@ -14,7 +14,7 @@ if (IS_ENV_WITH_UPDATES_ENABLED) {
                 return resolver.defaultAsset();
             }
         }
-        catch (e) {
+        catch {
             return resolver.defaultAsset();
         }
     });

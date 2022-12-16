@@ -13,6 +13,7 @@ import {
   UpdateCheckResult,
   UpdateEvent,
   UpdateFetchResult,
+  UpdatesLogEntry,
 } from './Updates.types';
 
 export * from './Updates.types';
@@ -61,6 +62,12 @@ export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
  */
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
 
+/**
+ * This will be true if the currently running update is the one embedded in the build,
+ * and not one downloaded from the updates server.
+ */
+export const isEmbeddedLaunch: boolean = ExpoUpdates.isEmbeddedLaunch || false;
+
 // @docsMissing
 /**
  * @hidden
@@ -69,7 +76,7 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/guides/how-expo-works#expo-development-server) object for the update that's currently
+ * [manifest](/workflow/expo-go#manifest) object for the update that's currently
  * running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
@@ -78,6 +85,16 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 export const manifest: Partial<Manifest> =
   (ExpoUpdates.manifestString ? JSON.parse(ExpoUpdates.manifestString) : ExpoUpdates.manifest) ??
   {};
+
+/**
+ * If `expo-updates` is enabled, this is a `Date` object representing the creation time of the update that's currently running (whether it was embedded or downloaded at runtime).
+ *
+ * In development mode, or any other environment in which `expo-updates` is disabled, this value is
+ * null.
+ */
+export const createdAt: Date | null = ExpoUpdates.commitTime
+  ? new Date(ExpoUpdates.commitTime)
+  : null;
 
 const isUsingDeveloperTool = !!(manifest as any).developer?.tool;
 const isUsingExpoDevelopmentClient = NativeModulesProxy.ExponentConstants?.appOwnership === 'expo';
@@ -129,6 +146,11 @@ export async function reloadAsync(): Promise<void> {
  * actually download the update. This method cannot be used in development mode, and the returned
  * promise will be rejected if you try to do so.
  *
+ * Checking for an update uses a device's bandwidth and battery life like any network call.
+ * Additionally, updates served by Expo may be rate limited. A good rule of thumb to check for
+ * updates judiciously is to check when the user launches or foregrounds the app. Avoid polling for
+ * updates in a frequent loop.
+ *
  * @return A promise that fulfills with an [`UpdateCheckResult`](#updatecheckresult) object.
  *
  * The promise rejects if the app is in development mode, or if there is an unexpected error or
@@ -152,6 +174,40 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   }
 
   return result;
+}
+
+/**
+ * Retrieves the most recent expo-updates log entries.
+ *
+ * @param maxAge Sets the max age of retrieved log entries in milliseconds. Default to 3600000 ms (1 hour).
+ *
+ * @return A promise that fulfills with an array of [`UpdatesLogEntry`](#updateslogentry) objects;
+ *
+ * The promise rejects if there is an unexpected error in retrieving the logs.
+ */
+export async function readLogEntriesAsync(maxAge: number = 3600000): Promise<UpdatesLogEntry[]> {
+  if (!ExpoUpdates.readLogEntriesAsync) {
+    throw new UnavailabilityError('Updates', 'readLogEntriesAsync');
+  }
+  return await ExpoUpdates.readLogEntriesAsync(maxAge);
+}
+
+/**
+ * Clears existing expo-updates log entries.
+ *
+ * > For now, this operation does nothing on the client.  Once log persistence has been
+ * > implemented, this operation will actually remove existing logs.
+ *
+ * @return A promise that fulfills if the clear operation was successful.
+ *
+ * The promise rejects if there is an unexpected error in clearing the logs.
+ *
+ */
+export async function clearLogEntriesAsync(): Promise<void> {
+  if (!ExpoUpdates.clearLogEntriesAsync) {
+    throw new UnavailabilityError('Updates', 'clearLogEntriesAsync');
+  }
+  await ExpoUpdates.clearLogEntriesAsync();
 }
 
 /**

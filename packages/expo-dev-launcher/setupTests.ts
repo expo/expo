@@ -1,6 +1,12 @@
 import { cleanup } from '@testing-library/react-native';
 import 'react-native-gesture-handler/jestSetup';
 
+global.fetch = jest.fn().mockResolvedValue({
+  ok: true,
+  json: () => Promise.resolve({}),
+  text: () => Promise.resolve(''),
+});
+
 afterEach(cleanup);
 
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
@@ -30,9 +36,9 @@ jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
 });
 
 jest.mock('./bundle/native-modules/DevLauncherInternal');
-jest.mock('./bundle/native-modules/DevMenuInternal');
-jest.mock('./bundle/native-modules/DevMenuWebBrowser');
-jest.mock('./bundle/native-modules/DevMenu');
+jest.mock('./bundle/native-modules/DevLauncherAuth');
+jest.mock('./bundle/native-modules/DevMenuPreferences');
+jest.mock('./bundle/providers/QueryProvider');
 
 const MOCK_INITIAL_METRICS = {
   frame: {
@@ -54,5 +60,13 @@ jest.mock('react-native-safe-area-context', () => {
     SafeAreaProvider: ({ children }: any) => children,
     SafeAreaView: ({ children }: any) => children,
     useSafeAreaInsets: jest.fn().mockReturnValue(MOCK_INITIAL_METRICS.insets),
+  };
+});
+
+jest.mock('@react-navigation/native', () => {
+  const actualRequire = jest.requireActual('@react-navigation/native');
+  return {
+    ...actualRequire,
+    useNavigation: jest.fn(),
   };
 });

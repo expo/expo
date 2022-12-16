@@ -1,17 +1,17 @@
 #import "DevMenuREAEventDispatcher.h"
-#import <React/RCTDefines.h>
-#import <React/RCTBridge+Private.h>
 #import "DevMenuREAModule.h"
+#import <React/RCTBridge+Private.h>
+#import <React/RCTDefines.h>
 
 @implementation DevMenuREAEventDispatcher
 
 - (void)sendEvent:(id<RCTEvent>)event
 {
-  [[_devmenu_bridge_reanimated moduleForName:@"ReanimatedModule"] eventDispatcherWillDispatchEvent:event];
+  [[[self bridge] moduleForName:@"ReanimatedModule"] eventDispatcherWillDispatchEvent:event];
   [super sendEvent:event];
 }
 
-+ (NSString*)moduleName
++ (NSString *)moduleName
 {
   return NSStringFromClass([RCTEventDispatcher class]);
 }

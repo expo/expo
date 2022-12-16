@@ -1,6 +1,3 @@
-import React from 'react';
-
-import { P } from '~/components/base/paragraph';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
@@ -8,17 +5,22 @@ import APISectionConstants from '~/components/plugins/api/APISectionConstants';
 import APISectionEnums from '~/components/plugins/api/APISectionEnums';
 import APISectionInterfaces from '~/components/plugins/api/APISectionInterfaces';
 import APISectionMethods from '~/components/plugins/api/APISectionMethods';
+import APISectionNamespaces from '~/components/plugins/api/APISectionNamespaces';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
-import { TypeDocKind } from '~/components/plugins/api/APISectionUtils';
+import { getComponentName, TypeDocKind } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import versions from '~/public/static/constants/versions.json';
+import { P } from '~/ui/components/Text';
 
-const LATEST_VERSION = `v${require('~/package.json').version}`;
+const { LATEST_VERSION } = versions;
 
 type Props = {
   packageName: string;
   apiName?: string;
   forceVersion?: string;
+  strictTypes?: boolean;
+  testRequire?: any;
 };
 
 const filterDataByKind = (
@@ -42,13 +44,21 @@ const isListener = ({ name }: GeneratedData) =>
 
 const isProp = ({ name }: GeneratedData) => name.includes('Props') && name !== 'ErrorRecoveryProps';
 
-const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) =>
-  (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) ||
-  (extendedTypes && extendedTypes.length ? extendedTypes[0].name === 'Component' : false) ||
-  (signatures && signatures[0]
-    ? signatures[0].type.name === 'Element' ||
+const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
+  if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {
+    return true;
+  } else if (extendedTypes && extendedTypes.length) {
+    return extendedTypes[0].name === 'Component';
+  } else if (signatures && signatures.length) {
+    if (
+      signatures[0].type.name === 'Element' ||
       (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
-    : false);
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
 
 const isConstant = ({ name, type }: GeneratedData) =>
   !['default', 'Constants', 'EventEmitter'].includes(name) &&
@@ -58,12 +68,12 @@ const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
   apiName?: string,
-  isTestMode: boolean = false
+  strictTypes: boolean = false,
+  testRequire: any = undefined
 ): JSX.Element => {
   try {
-    // note(simek): When the path prefix is interpolated Next or Webpack fails to locate the file
-    const { children: data } = isTestMode
-      ? require(`../../public/static/data/${version}/${packageName}.json`)
+    const { children: data } = testRequire
+      ? testRequire(`~/public/static/data/${version}/${packageName}.json`)
       : require(`~/public/static/data/${version}/${packageName}.json`);
 
     const methods = filterDataByKind(
@@ -71,7 +81,6 @@ const renderAPI = (
       TypeDocKind.Function,
       entry => !isListener(entry) && !isHook(entry) && !isComponent(entry)
     );
-    const hooks = filterDataByKind(data, TypeDocKind.Function, isHook);
     const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, isListener);
 
     const types = filterDataByKind(
@@ -84,7 +93,8 @@ const renderAPI = (
           entry.type.types ||
           entry.type.type ||
           entry.type.typeArguments
-        )
+        ) &&
+        (strictTypes && apiName ? entry.name.startsWith(apiName) : true)
     );
 
     const props = filterDataByKind(
@@ -101,7 +111,7 @@ const renderAPI = (
       entry => entry.name === 'defaultProps'
     )[0];
 
-    const enums = filterDataByKind(data, [TypeDocKind.Enum, TypeDocKind.LegacyEnum]);
+    const enums = filterDataByKind(data, TypeDocKind.Enum, entry => entry.name !== 'default');
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
@@ -110,23 +120,28 @@ const renderAPI = (
       [TypeDocKind.Variable, TypeDocKind.Class, TypeDocKind.Function],
       entry => isComponent(entry)
     );
-    const componentsPropNames = components.map(component => `${component.name}Props`);
+    const componentsPropNames = components.map(
+      ({ name, children }) => `${getComponentName(name, children)}Props`
+    );
     const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
       componentsPropNames.includes(entry.name)
     );
 
+    const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
+
     const classes = filterDataByKind(
       data,
       TypeDocKind.Class,
-      entry => !isComponent(entry) && (apiName ? !entry.name.includes(apiName) : true)
+      entry => !isComponent(entry) && entry.name !== 'default'
     );
 
     const componentsChildren = components
       .map((cls: ClassDefinitionData) =>
         cls.children?.filter(
           child =>
-            child.kind === TypeDocKind.Method &&
+            (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
             child?.flags?.isExternal !== true &&
+            !child.inheritedFrom &&
             child.name !== 'render' &&
             // note(simek): hide unannotated "private" methods
             !child.name.startsWith('_')
@@ -136,12 +151,27 @@ const renderAPI = (
 
     const methodsNames = methods.map(method => method.name);
     const staticMethods = componentsChildren.filter(
-      // note(simek): hide duplicate exports for Camera API
-      method => method?.flags?.isStatic === true && !methodsNames.includes(method.name)
+      // note(simek): hide duplicate exports from class components
+      method =>
+        method?.kind === TypeDocKind.Method &&
+        method?.flags?.isStatic === true &&
+        !methodsNames.includes(method.name) &&
+        !isHook(method as GeneratedData)
     );
     const componentMethods = componentsChildren
-      .filter(method => method?.flags?.isStatic !== true && !method?.overwrites)
+      .filter(
+        method =>
+          method?.kind === TypeDocKind.Method &&
+          method?.flags?.isStatic !== true &&
+          !method?.overwrites
+      )
       .filter(Boolean);
+
+    const hooks = filterDataByKind(
+      [...data, ...componentsChildren].filter(Boolean),
+      [TypeDocKind.Function, TypeDocKind.Property],
+      isHook
+    );
 
     return (
       <>
@@ -160,22 +190,29 @@ const renderAPI = (
           apiName={apiName}
           header="Event Subscriptions"
         />
-        <APISectionTypes data={types} />
+        <APISectionNamespaces data={namespaces} />
         <APISectionInterfaces data={interfaces} />
+        <APISectionTypes data={types} />
         <APISectionEnums data={enums} />
       </>
     );
-  } catch (error) {
+  } catch {
     return <P>No API data file found, sorry!</P>;
   }
 };
 
-const APISection = ({ packageName, apiName, forceVersion }: Props) => {
+const APISection = ({
+  packageName,
+  apiName,
+  forceVersion,
+  strictTypes = false,
+  testRequire = undefined,
+}: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
-  return renderAPI(packageName, resolvedVersion, apiName, !!forceVersion);
+  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, testRequire);
 };
 
 export default APISection;

@@ -17,7 +17,7 @@ export default {
                 localStorage.setItem(INSTALLATION_ID_KEY, installationId);
             }
         }
-        catch (error) {
+        catch {
             installationId = getFallbackInstallationId();
         }
         return installationId;

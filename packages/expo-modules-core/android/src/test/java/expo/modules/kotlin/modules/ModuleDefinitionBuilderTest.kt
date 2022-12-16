@@ -9,7 +9,7 @@ import org.junit.Test
 
 class ModuleDefinitionBuilderTest {
   private inline fun unboundModuleDefinition(block: ModuleDefinitionBuilder.() -> Unit): ModuleDefinitionData {
-    return ModuleDefinitionBuilder().also(block).build()
+    return ModuleDefinitionBuilder().also(block).buildModule()
   }
 
   private class TestModule : Module() {
@@ -18,7 +18,7 @@ class ModuleDefinitionBuilderTest {
 
   private class TestModuleWithName : Module() {
     override fun definition() = ModuleDefinition {
-      name("OverriddenName")
+      Name("OverriddenName")
     }
   }
 
@@ -30,7 +30,7 @@ class ModuleDefinitionBuilderTest {
 
     Assert.assertThrows(IllegalArgumentException::class.java) {
       unboundModuleDefinition {
-        function("method") { _: Int, _: Int -> }
+        AsyncFunction("method") { _: Int, _: Int -> }
       }
     }
   }
@@ -41,18 +41,18 @@ class ModuleDefinitionBuilderTest {
     val moduleConstants = emptyMap<String, Any?>()
 
     val moduleDefinition = unboundModuleDefinition {
-      name(moduleName)
-      constants {
+      Name(moduleName)
+      Constants {
         moduleConstants
       }
-      function("m1") { _: Int -> }
-      function("m2") { _: Int, _: Promise -> }
+      AsyncFunction("m1") { _: Int -> }
+      AsyncFunction("m2") { _: Int, _: Promise -> }
     }
 
     Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)
-    Truth.assertThat(moduleDefinition.constantsProvider()).isSameInstanceAs(moduleConstants)
-    Truth.assertThat(moduleDefinition.methods).containsKey("m1")
-    Truth.assertThat(moduleDefinition.methods).containsKey("m2")
+    Truth.assertThat(moduleDefinition.objectDefinition.constantsProvider()).isSameInstanceAs(moduleConstants)
+    Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("m1")
+    Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("m2")
   }
 
   @Test
@@ -60,9 +60,9 @@ class ModuleDefinitionBuilderTest {
     val moduleName = "Module"
 
     val moduleDefinition = unboundModuleDefinition {
-      name(moduleName)
-      viewManager {
-        view { mockk() }
+      Name(moduleName)
+      ViewManager {
+        View { mockk() }
       }
     }
 
@@ -75,12 +75,12 @@ class ModuleDefinitionBuilderTest {
     val moduleName = "Module"
 
     val moduleDefinition = unboundModuleDefinition {
-      name(moduleName)
-      onCreate { }
-      onDestroy { }
-      onActivityDestroys { }
-      onActivityEntersForeground { }
-      onActivityEntersBackground { }
+      Name(moduleName)
+      OnCreate { }
+      OnDestroy { }
+      OnActivityDestroys { }
+      OnActivityEntersForeground { }
+      OnActivityEntersBackground { }
     }
 
     Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)
@@ -94,21 +94,21 @@ class ModuleDefinitionBuilderTest {
   @Test
   fun `onStartObserving should be translated into method`() {
     val moduleDefinition = unboundModuleDefinition {
-      name("module")
-      onStartObserving { }
+      Name("module")
+      OnStartObserving { }
     }
 
-    Truth.assertThat(moduleDefinition.methods).containsKey("startObserving")
+    Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("startObserving")
   }
 
   @Test
   fun `onStopObserving should be translated into method`() {
     val moduleDefinition = unboundModuleDefinition {
-      name("module")
-      onStopObserving { }
+      Name("module")
+      OnStopObserving { }
     }
 
-    Truth.assertThat(moduleDefinition.methods).containsKey("stopObserving")
+    Truth.assertThat(moduleDefinition.objectDefinition.asyncFunctions).containsKey("stopObserving")
   }
 
   @Test

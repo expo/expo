@@ -72,7 +72,10 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
   }
 }
 
-const Container: React.FunctionComponent<{ title: string }> = ({ title, children }) => (
+const Container: React.FunctionComponent<{ title: string; children?: React.ReactNode }> = ({
+  title,
+  children,
+}) => (
   <View style={styles.container}>
     <Text style={styles.containerTitle}>{title}</Text>
     {children}

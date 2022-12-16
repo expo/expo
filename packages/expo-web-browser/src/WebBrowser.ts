@@ -1,5 +1,12 @@
 import { UnavailabilityError } from 'expo-modules-core';
-import { AppState, AppStateStatus, Linking, Platform } from 'react-native';
+import {
+  AppState,
+  AppStateStatus,
+  Linking,
+  Platform,
+  EmitterSubscription,
+  processColor,
+} from 'react-native';
 
 import ExponentWebBrowser from './ExpoWebBrowser';
 import {
@@ -16,6 +23,8 @@ import {
   WebBrowserResultType,
   WebBrowserWarmUpResult,
   WebBrowserWindowFeatures,
+  WebBrowserPresentationStyle,
+  AuthSessionOpenOptions,
 } from './WebBrowser.types';
 
 export {
@@ -31,6 +40,8 @@ export {
   WebBrowserResultType,
   WebBrowserWarmUpResult,
   WebBrowserWindowFeatures,
+  WebBrowserPresentationStyle,
+  AuthSessionOpenOptions,
 };
 
 const emptyCustomTabsPackages: WebBrowserCustomTabsResults = {
@@ -173,7 +184,7 @@ export async function openBrowserAsync(
 
   let result: WebBrowserResult;
   try {
-    result = await ExponentWebBrowser.openBrowserAsync(url, browserParams);
+    result = await ExponentWebBrowser.openBrowserAsync(url, _processOptions(browserParams));
   } finally {
     // WebBrowser session complete, unset lock
     browserLocked = false;
@@ -199,9 +210,8 @@ export function dismissBrowser(): void {
 // @needsAudit
 /**
  * # On iOS:
- * Opens the url with Safari in a modal using `SFAuthenticationSession` on iOS 11 and greater,
- * and falling back on a `SFSafariViewController`. The user will be asked whether to allow the app
- * to authenticate using the given url.
+ * Opens the url with Safari in a modal using `ASWebAuthenticationSession`. The user will be asked
+ * whether to allow the app to authenticate using the given url.
  *
  * # On Android:
  * This will be done using a "custom Chrome tabs" browser, [AppState](../react-native/appstate/),
@@ -216,7 +226,7 @@ export function dismissBrowser(): void {
  *
  * How this works on web:
  * - A crypto state will be created for verifying the redirect.
- *   - This means you need to run with `expo start:web --https`
+ *   - This means you need to run with `npx expo start --https`
  * - The state will be added to the window's `localstorage`. This ensures that auth cannot complete
  *   unless it's done from a page running with the same origin as it was started.
  *   Ex: if `openAuthSessionAsync` is invoked on `https://localhost:19006`, then `maybeCompleteAuthSession`
@@ -230,8 +240,9 @@ export function dismissBrowser(): void {
  * after a user interaction. If the event is blocked, an error with code [`ERR_WEB_BROWSER_BLOCKED`](#errwebbrowserblocked) will be thrown.
  *
  * @param url The url to open in the web browser. This should be a login page.
- * @param redirectUrl _Optional_ - The url to deep link back into your app. By default, this will be [`Constants.linkingUrl`](./constants/#expoconstantslinkinguri).
- * @param browserParams _Optional_ - An object with the same keys as [`WebBrowserOpenOptions`](#webbrowseropenoptions).
+ * @param redirectUrl _Optional_ - The url to deep link back into your app.
+ * On web, this defaults to the output of [`Linking.createURL("")`](./linking/#linkingcreateurlpath-namedparameters).
+ * @param options _Optional_ - An object extending the [`WebBrowserOpenOptions`](#webbrowseropenoptions).
  * If there is no native AuthSession implementation available (which is the case on Android)
  * these params will be used in the browser polyfill. If there is a native AuthSession implementation,
  * these params will be ignored.
@@ -244,19 +255,19 @@ export function dismissBrowser(): void {
  */
 export async function openAuthSessionAsync(
   url: string,
-  redirectUrl: string,
-  browserParams: WebBrowserOpenOptions = {}
+  redirectUrl?: string | null,
+  options: AuthSessionOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
   if (_authSessionIsNativelySupported()) {
     if (!ExponentWebBrowser.openAuthSessionAsync) {
       throw new UnavailabilityError('WebBrowser', 'openAuthSessionAsync');
     }
-    if (Platform.OS === 'web') {
-      return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, browserParams);
+    if (['ios', 'web'].includes(Platform.OS)) {
+      return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl, _processOptions(options));
     }
     return ExponentWebBrowser.openAuthSessionAsync(url, redirectUrl);
   } else {
-    return _openAuthSessionPolyfillAsync(url, redirectUrl, browserParams);
+    return _openAuthSessionPolyfillAsync(url, redirectUrl, options);
   }
 }
 
@@ -313,6 +324,15 @@ export function maybeCompleteAuthSession(
   return { type: 'failed', message: 'Not supported on this platform' };
 }
 
+function _processOptions(options: WebBrowserOpenOptions) {
+  return {
+    ...options,
+    controlsColor: processColor(options.controlsColor),
+    toolbarColor: processColor(options.toolbarColor),
+    secondaryToolbarColor: processColor(options.secondaryToolbarColor),
+  };
+}
+
 /* iOS <= 10 and Android polyfill for SFAuthenticationSession flow */
 
 function _authSessionIsNativelySupported(): boolean {
@@ -326,7 +346,7 @@ function _authSessionIsNativelySupported(): boolean {
   return versionNumber >= 11;
 }
 
-let _redirectHandler: ((event: RedirectEvent) => void) | null = null;
+let _redirectSubscription: EmitterSubscription | null = null;
 
 /*
  * openBrowserAsync on Android doesn't wait until closed, so we need to polyfill
@@ -385,10 +405,10 @@ async function _openBrowserAndWaitAndroidAsync(
 
 async function _openAuthSessionPolyfillAsync(
   startUrl: string,
-  returnUrl: string,
+  returnUrl: string | null | undefined,
   browserParams: WebBrowserOpenOptions = {}
 ): Promise<WebBrowserAuthSessionResult> {
-  if (_redirectHandler) {
+  if (_redirectSubscription) {
     throw new Error(
       `The WebBrowser's auth session is in an invalid state with a redirect handler set when it should not be`
     );
@@ -422,24 +442,27 @@ async function _openAuthSessionPolyfillAsync(
 }
 
 function _stopWaitingForRedirect() {
-  if (!_redirectHandler) {
+  if (!_redirectSubscription) {
     throw new Error(
       `The WebBrowser auth session is in an invalid state with no redirect handler when one should be set`
     );
   }
 
-  Linking.removeEventListener('url', _redirectHandler);
-  _redirectHandler = null;
+  _redirectSubscription.remove();
+  _redirectSubscription = null;
 }
 
-function _waitForRedirectAsync(returnUrl: string): Promise<WebBrowserRedirectResult> {
+function _waitForRedirectAsync(
+  returnUrl: string | null | undefined
+): Promise<WebBrowserRedirectResult> {
+  // Note that this Promise never resolves when `returnUrl` is nullish
   return new Promise((resolve) => {
-    _redirectHandler = (event: RedirectEvent) => {
-      if (event.url.startsWith(returnUrl)) {
+    const redirectHandler = (event: RedirectEvent) => {
+      if (returnUrl && event.url.startsWith(returnUrl)) {
         resolve({ url: event.url, type: 'success' });
       }
     };
 
-    Linking.addEventListener('url', _redirectHandler);
+    _redirectSubscription = Linking.addEventListener('url', redirectHandler);
   });
 }

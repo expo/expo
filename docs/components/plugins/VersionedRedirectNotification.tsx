@@ -3,7 +3,7 @@ import { theme } from '@expo/styleguide';
 import { useRouter } from 'next/router';
 import * as React from 'react';
 
-import { P } from '~/components/base/paragraph';
+import { P } from '~/ui/components/Text';
 
 export const CONTAINER_STYLE = css`
   background-color: ${theme.background.warning};

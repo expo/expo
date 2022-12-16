@@ -1,17 +1,9 @@
+import { InterruptionModeAndroid, InterruptionModeIOS } from './Audio.types';
 import ExponentAV from './ExponentAV';
 export * from './Audio/Recording';
 export * from './Audio/Sound';
 export { setIsEnabledAsync } from './Audio/AudioAvailability';
 export { PitchCorrectionQuality } from './AV';
-export const INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS = 0;
-export const INTERRUPTION_MODE_IOS_DO_NOT_MIX = 1;
-export const INTERRUPTION_MODE_IOS_DUCK_OTHERS = 2;
-export const INTERRUPTION_MODE_ANDROID_DO_NOT_MIX = 1;
-export const INTERRUPTION_MODE_ANDROID_DUCK_OTHERS = 2;
-// Returns true if value is in validValues, and false if not.
-const _isValueValid = (value, validValues) => {
-    return validValues.filter((validValue) => validValue === value).length > 0;
-};
 const _populateMissingKeys = (userAudioMode, defaultAudioMode) => {
     for (const key in defaultAudioMode) {
         if (!userAudioMode.hasOwnProperty(key)) {
@@ -22,10 +14,10 @@ const _populateMissingKeys = (userAudioMode, defaultAudioMode) => {
 };
 const defaultMode = {
     allowsRecordingIOS: false,
-    interruptionModeIOS: INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+    interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
     playsInSilentModeIOS: false,
     staysActiveInBackground: false,
-    interruptionModeAndroid: INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
+    interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
     shouldDuckAndroid: true,
     playThroughEarpieceAndroid: false,
 };
@@ -36,19 +28,17 @@ function getCurrentAudioMode() {
     }
     return currentAudioMode;
 }
+/**
+ * We provide this API to customize the audio experience on iOS and Android.
+ * @param partialMode
+ * @return A `Promise` that will reject if the audio mode could not be enabled for the device.
+ */
 export async function setAudioModeAsync(partialMode) {
     const mode = _populateMissingKeys(partialMode, getCurrentAudioMode());
-    if (!_isValueValid(mode.interruptionModeIOS, [
-        INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
-        INTERRUPTION_MODE_IOS_DO_NOT_MIX,
-        INTERRUPTION_MODE_IOS_DUCK_OTHERS,
-    ])) {
+    if (!InterruptionModeIOS[mode.interruptionModeIOS]) {
         throw new Error(`"interruptionModeIOS" was set to an invalid value.`);
     }
-    if (!_isValueValid(mode.interruptionModeAndroid, [
-        INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
-        INTERRUPTION_MODE_ANDROID_DUCK_OTHERS,
-    ])) {
+    if (!InterruptionModeAndroid[mode.interruptionModeAndroid]) {
         throw new Error(`"interruptionModeAndroid" was set to an invalid value.`);
     }
     if (typeof mode.allowsRecordingIOS !== 'boolean' ||

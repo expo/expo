@@ -1,7 +1,4 @@
-/**
- *
- */
-export declare type DocumentPickerOptions = {
+export type DocumentPickerOptions = {
     /**
      * The [MIME type(s)](https://en.wikipedia.org/wiki/Media_type) of the documents that are available
      * to be picked. Is also supports wildcards like `'image/*'` to choose any image. To allow any type
@@ -10,7 +7,7 @@ export declare type DocumentPickerOptions = {
      */
     type?: string | string[];
     /**
-     * If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](filesystem.md#filesystemcachedirectory),
+     * If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](./filesystem#filesystemcachedirectory),
      * which allows other Expo APIs to read the file immediately. This may impact performance for
      * large files, so you should consider setting this to `false` if you expect users to pick
      * particularly large files and your app does not need immediate read access.
@@ -24,7 +21,7 @@ export declare type DocumentPickerOptions = {
      */
     multiple?: boolean;
 };
-export declare type DocumentResult = {
+export type DocumentResult = {
     type: 'cancel';
 } | {
     type: 'success';
@@ -44,6 +41,9 @@ export declare type DocumentResult = {
      * Document MIME type.
      */
     mimeType?: string;
+    /**
+     * Timestamp of last document modification.
+     */
     lastModified?: number;
     file?: File;
     output?: FileList | null;

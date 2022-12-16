@@ -111,14 +111,14 @@ class NavigationBarModule(context: Context) : ExportedModule(context) {
   @ExpoMethod
   fun getVisibilityAsync(promise: Promise) {
     safeRunOnUiThread(promise) {
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        val visibility = if (it.window.decorView.rootWindowInsets.isVisible(WindowInsets.Type.navigationBars())) "visible" else "hidden"
-        promise.resolve(visibility)
+      val isVisible = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        it.window.decorView.rootWindowInsets.isVisible(WindowInsets.Type.navigationBars())
       } else {
-        // TODO: Verify this works
-        @Suppress("DEPRECATION") val visibility = if ((View.SYSTEM_UI_FLAG_HIDE_NAVIGATION and it.window.decorView.systemUiVisibility) == 0) "visible" else "hidden"
-        promise.resolve(visibility)
+        @Suppress("DEPRECATION")
+        (View.SYSTEM_UI_FLAG_HIDE_NAVIGATION and it.window.decorView.systemUiVisibility) == 0
       }
+      val visibility = if (isVisible) "visible" else "hidden"
+      promise.resolve(visibility)
     }
   }
 

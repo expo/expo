@@ -29,7 +29,7 @@ val BundledAppManifest = """
      },
      "iconUrl":"https://classic-assets.eascdn.net/~assets/4e3f888fc8475f69fd5fa32f1ad5216a",
      "locales":{
-        
+
      },
      "updates":{
         "fallbackToCacheTimeout":0

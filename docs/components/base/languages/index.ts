@@ -1,6 +1,7 @@
 import { Prism } from 'prism-react-renderer';
 
 import { installGroovy } from './groovy';
+import { installIni } from './ini';
 import { installJson5 } from './json5';
 import { installKotlin } from './kotlin';
 import { installObjectiveC } from './objectivec';
@@ -16,4 +17,5 @@ export function installLanguages(prism: typeof Prism) {
   installJson5(prism);
   installKotlin(prism);
   installSwift(prism);
+  installIni(prism);
 }

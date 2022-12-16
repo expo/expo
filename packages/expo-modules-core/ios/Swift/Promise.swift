@@ -2,7 +2,7 @@
 
 public struct Promise: AnyArgument {
   public typealias ResolveClosure = (Any?) -> Void
-  public typealias RejectClosure = (CodedError) -> Void
+  public typealias RejectClosure = (Exception) -> Void
 
   public var resolver: ResolveClosure
   public var rejecter: RejectClosure
@@ -22,14 +22,27 @@ public struct Promise: AnyArgument {
   }
 
   public func reject(_ error: Error) {
-    rejecter(UnexpectedException(error))
+    if let exception = error as? Exception {
+      rejecter(exception)
+    } else {
+      rejecter(UnexpectedException(error))
+    }
   }
 
-  public func reject(_ error: CodedError) {
+  public func reject(_ error: Exception) {
     rejecter(error)
   }
 
   public func reject(_ code: String, _ description: String) {
-    rejecter(SimpleCodedError(code, description))
+    rejecter(Exception(name: code, description: description, code: code))
+  }
+
+  public func settle<ValueType, ExceptionType: Exception>(with result: Result<ValueType, ExceptionType>) {
+    switch result {
+    case .success(let value):
+      resolve(value)
+    case .failure(let exception):
+      reject(exception)
+    }
   }
 }

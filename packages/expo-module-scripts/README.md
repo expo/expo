@@ -67,7 +67,7 @@ Running `yarn` will now run the `prepare` script, which generates any missing fi
 
 Besides, running `yarn prepare` script will also synchronize optional files from `expo-module-scripts` when the file is present and contains the `@generated` pattern:
 
-- [`source-login-scripts.sh`](./templates/scripts/source-login-scripts.sh): An Xcode build phase script helper for Node.js binary resolution. For example, we need to source login shell configs for `nvm`.
+- [`with-node.sh`](./templates/scripts/with-node.sh): An Xcode build phase script helper for Node.js binary resolution. It sources the project's **.xcode.env** and **.xcode.env.local** files, which may define an environment variable named `NODE_BINARY` to specify the file path of the Node.js binary to run.
 
 ### 🔌 Config Plugin
 
@@ -93,7 +93,7 @@ The following files are required for a TypeScript plugin:
     ╰── src/index.ts ➡️ The TypeScript entry point for your plugin
 ```
 
-Create a `app.config.js` (the entry point for a config plugin):
+Create an `app.plugin.js` (the entry point for a config plugin):
 
 ```js
 module.exports = require('./plugin/build');
@@ -156,15 +156,7 @@ The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/pac
 }
 ```
 
-**For unit testing component-based modules:**
-
-```json
-{
-  "jest": {
-    "preset": "expo-module-scripts/enzyme"
-  }
-}
-```
+**For unit testing component-based modules** use @testing-library/react and @testing-library/react-native.
 
 ### 📝 LICENSE
 

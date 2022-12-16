@@ -32,8 +32,5 @@ export type FirebaseOptions = {
 };
 
 export function getDefaultWebOptions(): FirebaseOptions | void {
-  return (
-    Constants.manifest?.web?.config?.firebase ??
-    Constants.manifest2?.extra?.expoClient?.web?.config?.firebase
-  );
+  return Constants.expoConfig?.web?.config?.firebase;
 }

@@ -10,7 +10,6 @@ RCT_EXPORT_MODULE(RNCViewPager)
 RCT_EXPORT_VIEW_PROPERTY(initialPage, NSInteger)
 RCT_EXPORT_VIEW_PROPERTY(pageMargin, NSInteger)
 
-RCT_EXPORT_VIEW_PROPERTY(transitionStyle, UIPageViewControllerTransitionStyle)
 RCT_EXPORT_VIEW_PROPERTY(orientation, UIPageViewControllerNavigationOrientation)
 RCT_EXPORT_VIEW_PROPERTY(onPageSelected, RCTDirectEventBlock)
 RCT_EXPORT_VIEW_PROPERTY(onPageScroll, RCTDirectEventBlock)
@@ -31,7 +30,9 @@ RCT_EXPORT_VIEW_PROPERTY(layoutDirection, NSString)
             RCTLogError(@"Cannot find ReactNativePageView with tag #%@", reactTag);
             return;
         }
-        [view goTo:index.integerValue animated:animated];
+        if (!animated || !view.animating) {
+            [view goTo:index.integerValue animated:animated];
+        }
     }];
 }
 

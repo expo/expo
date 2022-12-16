@@ -1,7 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 package host.exp.exponent.modules
 
-import com.facebook.internal.BundleJSONConverter
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import host.exp.exponent.Constants
@@ -15,6 +14,7 @@ import host.exp.exponent.kernel.ExponentKernelModuleProvider.KernelEvent
 import host.exp.exponent.kernel.ExponentKernelModuleProvider.KernelEventCallback
 import host.exp.exponent.kernel.Kernel
 import host.exp.exponent.storage.ExponentSharedPreferences
+import host.exp.exponent.utils.BundleJSONConverter
 import org.json.JSONObject
 import java.util.*
 import javax.inject.Inject

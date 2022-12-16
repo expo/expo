@@ -58,6 +58,24 @@ class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
     promise.resolve(null)
   }
 
+  @ExpoMethod
+  fun deleteAsync(dbName: String, promise: Promise) {
+    val errorCode = "SQLiteError"
+    if (DATABASES.containsKey(dbName)) {
+      promise.reject(errorCode, "Unable to delete database '$dbName' that is currently open. Close it prior to deletion.")
+    }
+    val dbFile = File(pathForDatabaseName(dbName))
+    if (!dbFile.exists()) {
+      promise.reject(errorCode, "Database '$dbName' not found")
+      return
+    }
+    if (!dbFile.delete()) {
+      promise.reject(errorCode, "Unable to delete the database file for '$dbName' database")
+      return
+    }
+    promise.resolve(null)
+  }
+
   // do a update/delete/insert operation
   private fun doUpdateInBackgroundAndPossiblyThrow(
     sql: String,

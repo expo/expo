@@ -1,31 +1,31 @@
 import { NativeModules } from 'react-native';
-const NativeProxy = NativeModules.NativeUnimoduleProxy;
+const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
+// Fixes `cannot find name 'global'.` in tests
+// @ts-ignore
+const ExpoNativeProxy = global.expo?.modules?.NativeModulesProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 const NativeModulesProxy = {};
-// Keep it opt-in for now. It's too risky without proper and thorough testing.
-let canUseExpoTurboModules = false;
-/**
- * Sets whether to use a TurboModule version of the proxy.
- */
-export function useExpoTurboModules(state = true) {
-    canUseExpoTurboModules = state;
-}
-if (NativeProxy) {
+if (LegacyNativeProxy) {
+    // use JSI proxy if available, fallback to legacy RN proxy
+    const NativeProxy = ExpoNativeProxy ?? LegacyNativeProxy;
     Object.keys(NativeProxy[exportedMethodsKey]).forEach((moduleName) => {
+        // copy constants
         NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
+        // copy methods
         NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo) => {
             NativeModulesProxy[moduleName][methodInfo.name] = (...args) => {
+                // Use the new proxy to call methods on legacy modules, if possible.
+                if (ExpoNativeProxy?.callMethod) {
+                    return ExpoNativeProxy.callMethod(moduleName, methodInfo.name, args);
+                }
+                // Otherwise fall back to the legacy proxy.
+                // This is deprecated and might be removed in SDK47 or later.
                 const { key, argumentsCount } = methodInfo;
                 if (argumentsCount !== args.length) {
                     return Promise.reject(new Error(`Native method ${moduleName}.${methodInfo.name} expects ${argumentsCount} ${argumentsCount === 1 ? 'argument' : 'arguments'} but received ${args.length}`));
                 }
-                if (canUseExpoTurboModules && global.ExpoModulesProxy) {
-                    return global.ExpoModulesProxy.callMethodAsync(moduleName, methodInfo.name, args);
-                }
-                else {
-                    return NativeProxy.callMethod(moduleName, key, args);
-                }
+                return LegacyNativeProxy.callMethod(moduleName, key, args);
             };
         });
         // These are called by EventEmitter (which is a wrapper for NativeEventEmitter)

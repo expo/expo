@@ -50,13 +50,13 @@ import expo.modules.core.interfaces.ExpoMethod;
 import expo.modules.core.interfaces.LifecycleEventListener;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import androidx.annotation.RequiresApi;
 
 import expo.modules.interfaces.permissions.Permissions;
 import expo.modules.interfaces.permissions.PermissionsResponse;
 import expo.modules.interfaces.permissions.PermissionsStatus;
+import expo.modules.interfaces.taskManager.TaskManagerInterface;
 import expo.modules.location.exceptions.LocationBackgroundUnauthorizedException;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
@@ -787,7 +787,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     if (isMissingForegroundPermissions() || mGeofield == null) {
       return -1;
     }
-    return magNorth + mGeofield.getDeclination();
+    return (magNorth + mGeofield.getDeclination()) % 360;
   }
 
   private void stopHeadingWatch() {

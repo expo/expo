@@ -48,20 +48,6 @@ export declare function logEvent(name: string, properties?: Record<string, any>)
  */
 export declare function setAnalyticsCollectionEnabled(isEnabled: boolean): Promise<void>;
 /**
- * Sets the current screen name, which specifies the current visual context in your app. This helps
- * identify the areas in your app where users spend their time and how they interact with your app.
- *
- * @deprecated __Deprecated.__ Use [`logEvent('screen_view', { screen_name: 'MyScreen', ... })`](#logevent)
- * instead. This API will be removed in SDK 45.
- *
- * @param screenName The name of the current screen. Should contain 1 to 100 characters. Set to
- * `undefined` to clear the current screen name.
- * @param screenClassOverride The name of the screen class. Should contain 1 to 100 characters. By
- * default this is the class name of the current screen (UIViewController on iOS). Set to
- * `undefined` to revert to the default class name.
- */
-export declare function setCurrentScreen(screenName?: string, screenClassOverride?: string): Promise<void>;
-/**
  * Sets the interval of inactivity in seconds that terminates the current session. The default
  * value is 1800000 milliseconds (30 minutes).
  *

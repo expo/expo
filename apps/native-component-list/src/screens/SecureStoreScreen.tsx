@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 
 import ListButton from '../components/ListButton';
+import Colors from '../constants/Colors';
 import { useResolvedValue } from '../utilities/useResolvedValue';
 
 export default function SecureStoreScreen() {
@@ -51,7 +52,6 @@ function SecureStoreView() {
 
   const _setValue = async (value: string, key: string) => {
     try {
-      console.log('SecureStore: ' + SecureStore);
       await SecureStore.setItemAsync(key, value, {
         keychainService: service,
         requireAuthentication: requireAuth,
@@ -94,18 +94,21 @@ function SecureStoreView() {
       <TextInput
         style={styles.textInput}
         placeholder="Enter a value to store (ex. pw123!)"
+        placeholderTextColor={Colors.secondaryText}
         value={value}
         onChangeText={setValue}
       />
       <TextInput
         style={styles.textInput}
         placeholder="Enter a key for the value (ex. password)"
+        placeholderTextColor={Colors.secondaryText}
         value={key}
         onChangeText={setKey}
       />
       <TextInput
         style={styles.textInput}
         placeholder="Enter a service name (may be blank)"
+        placeholderTextColor={Colors.secondaryText}
         value={service}
         onChangeText={setService}
       />

@@ -45,5 +45,22 @@ RCT_EXPORT_METHOD(showMessage:(NSString *)message color:(UIColor *)color backgro
   _isObserving = NO;
 }
 
+// RCTDevLoadingViewProtocol implementations
+
++ (void)setEnabled:(BOOL)enabled
+{
+
+}
+
+- (void)showWithURL:(NSURL *)URL
+{
+
+}
+
+- (void)updateProgress:(RCTLoadingProgress *)progress
+{
+
+}
+
 @end
 

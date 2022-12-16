@@ -1,18 +1,18 @@
 export interface StoryOptions {
     projectRoot: string;
-    watchRoot: string;
+    watchRoots: string[];
 }
-export declare type StoryManifest = {
+export type StoryManifest = {
     files: Record<string, StoryFile>;
 };
-export declare type StoryFile = {
+export type StoryFile = {
     id: string;
     fullPath: string;
     relativePath: string;
     title: string;
     stories: StoryItem[];
 };
-export declare type StoryItem = {
+export type StoryItem = {
     id: string;
     name: string;
 };

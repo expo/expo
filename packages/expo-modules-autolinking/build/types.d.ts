@@ -1,5 +1,5 @@
 import { ExpoModuleConfig } from './ExpoModuleConfig';
-export declare type SupportedPlatform = 'ios' | 'android' | 'web';
+export type SupportedPlatform = 'ios' | 'android' | 'web';
 export interface SearchOptions {
     searchPaths: string[];
     ignorePaths?: string[] | null;
@@ -21,16 +21,39 @@ export interface PatchReactImportsOptions {
     podsRoot: string;
     dryRun: boolean;
 }
-export declare type PackageRevision = {
+export type PackageRevision = {
     path: string;
     version: string;
     config?: ExpoModuleConfig;
     duplicates?: PackageRevision[];
 };
-export declare type SearchResults = {
+export type SearchResults = {
     [moduleName: string]: PackageRevision;
 };
-export declare type ModuleDescriptor = Record<string, any>;
+export interface ModuleAndroidProjectInfo {
+    name: string;
+    sourceDir: string;
+}
+export interface ModuleDescriptorAndroid {
+    packageName: string;
+    projects: ModuleAndroidProjectInfo[];
+    modules: string[];
+}
+export interface ModuleIosPodspecInfo {
+    podName: string;
+    podspecDir: string;
+}
+export interface ModuleDescriptorIos {
+    packageName: string;
+    pods: ModuleIosPodspecInfo[];
+    flags: Record<string, any> | undefined;
+    swiftModuleNames: string[];
+    modules: string[];
+    appDelegateSubscribers: string[];
+    reactDelegateHandlers: string[];
+    debugOnly: boolean;
+}
+export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
 /**
  * Represents a raw config from `expo-module.json`.
  */
@@ -62,8 +85,19 @@ export interface RawExpoModuleConfig {
         reactDelegateHandlers?: string[];
         /**
          * Podspec relative path.
+         * To have multiple podspecs, string array type is also supported.
          */
-        podspecPath?: string;
+        podspecPath?: string | string[];
+        /**
+         * Swift product module name. If empty, the pod name is used for Swift imports.
+         * To have multiple modules, string array is also supported.
+         */
+        swiftModuleName?: string | string[];
+        /**
+         * Whether this module will be added only to the debug configuration.
+         * Defaults to false.
+         */
+        debugOnly?: boolean;
     };
     /**
      * Android-specific config.
@@ -78,5 +112,10 @@ export interface RawExpoModuleConfig {
          * @deprecated Deprecated in favor of `modules`. Might be removed in the future releases.
          */
         modulesClassNames?: string[];
+        /**
+         * build.gradle relative path.
+         * To have multiple build.gradle projects, string array type is also supported.
+         */
+        gradlePath?: string | string[];
     };
 }

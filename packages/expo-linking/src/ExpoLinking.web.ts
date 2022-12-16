@@ -8,7 +8,12 @@ const EventTypes = ['url'];
 const listeners: { listener: URLListener; nativeListener: NativeURLListener }[] = [];
 
 export default {
-  addEventListener(type: 'url', listener: URLListener): void {
+  addEventListener(type: 'url', listener: URLListener): { remove(): void } {
+    // Do nothing in Node.js environments
+    if (!Platform.isDOMAvailable) {
+      return { remove() {} };
+    }
+
     invariant(
       EventTypes.indexOf(type) !== -1,
       `Linking.addEventListener(): ${type} is not a valid event`
@@ -17,9 +22,18 @@ export default {
       listener({ url: window.location.href, nativeEvent });
     listeners.push({ listener, nativeListener });
     window.addEventListener('message', nativeListener, false);
+    return {
+      remove: () => {
+        this.removeEventListener(type, listener);
+      },
+    };
   },
 
   removeEventListener(type: 'url', listener: URLListener): void {
+    // Do nothing in Node.js environments
+    if (!Platform.isDOMAvailable) {
+      return;
+    }
     invariant(
       EventTypes.indexOf(type) !== -1,
       `Linking.removeEventListener(): ${type} is not a valid event.`

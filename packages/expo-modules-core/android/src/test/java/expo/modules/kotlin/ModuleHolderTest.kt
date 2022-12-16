@@ -12,7 +12,7 @@ import org.junit.Test
 
 class EmptyModule : Module() {
   override fun definition() = ModuleDefinition {
-    name("empty-module")
+    Name("empty-module")
   }
 }
 

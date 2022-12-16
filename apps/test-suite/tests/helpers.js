@@ -1,5 +1,3 @@
-// @flow
-
 import asyncRetry from 'async-retry';
 import { isMatch } from 'lodash';
 import React from 'react';
@@ -27,11 +25,7 @@ export const retryForStatus = (object, status) =>
     { retries: 5, minTimeout: 100 }
   );
 
-export const mountAndWaitFor = (
-  child: React.Node,
-  propName = 'ref',
-  setPortalChild: (React.Node) => void
-) =>
+export const mountAndWaitFor = (child, propName = 'ref', setPortalChild) =>
   new Promise((resolve) => {
     // `ref` prop is set directly in the child, not in the `props` object.
     // https://github.com/facebook/react/issues/8873#issuecomment-275423780
@@ -51,12 +45,7 @@ export class TimeoutError extends Error {
   }
 }
 
-export const mountAndWaitForWithTimeout = (
-  child: React.Node,
-  propName = 'ref',
-  setPortalChild: (React.Node) => void,
-  timeout
-) =>
+export const mountAndWaitForWithTimeout = (child, propName = 'ref', setPortalChild, timeout) =>
   Promise.race([
     mountAndWaitFor(child, propName, setPortalChild),
     new Promise((resolve, reject) => {

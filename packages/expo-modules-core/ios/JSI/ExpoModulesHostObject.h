@@ -3,17 +3,21 @@
 #ifdef __cplusplus
 
 #import <vector>
+#import <unordered_map>
 #import <jsi/jsi.h>
 
 namespace jsi = facebook::jsi;
 
-@class SwiftInteropBridge;
+@class EXAppContext;
 
 namespace expo {
 
+using SharedJSIObject = std::shared_ptr<jsi::Object>;
+using UniqueJSIObject = std::unique_ptr<jsi::Object>;
+
 class JSI_EXPORT ExpoModulesHostObject : public jsi::HostObject {
 public:
-  ExpoModulesHostObject(SwiftInteropBridge *interopBridge);
+  ExpoModulesHostObject(EXAppContext *appContext);
 
   virtual ~ExpoModulesHostObject();
 
@@ -24,7 +28,8 @@ public:
   std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) override;
 
 private:
-  SwiftInteropBridge *swiftInterop;
+  EXAppContext *appContext;
+  std::unordered_map<std::string, UniqueJSIObject> modulesCache;
 
 }; // class ExpoModulesHostObject
 

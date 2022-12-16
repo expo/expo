@@ -17,7 +17,7 @@ typedef NS_OPTIONS(unsigned int, EXFileSystemPermissionFlags) {
 
 // TODO: Move permissionsForURI to EXFileSystemManagerInterface
 - (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
-- (NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
+- (nonnull NSString *)generatePathInDirectory:(NSString *)directory withExtension:(NSString *)extension;
 - (BOOL)ensureDirExistsWithPath:(NSString *)path;
 
 @end

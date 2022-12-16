@@ -2,11 +2,11 @@
 
 #import <EXNotifications/EXBackgroundNotificationTasksModule.h>
 #import <EXNotifications/EXBackgroundRemoteNotificationConsumer.h>
-#import <UMTaskManagerInterface/UMTaskManagerInterface.h>
+#import <ExpoModulesCore/EXTaskManagerInterface.h>
 
 @interface EXBackgroundNotificationTasksModule ()
 
-@property (nonatomic, weak) id<UMTaskManagerInterface> taskManager;
+@property (nonatomic, weak) id<EXTaskManagerInterface> taskManager;
 
 @end
 
@@ -18,7 +18,7 @@ EX_EXPORT_MODULE(ExpoBackgroundNotificationTasksModule);
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
-  _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
+  _taskManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXTaskManagerInterface)];
 }
 # pragma mark - Exported methods
 

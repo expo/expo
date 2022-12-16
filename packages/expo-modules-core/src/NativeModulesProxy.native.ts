@@ -1,33 +1,35 @@
 import { NativeModules } from 'react-native';
 
-import { ProxyNativeModule, TurboNativeModuleProxy } from './NativeModulesProxy.types';
+import { ProxyNativeModule } from './NativeModulesProxy.types';
 
-// `ExpoModulesProxy` is not declared in TypeScript yet. It's installed via JSI.
-declare namespace global {
-  const ExpoModulesProxy: TurboNativeModuleProxy;
-}
+const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
+// Fixes `cannot find name 'global'.` in tests
+// @ts-ignore
+const ExpoNativeProxy = global.expo?.modules?.NativeModulesProxy;
 
-const NativeProxy = NativeModules.NativeUnimoduleProxy;
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
 
 const NativeModulesProxy: { [moduleName: string]: ProxyNativeModule } = {};
 
-// Keep it opt-in for now. It's too risky without proper and thorough testing.
-let canUseExpoTurboModules = false;
+if (LegacyNativeProxy) {
+  // use JSI proxy if available, fallback to legacy RN proxy
+  const NativeProxy = ExpoNativeProxy ?? LegacyNativeProxy;
 
-/**
- * Sets whether to use a TurboModule version of the proxy.
- */
-export function useExpoTurboModules(state: boolean = true) {
-  canUseExpoTurboModules = state;
-}
-
-if (NativeProxy) {
   Object.keys(NativeProxy[exportedMethodsKey]).forEach((moduleName) => {
+    // copy constants
     NativeModulesProxy[moduleName] = NativeProxy[modulesConstantsKey][moduleName] || {};
+
+    // copy methods
     NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo) => {
       NativeModulesProxy[moduleName][methodInfo.name] = (...args: unknown[]): Promise<any> => {
+        // Use the new proxy to call methods on legacy modules, if possible.
+        if (ExpoNativeProxy?.callMethod) {
+          return ExpoNativeProxy.callMethod(moduleName, methodInfo.name, args);
+        }
+
+        // Otherwise fall back to the legacy proxy.
+        // This is deprecated and might be removed in SDK47 or later.
         const { key, argumentsCount } = methodInfo;
         if (argumentsCount !== args.length) {
           return Promise.reject(
@@ -38,12 +40,7 @@ if (NativeProxy) {
             )
           );
         }
-
-        if (canUseExpoTurboModules && global.ExpoModulesProxy) {
-          return global.ExpoModulesProxy.callMethodAsync(moduleName, methodInfo.name, args);
-        } else {
-          return NativeProxy.callMethod(moduleName, key, args);
-        }
+        return LegacyNativeProxy.callMethod(moduleName, key, args);
       };
     });
 

@@ -1,6 +1,6 @@
 #import "DevMenuREADebugNode.h"
-#import "DevMenuREAUtils.h"
 #import "DevMenuREANodesManager.h"
+#import "DevMenuREAUtils.h"
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
 
@@ -9,12 +9,13 @@
   NSString *_message;
 }
 
-- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _message = [RCTConvert NSString:config[@"message"]];
     _valueNodeID = [RCTConvert NSNumber:config[@"value"]];
-    DevMenuREA_LOG_ERROR_IF_NIL(_valueNodeID, @"Reanimated: Second argument passed to debug node is either of wrong type or is missing.");
+    DevMenuREA_LOG_ERROR_IF_NIL(
+        _valueNodeID, @"DevMenuReanimated: Second argument passed to debug node is either of wrong type or is missing.");
   }
   return self;
 }

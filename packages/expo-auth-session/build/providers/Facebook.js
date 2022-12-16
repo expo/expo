@@ -13,6 +13,10 @@ export const discovery = {
     authorizationEndpoint: 'https://www.facebook.com/v6.0/dialog/oauth',
     tokenEndpoint: 'https://graph.facebook.com/v6.0/oauth/access_token',
 };
+// @needsAudit
+/**
+ * Extends [`AuthRequest`](#authrequest) and accepts [`FacebookAuthRequest`](#facebookauthrequest) in the constructor.
+ */
 class FacebookAuthRequest extends AuthRequest {
     nonce;
     constructor({ language, 
@@ -66,10 +70,10 @@ class FacebookAuthRequest extends AuthRequest {
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes then the response will be fulfilled.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#facebook)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#facebook)
  *
  * @param config
- * @param discovery
+ * @param redirectUriOptions
  */
 export function useAuthRequest(config = {}, redirectUriOptions = {}) {
     const useProxy = useProxyEnabled(redirectUriOptions);

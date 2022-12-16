@@ -1,0 +1,51 @@
+{
+  "name": "@expo/metro-config",
+  "version": "0.5.1",
+  "description": "A Metro config for running React Native projects with the Metro bundler",
+  "main": "build/ExpoMetroConfig.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/metro-config"
+  },
+  "keywords": [
+    "expo",
+    "expo-cli",
+    "react",
+    "metro",
+    "metro-config"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-config#readme",
+  "files": [
+    "build",
+    "transformer"
+  ],
+  "dependencies": {
+    "@expo/config": "~7.0.2",
+    "@expo/json-file": "8.2.36",
+    "chalk": "^4.1.0",
+    "debug": "^4.3.2",
+    "find-yarn-workspace-root": "~2.0.0",
+    "getenv": "^1.0.0",
+    "resolve-from": "^5.0.0",
+    "sucrase": "^3.20.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -6,44 +6,41 @@ public final class KeepAwakeModule: Module {
   private var activeTags = Set<String>()
 
   public func definition() -> ModuleDefinition {
-    name("ExpoKeepAwake")
+    Name("ExpoKeepAwake")
 
-    function("activate", activate)
-    function("deactivate", deactivate)
-    function("isActivated", isActivated)
+    AsyncFunction("activate") { (tag: String) -> Bool in
+      if self.activeTags.isEmpty {
+        setActivated(true)
+      }
+      self.activeTags.insert(tag)
+      return true
+    }
 
-    onAppEntersForeground {
+    AsyncFunction("deactivate") { (tag: String) -> Bool in
+      self.activeTags.remove(tag)
+      if self.activeTags.isEmpty {
+        setActivated(false)
+      }
+      return true
+    }
+
+    AsyncFunction("isActivated") { () -> Bool in
+      return DispatchQueue.main.sync {
+        return UIApplication.shared.isIdleTimerDisabled
+      }
+    }
+
+    OnAppEntersForeground {
       if !self.activeTags.isEmpty {
         setActivated(true)
       }
     }
-    onAppEntersBackground {
+
+    OnAppEntersBackground {
       if !self.activeTags.isEmpty {
         setActivated(false)
       }
     }
-  }
-
-  private func activate(tag: String) -> Bool {
-    if activeTags.isEmpty {
-      setActivated(true)
-    }
-    activeTags.insert(tag)
-    return true
-  }
-
-  private func deactivate(tag: String) -> Bool {
-    activeTags.remove(tag)
-    if activeTags.isEmpty {
-      setActivated(false)
-    }
-    return true
-  }
-}
-
-private func isActivated() -> Bool {
-  return DispatchQueue.main.sync {
-    return UIApplication.shared.isIdleTimerDisabled
   }
 }
 

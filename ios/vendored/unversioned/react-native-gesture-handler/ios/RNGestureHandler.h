@@ -1,3 +1,4 @@
+#import "RNGestureHandlerActionType.h"
 #import "RNGestureHandlerState.h"
 #import "RNGestureHandlerDirection.h"
 #import "RNGestureHandlerEvents.h"
@@ -25,13 +26,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 
 @protocol RNGestureHandlerEventEmitter
 
-- (void)sendTouchEvent:(nonnull RNGestureHandlerEvent *)event;
-
-- (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
-
-- (void)sendTouchDeviceEvent:(nonnull RNGestureHandlerEvent *)event;
-
-- (void)sendStateChangeDeviceEvent:(nonnull RNGestureHandlerStateChange *)event;
+- (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event withActionType:(RNGestureHandlerActionType)actionType;
 
 @end
 
@@ -60,7 +55,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
 @property (nonatomic, readonly, nullable) RNGestureHandlerPointerTracker *pointerTracker;
 @property (nonatomic) BOOL enabled;
-@property (nonatomic) BOOL usesDeviceEvents;
+@property (nonatomic) RNGestureHandlerActionType actionType;
 @property (nonatomic) BOOL shouldCancelWhenOutside;
 @property (nonatomic) BOOL needsPointerData;
 @property (nonatomic) BOOL manualActivation;
@@ -70,6 +65,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 - (void)resetConfig NS_REQUIRES_SUPER;
 - (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)handleGesture:(nonnull id)recognizer;
+- (void)handleGesture:(nonnull id)recognizer inState:(RNGestureHandlerState)state;
 - (BOOL)containsPointInView;
 - (RNGestureHandlerState)state;
 - (nullable RNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
@@ -79,7 +75,7 @@ if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 - (void)sendEventsInState:(RNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
             withExtraData:(nonnull RNGestureHandlerEventExtraData *)extraData;
-- (void)sendStateChangeEvent:(nonnull RNGestureHandlerStateChange *)event;
+- (void)sendEvent:(nonnull RNGestureHandlerStateChange *)event;
 - (void)sendTouchEventInState:(RNGestureHandlerState)state
                  forViewWithTag:(nonnull NSNumber *)reactTag;
 

@@ -110,6 +110,22 @@ Object.defineProperties(constants, {
         },
         enumerable: true,
     },
+    expoConfig: {
+        get() {
+            const maybeManifest = getManifest(true);
+            if (!maybeManifest) {
+                return null;
+            }
+            if (isManifest(maybeManifest)) {
+                return maybeManifest.extra?.expoClient ?? null;
+            }
+            else if (isAppManifest(maybeManifest)) {
+                return maybeManifest;
+            }
+            return null;
+        },
+        enumerable: true,
+    },
     __rawManifest_TEST: {
         get() {
             return rawManifest;

@@ -149,3 +149,9 @@
 ##### Segment #####
 -keep class com.segment.analytics.** { *; }
 -keep class androidx.lifecycle.DefaultLifecycleObserver
+
+##### skia #####
+-keep class com.shopify.reactnative.skia.** { *; }
+
+##### svg #####
+-keep public class com.horcrux.svg.** { *; }

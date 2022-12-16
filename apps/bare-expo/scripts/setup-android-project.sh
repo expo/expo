@@ -9,5 +9,6 @@ else
     yarn
 fi
 
-../../tools/bin/expotools.js android-generate-dynamic-macros --configuration $1 --bare
+CURR_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+"${CURR_DIR}/../../../bin/expotools" android-generate-dynamic-macros --configuration $1 --bare
 echo " ✅ Generete dynamic macros"

@@ -29,9 +29,9 @@ expo install expo-navigation-bar
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide][contributing].
 
 
-[docs-main]: https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/navigation-bar.md
-[docs-stable]: https://docs.expo.io/versions/latest/sdk/navigation-bar/
-[docs-workflows]: https://docs.expo.io/versions/latest/introduction/managed-vs-bare/
+[docs-main]: https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/navigation-bar.mdx
+[docs-stable]: https://docs.expo.dev/versions/latest/sdk/navigation-bar/
+[docs-workflows]: https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/
 [contributing]: https://github.com/expo/expo#contributing
 [unimodules]: https://github.com/expo/expo/tree/main/packages/react-native-unimodules
 [status-bar]: https://github.com/expo/expo/tree/main/packages/expo-status-bar

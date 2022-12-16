@@ -1,4 +1,4 @@
-export declare type LocalAuthenticationResult = {
+export type LocalAuthenticationResult = {
     success: true;
 } | {
     success: false;
@@ -34,7 +34,7 @@ export declare enum SecurityLevel {
      */
     BIOMETRIC = 2
 }
-export declare type LocalAuthenticationOptions = {
+export type LocalAuthenticationOptions = {
     /**
      * A message that is shown alongside the TouchID or FaceID prompt.
      */
@@ -52,6 +52,13 @@ export declare type LocalAuthenticationOptions = {
      * policy. Defaults to `false`.
      */
     disableDeviceFallback?: boolean;
+    /**
+     * Sets a hint to the system for whether to require user confirmation after authentication.
+     * This may be ignored by the system if the user has disabled implicit authentication in Settings
+     * or if it does not apply to a particular biometric modality. Defaults to `true`.
+     * @platform android
+     */
+    requireConfirmation?: boolean;
     /**
      * Allows to customize the default `Use Passcode` label shown after several failed
      * authentication attempts. Setting this option to an empty string disables this button from

@@ -1,6 +1,11 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import {
+  createPermissionHook,
+  PermissionStatus,
+  Platform,
+  UnavailabilityError,
+} from 'expo-modules-core';
 
-import { CellularGeneration } from './Cellular.types';
+import { CellularGeneration, PermissionResponse } from './Cellular.types';
 import ExpoCellular from './ExpoCellular';
 
 export { CellularGeneration };
@@ -21,7 +26,7 @@ export { CellularGeneration };
  * ```ts
  * Cellular.allowsVoip; // true or false
  * ```
- * @deprecated Deprecated field, use [`allowsVoipAsync()`](#allowsvoipasync) instead.
+ * @deprecated Use [`allowsVoipAsync()`](#allowsvoipasync) instead.
  *
  */
 export const allowsVoip: boolean | null = ExpoCellular ? ExpoCellular.allowsVoip : null;
@@ -44,7 +49,7 @@ export const allowsVoip: boolean | null = ExpoCellular ? ExpoCellular.allowsVoip
  * ```ts
  * Cellular.carrier; // "T-Mobile" or "Verizon"
  * ```
- * @deprecated Deprecated field, use [`getCarrierNameAsync()`](#getcarriernameasync) instead.
+ * @deprecated Use [`getCarrierNameAsync()`](#getcarriernameasync) instead.
  *
  */
 export const carrier: string | null = ExpoCellular ? ExpoCellular.carrier : null;
@@ -63,7 +68,7 @@ export const carrier: string | null = ExpoCellular ? ExpoCellular.carrier : null
  * ```ts
  * Cellular.isoCountryCode; // "us" or "au"
  * ```
- * @deprecated Deprecated field, use [`getIsoCountryCodeAsync()`](#getisocountrycodeAsync) instead.
+ * @deprecated Use [`getIsoCountryCodeAsync()`](#getisocountrycodeAsync) instead.
  *
  */
 export const isoCountryCode: string | null = ExpoCellular ? ExpoCellular.isoCountryCode : null;
@@ -83,7 +88,7 @@ export const isoCountryCode: string | null = ExpoCellular ? ExpoCellular.isoCoun
  * ```ts
  * Cellular.mobileCountryCode; // "310"
  * ```
- * @deprecated Deprecated field, use [`getMobileCountryCodeAsync()`](#getmobilecountrycodeasync) instead.
+ * @deprecated Use [`getMobileCountryCodeAsync()`](#getmobilecountrycodeasync) instead.
  *
  */
 export const mobileCountryCode: string | null = ExpoCellular
@@ -104,7 +109,7 @@ export const mobileCountryCode: string | null = ExpoCellular
  * ```ts
  * Cellular.mobileNetworkCode; // "260"
  * ```
- * @deprecated Deprecated field, use [`getMobileNetworkCodeAsync()`](#getmobilenetworkcodeasync) instead.
+ * @deprecated Use [`getMobileNetworkCodeAsync()`](#getmobilenetworkcodeasync) instead.
  *
  */
 export const mobileNetworkCode: string | null = ExpoCellular
@@ -115,6 +120,10 @@ export const mobileNetworkCode: string | null = ExpoCellular
 /**
  * @return Returns a promise which fulfils with a [`Cellular.CellularGeneration`](#cellulargeneration)
  * enum value that represents the current cellular-generation type.
+ * 
+ * You will need to check if the native permission has been accepted to obtain generation. 
+ * If the permission is denied `getCellularGenerationAsync` will resolve to `Cellular.Cellular Generation.UNKNOWN`.
+
  *
  * On web, this method uses [`navigator.connection.effectiveType`](https://developer.mozilla.org/en-US/docs/Web/API/NetworkInformation/effectiveType)
  * to detect the effective type of the connection using a combination of recently observed
@@ -251,3 +260,49 @@ export async function getMobileNetworkCodeAsync(): Promise<string | null> {
   }
   return await ExpoCellular.getMobileNetworkCodeAsync();
 }
+
+/**
+ * Checks user's permissions for accessing phone state.
+ */
+export async function getPermissionsAsync(): Promise<PermissionResponse> {
+  if (Platform.OS === 'android') {
+    return await ExpoCellular.getPermissionsAsync();
+  }
+
+  return {
+    status: PermissionStatus.GRANTED,
+    expires: 'never',
+    granted: true,
+    canAskAgain: true,
+  };
+}
+
+/**
+ * Asks the user to grant permissions for accessing the phone state.
+ */
+export async function requestPermissionsAsync(): Promise<PermissionResponse> {
+  if (Platform.OS === 'android') {
+    return await ExpoCellular.requestPermissionsAsync();
+  }
+
+  return {
+    status: PermissionStatus.GRANTED,
+    expires: 'never',
+    granted: true,
+    canAskAgain: true,
+  };
+}
+
+/**
+ * Check or request permissions to access the phone state.
+ * This uses both `Cellular.requestPermissionsAsync` and `Cellular.getPermissionsAsync` to interact with the permissions.
+ *
+ * @example
+ * ```ts
+ * const [status, requestPermission] = Cellular.usePermissions();
+ * ```
+ */
+export const usePermissions = createPermissionHook({
+  getMethod: getPermissionsAsync,
+  requestMethod: requestPermissionsAsync,
+});

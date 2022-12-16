@@ -23,6 +23,7 @@ class NestedScrollableHost : FrameLayout {
   constructor(context: Context) : super(context)
   constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
   public var initialIndex: Int? = null
+  public var didSetInitialIndex = false
   private var touchSlop = 0
   private var initialX = 0f
   private var initialY = 0f

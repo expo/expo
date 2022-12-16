@@ -8,12 +8,27 @@
 #import <EXUpdates/EXUpdatesService.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 @interface EXUpdatesModule ()
 
 @property (nonatomic, weak) id<EXUpdatesModuleInterface> updatesService;
 
 @end
 
+/**
+ * Exported module which provides to the JS runtime information about the currently running update
+ * and updates state, along with methods to check for and download new updates, reload with the
+ * newest downloaded update applied, and read/clear native log entries.
+ *
+ * Communicates with the updates hub (EXUpdatesAppController in most apps, EXAppLoaderExpoUpdates in
+ * Expo Go and legacy standalone apps) via EXUpdatesService, an internal module which is overridden
+ * by EXUpdatesBinding, a scoped module, in Expo Go.
+ */
 @implementation EXUpdatesModule
 
 EX_EXPORT_MODULE(ExpoUpdates);
@@ -33,6 +48,7 @@ EX_EXPORT_MODULE(ExpoUpdates);
   if (!_updatesService.isStarted) {
     return @{
       @"isEnabled": @(NO),
+      @"isEmbeddedLaunch": @(NO),
       @"isMissingRuntimeVersion": isMissingRuntimeVersion,
       @"releaseChannel": releaseChannel,
       @"runtimeVersion": runtimeVersion,
@@ -43,15 +59,19 @@ EX_EXPORT_MODULE(ExpoUpdates);
   if (!launchedUpdate) {
     return @{
       @"isEnabled": @(NO),
+      @"isEmbeddedLaunch": @(NO),
       @"isMissingRuntimeVersion": isMissingRuntimeVersion,
       @"releaseChannel": releaseChannel,
       @"runtimeVersion": runtimeVersion,
       @"channel": channel
     };
   }
+
+  long long commitTime = [@(floor([launchedUpdate.commitTime timeIntervalSince1970] * 1000)) longLongValue];
   
   return @{
     @"isEnabled": @(YES),
+    @"isEmbeddedLaunch": @(_updatesService.isEmbeddedLaunch),
     @"isUsingEmbeddedAssets": @(_updatesService.isUsingEmbeddedAssets),
     @"updateId": launchedUpdate.updateId.UUIDString ?: @"",
     @"manifest": launchedUpdate.manifest.rawManifestJSON ?: @{},
@@ -60,7 +80,8 @@ EX_EXPORT_MODULE(ExpoUpdates);
     @"isMissingRuntimeVersion": isMissingRuntimeVersion,
     @"releaseChannel": releaseChannel,
     @"runtimeVersion": runtimeVersion,
-    @"channel": channel
+    @"channel": channel,
+    @"commitTime": @(commitTime)
   };
 }
 
@@ -101,11 +122,10 @@ EX_EXPORT_METHOD_AS(checkForUpdateAsync,
 
   __block NSDictionary *extraHeaders;
   dispatch_sync(_updatesService.database.databaseQueue, ^{
-    NSError *error;
-    extraHeaders = [self->_updatesService.database serverDefinedHeadersWithScopeKey:self->_updatesService.config.scopeKey error:&error];
-    if (error) {
-      NSLog(@"Error selecting serverDefinedHeaders from database: %@", error.localizedDescription);
-    }
+    extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:self->_updatesService.database
+                                                              config:self->_updatesService.config
+                                                      launchedUpdate:self->_updatesService.launchedUpdate
+                                                      embeddedUpdate:self->_updatesService.embeddedUpdate];
   });
 
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_updatesService.config];
@@ -130,6 +150,38 @@ EX_EXPORT_METHOD_AS(checkForUpdateAsync,
   }];
 }
 
+EX_EXPORT_METHOD_AS(readLogEntriesAsync,
+                     readLogEntriesAsync:(NSNumber *)maxAge
+                                 resolve:(EXPromiseResolveBlock)resolve
+                                  reject:(EXPromiseRejectBlock)reject)
+{
+  EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
+  NSError *error = nil;
+  // maxAge is in milliseconds, convert to seconds to compute NSDate
+  NSTimeInterval age = [maxAge intValue] / 1000;
+  NSDate *epoch = [NSDate dateWithTimeIntervalSinceNow:-age];
+  NSArray<NSDictionary *> *entries = [reader getLogEntriesNewerThan:epoch error:&error];
+  if (error != nil) {
+    reject(@"ERR_UPDATES_READ_LOGS", [error localizedDescription], error);
+  } else {
+    resolve(entries);
+  }
+}
+
+EX_EXPORT_METHOD_AS(clearLogEntriesAsync,
+                     clearLogEntriesAsync:(EXPromiseResolveBlock)resolve
+                                   reject:(EXPromiseRejectBlock)reject)
+{
+  EXUpdatesLogReader *reader = [EXUpdatesLogReader new];
+  [reader purgeLogEntriesOlderThan:[NSDate date] completion:^(NSError *error) {
+    if (error) {
+      reject(@"ERR_UPDATES_READ_LOGS", [error localizedDescription], error);
+    } else {
+      resolve(nil);
+    }
+  }];
+}
+
 EX_EXPORT_METHOD_AS(fetchUpdateAsync,
                     fetchUpdateAsync:(EXPromiseResolveBlock)resolve
                               reject:(EXPromiseRejectBlock)reject)
@@ -143,7 +195,7 @@ EX_EXPORT_METHOD_AS(fetchUpdateAsync,
     return;
   }
 
-  EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory completionQueue:self.methodQueue];
+  EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory launchedUpdate:_updatesService.launchedUpdate completionQueue:self.methodQueue];
   [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
     return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate filters:update.manifestFilters];
   } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {

@@ -1,7 +1,7 @@
 'use strict';
 
 import { Asset } from 'expo-asset';
-import { Video } from 'expo-av';
+import { Video, VideoFullscreenUpdate } from 'expo-av';
 import { forEach } from 'lodash';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -185,7 +185,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
                 />
               );
               t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
-            } catch (error) {
+            } catch {
               hasBeenRejected = true;
             }
             t.expect(hasBeenRejected).toBe(false);
@@ -201,7 +201,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
                 <Video style={style} source={{ uri: hlsStreamUriWithRedirect }} />
               );
               t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
-            } catch (error) {
+            } catch {
               hasBeenRejected = true;
             }
             t.expect(hasBeenRejected).toBe(false);
@@ -390,18 +390,18 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await waitFor(1000);
 
         t.expect(fullscreenUpdates).toEqual([
-          Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT,
-          Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT,
+          VideoFullscreenUpdate.PLAYER_WILL_PRESENT,
+          VideoFullscreenUpdate.PLAYER_DID_PRESENT,
         ]);
 
         await instance.dismissFullscreenPlayer();
         await waitFor(1000);
 
         t.expect(fullscreenUpdates).toEqual([
-          Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT,
-          Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT,
-          Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS,
-          Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS,
+          VideoFullscreenUpdate.PLAYER_WILL_PRESENT,
+          VideoFullscreenUpdate.PLAYER_DID_PRESENT,
+          VideoFullscreenUpdate.PLAYER_WILL_DISMISS,
+          VideoFullscreenUpdate.PLAYER_DID_DISMISS,
         ]);
       });
 
@@ -504,7 +504,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
           const pleaseDismiss = async () => {
             try {
               await instance.dismissFullscreenPlayer();
-            } catch (error) {
+            } catch {
               pleaseDismiss();
             }
           };

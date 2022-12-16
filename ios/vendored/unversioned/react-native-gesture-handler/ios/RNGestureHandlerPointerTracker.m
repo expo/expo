@@ -103,7 +103,7 @@
     return;
   }
   
-  _eventType = RNTouchEventTypePointerDown;
+  _eventType = RNGHTouchEventTypePointerDown;
   
   NSDictionary *data[touches.count];
   
@@ -129,7 +129,7 @@
     return;
   }
   
-  _eventType = RNTouchEventTypePointerMove;
+  _eventType = RNGHTouchEventTypePointerMove;
   
   NSDictionary *data[touches.count];
   
@@ -153,7 +153,7 @@
   // extract all touches first to include the ones that were just lifted
   [self extractAllTouches];
   
-  _eventType = RNTouchEventTypePointerUp;
+  _eventType = RNGHTouchEventTypePointerUp;
   
   NSDictionary *data[touches.count];
   
@@ -188,7 +188,7 @@
   
   if (_trackedPointersCount == 0) {
     // gesture has finished because all pointers were lifted, reset event type to send state change event
-    _eventType = RNTouchEventTypeUndetermined;
+    _eventType = RNGHTouchEventTypeUndetermined;
   } else {
     // turns out that the gesture may be made to fail without calling touchesCancelled in that case there
     // are still tracked pointers but the recognizer state is already set to UIGestureRecognizerStateFailed
@@ -218,7 +218,7 @@
       }
     }
     
-    _eventType = RNTouchEventTypeCancelled;
+    _eventType = RNGHTouchEventTypeCancelled;
     _changedPointersData = [[NSArray alloc] initWithObjects:data count:registeredTouches];
     [self sendEvent];
     _trackedPointersCount = 0;
@@ -227,7 +227,10 @@
 
 - (void)sendEvent
 {
-  if (!_gestureHandler.needsPointerData) {
+  // it may happen that the gesture recognizer is reset after it's been unbound from the view,
+  // it that recognizer tried to send event, the app would crash because the target of the event
+  // would be nil.
+  if (!_gestureHandler.needsPointerData || _gestureHandler.recognizer.view.reactTag == nil) {
     return;
   }
   

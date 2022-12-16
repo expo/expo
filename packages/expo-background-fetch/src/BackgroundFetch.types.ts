@@ -44,20 +44,22 @@ export interface BackgroundFetchOptions {
    * interval may differ from the specified one to minimize wakeups and battery usage.
    * - On Android it defaults to __10 minutes__,
    * - On iOS it calls [`BackgroundFetch.setMinimumIntervalAsync`](#backgroundfetchsetminimumintervalasyncminimuminterval)
-   * behind the scenes and the default value is the smallest fetch interval supported by the system __(10-15 minutes)__.
+   *   behind the scenes and the default value is the smallest fetch interval supported by the system __(10-15 minutes)__.
    * Background fetch task receives no data, but your task should return a value that best describes
    * the results of your background fetch work.
    * @return Returns a promise that fulfils once the task is registered and rejects in case of any errors.
    */
   minimumInterval?: number;
   /**
-   * __(Android only).__ Whether to stop receiving background fetch events after user terminates the
-   * app. Defaults to `true`.
+   * Whether to stop receiving background fetch events after user terminates the app.
+   * @default true
+   * @platform android
    */
   stopOnTerminate?: boolean;
   /**
-   * __(Android only).__ Whether to restart background fetch events when the device has finished
-   * booting. Defaults to `false`.
+   * Whether to restart background fetch events when the device has finished booting.
+   * @default false
+   * @platform android
    */
   startOnBoot?: boolean;
 }

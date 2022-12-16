@@ -11,10 +11,11 @@ import {
 import * as React from 'react';
 import { ActivityIndicator, ScrollView } from 'react-native';
 
-import { useDevSessions } from '../hooks/useDevSessions';
-import { useModalStack } from '../hooks/useModalStack';
-import { useRecentlyOpenedApps } from '../hooks/useRecentlyOpenedApps';
 import { loadApp } from '../native-modules/DevLauncherInternal';
+import { useDevSessions } from '../providers/DevSessionsProvider';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { useRecentlyOpenedApps } from '../providers/RecentlyOpenedAppsProvider';
+import { BaseModal } from './BaseModal';
 import { LoadAppErrorModal } from './LoadAppErrorModal';
 
 type DeepLinkModalProps = {
@@ -29,7 +30,7 @@ export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
   };
 
   return (
-    <View>
+    <BaseModal title="Deep link received:">
       <Spacer.Vertical size="small" />
       <View py="small" bg="secondary" rounded="medium" px="medium">
         <Text type="mono" numberOfLines={3}>
@@ -63,7 +64,7 @@ export function DeepLinkModal({ pendingDeepLink }: DeepLinkModalProps) {
           </View>
         </Button.ScaleOnPressContainer>
       </View>
-    </View>
+    </BaseModal>
   );
 }
 
@@ -76,10 +77,7 @@ function PackagersList() {
 
   const onPackagerPress = ({ url }: { url: string }) => {
     loadApp(url).catch((error) => {
-      modalStack.push({
-        title: 'Error loading app',
-        element: <LoadAppErrorModal message={error.message} />,
-      });
+      modalStack.push(() => <LoadAppErrorModal message={error.message} />);
     });
   };
 
@@ -97,7 +95,7 @@ function PackagersList() {
         </Text>
 
         <Spacer.Vertical size="small" />
-        <Text size="medium">Start a local development server with:</Text>
+        <Text>Start a local development server with:</Text>
         <Spacer.Vertical size="small" />
 
         <View bg="secondary" border="default" rounded="medium" padding="medium">
@@ -114,13 +112,17 @@ function PackagersList() {
         <Spacer.Vertical size="medium" />
         {devSessions.length > 0 && (
           <>
-            {devSessions.map((devSession) => {
+            {devSessions.map((devSession, index, arr) => {
+              const isLast = index === arr.length - 1;
+
               return (
-                <PackagerRow
-                  key={devSession.url}
-                  label={devSession.description}
-                  onPress={() => onPackagerPress(devSession)}
-                />
+                <View key={devSession.url}>
+                  <PackagerRow
+                    label={devSession.description}
+                    onPress={() => onPackagerPress(devSession)}
+                  />
+                  {!isLast && <Divider />}
+                </View>
               );
             })}
           </>
@@ -128,9 +130,14 @@ function PackagersList() {
 
         {recentlyOpenedApps.length > 0 && (
           <>
-            {recentlyOpenedApps.map((app) => {
+            <Divider />
+            {recentlyOpenedApps.map((app, index, arr) => {
+              const isLast = index === arr.length - 1;
               return (
-                <PackagerRow key={app.url} label={app.name} onPress={() => onPackagerPress(app)} />
+                <View key={app.url}>
+                  <PackagerRow label={app.name} onPress={() => onPackagerPress(app)} />
+                  {!isLast && <Divider />}
+                </View>
               );
             })}
           </>
@@ -153,11 +160,10 @@ function PackagerRow({ onPress, label }: PackagerRowProps) {
           <StatusIndicator size="small" status="success" />
           <Spacer.Horizontal size="small" />
           <Text>{label}</Text>
-          <Spacer.Horizontal size="flex" />
+          <Spacer.Horizontal />
           <ChevronRightIcon />
         </Row>
       </Button.ScaleOnPressContainer>
-      <Divider />
     </View>
   );
 }

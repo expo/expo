@@ -10,12 +10,13 @@ Pod::Spec.new do |s|
   s.license = 'MIT'
   s.author = "650 Industries, Inc."
   s.requires_arc = true
-  s.platform = :ios, "12.0"
+  s.platform = :ios, "13.0"
+  s.swift_version  = '5.4'
   s.default_subspec = "Core"
   s.source = { :git => "http://github.com/expo/expo.git" }
   s.xcconfig = {
     'CLANG_CXX_LANGUAGE_STANDARD' => 'gnu++14',
-    'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+    'SYSTEM_HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
     'OTHER_CPLUSPLUSFLAGS' => [
       "$(OTHER_CFLAGS)",
       "-DFOLLY_NO_CONFIG",
@@ -24,10 +25,15 @@ Pod::Spec.new do |s|
     ]
   }
 
+  s.pod_target_xcconfig = {
+    'USE_HEADERMAP' => 'YES',
+    'DEFINES_MODULE' => 'YES',
+  }
+
   s.subspec "Core" do |ss|
-    ss.source_files = "Exponent/**/*.{h,m,mm,cpp}", "../template-files/keys.json"
-    ss.preserve_paths = "Exponent/**/*.{h,m,mm,cpp}"
-    ss.exclude_files = "Exponent/Supporting/**", "Exponent/Versioned/Optional/**/*.{h,m}"
+    ss.source_files = "Exponent/**/*.{h,m,mm,cpp,swift}", "../template-files/keys.json"
+    ss.preserve_paths = "Exponent/**/*.{h,m,mm,cpp,swift}"
+    ss.exclude_files = "Exponent/Supporting/**", "Exponent/Versioned/Optional/**/*.{h,m,swift}"
 
 ${IOS_EXPOKIT_DEPS}
     ss.dependency 'React-Core' # explicit dependency required for CocoaPods >= 1.5.0

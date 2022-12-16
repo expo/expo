@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" integrity="sha512-NhSC1YmyruXifcj/KFRWoC561YpHpc5Jtzgvbuzx5VozKpWvQ+4nXhPdFgmx8xqexRcpAglTj9sIBWINXa8x5w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;600&display=swap');
+    
+    :root {
+      --background: #f8f8fa;
+      --text-color: #596068;
+      --secondary-text-color: #1b1f23;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--background);
+    }
+
+    .logo-box {
+      margin-top: 10%;
+      margin-bottom: 15%;
+    }
+
+    .logo-main {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: auto;
+      margin-right: auto;
+      width: 91px;
+      height: 91px;
+      border-radius: 24px;
+      background-color: #fff;
+      box-shadow: 0px 8.95144px 17.9029px rgba(0, 0, 0, 0.12);
+    }
+
+    .logo-main::before,
+    .logo-main::after {
+      display: block;
+      width: 71px;
+      height: 71px;
+      content: '';
+
+      border: 1.8px solid #e1e4e8;
+      box-sizing: border-box;
+      border-radius: 13px;
+
+      position: absolute;
+      z-index: -1;
+      top: 31px;
+    }
+
+    .logo-main::before {
+      transform: rotate(-9.5deg);
+      right: 55px;
+    }
+
+    .logo-main::after {
+      transform: rotate(13.7deg);
+      left: 55px;
+    }
+
+    .info-box {
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 345px;
+    }
+
+    .info-box-header {
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 150%;
+      letter-spacing: -0.0001em;
+      color: var(--text-color);
+      margin-left: 16px;
+      margin-bottom: 8px;
+    }
+
+    .info-box-description {
+      background-color: #fff;
+      border-radius: 8px;
+
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .info-box-icon {
+      width: 26px;
+      height: 26px;
+    }
+
+    .info-box-details {
+      width: 100%;
+    }
+
+    .info-box-app-name {
+      padding: 0;
+      margin: 3px 0 4px 8px;
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 150%;
+      letter-spacing: -0.0001em;
+      color: var(--secondary-text-color);
+    }
+
+    .info-box-details-record {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      margin-right: 8px;
+      padding: 4px 8px;
+      border-radius: 8px;
+    }
+
+    .info-box-details-record p {
+      color: var(--text-color);
+      padding: 0;
+      margin: 0;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 150%;
+    }
+
+    .info-box-details-record:nth-child(odd) {
+      background: #f8f8fa;
+    }
+
+    .bottom-bar {
+      background-color: #fff;
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+
+      padding: 17px;
+    }
+
+    @media all and (max-height: 550px) {
+      .bottom-bar {
+        position: relative;
+      }
+    }
+
+    .bottom-bar-header {
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 150%;
+      letter-spacing: -0.0001em;
+      color: var(--secondary-text-color);
+      margin: 0;
+      padding: 0;
+    }
+
+    .bottom-bar-button {
+      border: none;
+      background: inherit;
+      margin: 12px 0;
+      padding: 7.5px 0;
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 14px;
+      line-height: 150%;
+      text-align: center;
+      letter-spacing: -0.0001em;
+      text-decoration: none;
+    }
+
+    .bottom-bar-button-dark {
+      background-color: var(--secondary-text-color);
+      color: #fff;
+    }
+
+    .bottom-bar-button-grey {
+      background-color: #f0f1f2;
+      color: var(--secondary-text-color);
+    }
+
+    #alert {
+      background-color: #fff;
+      color: var(--secondary-text-color);
+
+      padding-top: 20px;
+      padding-bottom: 20px;
+      padding-left: 10px;
+      padding-right: 10px;
+
+      text-align: center;
+      font-size: 16px;
+      letter-spacing: -0.0001em;
+      line-height: 150%;
+
+      display: none;
+    }
+  </style>
+  <title>Expo Start | Loading Page</title>
+</head>
+<body>
+  <div id="alert"></div>
+  <div class="logo-box">
+    <div class="logo-background-box">
+
+    </div>
+    <div class="logo-main">
+      <svg width="46" height="61" viewBox="0 0 46 61" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0.26519 14.0223C-0.409907 15.1916 0.433964 16.6533 1.78416 16.6533H5.74165L7.11861 59.1335V59.1374C7.11861 59.7428 7.42541 60.2766 7.89203 60.5918C8.0888 60.7248 8.31399 60.8188 8.55659 60.863C8.65912 60.8816 8.76476 60.8914 8.87268 60.8914C9.84136 60.8914 10.6266 60.1061 10.6266 59.1374L11.3645 40.313C12.5872 37.8024 15.2005 36.1226 18.227 36.1226H27.7254C33.8603 36.1226 38.0564 31.9901 39.3187 24.8428C40.581 17.6955 40.3105 16.6578 40.3105 16.6578H44.1683C45.5185 16.6578 46.3624 15.1962 45.6873 14.0269L38.5988 1.74922C37.9237 0.579918 36.2359 0.579917 35.5608 1.74922L28.4723 14.0269C27.7972 15.1962 28.6411 16.6578 29.9913 16.6578H34.1274C34.1274 16.6578 34.2265 20.6048 33.9298 24.8428C33.6331 29.0808 31.923 31.9901 27.7254 31.9901H18.227C15.7212 31.9901 13.4092 32.8954 11.5507 34.3845L12.1074 16.6533H15.9612C17.3114 16.6533 18.1553 15.1916 17.4802 14.0223L10.3916 1.74465C9.71655 0.575351 8.02881 0.57535 7.35371 1.74465L0.26519 14.0223Z" fill="#596068"/>
+        </svg>
+        
+    </div>
+  </div>
+
+  <div class="info-box">
+    <p class="info-box-header">
+      You are loading
+    </p>
+    <div class="info-box-description">
+      <div class="info-box-icon">
+        <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="26" height="26" rx="4" fill="#E95D56"/>
+          <path d="M16 13C16 16.3137 13.3137 19 10 19C6.68629 19 4 16.3137 4 13C4 9.68629 6.68629 7 10 7C13.3137 7 16 9.68629 16 13Z" fill="white" fill-opacity="0.8"/>
+          <path d="M22 13C22 16.3137 19.3137 19 16 19C12.6863 19 10 16.3137 10 13C10 9.68629 12.6863 7 16 7C19.3137 7 22 9.68629 22 13Z" fill="white" fill-opacity="0.8"/>
+          </svg>                
+      </div>
+      <div class="info-box-details">
+        <p class="info-box-app-name">{{ AppName }}</p>
+        <div class="info-box-details-record">
+          <p>{{ ProjectVersionType }}</p>
+          <p>{{ ProjectVersion }}</p>
+        </div>
+        <!-- <div class="info-box-details-record">
+          <p>Branch</p>
+          <p>main</p>
+        </div> -->
+        <div class="info-box-details-record">
+          <p>Path</p>
+          <p>{{ Path }}</p>
+        </div>
+        <!-- <div class="info-box-details-record">
+          <p>Last commit</p>
+          <p>Jul 6, 2021, 4:51PM PT</p>
+        </div> -->
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-bar">
+    <p class="bottom-bar-header">
+      How would you like to open this project?
+    </p>
+    <a id="expo-dev-client-link" href="/_expo/link?choice=expo-dev-client" class="bottom-bar-button bottom-bar-button-dark">Development Build</a>
+    <a id="expo-go-link" href="/_expo/link?choice=expo-go" class="bottom-bar-button bottom-bar-button-grey">Expo Go</a>
+  </div>
+  
+  <script>
+  const alertElement = document.getElementById("alert");
+
+  const showAlert = (isExpoGo) => {
+    if (isExpoGo) {
+      alertElement.innerHTML = 'Unable to open in Expo Go. Please install <b>Expo Go</b> to continue.' +
+      '<br><a href="https://expo.dev/client">Learn more.</a>';
+    } else {
+      alertElement.innerHTML = 'Unable to open in Development Build with the <b>{{ Scheme }}</b> scheme. Please build and install a compatible <b>Development Build</b> to continue.' +
+      '<br><a href="https://docs.expo.dev/development/build/">Learn more.</a>';
+    }
+
+    alertElement.style.display = "block";
+  }
+
+  const hideAlert = () => {
+    alertElement.style.display = "none";
+  }
+
+  function findGetParameter(parameterName) {
+    let result = null;
+
+    location.search
+      .substr(1)
+      .split("&")
+      .forEach(function (item) {
+        const tmp = item.split("=");
+        if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+      });
+    return result;
+  }
+
+  function tryToDetectDeepLinkFailure(isExpoGo) {
+    const waitForRedirect = 800;
+    let didHide = false;
+    let didLoseFocuse = false;
+
+    const onVisibilitychange = (e) => { 
+      if (e.target.visibilityState === 'hidden') {
+        didHide = true;
+        hideAlert();
+      }
+    };
+
+    const clearOnFocus = () => {
+      hideAlert();
+      window.removeEventListener('focus', clearOnFocus);
+    };
+
+    const showErrorOnFocus = () => {
+      window.removeEventListener('focus', showErrorOnFocus);
+
+      setTimeout(() => {
+        window.addEventListener('focus', clearOnFocus);
+
+        if (!didHide) {
+          showAlert(isExpoGo);
+        }
+      }, waitForRedirect);
+    }
+
+    const onBlur = () => {
+      didLoseFocuse = true;
+      window.removeEventListener('blur', onBlur);
+      window.addEventListener('focus', showErrorOnFocus);
+    };
+
+    window.addEventListener('blur', onBlur);
+    document.addEventListener("visibilitychange", onVisibilitychange);
+    setTimeout(() => {
+      // A modal was shown. So we need to wait for a user input.
+      if (didLoseFocuse) {
+        return;
+      }
+
+      window.addEventListener('focus', clearOnFocus);
+      document.removeEventListener("visibilitychange", onVisibilitychange);
+
+      // deeplink seems to be working
+      if (didHide) {
+        return;
+      }
+
+      showAlert(isExpoGo);
+    }, waitForRedirect);
+  }
+
+  const devClientLink = document.getElementById("expo-dev-client-link");
+  const goLink = document.getElementById("expo-go-link");
+
+  devClientLink.onclick = () => tryToDetectDeepLinkFailure(false);
+  goLink.onclick = () => tryToDetectDeepLinkFailure(true);
+
+  const platform = findGetParameter("platform");
+  if (platform) {
+    devClientLink.href += "&platform=" + encodeURIComponent(platform);
+    goLink.href += "&platform=" + encodeURIComponent(platform);
+  }
+  </script>
+</body>
+</html>

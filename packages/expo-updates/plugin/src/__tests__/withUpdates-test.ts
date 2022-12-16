@@ -1,16 +1,23 @@
 import { getAccountUsername } from '@expo/config';
-import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { AndroidConfig, IOSConfig } from 'expo/config-plugins';
 
 import withUpdates from '../withUpdates';
 
 jest.mock('@expo/config');
 
 describe('Updates plugin', () => {
-  it('passes in expo username, resolved by getAccountUsername', () => {
-    jest.spyOn(AndroidConfig.Updates, 'withUpdates');
-    jest.spyOn(IOSConfig.Updates, 'withUpdates');
+  beforeAll(() => {
+    const config = getConfig();
+    jest.spyOn(AndroidConfig.Updates, 'withUpdates').mockReturnValue(config);
+    jest.spyOn(IOSConfig.Updates, 'withUpdates').mockReturnValue(config);
+  });
 
+  afterAll(() => {
+    jest.clearAllMocks();
+  });
+
+  it('passes in expo username, resolved by getAccountUsername', () => {
     const expoUsername = 'some-username';
     // @ts-ignore: return the username so we can validate it is passed to the ios/android plugins
     getAccountUsername.mockReturnValue(expoUsername);

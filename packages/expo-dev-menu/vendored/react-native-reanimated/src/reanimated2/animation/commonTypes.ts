@@ -1,48 +1,52 @@
-export type PrimitiveValue = number | string;
+import {
+  AnimatedStyle,
+  StyleProps,
+  AnimatableValue,
+  AnimationObject,
+  Animation,
+  Timestamp,
+  AnimationCallback,
+} from '../commonTypes';
 
-export interface AnimationObject {
-  [key: string]: any;
-  callback: AnimationCallback;
-  current?: PrimitiveValue;
-  toValue?: AnimationObject['current'];
-  startValue?: AnimationObject['current'];
-  finished?: boolean;
-  strippedCurrent?: number;
-  cancelled?: boolean;
-
-  __prefix?: string;
-  __suffix?: string;
-  onFrame: (animation: any, timestamp: Timestamp) => boolean;
-  onStart: (
-    nextAnimation: any,
-    current: any,
-    timestamp: Timestamp,
-    previousAnimation: any
-  ) => void;
-}
-
-export interface Animation<T extends AnimationObject> extends AnimationObject {
-  onFrame: (animation: T, timestamp: Timestamp) => boolean;
-  onStart: (
-    nextAnimation: T,
-    current: T extends NumericAnimation ? number : PrimitiveValue,
-    timestamp: Timestamp,
-    previousAnimation: T
-  ) => void;
-}
-
-export interface NumericAnimation {
-  current?: number;
-}
 export interface HigherOrderAnimation {
   isHigherOrder?: boolean;
 }
 
-export type AnimationCallback = (
-  finished?: boolean,
-  current?: PrimitiveValue
-) => void;
-
 export type NextAnimation<T extends AnimationObject> = T | (() => T);
 
-export type Timestamp = number;
+export interface DelayAnimation
+  extends Animation<DelayAnimation>,
+    HigherOrderAnimation {
+  startTime: Timestamp;
+  started: boolean;
+  previousAnimation: DelayAnimation | null;
+  current: AnimatableValue;
+}
+
+export interface RepeatAnimation
+  extends Animation<RepeatAnimation>,
+    HigherOrderAnimation {
+  reps: number;
+  startValue: AnimatableValue;
+  toValue?: AnimatableValue;
+  previousAnimation?: RepeatAnimation;
+}
+
+export interface SequenceAnimation
+  extends Animation<SequenceAnimation>,
+    HigherOrderAnimation {
+  animationIndex: number;
+}
+
+export interface StyleLayoutAnimation extends HigherOrderAnimation {
+  current: StyleProps;
+  styleAnimations: AnimatedStyle;
+  onFrame: (animation: StyleLayoutAnimation, timestamp: Timestamp) => boolean;
+  onStart: (
+    nextAnimation: StyleLayoutAnimation,
+    current: AnimatedStyle,
+    timestamp: Timestamp,
+    previousAnimation: StyleLayoutAnimation
+  ) => void;
+  callback?: AnimationCallback;
+}

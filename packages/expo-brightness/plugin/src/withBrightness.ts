@@ -1,4 +1,4 @@
-import { ConfigPlugin, AndroidConfig, createRunOncePlugin } from '@expo/config-plugins';
+import { ConfigPlugin, AndroidConfig, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('expo-brightness/package.json');
 

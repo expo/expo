@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXDevLauncherManifestParser.h"
+#import "EXDevLauncherController.h"
+
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
@@ -53,7 +55,8 @@ typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
       return;
     }
 
-    if ([headers[@"Content-Type"] hasPrefix:@"application/json"]) {
+    NSString *contentType = headers[@"Content-Type"];
+    if (contentType && ![contentType hasPrefix:@"text/html"] && ![contentType containsString:@"/javascript"]) {
       completion(YES);
       return;
     }

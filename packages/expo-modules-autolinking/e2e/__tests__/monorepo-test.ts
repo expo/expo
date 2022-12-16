@@ -53,8 +53,14 @@ describe('monorepo', () => {
       const { modules } = JSON.parse(resolveResult.stdout);
       const parsedModules = modules.map((module) => ({
         ...module,
-        sourceDir: removeProjectPath(module.sourceDir),
-        podspecDir: removeProjectPath(module.podspecDir),
+        projects: module.projects?.map((project) => ({
+          ...project,
+          sourceDir: removeProjectPath(project.sourceDir),
+        })),
+        pods: module.pods?.map((pod) => ({
+          ...pod,
+          podspecDir: removeProjectPath(pod.podspecDir),
+        })),
       }));
 
       expect(parsedModules).toMatchSnapshot();

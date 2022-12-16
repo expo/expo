@@ -1,6 +1,6 @@
 import chalk from 'chalk';
-import semver from 'semver';
 import inquirer from 'inquirer';
+import semver from 'semver';
 
 import { Platform, getSDKVersionsAsync } from '../ProjectVersions';
 

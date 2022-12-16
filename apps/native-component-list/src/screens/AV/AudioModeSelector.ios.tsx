@@ -1,34 +1,25 @@
-import { Audio } from 'expo-av';
+import { Audio, AudioMode, InterruptionModeIOS } from 'expo-av';
 import React from 'react';
 import { PixelRatio, Switch, Text, View } from 'react-native';
 
 import Button from '../../components/Button';
 import ListButton from '../../components/ListButton';
 
-interface Mode {
-  interruptionModeIOS: number;
-  playsInSilentModeIOS: boolean;
-  allowsRecordingIOS: boolean;
-  staysActiveInBackground: boolean;
-}
-
 interface State {
-  modeToSet: Mode;
-  setMode: Mode;
+  modeToSet: Partial<AudioMode>;
+  setMode: Partial<AudioMode>;
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class AudioModeSelector extends React.Component<{}, State> {
+export default class AudioModeSelector extends React.Component<object, State> {
   readonly state: State = {
     modeToSet: {
-      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+      interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
       playsInSilentModeIOS: false,
       allowsRecordingIOS: false,
       staysActiveInBackground: false,
     },
     setMode: {
-      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+      interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
       playsInSilentModeIOS: false,
       allowsRecordingIOS: false,
       staysActiveInBackground: false,
@@ -37,13 +28,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
 
   _applyMode = async () => {
     try {
-      await Audio.setAudioModeAsync({
-        ...this.state.modeToSet,
-        // Android values don't matter, this is iOS-only selector
-        shouldDuckAndroid: false,
-        interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
-        playThroughEarpieceAndroid: false,
-      });
+      await Audio.setAudioModeAsync({ ...this.state.modeToSet });
       const { modeToSet } = this.state;
       this.setState({ setMode: modeToSet });
     } catch (error) {
@@ -51,7 +36,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
     }
   };
 
-  _modesEqual = (modeA: Mode, modeB: Mode) =>
+  _modesEqual = (modeA: Partial<AudioMode>, modeB: Partial<AudioMode>) =>
     modeA.interruptionModeIOS === modeB.interruptionModeIOS &&
     modeA.playsInSilentModeIOS === modeB.playsInSilentModeIOS &&
     modeA.allowsRecordingIOS === modeB.allowsRecordingIOS &&
@@ -68,11 +53,7 @@ export default class AudioModeSelector extends React.Component<{}, State> {
   }: {
     title: string;
     disabled?: boolean;
-    valueName:
-      | 'interruptionModeIOS'
-      | 'playsInSilentModeIOS'
-      | 'allowsRecordingIOS'
-      | 'staysActiveInBackground';
+    valueName: keyof AudioMode;
     value?: boolean;
   }) => (
     <View
@@ -134,16 +115,16 @@ export default class AudioModeSelector extends React.Component<{}, State> {
         })}
         {this._renderModeSelector({
           title: 'Mix with others',
-          value: Audio.INTERRUPTION_MODE_IOS_MIX_WITH_OTHERS,
+          value: InterruptionModeIOS.MixWithOthers,
         })}
         {this._renderModeSelector({
           title: 'Do not mix',
-          value: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+          value: InterruptionModeIOS.DoNotMix,
         })}
         {this._renderModeSelector({
           disabled: this.state.modeToSet.playsInSilentModeIOS === false,
           title: 'Duck others',
-          value: Audio.INTERRUPTION_MODE_IOS_DUCK_OTHERS,
+          value: InterruptionModeIOS.DuckOthers,
         })}
         <Button
           title="Apply changes"

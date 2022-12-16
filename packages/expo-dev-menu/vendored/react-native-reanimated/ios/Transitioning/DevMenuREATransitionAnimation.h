@@ -8,7 +8,7 @@
 
 + (DevMenuREATransitionAnimation *)transitionWithAnimation:(CAAnimation *)animation
                                               layer:(CALayer *)layer
-                                         andKeyPath:(NSString*)keyPath;
+                                         andKeyPath:(NSString *)keyPath;
 - (void)play;
 - (void)delayBy:(CFTimeInterval)delay;
 - (CFTimeInterval)finishTime;

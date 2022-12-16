@@ -1,224 +1,167 @@
-import Entypo from '@expo/vector-icons/build/Entypo';
-import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { HomeFilledIcon, SettingsFilledIcon } from '@expo/styleguide-native';
 import {
   NavigationContainer,
   useTheme,
-  NavigationContainerRef,
   RouteProp,
+  useNavigationContainerRef,
 } from '@react-navigation/native';
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack';
-import Constants from 'expo-constants';
 import * as React from 'react';
 import { Platform, StyleSheet, Linking } from 'react-native';
+import { DiagnosticsStackScreen } from 'screens/DiagnosticsScreen';
 
-import OpenProjectByURLButton from '../components/OpenProjectByURLButton.ios';
-import OptionsButton from '../components/OptionsButton';
-import UserSettingsButton from '../components/UserSettingsButton';
+import DiagnosticsIcon from '../components/Icons';
 import { ColorTheme } from '../constants/Colors';
 import Themes from '../constants/Themes';
-import AccountScreen from '../screens/AccountScreen';
-import AudioDiagnosticsScreen from '../screens/AudioDiagnosticsScreen';
-import DiagnosticsScreen from '../screens/DiagnosticsScreen';
-import GeofencingScreen from '../screens/GeofencingScreen';
-import LocationDiagnosticsScreen from '../screens/LocationDiagnosticsScreen';
-import ProfileAllProjectsScreen from '../screens/ProfileAllProjectsScreen';
-import ProfileAllSnacksScreen from '../screens/ProfileAllSnacksScreen';
-import ProfileScreen from '../screens/ProfileScreen';
-import ProjectScreen from '../screens/ProjectScreen';
-import ProjectsForAccountScreen from '../screens/ProjectsForAccountScreen';
-import ProjectsScreen from '../screens/ProjectsScreen';
+import { AccountModal } from '../screens/AccountModal';
+import { BranchDetailsScreen } from '../screens/BranchDetailsScreen';
+import { BranchListScreen } from '../screens/BranchListScreen';
+import { DeleteAccountScreen } from '../screens/DeleteAccountScreen';
+import { HomeScreen } from '../screens/HomeScreen';
+import { ProjectScreen } from '../screens/ProjectScreen';
+import { ProjectsListScreen } from '../screens/ProjectsListScreen';
 import QRCodeScreen from '../screens/QRCodeScreen';
-import SnacksForAccountScreen from '../screens/SnacksForAccountScreen';
-import UserSettingsScreen from '../screens/UserSettingsScreen';
-import Environment from '../utils/Environment';
+import { SettingsScreen } from '../screens/SettingsScreen';
+import { SnacksListScreen } from '../screens/SnacksListScreen';
 import {
   alertWithCameraPermissionInstructions,
   requestCameraPermissionsAsync,
 } from '../utils/PermissionUtils';
 import BottomTab, { getNavigatorProps } from './BottomTabNavigator';
-import {
-  DiagnosticsStackRoutes,
-  ProfileStackRoutes,
-  ProjectsStackRoutes,
-} from './Navigation.types';
+import { HomeStackRoutes, SettingsStackRoutes, ModalStackRoutes } from './Navigation.types';
 import defaultNavigationOptions from './defaultNavigationOptions';
 
 // TODO(Bacon): Do we need to create a new one each time?
-const ProjectsStack = createStackNavigator<ProjectsStackRoutes>();
+const HomeStack = createStackNavigator<HomeStackRoutes>();
+const SettingsStack = createStackNavigator<SettingsStackRoutes>();
+
+// We have to disable this option on Android to not use `react-native-screen`,
+// which aren't correcly installed in the Home app.
+const shouldDetachInactiveScreens = Platform.OS !== 'android';
 
 function useThemeName() {
   const theme = useTheme();
   return theme.dark ? ColorTheme.DARK : ColorTheme.LIGHT;
 }
 
-const accountNavigationOptions = ({
-  route,
-}: {
-  route: RouteProp<ProfileStackRoutes, 'Account'>;
-}) => {
-  const accountName = route.params?.accountName;
-  return {
-    title: `@${accountName}`,
-    headerRight: () => <OptionsButton />,
-  };
-};
+function HomeStackScreen() {
+  const themeName = useThemeName();
 
-const profileNavigationOptions = () => {
-  return {
-    title: 'Profile',
-    headerRight: () => <UserSettingsButton />,
-  };
-};
-
-function ProjectsStackScreen() {
-  const theme = useThemeName();
   return (
-    <ProjectsStack.Navigator
-      initialRouteName="Projects"
-      screenOptions={defaultNavigationOptions(theme)}>
-      <ProjectsStack.Screen
-        name="Projects"
-        component={ProjectsScreen}
+    <HomeStack.Navigator
+      initialRouteName="Home"
+      detachInactiveScreens={shouldDetachInactiveScreens}
+      screenOptions={defaultNavigationOptions(themeName)}>
+      <HomeStack.Screen
+        name="Home"
+        component={HomeScreen}
         options={{
-          title: 'Projects',
-          ...Platform.select({
-            ios: {
-              headerRight: () => (Constants.isDevice ? null : <OpenProjectByURLButton />),
-            },
-          }),
+          headerShown: false,
         }}
       />
-    </ProjectsStack.Navigator>
+      <HomeStack.Screen
+        name="ProjectsList"
+        component={ProjectsListScreen}
+        options={{
+          title: 'Projects',
+        }}
+      />
+      <HomeStack.Screen
+        name="SnacksList"
+        component={SnacksListScreen}
+        options={{
+          title: 'Snacks',
+        }}
+      />
+      <HomeStack.Screen
+        name="ProjectDetails"
+        component={ProjectScreen}
+        options={{
+          title: 'Project',
+        }}
+      />
+      <HomeStack.Screen
+        name="Branches"
+        component={BranchListScreen}
+        options={{
+          title: 'Branches',
+        }}
+      />
+      <HomeStack.Screen
+        name="BranchDetails"
+        component={BranchDetailsScreen}
+        options={{
+          title: 'Branch',
+        }}
+      />
+    </HomeStack.Navigator>
   );
 }
 
-const ProfileStack = createStackNavigator<ProfileStackRoutes>();
+function SettingsStackScreen() {
+  const themeName = useThemeName();
 
-function ProfileStackScreen() {
-  const theme = useThemeName();
   return (
-    <ProfileStack.Navigator
-      initialRouteName="Profile"
-      screenOptions={defaultNavigationOptions(theme)}>
-      <ProfileStack.Screen
-        name="Profile"
-        component={ProfileScreen}
-        options={profileNavigationOptions}
+    <SettingsStack.Navigator
+      initialRouteName="Settings"
+      detachInactiveScreens={shouldDetachInactiveScreens}
+      screenOptions={defaultNavigationOptions(themeName)}>
+      <SettingsStack.Screen name="Settings" component={SettingsScreen} />
+      <SettingsStack.Screen
+        name="DeleteAccount"
+        component={DeleteAccountScreen}
+        options={{
+          title: 'Delete Account',
+        }}
       />
-      <ProfileStack.Screen
-        name="ProfileAllProjects"
-        component={ProfileAllProjectsScreen}
-        options={{ title: 'Projects' }}
-      />
-      <ProfileStack.Screen
-        name="ProfileAllSnacks"
-        component={ProfileAllSnacksScreen}
-        options={{ title: 'Snacks' }}
-      />
-      <ProfileStack.Screen
-        name="Account"
-        component={AccountScreen}
-        options={accountNavigationOptions}
-      />
-      <ProfileStack.Screen
-        name="UserSettings"
-        component={UserSettingsScreen}
-        options={{ title: 'Options' }}
-      />
-      <ProfileStack.Screen
-        name="ProjectsForAccount"
-        component={ProjectsForAccountScreen}
-        options={{ title: 'Projects' }}
-      />
-      <ProfileStack.Screen
-        name="SnacksForAccount"
-        component={SnacksForAccountScreen}
-        options={{ title: 'Snacks' }}
-      />
-      <ProfileStack.Screen name="Project" component={ProjectScreen} />
-    </ProfileStack.Navigator>
-  );
-}
-
-const DiagnosticsStack = createStackNavigator<DiagnosticsStackRoutes>();
-
-function DiagnosticsStackScreen() {
-  const theme = useThemeName();
-  return (
-    <DiagnosticsStack.Navigator
-      initialRouteName="Diagnostics"
-      screenOptions={defaultNavigationOptions(theme)}>
-      <DiagnosticsStack.Screen
-        name="Diagnostics"
-        component={DiagnosticsScreen}
-        options={{ title: 'Diagnostics' }}
-      />
-      <DiagnosticsStack.Screen
-        name="Audio"
-        component={AudioDiagnosticsScreen}
-        options={{ title: 'Audio Diagnostics' }}
-      />
-      <DiagnosticsStack.Screen
-        name="Location"
-        component={LocationDiagnosticsScreen}
-        options={{ title: 'Location Diagnostics' }}
-      />
-      <DiagnosticsStack.Screen
-        name="Geofencing"
-        component={GeofencingScreen}
-        options={{ title: 'Geofencing' }}
-      />
-    </DiagnosticsStack.Navigator>
+    </SettingsStack.Navigator>
   );
 }
 
 const RootStack = createStackNavigator();
 
 function TabNavigator(props: { theme: string }) {
-  const initialRouteName = Environment.IsIOSRestrictedBuild
-    ? 'ProfileStackScreen'
-    : 'ProjectsStack';
-
   return (
-    <BottomTab.Navigator {...getNavigatorProps(props)} initialRouteName={initialRouteName}>
+    <BottomTab.Navigator
+      {...getNavigatorProps(props)}
+      initialRouteName="HomeStack"
+      detachInactiveScreens={shouldDetachInactiveScreens}>
       <BottomTab.Screen
-        name="ProjectsStack"
-        component={ProjectsStackScreen}
+        name="HomeStack"
+        component={HomeStackScreen}
         options={{
-          tabBarIcon: (props) => <Entypo {...props} style={styles.icon} name="grid" size={24} />,
-          tabBarLabel: 'Projects',
+          tabBarIcon: ({ color }) => <HomeFilledIcon style={styles.icon} color={color} size={24} />,
+          tabBarLabel: 'Home',
         }}
       />
+
       {Platform.OS === 'ios' && (
         <BottomTab.Screen
           name="DiagnosticsStack"
           component={DiagnosticsStackScreen}
           options={{
-            tabBarIcon: (props) => (
-              <Ionicons {...props} style={styles.icon} name="ios-git-branch" size={26} />
-            ),
+            tabBarIcon: (props) => <DiagnosticsIcon {...props} style={styles.icon} size={24} />,
             tabBarLabel: 'Diagnostics',
           }}
         />
       )}
       <BottomTab.Screen
-        name="ProfileStack"
-        component={ProfileStackScreen}
+        name="SettingsScreen"
+        component={SettingsStackScreen}
         options={{
-          tabBarIcon: (props) => (
-            <Ionicons {...props} style={styles.icon} name="ios-person" size={26} />
-          ),
-          tabBarLabel: 'Profile',
+          title: 'Settings',
+          tabBarIcon: (props) => <SettingsFilledIcon {...props} style={styles.icon} size={24} />,
+          tabBarLabel: 'Settings',
         }}
       />
     </BottomTab.Navigator>
   );
 }
 
-const ModalStack = createStackNavigator();
+const ModalStack = createStackNavigator<ModalStackRoutes>();
 
 export default (props: { theme: ColorTheme }) => {
-  const navigationRef = React.useRef<NavigationContainerRef>(null);
+  const navigationRef = useNavigationContainerRef<ModalStackRoutes>();
   const isNavigationReadyRef = React.useRef(false);
   const initialURLWasConsumed = React.useRef(false);
 
@@ -247,11 +190,11 @@ export default (props: { theme: ColorTheme }) => {
       });
     }
 
-    Linking.addEventListener('url', handleDeepLinks);
+    const deepLinkSubscription = Linking.addEventListener('url', handleDeepLinks);
 
     return () => {
       isNavigationReadyRef.current = false;
-      Linking.removeEventListener('url', handleDeepLinks);
+      deepLinkSubscription.remove();
     };
   }, []);
 
@@ -264,22 +207,44 @@ export default (props: { theme: ColorTheme }) => {
       }}>
       <ModalStack.Navigator
         initialRouteName="RootStack"
+        detachInactiveScreens={shouldDetachInactiveScreens}
         screenOptions={({ route, navigation }) => ({
           headerShown: false,
           gestureEnabled: true,
           cardOverlayEnabled: true,
           cardStyle: { backgroundColor: 'transparent' },
-          headerStatusBarHeight:
-            navigation.dangerouslyGetState().routes.indexOf(route) > 0 ? 0 : undefined,
+          presentation: 'modal',
+          headerStatusBarHeight: navigation.getState().routes.indexOf(route) > 0 ? 0 : undefined,
           ...TransitionPresets.ModalPresentationIOS,
-        })}
-        mode="modal">
+        })}>
         <ModalStack.Screen name="RootStack">
           {() => (
-            <RootStack.Navigator initialRouteName="Tabs" mode="modal">
+            <RootStack.Navigator
+              initialRouteName="Tabs"
+              detachInactiveScreens={shouldDetachInactiveScreens}
+              screenOptions={{ presentation: 'modal' }}>
               <RootStack.Screen name="Tabs" options={{ headerShown: false }}>
                 {() => <TabNavigator theme={props.theme} />}
               </RootStack.Screen>
+              <RootStack.Screen
+                name="Account"
+                component={AccountModal}
+                options={({ route, navigation }) => ({
+                  title: 'Account',
+                  ...(Platform.OS === 'ios' && {
+                    headerShown: false,
+                    gestureEnabled: true,
+                    cardOverlayEnabled: true,
+                    headerStatusBarHeight:
+                      navigation
+                        .getState()
+                        .routes.findIndex((r: RouteProp<any, any>) => r.key === route.key) > 0
+                        ? 0
+                        : undefined,
+                    ...TransitionPresets.ModalPresentationIOS,
+                  }),
+                })}
+              />
             </RootStack.Navigator>
           )}
         </ModalStack.Screen>

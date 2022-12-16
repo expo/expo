@@ -1,6 +1,6 @@
 import { PermissionStatus, createPermissionHook, EventEmitter, UnavailabilityError, } from 'expo-modules-core';
 import { Platform } from 'react-native';
-import MediaLibrary from './ExponentMediaLibrary';
+import MediaLibrary from './ExpoMediaLibrary';
 const eventEmitter = new EventEmitter(MediaLibrary);
 export { PermissionStatus, };
 function arrayize(item) {
@@ -99,7 +99,7 @@ export async function getPermissionsAsync(writeOnly = false) {
  *
  * @example
  * ```ts
- * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook({
@@ -126,7 +126,7 @@ export async function presentPermissionsPickerAsync() {
 }
 // @needsAudit
 /**
- * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera).
+ * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](./camera).
  * This method requires `CAMERA_ROLL` permission.
  *
  * @example
@@ -236,7 +236,7 @@ export async function deleteAssetsAsync(assets) {
  * Provides more information about an asset, including GPS location, local URI and EXIF metadata.
  * @param asset An [Asset](#asset) or its ID.
  * @param options
- * @return [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
+ * @return An [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
  */
 export async function getAssetInfoAsync(asset, options = { shouldDownloadFromNetwork: true }) {
     if (!MediaLibrary.getAssetInfoAsync) {

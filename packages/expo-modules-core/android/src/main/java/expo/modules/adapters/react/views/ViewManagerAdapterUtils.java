@@ -31,7 +31,7 @@ public class ViewManagerAdapterUtils {
     // ¯\_(ツ)_/¯
     for (Object eventName : viewManager.getExportedEventNames()) {
       if (eventName instanceof String) {
-        builder.put((String) eventName, MapBuilder.of("registrationName", eventName));
+        builder.put(normalizeEventName((String) eventName), MapBuilder.of("registrationName", eventName));
       }
     }
     return builder.build();
@@ -53,5 +53,12 @@ public class ViewManagerAdapterUtils {
         Log.e(viewManagerAdapterName, "Error when setting prop " + key + ". " + e.getMessage());
       }
     }
+  }
+
+  public static String normalizeEventName(final String eventName) {
+    if (eventName.startsWith("on")) {
+      return "top" + eventName.substring(2);
+    }
+    return eventName;
   }
 }

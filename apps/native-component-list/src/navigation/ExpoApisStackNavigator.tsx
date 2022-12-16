@@ -12,6 +12,12 @@ const Stack = createStackNavigator();
 export const Screens = [
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/ExpoModulesScreen'));
+    },
+    name: 'ExpoModules',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/StatusBarScreen'));
     },
     name: 'StatusBar',
@@ -24,13 +30,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Amplitude/AmplitudeScreen'));
-    },
-    name: 'Amplitude',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/ClipboardScreen'));
+      return optionalRequire(() => require('../screens/Clipboard/ClipboardScreen'));
     },
     name: 'Clipboard',
   },
@@ -52,13 +52,6 @@ export const Screens = [
     },
     name: 'ActionSheet',
     options: { title: 'Action Sheet' },
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/AppAuthScreen'));
-    },
-    name: 'AppAuth',
-    options: { title: 'App Auth' },
   },
   {
     getComponent() {
@@ -113,12 +106,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/BranchScreen'));
-    },
-    name: 'Branch',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/BrightnessScreen'));
     },
     name: 'Brightness',
@@ -143,18 +130,6 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/FacebookAppEventsScreen'));
-    },
-    name: 'FacebookAppEvents',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/FacebookLoginScreen'));
-    },
-    name: 'FacebookLogin',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/FaceDetectorScreen'));
     },
     name: 'FaceDetector',
@@ -167,28 +142,9 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/FirebaseRecaptchaScreen'));
-    },
-    name: 'FirebaseRecaptcha',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/FontScreen'));
     },
     name: 'Font',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/GoogleScreen'));
-    },
-    name: 'Google',
-  },
-  {
-    getComponent() {
-      return optionalRequire(() => require('../screens/GoogleSignInScreen'));
-    },
-    name: 'GoogleSignIn',
-    options: { title: 'Native Google Sign-In' },
   },
   {
     getComponent() {
@@ -241,7 +197,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ImagePickerScreen'));
+      return optionalRequire(() => require('../screens/ImagePicker/ImagePickerScreen'));
     },
     name: 'ImagePicker',
   },
@@ -307,6 +263,12 @@ export const Screens = [
       return optionalRequire(() => require('../screens/NetworkScreen'));
     },
     name: 'Network',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/CryptoScreen'));
+    },
+    name: 'Crypto',
   },
   {
     getComponent() {
@@ -459,7 +421,7 @@ export const Screens = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/WebBrowserScreen'));
+      return optionalRequire(() => require('../screens/WebBrowser/WebBrowserScreen'));
     },
     name: 'WebBrowser',
   },

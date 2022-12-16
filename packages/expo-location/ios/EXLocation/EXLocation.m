@@ -20,8 +20,7 @@
 
 #import <ExpoModulesCore/EXPermissionsInterface.h>
 #import <ExpoModulesCore/EXPermissionsMethodsDelegate.h>
-
-#import <UMTaskManagerInterface/UMTaskManagerInterface.h>
+#import <ExpoModulesCore/EXTaskManagerInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -34,7 +33,7 @@ NSString * const EXHeadingChangedEventName = @"Expo.headingChanged";
 @property (nonatomic, strong) NSMutableSet<EXLocationDelegate *> *retainedDelegates;
 @property (nonatomic, weak) id<EXEventEmitterService> eventEmitter;
 @property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
-@property (nonatomic, weak) id<UMTaskManagerInterface> tasksManager;
+@property (nonatomic, weak) id<EXTaskManagerInterface> tasksManager;
 
 @end
 
@@ -54,7 +53,7 @@ EX_EXPORT_MODULE(ExpoLocation);
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry
 {
   _eventEmitter = [moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
-  _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(UMTaskManagerInterface)];
+  _tasksManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXTaskManagerInterface)];
 
   _permissionsManager = [moduleRegistry getModuleImplementingProtocol:@protocol(EXPermissionsInterface)];
   [EXPermissionsMethodsDelegate registerRequesters:@[

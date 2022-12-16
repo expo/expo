@@ -2,20 +2,10 @@ import { defineAnimation } from './util';
 import {
   Animation,
   AnimationCallback,
-  NextAnimation,
-  PrimitiveValue,
+  AnimatableValue,
   Timestamp,
-  HigherOrderAnimation,
-} from './commonTypes';
-
-export interface RepeatAnimation
-  extends Animation<RepeatAnimation>,
-    HigherOrderAnimation {
-  reps: number;
-  startValue: PrimitiveValue;
-  toValue?: PrimitiveValue;
-  previousAnimation?: RepeatAnimation;
-}
+} from '../commonTypes';
+import { NextAnimation, RepeatAnimation } from './commonTypes';
 
 export interface InnerRepeatAnimation
   extends Omit<RepeatAnimation, 'toValue' | 'startValue'> {
@@ -81,7 +71,7 @@ export function withRepeat(
 
     function onStart(
       animation: RepeatAnimation,
-      value: PrimitiveValue,
+      value: AnimatableValue,
       now: Timestamp,
       previousAnimation: RepeatAnimation
     ): void {

@@ -1,4 +1,4 @@
-#import "REANode.h"
+#import <RNReanimated/REANode.h>
 
 @interface REASetNode : REANode
 

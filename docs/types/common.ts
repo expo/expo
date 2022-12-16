@@ -1,5 +1,6 @@
 export type PageMetadata = {
   title?: string;
+  description?: string;
   sourceCodeUrl?: string;
   packageName?: string;
   maxHeadingDepth?: number;
@@ -35,8 +36,14 @@ export type NavigationRoute = {
   href: string;
   as?: string;
   hidden?: boolean;
-  collapsed?: boolean;
+  expanded?: boolean;
   sidebarTitle?: string;
   weight?: number;
   children?: NavigationRoute[];
 };
+
+/**
+ * Available platforms supported by our APIs.
+ * Temporarily it also accepts other strings for compatibility reasons.
+ */
+export type PlatformName = 'ios' | 'android' | 'web' | 'expo' | string;

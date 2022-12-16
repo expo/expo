@@ -22,12 +22,18 @@ export class Example {
 
   hi() {
     _fn() ?? this.byeAsync();
-    m &&= {};
-    s?.a?.();
+    this.m &&= {};
+    Example.s?.a?.();
 
     try {
       _fn();
-    } catch {
+    } catch (e) {
+      _fn();
+    }
+
+    try {
+      _fn();
+    } catch (_ignored) {
       _fn();
     }
 

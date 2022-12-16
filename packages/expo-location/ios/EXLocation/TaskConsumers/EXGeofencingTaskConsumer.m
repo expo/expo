@@ -5,9 +5,9 @@
 #import <CoreLocation/CLErrorDomain.h>
 
 #import <ExpoModulesCore/EXUtilities.h>
+#import <ExpoModulesCore/EXTaskInterface.h>
 #import <EXLocation/EXLocation.h>
 #import <EXLocation/EXGeofencingTaskConsumer.h>
-#import <UMTaskManagerInterface/UMTaskInterface.h>
 
 @interface EXGeofencingTaskConsumer ()
 
@@ -24,7 +24,7 @@
   [self reset];
 }
 
-# pragma mark - UMTaskConsumerInterface
+# pragma mark - EXTaskConsumerInterface
 
 - (NSString *)taskType
 {
@@ -37,7 +37,7 @@
   [self startMonitoringRegionsForTask:self->_task];
 }
 
-- (void)didRegisterTask:(id<UMTaskInterface>)task
+- (void)didRegisterTask:(id<EXTaskInterface>)task
 {
   [self startMonitoringRegionsForTask:task];
 }
@@ -58,7 +58,7 @@
   }];
 }
 
-- (void)startMonitoringRegionsForTask:(id<UMTaskInterface>)task
+- (void)startMonitoringRegionsForTask:(id<EXTaskInterface>)task
 {
   [EXUtilities performSynchronouslyOnMainThread:^{
     CLLocationManager *locationManager = [CLLocationManager new];

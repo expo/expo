@@ -35,9 +35,9 @@ export default function BrightnessScreen() {
 }
 
 function BrightnessView() {
-  const [brightness] = useResolvedValue(Brightness.getBrightnessAsync);
+  const [brightness, setBrightness] = React.useState<number | null>(null);
   const [systemBrightness] = useResolvedValue(Brightness.getSystemBrightnessAsync);
-  const [sliderBrightness, setBrightness] = React.useState<Record<string, number>>({});
+  const [sliderBrightness, setSliderBrightness] = React.useState<Record<string, number>>({});
 
   const [systemBrightnessPermissionGranted, setSystemBrightnessPermissionGranted] =
     React.useState(false);
@@ -45,10 +45,20 @@ function BrightnessView() {
   React.useEffect(() => {
     async function initialize() {
       const { granted } = await Brightness.getPermissionsAsync();
+      const brightness = await Brightness.getBrightnessAsync();
       setSystemBrightnessPermissionGranted(granted);
+      setBrightness(brightness);
     }
 
     initialize();
+
+    const brightnessLevelListener = Brightness.addBrightnessListener(({ brightness }) => {
+      setBrightness(brightness);
+    });
+
+    return () => {
+      brightnessLevelListener.remove();
+    };
   }, []);
 
   function alertBrightnessAsync(type: string) {
@@ -61,7 +71,7 @@ function BrightnessView() {
   }
 
   function updateBrightnessAsync(value: number, type: string) {
-    setBrightness((brightness) => ({ ...brightness, [type]: value }));
+    setSliderBrightness((brightness) => ({ ...brightness, [type]: value }));
     if (type === 'Brightness') {
       Brightness.setBrightnessAsync(value);
     } else {

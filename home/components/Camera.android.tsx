@@ -1,6 +1,7 @@
 import { Camera as OriginalCamera } from 'expo-camera';
 import React, { useCallback, useState, useEffect } from 'react';
 import { View } from 'react-native';
+import type { LayoutChangeEvent } from 'react-native';
 
 type CameraRef = OriginalCamera;
 type CameraRefCallback = (node: CameraRef) => void;
@@ -106,7 +107,7 @@ const useComponentDimensions = (): [Dimensions | null, (e: any) => void] => {
   const [dimensions, setDimensions] = useState<Dimensions | null>(null);
 
   const onLayout = useCallback(
-    (event) => {
+    (event: LayoutChangeEvent) => {
       const { width, height } = event.nativeEvent.layout;
       setDimensions({ width, height });
     },

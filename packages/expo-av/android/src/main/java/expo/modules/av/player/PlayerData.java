@@ -1,10 +1,15 @@
 package expo.modules.av.player;
 
+import android.Manifest;
 import android.content.Context;
+import android.media.audiofx.Visualizer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.Pair;
 import android.view.Surface;
+
+import com.facebook.jni.HybridData;
 
 import expo.modules.core.Promise;
 import expo.modules.core.arguments.ReadableArguments;
@@ -16,6 +21,9 @@ import expo.modules.av.AudioEventHandler;
 import expo.modules.av.AudioFocusNotAcquiredException;
 import expo.modules.av.progress.AndroidLooperTimeMachine;
 import expo.modules.av.progress.ProgressLooper;
+import expo.modules.core.interfaces.DoNotStrip;
+import expo.modules.interfaces.permissions.PermissionsResponse;
+import expo.modules.interfaces.permissions.PermissionsStatus;
 
 public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_ANDROID_IMPLEMENTATION_KEY_PATH = "androidImplementation";
@@ -33,9 +41,13 @@ public abstract class PlayerData implements AudioEventHandler {
   static final String STATUS_RATE_KEY_PATH = "rate";
   static final String STATUS_SHOULD_CORRECT_PITCH_KEY_PATH = "shouldCorrectPitch";
   static final String STATUS_VOLUME_KEY_PATH = "volume";
+  static final String STATUS_VOLUME_PAN_KEY_PATH = "audioPan";
   static final String STATUS_IS_MUTED_KEY_PATH = "isMuted";
   static final String STATUS_IS_LOOPING_KEY_PATH = "isLooping";
   static final String STATUS_DID_JUST_FINISH_KEY_PATH = "didJustFinish";
+
+  @DoNotStrip
+  private final HybridData mHybridData;
 
   public static Bundle getUnloadedStatus() {
     final Bundle map = new Bundle();
@@ -79,6 +91,7 @@ public abstract class PlayerData implements AudioEventHandler {
 
   private ProgressLooper mProgressUpdater = new ProgressLooper(new AndroidLooperTimeMachine());
 
+  private Visualizer mVisualizer = null;
 
   private FullscreenPresenter mFullscreenPresenter = null;
   private StatusUpdateListener mStatusUpdateListener = null;
@@ -90,12 +103,91 @@ public abstract class PlayerData implements AudioEventHandler {
   float mRate = 1.0f;
   boolean mShouldCorrectPitch = false;
   float mVolume = 1.0f;
+  float mPan = 0.0f;
   boolean mIsMuted = false;
 
   PlayerData(final AVManagerInterface avModule, final Uri uri, final Map<String, Object> requestHeaders) {
     mRequestHeaders = requestHeaders;
     mAVModule = avModule;
     mUri = uri;
+
+    mHybridData = initHybrid();
+  }
+
+  @Override
+  protected void finalize() throws Throwable {
+    super.finalize();
+    if (mVisualizer != null) {
+      mVisualizer.release();
+      mVisualizer = null;
+    }
+    mHybridData.resetNative();
+  }
+
+  @SuppressWarnings("JavaJniMissingFunction")
+  private native HybridData initHybrid();
+  @SuppressWarnings({"JavaJniMissingFunction"})
+  protected native void sampleBufferCallback(byte[] sampleBuffer, double positionSeconds);
+
+  protected double getCurrentPositionSeconds() {
+    return 0;
+  }
+
+//  @SuppressWarnings("unused")
+  @DoNotStrip
+  void setEnableSampleBufferCallback(boolean enable) {
+    if (enable) {
+      try {
+        boolean hasRecordAudioPermission = mAVModule.hasAudioPermission();
+        if (!hasRecordAudioPermission) {
+          mAVModule.requestAudioPermission(result -> {
+            PermissionsResponse response = result.get(Manifest.permission.RECORD_AUDIO);
+            if (response == null) {
+              return;
+            }
+            if (response.getStatus() == PermissionsStatus.GRANTED) {
+              // call func again, this time we have audio permission
+              setEnableSampleBufferCallback(true);
+            } else if (!response.getCanAskAgain()) {
+              Log.e("PlayerData", "Cannot initialize Sample Data Callback (Visualizer) when RECORD_AUDIO permission is not granted!");
+            }
+          });
+          return;
+        }
+        int id = getAudioSessionId();
+        Log.i("PlayerData", "Initializing Visualizer for Audio Session #" + id + "...");
+        mVisualizer = new Visualizer(id);
+        mVisualizer.setEnabled(false);
+        mVisualizer.setCaptureSize(Visualizer.getCaptureSizeRange()[1]);
+
+        // the rate at which the Visualizer calls back with new bytes - will be clamped to max 100ms (1000 mHz)
+        int callbackRate = Math.min(Visualizer.getMaxCaptureRate(), 10000);
+        mVisualizer.setDataCaptureListener(new Visualizer.OnDataCaptureListener() {
+          @Override
+          public void onWaveFormDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) {
+            if (mShouldPlay) {
+              sampleBufferCallback(bytes, getCurrentPositionSeconds());
+            }
+          }
+
+          @Override
+          public void onFftDataCapture(Visualizer visualizer, byte[] bytes, int samplingRate) { }
+        }, callbackRate, true, false);
+
+        mVisualizer.setEnabled(true);
+
+        Log.i("PlayerData", "Visualizer initialized with a capture rate of " + callbackRate);
+      } catch (Throwable e) {
+        Log.e("PlayerData", "Failed to initialize Visualizer! " + e.getLocalizedMessage());
+        e.printStackTrace();
+      }
+    } else {
+      if (mVisualizer != null) {
+        mVisualizer.setEnabled(false);
+        mVisualizer.release();
+      }
+      mVisualizer = null;
+    }
   }
 
   public static PlayerData createUnloadedPlayerData(final AVManagerInterface avModule, final Context context, final ReadableArguments source, final Bundle status) {
@@ -122,7 +214,14 @@ public abstract class PlayerData implements AudioEventHandler {
 
   public abstract void load(final Bundle status, final LoadCompletionListener loadCompletionListener);
 
-  public abstract void release();
+  public void release() {
+    if (mVisualizer != null) {
+      mVisualizer.setDataCaptureListener(null, 0, false, false);
+      mVisualizer.setEnabled(false);
+      mVisualizer.release();
+      mVisualizer = null;
+    }
+  }
 
   // Status update listener
 
@@ -227,6 +326,10 @@ public abstract class PlayerData implements AudioEventHandler {
       mVolume = (float) status.getDouble(STATUS_VOLUME_KEY_PATH);
     }
 
+    if (status.containsKey(STATUS_VOLUME_PAN_KEY_PATH)) {
+      mPan = (float) status.getDouble(STATUS_VOLUME_PAN_KEY_PATH);
+    }
+
     if (status.containsKey(STATUS_IS_MUTED_KEY_PATH)) {
       mIsMuted = status.getBoolean(STATUS_IS_MUTED_KEY_PATH);
     }
@@ -323,6 +426,7 @@ public abstract class PlayerData implements AudioEventHandler {
     map.putDouble(STATUS_RATE_KEY_PATH, (double) mRate);
     map.putBoolean(STATUS_SHOULD_CORRECT_PITCH_KEY_PATH, mShouldCorrectPitch);
     map.putDouble(STATUS_VOLUME_KEY_PATH, (double) mVolume);
+    map.putDouble(STATUS_VOLUME_PAN_KEY_PATH, (double) mPan);
     map.putBoolean(STATUS_IS_MUTED_KEY_PATH, mIsMuted);
     // STATUS_IS_LOOPING_KEY_PATH is set in addExtraStatusFields().
 

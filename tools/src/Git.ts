@@ -1,9 +1,9 @@
 import fs from 'fs-extra';
 import parseDiff from 'parse-diff';
-import { join } from 'path';
+import { join, relative } from 'path';
 
-import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 import { EXPO_DIR } from './Constants';
+import { spawnAsync, SpawnResult, SpawnOptions } from './Utils';
 
 export type GitPullOptions = {
   rebase?: boolean;
@@ -17,6 +17,8 @@ export type GitLogOptions = {
   fromCommit?: string;
   toCommit?: string;
   paths?: string[];
+  cherryPick?: 'left' | 'right';
+  symmetricDifference?: boolean;
 };
 
 export type GitLog = {
@@ -24,6 +26,7 @@ export type GitLog = {
   parent: string;
   title: string;
   authorName: string;
+  authorDate: string;
   committerRelativeDate: string;
 };
 
@@ -50,6 +53,10 @@ export type GitBranchesStats = {
 export type GitCommitOptions = {
   title: string;
   body?: string;
+};
+
+export type GitCherryPickOptions = {
+  inheritStdio?: boolean;
 };
 
 export type GitFetchOptions = {
@@ -97,7 +104,7 @@ export class GitDirectory {
     try {
       await this.runAsync(args, options);
       return true;
-    } catch (error) {
+    } catch {
       return false;
     }
   }
@@ -214,14 +221,19 @@ export class GitDirectory {
    */
   async logAsync(options: GitLogOptions = {}): Promise<GitLog[]> {
     const fromCommit = options.fromCommit ?? '';
-    const toCommit = options.toCommit ?? 'head';
+    const toCommit = options.toCommit ?? 'HEAD';
+    const commitSeparator = options.symmetricDifference ? '...' : '..';
     const paths = options.paths ?? ['.'];
+    const cherryPickOptions = options.cherryPick
+      ? ['--cherry-pick', options.cherryPick === 'left' ? '--left-only' : '--right-only']
+      : [];
 
     const template = {
       hash: '%H',
       parent: '%P',
       title: '%s',
       authorName: '%aN',
+      authorDate: '%aI',
       committerRelativeDate: '%cr',
     };
 
@@ -238,7 +250,8 @@ export class GitDirectory {
     const { stdout } = await this.runAsync([
       'log',
       `--pretty=format:${format}`,
-      `${fromCommit}..${toCommit}`,
+      ...cherryPickOptions,
+      `${fromCommit}${commitSeparator}${toCommit}`,
       '--',
       ...paths,
     ]);
@@ -320,6 +333,14 @@ export class GitDirectory {
       args.push('--message', options.body);
     }
     await this.runAsync(args);
+  }
+
+  /**
+   * Cherry-picks the given commits onto the checked out branch.
+   */
+  async cherryPickAsync(commits: string[], options: GitCherryPickOptions = {}): Promise<void> {
+    const spawnOptions: SpawnOptions = options.inheritStdio ? { stdio: 'inherit' } : {};
+    await this.runAsync(['cherry-pick', ...commits], spawnOptions);
   }
 
   /**
@@ -406,6 +427,14 @@ export class GitDirectory {
           path: columns.slice(4).join('').trim(),
         };
       });
+  }
+
+  /**
+   * Reads a file content from a given ref.
+   */
+  async readFileAsync(ref: string, path: string): Promise<string> {
+    const { stdout } = await this.runAsync(['show', `${ref}:${relative(EXPO_DIR, path)}`]);
+    return stdout;
   }
 
   /**

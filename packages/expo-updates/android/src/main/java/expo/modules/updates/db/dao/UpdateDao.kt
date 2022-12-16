@@ -6,6 +6,9 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import java.util.*
 
+/**
+ * Utility class for accessing and modifying data in SQLite relating to updates.
+ */
 @Dao
 abstract class UpdateDao {
   /**
@@ -55,6 +58,9 @@ abstract class UpdateDao {
 
   @Query("SELECT * FROM updates WHERE status = :status;")
   abstract fun loadAllUpdatesWithStatus(status: UpdateStatus): List<UpdateEntity>
+
+  @Query("SELECT id FROM updates WHERE status = :status;")
+  abstract fun loadAllUpdateIdsWithStatus(status: UpdateStatus): List<UUID>
 
   fun loadUpdateWithId(id: UUID): UpdateEntity? {
     val updateEntities = _loadUpdatesWithId(id)

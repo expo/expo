@@ -1,6 +1,6 @@
-#import "REATransformNode.h"
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REATransformNode.h>
 #import <React/RCTConvert.h>
-#import "REANodesManager.h"
 
 @implementation REATransformNode {
   NSArray<id> *_transformConfigs;

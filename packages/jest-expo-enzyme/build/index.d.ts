@@ -17,7 +17,8 @@ export default function withEnzyme(preset: Config.ProjectConfig): {
     detectOpenHandles: boolean;
     displayName?: Config.DisplayName | undefined;
     errorOnDeprecated: boolean;
-    extraGlobals: (string | number | symbol)[];
+    extensionsToTreatAsEsm: string[];
+    extraGlobals: ("undefined" | "globalThis" | "eval" | "parseInt" | "parseFloat" | "isNaN" | "isFinite" | "decodeURI" | "decodeURIComponent" | "encodeURI" | "encodeURIComponent" | "escape" | "unescape" | "NaN" | "Infinity" | "Symbol" | "Object" | "Function" | "String" | "Boolean" | "Number" | "Math" | "Date" | "RegExp" | "Error" | "EvalError" | "RangeError" | "ReferenceError" | "SyntaxError" | "TypeError" | "URIError" | "JSON" | "Array" | "Promise" | "ArrayBuffer" | "DataView" | "Int8Array" | "Uint8Array" | "Uint8ClampedArray" | "Int16Array" | "Uint16Array" | "Int32Array" | "Uint32Array" | "Float32Array" | "Float64Array" | "Intl" | "Map" | "WeakMap" | "Set" | "WeakSet" | "Proxy" | "Reflect" | "SharedArrayBuffer" | "Atomics" | "BigInt" | "BigInt64Array" | "BigUint64Array" | "structuredClone" | "process" | "console" | "__filename" | "__dirname" | "require" | "module" | "exports" | "gc" | "AbortController" | "AbortSignal" | "Blob" | "global" | "React" | "clearInterval" | "clearTimeout" | "setInterval" | "setTimeout" | "clearImmediate" | "setImmediate" | "cancelAnimationFrame" | "requestAnimationFrame" | "fetchBundle" | "fetch" | "Headers" | "Request" | "Response" | "XMLHttpRequest" | "XMLHttpRequestUpload" | "WebSocket" | "FileReader" | "atob" | "btoa" | "Buffer" | "queueMicrotask")[];
     filter?: string | undefined;
     forceCoverageMatch: string[];
     globalSetup?: string | undefined;
@@ -45,6 +46,7 @@ export default function withEnzyme(preset: Config.ProjectConfig): {
     skipNodeResolution?: boolean | undefined;
     slowTestThreshold: number;
     snapshotResolver?: string | undefined;
+    snapshotFormat: Config.PrettyFormatOptions;
     testMatch: string[];
     testLocationInResults: boolean;
     testPathIgnorePatterns: string[];

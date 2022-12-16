@@ -7,6 +7,8 @@
 
 package versioned.host.exp.exponent.modules.api.components.picker;
 
+import host.exp.expoview.R;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -32,7 +34,6 @@ import com.facebook.react.uimanager.events.EventDispatcher;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import host.exp.expoview.R;
 
 /**
  * {@link ViewManager} for the {@link ReactPicker} view. This is abstract because the

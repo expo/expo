@@ -1,0 +1,18 @@
+<manifest package="expo.modules.appauth"
+          xmlns:android="http://schemas.android.com/apk/res/android"
+          xmlns:tools="http://schemas.android.com/tools">
+    <application>
+
+        <!-- Fix unit test manifestMerger build error from expo -> autolinked expo-app-auth -> net.openid.appauth -->
+        <activity
+	    android:name="net.openid.appauth.RedirectUriReceiverActivity"
+            android:exported="true" tools:node="replace">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="test" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

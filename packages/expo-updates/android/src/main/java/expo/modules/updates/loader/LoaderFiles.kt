@@ -45,7 +45,7 @@ open class LoaderFiles {
   ): ByteArray {
     try {
       context.assets.open(asset.embeddedAssetFilename!!)
-        .use { inputStream -> return UpdatesUtils.sha256AndWriteToFile(inputStream, destination) }
+        .use { inputStream -> return UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, null) }
     } catch (e: Exception) {
       Log.e(TAG, "Failed to copy asset " + asset.embeddedAssetFilename, e)
       throw e
@@ -65,7 +65,7 @@ open class LoaderFiles {
     )
     try {
       context.resources.openRawResource(id)
-        .use { inputStream -> return UpdatesUtils.sha256AndWriteToFile(inputStream, destination) }
+        .use { inputStream -> return UpdatesUtils.verifySHA256AndWriteToFile(inputStream, destination, null) }
     } catch (e: Exception) {
       Log.e(TAG, "Failed to copy asset " + asset.embeddedAssetFilename, e)
       throw e

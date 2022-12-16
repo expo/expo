@@ -1,10 +1,3 @@
-//
-//  REAInitializer.h
-//  RNReanimated
-//
-//  Created by Szymon Kapala on 27/07/2021.
-//
-
 #import <Foundation/Foundation.h>
 #import <RNReanimated/NativeProxy.h>
 #import <RNReanimated/REAEventDispatcher.h>
@@ -14,11 +7,11 @@
 #import <ReactCommon/RCTTurboModuleManager.h>
 #import <jsireact/JSIExecutor.h>
 
-#if RNVERSION >= 64
+#if REACT_NATIVE_MINOR_VERSION >= 64
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
 #endif
 
-#if RNVERSION < 63
+#if REACT_NATIVE_MINOR_VERSION < 63
 #import <ReactCommon/BridgeJSCallInvoker.h>
 #endif
 

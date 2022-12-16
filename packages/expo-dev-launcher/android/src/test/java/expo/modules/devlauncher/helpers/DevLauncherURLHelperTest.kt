@@ -31,18 +31,6 @@ internal class DevLauncherURLHelperTest {
   }
 
   @Test
-  fun `tests getAppUrlFromDevLauncherUrl`() {
-    val uriWithCorrectAppUrl = Uri.parse("http://localhost?url=exp://app")
-    val uriWithoutAppUrl = Uri.parse("http://localhost")
-
-    val appUrl = getAppUrlFromDevLauncherUrl(uriWithCorrectAppUrl)
-    val expectedNull = getAppUrlFromDevLauncherUrl(uriWithoutAppUrl)
-
-    Truth.assertThat(appUrl).isEqualTo(Uri.parse("exp://app"))
-    Truth.assertThat(expectedNull).isNull()
-  }
-
-  @Test
   fun `tests isDevLauncherUrl`() {
     Truth.assertThat(
       isDevLauncherUrl(

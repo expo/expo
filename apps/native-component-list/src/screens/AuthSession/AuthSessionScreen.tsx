@@ -24,6 +24,9 @@ const languages = [
   { key: 'nl', value: 'Dutch' },
   { key: 'fi', value: 'Finnish' },
 ];
+
+const PROJECT_NAME_FOR_PROXY = '@community/native-component-list';
+
 export default function AuthSessionScreen() {
   const [useProxy, setProxy] = React.useState<boolean>(false);
   const [usePKCE, setPKCE] = React.useState<boolean>(true);
@@ -64,13 +67,7 @@ export default function AuthSessionScreen() {
             value={language}
             setValue={setLanguage}
           />
-          <H4>
-            ID:{' '}
-            {Constants.manifest?.originalFullName ||
-              Constants.manifest2?.extra?.expoClient?.originalFullName ||
-              Constants.manifest?.id ||
-              'unset'}
-          </H4>
+          <H4>ID: {PROJECT_NAME_FOR_PROXY}</H4>
         </View>
         <H2>Services</H2>
         <AuthSessionProviders
@@ -102,6 +99,7 @@ function AuthSessionProviders(props: {
     path: 'redirect',
     preferLocalhost: Platform.select({ android: false, default: true }),
     useProxy,
+    projectNameForProxy: PROJECT_NAME_FOR_PROXY,
   });
 
   const options = {
@@ -151,6 +149,7 @@ function Google({ prompt, language, usePKCE }: any) {
     },
     {
       path: 'redirect',
+      projectNameForProxy: PROJECT_NAME_FOR_PROXY,
       preferLocalhost: true,
     }
   );
@@ -166,7 +165,11 @@ function Google({ prompt, language, usePKCE }: any) {
       request={request}
       title="google"
       result={result}
-      promptAsync={() => promptAsync()}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
     />
   );
 }
@@ -182,6 +185,7 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
     },
     {
       path: 'redirect',
+      projectNameForProxy: PROJECT_NAME_FOR_PROXY,
       preferLocalhost: true,
     }
   );
@@ -197,7 +201,11 @@ function GoogleFirebase({ prompt, language, usePKCE }: any) {
       request={request}
       title="google_firebase"
       result={result}
-      promptAsync={() => promptAsync()}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
     />
   );
 }
@@ -264,7 +272,11 @@ function Okta({ redirectUri, usePKCE, useProxy }: any) {
       title="okta"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -317,7 +329,11 @@ function Reddit({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="reddit"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -370,7 +386,13 @@ function Imgur({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="imgur"
       request={request}
       result={result}
-      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 500, height: 750 } })}
+      promptAsync={() =>
+        promptAsync({
+          useProxy,
+          windowFeatures: { width: 500, height: 750 },
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -420,7 +442,13 @@ function Github({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="github"
       request={request}
       result={result}
-      promptAsync={() => promptAsync({ useProxy, windowFeatures: { width: 500, height: 750 } })}
+      promptAsync={() =>
+        promptAsync({
+          useProxy,
+          windowFeatures: { width: 500, height: 750 },
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -453,7 +481,11 @@ function Uber({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="uber"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -505,7 +537,11 @@ function FitBit({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="fitbit"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -522,6 +558,7 @@ function Facebook({ usePKCE, useProxy, language }: any) {
     {
       path: 'redirect',
       preferLocalhost: true,
+      projectNameForProxy: PROJECT_NAME_FOR_PROXY,
       useProxy,
     }
   );
@@ -532,7 +569,11 @@ function Facebook({ usePKCE, useProxy, language }: any) {
       title="facebook"
       request={request}
       result={result}
-      promptAsync={() => promptAsync()}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
     />
   );
 }
@@ -565,7 +606,11 @@ function Slack({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="slack"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -596,7 +641,11 @@ function Spotify({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="spotify"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -642,7 +691,11 @@ function Strava({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="strava"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -667,7 +720,11 @@ function Identity({ redirectUri, prompt, useProxy }: any) {
       title="identity4"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -697,7 +754,11 @@ function Coinbase({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="coinbase"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -726,7 +787,11 @@ function Dropbox({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="dropbox"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );
@@ -754,7 +819,11 @@ function Twitch({ redirectUri, prompt, usePKCE, useProxy }: any) {
       title="twitch"
       request={request}
       result={result}
-      promptAsync={promptAsync}
+      promptAsync={() =>
+        promptAsync({
+          projectNameForProxy: PROJECT_NAME_FOR_PROXY,
+        })
+      }
       useProxy={useProxy}
     />
   );

@@ -6,10 +6,9 @@ import { requireNativeViewManager } from '../NativeViewManagerAdapter';
 jest.mock('react-native', () => {
   const ReactNative = jest.requireActual('react-native');
   // Mock a natively defined test view that the adapter will reference
-  ReactNative.NativeModules.NativeUnimoduleProxy.viewManagersNames = [
-    ...ReactNative.NativeModules.NativeUnimoduleProxy.viewManagersNames,
-    'ExpoTestView',
-  ];
+  ReactNative.NativeModules.NativeUnimoduleProxy.viewManagersMetadata.ExpoTestView = {
+    propsNames: ['custom'],
+  };
   ReactNative.UIManager.ExpoTestView = {
     NativeProps: {},
     directEventTypes: {},

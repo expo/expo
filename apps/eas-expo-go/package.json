@@ -1,0 +1,15 @@
+{
+  "name": "eas-expo-go",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@expo/config": "~7.0.2"
+  },
+  "scripts": {
+    "postinstall": "expo-yarn-workspaces postinstall",
+    "eas-build-pre-install": "./scripts/eas-build-pre-install.sh",
+    "eas-build-post-install": "./scripts/eas-build-post-install.sh",
+    "eas-build-pre-upload-artifacts": "./scripts/eas-build-pre-upload-artifacts.sh"
+  }
+}

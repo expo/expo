@@ -1,51 +1,16 @@
 import { css, SerializedStyles } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
-import React, { HTMLAttributes } from 'react';
+import { theme, typography, spacing, borderRadius } from '@expo/styleguide';
 
 import { LinkBase, LinkProps } from './Link';
+import { TextComponentProps, TextElement } from './types';
 
 import { durations } from '~/ui/foundations/durations';
 
-export enum TextElement {
-  CODE = 'code',
-  H1 = 'h1',
-  H2 = 'h2',
-  H3 = 'h3',
-  H4 = 'h4',
-  H5 = 'h5',
-  H6 = 'h6',
-  LI = 'li',
-  P = 'p',
-  SPAN = 'span',
-  UL = 'ul',
-  OL = 'ol',
-  PRE = 'pre',
-}
+export { LinkBase } from './Link';
+export { AnchorContext } from './withAnchor';
 
-type TextWeight = keyof typeof typography.utility.weight;
-type TextTheme = keyof typeof theme.text;
-
-type TextComponentProps = HTMLAttributes<
-  HTMLHeadingElement | HTMLParagraphElement | HTMLLIElement | HTMLUListElement | HTMLPreElement
-> & {
-  testID?: string;
-  weight?: TextWeight;
-  theme?: TextTheme;
-  tag?:
-    | 'code'
-    | 'h1'
-    | 'h2'
-    | 'h3'
-    | 'h4'
-    | 'h5'
-    | 'h6'
-    | 'li'
-    | 'p'
-    | 'span'
-    | 'ul'
-    | 'ol'
-    | 'pre';
-};
+const CRAWLABLE_HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5'];
+const CRAWLABLE_TEXT = ['span', 'p', 'li', 'blockquote', 'code', 'pre'];
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
   function TextComponent(props: TextComponentProps) {
@@ -61,6 +26,8 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
           textTheme && { color: theme.text[textTheme] },
         ]}
         data-testid={testID}
+        data-heading={CRAWLABLE_HEADINGS.includes(TextElementTag) || undefined}
+        data-text={CRAWLABLE_TEXT.includes(TextElementTag) || undefined}
         {...rest}
       />
     );
@@ -75,11 +42,8 @@ const baseTextStyle = css({
 });
 
 const link = css({
-  textDecoration: 'none',
   cursor: 'pointer',
-
-  // transform prevents a 1px shift on hover on Safari
-  transform: 'translate3d(0,0,0)',
+  textDecoration: 'none',
 
   ':hover': {
     transition: durations.hover,
@@ -87,31 +51,88 @@ const link = css({
   },
 });
 
+const linkStyled = css({
+  ...typography.utility.anchor,
+
+  // note(Cedric): transform prevents a 1px shift on hover on Safari
+  transform: 'translate3d(0,0,0)',
+
+  ':hover': {
+    textDecoration: 'underline',
+
+    code: {
+      textDecoration: 'inherit',
+    },
+  },
+
+  'span, code, strong, em, b, i': {
+    color: theme.link.default,
+  },
+});
+
 const listStyle = css({
   marginLeft: '1.5rem',
 });
 
-export const H1 = createTextComponent(TextElement.H1, css(typography.headers.default.h1));
-export const H2 = createTextComponent(TextElement.H2, css(typography.headers.default.h2));
-export const H3 = createTextComponent(TextElement.H4, css(typography.headers.default.h3));
-export const H4 = createTextComponent(TextElement.H4, css(typography.headers.default.h4));
-export const H5 = createTextComponent(TextElement.H5, css(typography.headers.default.h5));
-export const H6 = createTextComponent(TextElement.H6, css(typography.headers.default.h6));
+const codeStyle = css({
+  borderRadius: borderRadius.small,
+  verticalAlign: 'initial',
+});
+
+export const kbdStyle = css({
+  fontFamily: typography.fontFaces.medium,
+  color: theme.text.secondary,
+  padding: `0 ${spacing[1]}px`,
+  boxShadow: `0 0.1rem 0 1px ${theme.border.default}`,
+  borderRadius: borderRadius.small,
+  position: 'relative',
+  display: 'inline-flex',
+  margin: 0,
+  minWidth: 22,
+  justifyContent: 'center',
+  top: -1,
+});
+
+const codeInHeaderStyle = { '& code': { fontSize: 'inherit' } };
+
+const { h1, h2, h3, h4, h5, h6 } = typography.headers.default;
+export const H1 = createTextComponent(TextElement.H1, css([h1, codeInHeaderStyle]));
+export const H2 = createTextComponent(TextElement.H2, css([h2, codeInHeaderStyle]));
+export const H3 = createTextComponent(TextElement.H3, css([h3, codeInHeaderStyle]));
+export const H4 = createTextComponent(TextElement.H4, css([h4, codeInHeaderStyle]));
+export const H5 = createTextComponent(TextElement.H5, css([h5, codeInHeaderStyle]));
+export const H6 = createTextComponent(TextElement.H6, css([h6, codeInHeaderStyle]));
+
 export const P = createTextComponent(TextElement.P, css(typography.body.paragraph));
-export const CODE = createTextComponent(TextElement.CODE, css(typography.utility.inlineCode));
+export const CODE = createTextComponent(
+  TextElement.CODE,
+  css([typography.utility.inlineCode, codeStyle])
+);
 export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
 export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));
 export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
 export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.footnote));
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
-export const BOLD = createTextComponent(TextElement.SPAN, css(typography.utility.weight.semiBold));
+export const BOLD = createTextComponent(
+  TextElement.STRONG,
+  css(typography.utility.weight.semiBold)
+);
 export const DEMI = createTextComponent(TextElement.SPAN, css(typography.utility.weight.medium));
 export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
 export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
 export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre));
+export const KBD = createTextComponent(TextElement.KBD, css([typography.utility.pre, kbdStyle]));
 
-export const A = (props: Omit<LinkProps, 'router'> & { isStyled?: boolean }) => {
+const isExternalLink = (href?: string) => href?.includes('://');
+
+export const A = (props: LinkProps & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;
-  return <LinkBase css={[link, isStyled && css(typography.utility.anchor)]} {...rest} />;
+  return (
+    <LinkBase
+      css={[link, !isStyled && linkStyled]}
+      openInNewTab={isExternalLink(props.href)}
+      {...rest}
+    />
+  );
 };
 A.displayName = 'Text(a)';

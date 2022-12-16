@@ -1,21 +1,26 @@
-import { BaseAnimationBuilder } from '../animationBuilder/BaseAnimationBuilder';
+import { ComplexAnimationBuilder } from '../animationBuilder';
 import {
-  EntryExitAnimationBuild,
-  IEntryExitAnimationBuilder,
+  EntryAnimationsValues,
+  ExitAnimationsValues,
+  AnimationConfigFunction,
+  IEntryAnimationBuilder,
+  IExitAnimationBuilder,
 } from '../animationBuilder/commonTypes';
 
 export class RotateInDownLeft
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryAnimationBuilder
+{
   static createInstance(): RotateInDownLeft {
     return new RotateInDownLeft();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): AnimationConfigFunction<EntryAnimationsValues> => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return (values) => {
       'worklet';
@@ -32,9 +37,10 @@ export class RotateInDownLeft
           opacity: 0,
           transform: [
             { rotate: '-90deg' },
-            { translateX: values.width / 2 - values.height / 2 },
-            { translateY: -(values.width / 2 - values.height / 2) },
+            { translateX: values.targetWidth / 2 - values.targetHeight / 2 },
+            { translateY: -(values.targetWidth / 2 - values.targetHeight / 2) },
           ],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -43,17 +49,19 @@ export class RotateInDownLeft
 }
 
 export class RotateInDownRight
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryAnimationBuilder
+{
   static createInstance(): RotateInDownRight {
     return new RotateInDownRight();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): AnimationConfigFunction<EntryAnimationsValues> => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return (values) => {
       'worklet';
@@ -70,9 +78,10 @@ export class RotateInDownRight
           opacity: 0,
           transform: [
             { rotate: '90deg' },
-            { translateX: -(values.width / 2 - values.height / 2) },
-            { translateY: -(values.width / 2 - values.height / 2) },
+            { translateX: -(values.targetWidth / 2 - values.targetHeight / 2) },
+            { translateY: -(values.targetWidth / 2 - values.targetHeight / 2) },
           ],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -81,17 +90,19 @@ export class RotateInDownRight
 }
 
 export class RotateInUpLeft
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryAnimationBuilder
+{
   static createInstance(): RotateInUpLeft {
     return new RotateInUpLeft();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): AnimationConfigFunction<EntryAnimationsValues> => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return (values) => {
       'worklet';
@@ -108,9 +119,10 @@ export class RotateInUpLeft
           opacity: 0,
           transform: [
             { rotate: '90deg' },
-            { translateX: values.width / 2 - values.height / 2 },
-            { translateY: values.width / 2 - values.height / 2 },
+            { translateX: values.targetWidth / 2 - values.targetHeight / 2 },
+            { translateY: values.targetWidth / 2 - values.targetHeight / 2 },
           ],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -119,17 +131,19 @@ export class RotateInUpLeft
 }
 
 export class RotateInUpRight
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryAnimationBuilder
+{
   static createInstance(): RotateInUpRight {
     return new RotateInUpRight();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): AnimationConfigFunction<EntryAnimationsValues> => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return (values) => {
       'worklet';
@@ -146,9 +160,10 @@ export class RotateInUpRight
           opacity: 0,
           transform: [
             { rotate: '-90deg' },
-            { translateX: -(values.width / 2 - values.height / 2) },
-            { translateY: values.width / 2 - values.height / 2 },
+            { translateX: -(values.targetWidth / 2 - values.targetHeight / 2) },
+            { translateY: values.targetWidth / 2 - values.targetHeight / 2 },
           ],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -157,17 +172,19 @@ export class RotateInUpRight
 }
 
 export class RotateOutDownLeft
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IExitAnimationBuilder
+{
   static createInstance(): RotateOutDownLeft {
     return new RotateOutDownLeft();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): AnimationConfigFunction<ExitAnimationsValues> => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return (values) => {
       'worklet';
@@ -179,13 +196,19 @@ export class RotateOutDownLeft
             {
               translateX: delayFunction(
                 delay,
-                animation(values.width / 2 - values.height / 2, config)
+                animation(
+                  values.currentWidth / 2 - values.currentHeight / 2,
+                  config
+                )
               ),
             },
             {
               translateY: delayFunction(
                 delay,
-                animation(values.width / 2 - values.height / 2, config)
+                animation(
+                  values.currentWidth / 2 - values.currentHeight / 2,
+                  config
+                )
               ),
             },
           ],
@@ -193,6 +216,7 @@ export class RotateOutDownLeft
         initialValues: {
           opacity: 1,
           transform: [{ rotate: '0deg' }, { translateX: 0 }, { translateY: 0 }],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -201,17 +225,19 @@ export class RotateOutDownLeft
 }
 
 export class RotateOutDownRight
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IExitAnimationBuilder
+{
   static createInstance(): RotateOutDownRight {
     return new RotateOutDownRight();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): AnimationConfigFunction<ExitAnimationsValues> => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return (values) => {
       'worklet';
@@ -223,13 +249,19 @@ export class RotateOutDownRight
             {
               translateX: delayFunction(
                 delay,
-                animation(-(values.width / 2 - values.height / 2), config)
+                animation(
+                  -(values.currentWidth / 2 - values.currentHeight / 2),
+                  config
+                )
               ),
             },
             {
               translateY: delayFunction(
                 delay,
-                animation(values.width / 2 - values.height / 2, config)
+                animation(
+                  values.currentWidth / 2 - values.currentHeight / 2,
+                  config
+                )
               ),
             },
           ],
@@ -237,6 +269,7 @@ export class RotateOutDownRight
         initialValues: {
           opacity: 1,
           transform: [{ rotate: '0deg' }, { translateX: 0 }, { translateY: 0 }],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -245,17 +278,19 @@ export class RotateOutDownRight
 }
 
 export class RotateOutUpLeft
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IExitAnimationBuilder
+{
   static createInstance(): RotateOutUpLeft {
     return new RotateOutUpLeft();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): AnimationConfigFunction<ExitAnimationsValues> => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return (values) => {
       'worklet';
@@ -267,13 +302,19 @@ export class RotateOutUpLeft
             {
               translateX: delayFunction(
                 delay,
-                animation(values.width / 2 - values.height / 2, config)
+                animation(
+                  values.currentWidth / 2 - values.currentHeight / 2,
+                  config
+                )
               ),
             },
             {
               translateY: delayFunction(
                 delay,
-                animation(-(values.width / 2 - values.height / 2), config)
+                animation(
+                  -(values.currentWidth / 2 - values.currentHeight / 2),
+                  config
+                )
               ),
             },
           ],
@@ -281,6 +322,7 @@ export class RotateOutUpLeft
         initialValues: {
           opacity: 1,
           transform: [{ rotate: '0deg' }, { translateX: 0 }, { translateY: 0 }],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -289,17 +331,19 @@ export class RotateOutUpLeft
 }
 
 export class RotateOutUpRight
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IExitAnimationBuilder
+{
   static createInstance(): RotateOutUpRight {
     return new RotateOutUpRight();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): AnimationConfigFunction<ExitAnimationsValues> => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
     return (values) => {
       'worklet';
@@ -311,13 +355,19 @@ export class RotateOutUpRight
             {
               translateX: delayFunction(
                 delay,
-                animation(-(values.width / 2 - values.height / 2), config)
+                animation(
+                  -(values.currentWidth / 2 - values.currentHeight / 2),
+                  config
+                )
               ),
             },
             {
               translateY: delayFunction(
                 delay,
-                animation(-(values.width / 2 - values.height / 2), config)
+                animation(
+                  -(values.currentWidth / 2 - values.currentHeight / 2),
+                  config
+                )
               ),
             },
           ],
@@ -325,6 +375,7 @@ export class RotateOutUpRight
         initialValues: {
           opacity: 1,
           transform: [{ rotate: '0deg' }, { translateX: 0 }, { translateY: 0 }],
+          ...initialValues,
         },
         callback: callback,
       };

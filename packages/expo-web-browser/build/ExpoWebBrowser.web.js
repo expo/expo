@@ -15,10 +15,10 @@ function dismissPopup() {
     }
     popupWindow.close();
     if (listenerMap.has(popupWindow)) {
-        const { listener, appStateListener, interval } = listenerMap.get(popupWindow);
+        const { listener, appStateSubscription, interval } = listenerMap.get(popupWindow);
         clearInterval(interval);
         window.removeEventListener('message', listener);
-        AppState.removeEventListener('change', appStateListener);
+        appStateSubscription.remove();
         listenerMap.delete(popupWindow);
         const handle = window.localStorage.getItem(getHandle());
         if (handle) {
@@ -86,11 +86,6 @@ export default {
         if (!Platform.isDOMAvailable)
             return { type: WebBrowserResultType.CANCEL };
         redirectUrl = redirectUrl ?? getRedirectUrlFromUrlOrGenerate(url);
-        const state = await getStateFromUrlOrGenerateAsync(url);
-        // Save handle for session
-        window.localStorage.setItem(getHandle(), state);
-        // Save redirect Url for further verification
-        window.localStorage.setItem(getRedirectUrlHandle(state), redirectUrl);
         if (popupWindow == null || popupWindow?.closed) {
             const features = getPopupFeaturesString(openOptions?.windowFeatures);
             popupWindow = window.open(url, openOptions?.windowName, features);
@@ -98,12 +93,17 @@ export default {
                 try {
                     popupWindow.focus();
                 }
-                catch (e) { }
+                catch { }
             }
             else {
                 throw new CodedError('ERR_WEB_BROWSER_BLOCKED', 'Popup window was blocked by the browser or failed to open. This can happen in mobile browsers when the window.open() method was invoked too long after a user input was fired.');
             }
         }
+        const state = await getStateFromUrlOrGenerateAsync(url);
+        // Save handle for session
+        window.localStorage.setItem(getHandle(), state);
+        // Save redirect Url for further verification
+        window.localStorage.setItem(getRedirectUrlHandle(state), redirectUrl);
         return new Promise(async (resolve) => {
             // Create a listener for messages sent from the popup
             const listener = (event) => {
@@ -138,7 +138,7 @@ export default {
                     }
                 }
             };
-            AppState.addEventListener('change', appStateListener);
+            const appStateSubscription = AppState.addEventListener('change', appStateListener);
             // Check if the window has been closed every second.
             const interval = setInterval(() => {
                 if (popupWindow?.closed) {
@@ -152,7 +152,7 @@ export default {
             listenerMap.set(popupWindow, {
                 listener,
                 interval,
-                appStateListener,
+                appStateSubscription,
             });
         });
     },
@@ -234,7 +234,7 @@ function normalizePopupFeaturesString(options) {
         for (const pair of windowFeaturePairs) {
             const [key, value] = pair.trim().split('=');
             if (key && value) {
-                windowFeaturePairs[key] = value;
+                windowFeatures[key] = value;
             }
         }
     }

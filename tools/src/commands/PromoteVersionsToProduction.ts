@@ -1,8 +1,8 @@
+import { Command } from '@expo/commander';
+import { Config, Versions } from '@expo/xdl';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
-import { Config, Versions } from '@expo/xdl';
 import * as jsondiffpatch from 'jsondiffpatch';
-import { Command } from '@expo/commander';
 
 import { STAGING_API_HOST, PRODUCTION_API_HOST } from '../Constants';
 

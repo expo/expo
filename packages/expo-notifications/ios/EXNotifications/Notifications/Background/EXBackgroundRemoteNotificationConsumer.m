@@ -2,13 +2,13 @@
 
 #import <EXNotifications/EXBackgroundNotificationTasksModule.h>
 #import <EXNotifications/EXBackgroundRemoteNotificationConsumer.h>
-#import <UMTaskManagerInterface/UMTaskInterface.h>
+#import <ExpoModulesCore/EXTaskInterface.h>
 
 @implementation EXBackgroundRemoteNotificationConsumer
 
-+ (BOOL)supportsLaunchReason:(UMTaskLaunchReason)launchReason
++ (BOOL)supportsLaunchReason:(EXTaskLaunchReason)launchReason
 {
-  return launchReason == UMTaskLaunchReasonRemoteNotification;
+  return launchReason == EXTaskLaunchReasonRemoteNotification;
 }
 
 - (NSString *)taskType
@@ -17,7 +17,7 @@
 }
 
 // Associating task to the consumer.
-- (void)didRegisterTask:(id<UMTaskInterface>)task
+- (void)didRegisterTask:(id<EXTaskInterface>)task
 {
   _task = task;
 }

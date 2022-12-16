@@ -13,7 +13,7 @@ const qrWorkerMethod = ({ data, width, height }: ImageData): any => {
   let parsed;
   try {
     parsed = JSON.parse(decoded);
-  } catch (err) {
+  } catch {
     parsed = decoded;
   }
 
@@ -21,6 +21,8 @@ const qrWorkerMethod = ({ data, width, height }: ImageData): any => {
     const nativeEvent: BarCodeScanningResult = {
       type: 'qr',
       data: parsed.data,
+      cornerPoints: [],
+      bounds: { origin: { x: 0, y: 0 }, size: { width: 0, height: 0 } },
     };
     if (parsed.location) {
       nativeEvent.cornerPoints = [
@@ -38,7 +40,7 @@ const qrWorkerMethod = ({ data, width, height }: ImageData): any => {
 function useRemoteJsQR() {
   return useWorker(qrWorkerMethod, {
     remoteDependencies: ['https://cdn.jsdelivr.net/npm/jsqr@1.2.0/dist/jsQR.min.js'],
-    timeout: 5000,
+    autoTerminate: false,
   });
 }
 

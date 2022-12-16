@@ -2,7 +2,7 @@ import * as React from 'react';
 import { ViewProps } from 'react-native';
 import { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
 import { VideoFullscreenUpdateEvent, VideoReadyForDisplayEvent } from './Video.types';
-declare type ExponentVideoProps = {
+type ExponentVideoProps = {
     source: AVPlaybackNativeSource | null;
     resizeMode?: object;
     status?: AVPlaybackStatusToSet;
@@ -31,19 +31,11 @@ declare type ExponentVideoProps = {
     translateY?: number;
     rotation?: number;
 } & ViewProps;
-export declare type NaturalSize = {
+export type NaturalSize = {
     width: number;
     height: number;
     orientation: 'portrait' | 'landscape';
 };
-export declare const FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
-export declare const FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
-export declare const FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
-export declare const FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT = 0;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_PRESENT = 1;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS = 2;
-export declare const IOS_FULLSCREEN_UPDATE_PLAYER_DID_DISMISS = 3;
 export default class ExponentVideo extends React.Component<ExponentVideoProps> {
     _video?: HTMLVideoElement;
     _removeFullscreenListener?: () => any;

@@ -1,4 +1,4 @@
-#import "REAValueNode.h"
+#import <RNReanimated/REAValueNode.h>
 
 @implementation REAValueNode {
   NSNumber *_value;

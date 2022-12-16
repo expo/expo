@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.modifyJavaMainActivity = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const semver_1 = __importDefault(require("semver"));
@@ -34,7 +34,6 @@ const DEV_LAUNCHER_UPDATES_ANDROID_INIT = `if (BuildConfig.DEBUG) {
       DevLauncherController.getInstance().setUpdatesInterface(UpdatesDevLauncherController.initialize(this));
     }`;
 const DEV_LAUNCHER_UPDATES_DEVELOPER_SUPPORT = 'return DevLauncherController.getInstance().getUseDeveloperSupport();';
-const DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX = /import ['"](?:expo-dev-client|expo-dev-launcher)['"]/;
 async function readFileAsync(path) {
     return fs_1.default.promises.readFile(path, 'utf8');
 }
@@ -92,17 +91,6 @@ async function editPodfile(config, action) {
     catch (e) {
         config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify AppDelegate.m - ${e}.
 See the expo-dev-client installation instructions to modify your AppDelegate.m manually: ${constants_1.InstallationPage}`);
-    }
-}
-async function editIndex(config, action) {
-    const indexPath = path_1.default.join(config.modRequest.projectRoot, 'index.js');
-    try {
-        const index = action(await readFileAsync(indexPath));
-        return await saveFileAsync(indexPath, index);
-    }
-    catch (e) {
-        config_plugins_1.WarningAggregator.addWarningIOS('expo-dev-launcher', `Couldn't modify index.js - ${e}.
-See the expo-dev-client installation instructions to modify your index.js manually: ${constants_1.InstallationPage}`);
     }
 }
 const withDevLauncherApplication = (config) => {
@@ -180,7 +168,7 @@ const withDevLauncherPodfile = (config) => {
         async (config) => {
             await editPodfile(config, (podfile) => {
                 // replace all iOS versions below 12
-                podfile = podfile.replace(/platform :ios, '((\d\.0)|(1[0-1].0))'/, "platform :ios, '12.0'");
+                podfile = podfile.replace(/platform :ios, '((\d\.0)|(1[0-1].0))'/, "platform :ios, '13.0'");
                 // Match both variations of Ruby config:
                 // unknown: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', :configurations => :debug
                 // Rubocop: pod 'expo-dev-launcher', path: '../node_modules/expo-dev-launcher', configurations: :debug
@@ -197,29 +185,15 @@ const withDevLauncherPodfile = (config) => {
         },
     ]);
 };
-const withErrorHandling = (config) => {
-    const injectErrorHandlers = async (config) => {
-        await editIndex(config, (index) => {
-            if (!DEV_LAUNCHER_JS_REGISTER_ERROR_HANDLERS_REGEX.test(index)) {
-                index = `import 'expo-dev-client';\n\n${index}`;
-            }
-            return index;
-        });
-        return config;
-    };
-    // We need to run the same task twice to ensure it will work on both platforms,
-    // because if someone runs `expo run:ios`, it will trigger only dangerous mode for that specific platform.
-    // Note: after the first execution, the second one won't change anything.
-    config = (0, config_plugins_1.withDangerousMod)(config, ['android', injectErrorHandlers]);
-    config = (0, config_plugins_1.withDangerousMod)(config, ['ios', injectErrorHandlers]);
-    return config;
-};
 const withDevLauncher = (config) => {
-    config = withDevLauncherActivity(config);
-    config = withDevLauncherApplication(config);
-    config = withDevLauncherPodfile(config);
-    config = (0, withDevLauncherAppDelegate_1.withDevLauncherAppDelegate)(config);
-    config = withErrorHandling(config);
+    // projects using SDKs before 45 need the old regex-based integration
+    // TODO: remove these once we drop support for SDK 44
+    if (config.sdkVersion && semver_1.default.lt(config.sdkVersion, '45.0.0')) {
+        config = withDevLauncherActivity(config);
+        config = withDevLauncherApplication(config);
+        config = withDevLauncherPodfile(config);
+        config = (0, withDevLauncherAppDelegate_1.withDevLauncherAppDelegate)(config);
+    }
     return config;
 };
 exports.default = (0, config_plugins_1.createRunOncePlugin)(withDevLauncher, pkg.name, pkg.version);

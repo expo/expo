@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 9.2.2 — 2022-11-03
+
+_This version does not introduce any user-facing changes._
+
+## 9.2.1 — 2022-10-06
+
+### ⚠️ Notices
+
+- Added support for React Native 0.70.x. ([#19261](https://github.com/expo/expo/pull/19261) by [@kudo](https://github.com/kudo))
+
+## 9.2.0 — 2022-07-07
+
+### 💡 Others
+
+- Preserve `import/export` syntax on Webpack only. ([#17713](https://github.com/expo/expo/pull/17713) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 📚 3rd party library updates
+
+- Updates `metro-react-native-babel-preset` for react-native 0.69. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
+
+## 9.1.0 — 2022-04-18
+
 ### 📚 3rd party library updates
 
 - Upgrade to react-native 0.66. ([#15914](https://github.com/expo/expo/pull/15914) by [@kudo](https://github.com/kudo))

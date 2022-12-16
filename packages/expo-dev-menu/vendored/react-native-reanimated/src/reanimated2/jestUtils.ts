@@ -1,6 +1,17 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
-const MockDate = require('mockdate');
+import { jestResetJsReanimatedModule } from './core';
+
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace jest {
+    interface Matchers<R> {
+      toHaveAnimatedStyle(
+        style: Record<string, unknown>[] | Record<string, unknown>
+      ): R;
+    }
+  }
+}
 
 let config = {
   fps: 60,
@@ -129,32 +140,36 @@ const compareStyle = (received, expectedStyle, config) => {
 
 let frameTime = 1000 / config.fps;
 let requestAnimationFrameCopy;
+let currentTimestamp = 0;
 
 const requestAnimationFrame = (callback) => {
   setTimeout(callback, frameTime);
 };
 
 const beforeTest = () => {
+  jestResetJsReanimatedModule();
   requestAnimationFrameCopy = global.requestAnimationFrame;
   global.requestAnimationFrame = requestAnimationFrame;
-  MockDate.set(0);
+  global.ReanimatedDataMock = {
+    now: () => currentTimestamp,
+  };
+  currentTimestamp = 0;
   jest.useFakeTimers();
 };
 
 const afterTest = () => {
-  MockDate.reset();
   jest.useRealTimers();
   global.requestAnimationFrame = requestAnimationFrameCopy;
 };
 
 const tickTravel = () => {
-  MockDate.set(new Date(Date.now() + frameTime));
+  currentTimestamp += frameTime;
   jest.advanceTimersByTime(frameTime);
 };
 
-export const withReanimatedTimer = (animatonTest) => {
+export const withReanimatedTimer = (animationTest) => {
   beforeTest();
-  animatonTest();
+  animationTest();
   afterTest();
 };
 
@@ -173,7 +188,16 @@ export const advanceAnimationByFrame = (count) => {
 };
 
 export const setUpTests = (userConfig = {}) => {
-  const expect = require('expect');
+  let expect;
+  try {
+    expect = require('expect');
+  } catch (_) {
+    // for Jest in version 28+
+    const { expect: expectModule } = require('@jest/globals');
+    expect = expectModule;
+  }
+
+  require('setimmediate');
   frameTime = Math.round(1000 / config.fps);
 
   config = {

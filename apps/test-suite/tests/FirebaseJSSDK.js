@@ -205,6 +205,9 @@ export async function test({ describe, it, expect, beforeAll }) {
  * @see https://github.com/firebase/firebase-js-sdk/issues/1847#issuecomment-929482013
  */
 function getReactNativePersistence(storage) {
+  // https://github.com/firebase/firebase-js-sdk/blob/6dacc2400fdcf4432ed1977ca1eb148da6db3fc5/packages/auth/src/core/persistence/index.ts#L33
+  const STORAGE_AVAILABLE_KEY = '__sak';
+
   return class PersistenceExpo {
     type = 'LOCAL';
 

@@ -1,10 +1,13 @@
+#import "EXAppLoadingProgressWindowController.h"
+
+#import <React/React-Core-umbrella.h> // Keeps this import to fix the error from building React module: `error: definition of 'RCTBridge' must be imported from module 'React' before it is required`
+
 #import <ExpoModulesCore/EXDefines.h>
 
 #if !defined(EX_DETACHED)
 #import "Expo_Go-Swift.h"
 #endif // !defined(EX_DETACHED)
 
-#import "EXAppLoadingProgressWindowController.h"
 #import "EXUtil.h"
 
 @interface EXAppLoadingProgressWindowController ()

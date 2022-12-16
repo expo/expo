@@ -1,8 +1,8 @@
 #include "DevMenuMutableValue.h"
-#include "DevMenuSharedParent.h"
-#include "DevMenuShareableValue.h"
-#include "DevMenuRuntimeManager.h"
 #include "DevMenuRuntimeDecorator.h"
+#include "DevMenuRuntimeManager.h"
+#include "DevMenuShareableValue.h"
+#include "DevMenuSharedParent.h"
 
 namespace devmenureanimated {
 
@@ -11,7 +11,7 @@ void MutableValue::setValue(jsi::Runtime &rt, const jsi::Value &newValue) {
   value = ShareableValue::adapt(rt, newValue, runtimeManager);
 
   std::shared_ptr<MutableValue> thiz = shared_from_this();
-  auto notifyListeners = [thiz] () {
+  auto notifyListeners = [thiz]() {
     for (auto listener : thiz->listeners) {
       listener.second();
     }
@@ -19,9 +19,8 @@ void MutableValue::setValue(jsi::Runtime &rt, const jsi::Value &newValue) {
   if (RuntimeDecorator::isUIRuntime(rt)) {
     notifyListeners();
   } else {
-    runtimeManager->scheduler->scheduleOnUI([notifyListeners] {
-      notifyListeners();
-    });
+    runtimeManager->scheduler->scheduleOnUI(
+        [notifyListeners] { notifyListeners(); });
   }
 }
 
@@ -30,26 +29,36 @@ jsi::Value MutableValue::getValue(jsi::Runtime &rt) {
   return value->getValue(rt);
 }
 
-void MutableValue::set(jsi::Runtime &rt, const jsi::PropNameID &name, const jsi::Value &newValue) {
+void MutableValue::set(
+    jsi::Runtime &rt,
+    const jsi::PropNameID &name,
+    const jsi::Value &newValue) {
   auto propName = name.utf8(rt);
   if (!runtimeManager->valueSetter) {
-    throw jsi::JSError(rt, "Value-Setter is not yet configured! Make sure the core-functions are installed.");
+    throw jsi::JSError(
+        rt,
+        "Value-Setter is not yet configured! Make sure the core-functions are installed.");
   }
 
   if (RuntimeDecorator::isUIRuntime(rt)) {
     // UI thread
     if (propName == "value") {
-      auto setterProxy = jsi::Object::createFromHostObject(rt, std::make_shared<MutableValueSetterProxy>(shared_from_this()));
+      auto setterProxy = jsi::Object::createFromHostObject(
+          rt, std::make_shared<MutableValueSetterProxy>(shared_from_this()));
       runtimeManager->valueSetter->getValue(rt)
-      .asObject(rt)
-      .asFunction(rt)
-      .callWithThis(rt, setterProxy, newValue);
+          .asObject(rt)
+          .asFunction(rt)
+          .callWithThis(rt, setterProxy, newValue);
     } else if (propName == "_animation") {
       // TODO: assert to allow animation to be set from UI only
       if (animation.expired()) {
         animation = getWeakRef(rt);
       }
       *animation.lock() = jsi::Value(rt, newValue);
+    } else if (propName == "_value") {
+      auto setter =
+          std::make_shared<MutableValueSetterProxy>(shared_from_this());
+      setter->set(rt, jsi::PropNameID::forAscii(rt, "_value"), newValue);
     }
   } else {
     // React-JS Thread or another threaded Runtime.
@@ -57,16 +66,16 @@ void MutableValue::set(jsi::Runtime &rt, const jsi::PropNameID &name, const jsi:
       auto shareable = ShareableValue::adapt(rt, newValue, runtimeManager);
       runtimeManager->scheduler->scheduleOnUI([this, shareable] {
         jsi::Runtime &rt = *this->runtimeManager->runtime.get();
-        auto setterProxy = jsi::Object::createFromHostObject(rt, std::make_shared<MutableValueSetterProxy>(shared_from_this()));
+        auto setterProxy = jsi::Object::createFromHostObject(
+            rt, std::make_shared<MutableValueSetterProxy>(shared_from_this()));
         jsi::Value newValue = shareable->getValue(rt);
         runtimeManager->valueSetter->getValue(rt)
-          .asObject(rt)
-          .asFunction(rt)
-          .callWithThis(rt, setterProxy, newValue);
+            .asObject(rt)
+            .asFunction(rt)
+            .callWithThis(rt, setterProxy, newValue);
       });
     }
   }
-
 }
 
 jsi::Value MutableValue::get(jsi::Runtime &rt, const jsi::PropNameID &name) {
@@ -98,11 +107,18 @@ std::vector<jsi::PropNameID> MutableValue::getPropertyNames(jsi::Runtime &rt) {
   return result;
 }
 
-MutableValue::MutableValue(jsi::Runtime &rt, const jsi::Value &initial, RuntimeManager *runtimeManager, std::shared_ptr<Scheduler> s):
-StoreUser(s), runtimeManager(runtimeManager), value(ShareableValue::adapt(rt, initial, runtimeManager)) {
-}
+MutableValue::MutableValue(
+    jsi::Runtime &rt,
+    const jsi::Value &initial,
+    RuntimeManager *runtimeManager,
+    std::shared_ptr<Scheduler> s)
+    : StoreUser(s, *runtimeManager),
+      runtimeManager(runtimeManager),
+      value(ShareableValue::adapt(rt, initial, runtimeManager)) {}
 
-unsigned long int MutableValue::addListener(unsigned long id, std::function<void ()> listener) {
+unsigned long int MutableValue::addListener(
+    unsigned long id,
+    std::function<void()> listener) {
   listeners[id] = listener;
   return id;
 }
@@ -113,5 +129,4 @@ void MutableValue::removeListener(unsigned long listenerId) {
   }
 }
 
-
-}
+} // namespace devmenureanimated

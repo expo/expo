@@ -36,8 +36,8 @@ import host.exp.exponent.utils.AsyncCondition.AsyncConditionListener
 import host.exp.exponent.utils.ColorParser
 import host.exp.exponent.utils.JSONUtils.getJSONString
 import host.exp.expoview.R
-import okhttp3.MediaType
-import okhttp3.RequestBody
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.IOException
@@ -137,7 +137,7 @@ object NotificationHelper {
             }
           }
 
-          val body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), params.toString())
+          val body = params.toString().toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
           val request = ExponentUrls.addExponentHeadersToUrl("https://exp.host/--/api/v2/push/getExpoPushToken")
             .header("Content-Type", "application/json")
             .post(body)
@@ -500,7 +500,9 @@ object NotificationHelper {
               intent.putExtra(KernelConstants.NOTIFICATION_KEY, body) // deprecated
               intent.putExtra(KernelConstants.NOTIFICATION_OBJECT_KEY, notificationEvent.toJSONObject(null).toString())
 
-              val contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+              // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+              val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+              val contentIntent = PendingIntent.getActivity(context, id, intent, PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag)
               builder.setContentIntent(contentIntent)
 
               if (data.containsKey("categoryId")) {

@@ -10,6 +10,7 @@
 
 #import "RNPinchHandler.h"
 
+#if !TARGET_OS_TV
 @interface RNBetterPinchRecognizer : UIPinchGestureRecognizer
 
 - (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
@@ -67,6 +68,7 @@
 }
 
 @end
+#endif
 
 @implementation RNPinchGestureHandler
 

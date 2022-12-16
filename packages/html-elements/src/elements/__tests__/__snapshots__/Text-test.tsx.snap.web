@@ -2,13 +2,8 @@
 
 exports[`renders B 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-fontWeight-vw2c0b"
   dir="auto"
-  style={
-    Object {
-      "fontWeight": "bold",
-    }
-  }
 >
   demo
 </div>
@@ -16,53 +11,29 @@ exports[`renders B 1`] = `
 
 exports[`renders BR 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-height-10rkof1 r-width-1h2t8mc"
   dir="auto"
-  style={
-    Object {
-      "height": "0.5em",
-      "width": "0px",
-    }
-  }
 />
 `;
 
 exports[`renders BlockQuote 1`] = `
 <div
-  className="css-view-1dbjc4n"
-  style={
-    Object {
-      "marginBottom": "1em",
-      "marginTop": "1em",
-    }
-  }
+  className="css-view-175oi2r r-marginVertical-gdo61v"
+  dir={null}
 />
 `;
 
 exports[`renders Code 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-fontFamily-1pm8pkb r-fontWeight-majxgm"
   dir="auto"
-  style={
-    Object {
-      "fontFamily": "Courier",
-      "fontWeight": "500",
-    }
-  }
 />
 `;
 
 exports[`renders Del 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-textDecorationLine-142tt33 r-textDecorationStyle-1a2p6p6"
   dir="auto"
-  style={
-    Object {
-      "WebkitTextDecorationStyle": "solid",
-      "textDecoration": "line-through",
-      "textDecorationStyle": "solid",
-    }
-  }
 >
   demo
 </div>
@@ -70,13 +41,8 @@ exports[`renders Del 1`] = `
 
 exports[`renders EM 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-fontStyle-36ujnk"
   dir="auto"
-  style={
-    Object {
-      "fontStyle": "italic",
-    }
-  }
 >
   demo
 </div>
@@ -84,13 +50,8 @@ exports[`renders EM 1`] = `
 
 exports[`renders I 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-fontStyle-36ujnk"
   dir="auto"
-  style={
-    Object {
-      "fontStyle": "italic",
-    }
-  }
 >
   demo
 </div>
@@ -98,27 +59,15 @@ exports[`renders I 1`] = `
 
 exports[`renders Mark 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-backgroundColor-98uye2 r-color-cqee49"
   dir="auto"
-  style={
-    Object {
-      "backgroundColor": "rgba(255,255,0,1.00)",
-      "color": "rgba(0,0,0,1.00)",
-    }
-  }
 />
 `;
 
 exports[`renders P 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-marginVertical-gdo61v"
   dir="auto"
-  style={
-    Object {
-      "marginBottom": "1em",
-      "marginTop": "1em",
-    }
-  }
 >
   demo
 </div>
@@ -126,16 +75,8 @@ exports[`renders P 1`] = `
 
 exports[`renders Pre 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-fontFamily-1pm8pkb r-fontWeight-majxgm r-marginVertical-gdo61v"
   dir="auto"
-  style={
-    Object {
-      "fontFamily": "Courier",
-      "fontWeight": "500",
-      "marginBottom": "1em",
-      "marginTop": "1em",
-    }
-  }
 >
   
     body {
@@ -147,13 +88,8 @@ exports[`renders Pre 1`] = `
 
 exports[`renders Q 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-fontStyle-36ujnk"
   dir="auto"
-  style={
-    Object {
-      "fontStyle": "italic",
-    }
-  }
 >
   "
   demo
@@ -163,15 +99,8 @@ exports[`renders Q 1`] = `
 
 exports[`renders S 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-textDecorationLine-142tt33 r-textDecorationStyle-1a2p6p6"
   dir="auto"
-  style={
-    Object {
-      "WebkitTextDecorationStyle": "solid",
-      "textDecoration": "line-through",
-      "textDecorationStyle": "solid",
-    }
-  }
 >
   demo
 </div>
@@ -179,13 +108,8 @@ exports[`renders S 1`] = `
 
 exports[`renders Strong 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56 r-fontWeight-vw2c0b"
   dir="auto"
-  style={
-    Object {
-      "fontWeight": "bold",
-    }
-  }
 >
   demo
 </div>
@@ -193,7 +117,7 @@ exports[`renders Strong 1`] = `
 
 exports[`renders Time 1`] = `
 <div
-  className="css-text-901oao"
+  className="css-text-1rynq56"
   dir="auto"
 >
   May 15

@@ -12,7 +12,7 @@ function resolveExpoUpdatesVersion(projectRoot) {
     try {
         expoUpdatesBuildPath = (0, resolve_from_1.default)(projectRoot, 'expo-updates');
     }
-    catch (e) {
+    catch {
         // this is expected in projects that don't have expo-updates installed
         return null;
     }

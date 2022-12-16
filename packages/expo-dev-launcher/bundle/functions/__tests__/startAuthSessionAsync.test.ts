@@ -1,10 +1,6 @@
 import { websiteOrigin } from '../../apiClient';
-import { getAuthSchemeAsync } from '../../native-modules/DevMenuInternal';
-import { openAuthSessionAsync } from '../../native-modules/DevMenuWebBrowser';
+import { openAuthSessionAsync, getAuthSchemeAsync } from '../../native-modules/DevLauncherAuth';
 import { startAuthSessionAsync } from '../startAuthSessionAsync';
-
-jest.mock('../../native-modules/DevMenuInternal');
-jest.mock('../../native-modules/DevMenuWebBrowser');
 
 const mockOpenAuthSessionAsync = openAuthSessionAsync as jest.Mock;
 const mockGetAuthSchemeAsync = getAuthSchemeAsync as jest.Mock;

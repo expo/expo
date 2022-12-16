@@ -4,13 +4,16 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
+import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.SingleType
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KType
 
 class PairTypeConverter(
   converterProvider: TypeConverterProvider,
   private val pairType: KType,
-) : TypeConverter<Pair<*, *>>(pairType.isMarkedNullable) {
+) : DynamicAwareTypeConverters<Pair<*, *>>(pairType.isMarkedNullable) {
   private val converters = listOf(
     converterProvider.obtainTypeConverter(
       requireNotNull(pairType.arguments.getOrNull(0)?.type) {
@@ -24,8 +27,20 @@ class PairTypeConverter(
     )
   )
 
-  override fun convertNonOptional(value: Dynamic): Pair<*, *> {
+  override fun convertFromDynamic(value: Dynamic): Pair<*, *> {
     val jsArray = value.asArray()
+    return convertFromReadableArray(jsArray)
+  }
+
+  override fun convertFromAny(value: Any): Pair<*, *> {
+    if (value is ReadableArray) {
+      return convertFromReadableArray(value)
+    }
+
+    return value as Pair<*, *>
+  }
+
+  private fun convertFromReadableArray(jsArray: ReadableArray): Pair<*, *> {
     return Pair(
       convertElement(jsArray, 0),
       convertElement(jsArray, 1)
@@ -41,4 +56,10 @@ class PairTypeConverter(
       }
     }
   }
+
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType(
+    SingleType(CppType.READABLE_ARRAY)
+  )
+
+  override fun isTrivial() = false
 }

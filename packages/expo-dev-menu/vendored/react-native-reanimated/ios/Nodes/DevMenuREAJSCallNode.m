@@ -1,12 +1,12 @@
 #import "DevMenuREAJSCallNode.h"
-#import "DevMenuREANodesManager.h"
 #import "DevMenuREAModule.h"
+#import "DevMenuREANodesManager.h"
 
 @implementation DevMenuREAJSCallNode {
   NSArray<NSNumber *> *_input;
 }
 
-- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *,id> *)config
+- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config
 {
   if ((self = [super initWithID:nodeID config:config])) {
     _input = config[@"input"];
@@ -21,9 +21,8 @@
     args[i] = [[self.nodesManager findNodeByID:_input[i]] value];
   }
 
-  [self.nodesManager.reanimatedModule
-   sendEventWithName:@"onReanimatedCall"
-   body:@{@"id": self.nodeID, @"args": args }];
+  [self.nodesManager.reanimatedModule sendEventWithName:@"onReanimatedCall"
+                                                   body:@{@"id" : self.nodeID, @"args" : args}];
 
   return @(0);
 }

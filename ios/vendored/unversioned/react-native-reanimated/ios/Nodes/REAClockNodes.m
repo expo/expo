@@ -1,9 +1,9 @@
-#import "REAClockNodes.h"
+#import <RNReanimated/REAClockNodes.h>
+#import <RNReanimated/REANodesManager.h>
+#import <RNReanimated/REAParamNode.h>
+#import <RNReanimated/REAUtils.h>
 #import <React/RCTConvert.h>
 #import <React/RCTLog.h>
-#import "REANodesManager.h"
-#import "REAParamNode.h"
-#import "REAUtils.h"
 
 @interface REAClockNode ()
 

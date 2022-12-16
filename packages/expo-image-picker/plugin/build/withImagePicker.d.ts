@@ -1,8 +1,10 @@
-import { ConfigPlugin, AndroidConfig } from '@expo/config-plugins';
-export declare function setImagePickerManifestActivity(androidManifest: AndroidConfig.Manifest.AndroidManifest): AndroidConfig.Manifest.AndroidManifest;
-declare const _default: ConfigPlugin<void | {
-    photosPermission?: string | undefined;
-    cameraPermission?: string | undefined;
-    microphonePermission?: string | undefined;
-}>;
+import { ConfigPlugin, InfoPlist } from '@expo/config-plugins';
+declare type Props = {
+    photosPermission?: string | false;
+    cameraPermission?: string | false;
+    microphonePermission?: string | false;
+};
+export declare function setImagePickerInfoPlist(infoPlist: InfoPlist, { cameraPermission, microphonePermission, photosPermission }: Props): InfoPlist;
+export declare const withAndroidImagePickerPermissions: ConfigPlugin<Props | void>;
+declare const _default: ConfigPlugin<void | Props>;
 export default _default;

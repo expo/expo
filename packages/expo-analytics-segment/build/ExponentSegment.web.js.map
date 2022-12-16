@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentSegment.web.js","sourceRoot":"","sources":["../src/ExponentSegment.web.ts"],"names":[],"mappings":"AAAA,eAAe;IACb,IAAI,IAAI;QACN,OAAO,iBAAiB,CAAC;IAC3B,CAAC;CACF,CAAC","sourcesContent":["export default {\n  get name(): string {\n    return 'ExponentSegment';\n  },\n};\n"]}

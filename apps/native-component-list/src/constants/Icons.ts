@@ -1,5 +1,4 @@
 const Icons: { [key: string]: any } = {
-  AdMob: () => require('../../assets/icons/api/AdMob.png'),
   BackgroundLocation: () => require('../../assets/icons/api/Location.png'),
   BarCodeScanner: () => require('../../assets/icons/api/BarCodeScanner.png'),
   BlurView: () => require('../../assets/icons/api/BlurView.png'),
@@ -22,6 +21,7 @@ const Icons: { [key: string]: any } = {
   Location: () => require('../../assets/icons/api/Location.png'),
   Lottie: () => require('../../assets/icons/api/Lottie.png'),
   Maps: () => require('../../assets/icons/api/Maps.png'),
+  ExpoMaps: () => require('../../assets/icons/api/Maps.png'),
   MediaLibrary: () => require('../../assets/icons/api/FileSystem.png'),
   Notification: () => require('../../assets/icons/api/Notification.png'),
   Pedometer: () => require('../../assets/icons/api/Pedometer.png'),

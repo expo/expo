@@ -16,15 +16,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property(nonatomic, readonly) BOOL scrollEnabled;
 @property(nonatomic, readonly) BOOL showPageIndicator;
 @property(nonatomic, readonly) UIScrollViewKeyboardDismissMode dismissKeyboard;
-@property(nonatomic) UIPageViewControllerTransitionStyle transitionStyle;
 @property(nonatomic) UIPageViewControllerNavigationOrientation orientation;
 @property(nonatomic, copy) RCTDirectEventBlock onPageSelected;
 @property(nonatomic, copy) RCTDirectEventBlock onPageScroll;
 @property(nonatomic, copy) RCTDirectEventBlock onPageScrollStateChanged;
 @property(nonatomic) BOOL overdrag;
 @property(nonatomic) NSString* layoutDirection;
-@property(nonatomic) CGRect previousBounds;
-
+@property(nonatomic, assign) BOOL animating;
 
 - (void)goTo:(NSInteger)index animated:(BOOL)animated;
 - (void)shouldScroll:(BOOL)scrollEnabled;

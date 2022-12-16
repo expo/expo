@@ -10,3 +10,8 @@ export interface Descriptor {
   tag: number;
   name: string;
 }
+
+export interface RefObjectFunction<T> {
+  current: T | null;
+  (component?: T): number;
+}

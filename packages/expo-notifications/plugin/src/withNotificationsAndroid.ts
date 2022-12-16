@@ -1,12 +1,12 @@
+import { generateImageAsync } from '@expo/image-utils';
+import { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
   ConfigPlugin,
   withDangerousMod,
   withAndroidColors,
   withAndroidManifest,
-} from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
-import { generateImageAsync } from '@expo/image-utils';
+} from 'expo/config-plugins';
 import { writeFileSync, unlinkSync, copyFileSync, existsSync, mkdirSync } from 'fs';
 import { basename, resolve } from 'path';
 

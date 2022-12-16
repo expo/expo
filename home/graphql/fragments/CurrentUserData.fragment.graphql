@@ -1,0 +1,19 @@
+fragment CurrentUserData on User {
+  id
+  username
+  firstName
+  lastName
+  profilePhoto
+  accounts {
+    id
+    name
+    owner {
+      id
+      username
+      profilePhoto
+      firstName
+      fullName
+      lastName
+    }
+  }
+}

@@ -47,11 +47,6 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}$1`,
       },
       {
-        paths: `${versionName}FBReactNativeSpec`,
-        replace: /\b(NSStringToNativeAppearanceColorSchemeName|NativeAppearanceColorSchemeNameToNSString)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
         paths: 'RCTView.m',
         replace: /\b(SwitchAccessibilityTrait)\b/g,
         with: `${versionName}$1`,
@@ -70,6 +65,24 @@ export function postTransforms(versionName: string): TransformPipeline {
         paths: 'ModuleRegistry.cpp',
         replace: /(\(name\.compare\(\d+, \d+, ")([^"]+)(RCT"\))/,
         with: '$1$3',
+      },
+      {
+        paths: ['RCTSRWebSocket.h', 'UIView+Private.h'],
+        replace: /@interface (\w+) \((CertificateAdditions|Private)\)/g,
+        with: `@interface $1 (${versionName}$2)`,
+      },
+      {
+        // Fix prefixing imports from React-bridging
+        paths: 'ReactCommon',
+        replace: new RegExp(`(React)\\/${versionName}(bridging)\\/`, 'g'),
+        with: `$1/$2/${versionName}`,
+      },
+      {
+        // Codegen adds methods to `RCTCxxConvert` that start with `JS_`, which refer to `JS::`
+        // C++ namespace that we prefix, so these methods must be prefixed as well.
+        paths: ['FBReactNativeSpec.h', 'FBReactNativeSpec-generated.mm'],
+        replace: /(RCTManagedPointer \*\))(JS_)/g,
+        with: `$1${versionName}$2`,
       },
 
       // Universal modules
@@ -96,7 +109,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         with: `${versionName}NSDictionary+$1.h`,
       },
       {
-        paths: [`${versionName}EXNotifications`, `${versionName}EXAppState`],
+        paths: [
+          `${versionName}EXNotifications`,
+          `${versionName}EXAppState`,
+          `${versionName}EXVersionManager`,
+        ],
         replace: new RegExp(`EXModuleRegistryHolder${versionName}React`, 'g'),
         with: 'EXModuleRegistryHolderReact',
       },
@@ -105,6 +122,11 @@ export function postTransforms(versionName: string): TransformPipeline {
         paths: 'EXVersionManager.mm',
         replace: /@"(ExpoModulesProvider)"/,
         with: `@"${versionName}$1"`,
+      },
+      {
+        paths: `${versionName}EXVersionManager.mm`,
+        replace: `#import <${versionName}Reacthermes/HermesExecutorFactory.h>`,
+        with: `#import <${versionName}reacthermes/${versionName}HermesExecutorFactory.h>`,
       },
 
       // react-native-maps
@@ -116,48 +138,6 @@ export function postTransforms(versionName: string): TransformPipeline {
       {
         paths: 'AIRGoogleMapWMSTile',
         replace: /\b(WMSTileOverlay)\b/g,
-        with: `${versionName}$1`,
-      },
-
-      // react-native-svg
-      {
-        paths: 'RNSVGRenderable.m',
-        replace: /\b(saturate)\(/g,
-        with: `${versionName}$1(`,
-      },
-      {
-        paths: 'RNSVGPainter.m',
-        replace: /\b(PatternFunction)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
-        paths: 'RNSVGFontData.m',
-        replace: /\b(AbsoluteFontWeight|bolder|lighter|nearestFontWeight)\(/gi,
-        with: `${versionName}$1(`,
-      },
-      {
-        paths: 'RNSVGTSpan.m',
-        replace: new RegExp(`\\b(${versionName}RNSVGTopAlignedLabel\\s*\\*\\s*label)\\b`, 'gi'),
-        with: 'static $1',
-      },
-      {
-        paths: 'RNSVGMarker.m',
-        replace: /\b(deg2rad)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
-        paths: 'RNSVGMarkerPosition.m',
-        replace: /\b(PathIsDone|rad2deg|SlopeAngleRadians|CurrentAngle|subtract|ExtractPathElementFeatures|UpdateFromPathElement)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
-        paths: 'RNSVGMarkerPosition.m',
-        replace: /\b(positions_|element_index_|origin_|subpath_start_|in_slope_|out_slope_|auto_start_reverse_)\b/g,
-        with: `${versionName}$1`,
-      },
-      {
-        paths: 'RNSVGPathMeasure.m',
-        replace: /\b(distance|subdivideBezierAtT)\b/g,
         with: `${versionName}$1`,
       },
 
@@ -211,8 +191,8 @@ export function postTransforms(versionName: string): TransformPipeline {
       // react-native-safe-area-context
       {
         paths: [
-          'RCTView+SafeAreaCompat.h',
-          'RCTView+SafeAreaCompat.m',
+          'RNCSafeAreaUtils.h',
+          'RNCSafeAreaUtils.m',
           'RNCSafeAreaProvider.m',
           'RNCSafeAreaView.m',
         ],

@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.app.Activity;
+import android.util.Log;
 
 import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
@@ -63,8 +64,8 @@ public class InAppPurchasesModule extends ExportedModule implements RegistryLife
   }
 
   @ExpoMethod
-  public void purchaseItemAsync(String skuId, String oldSku, final Promise promise) {
-    mBillingManager.purchaseItemAsync(skuId, oldSku, promise);
+  public void purchaseItemAsync(String skuId, ReadableArguments details, final Promise promise) {
+    mBillingManager.purchaseItemAsync(skuId, details, promise);
   }
 
   @ExpoMethod

@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
  */
 @property (nullable, nonatomic, strong) NSDate *downloadTime;
 @property (nullable, nonatomic, strong) NSString *filename;
-@property (nullable, nonatomic, strong) NSString *contentHash; // hex-encoded sha-256
+@property (nullable, nonatomic, strong) NSString *contentHash; // base64url-encoded sha-256
 @property (nullable, nonatomic, strong) NSDictionary *headers;
 
 /**

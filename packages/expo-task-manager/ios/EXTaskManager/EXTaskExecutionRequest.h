@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <UMTaskManagerInterface/UMTaskInterface.h>
+#import <ExpoModulesCore/EXTaskInterface.h>
 #import <UMAppLoader/UMAppLoaderInterface.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,9 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithCallback:(void(^)(NSArray * _Nonnull results))callback;
 
-- (void)addTask:(nonnull id<UMTaskInterface>)task;
-- (void)task:(nonnull id<UMTaskInterface>)task didFinishWithResult:(id)result;
-- (BOOL)isIncludingTask:(nullable id<UMTaskInterface>)task;
+- (void)addTask:(nonnull id<EXTaskInterface>)task;
+- (void)task:(nonnull id<EXTaskInterface>)task didFinishWithResult:(id)result;
+- (BOOL)isIncludingTask:(nullable id<EXTaskInterface>)task;
 - (void)maybeEvaluate;
 
 @end

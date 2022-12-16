@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import org.unimodules.interfaces.taskManager.TaskConsumer;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
-import org.unimodules.interfaces.taskManager.TaskConsumerInterface;
-import org.unimodules.interfaces.taskManager.TaskExecutionCallback;
-import org.unimodules.interfaces.taskManager.TaskInterface;
 import expo.modules.location.LocationHelpers;
 import expo.modules.location.LocationModule;
+import expo.modules.interfaces.taskManager.TaskConsumer;
+import expo.modules.interfaces.taskManager.TaskConsumerInterface;
+import expo.modules.interfaces.taskManager.TaskExecutionCallback;
+import expo.modules.interfaces.taskManager.TaskInterface;
+import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumerInterface {
   public static int VERSION = 1;

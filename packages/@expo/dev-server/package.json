@@ -1,0 +1,56 @@
+{
+  "name": "@expo/dev-server",
+  "version": "0.1.122",
+  "description": "Development servers for starting React Native projects",
+  "main": "build/MetroDevServer.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/dev-server"
+  },
+  "keywords": [
+    "expo",
+    "metro"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/dev-server#readme",
+  "files": [
+    "build",
+    "!*/__tests__/*"
+  ],
+  "dependencies": {
+    "@expo/bunyan": "4.0.0",
+    "@expo/metro-config": "~0.5.1",
+    "@expo/osascript": "2.0.33",
+    "@expo/spawn-async": "^1.5.0",
+    "body-parser": "1.19.0",
+    "chalk": "^4.0.0",
+    "connect": "^3.7.0",
+    "fs-extra": "9.0.0",
+    "is-docker": "^2.0.0",
+    "is-wsl": "^2.1.1",
+    "node-fetch": "^2.6.0",
+    "open": "^8.3.0",
+    "resolve-from": "^5.0.0",
+    "semver": "7.3.2",
+    "serialize-error": "6.0.0",
+    "temp-dir": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/connect": "^3.4.33"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

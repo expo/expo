@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -45,11 +45,12 @@ var path_1 = __importDefault(require("path"));
 var shared_1 = require("./shared");
 function writeStoriesAsync(config) {
     return __awaiter(this, void 0, void 0, function () {
-        var storyManifest, stories, template, storiesDir, writeRequiresPath;
+        var projectRoot, storyManifest, stories, template, storiesDir, writeRequiresPath;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    storyManifest = (0, shared_1.getStoryManifest)(config.projectRoot);
+                    projectRoot = config.projectRoot;
+                    storyManifest = (0, shared_1.getStoryManifest)(projectRoot);
                     stories = Object.keys(storyManifest.files).map(function (id) { return storyManifest.files[id]; });
                     template = "\n      const storiesToExport = {}\n      ".concat(stories.map(function (story) { return generateTemplateForStory(story); }).join(''), "\n      module.exports = storiesToExport\n    ");
                     if (!process.env.EXPO_DEBUG) {
@@ -57,7 +58,7 @@ function writeStoriesAsync(config) {
                             minify: true,
                         }).code;
                     }
-                    storiesDir = (0, shared_1.getStoriesDir)(config);
+                    storiesDir = (0, shared_1.getStoriesDir)({ projectRoot: projectRoot });
                     writeRequiresPath = path_1.default.resolve(storiesDir, 'stories.js');
                     return [4 /*yield*/, fs_extra_1.default.writeFile(writeRequiresPath, template, { encoding: 'utf-8' })];
                 case 1:

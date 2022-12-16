@@ -14,7 +14,7 @@
   <a aria-label="Join our forums" href="https://forums.expo.dev" target="_blank">
     <img alt="Forums" src="https://img.shields.io/badge/Ask%20Questions%20-blue.svg?style=flat-square&logo=discourse&logoWidth=15&labelColor=000000&color=4630EB" />
   </a>
-  <a aria-label="Join our Discord" href="https://discord.gg/4gtbPAdpaE" target="_blank">
+  <a aria-label="Join our Discord" href="https://chat.expo.dev" target="_blank">
     <img alt="Discord" src="https://img.shields.io/discord/695411232856997968.svg?style=flat-square&labelColor=000000&color=4630EB&logo=discord&logoColor=FFFFFF&label=" />
   </a>
   <a aria-label="Expo is free to use" href="https://github.com/expo/expo/blob/main/LICENSE" target="_blank">
@@ -50,7 +50,7 @@
 - [💙 The Team](#-the-team)
 - [License](#license)
 
-Expo is an open-source platform for making universal native apps that run on Android, iOS, and the web. It includes a universal runtime and libraries that let you build native apps by writing React and JavaScript. This repository is where the Expo client software is developed, and includes the client apps, modules, apps, and more. The [Expo CLI](https://github.com/expo/expo-cli) repository contains the Expo development tools.
+Expo is an open-source platform for making universal native apps that run on Android, iOS, and the web. It includes a universal runtime and libraries that let you build native apps by writing React and JavaScript. This repository is where the Expo client software is developed, and includes the client apps, modules, apps, CLI, and more. [Expo Application Services (EAS)](https://expo.dev/eas) is a platform of hosted services that are deeply integrated with Expo open source tools. EAS helps you build, ship, and iterate on your app as an individual or a team.
 
 [Click here to view the Expo Community Guidelines](https://expo.dev/guidelines). Thank you for helping keep the Expo community open and welcoming!
 
@@ -60,15 +60,15 @@ Expo is an open-source platform for making universal native apps that run on And
 
 - [Getting Started](https://docs.expo.dev/)
 - [API Reference](https://docs.expo.dev/versions/latest/)
-- [Using Custom Native Modules](https://docs.expo.dev/bare/exploring-bare-workflow/)
+- [Using Custom Native Modules](https://docs.expo.dev/workflow/customizing/)
 
 ## 🗺 Project Layout
 
-- [`packages`](/packages) All the source code for the Unimodules, if you want to edit a library or just see how it works this is where you'll find it.
-- [`apps`](/apps) This is where you can find Expo projects which are linked to the development Unimodules. You'll do most of your testing in here.
+- [`packages`](/packages) All the source code for Expo modules, if you want to edit a library or just see how it works this is where you'll find it.
+- [`apps`](/apps) This is where you can find Expo projects which are linked to the development modules. You'll do most of your testing in here.
 - [`docs`](/docs) The source code for **https://docs.expo.dev**
-- [`templates`](/templates) The template projects you get when you run `expo start`
-- [`react-native-lab`](/react-native-lab) This is our fork of `react-native`. We keep this very close to the upstream but sometimes need to add quick fixes locally before they can land.
+- [`templates`](/templates) The template projects you get when you run `npx create-expo-app`
+- [`react-native-lab`](/react-native-lab) This is our fork of `react-native` used to build Expo Go.
 - [`guides`](/guides) In-depth tutorials for advanced topics like contributing to the client.
 - [`android`](/android) contains the Android project.
 - [`home`](/home) contains the JavaScript source code of the app.
@@ -95,13 +95,13 @@ Let everyone know your app can be run instantly in the _Expo Go_ app!
 
 ## 👏 Contributing
 
-If you like Expo and want to help make it better then check out our [contributing guide](/CONTRIBUTING.md)! Check out the [Expo CLI repo](http://github.com/expo/expo-cli) to work on the Expo CLI, and various other universal development tools.
+If you like Expo and want to help make it better then check out our [contributing guide](/CONTRIBUTING.md)! Check out the [CLI package](https://github.com/expo/expo/tree/main/packages/%40expo/cli) to work on the Expo CLI.
 
 ## ❓ FAQ
 
 If you have questions about Expo and want answers, then check out our [Frequently Asked Questions](https://docs.expo.dev/versions/latest/introduction/faq/)!
 
-If you still have questions you can ask them on our [forums](https://forums.expo.dev), [Discord](https://discord.gg/4gtbPAdpaE) or on Twitter [@Expo](https://twitter.com/expo).
+If you still have questions you can ask them on our [forums](https://forums.expo.dev), [Discord](https://chat.expo.dev) or on Twitter [@Expo](https://twitter.com/expo).
 
 ## 💙 The Team
 
@@ -110,3 +110,6 @@ Curious about who makes Expo? Here are our [team members](https://expo.dev/about
 ## License
 
 The Expo source code is made available under the [MIT license](LICENSE). Some of the dependencies are licensed differently, with the BSD license, for example.
+
+
+<img alt="Star the Expo repo on GitHub to support the project" src="https://user-images.githubusercontent.com/9664363/185428788-d762fd5d-97b3-4f59-8db7-f72405be9677.gif" width="50%">

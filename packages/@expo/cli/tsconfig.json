@@ -1,0 +1,13 @@
+{
+  "extends": "../../../tsconfig.node",
+  "include": ["./src"],
+  "exclude": ["**/__mocks__/*", "**/__tests__/*"],
+  "compilerOptions": {
+    "outDir": "./build",
+    "typeRoots": [
+      "ts-declarations",
+      "../../expo-module-scripts/ts-declarations",
+      "../../../node_modules/@types"
+    ]
+  }
+}

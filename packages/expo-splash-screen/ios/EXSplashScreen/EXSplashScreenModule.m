@@ -39,6 +39,7 @@ EX_EXPORT_METHOD_AS(hideAsync,
     EX_ENSURE_STRONGIFY(self);
     UIViewController *currentViewController = [self reactViewController];
     [[self splashScreenService] hideSplashScreenFor:currentViewController
+                                            options:EXSplashScreenDefault
                                     successCallback:^(BOOL hasEffect){ resolve(@(hasEffect)); }
                                     failureCallback:^(NSString *message){ reject(@"ERR_SPLASH_SCREEN_CANNOT_HIDE", message, nil); }];
   });
@@ -53,6 +54,7 @@ EX_EXPORT_METHOD_AS(preventAutoHideAsync,
     EX_ENSURE_STRONGIFY(self);
     UIViewController *currentViewController = [self reactViewController];
     [[self splashScreenService] preventSplashScreenAutoHideFor:currentViewController
+                                                       options:EXSplashScreenDefault
                                                successCallback:^(BOOL hasEffect){ resolve(@(hasEffect)); }
                                                failureCallback:^(NSString *message){ reject(@"ERR_SPLASH_SCREEN_CANNOT_PREVENT_AUTOHIDE", message, nil); }];
   });

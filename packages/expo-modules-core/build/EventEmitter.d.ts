@@ -1,11 +1,12 @@
 import { NativeEventEmitter } from 'react-native';
-declare type NativeModule = {
+type NativeModule = {
+    __expo_module_name__?: string;
     startObserving?: () => void;
     stopObserving?: () => void;
     addListener: (eventName: string) => void;
     removeListeners: (count: number) => void;
 };
-export declare type Subscription = {
+export type Subscription = {
     /**
      * A method to unsubscribe the listener.
      */

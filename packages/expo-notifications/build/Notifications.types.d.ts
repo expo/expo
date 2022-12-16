@@ -4,7 +4,7 @@ import { CalendarTriggerInput as NativeCalendarTriggerInput } from './Notificati
  * `remoteMessage` is set only on Android,
  * no extra entry is for Web
  */
-export declare type PushNotificationTrigger = {
+export type PushNotificationTrigger = {
     type: 'push';
 } & ({
     payload: Record<string, unknown>;
@@ -133,11 +133,11 @@ export interface FirebaseRemoteMessage {
 export interface UnknownNotificationTrigger {
     type: 'unknown';
 }
-export declare type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | WeeklyNotificationTrigger | YearlyNotificationTrigger | UnknownNotificationTrigger;
-export declare type ChannelAwareTriggerInput = {
+export type NotificationTrigger = PushNotificationTrigger | CalendarNotificationTrigger | LocationNotificationTrigger | TimeIntervalNotificationTrigger | DailyNotificationTrigger | WeeklyNotificationTrigger | YearlyNotificationTrigger | UnknownNotificationTrigger;
+export type ChannelAwareTriggerInput = {
     channelId: string;
 };
-export declare type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
+export type CalendarTriggerInput = NativeCalendarTriggerInput['value'] & {
     channelId?: string;
     repeats?: boolean;
 };
@@ -167,12 +167,12 @@ export interface YearlyTriggerInput {
     minute: number;
     repeats: true;
 }
-export declare type DateTriggerInput = Date | number | {
+export type DateTriggerInput = Date | number | {
     channelId?: string;
     date: Date | number;
 };
-export declare type SchedulableNotificationTriggerInput = DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput | YearlyTriggerInput | CalendarTriggerInput;
-export declare type NotificationTriggerInput = null | ChannelAwareTriggerInput | SchedulableNotificationTriggerInput;
+export type SchedulableNotificationTriggerInput = DateTriggerInput | TimeIntervalTriggerInput | DailyTriggerInput | WeeklyTriggerInput | YearlyTriggerInput | CalendarTriggerInput;
+export type NotificationTriggerInput = null | ChannelAwareTriggerInput | SchedulableNotificationTriggerInput;
 export declare enum AndroidNotificationPriority {
     MIN = "min",
     LOW = "low",
@@ -180,7 +180,7 @@ export declare enum AndroidNotificationPriority {
     HIGH = "high",
     MAX = "max"
 }
-export declare type NotificationContent = {
+export type NotificationContent = {
     title: string | null;
     subtitle: string | null;
     body: string | null;

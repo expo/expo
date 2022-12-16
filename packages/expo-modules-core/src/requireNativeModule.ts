@@ -1,6 +1,20 @@
 import NativeModulesProxy from './NativeModulesProxy';
 
+type ExpoObject = {
+  modules:
+    | undefined
+    | {
+        [key: string]: any;
+      };
+};
+
 declare global {
+  // eslint-disable-next-line no-var
+  var expo: ExpoObject | undefined;
+
+  /**
+   * @deprecated `global.ExpoModules` is deprecated, use `global.expo.modules` instead.
+   */
   // eslint-disable-next-line no-var
   var ExpoModules:
     | undefined
@@ -20,7 +34,9 @@ declare global {
  */
 export function requireNativeModule<ModuleType = any>(moduleName: string): ModuleType {
   const nativeModule: ModuleType =
-    global.ExpoModules?.[moduleName] ?? NativeModulesProxy[moduleName];
+    global.expo?.modules?.[moduleName] ??
+    global.ExpoModules?.[moduleName] ??
+    NativeModulesProxy[moduleName];
 
   if (!nativeModule) {
     throw new Error(`Cannot find native module '${moduleName}'`);

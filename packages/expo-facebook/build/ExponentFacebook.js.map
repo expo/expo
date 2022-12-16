@@ -1,1 +1,0 @@
-{"version":3,"file":"ExponentFacebook.js","sourceRoot":"","sources":["../src/ExponentFacebook.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AACvD,eAAe,kBAAkB,CAAC,gBAAgB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\nexport default NativeModulesProxy.ExponentFacebook;\n"]}

@@ -1,4 +1,4 @@
-import { ConfigPlugin, withEntitlementsPlist, withInfoPlist } from '@expo/config-plugins';
+import { ConfigPlugin, withEntitlementsPlist, withInfoPlist } from 'expo/config-plugins';
 
 /**
  * Enable including `strings` files from external packages.

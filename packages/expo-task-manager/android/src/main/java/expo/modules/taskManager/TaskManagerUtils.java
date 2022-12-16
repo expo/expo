@@ -8,13 +8,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.os.PersistableBundle;
 import android.util.Log;
-
-import org.unimodules.interfaces.taskManager.TaskInterface;
-import org.unimodules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -25,6 +23,9 @@ import java.util.Set;
 
 import androidx.annotation.NonNull;
 import androidx.collection.ArraySet;
+
+import expo.modules.interfaces.taskManager.TaskInterface;
+import expo.modules.interfaces.taskManager.TaskManagerUtilsInterface;
 
 public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
@@ -185,7 +186,9 @@ public class TaskManagerUtils implements TaskManagerUtilsInterface {
 
     intent.setData(dataUri);
 
-    return PendingIntent.getBroadcast(context, PENDING_INTENT_REQUEST_CODE, intent, flags);
+    // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+    int mutableFlag = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ? PendingIntent.FLAG_MUTABLE : 0;
+    return PendingIntent.getBroadcast(context, PENDING_INTENT_REQUEST_CODE, intent, flags | mutableFlag);
   }
 
   private PendingIntent createTaskIntent(Context context, TaskInterface task, int flags) {

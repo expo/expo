@@ -1,10 +1,10 @@
-export declare type RedirectEvent = {
+export type RedirectEvent = {
     url: string;
 };
-export declare type WebBrowserWindowFeatures = Record<string, number | boolean | string>;
-export declare type WebBrowserOpenOptions = {
+export type WebBrowserWindowFeatures = Record<string, number | boolean | string>;
+export type WebBrowserOpenOptions = {
     /**
-     * Color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
+     * Color of the toolbar. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      */
     toolbarColor?: string;
     /**
@@ -18,7 +18,7 @@ export declare type WebBrowserOpenOptions = {
      */
     enableBarCollapsing?: boolean;
     /**
-     * Color of the secondary toolbar in either `#AARRGGBB` or `#RRGGBB` format.
+     * Color of the secondary toolbar. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      * @platform android
      */
     secondaryToolbarColor?: string;
@@ -47,7 +47,7 @@ export declare type WebBrowserOpenOptions = {
      */
     createTask?: boolean;
     /**
-     * Tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
+     * Tint color for controls in SKSafariViewController. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      * @platform ios
      */
     controlsColor?: string;
@@ -62,6 +62,13 @@ export declare type WebBrowserOpenOptions = {
      */
     readerMode?: boolean;
     /**
+     * The [presentation style](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle)
+     * of the browser window.
+     * @default WebBrowser.WebBrowserPresentationStyle.OverFullScreen
+     * @platform ios
+     */
+    presentationStyle?: WebBrowserPresentationStyle;
+    /**
      * Name to assign to the popup window.
      * @platform web
      */
@@ -72,8 +79,23 @@ export declare type WebBrowserOpenOptions = {
      */
     windowFeatures?: string | WebBrowserWindowFeatures;
 };
-export declare type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;
-export declare type WebBrowserCustomTabsResults = {
+/**
+ * If there is no native AuthSession implementation available (which is the case on Android) the params inherited from
+ * [`WebBrowserOpenOptions`](#webbrowseropenoptions) will be used in the browser polyfill. Otherwise, the browser parameters will be ignored.
+ */
+export type AuthSessionOpenOptions = WebBrowserOpenOptions & {
+    /**
+     * Determines whether the session should ask the browser for a private authentication session.
+     * Set this to `true` to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session.
+     * Whether the request is honored depends on the user’s default web browser.
+     *
+     * @default false
+     * @platform ios 13+
+     */
+    preferEphemeralSession?: boolean;
+};
+export type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;
+export type WebBrowserCustomTabsResults = {
     /**
      * Default package chosen by user, `null` if there is no such packages. Also `null` usually means,
      * that user will be prompted to choose from available packages.
@@ -114,32 +136,74 @@ export declare enum WebBrowserResultType {
     OPENED = "opened",
     LOCKED = "locked"
 }
-export declare type WebBrowserResult = {
+/**
+ * A browser presentation style. Its values are directly mapped to the [`UIModalPresentationStyle`](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle).
+ *
+ * @platform ios
+ */
+export declare enum WebBrowserPresentationStyle {
+    /**
+     * A presentation style in which the presented browser covers the screen.
+     */
+    FULL_SCREEN = "fullScreen",
+    /**
+     * A presentation style that partially covers the underlying content.
+     */
+    PAGE_SHEET = "pageSheet",
+    /**
+     * A presentation style that displays the browser centered in the screen.
+     */
+    FORM_SHEET = "formSheet",
+    /**
+     * A presentation style where the browser is displayed over the app's content.
+     */
+    CURRENT_CONTEXT = "currentContext",
+    /**
+     * A presentation style in which the browser view covers the screen.
+     */
+    OVER_FULL_SCREEN = "overFullScreen",
+    /**
+     * A presentation style where the browser is displayed over the app's content.
+     */
+    OVER_CURRENT_CONTEXT = "overCurrentContext",
+    /**
+     * A presentation style where the browser is displayed in a popover view.
+     */
+    POPOVER = "popover",
+    /**
+     * The default presentation style chosen by the system.
+     * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
+     *
+     * @platform ios 13+
+     */
+    AUTOMATIC = "automatic"
+}
+export type WebBrowserResult = {
     /**
      * Type of the result.
      */
     type: WebBrowserResultType;
 };
-export declare type WebBrowserRedirectResult = {
+export type WebBrowserRedirectResult = {
     /**
      * Type of the result.
      */
     type: 'success';
     url: string;
 };
-export declare type ServiceActionResult = {
+export type ServiceActionResult = {
     servicePackage?: string;
 };
-export declare type WebBrowserMayInitWithUrlResult = ServiceActionResult;
-export declare type WebBrowserWarmUpResult = ServiceActionResult;
-export declare type WebBrowserCoolDownResult = ServiceActionResult;
-export declare type WebBrowserCompleteAuthSessionOptions = {
+export type WebBrowserMayInitWithUrlResult = ServiceActionResult;
+export type WebBrowserWarmUpResult = ServiceActionResult;
+export type WebBrowserCoolDownResult = ServiceActionResult;
+export type WebBrowserCompleteAuthSessionOptions = {
     /**
      * Attempt to close the window without checking to see if the auth redirect matches the cached redirect URL.
      */
     skipRedirectCheck?: boolean;
 };
-export declare type WebBrowserCompleteAuthSessionResult = {
+export type WebBrowserCompleteAuthSessionResult = {
     /**
      * Type of the result.
      */

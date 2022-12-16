@@ -14,6 +14,7 @@ import * as DevMenu from './DevMenuModule';
 
 type Props = {
   uuid: string;
+  children?: React.ReactNode;
 };
 
 class DevMenuBottomSheet extends React.PureComponent<Props, any> {

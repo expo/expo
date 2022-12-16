@@ -26,8 +26,7 @@ export const DEFAULT_APP_NAME = ExpoFirebaseCore
  * | Android  | `google-services.json`     | `android.googleServicesFile` |
  * | Web      | -                          | `web.config.firebase`        |
  *
- * # Example
- *
+ * @example
  * ```js
  * console.log(FirebaseCore.DEFAULT_APP_OPTIONS);
  * {

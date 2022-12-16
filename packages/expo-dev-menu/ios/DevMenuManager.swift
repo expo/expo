@@ -1,6 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import React
 import EXDevMenuInterface
+import EXManifests
+import CoreGraphics
+import CoreMedia
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
@@ -49,12 +53,9 @@ private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtoc
 @objc
 open class DevMenuManager: NSObject {
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
-  lazy var expoSessionDelegate: DevMenuExpoSessionDelegate = DevMenuExpoSessionDelegate(manager: self)
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
-
-  public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
-
+  
   /**
    Shared singleton instance.
    */
@@ -71,11 +72,18 @@ open class DevMenuManager: NSObject {
   lazy var appInstance: DevMenuAppInstance = DevMenuAppInstance(manager: self)
 
   var currentScreen: String?
+
+  /**
+   For backwards compatibility in projects that call this method from AppDelegate
+   */
+  @available(*, deprecated, message: "Manual setup of DevMenuManager in AppDelegate is deprecated in favor of automatic setup with Expo Modules")
+  @objc
+  public static func configure(withBridge bridge: AnyObject) { }
   
   @objc
   public var currentBridge: RCTBridge? {
     didSet {
-      guard self.canLaunchDevMenuOnStart && DevMenuSettings.showsAtLaunch, let bridge = currentBridge else {
+      guard self.canLaunchDevMenuOnStart && (DevMenuPreferences.showsAtLaunch || self.shouldShowOnboarding()), let bridge = currentBridge else {
         return
       }
       
@@ -87,10 +95,13 @@ open class DevMenuManager: NSObject {
     }
   }
   @objc
-  public var currentManifest: [AnyHashable: Any] = [:]
+  public var currentManifest: EXManifestsManifestBehavior?
   
   @objc
   public var currentManifestURL: URL?
+  
+  
+
 
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
@@ -106,9 +117,8 @@ open class DevMenuManager: NSObject {
     self.window = DevMenuWindow(manager: self)
     self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
     self.packagerConnectionHandler?.setup()
-    DevMenuSettings.setup()
+    DevMenuPreferences.setup()
     self.readAutoLaunchDisabledState()
-    self.expoSessionDelegate.restoreSession()
   }
 
   /**
@@ -298,7 +308,7 @@ open class DevMenuManager: NSObject {
    Returns bool value whether the onboarding view should be displayed by the dev menu view.
    */
   func shouldShowOnboarding() -> Bool {
-    return !DevMenuSettings.isOnboardingFinished
+    return !DevMenuPreferences.isOnboardingFinished
   }
 
   func readAutoLaunchDisabledState() {
@@ -315,6 +325,7 @@ open class DevMenuManager: NSObject {
   var userInterfaceStyle: UIUserInterfaceStyle {
     return UIUserInterfaceStyle.unspecified
   }
+
 
   // MARK: private
 
@@ -375,4 +386,52 @@ open class DevMenuManager: NSObject {
     }
     return true
   }
+  
+  @objc
+  public func getAppInfo() -> [AnyHashable: Any] {
+    return EXDevMenuAppInfo.getAppInfo()
+  }
+  
+  @objc
+  public func getDevSettings() -> [AnyHashable: Any] {
+    return EXDevMenuDevSettings.getDevSettings()
+  }
+  
+  private static var fontsWereLoaded = false
+
+  @objc
+  public func loadFonts() {
+    if DevMenuManager.fontsWereLoaded {
+       return
+    }
+    DevMenuManager.fontsWereLoaded = true
+
+    let fonts = [
+      "Inter-Black",
+      "Inter-ExtraBold",
+      "Inter-Bold",
+      "Inter-SemiBold",
+      "Inter-Medium",
+      "Inter-Regular",
+      "Inter-Light",
+      "Inter-ExtraLight",
+      "Inter-Thin"
+    ]
+    
+    for font in fonts {
+      let path = DevMenuUtils.resourcesBundle()?.path(forResource: font, ofType: "otf")
+      let data = FileManager.default.contents(atPath: path!)
+      let provider = CGDataProvider(data: data! as CFData)
+      let font = CGFont(provider!)
+      var error: Unmanaged<CFError>?
+      CTFontManagerRegisterGraphicsFont(font!, &error)
+    }
+  }
+  
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset by the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
+  @objc
+  public var registeredCallbacks: [String] = []
+
 }

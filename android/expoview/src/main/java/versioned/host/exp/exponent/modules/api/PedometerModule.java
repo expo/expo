@@ -74,7 +74,7 @@ public class PedometerModule extends ReactContextBaseJavaModule implements Lifec
           .addApi(Fitness.HISTORY_API)
           .addApi(Fitness.SENSORS_API)
           .addApi(Fitness.RECORDING_API)
-          .addScope(new Scope(Scopes.FITNESS_ACTIVITY_READ))
+          .addScope(Fitness.SCOPE_ACTIVITY_READ)
           .addConnectionCallbacks(
               new GoogleApiClient.ConnectionCallbacks() {
                 @Override

@@ -1,4 +1,7 @@
 {
   "name": "expo",
-  "platforms": ["ios", "android"]
+  "platforms": ["ios", "android"],
+  "ios": {
+    "podspecPath": "Expo.podspec"
+  }
 }

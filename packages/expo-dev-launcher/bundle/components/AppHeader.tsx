@@ -8,69 +8,101 @@ import {
   Spacer,
   View,
   UserIcon,
+  scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useWindowDimensions } from 'react-native';
 
-import { useUser } from '../hooks/useUser';
+import { SafeAreaTop } from '../components/SafeAreaTop';
+import { useBuildInfo } from '../providers/BuildInfoProvider';
+import { useUser } from '../providers/UserContextProvider';
 
-type AppHeaderProps = {
-  title?: string;
-  subtitle?: string;
-  appImageUri?: string;
-  onUserProfilePress: () => void;
-};
+export function AppHeader({ navigation }) {
+  const buildInfo = useBuildInfo();
+  const { width } = useWindowDimensions();
+  const { appName, appIcon } = buildInfo;
 
-export function AppHeader({ title, subtitle, appImageUri, onUserProfilePress }: AppHeaderProps) {
-  const insets = useSafeAreaInsets();
   const { userData, selectedAccount } = useUser();
 
+  const onUserProfilePress = () => {
+    navigation.navigate('User Profile');
+  };
+
   const isAuthenticated = userData != null;
-  const selectedUserImage = selectedAccount?.owner?.profilePhoto;
+  const selectedUserImage = selectedAccount?.owner?.profilePhoto ?? null;
 
   return (
-    <View>
-      <Spacer.Horizontal style={{ height: insets.top }} />
-      <Row align="center">
-        <Row px="medium">
-          {Boolean(appImageUri) && (
-            <>
-              <Image size="xl" rounded="medium" source={{ uri: appImageUri }} />
-              <Spacer.Horizontal size="small" />
-            </>
-          )}
-
-          <View>
-            <Heading size="small" weight="semibold">
-              {title}
-            </Heading>
-            <Text size="small" color="secondary">
-              {subtitle}
-            </Text>
-          </View>
-        </Row>
-
-        <Spacer.Horizontal size="flex" />
-
-        <Button.ScaleOnPressContainer
-          onPress={onUserProfilePress}
-          minScale={0.85}
-          accessibilityLabel="Navigate to User Profile"
-          bg="default"
-          rounded="full">
-          <View rounded="full" padding="medium">
-            {isAuthenticated ? (
-              <View bg="secondary" rounded="full">
-                <Image size="xl" rounded="full" source={{ uri: selectedUserImage }} />
+    <>
+      <View
+        bg="default"
+        pt="small"
+        pb="small"
+        style={{ paddingHorizontal: width > 650 ? scale[14] : 0 }}>
+        <SafeAreaTop />
+        <Row align="center">
+          <Spacer.Horizontal size="medium" />
+          <View flex="1" shrink="1">
+            <Row align="center">
+              <View height="xl" width="xl" rounded="large" bg="secondary">
+                {Boolean(appIcon) && <Image size="xl" rounded="large" source={{ uri: appIcon }} />}
               </View>
-            ) : (
-              <UserIcon />
+
+              <Spacer.Horizontal size="small" />
+
+              <View flex="1">
+                <Heading weight="semibold" numberOfLines={1}>
+                  {appName}
+                </Heading>
+                <Text size="small" color="secondary">
+                  Development Build
+                </Text>
+              </View>
+            </Row>
+          </View>
+
+          <View align="centered" style={{ justifyContent: 'flex-end' }}>
+            <Button.ScaleOnPressContainer
+              onPress={onUserProfilePress}
+              minScale={0.85}
+              accessibilityLabel="Navigate to User Profile"
+              bg="ghost"
+              rounded="full">
+              <View>
+                {isAuthenticated ? (
+                  <View rounded="full" padding="small">
+                    <View height="xl" width="xl" bg="secondary" rounded="full">
+                      {selectedUserImage && (
+                        <Image size="xl" rounded="full" source={{ uri: selectedUserImage }} />
+                      )}
+                    </View>
+                  </View>
+                ) : (
+                  <View mx="small">
+                    <View bg="default" rounded="full" padding="tiny">
+                      <UserIcon />
+                    </View>
+                  </View>
+                )}
+              </View>
+            </Button.ScaleOnPressContainer>
+            {!selectedUserImage && (
+              <Row
+                style={{
+                  height: scale[2],
+                  flexWrap: 'wrap',
+                  maxWidth: scale[16],
+                  paddingRight: scale[2],
+                  transform: [{ translateY: -scale[2] }],
+                }}>
+                <Text numberOfLines={1} size="small" align="center" weight="medium">
+                  {selectedAccount?.name}
+                </Text>
+              </Row>
             )}
           </View>
-        </Button.ScaleOnPressContainer>
-      </Row>
-
+        </Row>
+      </View>
       <Divider weight="thin" />
-    </View>
+    </>
   );
 }

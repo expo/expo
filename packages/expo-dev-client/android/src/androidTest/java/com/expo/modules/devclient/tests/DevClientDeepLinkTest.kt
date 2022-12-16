@@ -19,26 +19,28 @@ import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
-internal class DevClientDeepLinkTest: DevLauncherKoinTest() {
+internal class DevClientDeepLinkTest : DevLauncherKoinTest() {
   @Test
-  fun checks_if_pending_deep_link_is_displayed() = DevLauncherBasicScenario(koinDeclaration = {
-    val intentRegistry: DevLauncherIntentRegistryInterface = object : DevLauncherIntentRegistryInterface {
-      override var intent: Intent? = null
+  fun checks_if_pending_deep_link_is_displayed() = DevLauncherBasicScenario(
+    koinDeclaration = {
+      val intentRegistry: DevLauncherIntentRegistryInterface = object : DevLauncherIntentRegistryInterface {
+        override var intent: Intent? = null
 
-      override fun subscribe(listener: DevLauncherPendingIntentListener) = Unit
-      override fun unsubscribe(listener: DevLauncherPendingIntentListener) = Unit
+        override fun subscribe(listener: DevLauncherPendingIntentListener) = Unit
+        override fun unsubscribe(listener: DevLauncherPendingIntentListener) = Unit
 
-      override fun consumePendingIntent(): Intent? = intent
-    }
+        override fun consumePendingIntent(): Intent? = intent
+      }
 
-    intentRegistry.intent = Intent().apply {
-      data = Uri.parse("http://localhost:9876")
+      intentRegistry.intent = Intent().apply {
+        data = Uri.parse("http://localhost:9876")
+      }
+      @Suppress("RemoveExplicitTypeArguments")
+      declareInDevLauncherScope<DevLauncherIntentRegistryInterface> {
+        intentRegistry
+      }
     }
-    @Suppress("RemoveExplicitTypeArguments")
-    declareInDevLauncherScope<DevLauncherIntentRegistryInterface> {
-      intentRegistry
-    }
-  }).setUpAndLaunch {
+  ).setUpAndLaunch {
     onView(withText("http://localhost:9876")).check(matches(isDisplayed()))
   }
 
