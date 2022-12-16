@@ -65,3 +65,7 @@ export const stripVersionFromPath = (path: string) => {
   }
   return path.replace(/\/versions\/[\w.]+/, '');
 };
+
+export const pathStartsWith = (name: string, path: string) => {
+  return path.startsWith(`/${name}`);
+};
