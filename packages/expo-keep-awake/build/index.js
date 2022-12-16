@@ -1,11 +1,21 @@
+import { UnavailabilityError } from 'expo-modules-core';
 import { useEffect } from 'react';
 import ExpoKeepAwake from './ExpoKeepAwake';
 export const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
+/**
+ * Returns `true` on all platforms except [unsupported web browsers](https://caniuse.com/wake-lock).
+ */
+export async function isAvailableAsync() {
+    if (ExpoKeepAwake.isAvailableAsync) {
+        return await ExpoKeepAwake.isAvailableAsync();
+    }
+    return true;
+}
 // @needsAudit
 /**
  * A React hook to keep the screen awake for as long as the owner component is mounted.
  * The optionally provided `tag` argument is used when activating and deactivating the keep-awake
- * feature. If unspecified, the default `tag` is used. See the documentation for `activateKeepAwake`
+ * feature. If unspecified, the default `tag` is used. See the documentation for `activateKeepAwakeAsync`
  * below to learn more about the `tag` argument.
  *
  * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
@@ -14,11 +24,19 @@ export const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
  *      The call will throw an unhandled promise rejection on Android
  *      when the original Activity is dead or deactivated.
  *      Set the value to true for suppressing the uncaught exception.
+ *   - `listener` *Optional* -
+ *      A callback that is invoked when the keep-awake state changes (web-only).
  */
 export function useKeepAwake(tag = ExpoKeepAwakeTag, options) {
     useEffect(() => {
-        activateKeepAwake(tag);
+        let isMounted = true;
+        activateKeepAwakeAsync(tag).then(() => {
+            if (isMounted && ExpoKeepAwake.addListenerForTag && options?.listener) {
+                addListener(tag, options.listener);
+            }
+        });
         return () => {
+            isMounted = false;
             if (options?.suppressDeactivateWarnings) {
                 deactivateKeepAwake(tag).catch(() => { });
             }
@@ -35,9 +53,29 @@ export function useKeepAwake(tag = ExpoKeepAwakeTag, options) {
  * If the `tag` argument is specified, the screen will not sleep until you call `deactivateKeepAwake`
  * with the same `tag` argument. When using multiple `tags` for activation you'll have to deactivate
  * each one in order to re-enable screen sleep. If tag is unspecified, the default `tag` is used.
+ *
+ * Web support [is limited](https://caniuse.com/wake-lock).
+ *
+ * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
+ * @deprecated use `activateKeepAwakeAsync` instead.
+ */
+export function activateKeepAwake(tag = ExpoKeepAwakeTag) {
+    console.warn('`activateKeepAwake` is deprecated. Use `activateKeepAwakeAsync` instead.');
+    return activateKeepAwakeAsync(tag);
+}
+// @needsAudit
+/**
+ * Prevents the screen from sleeping until `deactivateKeepAwake` is called with the same `tag` value.
+ *
+ * If the `tag` argument is specified, the screen will not sleep until you call `deactivateKeepAwake`
+ * with the same `tag` argument. When using multiple `tags` for activation you'll have to deactivate
+ * each one in order to re-enable screen sleep. If tag is unspecified, the default `tag` is used.
+ *
+ * Web support [is limited](https://caniuse.com/wake-lock).
+ *
  * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
  */
-export async function activateKeepAwake(tag = ExpoKeepAwakeTag) {
+export async function activateKeepAwakeAsync(tag = ExpoKeepAwakeTag) {
     await ExpoKeepAwake.activate?.(tag);
 }
 // @needsAudit
@@ -50,4 +88,25 @@ export async function activateKeepAwake(tag = ExpoKeepAwakeTag) {
 export async function deactivateKeepAwake(tag = ExpoKeepAwakeTag) {
     await ExpoKeepAwake.deactivate?.(tag);
 }
+/**
+ * Observe changes to the keep awake timer.
+ * On web, this changes when navigating away from the active window/tab. No-op on native.
+ *
+ * @example
+ * ```ts
+ * KeepAwake.addListener(({ state }) => {
+ *   // ...
+ * });
+ * ```
+ */
+export function addListener(tagOrListener, listener) {
+    // Assert so the type is non-nullable.
+    if (!ExpoKeepAwake.addListenerForTag) {
+        throw new UnavailabilityError('ExpoKeepAwake', 'addListenerForTag');
+    }
+    const tag = typeof tagOrListener === 'string' ? tagOrListener : ExpoKeepAwakeTag;
+    const _listener = typeof tagOrListener === 'function' ? tagOrListener : listener;
+    return ExpoKeepAwake.addListenerForTag(tag, _listener);
+}
+export * from './KeepAwake.types';
 //# sourceMappingURL=index.js.map
