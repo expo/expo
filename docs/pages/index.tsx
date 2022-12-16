@@ -14,8 +14,7 @@ import {
   TwitterIcon,
   breakpoints,
 } from '@expo/styleguide';
-import { useRouter } from 'next/router';
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { Container, Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
@@ -51,12 +50,11 @@ const Description = ({ children }: PropsWithChildren<object>) => (
 );
 
 const Home = () => {
-  const router = useRouter();
   const { themeName } = useTheme();
   const { palette, button, background } = theme;
   return (
     <ScreenClassProvider>
-      <DocumentationPage router={router} tocVisible={false} hideFromSearch>
+      <DocumentationPage tocVisible={false} hideFromSearch>
         <div css={imageMasksContainerStyle}>
           <DevicesImageMasks />
           <CodecademyImageMasks />
