@@ -3,6 +3,13 @@
 #import <UIKit/UIKit.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
 
+#if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
+#import <React-RCTAppDelegate/RCTAppDelegate.h>
+#elif __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
+// for importing the header from framework, the dash will be transformed to underscore
+#import <React_RCTAppDelegate/RCTAppDelegate.h>
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
@@ -10,7 +17,11 @@ NS_ASSUME_NONNULL_BEGIN
  written in Objective-C and that forwards all messages to the new `ExpoAppDelegate`.
  If your `AppDelegate` is in Swift, it should inherit from `ExpoAppDelegate` class instead.
  */
+#if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>) || __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
+@interface EXAppDelegateWrapper : RCTAppDelegate
+#else
 @interface EXAppDelegateWrapper : UIResponder <UIApplicationDelegate>
+#endif
 
 @property (nonatomic, strong, readonly) EXReactDelegateWrapper *reactDelegate;
 
