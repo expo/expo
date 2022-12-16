@@ -14,8 +14,7 @@ import {
   TwitterIcon,
   breakpoints,
 } from '@expo/styleguide';
-import { useRouter } from 'next/router';
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 import { Container, Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
