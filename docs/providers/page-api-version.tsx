@@ -55,6 +55,10 @@ export function getVersionFromPath(path: string): PageApiVersionContextType['ver
     : null;
 }
 
+/**
+ * Replace the version in the pathname from the URL.
+ * If no version was found, the path is returned as is.
+ */
 export function replaceVersionInPath(path: string, newVersion: string) {
   const version = getVersionFromPath(path);
   return version ? path.replace(version, newVersion) : path;
