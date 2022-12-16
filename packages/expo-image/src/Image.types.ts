@@ -109,6 +109,12 @@ export type ImageProps = AccessibilityProps & {
   cachePolicy?: ImageCachePolicy | null;
 
   /**
+   * Determines whether to choose image source based on container size only on mount or on every resize.
+   * @platform web
+   */
+  webResponsivePolicy?: 'live' | 'initial';
+
+  /**
    * Called when the image starts to load.
    */
   onLoadStart?: () => void;
