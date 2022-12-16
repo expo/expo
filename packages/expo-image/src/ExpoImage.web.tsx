@@ -151,6 +151,18 @@ const useTransition = (
   return { placeholder: {}, image: {} };
 };
 
+function getFetchPriorityFromImagePriority(priority: ImagePriority) {
+  switch (priority) {
+    case ImagePriority.HIGH:
+      return 'high';
+    case ImagePriority.LOW:
+      return 'low';
+    case ImagePriority.NORMAL:
+    default:
+      return 'auto';
+  }
+}
+
 export default function ExpoImage({
   source,
   placeholder,
@@ -169,10 +181,22 @@ export default function ExpoImage({
 
   const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
 
-  const fetchPriority =
-    { [ImagePriority.HIGH]: 'high', [ImagePriority.LOW]: 'low', [ImagePriority.NORMAL]: 'auto' }[
-      priority || ImagePriority.NORMAL
-    ] ?? 'auto';
+  function onLoadHandler() {
+    handlers.onLoad();
+    if (!resolvedSources[0]) return;
+    onLoad?.({
+      source: { ...resolvedSources[0], mediaType: null },
+      cacheType: ImageCacheType.NONE,
+    });
+    onLoadEnd?.();
+  }
+
+  function onErrorHandler() {
+    onError?.({
+      error: `Failed to load image from url: ${resolvedSources[0]?.uri}`,
+    });
+    onLoadEnd?.();
+  }
 
   return (
     <div
@@ -189,7 +213,7 @@ export default function ExpoImage({
         src={placeholder?.[0]?.uri}
         // @ts-ignore
         // eslint-disable-next-line react/no-unknown-property
-        fetchpriority={fetchPriority}
+        fetchpriority={getFetchPriorityFromImagePriority(fetchPriority)}
         style={{
           width: '100%',
           height: '100%',
@@ -213,22 +237,8 @@ export default function ExpoImage({
           objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
           ...imageStyle,
         }}
-        onLoad={() => {
-          handlers.onLoad();
-          if (!resolvedSources[0]) return;
-          onLoad?.({
-            source: { ...resolvedSources[0], mediaType: null },
-            cacheType: ImageCacheType.NONE,
-          });
-          onLoadEnd?.();
-        }}
-        onError={(event) => {
-          onError?.({
-            error: `Failed to load image from url: ${resolvedSources[0]?.uri}`,
-          });
-          onLoadEnd?.();
-        }}
-
+        onLoad={onLoadHandler}
+        onError={onErrorHandler}
       />
     </div>
   );
