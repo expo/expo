@@ -110,6 +110,15 @@ class ExpoImageView(
     it.bgTarget = bgTarget
   }
 
+  private val activeTarget: ViewConnectedTarget?
+    get() = if (target.state == ViewConnectedTarget.State.ACTIVE) {
+      target
+    } else if (target.bgTarget?.state == ViewConnectedTarget.State.ACTIVE) {
+      target.bgTarget
+    } else {
+      null
+    }
+
   private var propsChanged = false
   private var transformationMatrixChanged = false
 
@@ -139,7 +148,16 @@ class ExpoImageView(
     if (drawable == null) {
       return
     }
-    applyTransformationMatrix()
+
+    val currentTarget = activeTarget
+
+    // We have to check if the placeholder is currently displayed.
+    // If it is, we want to apply different transformations.
+    if (currentTarget != null && currentTarget.placeholderIsVisible) {
+      applyTransformationMatrix(drawable, currentTarget.placeholderContentFit)
+    } else {
+      applyTransformationMatrix()
+    }
   }
 
   fun applyTransformationMatrix() {
@@ -264,9 +282,12 @@ class ExpoImageView(
   // region ViewManager Lifecycle methods
   internal fun onAfterUpdateTransaction() {
     val bestSource = bestSource
-    val sourceToLoad = bestSource?.createGlideModel(context)
+    val bestPlaceholder = bestPlaceholder
 
-    if (bestSource == null || sourceToLoad == null) {
+    val sourceToLoad = bestSource?.createGlideModel(context)
+    val placeholder = bestPlaceholder?.createGlideModel(context)
+    // We only clean the image when the source is set to null and we don't have a placeholder.
+    if ((bestSource == null || sourceToLoad == null) && placeholder == null) {
       target.clearBothTargets()
       setImageDrawable(null)
       loadedSource = null
@@ -275,10 +296,10 @@ class ExpoImageView(
       return
     }
 
-    if (sourceToLoad != loadedSource || propsChanged) {
+    if (sourceToLoad != loadedSource || propsChanged || (sourceToLoad == null && placeholder != null)) {
       propsChanged = false
       loadedSource = sourceToLoad
-      val options = bestSource.createOptions(context)
+      val options = bestSource?.createOptions(context)
       val propOptions = createPropOptions()
 
       if (sourceToLoad is GlideUrlModel) {
@@ -291,11 +312,10 @@ class ExpoImageView(
       expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
 
       val newTarget = target.getUnusedTarget() ?: return
-
-      val placeholder = bestPlaceholder?.createGlideModel(context)
+      newTarget.hasSource = sourceToLoad != null
       val request = requestManager
         .asDrawable()
-        .load(sourceToLoad.glideData)
+        .load(sourceToLoad?.glideData)
         .apply {
           if (placeholder != null) {
             thumbnail(requestManager.load(placeholder.glideData))
@@ -307,7 +327,11 @@ class ExpoImageView(
             newTarget.placeholderContentFit = placeholderContentFit
           }
         }
-        .apply(options)
+        .apply {
+          options?.let {
+            apply(it)
+          }
+        }
         .downsample(DownsampleStrategy.NONE)
         .addListener(GlideRequestListener(expoImageViewWrapper))
         .encodeQuality(100)
@@ -320,7 +344,7 @@ class ExpoImageView(
       // When the source and the matrix is different, we don't want to do anything.
       // We don't want to changed the transformation of the currently displayed image.
       // The new matrix will be applied when new resource is loaded.
-      if (transformationMatrixChanged) {
+      if (transformationMatrixChanged && drawable != null) {
         applyTransformationMatrix()
       }
     }
