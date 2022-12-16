@@ -68,7 +68,7 @@ function getTransitionObjectFromTransition(transition) {
         ...transition,
     };
 }
-const useTransition = (transition, state) => {
+function useTransition(transition, state) {
     const { duration, timing, effect } = getTransitionObjectFromTransition(transition);
     if (effect === ImageTransitionEffect.CROSS_DISOLVE) {
         const commonStyles = {
@@ -104,53 +104,51 @@ const useTransition = (transition, state) => {
         };
     }
     return { placeholder: {}, image: {} };
-};
-const findBestSourceForSize = (sources, size) => {
-    return (sources
+}
+function findBestSourceForSize(sources, size) {
+    return ([...(sources || [])]
         // look for the smallest image that's still larger then a container
         ?.map((source) => {
-        if (!size)
+        if (!size) {
             return { source, penalty: 0, covers: false };
+        }
         const { width, height } = typeof source === 'object' ? source : { width: null, height: null };
-        if (width == null || height == null)
+        if (width == null || height == null) {
             return { source, penalty: 0, covers: false };
-        if (width < size.width || height < size.height)
+        }
+        if (width < size.width || height < size.height) {
             return {
                 source,
                 penalty: Math.max(size.width - width, size.height - height),
                 covers: false,
             };
+        }
         return { source, penalty: (width - size.width) * (height - size.height), covers: true };
     })
         .sort((a, b) => a.penalty - b.penalty)
         .sort((a, b) => Number(b.covers) - Number(a.covers))[0]?.source ?? null);
-};
-const useSourceSelection = (sources, sizeCalculation = 'initial') => {
+}
+;
+function useSourceSelection(sources, sizeCalculation = 'live') {
     const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
-    // undefined - not calculated yet, don't fetch any images, null - no size available, pick arbitrary image, DOMRect - size available
-    const [size, setSize] = React.useState(undefined);
+    // null - not calculated yet, DOMRect - size available
+    const [size, setSize] = React.useState(null);
     const resizeObserver = React.useRef(null);
     React.useEffect(() => {
-        if (!hasMoreThanOneSource)
-            return;
-        const timeout = setTimeout(() => {
-            setSize((s) => (s === undefined ? null : s));
-        }, 200);
         return () => {
-            clearTimeout(timeout);
             resizeObserver.current?.disconnect();
         };
-    }, [hasMoreThanOneSource]);
+    }, []);
     const containerRef = React.useCallback((element) => {
-        if (!hasMoreThanOneSource)
+        if (!hasMoreThanOneSource) {
             return;
-        if (sizeCalculation === 'initial') {
-            setSize(element?.getBoundingClientRect());
         }
-        else if (sizeCalculation === 'live') {
+        setSize(element?.getBoundingClientRect());
+        if (sizeCalculation === 'live') {
             resizeObserver.current?.disconnect();
-            if (!element)
+            if (!element) {
                 return;
+            }
             resizeObserver.current = new ResizeObserver((entries) => {
                 setSize(entries[0].contentRect);
             });
@@ -163,7 +161,8 @@ const useSourceSelection = (sources, sizeCalculation = 'initial') => {
         containerRef,
         source,
     }), [source]);
-};
+}
+;
 export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onLoadStart, onLoadEnd, onError, webResponsivePolicy, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const [state, handlers] = useImageState(source);
