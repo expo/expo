@@ -1,0 +1,1 @@
+{"version":3,"file":"ExponentMediaLibrary.js","sourceRoot":"","sources":["../src/ExponentMediaLibrary.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,kBAAkB,EAAE,MAAM,mBAAmB,CAAC;AAEvD,eAAe,kBAAkB,CAAC,oBAAoB,CAAC","sourcesContent":["import { NativeModulesProxy } from 'expo-modules-core';\n\nexport default NativeModulesProxy.ExponentMediaLibrary;\n"]}

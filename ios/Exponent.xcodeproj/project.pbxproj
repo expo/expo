@@ -185,6 +185,7 @@
 		B5A72C2F20A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2720A0D1BF00974CCE /* EXAppFetcherDevelopmentMode.m */; };
 		B5A72C3020A0D1BF00974CCE /* EXAppFetcher.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2B20A0D1BF00974CCE /* EXAppFetcher.m */; };
 		B5A72C3420A0D42D00974CCE /* EXAbstractLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3120A0D42C00974CCE /* EXAbstractLoader.m */; };
+		B5A72C3420A0D42D00974CCE /* EXAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3120A0D42C00974CCE /* EXAppLoader.m */; };
 		B5AC39A71E95A90B00540AA7 /* EXKernel.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC398E1E95A90B00540AA7 /* EXKernel.m */; };
 		B5AC39AF1E95A90B00540AA7 /* EXVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39A11E95A90B00540AA7 /* EXVersions.m */; };
 		B5AC39B01E95A90B00540AA7 /* EXUserNotificationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5AC39A41E95A90B00540AA7 /* EXUserNotificationManager.m */; };
@@ -281,6 +282,7 @@
 		F142181A262CB68600BB97E6 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
 		F142181B262CB68600BB97E6 /* NSData+EXRemoteNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 78D8252D2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m */; };
 		F142181C262CB68600BB97E6 /* EXAbstractLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3120A0D42C00974CCE /* EXAbstractLoader.m */; };
+		F142181C262CB68600BB97E6 /* EXAppLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C3120A0D42C00974CCE /* EXAppLoader.m */; };
 		F142181F262CB68600BB97E6 /* EXAppFetcherWithTimeout.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2520A0D1BF00974CCE /* EXAppFetcherWithTimeout.m */; };
 		F1421820262CB68600BB97E6 /* EXDevMenuWindow.m in Sources */ = {isa = PBXBuildFile; fileRef = F116A3BF2445EBBB008FA957 /* EXDevMenuWindow.m */; };
 		F1421821262CB68600BB97E6 /* EXAppFetcherCacheOnly.m in Sources */ = {isa = PBXBuildFile; fileRef = B5A72C2420A0D1BF00974CCE /* EXAppFetcherCacheOnly.m */; };
@@ -855,6 +857,9 @@
 		B5A72C3120A0D42C00974CCE /* EXAbstractLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAbstractLoader.m; sourceTree = "<group>"; };
 		B5A72C3220A0D42C00974CCE /* EXAbstractLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAbstractLoader.h; sourceTree = "<group>"; };
 		B5A72C3320A0D42D00974CCE /* EXAbstractLoader+Updates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXAbstractLoader+Updates.h"; sourceTree = "<group>"; };
+		B5A72C3120A0D42C00974CCE /* EXAppLoader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXAppLoader.m; sourceTree = "<group>"; };
+		B5A72C3220A0D42C00974CCE /* EXAppLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXAppLoader.h; sourceTree = "<group>"; };
+		B5A72C3320A0D42D00974CCE /* EXAppLoader+Updates.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "EXAppLoader+Updates.h"; sourceTree = "<group>"; };
 		B5AC398D1E95A90B00540AA7 /* EXKernel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernel.h; sourceTree = "<group>"; };
 		B5AC398E1E95A90B00540AA7 /* EXKernel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXKernel.m; sourceTree = "<group>"; };
 		B5AC39931E95A90B00540AA7 /* EXKernelUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXKernelUtil.h; sourceTree = "<group>"; };
@@ -1661,6 +1666,9 @@
 				B5A72C3220A0D42C00974CCE /* EXAbstractLoader.h */,
 				B5A72C3120A0D42C00974CCE /* EXAbstractLoader.m */,
 				B5A72C3320A0D42D00974CCE /* EXAbstractLoader+Updates.h */,
+				B5A72C3220A0D42C00974CCE /* EXAppLoader.h */,
+				B5A72C3120A0D42C00974CCE /* EXAppLoader.m */,
+				B5A72C3320A0D42D00974CCE /* EXAppLoader+Updates.h */,
 				07C6733324D230FB003F3F5C /* EXAppLoaderExpoUpdates.h */,
 				07C6733424D2310C003F3F5C /* EXAppLoaderExpoUpdates.m */,
 				B5D0D666204F4C0400DDFC99 /* EXFileDownloader.h */,
@@ -2637,6 +2645,7 @@
 				B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */,
 				78D8252E2051217F00CBD9D9 /* NSData+EXRemoteNotifications.m in Sources */,
 				B5A72C3420A0D42D00974CCE /* EXAbstractLoader.m in Sources */,
+				B5A72C3420A0D42D00974CCE /* EXAppLoader.m in Sources */,
 				B5A72C2E20A0D1BF00974CCE /* EXAppFetcherWithTimeout.m in Sources */,
 				F116A3C02445EBBB008FA957 /* EXDevMenuWindow.m in Sources */,
 				B5A72C2D20A0D1BF00974CCE /* EXAppFetcherCacheOnly.m in Sources */,
@@ -2875,6 +2884,7 @@
 				F142181A262CB68600BB97E6 /* EXScopedNotificationBuilder.m in Sources */,
 				F142181B262CB68600BB97E6 /* NSData+EXRemoteNotifications.m in Sources */,
 				F142181C262CB68600BB97E6 /* EXAbstractLoader.m in Sources */,
+				F142181C262CB68600BB97E6 /* EXAppLoader.m in Sources */,
 				F142181F262CB68600BB97E6 /* EXAppFetcherWithTimeout.m in Sources */,
 				F1421820262CB68600BB97E6 /* EXDevMenuWindow.m in Sources */,
 				F1421821262CB68600BB97E6 /* EXAppFetcherCacheOnly.m in Sources */,

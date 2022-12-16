@@ -1,0 +1,4 @@
+{
+  "name": "expo-brightness",
+  "platforms": ["ios", "android"]
+}

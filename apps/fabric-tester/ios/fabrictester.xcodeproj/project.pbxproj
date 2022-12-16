@@ -61,6 +61,15 @@
 				A0DB1EF9BC6248218DEE76C0 /* noop-file.swift */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				BB2F792B24A3F905000567C9 /* Supporting */,
+				BB2F792B24A3F905000567C9 /* Supporting */,
+				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
+				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
+				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
+				13B07FB51A68108700A75B9A /* Images.xcassets */,
+				13B07FB61A68108700A75B9A /* Info.plist */,
+				13B07FB71A68108700A75B9A /* main.m */,
+				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
+				A0DB1EF9BC6248218DEE76C0 /* noop-file.swift */,
 			);
 			name = fabrictester;
 			sourceTree = "<group>";

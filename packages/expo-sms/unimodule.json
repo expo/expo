@@ -1,0 +1,4 @@
+{
+  "name": "expo-sms",
+  "platforms": ["ios", "android"]
+}
