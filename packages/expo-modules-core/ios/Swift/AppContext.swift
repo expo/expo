@@ -308,10 +308,12 @@ public final class AppContext: NSObject {
   // MARK: - Runtime
 
   internal func installExpoModulesHostObject() throws {
-    guard runtime != nil else {
+    guard runtime != nil, let bridge = reactBridge else {
       throw RuntimeLostException()
     }
-    EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+    bridge.dispatchBlock({
+      EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)
+    }, queue: RCTJSThread)
   }
 
   /**
