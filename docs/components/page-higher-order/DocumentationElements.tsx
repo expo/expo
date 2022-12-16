@@ -1,6 +1,5 @@
 import GithubSlugger from 'github-slugger';
-import { useRouter } from 'next/router';
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import { HeadingManager } from '~/common/headingManager';
 import DocumentationPage from '~/components/DocumentationPage';
@@ -16,7 +15,6 @@ type DocumentationElementsProps = PropsWithChildren<{
 }>;
 
 export default function DocumentationElements(props: DocumentationElementsProps) {
-  const router = useRouter();
   const slugger = new GithubSlugger();
   const manager = new HeadingManager(slugger, {
     ...props.meta,
@@ -27,9 +25,8 @@ export default function DocumentationElements(props: DocumentationElementsProps)
     <AnchorContext.Provider value={slugger}>
       <HeadingsContext.Provider value={manager}>
         <PageMetadataContext.Provider value={props.meta}>
-          <PageApiVersionProvider router={router}>
+          <PageApiVersionProvider>
             <DocumentationPage
-              router={router}
               title={props.meta.title || ''}
               description={props.meta.description || ''}
               sourceCodeUrl={props.meta.sourceCodeUrl}

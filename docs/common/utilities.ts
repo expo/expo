@@ -31,6 +31,9 @@ export const generateSlug = (slugger: GithubSlugger, node: React.ReactNode, leng
   return slugger.slug(stringToSlug);
 };
 
+/**
+ * Replace the version in the pathname from the URL.
+ */
 export const replaceVersionInUrl = (url: string, replaceWith: string) => {
   const urlArr = url.split('/');
   urlArr[2] = replaceWith;

@@ -51,12 +51,11 @@ const Description = ({ children }: PropsWithChildren<object>) => (
 );
 
 const Home = () => {
-  const router = useRouter();
   const { themeName } = useTheme();
   const { palette, button, background } = theme;
   return (
     <ScreenClassProvider>
-      <DocumentationPage router={router} tocVisible={false} hideFromSearch>
+      <DocumentationPage tocVisible={false} hideFromSearch>
         <div css={imageMasksContainerStyle}>
           <DevicesImageMasks />
           <CodecademyImageMasks />

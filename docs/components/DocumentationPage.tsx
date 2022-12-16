@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { breakpoints, theme } from '@expo/styleguide';
-import Router, { NextRouter, useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 import { useEffect, useState, createRef } from 'react';
 
 import * as RoutesUtils from '~/common/routes';
@@ -28,7 +28,6 @@ const STYLES_DOCUMENT = css`
 `;
 
 type Props = React.PropsWithChildren<{
-  router: NextRouter;
   title?: string;
   description?: string;
   sourceCodeUrl?: string;
