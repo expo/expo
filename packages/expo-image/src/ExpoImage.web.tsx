@@ -8,6 +8,7 @@ import {
   ImageTransitionTiming,
   ImageNativeProps,
   PositionValue,
+  ImagePriority,
   ImageCacheType,
 } from './Image.types';
 
@@ -179,13 +180,16 @@ export default function ExpoImage({
   const [state, handlers] = useImageState(source);
   const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
 
-  const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
-
-  function onLoadHandler() {
+  function onLoadHandler(event: React.SyntheticEvent<HTMLImageElement, Event>) {
     handlers.onLoad();
-    if (!resolvedSources[0]) return;
+    const target = event.target as HTMLImageElement;
     onLoad?.({
-      source: { ...resolvedSources[0], mediaType: null },
+      source: {
+        url: target.currentSrc,
+        width: target.naturalWidth,
+        height: target.naturalHeight,
+        mediaType: null,
+      },
       cacheType: ImageCacheType.NONE,
     });
     onLoadEnd?.();
@@ -193,7 +197,7 @@ export default function ExpoImage({
 
   function onErrorHandler() {
     onError?.({
-      error: `Failed to load image from url: ${resolvedSources[0]?.uri}`,
+      error: `Failed to load image from url: ${source?.[0]?.uri}`,
     });
     onLoadEnd?.();
   }
@@ -213,7 +217,7 @@ export default function ExpoImage({
         src={placeholder?.[0]?.uri}
         // @ts-ignore
         // eslint-disable-next-line react/no-unknown-property
-        fetchpriority={getFetchPriorityFromImagePriority(fetchPriority)}
+        fetchpriority={getFetchPriorityFromImagePriority(priority)}
         style={{
           width: '100%',
           height: '100%',
