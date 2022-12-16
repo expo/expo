@@ -34,9 +34,6 @@
   "jest": {
     "preset": "expo-module-scripts"
   },
-  "dependencies": {
-    "uuid": "^3.3.2"
-  },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"
   },

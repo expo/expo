@@ -1,5 +1,4 @@
 import { Platform } from 'expo-modules-core';
-import { v4 as uuidv4 } from 'uuid';
 
 import { DocumentPickerOptions, DocumentResult } from './types';
 
@@ -21,7 +20,7 @@ export default {
     input.style.display = 'none';
     input.setAttribute('type', 'file');
     input.setAttribute('accept', Array.isArray(type) ? type.join(',') : type);
-    input.setAttribute('id', uuidv4());
+    input.setAttribute('id', String(Math.random()));
     if (multiple) {
       input.setAttribute('multiple', 'multiple');
     }
