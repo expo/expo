@@ -154,7 +154,7 @@ function useSourceSelection(sources, sizeCalculation = 'live') {
             });
             resizeObserver.current.observe(element);
         }
-    }, [hasMoreThanOneSource]);
+    }, [hasMoreThanOneSource, sizeCalculation]);
     const bestSourceForSize = size !== undefined ? findBestSourceForSize(sources, size) : null;
     const source = (hasMoreThanOneSource ? bestSourceForSize : sources?.[0]) ?? null;
     return React.useMemo(() => ({

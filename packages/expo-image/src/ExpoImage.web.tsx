@@ -214,7 +214,7 @@ function useSourceSelection(
         resizeObserver.current.observe(element);
       }
     },
-    [hasMoreThanOneSource]
+    [hasMoreThanOneSource, sizeCalculation]
   );
 
   const bestSourceForSize = size !== undefined ? findBestSourceForSize(sources, size) : null;
