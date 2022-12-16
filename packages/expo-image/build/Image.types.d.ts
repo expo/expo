@@ -102,7 +102,7 @@ export type ImageProps = AccessibilityProps & {
      * @default "initial"
      * @platform web
      */
-    webResponsivePolicy?: 'live' | 'initial';
+    responsivePolicy?: 'live' | 'initial';
     /**
      * Called when the image starts to load.
      */

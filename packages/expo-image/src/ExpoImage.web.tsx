@@ -183,7 +183,7 @@ function findBestSourceForSize(
 
 function useSourceSelection(
   sources?: ImageSource[],
-  sizeCalculation: ImageProps['webResponsivePolicy'] = 'live'
+  sizeCalculation: ImageProps['responsivePolicy'] = 'live'
 ) {
   const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
 
@@ -238,14 +238,14 @@ export default function ExpoImage({
   onLoadStart,
   onLoadEnd,
   onError,
-  webResponsivePolicy,
+  responsivePolicy,
   ...props
 }: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const [state, handlers] = useImageState(source);
   const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
 
-  const { containerRef, source: selectedSource } = useSourceSelection(source, webResponsivePolicy);
+  const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
 
   return (
     <div

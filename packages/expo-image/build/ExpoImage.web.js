@@ -163,11 +163,11 @@ function useSourceSelection(sources, sizeCalculation = 'live') {
     }), [source]);
 }
 ;
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onLoadStart, onLoadEnd, onError, webResponsivePolicy, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onLoadStart, onLoadEnd, onError, responsivePolicy, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const [state, handlers] = useImageState(source);
     const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
-    const { containerRef, source: selectedSource } = useSourceSelection(source, webResponsivePolicy);
+    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
     return (React.createElement("div", { ref: containerRef, style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
