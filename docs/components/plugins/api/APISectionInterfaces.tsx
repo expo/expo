@@ -1,6 +1,5 @@
 import { renderMethod } from './APISectionMethods';
 
-import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   CommentData,
@@ -25,9 +24,10 @@ import {
   getTagNamesList,
   STYLES_APIBOX_NESTED,
   STYLES_ELEMENT_SPACING,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, H4, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -144,6 +144,7 @@ const renderInterface = ({
             <ParamsTableHeadRow />
             <tbody>{interfaceFields.map(renderInterfacePropertyRow)}</tbody>
           </Table>
+          <br />
         </>
       ) : undefined}
     </div>
