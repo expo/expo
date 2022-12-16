@@ -11,11 +11,11 @@ import DocumentationSidebarRight, {
   SidebarRightComponentType,
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
-import { H1 } from '~/components/base/headings';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { Sidebar } from '~/ui/components/Sidebar';
+import { H1 } from '~/ui/components/Text';
 
 const STYLES_DOCUMENT = css`
   background: ${theme.background.default};
