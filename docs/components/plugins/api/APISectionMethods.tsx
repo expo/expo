@@ -2,7 +2,6 @@ import { css } from '@emotion/react';
 import { theme, spacing, UndoIcon, iconSize } from '@expo/styleguide';
 import ReactMarkdown from 'react-markdown';
 
-import { H2, H3Code, H4, H4Code } from '~/components/plugins/Headings';
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   AccessorDefinitionData,
@@ -25,8 +24,10 @@ import {
   STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
   TypeDocKind,
+  H3Code,
+  H4Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { LI, UL, CODE } from '~/ui/components/Text';
+import { H2, H4, LI, UL, CODE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];

@@ -1,4 +1,3 @@
-import { H2, H3Code } from '~/components/plugins/Headings';
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import { ConstantDefinitionData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
@@ -8,8 +7,9 @@ import {
   getTagNamesList,
   STYLE_APIBOX_NO_SPACING,
   STYLES_APIBOX,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionConstantsProps = {
   data: ConstantDefinitionData[];

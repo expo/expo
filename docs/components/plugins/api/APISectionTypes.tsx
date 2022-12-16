@@ -1,6 +1,5 @@
 import { Fragment } from 'react';
 
-import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   PropData,
   TypeDeclarationContentData,
@@ -24,9 +23,10 @@ import {
   renderIndexSignature,
   STYLES_APIBOX,
   getTagNamesList,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { UL, LI, BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, UL, LI, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];

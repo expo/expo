@@ -1,7 +1,6 @@
 import { css } from '@emotion/react';
 import { spacing, theme } from '@expo/styleguide';
 
-import { H2, H3Code, H4Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
@@ -10,8 +9,9 @@ import {
   getTagNamesList,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { CODE } from '~/ui/components/Text';
+import { H2, H4, CODE } from '~/ui/components/Text';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -39,11 +39,9 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     {children.sort(sortByValue).map((enumValue: EnumValueData) => (
       <div css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]} key={enumValue.name}>
         <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" />
-        <div css={enumValueNameStyle}>
-          <H4Code>
-            <CODE>{enumValue.name}</CODE>
-          </H4Code>
-        </div>
+        <H4 css={enumValueNameStyle}>
+          <CODE>{enumValue.name}</CODE>
+        </H4>
         <CODE css={enumValueStyles}>
           {name}.{enumValue.name}
           {enumValue?.defaultValue ? ` ＝ ${enumValue?.defaultValue}` : ''}

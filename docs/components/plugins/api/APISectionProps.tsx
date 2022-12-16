@@ -1,4 +1,3 @@
-import { H2, H3, H3Code, H4, H4Code } from '~/components/plugins/Headings';
 import {
   DefaultPropsDefinitionData,
   PropData,
@@ -20,8 +19,10 @@ import {
   STYLES_NOT_EXPOSED_HEADER,
   STYLES_SECONDARY,
   STYLES_ELEMENT_SPACING,
+  H3Code,
+  H4Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { LI, UL, P, CODE } from '~/ui/components/Text';
+import { H2, H3, H4, LI, UL, P, CODE } from '~/ui/components/Text';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];

@@ -1,9 +1,11 @@
-import { H3 } from '~/components/plugins/Headings';
+import type { PropsWithChildren } from 'react';
+
 import { STYLES_APIBOX } from '~/components/plugins/api/APISectionUtils';
 import { PlatformName } from '~/types/common';
 import { PlatformTags } from '~/ui/components/Tag';
+import { H3 } from '~/ui/components/Text';
 
-type APIBoxProps = React.PropsWithChildren<{
+type APIBoxProps = PropsWithChildren<{
   header?: string;
   platforms?: PlatformName[];
   className?: string;

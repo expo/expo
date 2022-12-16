@@ -35,7 +35,7 @@ import {
   WhyImage,
 } from '~/ui/components/Home/resources';
 import { Terminal } from '~/ui/components/Snippet';
-import { H1, H2, H3, P } from '~/ui/components/Text';
+import { H1, RawH2, RawH3, P } from '~/ui/components/Text';
 
 export const CellContainer = ({ children }: PropsWithChildren<object>) => (
   // https://github.com/sealninja/react-grid-system/issues/175
@@ -61,14 +61,7 @@ const Home = () => {
           <DevicesImageMasks />
           <CodecademyImageMasks />
         </div>
-        <H1
-          css={css({
-            marginBottom: 8,
-            fontFamily: typography.fontStacks.black,
-            fontWeight: '900',
-          })}>
-          Create amazing apps that run everywhere
-        </H1>
+        <H1 css={docsTitleStyle}>Create amazing apps that run everywhere</H1>
         <Description>
           Build one JavaScript/TypeScript project that runs natively on all your users' devices.
         </Description>
@@ -88,9 +81,9 @@ const Home = () => {
                   position: 'relative',
                   zIndex: 1,
                 }}>
-                <H2>
+                <RawH2>
                   <QuickStartIcon /> Quick Start
-                </H2>
+                </RawH2>
                 <br />
                 <Terminal
                   includeMargin={false}
@@ -117,11 +110,11 @@ const Home = () => {
                 ]}
               />
               <DevicesImage />
-              <H2 css={css({ color: palette.primary['900'], zIndex: 1, position: 'relative' })}>
+              <RawH2 css={css({ color: palette.primary['900'], zIndex: 1, position: 'relative' })}>
                 Create a universal Android, iOS,
                 <br />
                 and web app
-              </H2>
+              </RawH2>
               <HomeButton
                 css={css({
                   background: button.primary.background,
@@ -135,7 +128,7 @@ const Home = () => {
             </GridCell>
           </Row>
         </CellContainer>
-        <H3>Learn more</H3>
+        <RawH3>Learn more</RawH3>
         <Description>
           Try out Expo in minutes and learn how to get the most out of Expo.
         </Description>
@@ -149,9 +142,7 @@ const Home = () => {
                 borderColor: palette.blue['200'],
               })}>
               <SnackImage />
-              <H3 css={css({ color: palette.blue['900'], marginBottom: spacing[1.5] })}>
-                Try Expo in your browser
-              </H3>
+              <RawH3 css={css({ color: palette.blue['900'] })}>Try Expo in your browser</RawH3>
               <P css={css({ color: palette.blue['800'], ...typography.fontSizes[14] })}>
                 Expo’s Snack lets you try Expo
                 <br />
@@ -173,11 +164,11 @@ const Home = () => {
                 borderColor: palette.orange[themeName === 'dark' ? '300' : '200'],
               })}>
               <CodecademyImage />
-              <H3 css={css({ color: palette.orange['900'] })}>
+              <RawH3 css={css({ color: palette.orange['900'] })}>
                 Learn Expo on
                 <br />
                 Codecademy
-              </H3>
+              </RawH3>
               <HomeButton
                 css={css({
                   backgroundColor: palette.orange['800'],
@@ -197,9 +188,7 @@ const Home = () => {
                 borderColor: palette.green['200'],
               })}>
               <WhyImage />
-              <H3 css={css({ color: palette.green['900'], marginBottom: spacing[1.5] })}>
-                Why choose Expo?
-              </H3>
+              <RawH3 css={css({ color: palette.green['900'] })}>Why choose Expo?</RawH3>
               <P css={{ color: palette.green['800'], ...typography.fontSizes[14] }}>
                 Learn the tradeoffs of
                 <br />
@@ -220,9 +209,7 @@ const Home = () => {
                 borderColor: palette.yellow['300'],
               })}>
               <OfficeHoursImage />
-              <H3 css={css({ color: palette.yellow['900'], marginBottom: spacing[1.5] })}>
-                Join us for Office Hours
-              </H3>
+              <RawH3 css={css({ color: palette.yellow['900'] })}>Join us for Office Hours</RawH3>
               <P css={css({ color: palette.yellow['800'], ...typography.fontSizes[14] })}>
                 Get answers to your questions and
                 <br />
@@ -241,7 +228,7 @@ const Home = () => {
             </GridCell>
           </Row>
         </CellContainer>
-        <H3>Explore APIs</H3>
+        <RawH3>Explore APIs</RawH3>
         <Description>
           Expo supplies a vast array of SDK modules. You can also create your own.
         </Description>
@@ -269,7 +256,7 @@ const Home = () => {
             />
           </Row>
         </CellContainer>
-        <H3>Join the community</H3>
+        <RawH3>Join the community</RawH3>
         <JoinTheCommunity />
       </DocumentationPage>
     </ScreenClassProvider>
@@ -326,6 +313,15 @@ export function JoinTheCommunity() {
     </>
   );
 }
+
+const docsTitleStyle = css({
+  marginTop: 0,
+  marginBottom: spacing[2],
+  paddingBottom: 0,
+  borderBottomWidth: 0,
+  fontFamily: typography.fontStacks.black,
+  fontWeight: '900',
+});
 
 const baseGradientStyle = css({
   top: 0,
