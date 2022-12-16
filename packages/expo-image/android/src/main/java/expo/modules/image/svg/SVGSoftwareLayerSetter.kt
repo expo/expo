@@ -15,7 +15,7 @@ import com.bumptech.glide.request.target.Target
  * and rewritten to Kotlin.
  */
 class SVGSoftwareLayerSetter @JvmOverloads constructor(private val mDefaultLayerType: Int = ImageView.LAYER_TYPE_NONE) : RequestListener<Any> {
-  override fun onLoadFailed(e: GlideException?, model: Any, target: Target<Any>, isFirstResource: Boolean): Boolean {
+  override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Any>, isFirstResource: Boolean): Boolean {
     getViewOfTarget(target)?.setLayerType(mDefaultLayerType, null)
     return false
   }

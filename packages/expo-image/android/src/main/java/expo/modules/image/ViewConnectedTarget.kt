@@ -24,7 +24,7 @@ class ViewConnectedTarget(
   /**
    * An enum representing the state of the target.
    */
-  private enum class State {
+  enum class State {
     /**
      * Target is free to use.
      */
@@ -41,9 +41,12 @@ class ViewConnectedTarget(
     ACTIVE
   }
 
-  private var state = State.FREE
+  var state = State.FREE
+    private set
 
   var placeholderContentFit: ContentFit = ContentFit.ScaleDown
+  var hasSource = false
+  var placeholderIsVisible = false
 
   /**
    * Gets the currently unused target.
@@ -118,7 +121,9 @@ class ViewConnectedTarget(
       if (fullRequest?.isComplete != true) {
         // We know that we received a thumbnail.
         // But if something is already displayed, we don't want to show the placeholder.
-        if (imageView.drawable != null) {
+        // One exception is when the current target doesn't have the primary source.
+        // In that case, we want to display the placeholder anyway.
+        if (imageView.drawable != null && hasSource) {
           return
         }
 
@@ -134,8 +139,10 @@ class ViewConnectedTarget(
 
     imageView.setImageDrawable(resource)
     if (isPlaceholder) {
+      placeholderIsVisible = true
       imageView.applyTransformationMatrix(resource, placeholderContentFit)
     } else {
+      placeholderIsVisible = false
       imageView.applyTransformationMatrix()
     }
 
@@ -157,11 +164,15 @@ class ViewConnectedTarget(
 
   private fun clearSelf() {
     state = State.FREE
+    hasSource = false
+    placeholderIsVisible = false
     requestManager.clear(this)
   }
 
   private fun clearBgTarget() {
     bgTarget?.state = State.FREE
+    bgTarget?.hasSource = false
+    bgTarget?.placeholderIsVisible = false
     requestManager.clear(bgTarget)
   }
 
