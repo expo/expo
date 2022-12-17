@@ -95,7 +95,6 @@
     "terminal-link": "^2.1.1",
     "text-table": "^0.2.0",
     "url-join": "4.0.0",
-    "uuid": "^3.4.0",
     "wrap-ansi": "^7.0.0"
   },
   "taskr": {
@@ -128,7 +127,6 @@
     "@types/tar": "^6.1.1",
     "@types/text-table": "^0.2.1",
     "@types/url-join": "^4.0.0",
-    "@types/uuid": "^3.4.7",
     "@types/webpack": "~4.41.32",
     "@types/webpack-dev-server": "3.11.0",
     "@types/wrap-ansi": "^8.0.1",
