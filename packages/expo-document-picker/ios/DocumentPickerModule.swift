@@ -170,7 +170,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
       let utiTypes = options.type.map { $0.toUTI() }
       return UIDocumentPickerViewController(
         documentTypes: utiTypes,
-        in: UIDocumentPickerMode.import
+        in: .import
       )
     }
   }

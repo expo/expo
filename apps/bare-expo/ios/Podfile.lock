@@ -1296,7 +1296,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
   ExpoDevice: f3c8baaea11ae02095ecb474dcfd48d80ee5bf8f
-  ExpoDocumentPicker: bc1ef93a2f7fad84699c0a075f74413ad1fd6f1e
+  ExpoDocumentPicker: 0376a8dab4d2797f3f58216c3a048494531cfac2
   ExpoGL: 1f734be738a52713e6ec7abe4fd970f0946a2a0b
   ExpoHaptics: 5a56d30a87ea213dd00b09566dc4b441a4dff97f
   ExpoImage: 81a614a20ece8e5f23f987c3d4060d3915ead413
