@@ -42,7 +42,9 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
     didSet {
       appContext.reactBridge = bridge
       bridge.dispatchBlock({ [weak self] in
-        guard let self = self, let bridge = self.appContext.reactBridge else { return }
+        guard let self = self, let bridge = self.appContext.reactBridge else {
+          return
+        }
         self.appContext.runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
       }, queue: RCTJSThread)
     }
