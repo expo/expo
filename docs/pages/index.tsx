@@ -83,7 +83,6 @@ const Home = () => {
                   <QuickStartIcon /> Quick Start
                 </RawH2>
                 <br />
-                <br />
                 <Terminal includeMargin={false} cmd={['$ npx create-expo-app my-app']} />
               </div>
             </GridCell>
@@ -331,7 +330,7 @@ const quickStartCellStyle = css({
   backgroundColor: theme.background.secondary,
   backgroundImage: 'url("/static/images/home/QuickStartPattern.svg")',
   backgroundBlendMode: 'multiply',
-  minHeight: 250,
+  minHeight: 220,
 
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     minHeight: 200,
@@ -342,7 +341,7 @@ const tutorialCellStyle = css({
   backgroundColor: theme.palette.primary['100'],
   backgroundImage: 'url("/static/images/home/TutorialPattern.svg")',
   backgroundBlendMode: 'multiply',
-  minHeight: 250,
+  minHeight: 220,
 
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     minHeight: 200,
