@@ -108,6 +108,7 @@ const nonLinkableTypes = [
   'ColorValue',
   'Component',
   'ComponentClass',
+  'PureComponent',
   'E',
   'EventSubscription',
   'Listener',
