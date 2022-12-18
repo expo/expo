@@ -14,7 +14,7 @@ function mergeDeprecatedResult(result) {
         ...result,
         get type() {
             console.warn('Key "type" in the document picker result is deprecated and will be removed in SDK 49, use "canceled" instead');
-            return this.canceled;
+            return this.canceled ? 'cancel' : 'success';
         },
     };
     for (const key of DEPRECATED_RESULT_KEYS) {
