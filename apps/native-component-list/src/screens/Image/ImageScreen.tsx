@@ -67,6 +67,13 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageTransitionsScreen'));
     },
   },
+  {
+    name: 'Blurhash',
+    route: 'image/blurhash',
+    getComponent() {
+      return optionalRequire(() => require('./ImageBlurhashScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {

@@ -1,13 +1,13 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppFetcherDevelopmentMode.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXAppFetcherDevelopmentMode
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader manifest:(EXManifestsManifest *)manifest;
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)appLoader manifest:(EXManifestsManifest *)manifest;
 {
   if (self = [super initWithAppLoader:appLoader]) {
     self.manifest = manifest;

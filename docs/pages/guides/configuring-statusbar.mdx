@@ -3,7 +3,7 @@ title: Configuring the status bar
 description: Learn how to configure status bar using expo-status-bar library.
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { CODE } from '~/ui/components/Text';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { APIBox } from '~/components/plugins/APIBox';
@@ -96,7 +96,7 @@ export default function Playlists() {
 }
 ```
 
-<Collapsible summary={<span>How is <InlineCode>expo-status-bar</InlineCode> different from the StatusBar component included in React Native?</span>}>
+<Collapsible summary={<span>How is <CODE>expo-status-bar</CODE> different from the StatusBar component included in React Native?</span>}>
 
 `expo-status-bar` builds on top of the `StatusBar` component that React Native provides to give you better defaults when you're building an app with Expo tools.
 For example, the `translucent` property of `expo-status-bar` defaults to `true` or, if you have changed that property in `androidStatusBar`, it will use that value instead.

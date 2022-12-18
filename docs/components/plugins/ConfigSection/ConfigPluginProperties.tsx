@@ -1,9 +1,8 @@
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
-import { H3 } from '~/components/plugins/Headings';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { P, CODE } from '~/ui/components/Text';
+import { P, CODE, H3 } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<{
   properties: PluginProperty[];

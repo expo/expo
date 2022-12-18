@@ -16,9 +16,6 @@ import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
 import com.bumptech.glide.request.RequestOptions
-import com.bumptech.glide.request.target.DrawableImageViewTarget
-import com.bumptech.glide.request.target.SizeReadyCallback
-import com.bumptech.glide.request.target.Target
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
@@ -105,7 +102,26 @@ class ExpoImageView(
 
   private val outlineProvider = OutlineProvider(context)
 
+  private var target: ViewConnectedTarget = ViewConnectedTarget(
+    requestManager,
+    WeakReference(this)
+  ).also {
+    val bgTarget = ViewConnectedTarget(requestManager, WeakReference(this), it)
+    it.bgTarget = bgTarget
+  }
+
+  private val activeTarget: ViewConnectedTarget?
+    get() = if (target.state == ViewConnectedTarget.State.ACTIVE) {
+      target
+    } else if (target.bgTarget?.state == ViewConnectedTarget.State.ACTIVE) {
+      target.bgTarget
+    } else {
+      null
+    }
+
   private var propsChanged = false
+  private var transformationMatrixChanged = false
+
   private var loadedSource: GlideModel? = null
 
   private val borderDrawableLazyHolder = lazy {
@@ -132,7 +148,16 @@ class ExpoImageView(
     if (drawable == null) {
       return
     }
-    applyTransformationMatrix()
+
+    val currentTarget = activeTarget
+
+    // We have to check if the placeholder is currently displayed.
+    // If it is, we want to apply different transformations.
+    if (currentTarget != null && currentTarget.placeholderIsVisible) {
+      applyTransformationMatrix(drawable, currentTarget.placeholderContentFit)
+    } else {
+      applyTransformationMatrix()
+    }
   }
 
   fun applyTransformationMatrix() {
@@ -148,6 +173,18 @@ class ExpoImageView(
     }
   }
 
+  fun applyTransformationMatrix(drawable: Drawable, contentFit: ContentFit) {
+    val imageRect = RectF(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
+    val viewRect = RectF(0f, 0f, width.toFloat(), height.toFloat())
+
+    val matrix = contentFit.toMatrix(imageRect, viewRect)
+    val scaledImageRect = imageRect.transform(matrix)
+
+    imageMatrix = matrix.apply {
+      ContentPosition().apply(this, scaledImageRect, viewRect)
+    }
+  }
+
   private val borderDrawable
     get() = borderDrawableLazyHolder.value
 
@@ -160,38 +197,11 @@ class ExpoImageView(
   // region Component Props
   internal var sources: List<SourceMap> = emptyList()
   private val bestSource: SourceMap?
-    get() {
-      if (sources.isEmpty()) {
-        return null
-      }
+    get() = getBestSource(sources)
 
-      if (sources.size == 1) {
-        return sources.first()
-      }
-
-      val parent = parent as? ExpoImageViewWrapper ?: return null
-      val parentRect = Rect(0, 0, parent.width, parent.height)
-      if (parentRect.isEmpty) {
-        return null
-      }
-
-      val targetPixelCount = parentRect.width() * parentRect.height()
-
-      var bestSource: SourceMap? = null
-      var bestFit = Double.MAX_VALUE
-
-      sources.forEach {
-        val fit = abs(1 - (it.pixelCount / targetPixelCount))
-        if (fit < bestFit) {
-          bestFit = fit
-          bestSource = it
-        }
-      }
-
-      return bestSource
-    }
-
-  internal var defaultSourceMap: SourceMap? = null
+  internal var placeholders: List<SourceMap> = emptyList()
+  private val bestPlaceholder: SourceMap?
+    get() = getBestSource(placeholders)
 
   internal var blurRadius: Int? = null
     set(value) {
@@ -208,13 +218,13 @@ class ExpoImageView(
   internal var contentFit: ContentFit = ContentFit.Cover
     set(value) {
       field = value
-      propsChanged = true
+      transformationMatrixChanged = true
     }
 
   internal var contentPosition: ContentPosition = ContentPosition.center
     set(value) {
       field = value
-      propsChanged = true
+      transformationMatrixChanged = true
     }
 
   internal var priority: Priority = Priority.NORMAL
@@ -272,19 +282,24 @@ class ExpoImageView(
   // region ViewManager Lifecycle methods
   internal fun onAfterUpdateTransaction() {
     val bestSource = bestSource
-    val sourceToLoad = bestSource?.createGlideModel()
+    val bestPlaceholder = bestPlaceholder
 
-    if (bestSource == null || sourceToLoad == null) {
-      requestManager.clear(this)
+    val sourceToLoad = bestSource?.createGlideModel(context)
+    val placeholder = bestPlaceholder?.createGlideModel(context)
+    // We only clean the image when the source is set to null and we don't have a placeholder.
+    if ((bestSource == null || sourceToLoad == null) && placeholder == null) {
+      target.clearBothTargets()
       setImageDrawable(null)
       loadedSource = null
+      transformationMatrixChanged = false
+      propsChanged = false
       return
     }
 
-    if (sourceToLoad != loadedSource || propsChanged) {
+    if (sourceToLoad != loadedSource || propsChanged || (sourceToLoad == null && placeholder != null)) {
       propsChanged = false
       loadedSource = sourceToLoad
-      val options = bestSource.createOptions(context)
+      val options = bestSource?.createOptions(context)
       val propOptions = createPropOptions()
 
       if (sourceToLoad is GlideUrlModel) {
@@ -296,29 +311,44 @@ class ExpoImageView(
 
       expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
 
-      val defaultSourceToLoad = defaultSourceMap?.createGlideModel()
-      requestManager
+      val newTarget = target.getUnusedTarget() ?: return
+      newTarget.hasSource = sourceToLoad != null
+      val request = requestManager
         .asDrawable()
-        .load(sourceToLoad.glideData)
-        .apply { if (defaultSourceToLoad != null) thumbnail(requestManager.load(defaultSourceToLoad)) }
-        .apply(options)
+        .load(sourceToLoad?.glideData)
+        .apply {
+          if (placeholder != null) {
+            thumbnail(requestManager.load(placeholder.glideData))
+            val placeholderContentFit = if (bestPlaceholder?.isBlurhash() == true) {
+              contentFit
+            } else {
+              ContentFit.ScaleDown
+            }
+            newTarget.placeholderContentFit = placeholderContentFit
+          }
+        }
+        .apply {
+          options?.let {
+            apply(it)
+          }
+        }
         .downsample(DownsampleStrategy.NONE)
         .addListener(GlideRequestListener(expoImageViewWrapper))
         .encodeQuality(100)
         .apply(propOptions)
-        .into(object : DrawableImageViewTarget(this) {
-          override fun getSize(cb: SizeReadyCallback) {
-            cb.onSizeReady(Target.SIZE_ORIGINAL, Target.SIZE_ORIGINAL)
-          }
 
-          override fun setResource(resource: Drawable?) {
-            super.setResource(resource)
-            if (resource != null) {
-              applyTransformationMatrix()
-            }
-          }
-        })
+      request.into(newTarget)
+    } else {
+      // In the case where the source didn't change, but the transformation matrix has to be
+      // recalculated, we can apply the new transformation right away.
+      // When the source and the matrix is different, we don't want to do anything.
+      // We don't want to changed the transformation of the currently displayed image.
+      // The new matrix will be applied when new resource is loaded.
+      if (transformationMatrixChanged && drawable != null) {
+        applyTransformationMatrix()
+      }
     }
+    transformationMatrixChanged = false
   }
 
   internal fun onDrop() {
@@ -327,6 +357,37 @@ class ExpoImageView(
   // endregion
 
   // region Helper methods
+
+  private fun getBestSource(sources: List<SourceMap>): SourceMap? {
+    if (sources.isEmpty()) {
+      return null
+    }
+
+    if (sources.size == 1) {
+      return sources.first()
+    }
+
+    val parent = parent as? ExpoImageViewWrapper ?: return null
+    val parentRect = Rect(0, 0, parent.width, parent.height)
+    if (parentRect.isEmpty) {
+      return null
+    }
+
+    val targetPixelCount = parentRect.width() * parentRect.height()
+
+    var bestSource: SourceMap? = null
+    var bestFit = Double.MAX_VALUE
+
+    sources.forEach {
+      val fit = abs(1 - (it.pixelCount / targetPixelCount))
+      if (fit < bestFit) {
+        bestFit = fit
+        bestSource = it
+      }
+    }
+
+    return bestSource
+  }
 
   private fun createPropOptions(): RequestOptions {
     return RequestOptions()

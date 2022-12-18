@@ -1,14 +1,14 @@
 import { css } from '@emotion/react';
 import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
-import React from 'react';
+import type { ComponentProps, ComponentType } from 'react';
+import { Fragment } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import { APIDataType } from './APIDataType';
 
-import { Code, InlineCode } from '~/components/base/code';
-import { H4 } from '~/components/base/headings';
-import { LI, UL, OL } from '~/components/base/list';
+import { HeadingType } from '~/common/headingManager';
+import { Code as PrismCodeBlock } from '~/components/base/code';
 import {
   CommentData,
   MethodDefinitionData,
@@ -23,7 +23,19 @@ import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 import { Tag } from '~/ui/components/Tag';
-import { BOLD, P, A } from '~/ui/components/Text';
+import {
+  A,
+  BOLD,
+  CODE,
+  H4,
+  LI,
+  OL,
+  P,
+  RawH3,
+  RawH4,
+  UL,
+  createPermalinkedComponent,
+} from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -41,7 +53,7 @@ export enum TypeDocKind {
   TypeAlias = 4194304,
 }
 
-export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
+export type MDComponents = ComponentProps<typeof ReactMarkdown>['components'];
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -49,10 +61,14 @@ const getInvalidLinkMessage = (href: string) =>
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => <Callout>{children}</Callout>,
   code: ({ children, className }) =>
-    className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
+    className ? (
+      <PrismCodeBlock className={className}>{children}</PrismCodeBlock>
+    ) : (
+      <CODE css={css({ display: 'inline' })}>{children}</CODE>
+    ),
   h1: ({ children }) => <H4>{children}</H4>,
-  ul: ({ children }) => <UL>{children}</UL>,
-  ol: ({ children }) => <OL>{children}</OL>,
+  ul: ({ children }) => <UL css={STYLES_ELEMENT_SPACING}>{children}</UL>,
+  ol: ({ children }) => <OL css={STYLES_ELEMENT_SPACING}>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
     if (
@@ -68,7 +84,7 @@ export const mdComponents: MDComponents = {
     }
     return <A href={href}>{children}</A>;
   },
-  p: ({ children }) => (children ? <P css={{ marginBottom: spacing[4] }}>{children}</P> : null),
+  p: ({ children }) => (children ? <P css={STYLES_ELEMENT_SPACING}>{children}</P> : null),
   strong: ({ children }) => <BOLD>{children}</BOLD>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
   table: ({ children }) => <Table>{children}</Table>,
@@ -399,7 +415,7 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <BOLD>Default:</BOLD> <InlineCode>{defaultValue}</InlineCode>
+      <BOLD>Default:</BOLD> <CODE>{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -410,7 +426,7 @@ export const renderTypeOrSignatureType = (
 ) => {
   if (signatures && signatures.length) {
     return (
-      <InlineCode key={`signature-type-${signatures[0].name}`}>
+      <CODE key={`signature-type-${signatures[0].name}`}>
         (
         {signatures?.map(({ parameters }) =>
           parameters?.map(param => (
@@ -421,18 +437,14 @@ export const renderTypeOrSignatureType = (
           ))
         )}
         ) =&gt;{' '}
-        {type ? (
-          <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>
-        ) : (
-          'void'
-        )}
-      </InlineCode>
+        {type ? <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE> : 'void'}
+      </CODE>
     );
   } else if (type) {
     if (allowBlock) {
       return <APIDataType typeDefinition={type} />;
     }
-    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
+    return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE>;
   }
   return undefined;
 };
@@ -546,18 +558,18 @@ export const CommentTextBlock = ({
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <React.Fragment key={'example-' + index}>
+    <Fragment key={'example-' + index}>
       {components !== mdComponents ? (
         <div css={STYLES_EXAMPLE_IN_TABLE}>
           <BOLD>Example</BOLD>
         </div>
       ) : (
         <div css={STYLES_NESTED_SECTION_HEADER}>
-          <H4>Example</H4>
+          <RawH4>Example</RawH4>
         </div>
       )}
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
-    </React.Fragment>
+    </Fragment>
   ));
 
   const see = getTagData('see', comment);
@@ -595,6 +607,20 @@ export const CommentTextBlock = ({
   );
 };
 
+export const getAPISectionHeader = (exposeInSidebar?: boolean) =>
+  exposeInSidebar ? createPermalinkedComponent(RawH4, { baseNestingLevel: 2 }) : H4;
+
+const getMonospaceHeader = (element: ComponentType<any>) => {
+  const level = parseInt(element?.displayName?.replace(/\D/g, '') ?? '0', 10);
+  return createPermalinkedComponent(element, {
+    baseNestingLevel: level !== 0 ? level : undefined,
+    sidebarType: HeadingType.InlineCode,
+  });
+};
+
+export const H3Code = getMonospaceHeader(RawH3);
+export const H4Code = getMonospaceHeader(RawH4);
+
 export const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') return name;
   const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
@@ -606,7 +632,7 @@ export const STYLES_APIBOX = css({
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  padding: `${spacing[5]}px ${spacing[5]}px 0`,
+  padding: spacing[5],
   boxShadow: shadows.micro,
   marginBottom: spacing[6],
   overflowX: 'hidden',
@@ -624,8 +650,13 @@ export const STYLES_APIBOX = css({
     padding: `${spacing[3]}px ${spacing[4]}px`,
   },
 
+  li: {
+    marginBottom: 0,
+  },
+
   [`.css-${tableWrapperStyle.name}`]: {
     boxShadow: 'none',
+    marginBottom: 0,
   },
 
   [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
@@ -635,11 +666,15 @@ export const STYLES_APIBOX = css({
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
+  marginBottom: spacing[4],
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   h4: {
     marginTop: 0,
   },
 });
+
+export const STYLE_APIBOX_NO_SPACING = css({ marginBottom: -spacing[5] });
 
 export const STYLES_NESTED_SECTION_HEADER = css({
   display: 'flex',
@@ -690,4 +725,8 @@ const defaultValueContainerStyle = css({
 
 const STYLES_EXAMPLE_IN_TABLE = css({
   margin: `${spacing[2]}px 0`,
+});
+
+export const STYLES_ELEMENT_SPACING = css({
+  marginBottom: spacing[4],
 });

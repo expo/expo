@@ -1,9 +1,6 @@
 import { css } from '@emotion/react';
 import { spacing, theme } from '@expo/styleguide';
-import React from 'react';
 
-import { InlineCode } from '~/components/base/code';
-import { H2, H3Code, H4Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
@@ -11,7 +8,10 @@ import {
   CommentTextBlock,
   getTagNamesList,
   STYLES_APIBOX,
+  STYLES_APIBOX_NESTED,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
+import { H2, H4, CODE } from '~/ui/components/Text';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -33,21 +33,19 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     <APISectionDeprecationNote comment={comment} />
     <APISectionPlatformTags comment={comment} prefix="Only for:" />
     <H3Code tags={getTagNamesList(comment)}>
-      <InlineCode>{name}</InlineCode>
+      <CODE>{name}</CODE>
     </H3Code>
     <CommentTextBlock comment={comment} includePlatforms={false} />
     {children.sort(sortByValue).map((enumValue: EnumValueData) => (
-      <div css={[STYLES_APIBOX, enumContainerStyle]} key={enumValue.name}>
+      <div css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]} key={enumValue.name}>
         <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" />
-        <div css={enumValueNameStyle}>
-          <H4Code>
-            <InlineCode>{enumValue.name}</InlineCode>
-          </H4Code>
-        </div>
-        <InlineCode css={enumValueStyles}>
+        <H4 css={enumValueNameStyle}>
+          <CODE>{enumValue.name}</CODE>
+        </H4>
+        <CODE css={enumValueStyles}>
           {name}.{enumValue.name}
           {enumValue?.defaultValue ? ` ＝ ${enumValue?.defaultValue}` : ''}
-        </InlineCode>
+        </CODE>
         <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
       </div>
     ))}
@@ -61,11 +59,6 @@ const APISectionEnums = ({ data }: APISectionEnumsProps) =>
       {data.map(renderEnum)}
     </>
   ) : null;
-
-const enumContainerStyle = css({
-  boxShadow: 'none',
-  marginBottom: spacing[3],
-});
 
 const enumValueNameStyle = css({
   h4: {
@@ -82,9 +75,7 @@ const enumValueStyles = css({
 });
 
 const enumContentStyles = css({
-  '& ul': {
-    marginBottom: 0,
-  },
+  paddingBottom: 0,
 });
 
 export default APISectionEnums;

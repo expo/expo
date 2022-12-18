@@ -13,7 +13,12 @@ class Base64ModelLoader : ModelLoader<String, ByteBuffer> {
     return model.startsWith("data:")
   }
 
-  override fun buildLoadData(model: String, width: Int, height: Int, options: Options): ModelLoader.LoadData<ByteBuffer> {
+  override fun buildLoadData(
+    model: String,
+    width: Int,
+    height: Int,
+    options: Options
+  ): ModelLoader.LoadData<ByteBuffer> {
     return ModelLoader.LoadData(ObjectKey(model), Base64DataFetcher(model))
   }
 }
