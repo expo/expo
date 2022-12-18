@@ -83,11 +83,8 @@ const Home = () => {
                   <QuickStartIcon /> Quick Start
                 </RawH2>
                 <br />
-                <Terminal
-                  includeMargin={false}
-                  cmd={['$ npm i -g expo-cli', '$ npx create-expo-app my-app']}
-                  cmdCopy="npm install --global expo-cli && npx create-expo-app my-app"
-                />
+                <br />
+                <Terminal includeMargin={false} cmd={['$ npx create-expo-app my-app']} />
               </div>
             </GridCell>
             <GridCell
