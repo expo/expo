@@ -8,10 +8,15 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline} from '~/ui/components/Snippet';
+import { PlatformTags } from '~/ui/components/Tag';
 
 **`expo-face-detector`** lets you use the power of the [Google Mobile Vision](https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.
 
 <PlatformsSection android ios />
+
+#### Known issues&ensp;<PlatformTags platforms={['android']}  />
+
+Face detector does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
 
 ## Installation
 
@@ -19,19 +24,17 @@ import { SnackInline} from '~/ui/components/Snippet';
 
 ## Usage
 
-### Known issues
-
-- Android does not recognize faces that aren't aligned with the interface (top of the interface matches top of the head).
-
 ### Settings
 
 In order to configure detector's behavior modules pass a [`DetectionOptions`](#detectionoptions) object which is then interpreted by this module.
 
-Eg. you could use the following snippet to detect faces in fast mode without detecting landmarks or whether face is smiling:
+### Example
 
-<SnackInline dependencies={['expo-camera', 'expo-face-detector']}>
+You can use the following snippet to detect faces in a fast mode without detecting landmarks or whether a face is smiling.
 
-```js
+<SnackInline dependencies={['expo-camera', 'expo-face-detector']} label="Quick face detection">
+
+```jsx
 import * as React from 'react';
 import { Camera } from 'expo-camera';
 import * as FaceDetector from 'expo-face-detector';
