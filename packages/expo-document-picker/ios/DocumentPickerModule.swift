@@ -57,19 +57,19 @@ public class DocumentPickerModule: Module, PickingResultHandler {
 
     do {
       if options.multiple {
-        let documents = try urls.map {
+        let assets = try urls.map {
           try readDocumentDetails(
             documentUrl: $0,
             copy: options.copyToCacheDirectory
           )
         }
-        promise.resolve(documents)
+        promise.resolve(DocumentPickerResponse(assets: assets))
       } else {
-        let document = try readDocumentDetails(
+        let asset = try readDocumentDetails(
           documentUrl: urls[0],
           copy: options.copyToCacheDirectory
         )
-        promise.resolve(document)
+        promise.resolve(DocumentPickerResponse(assets: [asset]))
       }
     } catch {
       promise.reject(error)
@@ -83,7 +83,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
 
     pickingContext = nil
-    context.promise.resolve(["type": "cancel"])
+    context.promise.resolve(DocumentPickerResponse(canceled: true))
   }
 
   private func getFileSize(path: URL) -> Int? {
@@ -109,7 +109,7 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     return folderSize
   }
 
-  private func readDocumentDetails(documentUrl: URL, copy: Bool) throws -> [String: Any] {
+  private func readDocumentDetails(documentUrl: URL, copy: Bool) throws -> DocumentInfo {
     let pathExtension = documentUrl.pathExtension
     var newUrl = documentUrl
 
@@ -129,18 +129,13 @@ public class DocumentPickerModule: Module, PickingResultHandler {
     }
 
     let mimeType = self.getMimeType(from: pathExtension)
-    var result: [String: Any] = [
-      "type": "success",
-      "uri": newUrl.absoluteString,
-      "name": documentUrl.lastPathComponent,
-      "size": fileSize
-    ]
 
-    if mimeType != nil {
-      result["mimeType"] = mimeType
-    }
-
-    return result
+    return DocumentInfo(
+      uri: newUrl.absoluteString,
+      name: documentUrl.lastPathComponent,
+      size: fileSize,
+      mimeType: mimeType
+    )
   }
 
   private func getMimeType(from pathExtension: String) -> String? {

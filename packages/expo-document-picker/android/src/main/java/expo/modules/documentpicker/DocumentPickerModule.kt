@@ -68,7 +68,7 @@ class DocumentPickerModule : Module() {
         }
       } else {
         promise.resolve(
-          DocumentPickerResult(type = "cancel")
+          DocumentPickerResult(canceled = true)
         )
       }
     }
@@ -98,8 +98,7 @@ class DocumentPickerModule : Module() {
     intent?.data?.let { uri ->
       val details = readDocumentDetails(uri)
       val result = DocumentPickerResult(
-        type = "success",
-        result = listOf(details)
+        assets = listOf(details),
       )
       pendingPromise?.resolve(result)
     } ?: throw FailedToReadDocumentException()
@@ -107,23 +106,19 @@ class DocumentPickerModule : Module() {
 
   private fun handleMultipleSelection(intent: Intent?) {
     val count = intent?.clipData?.itemCount ?: 0
-    val documents = mutableListOf<DocumentPickerData>()
+    val assets = mutableListOf<DocumentInfo>()
 
     for (i in 0 until count) {
       val uri = intent?.clipData?.getItemAt(i)?.uri
         ?: throw FailedToReadDocumentException()
       val document = readDocumentDetails(uri)
-      documents.add(document)
+      assets.add(document)
     }
 
-    val pickingResult = DocumentPickerResult(
-      type = "success",
-      result = documents
-    )
-    pendingPromise?.resolve(pickingResult)
+    pendingPromise?.resolve(DocumentPickerResult(assets = assets))
   }
 
-  private fun readDocumentDetails(uri: Uri): DocumentPickerData {
+  private fun readDocumentDetails(uri: Uri): DocumentInfo {
     val originalDocumentDetails = DocumentDetailsReader(context).read(uri)
 
     val details = if (!copyToCacheDirectory || originalDocumentDetails == null) {
@@ -136,7 +131,7 @@ class DocumentPickerModule : Module() {
     }
 
     return details?.let { it ->
-      DocumentPickerData(
+      DocumentInfo(
         uri = it.uri,
         name = it.name,
         mimeType = it.mimeType,

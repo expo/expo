@@ -1,6 +1,40 @@
 import ExpoDocumentPicker from './ExpoDocumentPicker';
-import { DocumentPickerOptions, DocumentResult } from './types';
-export { DocumentPickerOptions, DocumentResult };
+import { DocumentPickerOptions, DocumentPickerResult } from './types';
+export { DocumentPickerOptions, DocumentPickerResult as DocumentResult };
+
+const DEPRECATED_RESULT_KEYS = [
+  'name',
+  'size',
+  'uri',
+  'mimeType',
+  'lastModified',
+  'file',
+  'output',
+];
+
+function mergeDeprecatedResult(result: DocumentPickerResult): DocumentPickerResult {
+  const firstAsset = result.assets?.[0];
+  const deprecatedResult = {
+    ...result,
+    get type() {
+      console.warn(
+        'Key "type" in the document picker result is deprecated and will be removed in SDK 49, use "canceled" instead'
+      );
+      return this.canceled;
+    },
+  };
+  for (const key of DEPRECATED_RESULT_KEYS) {
+    Object.defineProperty(deprecatedResult, key, {
+      get() {
+        console.warn(
+          `Key "${key}" in the document picker result is deprecated and will be removed in SDK 49, you can access selected assets through the "assets" array instead`
+        );
+        return firstAsset?.[key];
+      },
+    });
+  }
+  return deprecatedResult;
+}
 
 // @needsAudit
 /**
@@ -18,9 +52,14 @@ export async function getDocumentAsync({
   type = '*/*',
   copyToCacheDirectory = true,
   multiple = false,
-}: DocumentPickerOptions = {}): Promise<DocumentResult> {
+}: DocumentPickerOptions = {}): Promise<DocumentPickerResult> {
   if (typeof type === 'string') {
     type = [type] as string[];
   }
-  return await ExpoDocumentPicker.getDocumentAsync({ type, copyToCacheDirectory, multiple });
+  const result = await ExpoDocumentPicker.getDocumentAsync({
+    type,
+    copyToCacheDirectory,
+    multiple,
+  });
+  return mergeDeprecatedResult(result);
 }

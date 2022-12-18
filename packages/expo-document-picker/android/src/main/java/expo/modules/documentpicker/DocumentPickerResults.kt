@@ -5,13 +5,13 @@ import expo.modules.kotlin.records.Record
 
 data class DocumentPickerResult(
   @Field
-  val type: String,
+  val canceled: Boolean = false,
 
   @Field
-  val result: List<DocumentPickerData> = emptyList()
+  val assets: List<DocumentInfo>? = null
 ) : Record
 
-data class DocumentPickerData(
+data class DocumentInfo(
   @Field
   val uri: String,
 
