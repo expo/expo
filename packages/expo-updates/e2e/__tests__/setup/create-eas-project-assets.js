@@ -1,17 +1,17 @@
 const path = require('path');
 
-const { buildAsync: buildAndroidAsync } = require('./build-android');
-const { buildAsync: buildIosAsync } = require('./build-ios');
 const { initAsync, setupBasicAppAsync, setupAssetsAppAsync } = require('./project');
 
 const repoRoot = process.env.EXPO_REPO_ROOT;
-const artifactsDest = process.env.ARTIFACTS_DEST;
-
 const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
 
 /**
- * To setup e2e tests locally, export the following environment variables:
+ * This generates a project at the location TEST_PROJECT_ROOT,
+ * that is configured to build a test app and run the "basic" suite
+ * of updates E2E tests in the Detox environment.
+ *
+ * To test this locally, export the following environment variables:
  * $ export UPDATES_HOST=$(ifconfig -l | xargs -n1 ipconfig getifaddr)
  * $ export UPDATES_PORT=4747
  * $ export EXPO_REPO_ROOT=<path to local expo repo>
@@ -20,9 +20,10 @@ const runtimeVersion = '1.0.0';
  *
  * Then execute this file to setup the test project and builds.
  *
- * Afterwards, tests can be run on a booted simulator or (Android) connected device with
- * $ yarn test --config packages/expo-updates/e2e/jest.config.android.js --runInBand
- * $ yarn test --config packages/expo-updates/e2e/jest.config.ios.js --runInBand
+ * Afterwards, tests can be run by changing to TEST_PROJECT_ROOT and running
+ *
+ * eas init
+ * eas build --profile=updates_testing --platform=<ios|android>
  */
 
 (async function () {
@@ -41,17 +42,5 @@ const runtimeVersion = '1.0.0';
 
   await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin });
 
-  // Order is somewhat important here as the `basic` and `assets` apps are created by modifying the
-  // same project (not creating a new one).
-  await setupBasicAppAsync(projectRoot, localCliBin);
-  await buildAndroidAsync(projectRoot, artifactsDest, 'basic');
-  await buildIosAsync(projectRoot, artifactsDest, 'basic');
-
   await setupAssetsAppAsync(projectRoot, localCliBin);
-  await buildAndroidAsync(projectRoot, artifactsDest, 'assets');
-  await buildIosAsync(projectRoot, artifactsDest, 'assets');
-
-  // build the same app a second time for tests involving overwriting installation
-  await buildAndroidAsync(projectRoot, artifactsDest, 'assets2');
-  await buildIosAsync(projectRoot, artifactsDest, 'assets2');
 })();

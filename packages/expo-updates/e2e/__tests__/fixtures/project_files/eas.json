@@ -1,0 +1,31 @@
+{
+  "cli": {
+    "version": ">= 2.7.1"
+  },
+  "build": {
+    "development": {
+      "distribution": "internal",
+      "android": {
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug"
+      }
+    },
+    "updates_testing": {
+      "android": {
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "withoutCredentials": true
+      },
+      "ios": {
+        "simulator": true
+      },
+      "distribution": "internal",
+      "buildArtifactPaths": ["logs/detox-tests.log"]
+    },
+    "production": {}
+  },
+  "submit": {
+    "production": {}
+  }
+}

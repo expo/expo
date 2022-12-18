@@ -1,31 +1,29 @@
-import crypto from 'crypto';
-import express from 'express';
-import fs from 'fs';
-import path from 'path';
-import { Dictionary, serializeDictionary } from 'structured-headers';
-import { setTimeout } from 'timers/promises';
+const crypto = require('crypto');
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const { Dictionary, serializeDictionary } = require('structured-headers');
+const { setTimeout } = require('timers/promises');
 
-import { UpdatesLogEntry } from '../../../src/Updates.types';
+const app = express();
+let server;
 
-const app: any = express();
-let server: any;
+let messages = [];
+let logEntries = [];
+let responsesToServe = [];
 
-let messages: any[] = [];
-let logEntries: UpdatesLogEntry[] = [];
-let responsesToServe: any[] = [];
+let updateRequest = null;
+let manifestToServe = null;
+let manifestHeadersToServe = null;
+let requestedStaticFiles = [];
 
-let updateRequest: any = null;
-let manifestToServe: any = null;
-let manifestHeadersToServe: any = null;
-let requestedStaticFiles: string[] = [];
-
-export function start(port: number) {
+function start(port) {
   if (!server) {
     server = app.listen(port);
   }
 }
 
-export function stop() {
+function stop() {
   if (server) {
     server.close();
     server = null;
@@ -39,20 +37,20 @@ export function stop() {
   requestedStaticFiles = [];
 }
 
-export function consumeRequestedStaticFiles() {
+function consumeRequestedStaticFiles() {
   const returnArray = requestedStaticFiles;
   requestedStaticFiles = [];
   return returnArray;
 }
 
 app.use(express.json());
-app.use('/static', (req: any, res: any, next: any) => {
+app.use('/static', (req, res, next) => {
   requestedStaticFiles.push(path.basename(req.url));
   next();
 });
 app.use('/static', express.static(path.resolve(__dirname, '..', '.static')));
 
-app.get('/notify/:string', (req: any, res: any) => {
+app.get('/notify/:string', (req, res) => {
   messages.push(req.params.string);
   res.set('Cache-Control', 'no-store');
   if (responsesToServe[0]) {
@@ -62,7 +60,7 @@ app.get('/notify/:string', (req: any, res: any) => {
   }
 });
 
-app.post('/post', (req: any, res: any) => {
+app.post('/post', (req, res) => {
   messages.push(req.body);
   res.set('Cache-Control', 'no-store');
   if (responsesToServe[0]) {
@@ -72,13 +70,13 @@ app.post('/post', (req: any, res: any) => {
   }
 });
 
-app.post('/log', (req: any, res: any) => {
+app.post('/log', (req, res) => {
   logEntries = req.body.logEntries || [];
   res.set('Cache-Control', 'no-store');
   res.send('Received request');
 });
 
-export async function waitForRequest(timeout: number, responseToServe?: { command: string }) {
+async function waitForRequest(timeout, responseToServe) {
   const finishTime = new Date().getTime() + timeout;
 
   if (responseToServe) {
@@ -96,7 +94,7 @@ export async function waitForRequest(timeout: number, responseToServe?: { comman
   return messages.shift();
 }
 
-export async function waitForLogEntries(timeout: number): Promise<UpdatesLogEntry[]> {
+async function waitForLogEntries(timeout) {
   const finishTime = new Date().getTime() + timeout;
 
   while (!logEntries.length) {
@@ -110,7 +108,7 @@ export async function waitForLogEntries(timeout: number): Promise<UpdatesLogEntr
   return logEntries;
 }
 
-app.get('/update', (req: any, res: any) => {
+app.get('/update', (req, res) => {
   updateRequest = req;
   if (manifestToServe) {
     if (manifestHeadersToServe) {
@@ -124,7 +122,7 @@ app.get('/update', (req: any, res: any) => {
   }
 });
 
-export async function waitForUpdateRequest(timeout: number) {
+async function waitForUpdateRequest(timeout) {
   const finishTime = new Date().getTime() + timeout;
   while (!updateRequest) {
     const currentTime = new Date().getTime();
@@ -139,25 +137,25 @@ export async function waitForUpdateRequest(timeout: number) {
   return request;
 }
 
-export function serveManifest(manifest: any, headers: any = null) {
+function serveManifest(manifest, headers = null) {
   manifestToServe = manifest;
   manifestHeadersToServe = headers;
 }
 
-async function getPrivateKeyAsync(projectRoot: string) {
+async function getPrivateKeyAsync(projectRoot) {
   const codeSigningPrivateKeyPath = path.join(projectRoot, 'keys', 'private-key.pem');
   const pemBuffer = fs.readFileSync(path.resolve(codeSigningPrivateKeyPath));
   return pemBuffer.toString('utf8');
 }
 
-function signRSASHA256(data: string, privateKey: string) {
+function signRSASHA256(data, privateKey) {
   const sign = crypto.createSign('RSA-SHA256');
   sign.update(data, 'utf8');
   sign.end();
   return sign.sign(privateKey, 'base64');
 }
 
-function convertToDictionaryItemsRepresentation(obj: { [key: string]: string }): Dictionary {
+function convertToDictionaryItemsRepresentation(obj) {
   return new Map(
     Object.entries(obj).map(([k, v]) => {
       return [k, [v, new Map()]];
@@ -165,7 +163,7 @@ function convertToDictionaryItemsRepresentation(obj: { [key: string]: string }):
   );
 }
 
-export async function serveSignedManifest(manifest: any, projectRoot: string) {
+async function serveSignedManifest(manifest, projectRoot) {
   const privateKey = await getPrivateKeyAsync(projectRoot);
   const manifestString = JSON.stringify(manifest);
   const hashSignature = signRSASHA256(manifestString, privateKey);
@@ -176,3 +174,16 @@ export async function serveSignedManifest(manifest: any, projectRoot: string) {
   const signature = serializeDictionary(dictionary);
   serveManifest(manifest, { 'expo-protocol-version': '0', 'expo-signature': signature });
 }
+
+const Server = {
+  start,
+  stop,
+  waitForLogEntries,
+  waitForRequest,
+  waitForUpdateRequest,
+  serveManifest,
+  serveSignedManifest,
+  consumeRequestedStaticFiles,
+};
+
+module.exports = Server;
