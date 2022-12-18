@@ -78,11 +78,11 @@ export type DocumentPickerResult = {
     lastModified?: number;
     file?: File;
     output?: FileList | null;
-} & (DocumentPickerMultipleResult | DocumentPickerCanceledResult);
+} & (DocumentPickerSuccessResult | DocumentPickerCanceledResult);
 /**
  * @hidden
  */
-export type DocumentPickerMultipleResult = {
+export type DocumentPickerSuccessResult = {
     canceled: false;
     assets: DocumentPickerAsset[];
 };
