@@ -44,7 +44,12 @@ function useTransition(transition, state) {
     if (!transition) {
         return { placeholder: {}, image: {} };
     }
-    const { duration, timing, effect } = transition;
+    const { duration, timing, effect } = {
+        timing: 'ease-in-out',
+        effect: 'cross-disolve',
+        duration: 1000,
+        ...transition,
+    };
     if (effect === 'cross-disolve') {
         const commonStyles = {
             transition: `opacity ${duration}ms`,
@@ -142,7 +147,7 @@ function getFetchPriorityFromImagePriority(priority) {
 function Image({ source, events, contentPosition, blurhashContentPosition, priority, style, blurhashStyle, }) {
     const blurhashUrl = useBlurhash(isBlurhashString(source?.uri || '') ? source?.uri : null, source?.width, source?.height);
     const objectPosition = getObjectPositionFromContentPositionObject(blurhashUrl ? blurhashContentPosition : contentPosition);
-    return (React.createElement("img", { src: blurhashUrl || source?.[0]?.uri, style: {
+    return (React.createElement("img", { src: blurhashUrl || source?.uri, style: {
             width: '100%',
             height: '100%',
             position: 'absolute',

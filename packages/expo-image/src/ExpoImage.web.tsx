@@ -84,7 +84,12 @@ function useTransition(
   if (!transition) {
     return { placeholder: {}, image: {} };
   }
-  const { duration, timing, effect } = transition;
+  const { duration, timing, effect } = {
+    timing: 'ease-in-out',
+    effect: 'cross-disolve',
+    duration: 1000,
+    ...transition,
+  };
 
   if (effect === 'cross-disolve') {
     const commonStyles = {
@@ -234,7 +239,7 @@ function Image({
   );
   return (
     <img
-      src={blurhashUrl || source?.[0]?.uri}
+      src={blurhashUrl || source?.uri}
       style={{
         width: '100%',
         height: '100%',
@@ -295,7 +300,6 @@ export default function ExpoImage({
   const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
 
   const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
-
   return (
     <div
       ref={containerRef}
