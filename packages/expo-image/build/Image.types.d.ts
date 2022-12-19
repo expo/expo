@@ -167,7 +167,7 @@ export interface ImageNativeProps extends ImageProps {
  * Determines how the image should be resized to fit its container.
  * @hidden Described in the {@link ImageProps['contentFit']}
  */
-export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+export type ImageContentFit = ImageProps['contentFit'];
 /**
  * A value that represents the relative position of a single axis.
  *
