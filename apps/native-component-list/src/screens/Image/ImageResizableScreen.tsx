@@ -1,9 +1,8 @@
-import { ImageContentFit, ImageContentPosition, Image } from 'expo-image';
+import { ImageContentFit, ImageContentPosition, Image, ImageProps } from 'expo-image';
 import React from 'react';
 import {
   Dimensions,
   Image as RNImage,
-  ImageResizeMode,
   ScrollView,
   StyleSheet,
   Text,
@@ -141,7 +140,10 @@ const parameters: FunctionParameter[] = [
   },
 ];
 
-function mapContentFitToResizeMode(contentFit: ImageContentFit): ImageResizeMode {
+function mapContentFitToResizeMode(contentFit: ImageContentFit): ImageProps['resizeMode'] {
+  if (!contentFit) {
+    return 'cover';
+  }
   switch (contentFit) {
     case 'cover':
     case 'contain':
