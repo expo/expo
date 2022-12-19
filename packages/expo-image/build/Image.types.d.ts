@@ -1,4 +1,4 @@
-import { AccessibilityProps, ImageStyle as RNImageStyle } from 'react-native';
+import { ImageStyle as RNImageStyle } from 'react-native';
 export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,
@@ -8,9 +8,7 @@ export type ImageSource = {
     /**
      * An object representing the HTTP headers to send along with the request for a remote image.
      */
-    headers?: {
-        [key: string]: string;
-    };
+    headers?: Record<string, string>;
     /**
      * Can be specified if known at build time, in which case the value
      * will be used to set the default `<Image/>` component dimension
@@ -29,73 +27,82 @@ export type ImageSource = {
      */
     blurhash?: string;
 };
-export type ImageStyle = RNImageStyle & {
-    resizeMode?: ImageResizeMode;
-    elevation?: number;
-};
-export type ImageProps = AccessibilityProps & {
-    style?: ImageStyle;
+/**
+ * @hidden
+ */
+export type ImageStyle = RNImageStyle;
+/**
+ * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
+ * but all of them are deprecated and might be removed in the future.
+ */
+export type ImageProps = {
+    /** @hidden */
+    style?: RNImageStyle;
     /**
-     * The image source (either a remote URL or a local file resource).
+     * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
+     * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
+     * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
      */
     source?: ImageSource | string | number | ImageSource[] | string[] | null;
     /**
-     * A static image to display while loading the image source.
+     * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
      */
     placeholder?: ImageSource | string | number | ImageSource[] | string[] | null;
     /**
-     * A static image to display while loading the image source.
-     * @platform android
-     */
-    defaultSource?: ImageSource | null;
-    /**
-     * Similarly to `source`, this property represents the resource used to render the loading indicator for the image.
-     * The loading indicator is displayed until image is ready to be displayed, typically after the image is downloaded.
-     * @platform android
-     */
-    loadingIndicatorSource?: ImageSource | null;
-    /**
-     * Determines how the image should be resized to fit its container.
+     * Determines how the image should be resized to fit its container. This property tells the image to fill the container
+     * in a variety of ways; such as "preserve that aspect ratio" or "stretch up and take up as much space as possible".
      * It mirrors the CSS [`object-fit`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) property.
-     * @default "cover"
+     *
+     * - `'cover'` - The image is sized to maintain its aspect ratio while filling the container box.
+     * If the image's aspect ratio does not match the aspect ratio of its box, then the object will be clipped to fit.
+     *
+     * - `'contain'` - The image is scaled down or up to maintain its aspect ratio while fitting within the container box.
+     *
+     * - `'fill'` - The image is sized to entirely fill the container box. If necessary, the image will be stretched or squished to fit.
+     *
+     * - `'none'` - The image is not resized and is centered by default.
+     * When specified, the exact position can be controlled with [`contentPosition`](#contentposition) prop.
+     *
+     * - `'scale-down'` - The image is sized as if `none` or `contain` were specified, whichever would result in a smaller concrete image size.
+     *
+     * @default 'cover'
      */
-    contentFit?: ImageContentFit;
+    contentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
     /**
-     * Specifies the alignment of the image within the component's box.
-     * Areas of the box which aren't covered by the image will show the component's background.
-     * It's an equivalent of the CSS [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) property.
+     * It is used together with [`contentFit`](#contentfit) to specify how the image should be positioned with x/y coordinates inside its own container.
+     * An equivalent of the CSS [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) property.
+     * @default 'center'
      */
-    contentPosition?: ImageContentPosition;
+    contentPosition?: ImageContentPositionString | ImageContentPositionObject;
     /**
-     * Determines how to resize the image when the frame doesn't match the raw image dimensions.
-     * @default "cover"
-     * @deprecated Deprecated in favor of the more powerful `contentFit` and `contentPosition` props.
-     */
-    resizeMode?: ImageResizeMode;
-    /**
-     * Object that describes how the image view should transition the contents on props change.
+     * Describes how the image view should transition the contents when switching the image source.\
+     * If provided as a number, it is the duration in milliseconds of the `'cross-disolve'` effect.
      * @platform ios
+     * @platform web
      */
     transition?: ImageTransition | number | null;
-    /**
-     * Fade animation duration in milliseconds.
-     * @deprecated This prop is deprecated, use [`transition`](#transition) instead.
-     */
-    fadeDuration?: number;
     /**
      * Priorities for completing loads. If more than one load is queued at a time,
      * the load with the higher priority will be started first.
      * Priorities are considered best effort, there are no guarantees about the order in which loads will start or finish.
-     * @default ImagePriority.NORMAL
-     * @platform android
+     * @default 'normal'
      */
-    priority?: ImagePriority | null;
+    priority?: 'low' | 'normal' | 'high' | null;
     /**
      * Determines whether to cache the image and where: on the disk, in the memory or both.
-     * > Note: Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
-     * @default ImageCachePolicy.DISK
+     *
+     * - `'none'` - Image is not cached at all.
+     *
+     * - `'disk'` - Image is queried from the disk cache if exists, otherwise it's downloaded and then stored on the disk.
+     *
+     * - `'memory'` - Image is cached in memory. Might be useful when you render a high-resolution picture many times.
+     * Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
+     *
+     * - `'memory-disk'` - Image is cached in memory, but with a fallback to the disk cache.
+     *
+     * @default 'disk'
      */
-    cachePolicy?: ImageCachePolicy | null;
+    cachePolicy?: 'none' | 'disk' | 'memory' | 'memory-disk' | /** @hidden */ null;
     /**
      * Determines whether to choose image source based on container size only on mount or on every resize.
      * Use `initial` to improve performance.
@@ -124,6 +131,27 @@ export type ImageProps = AccessibilityProps & {
      * Called when the image load either succeeds or fails.
      */
     onLoadEnd?: () => void;
+    /**
+     * @deprecated Provides compatibility for [`defaultSource` from React Native Image](https://reactnative.dev/docs/image#defaultsource).
+     * Use [`placeholder`](#placeholder) prop instead.
+     */
+    defaultSource?: ImageSource | null;
+    /**
+     * @deprecated Provides compatibility for [`loadingIndicatorSource` from React Native Image](https://reactnative.dev/docs/image#loadingindicatorsource).
+     * Use [`placeholder`](#placeholder) prop instead.
+     */
+    loadingIndicatorSource?: ImageSource | null;
+    /**
+     * @deprecated Provides compatibility for [`resizeMode` from React Native Image](https://reactnative.dev/docs/image#resizemode).
+     * Note that `"repeat"` option is not supported at all.
+     * Use the more powerful [`contentFit`](#contentfit) and [`contentPosition`](#contentposition) props instead.
+     */
+    resizeMode?: 'cover' | 'contain' | 'stretch' | 'repeat' | 'center';
+    /**
+     * @deprecated Provides compatibility for [`fadeDuration` from React Native Image](https://reactnative.dev/docs/image#fadeduration-android).
+     * Instead use [`transition`](#transition) with the provided duration.
+     */
+    fadeDuration?: number;
 };
 /**
  * It narrows down some props to types expected by the native/web side.
@@ -137,135 +165,89 @@ export interface ImageNativeProps extends ImageProps {
 }
 /**
  * Determines how the image should be resized to fit its container.
+ * @hidden Described in the {@link ImageProps['contentFit']}
  */
-export declare enum ImageContentFit {
-    /**
-     * The image is sized to maintain its aspect ratio while filling the element's entire content box.
-     * If the image's aspect ratio does not match the aspect ratio of its box, then the object will be clipped to fit.
-     */
-    COVER = "cover",
-    /**
-     * The image is scaled to maintain its aspect ratio while fitting within the element's content box.
-     * The entire image is made to fill the box, while preserving its aspect ratio,
-     * so the image will be "letterboxed" if its aspect ratio does not match the aspect ratio of the box.
-     */
-    CONTAIN = "contain",
-    /**
-     * The image is sized to fill the element's content box. The entire object will completely fill the box.
-     * If the image's aspect ratio does not match the aspect ratio of its box, then the image will be stretched to fit.
-     */
-    FILL = "fill",
-    /**
-     * The image is not resized and is centered by default.
-     * When specified, the exact position can be controlled with `objectPosition` option.
-     */
-    NONE = "none",
-    /**
-     * The image is sized as if `none` or `contain` were specified,
-     * whichever would result in a smaller concrete object size.
-     */
-    SCALE_DOWN = "scale-down"
-}
+export type ImageContentFit = ImageProps['contentFit'];
 /**
- * @docsMissing
+ * A value that represents the relative position of a single axis.
+ *
+ * If `number`, it is a distance in points (logical pixels) from the respective edge.\
+ * If `string`, it must be a percentage value where `'100%'` is the difference in size between the container and the image along the respective axis,
+ * or `'center'` which is an alias for `'50%'` that is the default value. You can read more regarding percentages on the MDN docs for
+ * [`background-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/background-position#regarding_percentages) that describes this concept well.
  */
-export type PositionValue = number | `${number}%` | `${number}` | 'center';
+export type ImageContentPositionValue = number | string | `${number}%` | `${number}` | 'center';
 /**
- * @docsMissing
+ * Specifies the position of the image inside its container. One value controls the x-axis and the second value controls the y-axis.
+ *
+ * Additionally, it supports stringified shorthand form that specifies the edges to which to align the image content:\
+ * `'center'`, `'top'`, `'right'`, `'bottom'`, `'left'`, `'top center'`, `'top right'`, `'top left'`, `'right center'`, `'right top'`,
+ * `'right bottom'`, `'bottom center'`, `'bottom right'`, `'bottom left'`, `'left center'`, `'left top'`, `'left bottom'`.\
+ * If only one keyword is provided, then the other dimension is set to `'center'` (`'50%'`), so the image is placed in the middle of the specified edge.\
+ * As an example, `'top right'` is the same as `{ top: 0, right: 0 }` and `'bottom'` is the same as `{ bottom: 0, left: '50%' }`.
  */
-export type ImageContentPositionObject = {
-    top?: PositionValue;
-    right?: PositionValue;
-} | {
-    top?: PositionValue;
-    left?: PositionValue;
-} | {
-    bottom?: PositionValue;
-    right?: PositionValue;
-} | {
-    bottom?: PositionValue;
-    left?: PositionValue;
-};
+export type ImageContentPosition = 
 /**
- * A stringified and shorthand form of the `contentPosition` prop. This specifies the edges to which to align the image content.
- * If only one keyword is provided, the other dimension is then set to 50%, so the image is placed in the middle of the edge specified.
+ * An object that positions the image relatively to the top-right corner.
+ */
+{
+    top?: ImageContentPositionValue;
+    right?: ImageContentPositionValue;
+} | 
+/**
+ * An object that positions the image relatively to the top-left corner.
+ */
+{
+    top?: ImageContentPositionValue;
+    left?: ImageContentPositionValue;
+} | 
+/**
+ * An object that positions the image relatively to the bottom-right corner.
+ */
+{
+    bottom?: ImageContentPositionValue;
+    right?: ImageContentPositionValue;
+} | 
+/**
+ * An object that positions the image relatively to the bottom-left corner.
+ */
+{
+    bottom?: ImageContentPositionValue;
+    left?: ImageContentPositionValue;
+} | ImageContentPositionString;
+/**
+ * @hidden It's described as part of {@link ImageContentPosition}.
  */
 export type ImageContentPositionString = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'top center' | 'top right' | 'top left' | 'right center' | 'right top' | 'right bottom' | 'bottom center' | 'bottom right' | 'bottom left' | 'left center' | 'left top' | 'left bottom';
+type OnlyObject<T> = T extends object ? T : never;
 /**
- * @docsMissing
+ * @hidden It's a conditional type that matches only objects of {@link ImageContentPosition}.
  */
-export type ImageContentPosition = ImageContentPositionString | ImageContentPositionObject;
+export type ImageContentPositionObject = OnlyObject<ImageContentPosition>;
 /**
- * @deprecated The resize mode is deprecated in favor of `ImageContentFit` and `contentFit` prop.
+ * An object that describes the smooth transition when switching the image source.
+ * @platform ios
+ * @platform web
  */
-export declare enum ImageResizeMode {
-    /**
-     * The image will be resized such that the entire area of the view
-     * is covered by the image, potentially clipping parts of the image.
-     */
-    COVER = "cover",
-    /**
-     * The image will be resized such that it will be completely
-     * visible, contained within the frame of the view.
-     */
-    CONTAIN = "contain",
-    /**
-     * The image will be stretched to fill the entire frame of the view without clipping.
-     * This may change the aspect ratio of the image, distorting it.
-     *
-     * @platform ios
-     */
-    STRETCH = "stretch",
-    /**
-     * The image will be repeated to cover the frame of the view.
-     * The image will keep its size and aspect ratio.
-     */
-    REPEAT = "repeat",
-    /**
-     * The image will be scaled down such that it is completely visible,
-     * if bigger than the area of the view. The image will not be scaled up.
-     */
-    CENTER = "center"
-}
 export type ImageTransition = {
+    /**
+     * The duration of the transition in milliseconds.
+     * @default 0
+     */
     duration?: number;
-    timing?: ImageTransitionTiming;
-    effect?: ImageTransitionEffect;
+    /**
+     * Specifies the speed curve of the transition effect and how intermediate values are calculated.
+     * @default 'ease-in-out'
+     */
+    timing?: 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear';
+    /**
+     * An animation effect used for transition.
+     * @default 'cross-disolve'
+     */
+    effect?: 'cross-disolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | null;
 };
-export declare enum ImageTransitionTiming {
-    EASE_IN_OUT = 1,
-    EASE_IN = 2,
-    EASE_OUT = 3,
-    LINEAR = 4
-}
-export declare enum ImageTransitionEffect {
-    NONE = 0,
-    CROSS_DISOLVE = 1,
-    FLIP_FROM_LEFT = 2,
-    FLIP_FROM_RIGHT = 3,
-    FLIP_FROM_TOP = 4,
-    FLIP_FROM_BOTTOM = 5,
-    CURL_UP = 6,
-    CURL_DOWN = 7
-}
-export declare enum ImageCacheType {
-    NONE = "none",
-    DISK = "disk",
-    MEMORY = "memory"
-}
-export declare enum ImageCachePolicy {
-    NONE = "none",
-    DISK = "disk",
-    MEMORY = "memory",
-    MEMORY_AND_DISK = "memoryAndDisk"
-}
-export declare enum ImagePriority {
-    LOW = "low",
-    NORMAL = "normal",
-    HIGH = "high"
-}
 export type ImageLoadEventData = {
-    cacheType: ImageCacheType;
+    cacheType: 'none' | 'disk' | 'memory';
     source: {
         url: string;
         width: number;
@@ -280,4 +262,5 @@ export type ImageProgressEventData = {
 export type ImageErrorEventData = {
     error: string;
 };
+export {};
 //# sourceMappingURL=Image.types.d.ts.map
