@@ -9,13 +9,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import HeadingText from '../../components/HeadingText';
 import { Colors } from '../../constants';
 
-const CONTENT_FITS = [
-  ImageContentFit.COVER,
-  ImageContentFit.CONTAIN,
-  ImageContentFit.FILL,
-  ImageContentFit.NONE,
-  ImageContentFit.SCALE_DOWN,
-];
+const CONTENT_FITS: ImageContentFit[] = ['cover', 'contain', 'fill', 'none', 'scale-down'];
 
 const CONTENT_POSITIONS: ImageContentPositionString[] = [
   'center',
@@ -117,7 +111,7 @@ function renderContentPositionExample(contentPosition: ImageContentPositionStrin
     size: [100, 100],
     position: contentPosition,
   };
-  return renderExample(ImageContentFit.NONE, example, index);
+  return renderExample('none', example, index);
 }
 
 export default function ImageContentFitScreen() {

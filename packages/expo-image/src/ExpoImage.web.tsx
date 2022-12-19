@@ -2,15 +2,11 @@ import React from 'react';
 
 import {
   ImageContentPositionObject,
-  ImageTransition,
-  ImageTransitionEffect,
-  ImageTransitionTiming,
-  PositionValue,
-  ImageSource,
+  ImageContentPositionValue,
   ImageNativeProps,
   ImageProps,
-  ImagePriority,
-  ImageCacheType,
+  ImageSource,
+  ImageTransition,
 } from './Image.types';
 
 function ensureUnit(value: string | number) {
@@ -28,7 +24,7 @@ function getObjectPositionFromContentPositionObject(
 ): string {
   const resolvedPosition = { ...contentPosition } as Record<
     KeysOfUnion<ImageContentPositionObject>,
-    PositionValue
+    ImageContentPositionValue
   >;
   if (!resolvedPosition) {
     return '50% 50%';
@@ -78,48 +74,19 @@ function useImageState(source?: ImageSource[]) {
   return [imageState, handlers] as [ImageState, { onLoad: () => void }];
 }
 
-function getCSSTiming(timing?: ImageTransitionTiming) {
-  return (
-    {
-      [ImageTransitionTiming.EASE_IN]: 'ease-in',
-      [ImageTransitionTiming.EASE_OUT]: 'ease-out',
-      [ImageTransitionTiming.EASE_IN_OUT]: 'ease-in-out',
-      [ImageTransitionTiming.LINEAR]: 'linear',
-    }[timing || ImageTransitionTiming.LINEAR] ?? 'linear'
-  );
-}
-
-function getTransitionObjectFromTransition(transition?: number | ImageTransition | null) {
-  if (transition == null) {
-    return {
-      timing: ImageTransitionTiming.LINEAR,
-      duration: 0,
-      effect: ImageTransitionEffect.NONE,
-    };
-  }
-  if (typeof transition === 'number') {
-    return {
-      timing: ImageTransitionTiming.EASE_IN_OUT,
-      duration: transition,
-      effect: ImageTransitionEffect.CROSS_DISOLVE,
-    };
-  }
-  return {
-    timing: ImageTransitionTiming.EASE_IN_OUT,
-    duration: 1000,
-    ...transition,
-  };
-}
-
 function useTransition(
-  transition: number | ImageTransition | null | undefined,
+  transition: ImageTransition | null | undefined,
   state: ImageState
 ): Record<'placeholder' | 'image', Partial<React.CSSProperties>> {
-  const { duration, timing, effect } = getTransitionObjectFromTransition(transition);
-  if (effect === ImageTransitionEffect.CROSS_DISOLVE) {
+  if (!transition) {
+    return { placeholder: {}, image: {} };
+  }
+  const { duration, timing, effect } = transition;
+
+  if (effect === 'cross-disolve') {
     const commonStyles = {
       transition: `opacity ${duration}ms`,
-      transitionTimingFunction: getCSSTiming(timing),
+      transitionTimingFunction: timing,
     };
     return {
       image: {
@@ -132,11 +99,11 @@ function useTransition(
       },
     };
   }
-  if (effect === ImageTransitionEffect.FLIP_FROM_TOP) {
+  if (effect === 'flip-from-top') {
     const commonStyles = {
       transition: `transform ${duration}ms`,
       transformOrigin: 'top',
-      transitionTimingFunction: getCSSTiming(timing),
+      transitionTimingFunction: timing,
     };
     return {
       placeholder: {
@@ -230,16 +197,8 @@ function useSourceSelection(
   );
 }
 
-function getFetchPriorityFromImagePriority(priority: ImagePriority) {
-  switch (priority) {
-    case ImagePriority.HIGH:
-      return 'high';
-    case ImagePriority.LOW:
-      return 'low';
-    case ImagePriority.NORMAL:
-    default:
-      return 'auto';
-  }
+function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority']) {
+  return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
 
 export default function ExpoImage({
@@ -271,7 +230,7 @@ export default function ExpoImage({
         height: target.naturalHeight,
         mediaType: null,
       },
-      cacheType: ImageCacheType.NONE,
+      cacheType: 'none',
     });
     onLoadEnd?.();
   }

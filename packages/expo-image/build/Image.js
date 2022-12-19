@@ -8,7 +8,7 @@ export class Image extends React.PureComponent {
     /**
      * Preloads images at the given urls that can be later used in the image view.
      * Preloaded images are always cached on the disk, so make sure to use
-     * `disk` (default) or `memoryAndDisk` cache policy.
+     * `disk` (default) or `memory-disk` cache policy.
      */
     static prefetch(urls) {
         return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls]);
