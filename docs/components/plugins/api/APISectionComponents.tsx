@@ -1,4 +1,3 @@
-import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   CommentData,
   GeneratedData,
@@ -13,8 +12,9 @@ import {
   getComponentName,
   STYLES_APIBOX,
   getTagNamesList,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];

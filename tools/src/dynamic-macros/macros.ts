@@ -2,11 +2,11 @@ import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
 import chalk from 'chalk';
+import crypto from 'crypto';
 import ip from 'ip';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
-import { v4 as uuidv4 } from 'uuid';
 
 import { getExpoRepositoryRootDir } from '../Directories';
 import { getHomeSDKVersionAsync } from '../ProjectVersions';
@@ -102,7 +102,7 @@ export default {
   },
 
   async TEST_RUN_ID() {
-    return process.env.UNIVERSE_BUILD_ID || uuidv4();
+    return process.env.UNIVERSE_BUILD_ID || crypto.randomUUID();
   },
 
   async BUILD_MACHINE_LOCAL_HOSTNAME() {

@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Avoid dependency on `uuid`. ([#20477](https://github.com/expo/expo/pull/20477) by [@LinusU](https://github.com/LinusU))
+
 ## 11.0.1 — 2022-10-28
 
 _This version does not introduce any user-facing changes._

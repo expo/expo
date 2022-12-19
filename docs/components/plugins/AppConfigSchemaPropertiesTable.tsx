@@ -2,12 +2,11 @@ import { css } from '@emotion/react';
 import { borderRadius, breakpoints, spacing, theme, typography } from '@expo/styleguide';
 import ReactMarkdown from 'react-markdown';
 
-import { createPermalinkedComponent } from '~/common/create-permalinked-component';
 import { HeadingType } from '~/common/headingManager';
 import { APIBox } from '~/components/plugins/APIBox';
 import { mdComponents, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { P, CALLOUT, CODE } from '~/ui/components/Text';
+import { P, CALLOUT, CODE, createPermalinkedComponent } from '~/ui/components/Text';
 
 type PropertyMeta = {
   regexHuman?: string;

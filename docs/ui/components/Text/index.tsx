@@ -1,9 +1,12 @@
 import { css, SerializedStyles } from '@emotion/react';
 import { theme, typography, spacing, borderRadius } from '@expo/styleguide';
+import * as React from 'react';
 
 import { LinkBase, LinkProps } from './Link';
 import { TextComponentProps, TextElement } from './types';
 
+import { AdditionalProps, HeadingType } from '~/common/headingManager';
+import Permalink from '~/components/Permalink';
 import { durations } from '~/ui/foundations/durations';
 
 export { LinkBase } from './Link';
@@ -11,6 +14,41 @@ export { AnchorContext } from './withAnchor';
 
 const CRAWLABLE_HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5'];
 const CRAWLABLE_TEXT = ['span', 'p', 'li', 'blockquote', 'code', 'pre'];
+
+type PermalinkedComponentProps = React.PropsWithChildren<
+  { level?: number; id?: string } & AdditionalProps
+>;
+
+const isDev = process.env.NODE_ENV === 'development';
+
+export const createPermalinkedComponent = (
+  BaseComponent: React.ComponentType<React.PropsWithChildren<any>>,
+  options?: {
+    baseNestingLevel?: number;
+    sidebarType?: HeadingType;
+  }
+) => {
+  const { baseNestingLevel, sidebarType = HeadingType.Text } = options || {};
+  return ({ children, level, id, ...props }: PermalinkedComponentProps) => {
+    const cleanChildren = React.Children.map(children, child => {
+      if (React.isValidElement(child) && child?.props?.href) {
+        isDev &&
+          console.warn(
+            `It looks like the header on this page includes a link, this is an invalid pattern, nested link will be removed!`,
+            child?.props?.href
+          );
+        return (child as JSX.Element)?.props?.children;
+      }
+      return child;
+    });
+    const nestingLevel = baseNestingLevel != null ? (level ?? 0) + baseNestingLevel : undefined;
+    return (
+      <Permalink nestingLevel={nestingLevel} additionalProps={{ ...props, sidebarType }} id={id}>
+        <BaseComponent>{cleanChildren}</BaseComponent>
+      </Permalink>
+    );
+  };
+};
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
   function TextComponent(props: TextComponentProps) {
@@ -93,15 +131,55 @@ export const kbdStyle = css({
   top: -1,
 });
 
+const { h1, h2, h3, h4, h5 } = typography.headers.default;
 const codeInHeaderStyle = { '& code': { fontSize: 'inherit' } };
 
-const { h1, h2, h3, h4, h5, h6 } = typography.headers.default;
-export const H1 = createTextComponent(TextElement.H1, css([h1, codeInHeaderStyle]));
-export const H2 = createTextComponent(TextElement.H2, css([h2, codeInHeaderStyle]));
-export const H3 = createTextComponent(TextElement.H3, css([h3, codeInHeaderStyle]));
-export const H4 = createTextComponent(TextElement.H4, css([h4, codeInHeaderStyle]));
-export const H5 = createTextComponent(TextElement.H5, css([h5, codeInHeaderStyle]));
-export const H6 = createTextComponent(TextElement.H6, css([h6, codeInHeaderStyle]));
+const h1Style = {
+  ...h1,
+  marginTop: spacing[2],
+  marginBottom: spacing[6],
+  paddingBottom: spacing[4],
+  borderBottom: `1px solid ${theme.border.default}`,
+  ...codeInHeaderStyle,
+};
+
+const h2Style = {
+  ...h2,
+  marginTop: spacing[8],
+  marginBottom: spacing[3],
+  ...codeInHeaderStyle,
+};
+
+const h3Style = {
+  ...h3,
+  marginTop: spacing[6],
+  marginBottom: spacing[1.5],
+  ...codeInHeaderStyle,
+};
+
+const h4Style = {
+  ...h4,
+  marginTop: spacing[6],
+  marginBottom: spacing[1],
+  ...codeInHeaderStyle,
+};
+
+const h5Style = {
+  ...h5,
+  marginTop: spacing[4],
+  marginBottom: spacing[1],
+  ...codeInHeaderStyle,
+};
+
+export const H1 = createTextComponent(TextElement.H1, css(h1Style));
+export const RawH2 = createTextComponent(TextElement.H2, css(h2Style));
+export const H2 = createPermalinkedComponent(RawH2, { baseNestingLevel: 2 });
+export const RawH3 = createTextComponent(TextElement.H3, css(h3Style));
+export const H3 = createPermalinkedComponent(RawH3, { baseNestingLevel: 3 });
+export const RawH4 = createTextComponent(TextElement.H4, css(h4Style));
+export const H4 = createPermalinkedComponent(RawH4, { baseNestingLevel: 4 });
+export const RawH5 = createTextComponent(TextElement.H5, css(h5Style));
+export const H5 = createPermalinkedComponent(RawH5, { baseNestingLevel: 5 });
 
 export const P = createTextComponent(TextElement.P, css(typography.body.paragraph));
 export const CODE = createTextComponent(

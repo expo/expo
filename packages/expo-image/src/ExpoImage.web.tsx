@@ -9,6 +9,8 @@ import {
   ImageSource,
   ImageNativeProps,
   ImageProps,
+  ImagePriority,
+  ImageCacheType,
 } from './Image.types';
 
 function ensureUnit(value: string | number) {
@@ -228,6 +230,18 @@ function useSourceSelection(
   );
 }
 
+function getFetchPriorityFromImagePriority(priority: ImagePriority) {
+  switch (priority) {
+    case ImagePriority.HIGH:
+      return 'high';
+    case ImagePriority.LOW:
+      return 'low';
+    case ImagePriority.NORMAL:
+    default:
+      return 'auto';
+  }
+}
+
 export default function ExpoImage({
   source,
   placeholder,
@@ -235,10 +249,10 @@ export default function ExpoImage({
   contentPosition,
   onLoad,
   transition,
-  onLoadStart,
-  onLoadEnd,
   onError,
   responsivePolicy,
+  onLoadEnd,
+  priority,
   ...props
 }: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
@@ -246,6 +260,28 @@ export default function ExpoImage({
   const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
 
   const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
+
+  function onLoadHandler(event: React.SyntheticEvent<HTMLImageElement, Event>) {
+    handlers.onLoad();
+    const target = event.target as HTMLImageElement;
+    onLoad?.({
+      source: {
+        url: target.currentSrc,
+        width: target.naturalWidth,
+        height: target.naturalHeight,
+        mediaType: null,
+      },
+      cacheType: ImageCacheType.NONE,
+    });
+    onLoadEnd?.();
+  }
+
+  function onErrorHandler() {
+    onError?.({
+      error: `Failed to load image from url: ${source?.[0]?.uri}`,
+    });
+    onLoadEnd?.();
+  }
 
   return (
     <div
@@ -261,6 +297,9 @@ export default function ExpoImage({
       }}>
       <img
         src={placeholder?.[0]?.uri}
+        // @ts-ignore
+        // eslint-disable-next-line react/no-unknown-property
+        fetchpriority={getFetchPriorityFromImagePriority(priority)}
         style={{
           width: '100%',
           height: '100%',
@@ -284,7 +323,8 @@ export default function ExpoImage({
           objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
           ...imageStyle,
         }}
-        onLoad={handlers.onLoad}
+        onLoad={onLoadHandler}
+        onError={onErrorHandler}
       />
     </div>
   );
