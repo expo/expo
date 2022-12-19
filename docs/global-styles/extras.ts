@@ -8,7 +8,6 @@ export const globalExtras = css`
 
   body {
     ${typography.body.paragraph}
-    font-family: ${typography.fontFaces.regular};
     text-rendering: optimizeLegibility;
     line-height: 1;
   }
@@ -85,7 +84,6 @@ export const globalExtras = css`
 
   .diff-unified {
     ${typography.fontSizes[13]};
-    font-family: ${typography.fontStacks.mono};
     border-collapse: collapse;
     white-space: pre-wrap;
     width: 100%;

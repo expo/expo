@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
-import { theme as styleguideTheme, borderRadius, typography, shadows } from '@expo/styleguide';
-import { ReactNode, MouseEvent, PropsWithChildren } from 'react';
+import { theme as styleguideTheme, borderRadius, shadows } from '@expo/styleguide';
+import type { ReactNode, MouseEvent, PropsWithChildren } from 'react';
 
 import { ButtonBase } from './ButtonBase';
 import { hexToAccessibleHSLA, hexToRGBA } from './colors';
@@ -176,7 +176,6 @@ function getButtonSize(size?: ButtonSize) {
 }
 
 const buttonStyle = css({
-  fontFamily: typography.fontStacks.medium,
   fontSize: 16,
   lineHeight: 1,
   height: 40,
@@ -196,6 +195,7 @@ const buttonStyle = css({
 const hasIconStyle = css({ paddingTop: 0, paddingBottom: 0, height: 40 });
 
 const childrenStyle = css({
+  fontWeight: 500,
   display: 'flex',
   alignItems: 'center',
 });

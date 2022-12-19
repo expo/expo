@@ -5,10 +5,9 @@ import {
   shadows,
   spacing,
   theme,
-  typography,
   TriangleDownIcon,
 } from '@expo/styleguide';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 
 import { HEADLINE } from '~/ui/components/Text';
 
@@ -95,7 +94,7 @@ const markerStyle = css({
   'details[open] &': { transform: 'rotate(0)' },
 });
 
-const contentStyle = css(typography.body.paragraph, {
+const contentStyle = css({
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   p: {

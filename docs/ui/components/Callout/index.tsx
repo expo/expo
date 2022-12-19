@@ -3,7 +3,6 @@ import {
   borderRadius,
   iconSize,
   theme,
-  typography,
   spacing,
   ErrorIcon,
   InfoIcon,
@@ -127,7 +126,6 @@ const iconStyle = css({
 });
 
 const contentStyle = css({
-  ...typography.body.paragraph,
   color: theme.text.default,
 
   '*:last-child': {

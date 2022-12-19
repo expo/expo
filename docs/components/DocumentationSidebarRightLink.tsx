@@ -3,10 +3,11 @@ import { theme, typography } from '@expo/styleguide';
 import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
+import { monospaceFont } from '~/pages/_app';
 import { Tag } from '~/ui/components/Tag';
 
 const STYLES_LINK = css`
-  ${typography.body.paragraph}
+  ${typography.fontSizes[14]}
   color: ${theme.text.secondary};
   transition: 50ms ease color;
   font-size: 14px;
@@ -24,10 +25,6 @@ const STYLES_LINK = css`
   }
 `;
 
-const STYLES_LINK_HEADER = css`
-  font-family: ${typography.fontFaces.medium};
-`;
-
 const STYLES_LINK_LABEL = css`
   overflow: hidden;
   text-overflow: ellipsis;
@@ -35,7 +32,7 @@ const STYLES_LINK_LABEL = css`
 `;
 
 const STYLES_LINK_CODE = css`
-  font-family: ${typography.fontFaces.mono};
+  font-family: ${monospaceFont.style.fontFamily};
   font-size: 13px;
 `;
 
@@ -59,7 +56,7 @@ const STYLES_TOOLTIP = css`
 `;
 
 const STYLES_CODE_TOOLTIP = css`
-  font-family: ${typography.fontFaces.mono};
+  font-family: ${monospaceFont.style.fontFamily};
   font-size: 11px;
 `;
 
@@ -119,9 +116,7 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
   ({ heading, isActive, shortenCode, onClick }, ref) => {
     const { slug, level, title, type, tags } = heading;
 
-    const isNested = level <= BASE_HEADING_LEVEL;
     const isCode = type === HeadingType.InlineCode;
-
     const paddingLeft = NESTING_OFFSET * (level - BASE_HEADING_LEVEL) + 'px';
     const displayTitle = shortenCode && isCode ? trimCodedTitle(title) : title;
 
@@ -152,7 +147,7 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
           style={{ paddingLeft }}
           href={'#' + slug}
           onClick={onClick}
-          css={[STYLES_LINK, isNested && STYLES_LINK_HEADER, isActive && STYLES_LINK_ACTIVE]}>
+          css={[STYLES_LINK, isActive && STYLES_LINK_ACTIVE]}>
           <span css={[STYLES_LINK_LABEL, isCode && STYLES_LINK_CODE]}>{displayTitle}</span>
           {tags && tags.length ? (
             <div css={STYLES_TAG_CONTAINER}>

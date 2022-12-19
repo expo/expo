@@ -182,7 +182,7 @@ const cellTitleWrapperStyle = css({
   backgroundColor: theme.background.default,
   padding: spacing[4],
   textDecoration: 'none',
-  fontFamily: typography.fontStacks.medium,
+  fontWeight: 500,
   lineHeight: '30px',
   color: theme.text.default,
   alignItems: 'center',
@@ -214,7 +214,7 @@ const cellCommunityContentStyle = css({
 
 const cellCommunityTitleStyle = css({
   ...typography.fontSizes[16],
-  fontFamily: typography.fontStacks.medium,
+  fontWeight: 500,
   color: theme.text.default,
   textDecoration: 'none',
   marginBottom: spacing[2],

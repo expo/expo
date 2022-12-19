@@ -163,7 +163,7 @@ const AppConfigProperty = ({
 }: FormattedProperty & { nestingLevel: number }) => (
   <APIBox css={boxStyle}>
     <PropertyName name={name} nestingLevel={nestingLevel} />
-    <CALLOUT theme="secondary" data-text="true">
+    <CALLOUT theme="secondary" data-text="true" css={typeRow}>
       Type: <CODE>{type || 'undefined'}</CODE>
       {nestingLevel > 0 && (
         <>
@@ -174,7 +174,6 @@ const AppConfigProperty = ({
         </>
       )}
     </CALLOUT>
-    <br />
     <ReactMarkdown components={mdComponents}>{description}</ReactMarkdown>
     {expoKit && (
       <Collapsible summary="ExpoKit">
@@ -205,6 +204,7 @@ const boxStyle = css({
   marginBottom: 0,
   borderRadius: 0,
   borderBottomWidth: 0,
+  paddingBottom: 0,
 
   '&:first-of-type': {
     borderTopLeftRadius: borderRadius.medium,
@@ -224,10 +224,13 @@ const boxStyle = css({
 });
 
 const secondaryCodeLineStyle = css({
-  fontFamily: typography.fontStacks.mono,
   color: theme.text.secondary,
   padding: `0 ${spacing[1]}px`,
   wordBreak: 'break-word',
+});
+
+const typeRow = css({
+  margin: `${spacing[3]}px 0`,
 });
 
 export default AppConfigSchemaPropertiesTable;
