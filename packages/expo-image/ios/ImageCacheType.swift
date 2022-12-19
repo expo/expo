@@ -3,11 +3,10 @@
 import SDWebImage
 import ExpoModulesCore
 
-enum ImageCacheType: Int, EnumArgument {
-  case unknown = 0
-  case none = 1
-  case disk = 2
-  case memory = 3
+enum ImageCacheType: String, EnumArgument {
+  case none
+  case disk
+  case memory
 
   static func fromSdCacheType(_ sdImageCacheType: SDImageCacheType) -> ImageCacheType {
     switch sdImageCacheType {
@@ -17,8 +16,6 @@ enum ImageCacheType: Int, EnumArgument {
       return .disk
     case .memory:
       return .memory
-    default:
-      return .unknown
     }
   }
 }

@@ -98,11 +98,11 @@ export type ImageProps = {
      * - `'memory'` - Image is cached in memory. Might be useful when you render a high-resolution picture many times.
      * Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
      *
-     * - `'memoryAndDisk'` - Image is cached in memory, but with a fallback to the disk cache.
+     * - `'memory-disk'` - Image is cached in memory, but with a fallback to the disk cache.
      *
      * @default 'disk'
      */
-    cachePolicy?: 'none' | 'disk' | 'memory' | 'memoryAndDisk' | /** @hidden */ null;
+    cachePolicy?: 'none' | 'disk' | 'memory' | 'memory-disk' | /** @hidden */ null;
     /**
      * Determines whether to choose image source based on container size only on mount or on every resize.
      * Use `initial` to improve performance.
