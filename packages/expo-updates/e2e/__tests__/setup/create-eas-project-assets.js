@@ -7,23 +7,14 @@ const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
 
 /**
+ *
  * This generates a project at the location TEST_PROJECT_ROOT,
- * that is configured to build a test app and run the "basic" suite
+ * that is configured to build a test app and run the "assets" suite
  * of updates E2E tests in the Detox environment.
  *
- * To test this locally, export the following environment variables:
- * $ export UPDATES_HOST=$(ifconfig -l | xargs -n1 ipconfig getifaddr)
- * $ export UPDATES_PORT=4747
- * $ export EXPO_REPO_ROOT=<path to local expo repo>
- * $ export ARTIFACTS_DEST=<path to any temp artifacts dir>
- * $ export TEST_PROJECT_ROOT=<path to any temp dir for the project root>
+ * See `packages/expo-updates/e2e/README.md` for instructions on how
+ * to run these tests locally.
  *
- * Then execute this file to setup the test project and builds.
- *
- * Afterwards, tests can be run by changing to TEST_PROJECT_ROOT and running
- *
- * eas init
- * eas build --profile=updates_testing --platform=<ios|android>
  */
 
 (async function () {
