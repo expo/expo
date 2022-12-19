@@ -24,7 +24,7 @@ import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.events.GlideRequestListener
 import expo.modules.image.events.OkHttpProgressListener
-import expo.modules.image.okhttp.OkHttpClientProgressInterceptor
+import expo.modules.image.okhttp.GlideUrlWrapper
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.ImageErrorEvent
@@ -98,9 +98,8 @@ class ExpoImageView(
   private val requestManager: RequestManager,
   private val expoImageViewWrapper: WeakReference<ExpoImageViewWrapper>
 ) : AppCompatImageView(context) {
-  private val progressInterceptor = OkHttpClientProgressInterceptor
-
   private val outlineProvider = OutlineProvider(context)
+  private val progressListener = OkHttpProgressListener(expoImageViewWrapper)
 
   private var target: ViewConnectedTarget = ViewConnectedTarget(
     requestManager,
@@ -302,11 +301,9 @@ class ExpoImageView(
       val options = bestSource?.createOptions(context)
       val propOptions = createPropOptions()
 
-      if (sourceToLoad is GlideUrlModel) {
-        progressInterceptor.registerProgressListener(
-          sourceToLoad.glideData.toStringUrl(),
-          OkHttpProgressListener(expoImageViewWrapper)
-        )
+      val model = sourceToLoad?.glideData
+      if (model is GlideUrlWrapper) {
+        model.progressListener = progressListener
       }
 
       expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
@@ -315,11 +312,11 @@ class ExpoImageView(
       newTarget.hasSource = sourceToLoad != null
       val request = requestManager
         .asDrawable()
-        .load(sourceToLoad?.glideData)
+        .load(model)
         .apply {
           if (placeholder != null) {
             thumbnail(requestManager.load(placeholder.glideData))
-            val placeholderContentFit = if (bestPlaceholder?.isBlurhash() == true) {
+            val placeholderContentFit = if (bestPlaceholder.isBlurhash()) {
               contentFit
             } else {
               ContentFit.ScaleDown
