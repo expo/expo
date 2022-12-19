@@ -302,12 +302,7 @@ export enum ImagePriority {
 
 export type ImageLoadEventData = {
   cacheType: ImageCacheType;
-  source: {
-    url: string;
-    width: number;
-    height: number;
-    mediaType: string | null;
-  };
+  source: { url: string; width: number; height: number; mediaType: string | null };
 };
 
 export type ImageProgressEventData = {

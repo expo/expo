@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageTransitionEffect, ImageTransitionTiming, } from './Image.types';
+import { ImageTransitionEffect, ImageTransitionTiming, ImagePriority, ImageCacheType, } from './Image.types';
 function ensureUnit(value) {
     const trimmedValue = String(value).trim();
     if (trimmedValue.endsWith('%')) {
@@ -105,10 +105,41 @@ const useTransition = (transition, state) => {
     }
     return { placeholder: {}, image: {} };
 };
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onLoadStart, onLoadEnd, onError, ...props }) {
+function getFetchPriorityFromImagePriority(priority) {
+    switch (priority) {
+        case ImagePriority.HIGH:
+            return 'high';
+        case ImagePriority.LOW:
+            return 'low';
+        case ImagePriority.NORMAL:
+        default:
+            return 'auto';
+    }
+}
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, onLoadEnd, priority, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const [state, handlers] = useImageState(source);
     const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
+    function onLoadHandler(event) {
+        handlers.onLoad();
+        const target = event.target;
+        onLoad?.({
+            source: {
+                url: target.currentSrc,
+                width: target.naturalWidth,
+                height: target.naturalHeight,
+                mediaType: null,
+            },
+            cacheType: ImageCacheType.NONE,
+        });
+        onLoadEnd?.();
+    }
+    function onErrorHandler() {
+        onError?.({
+            error: `Failed to load image from url: ${source?.[0]?.uri}`,
+        });
+        onLoadEnd?.();
+    }
     return (React.createElement("div", { style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
@@ -118,7 +149,10 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
             overflow: 'hidden',
             position: 'relative',
         } },
-        React.createElement("img", { src: placeholder?.[0]?.uri, style: {
+        React.createElement("img", { src: placeholder?.[0]?.uri, 
+            // @ts-ignore
+            // eslint-disable-next-line react/no-unknown-property
+            fetchpriority: getFetchPriorityFromImagePriority(priority), style: {
                 width: '100%',
                 height: '100%',
                 position: 'absolute',
@@ -137,6 +171,6 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 objectFit: contentFit,
                 objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
                 ...imageStyle,
-            }, onLoad: handlers.onLoad })));
+            }, onLoad: onLoadHandler, onError: onErrorHandler })));
 }
 //# sourceMappingURL=ExpoImage.web.js.map
