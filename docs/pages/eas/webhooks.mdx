@@ -37,6 +37,9 @@ The build webhook payload looks something like this:
 ```json
 {
   "id": "147a3212-49fd-446f-b4e3-a6519acf264a",
+  "accountName": "dsokal",
+  "projectName": "example",
+  "buildDetailsPageUrl": "https://expo.dev/accounts/dsokal/projects/example/builds/147a3212-49fd-446f-b4e3-a6519acf264a",
   "parentBuildId": "75ac0be7-0d90-46d5-80ec-9423fa0aaa6b", // available for build retries
   "appId": "bc0a82de-65a5-4497-ad86-54ff1f53edf7",
   "initiatingUserId": "d1041496-1a59-423a-8caf-479bb978203a",
@@ -118,6 +121,9 @@ The submit webhook payload looks something like this:
 ```json
 {
   "id": "0374430d-7776-44ad-be7d-8513629adc54",
+  "accountName": "dsokal",
+  "projectName": "example",
+  "submissionDetailsPageUrl": "https://expo.dev/accounts/dsokal/projects/example/builds/0374430d-7776-44ad-be7d-8513629adc54",
   "parentSubmissionId": "75ac0be7-0d90-46d5-80ec-9423fa0aaa6b", // available for submission retries
   "appId": "23c0e405-d282-4399-b280-5689c3e1ea85",
   "archiveUrl": "http://archive.url/abc.apk",
