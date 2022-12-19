@@ -247,7 +247,7 @@ function Image({
       }}
       // @ts-ignore
       // eslint-disable-next-line react/no-unknown-property
-      fetchpriority={getFetchPriorityFromImagePriority(priority || "normal")}
+      fetchpriority={getFetchPriorityFromImagePriority(priority || 'normal')}
       onLoad={(event) => events?.onLoad.forEach((e) => e?.(event))}
       onError={() => events?.onError.forEach((e) => e?.({ source: source || null }))}
     />
@@ -295,7 +295,6 @@ export default function ExpoImage({
   const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
 
   const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
-
 
   return (
     <div

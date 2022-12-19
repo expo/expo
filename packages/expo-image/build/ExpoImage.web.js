@@ -154,7 +154,7 @@ function Image({ source, events, contentPosition, blurhashContentPosition, prior
         }, 
         // @ts-ignore
         // eslint-disable-next-line react/no-unknown-property
-        fetchpriority: getFetchPriorityFromImagePriority(priority || "normal"), onLoad: (event) => events?.onLoad.forEach((e) => e?.(event)), onError: () => events?.onError.forEach((e) => e?.({ source: source || null })) }));
+        fetchpriority: getFetchPriorityFromImagePriority(priority || 'normal'), onLoad: (event) => events?.onLoad.forEach((e) => e?.(event)), onError: () => events?.onError.forEach((e) => e?.({ source: source || null })) }));
 }
 function onLoadAdapter(onLoad) {
     return (event) => {
