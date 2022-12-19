@@ -27,16 +27,19 @@ object OkHttpClientProgressInterceptor : Interceptor {
         ProgressResponseBody(originalResponse.body) { bytesWritten, contentLength, done ->
           val strongThis = weakThis.get() ?: return@ProgressResponseBody
           val urlListeners = strongThis.mProgressListeners[requestUrl]
-          urlListeners?.forEach { it.get()?.onProgress(bytesWritten, contentLength, done) }
-          if (done) {
-            strongThis.mProgressListeners.remove(requestUrl)
+            ?: return@ProgressResponseBody
+          synchronized(this) {
+            urlListeners.forEach { it.get()?.onProgress(bytesWritten, contentLength, done) }
+            if (done) {
+              strongThis.mProgressListeners.remove(requestUrl)
+            }
           }
         }
       )
       .build()
   }
 
-  fun registerProgressListener(requestUrl: String, requestListener: ProgressListener) {
+  fun registerProgressListener(requestUrl: String, requestListener: ProgressListener) = synchronized(this) {
     var requestListeners = mProgressListeners[requestUrl]
     if (requestListeners == null) {
       requestListeners = HashSet()
