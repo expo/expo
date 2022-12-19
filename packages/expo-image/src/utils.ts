@@ -4,7 +4,6 @@ import {
   ImageContentPositionObject,
   ImageContentPositionString,
   ImageProps,
-  ImageResizeMode,
   ImageTransition,
 } from './Image.types';
 
@@ -18,7 +17,7 @@ let loggedFadeDurationDeprecationWarning = false;
  */
 export function resolveContentFit(
   contentFit?: ImageContentFit,
-  resizeMode?: ImageResizeMode
+  resizeMode?: ImageProps['resizeMode']
 ): ImageContentFit {
   if (contentFit) {
     return contentFit;
@@ -30,22 +29,21 @@ export function resolveContentFit(
     }
 
     switch (resizeMode) {
-      case ImageResizeMode.CONTAIN:
-        return ImageContentFit.CONTAIN;
-      case ImageResizeMode.COVER:
-        return ImageContentFit.COVER;
-      case ImageResizeMode.STRETCH:
-        return ImageContentFit.FILL;
-      case ImageResizeMode.CENTER:
-        return ImageContentFit.SCALE_DOWN;
-      case ImageResizeMode.REPEAT:
+      case 'contain':
+      case 'cover':
+        return resizeMode;
+      case 'stretch':
+        return 'fill';
+      case 'center':
+        return 'scale-down';
+      case 'repeat':
         if (!loggedRepeatDeprecationWarning) {
           console.log('[expo-image]: Resize mode "repeat" is no longer supported');
           loggedRepeatDeprecationWarning = true;
         }
     }
   }
-  return ImageContentFit.COVER;
+  return 'cover';
 }
 
 /**

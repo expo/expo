@@ -1,5 +1,4 @@
 import React from 'react';
-import { ImageTransitionEffect, ImageTransitionTiming, ImagePriority, ImageCacheType, } from './Image.types';
 function ensureUnit(value) {
     const trimmedValue = String(value).trim();
     if (trimmedValue.endsWith('%')) {
@@ -39,41 +38,15 @@ function useImageState(source) {
     }), [onLoad]);
     return [imageState, handlers];
 }
-function getCSSTiming(timing) {
-    return ({
-        [ImageTransitionTiming.EASE_IN]: 'ease-in',
-        [ImageTransitionTiming.EASE_OUT]: 'ease-out',
-        [ImageTransitionTiming.EASE_IN_OUT]: 'ease-in-out',
-        [ImageTransitionTiming.LINEAR]: 'linear',
-    }[timing || ImageTransitionTiming.LINEAR] ?? 'linear');
-}
-function getTransitionObjectFromTransition(transition) {
-    if (transition == null) {
-        return {
-            timing: ImageTransitionTiming.LINEAR,
-            duration: 0,
-            effect: ImageTransitionEffect.NONE,
-        };
-    }
-    if (typeof transition === 'number') {
-        return {
-            timing: ImageTransitionTiming.EASE_IN_OUT,
-            duration: transition,
-            effect: ImageTransitionEffect.CROSS_DISOLVE,
-        };
-    }
-    return {
-        timing: ImageTransitionTiming.EASE_IN_OUT,
-        duration: 1000,
-        ...transition,
-    };
-}
 function useTransition(transition, state) {
-    const { duration, timing, effect } = getTransitionObjectFromTransition(transition);
-    if (effect === ImageTransitionEffect.CROSS_DISOLVE) {
+    if (!transition) {
+        return { placeholder: {}, image: {} };
+    }
+    const { duration, timing, effect } = transition;
+    if (effect === 'cross-disolve') {
         const commonStyles = {
             transition: `opacity ${duration}ms`,
-            transitionTimingFunction: getCSSTiming(timing),
+            transitionTimingFunction: timing,
         };
         return {
             image: {
@@ -86,11 +59,11 @@ function useTransition(transition, state) {
             },
         };
     }
-    if (effect === ImageTransitionEffect.FLIP_FROM_TOP) {
+    if (effect === 'flip-from-top') {
         const commonStyles = {
             transition: `transform ${duration}ms`,
             transformOrigin: 'top',
-            transitionTimingFunction: getCSSTiming(timing),
+            transitionTimingFunction: timing,
         };
         return {
             placeholder: {
@@ -162,15 +135,7 @@ function useSourceSelection(sources, sizeCalculation = 'live') {
     }), [source]);
 }
 function getFetchPriorityFromImagePriority(priority) {
-    switch (priority) {
-        case ImagePriority.HIGH:
-            return 'high';
-        case ImagePriority.LOW:
-            return 'low';
-        case ImagePriority.NORMAL:
-        default:
-            return 'auto';
-    }
+    return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
 export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
@@ -187,7 +152,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 height: target.naturalHeight,
                 mediaType: null,
             },
-            cacheType: ImageCacheType.NONE,
+            cacheType: 'none',
         });
         onLoadEnd?.();
     }
