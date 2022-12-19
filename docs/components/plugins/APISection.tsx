@@ -48,7 +48,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
   if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {
     return true;
   } else if (extendedTypes && extendedTypes.length) {
-    return extendedTypes[0].name === 'Component';
+    return extendedTypes[0].name === 'Component' || extendedTypes[0].name === 'PureComponent';
   } else if (signatures && signatures.length) {
     if (
       signatures[0].type.name === 'Element' ||
