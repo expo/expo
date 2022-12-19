@@ -5,7 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-
+- Added support for HLS Stream with ExoPlayer in favor of multi-variant playlist. ([#20537](https://github.com/expo/expo/pull/20537) by [@asharamseervi](https://github.com/asharamseervi))
 ### 🐛 Bug fixes
 
 - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
