@@ -68,7 +68,7 @@ function getTransitionObjectFromTransition(transition) {
         ...transition,
     };
 }
-const useTransition = (transition, state) => {
+function useTransition(transition, state) {
     const { duration, timing, effect } = getTransitionObjectFromTransition(transition);
     if (effect === ImageTransitionEffect.CROSS_DISOLVE) {
         const commonStyles = {
@@ -104,7 +104,63 @@ const useTransition = (transition, state) => {
         };
     }
     return { placeholder: {}, image: {} };
-};
+}
+function findBestSourceForSize(sources, size) {
+    return ([...(sources || [])]
+        // look for the smallest image that's still larger then a container
+        ?.map((source) => {
+        if (!size) {
+            return { source, penalty: 0, covers: false };
+        }
+        const { width, height } = typeof source === 'object' ? source : { width: null, height: null };
+        if (width == null || height == null) {
+            return { source, penalty: 0, covers: false };
+        }
+        if (width < size.width || height < size.height) {
+            return {
+                source,
+                penalty: Math.max(size.width - width, size.height - height),
+                covers: false,
+            };
+        }
+        return { source, penalty: (width - size.width) * (height - size.height), covers: true };
+    })
+        .sort((a, b) => a.penalty - b.penalty)
+        .sort((a, b) => Number(b.covers) - Number(a.covers))[0]?.source ?? null);
+}
+function useSourceSelection(sources, sizeCalculation = 'live') {
+    const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
+    // null - not calculated yet, DOMRect - size available
+    const [size, setSize] = React.useState(null);
+    const resizeObserver = React.useRef(null);
+    React.useEffect(() => {
+        return () => {
+            resizeObserver.current?.disconnect();
+        };
+    }, []);
+    const containerRef = React.useCallback((element) => {
+        if (!hasMoreThanOneSource) {
+            return;
+        }
+        setSize(element?.getBoundingClientRect());
+        if (sizeCalculation === 'live') {
+            resizeObserver.current?.disconnect();
+            if (!element) {
+                return;
+            }
+            resizeObserver.current = new ResizeObserver((entries) => {
+                setSize(entries[0].contentRect);
+            });
+            resizeObserver.current.observe(element);
+        }
+    }, [hasMoreThanOneSource, sizeCalculation]);
+    const bestSourceForSize = size !== undefined ? findBestSourceForSize(sources, size) : null;
+    const source = (hasMoreThanOneSource ? bestSourceForSize : sources?.[0]) ?? null;
+    return React.useMemo(() => ({
+        containerRef,
+        source,
+    }), [source]);
+}
 function getFetchPriorityFromImagePriority(priority) {
     switch (priority) {
         case ImagePriority.HIGH:
@@ -116,10 +172,11 @@ function getFetchPriorityFromImagePriority(priority) {
             return 'auto';
     }
 }
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, onLoadEnd, priority, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const [state, handlers] = useImageState(source);
     const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
+    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
     function onLoadHandler(event) {
         handlers.onLoad();
         const target = event.target;
@@ -140,7 +197,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
         });
         onLoadEnd?.();
     }
-    return (React.createElement("div", { style: {
+    return (React.createElement("div", { ref: containerRef, style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
             transform: transform?.toString(),
@@ -162,7 +219,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 objectPosition: 'center',
                 ...placeholderStyle,
             } }),
-        React.createElement("img", { src: source?.[0]?.uri, style: {
+        React.createElement("img", { src: selectedSource?.uri, style: {
                 width: '100%',
                 height: '100%',
                 position: 'absolute',
