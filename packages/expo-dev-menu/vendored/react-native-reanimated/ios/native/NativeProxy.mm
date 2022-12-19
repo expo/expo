@@ -22,6 +22,8 @@
 #import <reacthermes/HermesExecutorFactory.h>
 #elif __has_include(<hermes/hermes.h>)
 #import <hermes/hermes.h>
+#elif __has_include(<React-jsc/JSCRuntime.h>)
+#import <React-jsc/JSCRuntime.h>
 #else
 #import <jsi/JSCRuntime.h>
 #endif

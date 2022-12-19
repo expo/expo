@@ -1,3 +1,5 @@
+# Remove this legacy folder when we drop SDK 47
+
 # Copyright (c) Meta Platforms, Inc. and affiliates.
 #
 # This source code is licensed under the MIT license found in the
