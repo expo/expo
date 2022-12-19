@@ -83,10 +83,11 @@ export const CommunityGridCell = ({
   md = 6,
 }: CommunityGridCellProps) => (
   <CustomCol css={cellWrapperStyle} md={md}>
-    <a
+    <A
       href={link}
       css={[cellStyle, cellCommunityStyle, cellCommunityHoverStyle]}
-      className={className}>
+      className={className}
+      isStyled>
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>
         {icon}
       </div>
@@ -95,7 +96,7 @@ export const CommunityGridCell = ({
         <P css={cellCommunityDescriptionStyle}>{description}</P>
       </div>
       <ArrowUpRightIcon color={theme.icon.secondary} css={cellCommunityLinkIconStyle} />
-    </a>
+    </A>
   </CustomCol>
 );
 
@@ -148,6 +149,15 @@ const cellStyle = css({
   borderStyle: 'solid',
   borderColor: theme.border.default,
   borderRadius: borderRadius.large,
+
+  h2: {
+    marginTop: 0,
+    marginBottom: 0,
+  },
+
+  h3: {
+    marginTop: 0,
+  },
 });
 
 const cellAPIStyle = css({

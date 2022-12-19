@@ -131,11 +131,11 @@ redirects[development/extensions]=development/development-workflows/
 redirects[development/develop-your-project]=development/use-development-builds/
 
 # Guides that have been deleted
-redirects[guides/using-gatsby]=guides/
+redirects[guides/using-gatsby]=/
 redirects[guides/testing-on-devices]=workflow/run-on-device
 redirects[distribution/uploading-apps]=submit/introduction
-redirects[distribution/uploading-apps]=submit/introduction
 redirects[guides/setup-native-firebase/]=guides/using-firebase
+redirects[guides/using-clojurescript/]=/
 
 # We should change this redirect to a more general EAS guide later
 redirects[guides/setting-up-continuous-integration]=build/building-on-ci

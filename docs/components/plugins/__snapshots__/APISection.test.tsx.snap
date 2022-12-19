@@ -3,7 +3,7 @@
 exports[`APISection expo-apple-authentication 1`] = `
 <div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -53,7 +53,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -286,7 +286,7 @@ for more details.
       </div>
     </blockquote>
     <h2
-      class="css-grnng4-H2"
+      class="  css-i435by-TextComponent"
       data-heading="true"
     >
       <a
@@ -334,10 +334,10 @@ for more details.
     </h2>
     <div>
       <div
-        class="css-16h0ecy"
+        class="css-1dyun4i"
       >
         <h3
-          class="css-m417je-H3"
+          class="  css-12j0zqa-TextComponent"
           data-heading="true"
         >
           <a
@@ -418,10 +418,10 @@ for more details.
         </p>
       </div>
       <div
-        class="css-16h0ecy"
+        class="css-1dyun4i"
       >
         <h3
-          class="css-m417je-H3"
+          class="  css-12j0zqa-TextComponent"
           data-heading="true"
         >
           <a
@@ -502,10 +502,10 @@ for more details.
         </p>
       </div>
       <div
-        class="css-16h0ecy"
+        class="css-1dyun4i"
       >
         <h3
-          class="css-m417je-H3"
+          class="  css-12j0zqa-TextComponent"
           data-heading="true"
         >
           <a
@@ -594,10 +594,10 @@ for more details.
         </p>
       </div>
       <div
-        class="css-16h0ecy"
+        class="css-1dyun4i"
       >
         <h3
-          class="css-m417je-H3"
+          class="  css-12j0zqa-TextComponent"
           data-heading="true"
         >
           <a
@@ -725,10 +725,10 @@ properties.
         </p>
       </div>
       <div
-        class="css-16h0ecy"
+        class="css-1dyun4i"
       >
         <h3
-          class="css-m417je-H3"
+          class="  css-12j0zqa-TextComponent"
           data-heading="true"
         >
           <a
@@ -820,7 +820,7 @@ in here.
         </p>
       </div>
       <h3
-        class="css-m417je-H3"
+        class="  css-12j0zqa-TextComponent"
         data-heading="true"
       >
         <a
@@ -889,7 +889,7 @@ in here.
     </div>
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -936,10 +936,10 @@ in here.
     </a>
   </h2>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -1127,7 +1127,7 @@ This should come from the user field of an
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -1246,10 +1246,10 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -1310,7 +1310,7 @@ value depending on the state of the credential.
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -1425,10 +1425,10 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -1574,7 +1574,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -1701,10 +1701,10 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -1895,7 +1895,7 @@ the user, since this remains the same for apps released by the same developer.
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -2022,10 +2022,10 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -2203,7 +2203,7 @@ from using
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -2330,7 +2330,7 @@ sign-out operation.
     </p>
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -2377,10 +2377,10 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -2499,7 +2499,7 @@ sign-out operation.
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -2587,7 +2587,7 @@ sign-out operation.
     <br />
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -2637,7 +2637,7 @@ sign-out operation.
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -3157,7 +3157,7 @@ developers.
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -3464,7 +3464,7 @@ may be
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -3769,7 +3769,7 @@ OAuth 2.0 protocol
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -4095,7 +4095,7 @@ OAuth 2.0 protocol
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -4330,7 +4330,7 @@ OAuth 2.0 protocol
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -4452,7 +4452,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -4502,7 +4502,7 @@ OAuth 2.0 protocol
     class="css-1mvi0k3"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -4572,64 +4572,60 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#white"
         >
-          <a
-            class="css-1y48vg3"
-            href="#white"
+          <span
+            class="css-s3qkfm"
+            id="white"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="white"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                WHITE
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              WHITE
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -4647,64 +4643,60 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#white_outline"
         >
-          <a
-            class="css-1y48vg3"
-            href="#white_outline"
+          <span
+            class="css-s3qkfm"
+            id="white_outline"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="white_outline"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                WHITE_OUTLINE
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              WHITE_OUTLINE
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -4722,64 +4714,60 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#black"
         >
-          <a
-            class="css-1y48vg3"
-            href="#black"
+          <span
+            class="css-s3qkfm"
+            id="black"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="black"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                BLACK
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              BLACK
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -4801,7 +4789,7 @@ OAuth 2.0 protocol
     class="css-1mvi0k3"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -4871,64 +4859,60 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#sign_in"
         >
-          <a
-            class="css-1y48vg3"
-            href="#sign_in"
+          <span
+            class="css-s3qkfm"
+            id="sign_in"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="sign_in"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                SIGN_IN
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              SIGN_IN
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -4946,64 +4930,60 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#continue"
         >
-          <a
-            class="css-1y48vg3"
-            href="#continue"
+          <span
+            class="css-s3qkfm"
+            id="continue"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="continue"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                CONTINUE
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              CONTINUE
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5021,7 +5001,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
       <strong
         class="css-7r3rok-TextComponent"
@@ -5056,62 +5036,58 @@ OAuth 2.0 protocol
         </span>
       </div>
       <br />
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#sign_up"
         >
-          <a
-            class="css-1y48vg3"
-            href="#sign_up"
+          <span
+            class="css-s3qkfm"
+            id="sign_up"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="sign_up"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                SIGN_UP
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              SIGN_UP
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5133,7 +5109,7 @@ OAuth 2.0 protocol
     class="css-1mvi0k3"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -5251,64 +5227,60 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#revoked"
         >
-          <a
-            class="css-1y48vg3"
-            href="#revoked"
+          <span
+            class="css-s3qkfm"
+            id="revoked"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="revoked"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                REVOKED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              REVOKED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5320,64 +5292,60 @@ for more details.
       </code>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#authorized"
         >
-          <a
-            class="css-1y48vg3"
-            href="#authorized"
+          <span
+            class="css-s3qkfm"
+            id="authorized"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="authorized"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                AUTHORIZED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              AUTHORIZED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5389,64 +5357,60 @@ for more details.
       </code>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#not_found"
         >
-          <a
-            class="css-1y48vg3"
-            href="#not_found"
+          <span
+            class="css-s3qkfm"
+            id="not_found"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="not_found"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                NOT_FOUND
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              NOT_FOUND
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5458,64 +5422,60 @@ for more details.
       </code>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#transferred"
         >
-          <a
-            class="css-1y48vg3"
-            href="#transferred"
+          <span
+            class="css-s3qkfm"
+            id="transferred"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="transferred"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                TRANSFERRED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              TRANSFERRED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5531,7 +5491,7 @@ for more details.
     class="css-1mvi0k3"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -5583,64 +5543,60 @@ for more details.
       </a>
     </h3>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#implicit"
         >
-          <a
-            class="css-1y48vg3"
-            href="#implicit"
+          <span
+            class="css-s3qkfm"
+            id="implicit"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="implicit"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                IMPLICIT
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              IMPLICIT
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5658,64 +5614,60 @@ for more details.
       </p>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#login"
         >
-          <a
-            class="css-1y48vg3"
-            href="#login"
+          <span
+            class="css-s3qkfm"
+            id="login"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="login"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                LOGIN
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              LOGIN
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5727,64 +5679,60 @@ for more details.
       </code>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#refresh"
         >
-          <a
-            class="css-1y48vg3"
-            href="#refresh"
+          <span
+            class="css-s3qkfm"
+            id="refresh"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="refresh"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                REFRESH
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              REFRESH
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5796,64 +5744,60 @@ for more details.
       </code>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#logout"
         >
-          <a
-            class="css-1y48vg3"
-            href="#logout"
+          <span
+            class="css-s3qkfm"
+            id="logout"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="logout"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                LOGOUT
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              LOGOUT
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -5869,7 +5813,7 @@ for more details.
     class="css-1mvi0k3"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -6028,64 +5972,60 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#full_name"
         >
-          <a
-            class="css-1y48vg3"
-            href="#full_name"
+          <span
+            class="css-s3qkfm"
+            id="full_name"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="full_name"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                FULL_NAME
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              FULL_NAME
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -6097,64 +6037,60 @@ for more details.
       </code>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#email"
         >
-          <a
-            class="css-1y48vg3"
-            href="#email"
+          <span
+            class="css-s3qkfm"
+            id="email"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="email"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                EMAIL
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              EMAIL
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -6170,7 +6106,7 @@ for more details.
     class="css-1mvi0k3"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -6276,64 +6212,60 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#unsupported"
         >
-          <a
-            class="css-1y48vg3"
-            href="#unsupported"
+          <span
+            class="css-s3qkfm"
+            id="unsupported"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="unsupported"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                UNSUPPORTED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              UNSUPPORTED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -6351,64 +6283,60 @@ for more details.
       </p>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#unknown"
         >
-          <a
-            class="css-1y48vg3"
-            href="#unknown"
+          <span
+            class="css-s3qkfm"
+            id="unknown"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="unknown"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                UNKNOWN
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              UNKNOWN
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -6426,64 +6354,60 @@ for more details.
       </p>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#likely_real"
         >
-          <a
-            class="css-1y48vg3"
-            href="#likely_real"
+          <span
+            class="css-s3qkfm"
+            id="likely_real"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="likely_real"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                LIKELY_REAL
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              LIKELY_REAL
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -6507,7 +6431,7 @@ for more details.
 exports[`APISection expo-barcode-scanner 1`] = `
 <div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -6557,7 +6481,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -6636,7 +6560,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </code>
     </p>
     <h2
-      class="css-grnng4-H2"
+      class="  css-i435by-TextComponent"
       data-heading="true"
     >
       <a
@@ -6684,10 +6608,10 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-        class="css-16h0ecy"
+        class="css-1dyun4i"
       >
         <h3
-          class="css-m417je-H3"
+          class="  css-12j0zqa-TextComponent"
           data-heading="true"
         >
           <a
@@ -6805,10 +6729,10 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-16h0ecy"
+        class="css-1dyun4i"
       >
         <h3
-          class="css-m417je-H3"
+          class="  css-12j0zqa-TextComponent"
           data-heading="true"
         >
           <a
@@ -6965,10 +6889,10 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="css-16h0ecy"
+        class="css-1dyun4i"
       >
         <h3
-          class="css-m417je-H3"
+          class="  css-12j0zqa-TextComponent"
           data-heading="true"
         >
           <a
@@ -7103,7 +7027,7 @@ Same as
         </p>
       </div>
       <h3
-        class="css-m417je-H3"
+        class="  css-12j0zqa-TextComponent"
         data-heading="true"
       >
         <a
@@ -7172,7 +7096,7 @@ Same as
     </div>
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -7219,10 +7143,10 @@ Same as
     </a>
   </h2>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -7362,7 +7286,7 @@ This can be used to quickly create specific permission hooks in every module.
       class="css-1wdnwk5"
     >
       <h4
-        class="css-uucypz-H4"
+        class="css-1ho46jg-TextComponent"
         data-heading="true"
       >
         Example
@@ -7445,7 +7369,7 @@ This can be used to quickly create specific permission hooks in every module.
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -7571,7 +7495,7 @@ This can be used to quickly create specific permission hooks in every module.
     <br />
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -7618,10 +7542,10 @@ This can be used to quickly create specific permission hooks in every module.
     </a>
   </h2>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -7682,7 +7606,7 @@ This can be used to quickly create specific permission hooks in every module.
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -7800,10 +7724,10 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -7884,7 +7808,7 @@ This can be used to quickly create specific permission hooks in every module.
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -8002,10 +7926,10 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -8220,7 +8144,7 @@ the platform.
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -8336,7 +8260,7 @@ code.
     </p>
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -8383,10 +8307,10 @@ code.
     </a>
   </h2>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -8447,7 +8371,7 @@ code.
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -8672,9 +8596,10 @@ in order to enable/disable the permission.
         </tbody>
       </table>
     </div>
+    <br />
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -8724,7 +8649,7 @@ in order to enable/disable the permission.
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -8889,7 +8814,7 @@ in order to enable/disable the permission.
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -9031,7 +8956,7 @@ in order to enable/disable the permission.
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -9153,7 +9078,7 @@ in order to enable/disable the permission.
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -9329,7 +9254,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -9454,7 +9379,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -9733,7 +9658,7 @@ you don't get this value.
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -9888,7 +9813,7 @@ you don't get this value.
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -9966,7 +9891,7 @@ you don't get this value.
     </p>
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -10016,7 +9941,7 @@ you don't get this value.
     class="css-1mvi0k3"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -10068,64 +9993,60 @@ you don't get this value.
       </a>
     </h3>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#denied"
         >
-          <a
-            class="css-1y48vg3"
-            href="#denied"
+          <span
+            class="css-s3qkfm"
+            id="denied"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="denied"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                DENIED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              DENIED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -10143,64 +10064,60 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#granted"
         >
-          <a
-            class="css-1y48vg3"
-            href="#granted"
+          <span
+            class="css-s3qkfm"
+            id="granted"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="granted"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                GRANTED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              GRANTED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -10218,64 +10135,60 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#undetermined"
         >
-          <a
-            class="css-1y48vg3"
-            href="#undetermined"
+          <span
+            class="css-s3qkfm"
+            id="undetermined"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="undetermined"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                UNDETERMINED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              UNDETERMINED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -10299,7 +10212,7 @@ you don't get this value.
 exports[`APISection expo-pedometer 1`] = `
 <div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -10346,10 +10259,10 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -10404,7 +10317,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -10504,10 +10417,10 @@ exports[`APISection expo-pedometer 1`] = `
     <br />
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -10682,7 +10595,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -10860,10 +10773,10 @@ a start date that is more than seven days in the past returns only the available
     </blockquote>
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -10924,7 +10837,7 @@ a start date that is more than seven days in the past returns only the available
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -11033,10 +10946,10 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -11091,7 +11004,7 @@ available on this device.
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -11191,10 +11104,10 @@ available on this device.
     <br />
   </div>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -11340,7 +11253,7 @@ provided with a single argument that is
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -11454,7 +11367,7 @@ provided with a single argument that is
     </p>
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -11501,10 +11414,10 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-16h0ecy"
+    class="css-1dyun4i"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -11559,7 +11472,7 @@ provided with a single argument that is
       class="css-1wdnwk5"
     >
       <h4
-        class="  css-uucypz-H4"
+        class="  css-1ho46jg-TextComponent"
         data-heading="true"
       >
         <a
@@ -11762,9 +11675,10 @@ provided with a single argument that is
         </tbody>
       </table>
     </div>
+    <br />
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -11814,7 +11728,7 @@ provided with a single argument that is
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -11936,7 +11850,7 @@ provided with a single argument that is
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -12061,7 +11975,7 @@ provided with a single argument that is
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -12142,7 +12056,7 @@ provided with a single argument that is
     class="css-1tnn2a"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -12264,7 +12178,7 @@ provided with a single argument that is
     </div>
   </div>
   <h2
-    class="css-grnng4-H2"
+    class="  css-i435by-TextComponent"
     data-heading="true"
   >
     <a
@@ -12314,7 +12228,7 @@ provided with a single argument that is
     class="css-1mvi0k3"
   >
     <h3
-      class="css-m417je-H3"
+      class="  css-12j0zqa-TextComponent"
       data-heading="true"
     >
       <a
@@ -12366,64 +12280,60 @@ provided with a single argument that is
       </a>
     </h3>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#denied"
         >
-          <a
-            class="css-1y48vg3"
-            href="#denied"
+          <span
+            class="css-s3qkfm"
+            id="denied"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="denied"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                DENIED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              DENIED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -12435,64 +12345,60 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#granted"
         >
-          <a
-            class="css-1y48vg3"
-            href="#granted"
+          <span
+            class="css-s3qkfm"
+            id="granted"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="granted"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                GRANTED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              GRANTED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"
@@ -12504,64 +12410,60 @@ provided with a single argument that is
       </code>
     </div>
     <div
-      class="css-16h0ecy"
+      class="css-1dyun4i"
     >
-      <div
-        class="css-1ow0rw3"
+      <h4
+        class="  css-1ho46jg-TextComponent"
+        data-heading="true"
       >
-        <h4
-          class="  css-uucypz-H4"
-          data-heading="true"
+        <a
+          class="css-1y48vg3"
+          href="#undetermined"
         >
-          <a
-            class="css-1y48vg3"
-            href="#undetermined"
+          <span
+            class="css-s3qkfm"
+            id="undetermined"
+          />
+          <span
+            class="css-6n7j50"
           >
-            <span
-              class="css-s3qkfm"
-              id="undetermined"
-            />
-            <span
-              class="css-6n7j50"
+            <code
+              class="css-lz3xyk-TextComponent"
+              data-text="true"
             >
-              <code
-                class="css-lz3xyk-TextComponent"
-                data-text="true"
-              >
-                UNDETERMINED
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
+              UNDETERMINED
+            </code>
+          </span>
+          <span
+            class="css-1eysgws"
+          >
+            <svg
+              aria-label="permalink"
+              class="anchor-icon"
+              fill="none"
+              height="24"
+              viewBox="0 0 24 24"
+              width="24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h4>
-      </div>
+              <path
+                d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+              <path
+                d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                stroke="#9B9B9B"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              />
+            </svg>
+          </span>
+        </a>
+      </h4>
       <code
         class="css-1bzxtqh-TextComponent"
         data-text="true"

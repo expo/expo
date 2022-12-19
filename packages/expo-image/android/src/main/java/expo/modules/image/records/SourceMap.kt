@@ -8,6 +8,7 @@ import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ApplicationVersionSignature
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
+import expo.modules.image.GlideBlurhashModel
 import expo.modules.image.GlideRawModel
 import expo.modules.image.GlideModel
 import expo.modules.image.GlideOptions
@@ -35,6 +36,8 @@ data class SourceMap(
 
   private fun isLocalFileUri() = parsedUri?.scheme?.startsWith("file") ?: false
 
+  fun isBlurhash() = parsedUri?.scheme?.startsWith("blurhash") ?: false
+
   internal fun createGlideModel(context: Context): GlideModel? {
     if (uri == null) {
       return null
@@ -46,6 +49,14 @@ data class SourceMap(
 
     if (isContentUrl() || isDataUrl()) {
       return GlideRawModel(uri)
+    }
+
+    if (isBlurhash()) {
+      return GlideBlurhashModel(
+        parsedUri!!,
+        width,
+        height
+      )
     }
 
     if (isResourceUri()) {

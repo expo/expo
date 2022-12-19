@@ -1,26 +1,16 @@
 import React from 'react';
 
 import {
-  ImageContentPosition,
   ImageContentPositionObject,
-  ImageProps,
   ImageSource,
+  ImageTransition,
+  ImageTransitionEffect,
+  ImageTransitionTiming,
+  ImageNativeProps,
   PositionValue,
+  ImagePriority,
+  ImageCacheType,
 } from './Image.types';
-import { resolveContentFit, resolveContentPosition } from './utils';
-
-function resolveAssetSource(source?: ImageSource | string | number | null) {
-  if (source == null) return null;
-
-  if (typeof source === 'string') {
-    return { uri: source };
-  }
-  if (typeof source === 'number') {
-    return { uri: String(source) };
-  }
-
-  return source;
-}
 
 function ensureUnit(value: string | number) {
   const trimmedValue = String(value).trim();
@@ -32,75 +22,228 @@ function ensureUnit(value: string | number) {
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
 
-function getObjectPositionFromContentPosition(contentPosition?: ImageContentPosition) {
-  const resolvedPosition = (
-    typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition
-  ) as Record<KeysOfUnion<ImageContentPositionObject>, PositionValue>;
-
+function getObjectPositionFromContentPositionObject(
+  contentPosition?: ImageContentPositionObject
+): string {
+  const resolvedPosition = { ...contentPosition } as Record<
+    KeysOfUnion<ImageContentPositionObject>,
+    PositionValue
+  >;
   if (!resolvedPosition) {
-    return null;
+    return '50% 50%';
   }
-  if (resolvedPosition.top == null || resolvedPosition.bottom == null) {
+  if (resolvedPosition.top == null && resolvedPosition.bottom == null) {
     resolvedPosition.top = '50%';
   }
-  if (resolvedPosition.left == null || resolvedPosition.right == null) {
+  if (resolvedPosition.left == null && resolvedPosition.right == null) {
     resolvedPosition.left = '50%';
   }
 
-  return ['top', 'bottom', 'left', 'right']
-    .map((key) => {
-      if (key in resolvedPosition) {
-        return `${key} ${ensureUnit(resolvedPosition[key])}`;
-      }
-      return '';
-    })
-    .join(' ');
+  return (
+    ['top', 'bottom', 'left', 'right']
+      .map((key) => {
+        if (key in resolvedPosition) {
+          return `${key} ${ensureUnit(resolvedPosition[key])}`;
+        }
+        return '';
+      })
+      .join(' ') || '50% 50%'
+  );
 }
 
-const ensureIsArray = <T extends any>(source: T | T[] | undefined) => {
-  if (Array.isArray(source)) {
-    return source;
+type ImageState = 'empty' | 'loading' | 'loaded' | 'error';
+
+function useImageState(source?: ImageSource[]) {
+  const hasAnySource = source && source.length > 0;
+  const [imageState, setImageState] = React.useState<ImageState>(
+    hasAnySource ? 'loading' : 'empty'
+  );
+  React.useEffect(() => {
+    setImageState((prevState) =>
+      prevState === 'empty' ? (hasAnySource ? 'loading' : 'empty') : prevState
+    );
+  }, [hasAnySource]);
+
+  const onLoad = React.useCallback(
+    () => setImageState((prevState) => (imageState === 'loading' ? 'loaded' : prevState)),
+    []
+  );
+  const handlers = React.useMemo(
+    () => ({
+      onLoad,
+    }),
+    [onLoad]
+  );
+  return [imageState, handlers] as [ImageState, { onLoad: () => void }];
+}
+
+function getCSSTiming(timing?: ImageTransitionTiming) {
+  return (
+    {
+      [ImageTransitionTiming.EASE_IN]: 'ease-in',
+      [ImageTransitionTiming.EASE_OUT]: 'ease-out',
+      [ImageTransitionTiming.EASE_IN_OUT]: 'ease-in-out',
+      [ImageTransitionTiming.LINEAR]: 'linear',
+    }[timing || ImageTransitionTiming.LINEAR] ?? 'linear'
+  );
+}
+
+function getTransitionObjectFromTransition(transition?: number | ImageTransition | null) {
+  if (transition == null) {
+    return {
+      timing: ImageTransitionTiming.LINEAR,
+      duration: 0,
+      effect: ImageTransitionEffect.NONE,
+    };
   }
-  if (source == null) {
-    return [];
+  if (typeof transition === 'number') {
+    return {
+      timing: ImageTransitionTiming.EASE_IN_OUT,
+      duration: transition,
+      effect: ImageTransitionEffect.CROSS_DISOLVE,
+    };
   }
-  return [source];
+  return {
+    timing: ImageTransitionTiming.EASE_IN_OUT,
+    duration: 1000,
+    ...transition,
+  };
+}
+
+const useTransition = (
+  transition: number | ImageTransition | null | undefined,
+  state: ImageState
+): Record<'placeholder' | 'image', Partial<React.CSSProperties>> => {
+  const { duration, timing, effect } = getTransitionObjectFromTransition(transition);
+  if (effect === ImageTransitionEffect.CROSS_DISOLVE) {
+    const commonStyles = {
+      transition: `opacity ${duration}ms`,
+      transitionTimingFunction: getCSSTiming(timing),
+    };
+    return {
+      image: {
+        opacity: state === 'loaded' ? '1' : '0',
+        ...commonStyles,
+      },
+      placeholder: {
+        opacity: state === 'loaded' ? '0' : '1',
+        ...commonStyles,
+      },
+    };
+  }
+  if (effect === ImageTransitionEffect.FLIP_FROM_TOP) {
+    const commonStyles = {
+      transition: `transform ${duration}ms`,
+      transformOrigin: 'top',
+      transitionTimingFunction: getCSSTiming(timing),
+    };
+    return {
+      placeholder: {
+        transform: `rotateX(${state !== 'loaded' ? '0' : '90deg'})`,
+        ...commonStyles,
+      },
+      image: {
+        transform: `rotateX(${state === 'loaded' ? '0' : '90deg'})`,
+        ...commonStyles,
+      },
+    };
+  }
+
+  return { placeholder: {}, image: {} };
 };
+
+function getFetchPriorityFromImagePriority(priority: ImagePriority) {
+  switch (priority) {
+    case ImagePriority.HIGH:
+      return 'high';
+    case ImagePriority.LOW:
+      return 'low';
+    case ImagePriority.NORMAL:
+    default:
+      return 'auto';
+  }
+}
 
 export default function ExpoImage({
   source,
-  defaultSource,
-  loadingIndicatorSource,
+  placeholder,
+  contentFit,
   contentPosition,
   onLoad,
-  onLoadStart,
-  onLoadEnd,
+  transition,
   onError,
+  onLoadEnd,
+  priority,
   ...props
-}: ImageProps) {
+}: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
-  const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
+  const [state, handlers] = useImageState(source);
+  const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
+
+  function onLoadHandler(event: React.SyntheticEvent<HTMLImageElement, Event>) {
+    handlers.onLoad();
+    const target = event.target as HTMLImageElement;
+    onLoad?.({
+      source: {
+        url: target.currentSrc,
+        width: target.naturalWidth,
+        height: target.naturalHeight,
+        mediaType: null,
+      },
+      cacheType: ImageCacheType.NONE,
+    });
+    onLoadEnd?.();
+  }
+
+  function onErrorHandler() {
+    onError?.({
+      error: `Failed to load image from url: ${source?.[0]?.uri}`,
+    });
+    onLoadEnd?.();
+  }
+
   return (
-    <>
-      <picture
+    <div
+      style={{
+        aspectRatio: String(aspectRatio),
+        backgroundColor: backgroundColor?.toString(),
+        transform: transform?.toString(),
+        borderColor: borderColor?.toString(),
+        ...style,
+        overflow: 'hidden',
+        position: 'relative',
+      }}>
+      <img
+        src={placeholder?.[0]?.uri}
+        // @ts-ignore
+        // eslint-disable-next-line react/no-unknown-property
+        fetchpriority={getFetchPriorityFromImagePriority(priority)}
         style={{
-          overflow: 'hidden',
-          ...style,
-        }}>
-        <img
-          src={resolvedSources.at(0)?.uri}
-          style={{
-            width: '100%',
-            height: '100%',
-            aspectRatio: String(aspectRatio),
-            backgroundColor: backgroundColor?.toString(),
-            transform: transform?.toString(),
-            borderColor: borderColor?.toString(),
-            objectFit: resolveContentFit(props.contentFit, props.resizeMode),
-            objectPosition: getObjectPositionFromContentPosition(contentPosition) || undefined,
-          }}
-        />
-      </picture>
-    </>
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          objectFit: 'scale-down',
+          objectPosition: 'center',
+          ...placeholderStyle,
+        }}
+      />
+      <img
+        src={source?.[0]?.uri}
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          objectFit: contentFit,
+          objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
+          ...imageStyle,
+        }}
+        onLoad={onLoadHandler}
+        onError={onErrorHandler}
+      />
+    </div>
   );
 }
