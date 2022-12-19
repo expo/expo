@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed threading crash issue when running with Hermes on iOS. ([#20506](https://github.com/expo/expo/pull/20506) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.11.9 — 2022-11-09
