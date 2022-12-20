@@ -71,4 +71,8 @@ const tableStyle = css({
   'blockquote div, li, p, strong': {
     ...typography.fontSizes[14],
   },
+
+  'blockquote code': {
+    padding: `0 ${spacing[1]}px`,
+  },
 });

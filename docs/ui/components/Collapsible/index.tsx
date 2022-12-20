@@ -9,7 +9,7 @@ import {
 } from '@expo/styleguide';
 import type { PropsWithChildren, ReactNode } from 'react';
 
-import { HEADLINE } from '~/ui/components/Text';
+import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
   /**
@@ -30,7 +30,7 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
         <div css={markerWrapperStyle}>
           <TriangleDownIcon css={markerStyle} size={iconSize.small} />
         </div>
-        <HEADLINE tag="span">{summary}</HEADLINE>
+        <DEMI>{summary}</DEMI>
       </summary>
       <div css={contentStyle}>{children}</div>
     </details>

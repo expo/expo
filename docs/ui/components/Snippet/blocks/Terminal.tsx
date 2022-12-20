@@ -82,7 +82,7 @@ function cmdMapper(line: string, index: number) {
             unselectableStyle,
             { display: 'inline', color: darkTheme.text.secondary },
           ]}>
-          →&nbsp;
+          -&nbsp;
         </CODE>
         <CODE css={codeStyle}>{line.substring(1).trim()}</CODE>
       </div>

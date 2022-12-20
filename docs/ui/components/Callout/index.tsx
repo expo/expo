@@ -7,6 +7,7 @@ import {
   ErrorIcon,
   InfoIcon,
   WarningIcon,
+  typography,
 } from '@expo/styleguide';
 import { IconProps } from '@expo/styleguide/dist/types';
 import { Children, ComponentType, PropsWithChildren, isValidElement, ReactNode } from 'react';
@@ -126,6 +127,7 @@ const iconStyle = css({
 });
 
 const contentStyle = css({
+  ...typography.fontSizes[16],
   color: theme.text.default,
 
   '*:last-child': {
