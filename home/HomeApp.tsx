@@ -177,6 +177,8 @@ export default function HomeApp() {
         // if there is no current user data, clear the accountName
         setAccountName(undefined);
       }
+    } catch (e) {
+      console.error(e);
     } finally {
       return;
     }

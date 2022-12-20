@@ -82,6 +82,8 @@ describe('User Authentication Flow', () => {
         `,
         variables: null,
       });
+    } catch (e) {
+      console.error(e);
     } finally {
       ApolloClient.resetStore();
     }

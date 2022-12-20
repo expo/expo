@@ -4,17 +4,9 @@ import { HttpLink } from '@apollo/client/link/http';
 
 import Store from '../redux/Store';
 import Config from './Config';
-import Connectivity from './Connectivity';
 
 const httpLink = new HttpLink({
   uri: `${Config.api.origin}/--/graphql`,
-});
-
-const connectivityLink = setContext(async (): Promise<any> => {
-  const isConnected = await Connectivity.isAvailableAsync();
-  if (!isConnected) {
-    throw new Error('No connection available');
-  }
 });
 
 const authMiddlewareLink = setContext((): any => {
@@ -27,7 +19,7 @@ const authMiddlewareLink = setContext((): any => {
   }
 });
 
-const link = connectivityLink.concat(authMiddlewareLink.concat(httpLink));
+const link = authMiddlewareLink.concat(httpLink);
 
 const cache = new InMemoryCache({
   possibleTypes: {

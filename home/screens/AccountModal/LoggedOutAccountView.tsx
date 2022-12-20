@@ -39,6 +39,8 @@ export function LoggedOutAccountView({ refetch }: Props) {
       if (isFinishedAuthenticating && sessionSecretExists) {
         try {
           await refetch();
+        } catch (e) {
+          console.error(e);
         } finally {
           // in the case that it rejects, we still want to dismiss the modal
 

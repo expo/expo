@@ -1,5 +1,4 @@
 import { spacing } from '@expo/styleguide-native';
-import dedent from 'dedent';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { FlatList, ActivityIndicator, ListRenderItem, View as RNView } from 'react-native';
@@ -10,16 +9,6 @@ import { ProjectsListItem } from '../../components/ProjectsListItem';
 import { StyledText } from '../../components/Text';
 import SharedStyles from '../../constants/SharedStyles';
 import { CommonAppDataFragment } from '../../graphql/types';
-
-const NETWORK_ERROR_TEXT = dedent`
-  Your connection appears to be offline.
-  Check back when you have a better connection.
-`;
-
-const SERVER_ERROR_TEXT = dedent`
-  An unexpected server error has occurred.
-  Sorry about this. We will resolve the issue as soon as quickly as possible.
-`;
 
 type Props = {
   data: { apps?: CommonAppDataFragment[]; appCount?: number };
@@ -60,10 +49,6 @@ export function ProjectList(props: Props) {
 
   if (!props.data?.apps?.length) {
     if (!props.loading && props.error) {
-      // Error
-      // NOTE(brentvatne): sorry for this
-      const isConnectionError = props.error.message.includes('No connection available');
-
       const refetchDataAsync = async () => {
         if (isRetrying.current) return;
         isRetrying.current = true;
@@ -89,7 +74,7 @@ export function ProjectList(props: Props) {
             style={SharedStyles.noticeDescriptionText}
             lightColor="rgba(36, 44, 58, 0.7)"
             darkColor="#ccc">
-            {isConnectionError ? NETWORK_ERROR_TEXT : SERVER_ERROR_TEXT}
+            {props.error.message}
           </StyledText>
 
           <PrimaryButton plain onPress={refetchDataAsync}>
