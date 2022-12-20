@@ -1,5 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
+#if __cplusplus
+
 #import <UIKit/UIKit.h>
 #import <ExpoModulesCore/EXReactDelegateWrapper.h>
 
@@ -28,3 +30,12 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#else
+
+// Workaround the main.m build error when running with new architecture mode
+// Context: https://github.com/facebook/react-native/pull/35661
+@interface EXAppDelegateWrapper : UIResponder
+@end
+
+#endif
