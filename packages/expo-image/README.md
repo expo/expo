@@ -21,7 +21,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 Add the package to your dependencies with the following commands:
 
 ```
-expo install expo-camera
+expo install expo-image
 npx pod-install
 ```
 
