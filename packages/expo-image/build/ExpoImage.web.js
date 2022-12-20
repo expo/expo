@@ -145,9 +145,11 @@ function getFetchPriorityFromImagePriority(priority) {
     return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
 function Image({ source, events, contentPosition, blurhashContentPosition, priority, style, blurhashStyle, }) {
-    const blurhashUrl = useBlurhash(isBlurhashString(source?.uri || '') ? source?.uri : null, source?.width, source?.height);
-    const objectPosition = getObjectPositionFromContentPositionObject(blurhashUrl ? blurhashContentPosition : contentPosition);
-    return (React.createElement("img", { src: blurhashUrl || source?.uri, style: {
+    const isBlurhash = isBlurhashString(source?.uri || '');
+    const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
+    const objectPosition = getObjectPositionFromContentPositionObject(isBlurhash ? blurhashContentPosition : contentPosition);
+    const uri = isBlurhash ? blurhashUri : source?.uri;
+    return (React.createElement("img", { src: uri || undefined, style: {
             width: '100%',
             height: '100%',
             position: 'absolute',
@@ -155,7 +157,7 @@ function Image({ source, events, contentPosition, blurhashContentPosition, prior
             right: 0,
             objectPosition,
             ...style,
-            ...(blurhashUrl ? blurhashStyle : {}),
+            ...(isBlurhash ? blurhashStyle : {}),
         }, 
         // @ts-ignore
         // eslint-disable-next-line react/no-unknown-property

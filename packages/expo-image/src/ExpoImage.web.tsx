@@ -229,17 +229,15 @@ function Image({
   style: React.CSSProperties;
   blurhashStyle?: React.CSSProperties;
 }) {
-  const blurhashUrl = useBlurhash(
-    isBlurhashString(source?.uri || '') ? source?.uri : null,
-    source?.width,
-    source?.height
-  );
+  const isBlurhash = isBlurhashString(source?.uri || '');
+  const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
   const objectPosition = getObjectPositionFromContentPositionObject(
-    blurhashUrl ? blurhashContentPosition : contentPosition
+    isBlurhash ? blurhashContentPosition : contentPosition
   );
+  const uri = isBlurhash ? blurhashUri : source?.uri;
   return (
     <img
-      src={blurhashUrl || source?.uri}
+      src={uri || undefined}
       style={{
         width: '100%',
         height: '100%',
@@ -248,7 +246,7 @@ function Image({
         right: 0,
         objectPosition,
         ...style,
-        ...(blurhashUrl ? blurhashStyle : {}),
+        ...(isBlurhash ? blurhashStyle : {}),
       }}
       // @ts-ignore
       // eslint-disable-next-line react/no-unknown-property
