@@ -5,8 +5,8 @@ import expo.modules.kotlin.exception.CodedException
 class ThumbnailException :
   CodedException("Can't read file")
 
-class GenerateThumbnailException:
+class GenerateThumbnailException :
   CodedException("Could not generate thumbnail")
 
-class FilePermissionsModuleNotFound:
+class FilePermissionsModuleNotFound :
   CodedException("File permissions module not found")

@@ -47,11 +47,13 @@ class VideoThumbnailsModule : Module() {
           thumbnail.compress(Bitmap.CompressFormat.JPEG, (options.quality * 100).toInt(), outputStream)
           outputStream.flush()
           outputStream.close()
-          promise.resolve(VideoThumbnailResult(
-            uri = Uri.fromFile(File(path)).toString(),
-            width = thumbnail.width,
-            height = thumbnail.height
-          ))
+          promise.resolve(
+            VideoThumbnailResult(
+              uri = Uri.fromFile(File(path)).toString(),
+              width = thumbnail.width,
+              height = thumbnail.height
+            )
+          )
         } catch (ex: IOException) {
           promise.reject(ERROR_TAG, ex.message, ex)
         } catch (ex: RuntimeException) {
