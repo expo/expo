@@ -12,7 +12,7 @@ import {
 import type { IconProps } from '@expo/styleguide/dist/types';
 import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
 
-import { A, HEADLINE, P } from '~/ui/components/Text';
+import { A, DEMI, P } from '~/ui/components/Text';
 
 type BoxLinkProps = PropsWithChildren<{
   title: string;
@@ -34,7 +34,7 @@ export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps
           </div>
         )}
         <div>
-          <HEADLINE tag="span">{title}</HEADLINE>
+          <DEMI>{title}</DEMI>
           <P>{description}</P>
         </div>
       </div>

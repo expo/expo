@@ -317,7 +317,6 @@ const docsTitleStyle = css({
   marginBottom: spacing[2],
   paddingBottom: 0,
   borderBottomWidth: 0,
-  fontFamily: typography.fontStacks.black,
   fontWeight: '900',
 });
 

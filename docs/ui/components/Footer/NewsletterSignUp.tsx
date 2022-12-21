@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, shadows, spacing, theme, typography } from '@expo/styleguide';
+import { borderRadius, shadows, spacing, theme } from '@expo/styleguide';
 import { useState } from 'react';
 
 import { Button } from '../Button';
@@ -58,7 +58,6 @@ const inputWrapperStyle = css({
 const buttonMinWidth = spacing[16] + spacing[1];
 
 const inputStyle = css({
-  fontFamily: typography.fontFaces.regular,
   display: 'block',
   boxSizing: 'border-box',
   boxShadow: shadows.input,

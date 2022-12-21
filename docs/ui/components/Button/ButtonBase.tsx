@@ -12,7 +12,7 @@ export const ButtonBase = forwardRef<HTMLButtonElement, Props>(function ButtonBa
 });
 
 const buttonBaseStyle = css({
-  ...typography.body.paragraph,
+  ...typography.fontSizes[16],
   display: 'flex',
   textAlign: 'left',
   background: 'none',

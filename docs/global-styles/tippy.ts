@@ -16,7 +16,6 @@ export const globalTippy = css`
   .tippy-box[data-theme~='expo'] .tippy-content {
     ${typography.body.paragraph};
     color: ${palette.dark.gray[900]};
-    font-family: ${typography.fontFaces.regular};
     font-weight: 400;
     font-size: 16px;
     line-height: 160%;

@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
-import { iconSize, spacing, typography, ChevronDownIcon } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { iconSize, spacing, ChevronDownIcon } from '@expo/styleguide';
+import type { PropsWithChildren } from 'react';
 
 import { NavigationRenderProps } from '.';
 
@@ -55,6 +55,6 @@ const iconStyle = css({
 });
 
 const textStyle = css({
-  ...typography.utility.weight.medium,
+  fontWeight: 500,
   padding: spacing[1.5],
 });

@@ -687,7 +687,7 @@ export const STYLES_NESTED_SECTION_HEADER = css({
 
   h4: {
     ...typography.fontSizes[16],
-    fontFamily: typography.fontFaces.medium,
+    fontWeight: 600,
     marginBottom: 0,
     marginTop: 0,
     color: theme.text.secondary,

@@ -21,7 +21,7 @@ const attributes = {
 };
 
 const STYLES_CODE_BLOCK = css`
-  ${typography.body.code};
+  ${{ ...typography.body.code, fontFamily: undefined }};
   color: ${theme.text.default};
   white-space: inherit;
   padding: 0;

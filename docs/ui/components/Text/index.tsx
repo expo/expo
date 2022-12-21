@@ -60,7 +60,7 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
         css={[
           baseTextStyle,
           textStyle,
-          textWeight && typography.utility.weight[textWeight],
+          textWeight && { fontWeight: typography.utility.weight[textWeight].fontWeight },
           textTheme && { color: theme.text[textTheme] },
         ]}
         data-testid={testID}
@@ -75,7 +75,7 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
 }
 
 const baseTextStyle = css({
-  ...typography.body.paragraph,
+  ...{ ...typography.body.paragraph, fontFamily: undefined },
   color: theme.text.default,
 });
 
@@ -118,7 +118,7 @@ const codeStyle = css({
 });
 
 export const kbdStyle = css({
-  fontFamily: typography.fontFaces.medium,
+  fontWeight: 500,
   color: theme.text.secondary,
   padding: `0 ${spacing[1]}px`,
   boxShadow: `0 0.1rem 0 1px ${theme.border.default}`,
@@ -132,10 +132,13 @@ export const kbdStyle = css({
 });
 
 const { h1, h2, h3, h4, h5 } = typography.headers.default;
+const skipFontFamily = { fontFamily: undefined };
 const codeInHeaderStyle = { '& code': { fontSize: 'inherit' } };
 
 const h1Style = {
   ...h1,
+  ...skipFontFamily,
+  fontWeight: 600,
   marginTop: spacing[2],
   marginBottom: spacing[6],
   paddingBottom: spacing[4],
@@ -145,6 +148,8 @@ const h1Style = {
 
 const h2Style = {
   ...h2,
+  ...skipFontFamily,
+  fontWeight: 600,
   marginTop: spacing[8],
   marginBottom: spacing[3],
   ...codeInHeaderStyle,
@@ -152,6 +157,8 @@ const h2Style = {
 
 const h3Style = {
   ...h3,
+  ...skipFontFamily,
+  fontWeight: 600,
   marginTop: spacing[6],
   marginBottom: spacing[1.5],
   ...codeInHeaderStyle,
@@ -159,6 +166,8 @@ const h3Style = {
 
 const h4Style = {
   ...h4,
+  ...skipFontFamily,
+  fontWeight: 600,
   marginTop: spacing[6],
   marginBottom: spacing[1],
   ...codeInHeaderStyle,
@@ -166,6 +175,8 @@ const h4Style = {
 
 const h5Style = {
   ...h5,
+  ...skipFontFamily,
+  fontWeight: 600,
   marginTop: spacing[4],
   marginBottom: spacing[1],
   ...codeInHeaderStyle,
@@ -181,25 +192,44 @@ export const H4 = createPermalinkedComponent(RawH4, { baseNestingLevel: 4 });
 export const RawH5 = createTextComponent(TextElement.H5, css(h5Style));
 export const H5 = createPermalinkedComponent(RawH5, { baseNestingLevel: 5 });
 
-export const P = createTextComponent(TextElement.P, css(typography.body.paragraph));
+export const P = createTextComponent(TextElement.P);
 export const CODE = createTextComponent(
   TextElement.CODE,
-  css([typography.utility.inlineCode, codeStyle])
+  css([{ ...typography.utility.inlineCode, ...skipFontFamily }, codeStyle])
 );
-export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
-export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));
-export const HEADLINE = createTextComponent(TextElement.P, css(typography.body.headline));
-export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.footnote));
-export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
-export const BOLD = createTextComponent(
-  TextElement.STRONG,
-  css(typography.utility.weight.semiBold)
+export const LI = createTextComponent(
+  TextElement.LI,
+  css({ ...typography.body.li, ...skipFontFamily })
 );
-export const DEMI = createTextComponent(TextElement.SPAN, css(typography.utility.weight.medium));
+export const LABEL = createTextComponent(
+  TextElement.SPAN,
+  css({ ...typography.body.label, ...skipFontFamily })
+);
+export const HEADLINE = createTextComponent(
+  TextElement.P,
+  css({ ...typography.body.headline, ...skipFontFamily })
+);
+export const FOOTNOTE = createTextComponent(
+  TextElement.P,
+  css({ ...typography.body.footnote, ...skipFontFamily })
+);
+export const CALLOUT = createTextComponent(
+  TextElement.P,
+  css({ ...typography.body.callout, ...skipFontFamily })
+);
+export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
+export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));
 export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
 export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
-export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre));
-export const KBD = createTextComponent(TextElement.KBD, css([typography.utility.pre, kbdStyle]));
+export const PRE = createTextComponent(
+  TextElement.PRE,
+  css({ ...typography.utility.pre, ...skipFontFamily })
+);
+export const KBD = createTextComponent(
+  TextElement.KBD,
+  css([{ ...typography.utility.pre, ...skipFontFamily }, kbdStyle])
+);
+export const MONOSPACE = createTextComponent(TextElement.CODE, css({ fontWeight: 500 }));
 
 const isExternalLink = (href?: string) => href?.includes('://');
 

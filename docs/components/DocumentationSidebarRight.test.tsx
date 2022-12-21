@@ -1,6 +1,5 @@
 import { render } from '@testing-library/react';
 import GithubSlugger from 'github-slugger';
-import React from 'react';
 
 import DocumentationSidebarRight from './DocumentationSidebarRight';
 

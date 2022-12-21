@@ -37,6 +37,7 @@ const headerDarkStyle = css`
 const headerTitleStyle = css`
   line-height: 42px !important;
   user-select: none;
+  font-weight: 500;
 `;
 
 const headerActionsStyle = css`

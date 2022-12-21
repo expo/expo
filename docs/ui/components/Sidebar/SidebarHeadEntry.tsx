@@ -50,7 +50,7 @@ const entryContainerStyle = css({
 
 const activeEntryContainerStyle = css({
   color: theme.text.default,
-  fontFamily: typography.fontFaces.medium,
+  fontWeight: 500,
   background: theme.background.tertiary,
   borderRadius: borderRadius.medium,
 

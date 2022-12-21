@@ -95,7 +95,6 @@ const STYLES_LINK = css`
 `;
 
 const STYLES_LINK_ACTIVE = css`
-  font-family: ${typography.fontFaces.medium};
   color: ${theme.link.default};
   padding-left: 0;
 `;
