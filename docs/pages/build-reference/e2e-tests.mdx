@@ -494,25 +494,27 @@ Development builds typically display an onboarding welcome screen when an app is
 An example of such a Detox test is shown below. Full example code is available on the [eas-tests-example](https://github.com/expo/eas-tests-example) repository.
 
 <Collapsible summary="e2e/homeScreen.e2e.js">
+
 ```js
 /* @info New line */
 const { openApp } = require('./utils/openApp');
 /* @end */
 
 describe('Home screen', () => {
-beforeEach(async () => {/* @info New line */ await openApp(); /* @end */});
+  beforeEach(async () => {
+    /* @info New line */ await openApp(); /* @end */
+  });
 
-it('"Click me" button should be visible', async () => {
-await expect(element(by.id('click-me-button'))).toBeVisible();
-});
+  it('"Click me" button should be visible', async () => {
+    await expect(element(by.id('click-me-button'))).toBeVisible();
+  });
 
-it('shows "Hi!" after tapping "Click me"', async () => {
-await element(by.id('click-me-button')).tap();
-await expect(element(by.text('Hi!'))).toBeVisible();
+  it('shows "Hi!" after tapping "Click me"', async () => {
+    await element(by.id('click-me-button')).tap();
+    await expect(element(by.text('Hi!'))).toBeVisible();
+  });
 });
-});
-
-````
+```
 
 </Collapsible>
 
@@ -530,7 +532,7 @@ module.exports.openApp = async function openApp() {
       newInstance: true,
     });
   }
-}
+};
 
 async function openAppForDebugBuild(platform) {
   const deepLinkUrl = process.env.EXPO_USE_UPDATES
@@ -557,7 +559,7 @@ async function openAppForDebugBuild(platform) {
   }
 
   await sleep(3000);
-};
+}
 
 const getDeepLinkUrl = url =>
   /* @info This is project-specific, replace eastestsexample with correct value */
@@ -573,7 +575,7 @@ const getLatestUpdateUrl = () =>
 const getAppId = () => appConfig?.expo?.extra?.eas?.projectId ?? '';
 
 const sleep = t => new Promise(res => setTimeout(res, t));
-````
+```
 
 </Collapsible>
 
