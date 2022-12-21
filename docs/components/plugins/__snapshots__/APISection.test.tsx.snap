@@ -263,7 +263,7 @@ not appear on the screen.
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         <strong
           class="css-bvflvn-TextComponent"
@@ -994,7 +994,7 @@ in here.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -1104,7 +1104,7 @@ This should come from the user field of an
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         
 
@@ -1483,7 +1483,7 @@ value depending on the state of the credential.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -1759,7 +1759,7 @@ refresh operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2080,7 +2080,7 @@ sign-in operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2435,7 +2435,7 @@ sign-out operation.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -2758,7 +2758,7 @@ which contains all of the pertinent user and credential information.
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         <strong
           class="css-bvflvn-TextComponent"
@@ -2784,7 +2784,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3226,7 +3226,7 @@ may be
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3560,7 +3560,7 @@ You must include the ID string of the user whose credentials you'd like to refre
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         <strong
           class="css-bvflvn-TextComponent"
@@ -3586,7 +3586,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -3865,7 +3865,7 @@ None of these options are required.
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         <strong
           class="css-bvflvn-TextComponent"
@@ -3891,7 +3891,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -4191,7 +4191,7 @@ You must include the ID string of the user to sign out.
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         <strong
           class="css-bvflvn-TextComponent"
@@ -4217,7 +4217,7 @@ for more details.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -4385,7 +4385,7 @@ OAuth 2.0 protocol
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -5204,7 +5204,7 @@ OAuth 2.0 protocol
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         <strong
           class="css-bvflvn-TextComponent"
@@ -5908,7 +5908,7 @@ for more details.
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         
 
@@ -5949,7 +5949,7 @@ You will still need to handle null values for any fields you request.
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         <strong
           class="css-bvflvn-TextComponent"
@@ -6189,7 +6189,7 @@ for more details.
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         <strong
           class="css-bvflvn-TextComponent"
@@ -6852,7 +6852,7 @@ provided with an
             </svg>
           </div>
           <div
-            class="css-l4ogsz-Callout"
+            class="css-1m74yfi-Callout"
           >
             
 
@@ -7201,7 +7201,7 @@ Same as
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -7984,7 +7984,7 @@ This can be used to quickly create specific permission hooks in every module.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8109,7 +8109,7 @@ the platform.
                   </svg>
                 </div>
                 <div
-                  class="css-l4ogsz-Callout"
+                  class="css-1m74yfi-Callout"
                 >
                   
 
@@ -8423,7 +8423,7 @@ code.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8704,7 +8704,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -8888,7 +8888,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9011,7 +9011,7 @@ in order to enable/disable the permission.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9140,7 +9140,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9311,7 +9311,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="css-rufzkc-Table"
       >
         <table
-          class="css-10cc7jf-Table"
+          class="css-q84cm9-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
@@ -9434,7 +9434,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -9713,7 +9713,7 @@ you don't get this value.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -10475,7 +10475,7 @@ exports[`APISection expo-pedometer 1`] = `
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -10756,7 +10756,7 @@ exports[`APISection expo-pedometer 1`] = `
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         
 
@@ -11162,7 +11162,7 @@ available on this device.
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11524,7 +11524,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11783,7 +11783,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"
@@ -11907,7 +11907,7 @@ provided with a single argument that is
         class="css-rufzkc-Table"
       >
         <table
-          class="css-10cc7jf-Table"
+          class="css-q84cm9-Table"
         >
           <thead
             class="css-3b8qij-TableHead"
@@ -12111,7 +12111,7 @@ provided with a single argument that is
       class="css-rufzkc-Table"
     >
       <table
-        class="css-10cc7jf-Table"
+        class="css-q84cm9-Table"
       >
         <thead
           class="css-3b8qij-TableHead"

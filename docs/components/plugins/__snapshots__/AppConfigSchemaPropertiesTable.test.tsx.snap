@@ -103,7 +103,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </div>
         <span
-          class="css-1b26u12-TextComponent"
+          class="css-1n5kx9e-TextComponent"
           data-text="true"
         >
           Bare Workflow
@@ -223,7 +223,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </div>
         <span
-          class="css-1b26u12-TextComponent"
+          class="css-1n5kx9e-TextComponent"
           data-text="true"
         >
           ExpoKit
@@ -268,7 +268,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </div>
         <span
-          class="css-1b26u12-TextComponent"
+          class="css-1n5kx9e-TextComponent"
           data-text="true"
         >
           Bare Workflow
@@ -396,7 +396,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </div>
             <span
-              class="css-1b26u12-TextComponent"
+              class="css-1n5kx9e-TextComponent"
               data-text="true"
             >
               ExpoKit
@@ -701,7 +701,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </div>
         <span
-          class="css-1b26u12-TextComponent"
+          class="css-1n5kx9e-TextComponent"
           data-text="true"
         >
           Bare Workflow
@@ -744,7 +744,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </svg>
       </div>
       <div
-        class="css-l4ogsz-Callout"
+        class="css-1m74yfi-Callout"
       >
         
 
