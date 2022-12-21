@@ -1,14 +1,15 @@
 ---
 title: Installing app variants on the same device
 maxHeadingDepth: 4
+description: Learn how to install multiple instances of an app on the same device.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 
-When creating [development, preview, and production builds](../build/eas-json/#common-use-cases), it's common to want to install one of each build on your device at the same time.
+When creating [development, preview, and production builds](/build/eas-json/#common-use-cases), it's common to want to install one of each build on your device at the same time.
 This allows you to do development work, preview the next version of your app, and run the production version all on the same device, without needing to uninstall and reinstall the app.
 
-In order to be able to have multiple instances of an app installed on your device, each instance must have a unique Application ID (Android) or Bundle Identifier (iOS).
+To be able to have multiple instances of an app installed on your device, each instance must have a unique Application ID (Android) or Bundle Identifier (iOS).
 
 **If you have a managed project**, this can be accomplished by using **app.config.js** and environment variables in **eas.json**.
 
@@ -183,7 +184,7 @@ The rest of the configuration at this point is not specific to EAS, it's the sam
   ```
 - To change the icon of the app built with the development profile, create `android/app/src/development/res/mipmap-*` directories with appropriate assets (you can copy them from **android/app/src/main/res** and replace the icon files).
 - To specify **google-services.json** for a specific flavor put it in a **android/app/src/&lbrace;flavor&rbrace;/google-services.json** file.
-- To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (e.g. **android/sentry-production-release.properties**)
+- To configure sentry, add `project.ext.sentryCli = [ flavorAware: true ]` to **android/app/build.gradle** and name your properties file `android/sentry-{flavor}-{buildType}.properties` (for example: **android/sentry-production-release.properties**)
 
 #### iOS
 
@@ -239,7 +240,7 @@ Open project in Xcode, click on the project name in the navigation panel, right 
   style={{ maxWidth: 720 }}
 />
 
-Rename the target to something more meaningful, e.g. `myapp copy` -> `myapp-dev`.
+Rename the target to something more meaningful, for example, `myapp copy` -> `myapp-dev`.
 
 Configure a scheme for the new target:
 
