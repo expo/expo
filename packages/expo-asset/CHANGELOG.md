@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 8.7.0 — 2022-12-21
+
+_This version does not introduce any user-facing changes._
+
 ## 8.6.2 — 2022-10-25
 
 _This version does not introduce any user-facing changes._
