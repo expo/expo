@@ -50,7 +50,6 @@ jobs:
         id: expo-caches
         with:
           yarn-workspace: 'true'
-          git-lfs: 'true'
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
