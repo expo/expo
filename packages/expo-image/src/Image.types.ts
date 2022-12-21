@@ -85,7 +85,7 @@ export type ImageProps = {
 
   /**
    * Describes how the image view should transition the contents when switching the image source.\
-   * If provided as a number, it is the duration in milliseconds of the `'cross-disolve'` effect.
+   * If provided as a number, it is the duration in milliseconds of the `'cross-dissolve'` effect.
    * @platform ios
    * @platform web
    */
@@ -315,10 +315,10 @@ export type ImageTransition = {
 
   /**
    * An animation effect used for transition.
-   * @default 'cross-disolve'
+   * @default 'cross-dissolve'
    */
   effect?:
-    | 'cross-disolve'
+    | 'cross-dissolve'
     | 'flip-from-top'
     | 'flip-from-right'
     | 'flip-from-bottom'

@@ -83,7 +83,7 @@ function useTransition(
   }
   const { duration, timing, effect } = transition;
 
-  if (effect === 'cross-disolve') {
+  if (effect === 'cross-dissolve') {
     const commonStyles = {
       transition: `opacity ${duration}ms`,
       transitionTimingFunction: timing,
