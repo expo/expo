@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, shadows, spacing, theme, typography } from '@expo/styleguide';
+import { borderRadius, iconSize, shadows, spacing, theme } from '@expo/styleguide';
 
 import { NavigationRenderProps } from './types';
 
@@ -56,6 +56,6 @@ const textStyle = css({
 });
 
 const textStyleActive = css({
-  ...typography.utility.weight.medium,
+  fontWeight: 500,
   color: theme.text.default,
 });

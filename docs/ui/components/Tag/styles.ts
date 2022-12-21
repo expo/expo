@@ -6,7 +6,6 @@ export const tagStyle = css({
   backgroundColor: theme.background.tertiary,
   color: theme.text.default,
   fontSize: '90%',
-  fontWeight: 700,
   padding: `${spacing[1]}px ${spacing[2]}px`,
   marginBottom: spacing[3],
   marginRight: spacing[2],
