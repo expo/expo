@@ -1,26 +1,29 @@
-import crypto from 'crypto';
-import { createReadStream } from 'fs';
-import fs from 'fs/promises';
-import path from 'path';
-
-import * as Simulator from './simulator';
+const crypto = require('crypto');
+const { createReadStream } = require('fs');
+const fs = require('fs/promises');
+const path = require('path');
 
 const STATIC_FOLDER_PATH = path.resolve(__dirname, '..', '.static');
 const EXPORT_PUBLIC_URL = 'https://u.expo.dev/dummy-url';
 
-function findBundlePath(updateDistPath: string): string {
-  const classicManifest = require(path.join(updateDistPath, Simulator.ExportedManifestFilename));
-  const { bundleUrl }: { bundleUrl: string } = classicManifest;
+function exportedManifestFilename(platform) {
+  return `${platform}-index.json`;
+}
+
+function findBundlePath(updateDistPath, platform) {
+  const classicManifest = require(path.join(updateDistPath, exportedManifestFilename(platform)));
+  const { bundleUrl } = classicManifest;
   return path.join(updateDistPath, bundleUrl.replace(EXPORT_PUBLIC_URL, ''));
 }
 
-export async function copyBundleToStaticFolder(
-  updateDistPath: string,
-  filename: string,
-  notifyString: string
-): Promise<string> {
+async function copyBundleToStaticFolder(
+  updateDistPath,
+  filename,
+  notifyString,
+  platform
+) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
-  let bundleString = await fs.readFile(findBundlePath(updateDistPath), 'utf-8');
+  let bundleString = await fs.readFile(findBundlePath(updateDistPath, platform), 'utf-8');
   if (notifyString) {
     bundleString = bundleString.replace('/notify/test', `/notify/${notifyString}`);
   }
@@ -28,10 +31,10 @@ export async function copyBundleToStaticFolder(
   return crypto.createHash('sha256').update(bundleString, 'utf-8').digest('base64url');
 }
 
-export async function copyAssetToStaticFolder(
-  sourcePath: string,
-  filename: string
-): Promise<string> {
+async function copyAssetToStaticFolder(
+  sourcePath,
+  filename
+) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
   const destinationPath = path.join(STATIC_FOLDER_PATH, filename);
   await fs.copyFile(sourcePath, destinationPath);
@@ -44,3 +47,11 @@ export async function copyAssetToStaticFolder(
     stream.on('end', () => resolve(hash.digest('base64url')));
   });
 }
+
+const Updates = {
+  copyBundleToStaticFolder,
+  copyAssetToStaticFolder,
+  exportedManifestFilename,
+};
+
+module.exports = Updates;
