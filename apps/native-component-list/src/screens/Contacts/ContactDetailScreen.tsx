@@ -1,4 +1,3 @@
-// tslint:disable max-classes-per-file
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import * as Contacts from 'expo-contacts';
 import * as ImagePicker from 'expo-image-picker';
@@ -41,7 +40,6 @@ export default function ContactDetailScreen(props: any) {
             name="md-open"
             onPress={async () => {
               await Contacts.presentFormAsync(props.route.params.id);
-              // tslint:disable-next-line no-console
               console.log('the native contact form has been closed');
             }}
           />
@@ -93,7 +91,6 @@ function ContactDetailView({
       await Contacts.removeContactAsync(id);
       navigation.goBack();
     } catch ({ message }) {
-      // tslint:disable-next-line no-console
       console.error(message);
     }
   };
@@ -171,8 +168,6 @@ function ContactDetailView({
                 value: item.url,
                 onPress: () => {
                   const webUrl = item.url.indexOf('://') === -1 ? 'http://' + item.url : item.url;
-
-                  // tslint:disable-next-line no-console
                   console.log('open', item.url, webUrl);
                   Linking.openURL(webUrl);
                 },
@@ -247,7 +242,6 @@ function ContactDetailView({
         [Contacts.Fields.Image]: uri,
       } as any);
     } catch ({ message }) {
-      // tslint:disable-next-line no-console
       console.error(message);
     }
 
