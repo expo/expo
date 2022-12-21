@@ -60,7 +60,7 @@
     "babel-preset-expo": "~9.2.0",
     "cross-spawn": "^6.0.5",
     "expo-application": "~4.2.2",
-    "expo-asset": "~8.6.1",
+    "expo-asset": "~8.6.3",
     "expo-constants": "~13.2.4",
     "expo-file-system": "~14.1.0",
     "expo-font": "~10.2.1",

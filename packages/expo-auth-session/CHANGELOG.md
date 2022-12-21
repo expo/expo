@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 3.7.4 — 2022-12-21
+
+_This version does not introduce any user-facing changes._
+
 ## 3.7.1 — 2022-07-16
 
 _This version does not introduce any user-facing changes._
