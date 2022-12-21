@@ -82,6 +82,23 @@ export type ImageProps = {
      */
     transition?: ImageTransition | number | null;
     /**
+     * The radius of the blur in points, `0` means no blur effect.
+     * This effect is not applied to placeholders.
+     * @default 0
+     * @platform android
+     * @platform ios
+     */
+    blurRadius?: number;
+    /**
+     * A color used to tint template images (a bitmap image where only the opacity matters).
+     * The color is applied to every non-transparent pixel, causing the image’s shape to adopt that color.
+     * This effect is not applied to placeholders.
+     * @default null
+     * @platform android
+     * @platform ios
+     */
+    tintColor?: string | null;
+    /**
      * Priorities for completing loads. If more than one load is queued at a time,
      * the load with the higher priority will be started first.
      * Priorities are considered best effort, there are no guarantees about the order in which loads will start or finish.
