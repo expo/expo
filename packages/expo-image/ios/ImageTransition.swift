@@ -23,7 +23,7 @@ enum ImageTransitionTiming: String, Enumerable {
 }
 
 enum ImageTransitionEffect: String, Enumerable {
-  case crossDissolve = "cross-disolve"
+  case crossDissolve = "cross-dissolve"
   case flipFromTop = "flip-from-top"
   case flipFromRight = "flip-from-right"
   case flipFromBottom = "flip-from-bottom"

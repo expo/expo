@@ -43,7 +43,7 @@ function useTransition(transition, state) {
         return { placeholder: {}, image: {} };
     }
     const { duration, timing, effect } = transition;
-    if (effect === 'cross-disolve') {
+    if (effect === 'cross-dissolve') {
         const commonStyles = {
             transition: `opacity ${duration}ms`,
             transitionTimingFunction: timing,

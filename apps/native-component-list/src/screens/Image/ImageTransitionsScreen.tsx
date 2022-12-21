@@ -24,7 +24,7 @@ const parameters: FunctionParameter[] = [
     type: 'enum',
     platforms: ['ios'],
     values: [
-      { name: 'cross-dissolve (default)', value: 'cross-disolve' },
+      { name: 'cross-dissolve (default)', value: 'cross-dissolve' },
       { name: 'flip-from-left', value: 'flip-from-left' },
       { name: 'flip-from-right', value: 'flip-from-right' },
       { name: 'flip-from-top', value: 'flip-from-top' },

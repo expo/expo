@@ -76,7 +76,7 @@ export type ImageProps = {
     contentPosition?: ImageContentPositionString | ImageContentPositionObject;
     /**
      * Describes how the image view should transition the contents when switching the image source.\
-     * If provided as a number, it is the duration in milliseconds of the `'cross-disolve'` effect.
+     * If provided as a number, it is the duration in milliseconds of the `'cross-dissolve'` effect.
      * @platform ios
      * @platform web
      */
@@ -259,9 +259,9 @@ export type ImageTransition = {
     timing?: 'ease-in-out' | 'ease-in' | 'ease-out' | 'linear';
     /**
      * An animation effect used for transition.
-     * @default 'cross-disolve'
+     * @default 'cross-dissolve'
      */
-    effect?: 'cross-disolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | null;
+    effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | null;
 };
 export type ImageLoadEventData = {
     cacheType: 'none' | 'disk' | 'memory';
