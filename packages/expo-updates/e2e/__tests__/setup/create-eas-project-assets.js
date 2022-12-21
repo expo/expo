@@ -1,6 +1,6 @@
 const path = require('path');
 
-const { initAsync, setupBasicAppAsync, setupAssetsAppAsync } = require('./project');
+const { initAsync, setupAssetsAppAsync } = require('./project');
 
 const repoRoot = process.env.EXPO_REPO_ROOT;
 const workingDir = path.resolve(repoRoot, '..');

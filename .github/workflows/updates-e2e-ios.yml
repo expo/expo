@@ -1,4 +1,4 @@
-name: Updates e2e basic EAS
+name: Updates e2e EAS (iOS)
 
 on:
   workflow_dispatch: {}
@@ -11,7 +11,6 @@ on:
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
-      - packages/expo/android/**
       - packages/expo/ios/**
       - templates/expo-template-bare-minimum/**
   push:
@@ -24,7 +23,6 @@ on:
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
-      - packages/expo/android/**
       - packages/expo/ios/**
       - templates/expo-template-bare-minimum/**
 
@@ -81,17 +79,6 @@ jobs:
       - name: 📦 Setup test project
 
         run: node packages/expo-updates/e2e/__tests__/setup/create-eas-project-basic.js
-      - name: 🚀 Build with EAS for Android
-        uses: ./.github/actions/eas-build
-        id: build_android
-        with:
-          platform: 'android'
-          profile: 'updates_testing'
-          projectRoot: './updates-e2e'
-          expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          resourceClass: large
-          noWait: ${{ github.event.schedule }}
-          message: ${{ github.event.pull_request.title }}
       - name: 🚀 Build with EAS for iOS
         uses: ./.github/actions/eas-build
         id: build_ios
@@ -103,13 +90,6 @@ jobs:
           resourceClass: large
           noWait: ${{ github.event.schedule }}
           message: ${{ github.event.pull_request.title }}
-      - name: On Android workflow canceled
-        if: ${{ cancelled() && steps.build_android.outputs.build_id }}
-        run: eas build:cancel ${{ steps.build_android.outputs.build_id }}
-        working-directory: './updates-e2e'
-        env:
-          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          EAS_BUILD_PROFILE: updates_testing
       - name: On iOS workflow canceled
         if: ${{ cancelled() && steps.build_ios.outputs.build_id }}
         run: eas build:cancel ${{ steps.build_ios.outputs.build_id }}

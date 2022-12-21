@@ -21,7 +21,7 @@
         "simulator": true
       },
       "distribution": "internal",
-      "buildArtifactPaths": ["logs/detox-tests.log"]
+      "buildArtifactPaths": ["logs/*.log"]
     },
     "production": {}
   },
