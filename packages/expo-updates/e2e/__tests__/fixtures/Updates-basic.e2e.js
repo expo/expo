@@ -1,57 +1,60 @@
-import path from 'path';
-import { setTimeout } from 'timers/promises';
-import uuid from 'uuid/v4';
+const path = require('path');
+const { setTimeout } = require('timers/promises');
+const uuid = require('uuid/v4');
+const { device, beforeEach } = require('detox');
 
-import * as Server from './utils/server';
-import * as Simulator from './utils/simulator';
-import { copyAssetToStaticFolder, copyBundleToStaticFolder } from './utils/update';
+const Server = require('./utils/server');
+
+const { copyAssetToStaticFolder, copyBundleToStaticFolder } = require('./utils/update');
 
 const SERVER_HOST = process.env.UPDATES_HOST;
 const SERVER_PORT = parseInt(process.env.UPDATES_PORT || '', 10);
+
+const projectRoot = process.env.PROJECT_ROOT || process.cwd();
+const updateDistPath = path.join(projectRoot, 'updates');
+const platform = process.env.DETOX_CONFIGURATION.split('.')[0];
 
 const RUNTIME_VERSION = '1.0.0';
 
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
-const repoRoot = process.env.EXPO_REPO_ROOT;
-if (!repoRoot) {
-  throw new Error(
-    'You must provide the path to the repo root in the EXPO_REPO_ROOT environment variable'
-  );
-}
-
-const projectRoot = process.env.TEST_PROJECT_ROOT ?? path.resolve(repoRoot, '..', 'updates-e2e');
-const updateDistPath = path.join(process.env.ARTIFACTS_DEST || '', 'dist-basic');
-
-describe('Basic updates e2e', () => {
+describe('', () => {
   afterEach(async () => {
-    await Simulator.uninstallApp();
+    await device.uninstallApp();
     Server.stop();
   });
 
   it('starts app, stops, and starts again', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     Server.start(SERVER_PORT);
-    await Simulator.installApp('basic');
-    await Simulator.startApp();
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+    console.warn(`Message = ${message}`);
     expect(message).toBe('test');
-    await Simulator.stopApp();
+    await device.terminateApp();
 
     await expect(Server.waitForRequest(5000 * TIMEOUT_BIAS)).rejects.toThrow(
       'Timed out waiting for message'
     );
 
-    await Simulator.startApp();
+    await device.launchApp();
     const message2 = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(message2).toBe('test');
+
+    await device.terminateApp();
   });
 
   it('initial request includes correct update-id headers', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     Server.start(SERVER_PORT);
-    await Simulator.installApp('basic');
-    await Simulator.startApp();
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
+    await setTimeout(3000);
     const request = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     expect(request.headers['expo-embedded-update-id']).toBeDefined();
     expect(request.headers['expo-current-update-id']).toBeDefined();
@@ -65,7 +68,12 @@ describe('Basic updates e2e', () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
-    const hash = await copyBundleToStaticFolder(updateDistPath, bundleFilename, newNotifyString);
+    const hash = await copyBundleToStaticFolder(
+      updateDistPath,
+      bundleFilename,
+      newNotifyString,
+      platform
+    );
     const manifest = {
       id: uuid(),
       createdAt: new Date().toISOString(),
@@ -83,8 +91,10 @@ describe('Basic updates e2e', () => {
 
     Server.start(SERVER_PORT);
     await Server.serveSignedManifest(manifest, projectRoot);
-    await Simulator.installApp('basic');
-    await Simulator.startApp();
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
     const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(message).toBe('test');
@@ -94,8 +104,8 @@ describe('Basic updates e2e', () => {
     expect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
-    await Simulator.stopApp();
-    await Simulator.startApp();
+    await device.terminateApp();
+    await device.launchApp();
     const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(updatedMessage).toBe(newNotifyString);
@@ -112,7 +122,7 @@ describe('Basic updates e2e', () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle-invalid-hash.js';
     const newNotifyString = 'test-update-invalid-hash';
-    await copyBundleToStaticFolder(updateDistPath, bundleFilename, newNotifyString);
+    await copyBundleToStaticFolder(updateDistPath, bundleFilename, newNotifyString, platform);
     const hash = 'invalid-hash';
     const manifest = {
       id: uuid(),
@@ -131,8 +141,10 @@ describe('Basic updates e2e', () => {
 
     Server.start(SERVER_PORT);
     await Server.serveSignedManifest(manifest, projectRoot);
-    await Simulator.installApp('basic');
-    await Simulator.startApp();
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(message).toBe('test');
@@ -142,8 +154,8 @@ describe('Basic updates e2e', () => {
     expect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app to verify the new update isn't used
-    await Simulator.stopApp();
-    await Simulator.startApp();
+    await device.terminateApp();
+    await device.launchApp();
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(updatedMessage).toBe('test');
@@ -153,7 +165,12 @@ describe('Basic updates e2e', () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle2.js';
     const newNotifyString = 'test-update-2';
-    const hash = await copyBundleToStaticFolder(updateDistPath, bundleFilename, newNotifyString);
+    const hash = await copyBundleToStaticFolder(
+      updateDistPath,
+      bundleFilename,
+      newNotifyString,
+      platform
+    );
     const assets = await Promise.all(
       [
         'lubo-minar-j2RgHfqKhCM-unsplash.jpg',
@@ -192,8 +209,10 @@ describe('Basic updates e2e', () => {
 
     Server.start(SERVER_PORT);
     await Server.serveSignedManifest(manifest, projectRoot);
-    await Simulator.installApp('basic');
-    await Simulator.startApp();
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(message).toBe('test');
 
@@ -202,8 +221,8 @@ describe('Basic updates e2e', () => {
     expect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
-    await Simulator.stopApp();
-    await Simulator.startApp();
+    await device.terminateApp();
+    await device.launchApp();
     const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     // Because of the mismatch, the new update will not load, so updatedMessage will still be 'test'
     expect(updatedMessage).toBe('test');
@@ -237,7 +256,12 @@ describe('Basic updates e2e', () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle2.js';
     const newNotifyString = 'test-update-2';
-    const hash = await copyBundleToStaticFolder(updateDistPath, bundleFilename, newNotifyString);
+    const hash = await copyBundleToStaticFolder(
+      updateDistPath,
+      bundleFilename,
+      newNotifyString,
+      platform
+    );
     const assets = await Promise.all(
       [
         'lubo-minar-j2RgHfqKhCM-unsplash.jpg',
@@ -275,8 +299,10 @@ describe('Basic updates e2e', () => {
 
     Server.start(SERVER_PORT);
     await Server.serveSignedManifest(manifest, projectRoot);
-    await Simulator.installApp('basic');
-    await Simulator.startApp();
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(message).toBe('test');
 
@@ -285,12 +311,11 @@ describe('Basic updates e2e', () => {
     expect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
-    await Simulator.stopApp();
-    await Simulator.startApp();
+    await device.terminateApp();
+    await device.launchApp();
     const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(updatedMessage).toBe(newNotifyString);
   });
-
   // important for usage accuracy
   it('does not download any assets for an older update', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
@@ -298,7 +323,8 @@ describe('Basic updates e2e', () => {
     const hash = await copyBundleToStaticFolder(
       updateDistPath,
       bundleFilename,
-      'test-update-older'
+      'test-update-older',
+      platform
     );
     const manifest = {
       id: uuid(),
@@ -317,8 +343,10 @@ describe('Basic updates e2e', () => {
 
     Server.start(SERVER_PORT);
     await Server.serveSignedManifest(manifest, projectRoot);
-    await Simulator.installApp('basic');
-    await Simulator.startApp();
+    await device.installApp();
+    await device.launchApp({
+      newInstance: true,
+    });
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     const firstMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(firstMessage).toBe('test');
@@ -328,8 +356,8 @@ describe('Basic updates e2e', () => {
     expect(Server.consumeRequestedStaticFiles().length).toBe(0);
 
     // restart the app and make sure it's still running the initial update
-    await Simulator.stopApp();
-    await Simulator.startApp();
+    await device.terminateApp();
+    await device.launchApp();
     const secondMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(secondMessage).toBe('test');
   });

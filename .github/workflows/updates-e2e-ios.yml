@@ -1,4 +1,4 @@
-name: Updates e2e
+name: Updates e2e EAS (iOS)
 
 on:
   workflow_dispatch: {}
@@ -11,7 +11,6 @@ on:
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
-      - packages/expo/android/**
       - packages/expo/ios/**
       - templates/expo-template-bare-minimum/**
   push:
@@ -24,7 +23,6 @@ on:
       - packages/expo-structured-headers/**
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
-      - packages/expo/android/**
       - packages/expo/ios/**
       - templates/expo-template-bare-minimum/**
 
@@ -33,16 +31,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # (2022-05): we run both iOS and Android tests in a single job in order to avoid taking up 2 macOS
-  # runners each time this workflow runs
   build:
-    runs-on: macos-12
+    runs-on: ubuntu-20.04
     timeout-minutes: 120
     env:
       UPDATES_PORT: 4747
-    strategy:
-      matrix:
-        api-level: [31]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -50,13 +43,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16'
-      - name: 🔨 Switch to Xcode 14.1
-        run: sudo xcode-select --switch /Applications/Xcode_14.1.app
-      - name: 🔨 Use JDK 11
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '11'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -64,9 +50,6 @@ jobs:
         id: expo-caches
         with:
           yarn-workspace: 'true'
-          avd: 'true'
-          avd-api: ${{ matrix.api-level }}
-          react-native-gradle-downloads: 'true'
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
@@ -78,35 +61,38 @@ jobs:
         run: yarn build:cli
       - name: 🔧 Install Expo CLI
         run: yarn global add expo-cli
+      - name: Install eas-cli
+        run: yarn global add eas-cli
       - name: 🌳 Add EXPO_REPO_ROOT to environment
         run: echo "EXPO_REPO_ROOT=$GITHUB_WORKSPACE" >> $GITHUB_ENV
-      - name: 🌐 Get local IP address
-        run: echo "UPDATES_HOST=$(ifconfig -l | xargs -n1 ipconfig getifaddr)" >> $GITHUB_ENV
+      - name: 🌐 Set updates host
+        run: echo "UPDATES_HOST=localhost" >> $GITHUB_ENV
+      - name: 🌐 Set updates port
+        run: echo "UPDATES_PORT=4747" >> $GITHUB_ENV
       - name: 📦 Get artifacts path
         run: mkdir -p artifact && echo "ARTIFACTS_DEST=$(pwd)/artifact" >> $GITHUB_ENV
-      - name: 🚀 Setup test project and build
-        run: node packages/expo-updates/e2e/__tests__/setup/index.js
-      - name: Upload test project artifacts
-        uses: actions/upload-artifact@v3
+      - name: 📦 Get commit message
+        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B | head -c1000)" >> $GITHUB_ENV
+      - name: 📦 Set test project location
+        run: echo "TEST_PROJECT_ROOT=$GITHUB_WORKSPACE/updates-e2e" >> $GITHUB_ENV
+      - name: 📦 Setup test project
+
+        run: node packages/expo-updates/e2e/__tests__/setup/create-eas-project-basic.js
+      - name: 🚀 Build with EAS for iOS
+        uses: ./.github/actions/eas-build
+        id: build_ios
         with:
-          name: updates-e2e-artifacts
-          path: artifact
-      - name: 🍏 Start iOS simulator
-        run: |
-          xcrun simctl list devices -j \
-          | jq -rc '[ .[] | .[] | .[] | select( .name | contains( "iPhone" ) ) | select( .isAvailable == true ) ] | last.udid ' \
-          | xargs open -a Simulator --args -CurrentDeviceUDID
-      - name: 🍏 Run iOS tests
-        timeout-minutes: 30
-        working-directory: packages/expo-updates
-        run: yarn test --config e2e/jest.config.ios.js --runInBand
-      - name: 🤖 Start Android emulator and run tests
-        timeout-minutes: 30
-        uses: reactivecircus/android-emulator-runner@v2
-        with:
-          api-level: ${{ matrix.api-level }}
-          avd-name: avd-${{ matrix.api-level }}
-          arch: x86_64
-          force-avd-creation: false
-          script: yarn test --config e2e/jest.config.android.js --runInBand
-          working-directory: packages/expo-updates
+          platform: 'ios'
+          profile: 'updates_testing'
+          projectRoot: './updates-e2e'
+          expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
+          resourceClass: large
+          noWait: ${{ github.event.schedule }}
+          message: ${{ github.event.pull_request.title }}
+      - name: On iOS workflow canceled
+        if: ${{ cancelled() && steps.build_ios.outputs.build_id }}
+        run: eas build:cancel ${{ steps.build_ios.outputs.build_id }}
+        working-directory: './updates-e2e'
+        env:
+          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
+          EAS_BUILD_PROFILE: 'updates_testing'
