@@ -45,7 +45,7 @@ export default function LegacyAuthSession() {
       </View>
     );
   }
-  const redirectUrl = AuthSession.getRedirectUrl();
+  const redirectUrl = AuthSession.makeRedirectUri();
   const auth0Domain = 'https://expo-testing.auth0.com';
   const authUrl =
     `${auth0Domain}/authorize` +
