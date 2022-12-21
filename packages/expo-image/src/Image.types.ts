@@ -81,7 +81,7 @@ export type ImageProps = {
    * An equivalent of the CSS [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) property.
    * @default 'center'
    */
-  contentPosition?: ImageContentPositionString | ImageContentPositionObject;
+  contentPosition?: ImageContentPosition;
 
   /**
    * Describes how the image view should transition the contents when switching the image source.\
