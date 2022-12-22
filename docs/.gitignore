@@ -8,3 +8,5 @@ pages/versions/latest/
 
 # staticly generated constants
 public/static/constants
+
+.vercel
