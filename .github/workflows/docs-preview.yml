@@ -53,7 +53,6 @@ jobs:
       #   id: vercel_deploy
       #   run: echo "PREVIEW_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} | tail -n 1)" >> $GITHUB_OUTPUT
       - name: 🚀 Deploy Docs website
-        if: ${{ github.event.ref == 'refs/heads/main' }}
         run: ./deploy.sh
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
