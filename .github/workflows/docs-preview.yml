@@ -1,0 +1,94 @@
+name: Docs Website Preview
+
+defaults:
+  run:
+    shell: bash
+    working-directory: docs
+
+on:
+  workflow_dispatch: {}
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+    types:
+      - labeled
+      - synchronize
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  docs-preview:
+    if: contains(github.event.pull_request.labels.*.name, 'docs:preview')
+    runs-on: ubuntu-20.04
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-docs: 'true'
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-docs-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - run: yarn danger ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # - name: 🔺 Install Vercel CLI
+      #   run: yarn global add vercel@latest
+      # - name: 🚚 Pull Vercel Environment Information
+      #   run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      # - name: 🏗️ Build Documentation Artifacts
+      #   run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+      # - name: 🚀 Deploy Documentation Artifacts to Vercel
+      #   id: vercel_deploy
+      #   run: echo "PREVIEW_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} | tail -n 1)" >> $GITHUB_OUTPUT
+      - name: 🚀 Deploy Docs website
+        if: ${{ github.event.ref == 'refs/heads/main' }}
+        run: ./deploy.sh
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: 'us-east-2'
+          AWS_BUCKET: 'docs.expo.dev-preview/pr-${{ github.event.pull_request.number }}'
+      - name: 🔍 Find old comment if it exists
+        uses: peter-evans/find-comment@v2
+        id: old_comment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'expo-bot'
+          body-includes: The documentation preview URL
+      - name: 💬 Add comment with preview URL
+        if: steps.old_comment.outputs.comment-id == ''
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'The documentation preview URL is: TODO: ${{ github.event.pull_request.number }}.'
+            });
+      - name: 💬 Update comment with preview URL
+        if: steps.old_comment.outputs.comment-id != ''
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.updateComment({
+              issue_number: context.issue.number,
+              comment_id: '${{ steps.old_comment.outputs.comment-id }}',
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'The documentation preview URL is: TODO: ${{ github.event.pull_request.number }}.'
+            });
