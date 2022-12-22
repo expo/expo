@@ -25,6 +25,7 @@ import java.util.UUID;
 
 import expo.modules.location.LocationHelpers;
 import expo.modules.location.LocationModule;
+import expo.modules.location.services.GeofenceService;
 import expo.modules.interfaces.taskManager.TaskConsumer;
 import expo.modules.interfaces.taskManager.TaskConsumerInterface;
 import expo.modules.interfaces.taskManager.TaskExecutionCallback;
@@ -209,7 +210,8 @@ public class GeofencingTaskConsumer extends TaskConsumer implements TaskConsumer
   }
 
   private PendingIntent preparePendingIntent() {
-    return getTaskManagerUtils().createTaskIntent(getContext(), mTask);
+    final PendingIntent taskIntent = getTaskManagerUtils().createTaskIntent(getContext(), mTask);
+    return GeofenceService.createIntent(getContext(), taskIntent);
   }
 
   private Geofence geofenceFromRegion(Map<String, Object> region) {

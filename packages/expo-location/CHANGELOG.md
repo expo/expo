@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Export types with type-only annotation to fix build when using `isolatedModules` flag. ([#20239](https://github.com/expo/expo/pull/20239) by [@zakharchenkoAndrii](https://github.com/zakharchenkoAndrii))
+- Use Service instead of Broadcast for listening to geofences to survive app crashes. ([#20571](https://github.com/expo/expo/pull/20571) by [@KurtHuwig](https://github.com/KurtHuwig))
 
 ### 💡 Others
 

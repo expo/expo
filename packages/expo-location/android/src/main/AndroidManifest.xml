@@ -10,5 +10,9 @@
       android:name=".services.LocationTaskService"
       android:exported="false"
       android:foregroundServiceType="location" />
+    <service
+      android:name=".services.GeofenceService"
+      android:exported="false"
+      android:foregroundServiceType="location" />
   </application>
 </manifest>
