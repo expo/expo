@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Migrated iOS codebase to use the new Expo modules API. ([#20316](https://github.com/expo/expo/pull/20316) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
