@@ -33,7 +33,7 @@ export const CommandMenuTrigger = ({ setOpen }: Props) => {
 
   return (
     <Button theme="ghost" css={buttonStyle} onClick={() => setOpen(true)}>
-      <SearchIcon size={iconSize.small} />
+      <SearchIcon size={iconSize.sm} />
       <CALLOUT css={[labelStyle, hideOnMobileStyle]}>Search</CALLOUT>
       {isMac !== null && (
         <div css={[keysWrapperStyle, hideOnMobileStyle]}>
@@ -50,11 +50,11 @@ const buttonStyle = css({
   maxWidth: 320,
   padding: `0 ${spacing[3]}px`,
   borderColor: theme.border.default,
-  boxShadow: shadows.input,
+  boxShadow: shadows.xs,
   marginRight: spacing[3],
 
   '&:focus': {
-    boxShadow: shadows.button,
+    boxShadow: shadows.xs,
   },
 
   '> div': {

@@ -450,10 +450,12 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@expo/styleguide@^4.3.0":
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-4.3.0.tgz#dd711ebd2879e62796eca1f0d58c1ce48e603f51"
-  integrity sha512-UPjkXEUMhlM1BNKS2waK1hYJJ3xy0OQksJbqzREPk5ZfqgofDH8lSMZ0Rc7yQMI8Akfaj/pOglSfJH8wVKV1bg==
+"@expo/styleguide@^6.1.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-6.1.0.tgz#c1066074495595c1d5374689b5f508e1ecaf08b3"
+  integrity sha512-Q5W3C7QqyDejoOjfcGrBdYG/TAEllfsT3h8RrZbZd3AmpnEWIOiq1tr4OvSXSc5j+7aiV7Lb6A6wPkkJi3Y++Q==
+  dependencies:
+    "@radix-ui/colors" "^0.1.8"
 
 "@gitbeaker/core@^21.7.0":
   version "21.7.0"
@@ -1052,6 +1054,11 @@
   version "2.11.5"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.5.tgz#db5a11bf66bdab39569719555b0f76e138d7bd64"
   integrity sha512-9X2obfABZuDVLCgPK9aX0a/x4jaOEweTTWE2+9sr0Qqqevj2Uv5XorvusThmc9XGYpS9yI+fhh8RTafBtGposw==
+
+"@radix-ui/colors@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@radix-ui/colors/-/colors-0.1.8.tgz#b08c62536fc462a87632165fb28e9b18f9bd047e"
+  integrity sha512-jwRMXYwC0hUo0mv6wGpuw254Pd9p/R6Td5xsRpOmaWkUHlooNWqVcadgyzlRumMq3xfOTXwJReU0Jv+EIy4Jbw==
 
 "@radix-ui/primitive@1.0.0":
   version "1.0.0"

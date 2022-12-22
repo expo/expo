@@ -14,7 +14,7 @@ export const globalPrism = css`
     position: relative;
     padding: 0.2em;
     border-radius: 0.3em;
-    color: color: ${theme.code.property};
+    color: color: ${theme.palette.red11};
     border: 1px solid ${theme.border.default};
     display: inline;
     white-space: normal;
@@ -49,11 +49,11 @@ export const globalPrism = css`
   .token.prolog,
   .token.doctype,
   .token.cdata {
-    color: ${theme.code.comment}
+    color: ${theme.palette.gray10}
   }
 
   .token.punctuation {
-    color: ${theme.code.punctuation}
+    color: ${theme.palette.gray11}
   }
 
   .token.property,
@@ -64,7 +64,7 @@ export const globalPrism = css`
   .token.constant,
   .token.symbol,
   .token.deleted {
-    color: ${theme.code.property}
+    color: ${theme.palette.red11}
   }
 
   .token.selector,
@@ -74,31 +74,31 @@ export const globalPrism = css`
   .token.function,
   .token.builtin,
   .token.inserted {
-    color: ${theme.code.builtin}
+    color: ${theme.palette.green11}
   }
 
   .token.operator,
   .token.entity,
   .token.url,
   .token.variable {
-    color: ${theme.code.operator}
+    color: ${theme.palette.yellow12}
   }
 
   .token.atrule,
   .token.attr-value,
   .token.keyword,
   .token.class-name {
-    color: ${theme.code.keyword}
+    color: ${theme.palette.blue11}
   }
 
   .token.regex,
   .token.important {
-    color: ${theme.code.regex}
+    color: ${theme.palette.orange11}
   }
 
   .language-css .token.string,
   .style .token.string {
-    color: ${theme.code.string}
+    color: ${theme.palette.yellow11}
   }
 
   .token.important {
@@ -131,7 +131,7 @@ export const globalPrism = css`
   .token.tab:not(:empty):before,
   .token.cr:before,
   .token.lf:before {
-    color: ${theme.code.before}
+    color: ${theme.palette.gray9}
   }
 
   pre[class*='language-'].line-numbers {

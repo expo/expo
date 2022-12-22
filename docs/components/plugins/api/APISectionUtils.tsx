@@ -637,12 +637,12 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
 };
 
 export const STYLES_APIBOX = css({
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
   padding: spacing[5],
-  boxShadow: shadows.micro,
+  boxShadow: shadows.xs,
   marginBottom: spacing[6],
   overflowX: 'hidden',
 
@@ -699,8 +699,8 @@ export const STYLES_NESTED_SECTION_HEADER = css({
   borderTop: `1px solid ${theme.border.default}`,
   borderBottom: `1px solid ${theme.border.default}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
-  padding: `${spacing[2]}px ${spacing[5]}px`,
-  backgroundColor: theme.background.secondary,
+  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  backgroundColor: theme.background.subtle,
 
   h4: {
     ...typography.fontSizes[16],

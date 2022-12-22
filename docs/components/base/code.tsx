@@ -10,6 +10,7 @@ import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
 import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
+import { CODE } from '~/ui/components/Text';
 
 // @ts-ignore Jest ESM issue https://github.com/facebook/jest/issues/9430
 const { default: testTippy } = tippy;
@@ -30,8 +31,8 @@ const STYLES_CODE_BLOCK = css`
   .code-annotation {
     transition: 200ms ease all;
     transition-property: text-shadow, opacity;
-    text-shadow: ${theme.highlight.emphasis} 0 0 10px, ${theme.highlight.emphasis} 0 0 10px,
-      ${theme.highlight.emphasis} 0 0 10px, ${theme.highlight.emphasis} 0 0 10px;
+    text-shadow: ${theme.palette.yellow7} 0 0 10px, ${theme.palette.yellow7} 0 0 10px,
+      ${theme.palette.yellow7} 0 0 10px, ${theme.palette.yellow7} 0 0 10px;
   }
 
   .code-annotation.with-tooltip:hover {
@@ -53,7 +54,7 @@ const STYLES_CODE_CONTAINER_BLOCK = css`
   border: 1px solid ${theme.border.default};
   padding: 16px;
   margin: 16px 0;
-  background-color: ${theme.background.secondary};
+  background-color: ${theme.background.subtle};
 `;
 
 const STYLES_CODE_CONTAINER = css`
@@ -61,7 +62,7 @@ const STYLES_CODE_CONTAINER = css`
   overflow: auto;
   -webkit-overflow-scrolling: touch;
   line-height: 120%;
-  border-radius: ${borderRadius.small}px;
+  border-radius: ${borderRadius.sm}px;
   padding: ${spacing[4]}px;
 
   table &:last-child {
@@ -259,7 +260,7 @@ export const CodeBlock = ({ children, inline = false }: CodeBlockProps) => {
         inline && codeBlockInlineContainerStyle,
       ]}
       {...attributes}>
-      <code css={[STYLES_CODE_BLOCK, { fontSize: '80%' }]}>{children}</code>
+      <CODE css={[STYLES_CODE_BLOCK, { fontSize: '80%' }]}>{children}</CODE>
     </Element>
   );
 };

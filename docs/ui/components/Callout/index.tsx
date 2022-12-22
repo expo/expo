@@ -48,7 +48,7 @@ export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
         {typeof icon === 'string' ? (
           icon
         ) : (
-          <Icon size={iconSize.small} color={getCalloutIconColor(finalType)} />
+          <Icon size={iconSize.sm} color={getCalloutIconColor(finalType)} />
         )}
       </div>
       <div css={contentStyle}>
@@ -87,7 +87,7 @@ function getCalloutIconColor(type: CalloutType) {
     case 'warning':
       return theme.text.warning;
     case 'error':
-      return theme.text.error;
+      return theme.text.danger;
     case 'info':
       return theme.text.info;
     default:
@@ -96,9 +96,9 @@ function getCalloutIconColor(type: CalloutType) {
 }
 
 const containerStyle = css({
-  backgroundColor: theme.background.secondary,
+  backgroundColor: theme.background.subtle,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   display: 'flex',
   padding: `${spacing[3]}px ${spacing[4]}px`,
   marginBottom: spacing[4],
@@ -110,7 +110,7 @@ const containerStyle = css({
   },
 
   code: {
-    backgroundColor: theme.background.tertiary,
+    backgroundColor: theme.background.element,
   },
 
   // TODO(simek): remove after migration to new components is completed
@@ -140,27 +140,27 @@ const warningColorStyle = css({
   borderColor: theme.border.warning,
 
   code: {
-    backgroundColor: theme.palette.yellow['000'],
-    borderColor: theme.palette.yellow[300],
+    backgroundColor: theme.palette.yellow5,
+    borderColor: theme.palette.yellow7,
   },
 
-  '[data-expo-theme="dark"] & code': {
-    backgroundColor: theme.palette.yellow[100],
-    borderColor: theme.palette.yellow[200],
+  '.dark-theme & code': {
+    backgroundColor: theme.palette.yellow6,
+    borderColor: theme.palette.yellow7,
   },
 });
 
 const errorColorStyle = css({
-  backgroundColor: theme.background.error,
-  borderColor: theme.border.error,
+  backgroundColor: theme.background.danger,
+  borderColor: theme.border.danger,
 
   code: {
-    backgroundColor: theme.palette.red['000'],
-    borderColor: theme.palette.red[200],
+    backgroundColor: theme.palette.red2,
+    borderColor: theme.palette.red5,
   },
 
-  '[data-expo-theme="dark"] & code': {
-    backgroundColor: theme.palette.red[100],
+  '.dark-theme & code': {
+    backgroundColor: theme.palette.red4,
   },
 });
 
@@ -169,11 +169,11 @@ const infoColorStyle = css({
   borderColor: theme.border.info,
 
   code: {
-    backgroundColor: theme.palette.blue['000'],
-    borderColor: theme.palette.blue[200],
+    backgroundColor: theme.palette.blue2,
+    borderColor: theme.palette.blue5,
   },
 
-  '[data-expo-theme="dark"] & code': {
-    backgroundColor: theme.palette.blue[100],
+  '.dark-theme & code': {
+    backgroundColor: theme.palette.blue4,
   },
 });
