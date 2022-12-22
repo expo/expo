@@ -131,4 +131,16 @@ export default {
     const cacheHeaders = [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }];
     return [{ source: '/_next/static/:static*', headers: cacheHeaders }];
   },
+  basePath: process.env.AWS_BUCKET ? `/${process.env.AWS_BUCKET}` : '',
+  assetPrefix: process.env.AWS_BUCKET ? `/${process.env.AWS_BUCKET}` : '',
+  async rewrites() {
+    return process.env.AWS_BUCKET
+      ? [
+          {
+            source: '/static/:path',
+            destination: `/${process.env.AWS_BUCKET}/static/:path`,
+          },
+        ]
+      : [];
+  },
 };
