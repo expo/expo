@@ -1968,14 +1968,11 @@ PODS:
   - EXBarCodeScanner (12.0.0):
     - EXImageLoader
     - ExpoModulesCore
-    - ZXingObjC/OneD
-    - ZXingObjC/PDF417
+    - ZXingObjC
   - EXBranch (6.0.1):
     - Branch (= 0.35.0)
     - ExpoModulesCore
     - React-Core
-  - EXBrightness (11.0.1):
-    - ExpoModulesCore
   - EXCalendar (11.0.1):
     - ExpoModulesCore
   - EXCamera (13.0.0):
@@ -2019,8 +2016,6 @@ PODS:
   - EXMediaLibrary (15.0.0):
     - ExpoModulesCore
     - React-Core
-  - EXNetwork (5.0.0):
-    - ExpoModulesCore
   - EXNotifications (0.17.0):
     - ExpoModulesCore
   - EXPermissions (14.0.0):
@@ -2030,6 +2025,8 @@ PODS:
   - ExpoBattery (7.0.0):
     - ExpoModulesCore
   - ExpoBlur (12.0.1):
+    - ExpoModulesCore
+  - ExpoBrightness (11.0.1):
     - ExpoModulesCore
   - ExpoCellular (5.0.1):
     - ExpoModulesCore
@@ -2073,6 +2070,8 @@ PODS:
     - ExpoModulesCore
     - Nimble (~> 9.2.0)
     - Quick (~> 5.0.0)
+  - ExpoNetwork (5.0.0):
+    - ExpoModulesCore
   - ExpoRandom (13.0.0):
     - ExpoModulesCore
   - ExpoSMS (11.0.0):
@@ -2740,6 +2739,9 @@ PODS:
     - StripeCore (= 22.8.3)
   - UMAppLoader (4.0.0)
   - Yoga (1.14.0)
+  - ZXingObjC (3.6.5):
+    - ZXingObjC/All (= 3.6.5)
+  - ZXingObjC/All (3.6.5)
   - ZXingObjC/Core (3.6.5)
   - ZXingObjC/OneD (3.6.5):
     - ZXingObjC/Core
@@ -3093,7 +3095,6 @@ DEPENDENCIES:
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
   - EXBarCodeScanner (from `../packages/expo-barcode-scanner/ios`)
   - EXBranch (from `../packages/expo-branch/ios`)
-  - EXBrightness (from `../packages/expo-brightness/ios`)
   - EXCalendar (from `../packages/expo-calendar/ios`)
   - EXCamera (from `../packages/expo-camera/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
@@ -3112,12 +3113,12 @@ DEPENDENCIES:
   - EXManifests (from `../packages/expo-manifests/ios`)
   - EXManifests/Tests (from `../packages/expo-manifests/ios`)
   - EXMediaLibrary (from `../packages/expo-media-library/ios`)
-  - EXNetwork (from `../packages/expo-network/ios`)
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo`)
   - ExpoBattery (from `../packages/expo-battery/ios`)
   - ExpoBlur (from `../packages/expo-blur/ios`)
+  - ExpoBrightness (from `../packages/expo-brightness/ios`)
   - ExpoCellular (from `../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../packages/expo-clipboard/ios`)
   - ExpoClipboard/Tests (from `../packages/expo-clipboard/ios`)
@@ -3135,6 +3136,7 @@ DEPENDENCIES:
   - ExpoModulesCore (from `../packages/expo-modules-core`)
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../packages/expo-modules-test-core/ios`)
+  - ExpoNetwork (from `../packages/expo-network/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSMS (from `../packages/expo-sms/ios`)
   - ExpoStoreReview (from `../packages/expo-store-review/ios`)
@@ -3936,8 +3938,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-barcode-scanner/ios"
   EXBranch:
     :path: "../packages/expo-branch/ios"
-  EXBrightness:
-    :path: "../packages/expo-brightness/ios"
   EXCalendar:
     :path: "../packages/expo-calendar/ios"
   EXCamera:
@@ -3970,8 +3970,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-manifests/ios"
   EXMediaLibrary:
     :path: "../packages/expo-media-library/ios"
-  EXNetwork:
-    :path: "../packages/expo-network/ios"
   EXNotifications:
     :path: "../packages/expo-notifications/ios"
   EXPermissions:
@@ -3982,6 +3980,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-battery/ios"
   ExpoBlur:
     :path: "../packages/expo-blur/ios"
+  ExpoBrightness:
+    :path: "../packages/expo-brightness/ios"
   ExpoCellular:
     :path: "../packages/expo-cellular/ios"
   ExpoClipboard:
@@ -4012,6 +4012,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-modules-core"
   ExpoModulesTestCore:
     :path: "../packages/expo-modules-test-core/ios"
+  ExpoNetwork:
+    :path: "../packages/expo-network/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
   ExpoSMS:
@@ -4491,9 +4493,8 @@ SPEC CHECKSUMS:
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
   EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
-  EXBarCodeScanner: 25f8a6a43c817a94afe54d07a1b9fe25550ea0fe
+  EXBarCodeScanner: 1bb12031981c4d5d4df4b144b659eed67ca0e553
   EXBranch: 7d74f6ff30a1efc45827517654dcc1508fe925f7
-  EXBrightness: 1725afacfdaeb4724bb949c44384cff0ef0d7d18
   EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
   EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
   EXConstants: d9bff28e1d37cd1c05133e6955e9ba8f2a702947
@@ -4510,12 +4511,12 @@ SPEC CHECKSUMS:
   EXLocation: ea8c1a5b5b3c3ac47f1f3a7cfd54d311ec920a37
   EXManifests: 347f49430b63444579aa013f0ad057d16b8d1cc8
   EXMediaLibrary: 458ae40e652df90ad46d38a5c588b05d59401d3c
-  EXNetwork: c16feb0dc85dacaf11fef55721e0b8ead2a8038f
   EXNotifications: 2bda232eb900aa6d602e40cad363879ae827d672
   EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
+  ExpoBrightness: a5ea97f0b9a3f5649a02e836472a7f266738a856
   ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
   ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
@@ -4531,6 +4532,7 @@ SPEC CHECKSUMS:
   ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
   ExpoModulesCore: f58d3a1df4c7ac1c2342a933795714a20af44668
   ExpoModulesTestCore: fe0a7344268158f254dadc9ac947b2c66bb19fed
+  ExpoNetwork: cca9eb81f511c75255502ef1747959fae32b43d9
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
   ExpoSMS: 9cd247733eb868bb39f25a8ba0d37167c632468a
   ExpoStoreReview: ff6d631f2949eb7e4b2d14146ef6af25a16d770d
