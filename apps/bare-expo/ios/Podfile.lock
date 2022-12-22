@@ -13,8 +13,7 @@ PODS:
   - EXBarCodeScanner (12.0.0):
     - EXImageLoader
     - ExpoModulesCore
-    - ZXingObjC/OneD
-    - ZXingObjC/PDF417
+    - ZXingObjC
   - EXCalendar (11.0.1):
     - ExpoModulesCore
   - EXCamera (13.0.0):
@@ -687,11 +686,9 @@ PODS:
     - SDWebImage/Core (~> 5.13)
   - UMAppLoader (4.0.0)
   - Yoga (1.14.0)
-  - ZXingObjC/Core (3.6.5)
-  - ZXingObjC/OneD (3.6.5):
-    - ZXingObjC/Core
-  - ZXingObjC/PDF417 (3.6.5):
-    - ZXingObjC/Core
+  - ZXingObjC (3.6.5):
+    - ZXingObjC/All (= 3.6.5)
+  - ZXingObjC/All (3.6.5)
 
 DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
@@ -1161,7 +1158,7 @@ SPEC CHECKSUMS:
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
   EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
-  EXBarCodeScanner: 25f8a6a43c817a94afe54d07a1b9fe25550ea0fe
+  EXBarCodeScanner: 1bb12031981c4d5d4df4b144b659eed67ca0e553
   EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
   EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
   EXConstants: d9bff28e1d37cd1c05133e6955e9ba8f2a702947
