@@ -231,6 +231,7 @@ function _emitEvent(params) {
  * listener.
  */
 export function addListener(listener) {
+    console.warn('addListener');
     const emitter = _getEmitter();
     return emitter.addListener('Expo.updatesEvent', listener);
 }

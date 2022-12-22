@@ -285,6 +285,7 @@ function _emitEvent(params): void {
  * listener.
  */
 export function addListener(listener: (event: UpdateEvent) => void): EventSubscription {
+  console.warn('addListener');
   const emitter = _getEmitter();
   return emitter.addListener('Expo.updatesEvent', listener);
 }
