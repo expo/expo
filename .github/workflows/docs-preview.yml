@@ -52,6 +52,9 @@ jobs:
       # - name: 🚀 Deploy Documentation Artifacts to Vercel
       #   id: vercel_deploy
       #   run: echo "PREVIEW_URL=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }} | tail -n 1)" >> $GITHUB_OUTPUT
+      - name: 🏗️ Build Docs website for deploy
+        run: yarn export
+        timeout-minutes: 20
       - name: 🚀 Deploy Docs website
         run: ./deploy.sh
         env:
