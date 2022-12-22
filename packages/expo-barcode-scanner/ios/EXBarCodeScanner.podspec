@@ -16,7 +16,8 @@ Pod::Spec.new do |s|
 
   s.dependency 'ExpoModulesCore'
   s.dependency 'EXImageLoader'
-  s.dependency 'ZXingObjC'
+  s.dependency 'ZXingObjC/PDF417'
+  s.dependency 'ZXingObjC/OneD'
 
   s.pod_target_xcconfig = {
     # For use_frameworks! to have correct defines, please sync up with ZxingObjC dependencies above

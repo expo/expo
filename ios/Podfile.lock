@@ -1968,7 +1968,8 @@ PODS:
   - EXBarCodeScanner (12.0.0):
     - EXImageLoader
     - ExpoModulesCore
-    - ZXingObjC
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
   - EXBranch (6.0.1):
     - Branch (= 0.35.0)
     - ExpoModulesCore
@@ -2739,9 +2740,6 @@ PODS:
     - StripeCore (= 22.8.3)
   - UMAppLoader (4.0.0)
   - Yoga (1.14.0)
-  - ZXingObjC (3.6.5):
-    - ZXingObjC/All (= 3.6.5)
-  - ZXingObjC/All (3.6.5)
   - ZXingObjC/Core (3.6.5)
   - ZXingObjC/OneD (3.6.5):
     - ZXingObjC/Core
@@ -4493,7 +4491,7 @@ SPEC CHECKSUMS:
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
   EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
-  EXBarCodeScanner: 1bb12031981c4d5d4df4b144b659eed67ca0e553
+  EXBarCodeScanner: 03dd4ae852f92885ac3a7dd0e0af1fe5a7444b38
   EXBranch: 7d74f6ff30a1efc45827517654dcc1508fe925f7
   EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
   EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
