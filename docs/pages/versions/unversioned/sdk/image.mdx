@@ -5,5 +5,72 @@ packageName: 'expo-image'
 ---
 
 import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+import PlatformsSection from '~/components/plugins/PlatformsSection';
+
+**`expo-image`** is a cross-platform React component that loads and renders images.
+
+**Main features:**
+
+- Designed for speed
+- Support for many image formats (including animated ones)
+- Disk and memory caching
+- Supports [blurhash](https://blurha.sh), a compact representation of a placeholder for an image
+- Transitioning between images when the source changes (no more flickering!)
+- Implements the CSS [`object-fit`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) and [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) properties (see [`contentFit`](#contentfit) and [`contentPosition`](#contentposition) props)
+- Uses performant [`SDWebImage`](https://github.com/SDWebImage/SDWebImage) and [`Glide`](https://github.com/bumptech/glide) under the hood
+
+<PlatformsSection android emulator ios simulator web />
+
+## Installation
+
+> **Info** Currently `expo-image` can be used only with [development builds](/development/create-development-builds/) and bare React Native apps with [configured Expo modules](/bare/installing-expo-modules/).
+> It is not available in Expo Go and Snack yet.
+
+<APIInstallSection />
+
+## Usage
+
+```jsx
+import { Image } from 'expo-image';
+import { StyleSheet, View } from 'react-native';
+
+const blurhash =
+  '|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[';
+
+export default function App() {
+  return (
+    <View style={styles.container}>
+      <Image
+        style={styles.image}
+        source="https://picsum.photos/seed/696/3000/2000"
+        placeholder={blurhash}
+        contentFit="cover"
+        transition={1000}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  image: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: '#0553',
+  },
+});
+```
+
+## API
+
+```js
+import { Image } from 'expo-image';
+```
 
 <APISection packageName="expo-image" apiName="Image" />
