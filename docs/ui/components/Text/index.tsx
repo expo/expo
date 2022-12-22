@@ -140,9 +140,7 @@ const h1Style = {
   ...skipFontFamily,
   fontWeight: 600,
   marginTop: spacing[2],
-  marginBottom: spacing[6],
-  paddingBottom: spacing[4],
-  borderBottom: `1px solid ${theme.border.default}`,
+  marginBottom: spacing[2],
   ...codeInHeaderStyle,
 };
 
