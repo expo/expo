@@ -84,7 +84,7 @@ function useTransition(
   }
   const { duration, timing, effect } = {
     timing: 'ease-in-out',
-    effect: 'cross-disolve',
+    effect: 'cross-dissolve',
     duration: 1000,
     ...transition,
   };
@@ -203,7 +203,7 @@ function useSourceSelection(
   );
 }
 
-function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority']) {
+function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'] = 'normal') {
   return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
 
@@ -217,7 +217,7 @@ function Image({
   source?: ImageSource | null;
   events?: {
     onLoad: (((event: React.SyntheticEvent<HTMLImageElement, Event>) => void) | undefined)[];
-    onError: ((({ source }: { source: ImageSource | null }) => void) | undefined)[];
+    onError: ((({ source }: { source?: ImageSource | null }) => void) | undefined)[];
   };
   contentPosition?: ImageContentPositionObject;
   blurhashContentPosition?: ImageContentPositionObject;
@@ -226,7 +226,7 @@ function Image({
   blurhashStyle?: React.CSSProperties;
 }) {
   const objectPosition = getObjectPositionFromContentPositionObject(contentPosition);
-  const uri = source?.uri;
+  const { uri = undefined } = source ?? {};
   return (
     <img
       src={uri || undefined}
@@ -241,9 +241,9 @@ function Image({
       }}
       // @ts-ignore
       // eslint-disable-next-line react/no-unknown-property
-      fetchpriority={getFetchPriorityFromImagePriority(priority || 'normal')}
+      fetchpriority={getFetchPriorityFromImagePriority(priority)}
       onLoad={(event) => events?.onLoad.forEach((e) => e?.(event))}
-      onError={() => events?.onError.forEach((e) => e?.({ source: source || null }))}
+      onError={() => events?.onError.forEach((e) => e?.({ source }))}
     />
   );
 }
@@ -264,7 +264,7 @@ function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
 }
 
 function onErrorAdapter(onError?: { (event: { error: string }): void }) {
-  return ({ source }: { source: ImageSource | null }) => {
+  return ({ source }: { source?: ImageSource | null }) => {
     onError?.({
       error: `Failed to load image from url: ${source?.uri}`,
     });

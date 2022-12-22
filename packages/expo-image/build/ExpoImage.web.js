@@ -44,7 +44,7 @@ function useTransition(transition, state) {
     }
     const { duration, timing, effect } = {
         timing: 'ease-in-out',
-        effect: 'cross-disolve',
+        effect: 'cross-dissolve',
         duration: 1000,
         ...transition,
     };
@@ -139,12 +139,12 @@ function useSourceSelection(sources, sizeCalculation = 'live') {
         source,
     }), [source]);
 }
-function getFetchPriorityFromImagePriority(priority) {
+function getFetchPriorityFromImagePriority(priority = 'normal') {
     return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
 function Image({ source, events, contentPosition, priority, style, }) {
     const objectPosition = getObjectPositionFromContentPositionObject(contentPosition);
-    const uri = source?.uri;
+    const { uri = undefined } = source ?? {};
     return (React.createElement("img", { src: uri || undefined, style: {
             width: '100%',
             height: '100%',
@@ -156,7 +156,7 @@ function Image({ source, events, contentPosition, priority, style, }) {
         }, 
         // @ts-ignore
         // eslint-disable-next-line react/no-unknown-property
-        fetchpriority: getFetchPriorityFromImagePriority(priority || 'normal'), onLoad: (event) => events?.onLoad.forEach((e) => e?.(event)), onError: () => events?.onError.forEach((e) => e?.({ source: source || null })) }));
+        fetchpriority: getFetchPriorityFromImagePriority(priority), onLoad: (event) => events?.onLoad.forEach((e) => e?.(event)), onError: () => events?.onError.forEach((e) => e?.({ source })) }));
 }
 function onLoadAdapter(onLoad) {
     return (event) => {
