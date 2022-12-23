@@ -1,7 +1,5 @@
-/* eslint-disable */
-
 export const sRGBToLinear = (value: number) => {
-  let v = value / 255;
+  const v = value / 255;
   if (v <= 0.04045) {
     return v / 12.92;
   } else {
@@ -10,7 +8,7 @@ export const sRGBToLinear = (value: number) => {
 };
 
 export const linearTosRGB = (value: number) => {
-  let v = Math.max(0, Math.min(1, value));
+  const v = Math.max(0, Math.min(1, value));
   if (v <= 0.0031308) {
     return Math.trunc(v * 12.92 * 255 + 0.5);
   } else {
