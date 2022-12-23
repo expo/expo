@@ -42,7 +42,12 @@ function useTransition(transition, state) {
     if (!transition) {
         return { placeholder: {}, image: {} };
     }
-    const { duration, timing, effect } = transition;
+    const { duration, timing, effect } = {
+        timing: 'ease-in-out',
+        effect: 'cross-dissolve',
+        duration: 1000,
+        ...transition,
+    };
     if (effect === 'cross-dissolve') {
         const commonStyles = {
             transition: `opacity ${duration}ms`,
@@ -134,16 +139,27 @@ function useSourceSelection(sources, sizeCalculation = 'live') {
         source,
     }), [source]);
 }
-function getFetchPriorityFromImagePriority(priority) {
+function getFetchPriorityFromImagePriority(priority = 'normal') {
     return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, ...props }) {
-    const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
-    const [state, handlers] = useImageState(source);
-    const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
-    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
-    function onLoadHandler(event) {
-        handlers.onLoad();
+function Image({ source, events, contentPosition, priority, style, }) {
+    const objectPosition = getObjectPositionFromContentPositionObject(contentPosition);
+    const { uri = undefined } = source ?? {};
+    return (React.createElement("img", { src: uri || undefined, style: {
+            width: '100%',
+            height: '100%',
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            objectPosition,
+            ...style,
+        }, 
+        // @ts-ignore
+        // eslint-disable-next-line react/no-unknown-property
+        fetchpriority: getFetchPriorityFromImagePriority(priority), onLoad: (event) => events?.onLoad.forEach((e) => e?.(event)), onError: () => events?.onError.forEach((e) => e?.({ source })) }));
+}
+function onLoadAdapter(onLoad) {
+    return (event) => {
         const target = event.target;
         onLoad?.({
             source: {
@@ -154,14 +170,20 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
             },
             cacheType: 'none',
         });
-        onLoadEnd?.();
-    }
-    function onErrorHandler() {
+    };
+}
+function onErrorAdapter(onError) {
+    return ({ source }) => {
         onError?.({
-            error: `Failed to load image from url: ${source?.[0]?.uri}`,
+            error: `Failed to load image from url: ${source?.uri}`,
         });
-        onLoadEnd?.();
-    }
+    };
+}
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, ...props }) {
+    const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
+    const [state, handlers] = useImageState(source);
+    const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
+    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
     return (React.createElement("div", { ref: containerRef, style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
@@ -171,28 +193,18 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
             overflow: 'hidden',
             position: 'relative',
         } },
-        React.createElement("img", { src: placeholder?.[0]?.uri, 
-            // @ts-ignore
-            // eslint-disable-next-line react/no-unknown-property
-            fetchpriority: getFetchPriorityFromImagePriority(priority), style: {
-                width: '100%',
-                height: '100%',
-                position: 'absolute',
-                left: 0,
-                right: 0,
+        React.createElement(Image, { source: placeholder?.[0], style: {
                 objectFit: 'scale-down',
-                objectPosition: 'center',
                 ...placeholderStyle,
-            } }),
-        React.createElement("img", { src: selectedSource?.uri, style: {
-                width: '100%',
-                height: '100%',
-                position: 'absolute',
-                left: 0,
-                right: 0,
+            }, contentPosition: { left: '50%', top: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
                 objectFit: contentFit,
-                objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
+            } }),
+        React.createElement(Image, { source: selectedSource, events: {
+                onError: [onErrorAdapter(onError), onLoadEnd],
+                onLoad: [onLoadAdapter(onLoad), handlers.onLoad, onLoadEnd],
+            }, style: {
+                objectFit: contentFit,
                 ...imageStyle,
-            }, onLoad: onLoadHandler, onError: onErrorHandler })));
+            }, priority: priority, contentPosition: contentPosition })));
 }
 //# sourceMappingURL=ExpoImage.web.js.map
