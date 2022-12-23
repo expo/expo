@@ -20,9 +20,11 @@
 
 + (BOOL) isKindOfImageView:(UIView*) view
 {
+  NSString* className = NSStringFromClass(view.class);
   return (
           [view isKindOfClass:[UIImageView class]] ||
-          [NSStringFromClass(view.class) isEqualToString:@"RCTImageView"]
+          [className isEqualToString:@"RCTImageView"] ||
+          [className isEqualToString:@"ExpoImage.ImageView"]
           );
 }
 
@@ -30,10 +32,9 @@
 {
   if ([view isKindOfClass:[UIImageView class]]) {
     return (UIImageView*) view;
-  } else if ([NSStringFromClass(view.class) isEqualToString:@"RCTImageView"]) {
-    // As of react-native 0.60, RCTImageView is no longer inherited from
-    // UIImageView, but has a UIImageView as child. That will cause this code-path
-    // to be executed, where the first child view is returned.
+  } else if ([RNSharedElementContent isKindOfImageView:view]) {
+    // Both react-native and expo-image have a UIImageView
+    // as the first child.
     return (UIImageView*) view.subviews.firstObject;
   } else {
     // Error
