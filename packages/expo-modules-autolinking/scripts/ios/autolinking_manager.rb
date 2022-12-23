@@ -173,11 +173,16 @@ module Expo
 
     private def use_modular_headers_for_dependencies(dependencies)
       dependencies.each { |dependency|
-        unless @target_definition.build_pod_as_module?(dependency.name)
-          UI.info "[Expo] ".blue << "Enabling modular headers for pod #{dependency.name.green}"
+        # The dependency name might be a subspec like `ReactCommon/turbomodule/core`,
+        # but the modular headers need to be enabled for the entire `ReactCommon` spec anyway,
+        # so we're stripping the subspec path from the dependency name.
+        root_spec_name = dependency.name.partition('/').first
+
+        unless @target_definition.build_pod_as_module?(root_spec_name)
+          UI.info "[Expo] ".blue << "Enabling modular headers for pod #{root_spec_name.green}"
 
           # This is an equivalent to setting `:modular_headers => true` for the specific dependency.
-          @target_definition.set_use_modular_headers_for_pod(dependency.name, true)
+          @target_definition.set_use_modular_headers_for_pod(root_spec_name, true)
         end
       }
     end
