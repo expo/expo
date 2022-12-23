@@ -12,6 +12,11 @@ open class SharedObject: AnySharedObject {
   public internal(set) var sharedObjectId: SharedObjectId = 0
 
   /**
+   The default public initializer of the shared object.
+   */
+  public init() {}
+
+  /**
    Returns the JavaScript shared object associated with the native shared object.
    */
   public func getJavaScriptObject() -> JavaScriptObject? {
