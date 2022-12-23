@@ -135,7 +135,7 @@ Our docs are made with [Next.js](https://github.com/zeit/next.js). They're locat
 **TL;DR:**
 
 1. Navigate to the `docs/` directory and run `yarn`.
-2. Start the project with `yarn dev` (make sure you don't have another server running on port `3000`).
+2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`).
 3. Navigate to the docs you want to edit: `cd docs/pages/versions/unversioned/`
 4. If you update an older version, ensure the relevant changes are copied into `unversioned/`
 
