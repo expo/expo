@@ -55,7 +55,7 @@ export type SecureStoreOptions = {
     authenticationPrompt?: string;
     /**
      * Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible` property.
-     * @see Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html#//apple_ref/doc/uid/TP30000897-CH204-SW18).
+     * @see Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html).
      * @default SecureStore.WHEN_UNLOCKED
      * @platform ios
      */
