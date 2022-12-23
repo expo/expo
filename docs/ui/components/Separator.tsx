@@ -12,7 +12,7 @@ export const Separator = ({ spacing }: SeparatorProps) => (
       marginBottom: spacing ?? themeSpacing[6],
       backgroundColor: theme.border.default,
       border: 0,
-      height: '0.01rem',
+      height: '0.05rem',
     })}
   />
 );
