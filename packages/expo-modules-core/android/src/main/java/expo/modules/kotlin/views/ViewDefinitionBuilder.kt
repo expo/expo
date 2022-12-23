@@ -74,6 +74,14 @@ class ViewDefinitionBuilder<T : View>(private val viewType: KClass<T>) {
   }
 
   /**
+   * Defines prop names that should be treated as callbacks.
+   */
+  @JvmName("EventsWithArray")
+  fun Events(callbacks: Array<String>) {
+    callbacksDefinition = CallbacksDefinition(callbacks)
+  }
+
+  /**
    * Creates the group view definition that scopes group view-related definitions.
    */
   inline fun GroupView(body: ViewGroupDefinitionBuilder.() -> Unit) {
