@@ -63,7 +63,7 @@ Your FCM server key can be found by making sure you've followed [this documentat
 
 ## APNs Server
 
-> This documentation is based off of [Apple's documentation](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html#//apple_ref/doc/uid/TP40008194-CH8-SW1), and we're just going to cover the basics here to get you started.
+> This documentation is based off of [Apple's documentation](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/APNSOverview.html), and we're just going to cover the basics here to get you started.
 
 Communicating with APNs is a little more complicated than with FCM. There are some libraries that wrap all of this functionality into one or two function calls (like [`node-apn`](https://github.com/node-apn/node-apn)), but in this example we're going to use the minimum required libraries to give you a good understanding of what's happening.
 
@@ -131,7 +131,7 @@ request.end();
 
 > This example is **very** minimal, and includes no error handling nor connection pooling. For testing purposes, you should refer to [this example code instead](https://github.com/expo/expo/blob/main/docs/public/static/code/sendNotificationToAPNS.js).
 
-APNs provides their full list of supported fields in the notification payload [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html#//apple_ref/doc/uid/TP40008194-CH17-SW1).
+APNs provides their full list of supported fields in the notification payload [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/PayloadKeyReference.html).
 
 ## Payload Formats
 
