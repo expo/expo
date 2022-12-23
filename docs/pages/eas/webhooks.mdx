@@ -166,7 +166,7 @@ app.post('/webhook', (req, res) => {
   const expoSignature = req.headers['expo-signature'];
   // process.env.SECRET_WEBHOOK_KEY has to match SECRET value set with `eas webhook:create` command
   const hmac = crypto.createHmac('sha1', process.env.SECRET_WEBHOOK_KEY);
-  hmac.update(req.body);
+  hmac.update(JSON.stringify(req.body))
   const hash = `sha1=${hmac.digest('hex')}`;
   if (!safeCompare(expoSignature, hash)) {
     res.status(500).send("Signatures didn't match!");
