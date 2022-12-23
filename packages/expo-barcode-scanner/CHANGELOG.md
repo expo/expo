@@ -10,9 +10,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix import issue on case-sensitive file systems ([#20141](https://github.com/expo/expo/pull/20141) by [@hirbod](https://github.com/hirbod))
-
 ### 💡 Others
+
+## 12.1.0 - 2022-11-23
+
+### 🐛 Bug fixes
+
+- Fix import issue on case-sensitive file systems ([#20141](https://github.com/expo/expo/pull/20141) by [@hirbod](https://github.com/hirbod))
 
 ## 12.0.0 — 2022-10-25
 
