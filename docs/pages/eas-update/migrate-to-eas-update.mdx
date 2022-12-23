@@ -1,9 +1,11 @@
 ---
 title: Migrating from Classic Updates to EAS Update
+description: A guide to help migrate from Classic Updates to EAS Update.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 EAS Update is the next generation of Expo's updates service. If you're using Classic Updates, this guide will help you upgrade to EAS Update.
 
@@ -18,47 +20,67 @@ EAS Update requires the following versions or greater:
 
 ## Install EAS CLI
 
-1. Install EAS CLI:
+<Step label="1">
+Install EAS CLI:
 
-   <Terminal cmd={['$ npm install --global eas-cli']} />
+<Terminal cmd={['$ npm install --global eas-cli']} />
 
-2. Then, log in with your expo account:
+</Step>
 
-   <Terminal cmd={['$ eas login']} />
+<Step label="2">
+Then, log in with your expo account:
+
+<Terminal cmd={['$ eas login']} />
+
+</Step>
 
 ## Configure your project
 
 You'll need to make the following changes to your project:
 
-1. Initialize your project with EAS Update:
+<Step label="1">
+Initialize your project with EAS Update:
 
-   <Terminal cmd={['$ eas update:configure']} />
+<Terminal cmd={['$ eas update:configure']} />
 
-   After this command, you should have two a new fields in your app config at `expo.updates.url` and `expo.runtimeVersion`.
+After this command, you should have two new fields in your Expo config at `expo.updates.url` and `expo.runtimeVersion`.
 
-2. To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config. Remove the `expo.sdkVersion` property from your app config.
+</Step>
 
-3. To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include `channel` properties. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
+<Step label="2">
 
-   ```json
-   {
-     "build": {
-       "development": {
-         "developmentClient": true,
-         "distribution": "internal"
-       },
-       "preview": {
-         "distribution": "internal",
-         "channel": "preview"
-       },
-       "production": {
-         "channel": "production"
-       }
-     }
-   }
-   ```
+To ensure that updates are compatible with the underlying native code inside a build, EAS Update uses a new field named `runtimeVersion` that replaces the `sdkVersion` field in your project's app config. Remove the `expo.sdkVersion` property from your app config.
 
-4. Optional: If your project is a bare React Native project, [read the doc](/bare/updating-your-app) on extra configuration you may need.
+</Step>
+
+<Step label="3">
+To allow updates to apply to builds built with EAS, update your EAS build profiles in **eas.json** to include `channel` properties. These channels should replace any `releaseChannel` properties. We find it convenient to name the `channel` after the profile's name. For instance, the `preview` profile has a `channel` named `"preview"` and the `production` profile has a `channel` named `"production"`.
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal",
+      "channel": "preview"
+    },
+    "production": {
+      "channel": "production"
+    }
+  }
+}
+```
+
+</Step>
+
+<Step label="4">
+
+**Optional**: If your project is a bare React Native project, see [Use EAS Update in an existing project](/bare/updating-your-app) for the extra configuration you may need.
+
+</Step>
 
 ## Create new builds
 
@@ -68,12 +90,16 @@ The changes above affect the native code layer inside builds, which means you'll
 
 After making a change to your project locally, you're ready to publish an update, run:
 
-```bash
-eas update --branch [branch-name] --message [message]
-
-# Example
-eas update --branch production --message "Fixes typo"
-```
+<Terminal
+  cmd={[
+    '$ eas update --branch [branch-name] --message [message]',
+    '',
+    '# Example',
+    '',
+    '$ eas update --branch production --message "Fixes typo"',
+  ]}
+  cmdCopy="eas update --branch [branch-name] --message [message]"
+/>
 
 EAS Update adds a new idea called a "branch". A branch is a list of updates, and it is mapped to a channel. In the diagram below, builds with a channel of "production" are linked to a branch named "production". By default, channels and branches of the same name are linked until changed. By default, this behaves like the Classic Updates service.
 
