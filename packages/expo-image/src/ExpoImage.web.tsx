@@ -7,6 +7,7 @@ import {
   ImageProps,
   ImageSource,
   ImageTransition,
+  ImageLoadEventData,
 } from './Image.types';
 
 function ensureUnit(value: string | number) {
@@ -81,7 +82,12 @@ function useTransition(
   if (!transition) {
     return { placeholder: {}, image: {} };
   }
-  const { duration, timing, effect } = transition;
+  const { duration, timing, effect } = {
+    timing: 'ease-in-out',
+    effect: 'cross-dissolve',
+    duration: 1000,
+    ...transition,
+  };
 
   if (effect === 'cross-dissolve') {
     const commonStyles = {
@@ -197,8 +203,72 @@ function useSourceSelection(
   );
 }
 
-function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority']) {
+function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'] = 'normal') {
   return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
+}
+
+function Image({
+  source,
+  events,
+  contentPosition,
+  priority,
+  style,
+}: {
+  source?: ImageSource | null;
+  events?: {
+    onLoad: (((event: React.SyntheticEvent<HTMLImageElement, Event>) => void) | undefined)[];
+    onError: ((({ source }: { source?: ImageSource | null }) => void) | undefined)[];
+  };
+  contentPosition?: ImageContentPositionObject;
+  blurhashContentPosition?: ImageContentPositionObject;
+  priority?: string | null;
+  style: React.CSSProperties;
+  blurhashStyle?: React.CSSProperties;
+}) {
+  const objectPosition = getObjectPositionFromContentPositionObject(contentPosition);
+  const { uri = undefined } = source ?? {};
+  return (
+    <img
+      src={uri || undefined}
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        objectPosition,
+        ...style,
+      }}
+      // @ts-ignore
+      // eslint-disable-next-line react/no-unknown-property
+      fetchpriority={getFetchPriorityFromImagePriority(priority)}
+      onLoad={(event) => events?.onLoad.forEach((e) => e?.(event))}
+      onError={() => events?.onError.forEach((e) => e?.({ source }))}
+    />
+  );
+}
+
+function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
+  return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = event.target as HTMLImageElement;
+    onLoad?.({
+      source: {
+        url: target.currentSrc,
+        width: target.naturalWidth,
+        height: target.naturalHeight,
+        mediaType: null,
+      },
+      cacheType: 'none',
+    });
+  };
+}
+
+function onErrorAdapter(onError?: { (event: { error: string }): void }) {
+  return ({ source }: { source?: ImageSource | null }) => {
+    onError?.({
+      error: `Failed to load image from url: ${source?.uri}`,
+    });
+  };
 }
 
 export default function ExpoImage({
@@ -219,29 +289,6 @@ export default function ExpoImage({
   const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
 
   const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
-
-  function onLoadHandler(event: React.SyntheticEvent<HTMLImageElement, Event>) {
-    handlers.onLoad();
-    const target = event.target as HTMLImageElement;
-    onLoad?.({
-      source: {
-        url: target.currentSrc,
-        width: target.naturalWidth,
-        height: target.naturalHeight,
-        mediaType: null,
-      },
-      cacheType: 'none',
-    });
-    onLoadEnd?.();
-  }
-
-  function onErrorHandler() {
-    onError?.({
-      error: `Failed to load image from url: ${source?.[0]?.uri}`,
-    });
-    onLoadEnd?.();
-  }
-
   return (
     <div
       ref={containerRef}
@@ -254,36 +301,30 @@ export default function ExpoImage({
         overflow: 'hidden',
         position: 'relative',
       }}>
-      <img
-        src={placeholder?.[0]?.uri}
-        // @ts-ignore
-        // eslint-disable-next-line react/no-unknown-property
-        fetchpriority={getFetchPriorityFromImagePriority(priority)}
+      <Image
+        source={placeholder?.[0]}
         style={{
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          left: 0,
-          right: 0,
           objectFit: 'scale-down',
-          objectPosition: 'center',
           ...placeholderStyle,
         }}
-      />
-      <img
-        src={selectedSource?.uri}
-        style={{
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          left: 0,
-          right: 0,
+        contentPosition={{ left: '50%', top: '50%' }}
+        blurhashContentPosition={contentPosition}
+        blurhashStyle={{
           objectFit: contentFit,
-          objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
+        }}
+      />
+      <Image
+        source={selectedSource}
+        events={{
+          onError: [onErrorAdapter(onError), onLoadEnd],
+          onLoad: [onLoadAdapter(onLoad), handlers.onLoad, onLoadEnd],
+        }}
+        style={{
+          objectFit: contentFit,
           ...imageStyle,
         }}
-        onLoad={onLoadHandler}
-        onError={onErrorHandler}
+        priority={priority}
+        contentPosition={contentPosition}
       />
     </div>
   );
