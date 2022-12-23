@@ -310,6 +310,14 @@ open class ObjectDefinitionBuilder {
   }
 
   /**
+   * Defines event names that this module can send to JavaScript.
+   */
+  @JvmName("EventsWithArray")
+  fun Events(events: Array<String>) {
+    eventsDefinition = EventsDefinition(events)
+  }
+
+  /**
    * Creates module's lifecycle listener that is called right after the first event listener is added.
    */
   inline fun OnStartObserving(crossinline body: () -> Unit) {

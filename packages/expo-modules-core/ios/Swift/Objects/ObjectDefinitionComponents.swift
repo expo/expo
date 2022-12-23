@@ -27,6 +27,13 @@ public func Events(_ names: String...) -> EventsDefinition {
 }
 
 /**
+ Defines event names that the object can send to JavaScript.
+ */
+public func Events(_ names: [String]) -> EventsDefinition {
+  return EventsDefinition(names: names)
+}
+
+/**
  Function that is invoked when the first event listener is added.
  */
 public func OnStartObserving(@_implicitSelfCapture _ body: @escaping () -> Void) -> AsyncFunctionComponent<(), Void, Void> {
