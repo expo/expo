@@ -64,7 +64,7 @@ public final class ImageView: ExpoView {
     super.init(appContext: appContext)
 
     clipsToBounds = true
-    sdImageView.contentMode = .scaleAspectFill
+    sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     sdImageView.layer.masksToBounds = false
 
@@ -96,6 +96,9 @@ public final class ImageView: ExpoView {
     guard let source = bestSource else {
       displayPlaceholderIfNecessary()
       return
+    }
+    if sdImageView.image == nil {
+      sdImageView.contentMode = contentFit.toContentMode()
     }
     var context = SDWebImageContext()
 
