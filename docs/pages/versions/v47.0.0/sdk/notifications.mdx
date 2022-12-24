@@ -715,7 +715,7 @@ export default function App() {
           const url = response?.notification.request.content.data.url;
 
           return url;
-        }
+        },
         subscribe(listener) {
           const onReceiveURL = ({ url }: { url: string }) => listener(url);
 
