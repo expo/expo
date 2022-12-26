@@ -3,10 +3,10 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="css-18m3l03-AppConfigProperty"
+    class="css-h5ouib-AppConfigProperty"
   >
     <p
-      class="  css-m3vzl4-TextComponent"
+      class="  css-yszm2s-TextComponent"
       data-text="true"
     >
       <a
@@ -21,7 +21,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-sejz18-PropertyName"
+            class="css-n7jx6g-PropertyName"
             data-text="true"
           >
             name
@@ -58,20 +58,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </a>
     </p>
     <p
-      class="css-6kj7vp-TextComponent"
+      class="css-1lwc34i-AppConfigProperty"
       data-text="true"
     >
       Type: 
       <code
-        class="css-lz3xyk-TextComponent"
+        class="css-i9jevy-TextComponent"
         data-text="true"
       >
         string
       </code>
     </p>
-    <br />
     <p
-      class="css-1a1x0ox-TextComponent"
+      class="css-1oym3r-TextComponent"
       data-text="true"
     >
       Name of your app.
@@ -104,17 +103,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </div>
         <span
-          class="css-x1nydd-TextComponent"
+          class="css-1n5kx9e-TextComponent"
           data-text="true"
         >
           Bare Workflow
         </span>
       </summary>
       <div
-        class="css-1gk6nru-Collapsible"
+        class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-1a1x0ox-TextComponent"
+          class="css-1oym3r-TextComponent"
           data-text="true"
         >
           Edit the 'Display Name' field in Xcode
@@ -124,10 +123,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div />
   </div>
   <div
-    class="css-18m3l03-AppConfigProperty"
+    class="css-h5ouib-AppConfigProperty"
   >
     <p
-      class="  css-m3vzl4-TextComponent"
+      class="  css-yszm2s-TextComponent"
       data-text="true"
     >
       <a
@@ -142,7 +141,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-sejz18-PropertyName"
+            class="css-n7jx6g-PropertyName"
             data-text="true"
           >
             androidNavigationBar
@@ -179,20 +178,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </a>
     </p>
     <p
-      class="css-6kj7vp-TextComponent"
+      class="css-1lwc34i-AppConfigProperty"
       data-text="true"
     >
       Type: 
       <code
-        class="css-lz3xyk-TextComponent"
+        class="css-i9jevy-TextComponent"
         data-text="true"
       >
         object
       </code>
     </p>
-    <br />
     <p
-      class="css-1a1x0ox-TextComponent"
+      class="css-1oym3r-TextComponent"
       data-text="true"
     >
       Configuration for the bottom navigation bar on Android.
@@ -225,17 +223,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </div>
         <span
-          class="css-x1nydd-TextComponent"
+          class="css-1n5kx9e-TextComponent"
           data-text="true"
         >
           ExpoKit
         </span>
       </summary>
       <div
-        class="css-1gk6nru-Collapsible"
+        class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-1a1x0ox-TextComponent"
+          class="css-1oym3r-TextComponent"
           data-text="true"
         >
           Set this property using AppConstants.java.
@@ -270,17 +268,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </div>
         <span
-          class="css-x1nydd-TextComponent"
+          class="css-1n5kx9e-TextComponent"
           data-text="true"
         >
           Bare Workflow
         </span>
       </summary>
       <div
-        class="css-1gk6nru-Collapsible"
+        class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-1a1x0ox-TextComponent"
+          class="css-1oym3r-TextComponent"
           data-text="true"
         >
           Set this property using just Xcode
@@ -289,10 +287,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
     <div>
       <div
-        class="css-18m3l03-AppConfigProperty"
+        class="css-h5ouib-AppConfigProperty"
       >
         <p
-          class="  css-m3vzl4-TextComponent"
+          class="  css-yszm2s-TextComponent"
           data-text="true"
         >
           <a
@@ -307,7 +305,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-sejz18-PropertyName"
+                class="css-n7jx6g-PropertyName"
                 data-text="true"
               >
                 visible
@@ -344,12 +342,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="css-6kj7vp-TextComponent"
+          class="css-1lwc34i-AppConfigProperty"
           data-text="true"
         >
           Type: 
           <code
-            class="css-lz3xyk-TextComponent"
+            class="css-i9jevy-TextComponent"
             data-text="true"
           >
             enum
@@ -357,16 +355,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
            • Path:
            
           <code
-            class="css-1c83t10-AppConfigProperty"
+            class="css-te23k8-AppConfigProperty"
           >
             androidNavigationBar
             .
             visible
           </code>
         </p>
-        <br />
         <p
-          class="css-1a1x0ox-TextComponent"
+          class="css-1oym3r-TextComponent"
           data-text="true"
         >
           Determines how and when the navigation bar is shown.
@@ -399,17 +396,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </svg>
             </div>
             <span
-              class="css-x1nydd-TextComponent"
+              class="css-1n5kx9e-TextComponent"
               data-text="true"
             >
               ExpoKit
             </span>
           </summary>
           <div
-            class="css-1gk6nru-Collapsible"
+            class="css-b8vpa7-Collapsible"
           >
             <p
-              class="css-1a1x0ox-TextComponent"
+              class="css-1oym3r-TextComponent"
               data-text="true"
             >
               Set this property using Xcode.
@@ -418,10 +415,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </details>
         <div>
           <div
-            class="css-18m3l03-AppConfigProperty"
+            class="css-h5ouib-AppConfigProperty"
           >
             <p
-              class="  css-m3vzl4-TextComponent"
+              class="  css-yszm2s-TextComponent"
               data-text="true"
             >
               <a
@@ -436,7 +433,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="css-sejz18-PropertyName"
+                    class="css-n7jx6g-PropertyName"
                     data-text="true"
                   >
                     always
@@ -473,12 +470,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </a>
             </p>
             <p
-              class="css-6kj7vp-TextComponent"
+              class="css-1lwc34i-AppConfigProperty"
               data-text="true"
             >
               Type: 
               <code
-                class="css-lz3xyk-TextComponent"
+                class="css-i9jevy-TextComponent"
                 data-text="true"
               >
                 boolean
@@ -486,16 +483,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                • Path:
                
               <code
-                class="css-1c83t10-AppConfigProperty"
+                class="css-te23k8-AppConfigProperty"
               >
                 androidNavigationBar.visible
                 .
                 always
               </code>
             </p>
-            <br />
             <p
-              class="css-1a1x0ox-TextComponent"
+              class="css-1oym3r-TextComponent"
               data-text="true"
             >
               Test sub-sub-property
@@ -505,10 +501,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="css-18m3l03-AppConfigProperty"
+        class="css-h5ouib-AppConfigProperty"
       >
         <p
-          class="  css-m3vzl4-TextComponent"
+          class="  css-yszm2s-TextComponent"
           data-text="true"
         >
           <a
@@ -523,7 +519,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-sejz18-PropertyName"
+                class="css-n7jx6g-PropertyName"
                 data-text="true"
               >
                 backgroundColor
@@ -560,12 +556,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="css-6kj7vp-TextComponent"
+          class="css-1lwc34i-AppConfigProperty"
           data-text="true"
         >
           Type: 
           <code
-            class="css-lz3xyk-TextComponent"
+            class="css-i9jevy-TextComponent"
             data-text="true"
           >
             string
@@ -573,16 +569,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
            • Path:
            
           <code
-            class="css-1c83t10-AppConfigProperty"
+            class="css-te23k8-AppConfigProperty"
           >
             androidNavigationBar
             .
             backgroundColor
           </code>
         </p>
-        <br />
         <p
-          class="css-1a1x0ox-TextComponent"
+          class="css-1oym3r-TextComponent"
           data-text="true"
         >
           Specifies the background color of the navigation bar.
@@ -590,12 +585,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         
 
         <p
-          class="css-1a1x0ox-TextComponent"
+          class="css-1oym3r-TextComponent"
           data-text="true"
         >
           6 character long hex color string, eg: 
           <code
-            class="css-yrev4b-TextComponent"
+            class="css-vixx70-TextComponent"
             data-text="true"
           >
             '#000000'
@@ -606,10 +601,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="css-18m3l03-AppConfigProperty"
+    class="css-h5ouib-AppConfigProperty"
   >
     <p
-      class="  css-m3vzl4-TextComponent"
+      class="  css-yszm2s-TextComponent"
       data-text="true"
     >
       <a
@@ -624,7 +619,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-sejz18-PropertyName"
+            class="css-n7jx6g-PropertyName"
             data-text="true"
           >
             intentFilters
@@ -661,20 +656,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </a>
     </p>
     <p
-      class="css-6kj7vp-TextComponent"
+      class="css-1lwc34i-AppConfigProperty"
       data-text="true"
     >
       Type: 
       <code
-        class="css-lz3xyk-TextComponent"
+        class="css-i9jevy-TextComponent"
         data-text="true"
       >
         array
       </code>
     </p>
-    <br />
     <p
-      class="css-1a1x0ox-TextComponent"
+      class="css-1oym3r-TextComponent"
       data-text="true"
     >
       Configuration for setting an array of custom intent filters in Android manifest.
@@ -707,17 +701,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </svg>
         </div>
         <span
-          class="css-x1nydd-TextComponent"
+          class="css-1n5kx9e-TextComponent"
           data-text="true"
         >
           Bare Workflow
         </span>
       </summary>
       <div
-        class="css-1gk6nru-Collapsible"
+        class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-1a1x0ox-TextComponent"
+          class="css-1oym3r-TextComponent"
           data-text="true"
         >
           This is set in AndroidManifest.xml directly.
@@ -750,7 +744,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </svg>
       </div>
       <div
-        class="css-19syq17-Callout"
+        class="css-1m74yfi-Callout"
       >
         
 
@@ -763,10 +757,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </blockquote>
     <div>
       <div
-        class="css-18m3l03-AppConfigProperty"
+        class="css-h5ouib-AppConfigProperty"
       >
         <p
-          class="  css-m3vzl4-TextComponent"
+          class="  css-yszm2s-TextComponent"
           data-text="true"
         >
           <a
@@ -781,7 +775,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-sejz18-PropertyName"
+                class="css-n7jx6g-PropertyName"
                 data-text="true"
               >
                 autoVerify
@@ -818,12 +812,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="css-6kj7vp-TextComponent"
+          class="css-1lwc34i-AppConfigProperty"
           data-text="true"
         >
           Type: 
           <code
-            class="css-lz3xyk-TextComponent"
+            class="css-i9jevy-TextComponent"
             data-text="true"
           >
             boolean
@@ -831,16 +825,15 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
            • Path:
            
           <code
-            class="css-1c83t10-AppConfigProperty"
+            class="css-te23k8-AppConfigProperty"
           >
             intentFilters
             .
             autoVerify
           </code>
         </p>
-        <br />
         <p
-          class="css-1a1x0ox-TextComponent"
+          class="css-1oym3r-TextComponent"
           data-text="true"
         >
           You may also use an intent filter to set your app as the default handler for links
@@ -848,10 +841,10 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div />
       </div>
       <div
-        class="css-18m3l03-AppConfigProperty"
+        class="css-h5ouib-AppConfigProperty"
       >
         <p
-          class="  css-m3vzl4-TextComponent"
+          class="  css-yszm2s-TextComponent"
           data-text="true"
         >
           <a
@@ -866,7 +859,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-sejz18-PropertyName"
+                class="css-n7jx6g-PropertyName"
                 data-text="true"
               >
                 data
@@ -903,12 +896,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </a>
         </p>
         <p
-          class="css-6kj7vp-TextComponent"
+          class="css-1lwc34i-AppConfigProperty"
           data-text="true"
         >
           Type: 
           <code
-            class="css-lz3xyk-TextComponent"
+            class="css-i9jevy-TextComponent"
             data-text="true"
           >
             array || object
@@ -916,20 +909,19 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
            • Path:
            
           <code
-            class="css-1c83t10-AppConfigProperty"
+            class="css-te23k8-AppConfigProperty"
           >
             intentFilters
             .
             data
           </code>
         </p>
-        <br />
         <div>
           <div
-            class="css-18m3l03-AppConfigProperty"
+            class="css-h5ouib-AppConfigProperty"
           >
             <p
-              class="  css-m3vzl4-TextComponent"
+              class="  css-yszm2s-TextComponent"
               data-text="true"
             >
               <a
@@ -944,7 +936,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="css-sejz18-PropertyName"
+                    class="css-n7jx6g-PropertyName"
                     data-text="true"
                   >
                     host
@@ -981,12 +973,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </a>
             </p>
             <p
-              class="css-6kj7vp-TextComponent"
+              class="css-1lwc34i-AppConfigProperty"
               data-text="true"
             >
               Type: 
               <code
-                class="css-lz3xyk-TextComponent"
+                class="css-i9jevy-TextComponent"
                 data-text="true"
               >
                 string
@@ -994,14 +986,13 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                • Path:
                
               <code
-                class="css-1c83t10-AppConfigProperty"
+                class="css-te23k8-AppConfigProperty"
               >
                 intentFilters.data
                 .
                 host
               </code>
             </p>
-            <br />
             <div />
           </div>
         </div>

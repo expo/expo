@@ -15,7 +15,7 @@ end
 REACT_NATIVE_MINOR_VERSION = reactNativeVersion.split('.')[1].to_i
 
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
-fabric_compiler_flags = '-DRN_FABRIC_ENABLED'
+fabric_compiler_flags = '-DRN_FABRIC_ENABLED -DRCT_NEW_ARCH_ENABLED'
 folly_version = '2021.07.22.00'
 folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
 
@@ -33,13 +33,30 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.header_dir     = 'ExpoModulesCore'
 
+  header_search_paths = [
+    # EXJavaScriptRuntime -> Hermes
+    '"$(PODS_ROOT)/boost"',
+    '"$(PODS_ROOT)/DoubleConversion"',
+    '"$(PODS_ROOT)/RCT-Folly"',
+    '"${PODS_ROOT}/Headers/Public/React-hermes"',
+    '"${PODS_ROOT}/Headers/Public/hermes-engine"',
+
+    # EXAppDelegateWrapper -> RCTAppDelegate -> RCTCxxBridgeDelegate
+    '"${PODS_ROOT}/Headers/Private/React-Core"',
+
+    # similar to https://github.com/facebook/react-native/commit/c4b51e8d7, review this when we drop SDK 47
+    '"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers"',
+  ]
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'USE_HEADERMAP' => 'YES',
     'DEFINES_MODULE' => 'YES',
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'SWIFT_COMPILATION_MODE' => 'wholemodule',
-    'HEADER_SEARCH_PATHS' => "\"$(PODS_ROOT)/boost\" \"${PODS_ROOT}/Headers/Public/React-hermes\" \"${PODS_ROOT}/Headers/Public/hermes-engine\" \"$(PODS_ROOT)/Headers/Private/React-bridging/react/bridging\" \"$(PODS_CONFIGURATION_BUILD_DIR)/React-bridging/react_bridging.framework/Headers\"",
+    'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
+    "FRAMEWORK_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes\"",
     'OTHER_SWIFT_FLAGS' => "$(inherited) #{fabric_enabled ? fabric_compiler_flags : ''}"
   }
   s.user_target_xcconfig = {
@@ -50,6 +67,7 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
+  s.dependency 'React-RCTAppDelegate' if REACT_NATIVE_MINOR_VERSION >= 71
 
   if fabric_enabled
     compiler_flags << ' ' << fabric_compiler_flags

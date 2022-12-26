@@ -1,4 +1,4 @@
-import { PackagerAsset } from '@react-native/assets/registry';
+import { PackagerAsset } from './ReactNativeCompatibleAssetsRegistry';
 export type AssetMetadata = Pick<PackagerAsset, 'httpServerLocation' | 'name' | 'hash' | 'type' | 'scales' | 'width' | 'height'> & {
     uri?: string;
     fileHashes?: string[];

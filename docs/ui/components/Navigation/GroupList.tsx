@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
-import { spacing, theme, typography } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { spacing, theme } from '@expo/styleguide';
+import type { PropsWithChildren } from 'react';
 
 import { NavigationRenderProps } from '.';
 
@@ -22,7 +22,7 @@ export function GroupList({ route, children }: GroupListProps) {
 }
 
 const textStyle = css({
-  ...typography.utility.weight.medium,
+  fontWeight: 500,
   borderBottom: `1px solid ${theme.border.default}`,
   padding: spacing[1],
   paddingLeft: spacing[4] + spacing[1.5], // padding + icon width
