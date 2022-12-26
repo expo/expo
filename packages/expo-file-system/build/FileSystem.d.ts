@@ -42,6 +42,7 @@ export declare function readAsStringAsync(fileUri: string, options?: ReadingOpti
  * ```
  * @return Returns a Promise that resolves to a `string` containing a `content://` URI pointing to the file.
  * The URI is the same as the `fileUri` input parameter but in a different format.
+ * @platform android
  */
 export declare function getContentUriAsync(fileUri: string): Promise<string>;
 /**
