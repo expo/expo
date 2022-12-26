@@ -25,13 +25,13 @@ Expo includes support for the [Google AdMob SDK](https://www.google.com/admob/) 
 
 <APIInstallSection />
 
-## Configuration in app.json / app.config.js
+## Configuration in app.json/app.config.js
 
 You can configure `expo-ads-admob` using its built-in [config plugin](../../../guides/config-plugins.mdx) if you use config plugins in your project ([EAS Build](../../../build/introduction.mdx) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 For the module to attribute interactions with ads to your AdMob app properly you will need to add a `googleMobileAdsAppId` property to **app.json** under `[platform].config`. More info on where to find the app ID can be found in [this Google Support answer](https://support.google.com/admob/answer/6232340). A sample valid **app.json** would look like:
 
-```json
+```json app.json
 {
   "expo": {
     "name": "Ads Showcase",

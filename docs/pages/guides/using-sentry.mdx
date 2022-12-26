@@ -131,7 +131,7 @@ to your root project file (usually **App.js**), so make sure you remove it (but 
 
 #### Configure a `postPublish` hook
 
-Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
+Add `expo.hooks` property to your project's **app.json** or **app.config.js** file:
 
 ```json app.json
 {
@@ -187,12 +187,14 @@ In addition to the required config fields above, you can also provide these **op
 
 #### Add the Config Plugin
 
-Add `expo.plugins` to your project's **app.json** (or **app.config.js**) file:
+Add `expo.plugins` to your project's **app.json** or **app.config.js** file:
 
+{/* prettier-ignore */}
 ```json app.json
 {
   "expo": {
-    /* @hide ... your existing configuration */ /* @end */ "plugins": ["sentry-expo"]
+    "plugins": ["sentry-expo"]
+    /* @hide ... your existing configuration */ /* @end */
   }
 }
 ```
