@@ -1,6 +1,6 @@
 ---
 title: Build schema for eas.json
-sidebar_title: Build schema for eas.json
+description: A reference of configuration options for EAS Build and Submit.
 ---
 
 import { EasJsonPropertiesTable } from '~/components/plugins/EasJsonPropertiesTable';
@@ -12,13 +12,13 @@ import iosSchema from '~/scripts/schemas/unversioned/eas-json-build-ios-schema.j
 
 **eas.json** is your go-to place for configuring EAS Build (and [EAS Submit](/submit/eas-json.mdx)). It is located at the root of your project next to your **package.json**.
 
-This document is a reference that outlines the schema for the `"build"` key in **eas.json**. For an explanation of how to use it, please refer to ["Configuring EAS Build eas.json"](/build/eas-json.mdx).
+This document is a reference that outlines the schema for the `"build"` key in **eas.json**. For an explanation of how to use it, see [Configuring EAS Build eas.json](/build/eas-json.mdx).
 
 ## Examples
 
 <Collapsible summary="A managed project with several profiles">
 
-```json
+```json eas.json
 {
   "build": {
     "base": {
@@ -78,7 +78,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 
 <Collapsible summary="A bare project with several profiles">
 
-```json
+```json eas.json
 {
   "build": {
     "base": {
@@ -135,7 +135,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 ## Schema
 
 {/* prettier-ignore */}
-```json
+```json eas.json
 {
   "cli": {
     "version": /* @info Required EAS CLI version range. */"SEMVER_RANGE"/* @end */,
@@ -163,7 +163,7 @@ This document is a reference that outlines the schema for the `"build"` key in *
 
 > You can specify common options both in the platform-specific configuration object or at the profile's root. The platform-specific options take precedence over globally-defined ones.
 
-> EAS Submit is also configured in **eas.json**. You can find the reference for the `"submit"` fields in ["Configuring EAS Submit with eas.json"](/submit/eas-json.mdx).
+> EAS Submit is also configured in **eas.json**. You can find the reference for the `"submit"` fields in [Configuring EAS Submit with eas.json](/submit/eas-json.mdx).
 
 ## Options common to both platforms
 

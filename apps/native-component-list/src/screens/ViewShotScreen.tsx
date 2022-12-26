@@ -1,7 +1,6 @@
 import { LinearGradient } from 'expo-linear-gradient';
 import * as MediaLibrary from 'expo-media-library';
 import { Platform } from 'expo-modules-core';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { Dimensions, Image, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { captureRef as takeSnapshotAsync, captureScreen } from 'react-native-view-shot';
@@ -16,9 +15,7 @@ interface State {
   screenUri?: string;
 }
 
-// See: https://github.com/expo/expo/pull/10229#discussion_r490961694
-// eslint-disable-next-line @typescript-eslint/ban-types
-export default class ViewShotScreen extends React.Component<{}, State> {
+export default class ViewShotScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'ViewShot',
   };
@@ -68,7 +65,7 @@ export default class ViewShotScreen extends React.Component<{}, State> {
     const uri = this.state.screenUri;
 
     if (uri) {
-      const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY);
+      const { status } = await MediaLibrary.requestPermissionsAsync();
 
       if (status === 'granted') {
         await MediaLibrary.createAssetAsync(uri);

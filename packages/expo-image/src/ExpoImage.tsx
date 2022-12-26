@@ -63,6 +63,7 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
       delete resolvedStyle.shadowOpacity;
       delete resolvedStyle.shadowRadius;
     } else {
+      // @ts-expect-error
       delete resolvedStyle.elevation;
     }
 

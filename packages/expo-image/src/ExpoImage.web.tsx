@@ -2,14 +2,12 @@ import React from 'react';
 
 import {
   ImageContentPositionObject,
+  ImageContentPositionValue,
+  ImageNativeProps,
+  ImageProps,
   ImageSource,
   ImageTransition,
-  ImageTransitionEffect,
-  ImageTransitionTiming,
-  ImageNativeProps,
-  PositionValue,
-  ImagePriority,
-  ImageCacheType,
+  ImageLoadEventData,
 } from './Image.types';
 
 function ensureUnit(value: string | number) {
@@ -27,7 +25,7 @@ function getObjectPositionFromContentPositionObject(
 ): string {
   const resolvedPosition = { ...contentPosition } as Record<
     KeysOfUnion<ImageContentPositionObject>,
-    PositionValue
+    ImageContentPositionValue
   >;
   if (!resolvedPosition) {
     return '50% 50%';
@@ -77,48 +75,24 @@ function useImageState(source?: ImageSource[]) {
   return [imageState, handlers] as [ImageState, { onLoad: () => void }];
 }
 
-function getCSSTiming(timing?: ImageTransitionTiming) {
-  return (
-    {
-      [ImageTransitionTiming.EASE_IN]: 'ease-in',
-      [ImageTransitionTiming.EASE_OUT]: 'ease-out',
-      [ImageTransitionTiming.EASE_IN_OUT]: 'ease-in-out',
-      [ImageTransitionTiming.LINEAR]: 'linear',
-    }[timing || ImageTransitionTiming.LINEAR] ?? 'linear'
-  );
-}
-
-function getTransitionObjectFromTransition(transition?: number | ImageTransition | null) {
-  if (transition == null) {
-    return {
-      timing: ImageTransitionTiming.LINEAR,
-      duration: 0,
-      effect: ImageTransitionEffect.NONE,
-    };
+function useTransition(
+  transition: ImageTransition | null | undefined,
+  state: ImageState
+): Record<'placeholder' | 'image', Partial<React.CSSProperties>> {
+  if (!transition) {
+    return { placeholder: {}, image: {} };
   }
-  if (typeof transition === 'number') {
-    return {
-      timing: ImageTransitionTiming.EASE_IN_OUT,
-      duration: transition,
-      effect: ImageTransitionEffect.CROSS_DISOLVE,
-    };
-  }
-  return {
-    timing: ImageTransitionTiming.EASE_IN_OUT,
+  const { duration, timing, effect } = {
+    timing: 'ease-in-out',
+    effect: 'cross-dissolve',
     duration: 1000,
     ...transition,
   };
-}
 
-const useTransition = (
-  transition: number | ImageTransition | null | undefined,
-  state: ImageState
-): Record<'placeholder' | 'image', Partial<React.CSSProperties>> => {
-  const { duration, timing, effect } = getTransitionObjectFromTransition(transition);
-  if (effect === ImageTransitionEffect.CROSS_DISOLVE) {
+  if (effect === 'cross-dissolve') {
     const commonStyles = {
       transition: `opacity ${duration}ms`,
-      transitionTimingFunction: getCSSTiming(timing),
+      transitionTimingFunction: timing,
     };
     return {
       image: {
@@ -131,11 +105,11 @@ const useTransition = (
       },
     };
   }
-  if (effect === ImageTransitionEffect.FLIP_FROM_TOP) {
+  if (effect === 'flip-from-top') {
     const commonStyles = {
       transition: `transform ${duration}ms`,
       transformOrigin: 'top',
-      transitionTimingFunction: getCSSTiming(timing),
+      transitionTimingFunction: timing,
     };
     return {
       placeholder: {
@@ -150,18 +124,151 @@ const useTransition = (
   }
 
   return { placeholder: {}, image: {} };
-};
+}
 
-function getFetchPriorityFromImagePriority(priority: ImagePriority) {
-  switch (priority) {
-    case ImagePriority.HIGH:
-      return 'high';
-    case ImagePriority.LOW:
-      return 'low';
-    case ImagePriority.NORMAL:
-    default:
-      return 'auto';
-  }
+function findBestSourceForSize(
+  sources: ImageSource[] | undefined,
+  size: DOMRect | null
+): ImageSource | null {
+  return (
+    [...(sources || [])]
+      // look for the smallest image that's still larger then a container
+      ?.map((source) => {
+        if (!size) {
+          return { source, penalty: 0, covers: false };
+        }
+        const { width, height } =
+          typeof source === 'object' ? source : { width: null, height: null };
+        if (width == null || height == null) {
+          return { source, penalty: 0, covers: false };
+        }
+        if (width < size.width || height < size.height) {
+          return {
+            source,
+            penalty: Math.max(size.width - width, size.height - height),
+            covers: false,
+          };
+        }
+        return { source, penalty: (width - size.width) * (height - size.height), covers: true };
+      })
+      .sort((a, b) => a.penalty - b.penalty)
+      .sort((a, b) => Number(b.covers) - Number(a.covers))[0]?.source ?? null
+  );
+}
+
+function useSourceSelection(
+  sources?: ImageSource[],
+  sizeCalculation: ImageProps['responsivePolicy'] = 'live'
+) {
+  const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
+
+  // null - not calculated yet, DOMRect - size available
+  const [size, setSize] = React.useState<null | DOMRect>(null);
+  const resizeObserver = React.useRef<ResizeObserver | null>(null);
+
+  React.useEffect(() => {
+    return () => {
+      resizeObserver.current?.disconnect();
+    };
+  }, []);
+
+  const containerRef = React.useCallback(
+    (element: HTMLDivElement) => {
+      if (!hasMoreThanOneSource) {
+        return;
+      }
+      setSize(element?.getBoundingClientRect());
+      if (sizeCalculation === 'live') {
+        resizeObserver.current?.disconnect();
+        if (!element) {
+          return;
+        }
+        resizeObserver.current = new ResizeObserver((entries) => {
+          setSize(entries[0].contentRect);
+        });
+        resizeObserver.current.observe(element);
+      }
+    },
+    [hasMoreThanOneSource, sizeCalculation]
+  );
+
+  const bestSourceForSize = size !== undefined ? findBestSourceForSize(sources, size) : null;
+  const source = (hasMoreThanOneSource ? bestSourceForSize : sources?.[0]) ?? null;
+  return React.useMemo(
+    () => ({
+      containerRef,
+      source,
+    }),
+    [source]
+  );
+}
+
+function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'] = 'normal') {
+  return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
+}
+
+function Image({
+  source,
+  events,
+  contentPosition,
+  priority,
+  style,
+}: {
+  source?: ImageSource | null;
+  events?: {
+    onLoad: (((event: React.SyntheticEvent<HTMLImageElement, Event>) => void) | undefined)[];
+    onError: ((({ source }: { source?: ImageSource | null }) => void) | undefined)[];
+  };
+  contentPosition?: ImageContentPositionObject;
+  blurhashContentPosition?: ImageContentPositionObject;
+  priority?: string | null;
+  style: React.CSSProperties;
+  blurhashStyle?: React.CSSProperties;
+}) {
+  const objectPosition = getObjectPositionFromContentPositionObject(contentPosition);
+  const { uri = undefined } = source ?? {};
+  return (
+    <img
+      src={uri || undefined}
+      style={{
+        width: '100%',
+        height: '100%',
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        objectPosition,
+        ...style,
+      }}
+      // @ts-ignore
+      // eslint-disable-next-line react/no-unknown-property
+      fetchpriority={getFetchPriorityFromImagePriority(priority)}
+      onLoad={(event) => events?.onLoad.forEach((e) => e?.(event))}
+      onError={() => events?.onError.forEach((e) => e?.({ source }))}
+    />
+  );
+}
+
+function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
+  return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = event.target as HTMLImageElement;
+    onLoad?.({
+      source: {
+        url: target.currentSrc,
+        width: target.naturalWidth,
+        height: target.naturalHeight,
+        mediaType: null,
+      },
+      cacheType: 'none',
+    });
+  };
+}
+
+function onErrorAdapter(onError?: { (event: { error: string }): void }) {
+  return ({ source }: { source?: ImageSource | null }) => {
+    onError?.({
+      error: `Failed to load image from url: ${source?.uri}`,
+    });
+  };
 }
 
 export default function ExpoImage({
@@ -172,6 +279,7 @@ export default function ExpoImage({
   onLoad,
   transition,
   onError,
+  responsivePolicy,
   onLoadEnd,
   priority,
   ...props
@@ -180,30 +288,10 @@ export default function ExpoImage({
   const [state, handlers] = useImageState(source);
   const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
 
-  function onLoadHandler(event: React.SyntheticEvent<HTMLImageElement, Event>) {
-    handlers.onLoad();
-    const target = event.target as HTMLImageElement;
-    onLoad?.({
-      source: {
-        url: target.currentSrc,
-        width: target.naturalWidth,
-        height: target.naturalHeight,
-        mediaType: null,
-      },
-      cacheType: ImageCacheType.NONE,
-    });
-    onLoadEnd?.();
-  }
-
-  function onErrorHandler() {
-    onError?.({
-      error: `Failed to load image from url: ${source?.[0]?.uri}`,
-    });
-    onLoadEnd?.();
-  }
-
+  const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
   return (
     <div
+      ref={containerRef}
       style={{
         aspectRatio: String(aspectRatio),
         backgroundColor: backgroundColor?.toString(),
@@ -213,36 +301,30 @@ export default function ExpoImage({
         overflow: 'hidden',
         position: 'relative',
       }}>
-      <img
-        src={placeholder?.[0]?.uri}
-        // @ts-ignore
-        // eslint-disable-next-line react/no-unknown-property
-        fetchpriority={getFetchPriorityFromImagePriority(priority)}
+      <Image
+        source={placeholder?.[0]}
         style={{
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          left: 0,
-          right: 0,
           objectFit: 'scale-down',
-          objectPosition: 'center',
           ...placeholderStyle,
         }}
-      />
-      <img
-        src={source?.[0]?.uri}
-        style={{
-          width: '100%',
-          height: '100%',
-          position: 'absolute',
-          left: 0,
-          right: 0,
+        contentPosition={{ left: '50%', top: '50%' }}
+        blurhashContentPosition={contentPosition}
+        blurhashStyle={{
           objectFit: contentFit,
-          objectPosition: getObjectPositionFromContentPositionObject(contentPosition),
+        }}
+      />
+      <Image
+        source={selectedSource}
+        events={{
+          onError: [onErrorAdapter(onError), onLoadEnd],
+          onLoad: [onLoadAdapter(onLoad), handlers.onLoad, onLoadEnd],
+        }}
+        style={{
+          objectFit: contentFit,
           ...imageStyle,
         }}
-        onLoad={onLoadHandler}
-        onError={onErrorHandler}
+        priority={priority}
+        contentPosition={contentPosition}
       />
     </div>
   );

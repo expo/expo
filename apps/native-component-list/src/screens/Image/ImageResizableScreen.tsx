@@ -1,9 +1,8 @@
-import { ImageContentFit, ImageContentPosition, Image } from 'expo-image';
+import { ImageContentFit, ImageContentPosition, Image, ImageProps } from 'expo-image';
 import React from 'react';
 import {
   Dimensions,
   Image as RNImage,
-  ImageResizeMode,
   ScrollView,
   StyleSheet,
   Text,
@@ -116,11 +115,11 @@ const parameters: FunctionParameter[] = [
     name: 'Content fit',
     type: 'enum',
     values: [
-      { name: 'cover', value: ImageContentFit.COVER },
-      { name: 'contain', value: ImageContentFit.CONTAIN },
-      { name: 'fill', value: ImageContentFit.FILL },
-      { name: 'none', value: ImageContentFit.NONE },
-      { name: 'scale-down', value: ImageContentFit.SCALE_DOWN },
+      { name: 'cover', value: 'cover' },
+      { name: 'contain', value: 'contain' },
+      { name: 'fill', value: 'fill' },
+      { name: 'none', value: 'none' },
+      { name: 'scale-down', value: 'scale-down' },
     ],
   },
   {
@@ -141,15 +140,18 @@ const parameters: FunctionParameter[] = [
   },
 ];
 
-function mapContentFitToResizeMode(contentFit: ImageContentFit): ImageResizeMode {
+function mapContentFitToResizeMode(contentFit: ImageContentFit): ImageProps['resizeMode'] {
+  if (!contentFit) {
+    return 'cover';
+  }
   switch (contentFit) {
-    case ImageContentFit.COVER:
-    case ImageContentFit.CONTAIN:
+    case 'cover':
+    case 'contain':
       return contentFit;
-    case ImageContentFit.FILL:
+    case 'fill':
       return 'stretch';
-    case ImageContentFit.NONE:
-    case ImageContentFit.SCALE_DOWN:
+    case 'none':
+    case 'scale-down':
       return 'center';
   }
 }
