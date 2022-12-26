@@ -91,7 +91,7 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
    Modifier that sets property setter that receives only the new value as an argument.
    */
   @discardableResult
-  public func set<ValueType>(_ setter: @escaping (_ newValue: ValueType) -> ()) -> Self {
+  public func set<ValueType>(_ setter: @escaping (_ newValue: ValueType) -> Void) -> Self {
     self.setter = SyncFunctionComponent(
       "set",
       firstArgType: ValueType.self,
@@ -106,7 +106,7 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
    The owner is an object on which the function is called, like `this` in JavaScript.
    */
   @discardableResult
-  public func set<ValueType>(_ setter: @escaping (_ this: OwnerType, _ newValue: ValueType) -> ()) -> Self {
+  public func set<ValueType>(_ setter: @escaping (_ this: OwnerType, _ newValue: ValueType) -> Void) -> Self {
     self.setter = SyncFunctionComponent(
       "set",
       firstArgType: OwnerType.self,
@@ -127,7 +127,7 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
 
   internal func setValue(_ value: Any, owner: OwnerType? = nil) {
     let owner = owner as? AnyObject
-    let _ = try? setter?.call(by: owner, withArguments: [value])
+    _ = try? setter?.call(by: owner, withArguments: [value])
   }
 
   /**
