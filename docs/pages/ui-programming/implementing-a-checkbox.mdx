@@ -13,7 +13,7 @@ A checkbox is a button that exists in one of two states — it is checked or it 
 
 > You can find more information about using icons in your Expo project in our [Icons guide](/guides/icons).
 
-<SnackInline>
+<SnackInline dependencies={['@expo/vector-icons']}>
 
 ```jsx
 import { useState } from 'react';
@@ -87,15 +87,15 @@ const styles = StyleSheet.create({
 
 This checkbox isn't useful in this state because the `checked` value is accessible only from within the component — more often than not you'll want to control the checkbox from outside. This is achievable by defining `checked` and `onChange` as props that are passed into the checkbox:
 
-<SnackInline>
+<SnackInline dependencies={['@expo/vector-icons']}>
 
 ```jsx
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-function MyCheckbox({ 
-  /* @info Define checked and onChange as props instead of state */ 
+function MyCheckbox({
+  /* @info Define checked and onChange as props instead of state */
   onChange, checked
   /* @end */
 }) {
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
 
 It's common enough to need to render different styles when the checkmark is `checked` and when it is not. Let's add this to the checkbox's props and make it more reusable:
 
-<SnackInline>
+<SnackInline dependencies={['@expo/vector-icons']}>
 
 ```jsx
 import { useState } from 'react';
@@ -179,7 +179,7 @@ import { Ionicons } from '@expo/vector-icons';
 function MyCheckbox({
   checked,
   onChange,
-  /* @info Add style and icon props to make the checkbox reusable throughout your codebase */ 
+  /* @info Add style and icon props to make the checkbox reusable throughout your codebase */
   buttonStyle = {},
   activeButtonStyle = {},
   inactiveButtonStyle = {},
