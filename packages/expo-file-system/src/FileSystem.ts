@@ -112,7 +112,7 @@ export async function getContentUriAsync(fileUri: string): Promise<string> {
     }
     return await ExponentFileSystem.getContentUriAsync(fileUri);
   } else {
-    return new Promise((resolve) => resolve(fileUri));
+    return fileUri;
   }
 }
 
