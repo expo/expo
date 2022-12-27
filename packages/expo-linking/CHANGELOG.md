@@ -1,6 +1,6 @@
 # Changelog
 
-## Unpublished - 2022-12-26
+## Unpublished
 
 ### 🛠 Breaking changes
 
