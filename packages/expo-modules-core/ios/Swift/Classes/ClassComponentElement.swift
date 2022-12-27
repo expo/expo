@@ -25,7 +25,7 @@ extension AsyncFunctionComponent: ClassComponentElement {
 }
 
 extension PropertyComponent: ClassComponentElement {
-  public typealias OwnerType = Void
+  // It already has the `OwnerType`
 }
 
 extension ConstantsDefinition: ClassComponentElement {

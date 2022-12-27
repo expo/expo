@@ -17,7 +17,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
   /**
    A map of dynamic properties defined by the object.
    */
-  let properties: [String: PropertyComponent]
+  let properties: [String: AnyPropertyComponent]
 
   /**
    A map of classes defined within the object.
@@ -38,8 +38,8 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
       .compactMap { $0 as? ConstantsDefinition }
 
     self.properties = definitions
-      .compactMap { $0 as? PropertyComponent }
-      .reduce(into: [String: PropertyComponent]()) { dict, property in
+      .compactMap { $0 as? AnyPropertyComponent }
+      .reduce(into: [String: AnyPropertyComponent]()) { dict, property in
         dict[property.name] = property
       }
 
@@ -90,7 +90,7 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
 
   internal func decorateWithProperties(runtime: JavaScriptRuntime, object: JavaScriptObject) {
     for property in properties.values {
-      let descriptor = property.buildDescriptor(inRuntime: runtime, withCaller: object)
+      let descriptor = property.buildDescriptor(inRuntime: runtime)
       object.defineProperty(property.name, descriptor: descriptor)
     }
   }
