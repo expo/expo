@@ -5,7 +5,7 @@ description: Learn how to implement a fully customizable checkbox in your Expo p
 
 import { SnackInline } from '~/ui/components/Snippet';
 
-One fairly common component that is not offered out of the box by Expo is the mighty checkbox. There are several packages available on npm; however, it is simple enough to implement yourself, and by doing so you have full customization and control over the look and feel of your checkbox.
+The [`expo-checkbox`](https://docs.expo.dev/versions/latest/sdk/checkbox/) package provides a quick implementation of a checkbox that you can directly use in your project. However, to have full customization, and control over the look and feel of the checkbox, this page goes in-depth on how to implement the component from scratch.
 
 ## Understanding the checkbox
 
@@ -89,16 +89,13 @@ This checkbox isn't useful in this state because the `checked` value is accessib
 
 <SnackInline dependencies={['@expo/vector-icons']}>
 
+{/* prettier-ignore */}
 ```jsx
 import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-function MyCheckbox({
-  /* @info Define checked and onChange as props instead of state */
-  onChange, checked
-  /* @end */
-}) {
+function MyCheckbox({ /* @info Define checked and onChange as props instead of state */onChange, checked/* @end */ }) {
   return (
     <Pressable
       style={[styles.checkboxBase, checked && styles.checkboxChecked]}
@@ -272,4 +269,4 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-Now this checkbox ticks all of the boxes of what it should be. It toggles between `checked` states, can be controlled, and its styles are fully customizable.
+This checkbox ticks all of the boxes of what it should be. It toggles between `checked` states, can be controlled, and the styles are fully customizable.
