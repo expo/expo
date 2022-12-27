@@ -13,16 +13,15 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 Screen Orientation is defined as the orientation in which graphics are painted on the device. For example, the figure below has a device in a vertical and horizontal physical orientation, but a portrait screen orientation. For physical device orientation, see the orientation section of [Device Motion](devicemotion.mdx).
 
 <ImageSpotlight
-  alt="Portrait orientation in different physical orientations"
-  src="/static/images/screen-orientation-portrait.png"
-  containerStyle={{ backgroundColor: palette.light.gray['300'] }}
+  alt="Portrait orientation in different physical orientations."
+  src="/static/images/screen-orientation-portrait.jpg"
 />
 
 `ScreenOrientation` from **`expo`** allows changing supported screen orientations at runtime, and subscribing to orientation changes. This will take priority over the `orientation` key in **app.json**.
 
-On both iOS and Android platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
+On both Android and iOS platforms, changes to the screen orientation will override any system settings or user preferences. On Android, it is possible to change the screen orientation while taking the user's preferred orientation into account. On iOS, user and system settings are not accessible by the application and any changes to the screen orientation will override existing settings.
 
-> Web support has [limited support](https://caniuse.com/#feat=deviceorientation). For improved resize detection on mobile Safari, check out the docs on using [Resize Observer in Expo web](../../../guides/customizing-webpack.mdx#resizeobserver).
+> Web support has [limited support](https://caniuse.com/#feat=deviceorientation). For improved resize detection on mobile Safari, check out the docs on using [Resize Observer in Expo web](/guides/customizing-webpack/#resizeobserver).
 
 <PlatformsSection android emulator ios simulator web />
 
@@ -32,13 +31,13 @@ On both iOS and Android platforms, changes to the screen orientation will overri
 
 ### Warning
 
-Apple added support for _split view_ mode to iPads in iOS 9. This changed how the screen orientation is handled by the system. To put the matter shortly, for the iOS, your iPad is always in the landscape mode unless you open two applications side by side. In order to be able to lock screen orientation using this module you will need to disable support for this feature. For more information about the _split view_ mode, check out [the official Apple documentation](https://support.apple.com/en-us/HT207582).
+Apple added support for _split view_ mode to iPads in iOS 9. This changed how the screen orientation is handled by the system. To put the matter shortly, for iOS, your iPad is always in landscape mode unless you open two applications side by side. To be able to lock screen orientation using this module you will need to disable support for this feature. For more information about the _split view_ mode, check out [the official Apple documentation](https://support.apple.com/en-us/HT207582).
 
 #### Managed workflow
 
 Open your **app.json** and add the following inside of the `"expo"` field:
 
-```json
+```json app.json
 {
   "expo": {
     ...
