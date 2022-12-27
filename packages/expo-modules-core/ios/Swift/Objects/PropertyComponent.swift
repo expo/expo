@@ -211,3 +211,30 @@ public func Property<Value: AnyArgument, OwnerType>(
 ) -> PropertyComponent<OwnerType> {
   return PropertyComponent<OwnerType>(name: name, getter: get)
 }
+
+/**
+ Creates the property that references to an immutable property of the owner object using the key path.
+ */
+public func Property<Value: AnyArgument, OwnerType>(
+  _ name: String,
+  _ keyPath: KeyPath<OwnerType, Value>
+) -> PropertyComponent<OwnerType> {
+  return PropertyComponent<OwnerType>(name: name) { owner in
+    return owner[keyPath: keyPath]
+  }
+}
+
+/**
+ Creates the property that references to a mutable property of the owner object using the key path.
+ */
+public func Property<Value: AnyArgument, OwnerType>(
+  _ name: String,
+  _ keyPath: ReferenceWritableKeyPath<OwnerType, Value>
+) -> PropertyComponent<OwnerType> {
+  return PropertyComponent<OwnerType>(name: name) { owner in
+    return owner[keyPath: keyPath]
+  }
+  .set { owner, newValue in
+    owner[keyPath: keyPath] = newValue
+  }
+}
