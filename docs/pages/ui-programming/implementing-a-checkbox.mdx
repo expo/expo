@@ -95,7 +95,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
-function MyCheckbox({ /* @info Define checked and onChange as props instead of state */onChange, checked/* @end */}) {
+function MyCheckbox({ /* @info Define checked and onChange as props instead of state */onChange, checked/* @end */ }) {
   return (
     <Pressable
       style={[styles.checkboxBase, checked && styles.checkboxChecked]}
