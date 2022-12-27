@@ -93,6 +93,44 @@ class PropertyComponentSpec: ExpoSpec {
         expect(value?.kind) == .number
         expect(value?.getInt()) == newValue
       }
+
+      // Tests for accessing shared object properties through KeyPath and ReferenceWritableKeyPath
+      describe("key path") {
+        it("gets immutable property") {
+          let value = try runtime?.eval([
+            "object = new expo.modules.PropertyTest.TestClass()",
+            "object.immutableKeyPathProperty"
+          ])
+
+          expect(value?.kind) == .number
+          expect(value?.getInt()) == TestClass.constantValue
+        }
+
+        it("cannot set immutable property") {
+          let newValue = Int.random(in: 100..<200)
+          let value = try runtime?.eval([
+            "object = new expo.modules.PropertyTest.TestClass()",
+            "object.immutableKeyPathProperty = \(newValue)",
+            "object.immutableKeyPathProperty"
+          ])
+
+          // Returned value didn't change, it doesn't equal to `newValue`
+          expect(value?.kind) == .number
+          expect(value?.getInt()) == TestClass.constantValue
+        }
+
+        it("sets mutable property") {
+          let newValue = Int.random(in: 100..<200)
+          let value = try runtime?.eval([
+            "object = new expo.modules.PropertyTest.TestClass()",
+            "object.mutableKeyPathProperty = \(newValue)",
+            "object.mutableKeyPathProperty"
+          ])
+
+          expect(value?.kind) == .number
+          expect(value?.getInt()) == newValue
+        }
+      }
     }
   }
 }
@@ -134,6 +172,12 @@ class PropertyTestModule: Module {
       .set { object, newValue in
         object.someValue = newValue
       }
+
+      // KeyPath<TestClass, Int>
+      Property("immutableKeyPathProperty", \.immutableKeyPathProperty)
+
+      // ReferenceWritableKeyPath<TestClass, Int>
+      Property("mutableKeyPathProperty", \.mutableKeyPathProperty)
     }
   }
 }
@@ -142,4 +186,8 @@ fileprivate final class TestClass: SharedObject {
   static let constantValue = Int.random(in: 1..<100)
 
   var someValue = TestClass.constantValue
+
+  // For "key path" tests
+  let immutableKeyPathProperty = TestClass.constantValue
+  var mutableKeyPathProperty = TestClass.constantValue
 }
