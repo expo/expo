@@ -2,6 +2,7 @@ package expo.modules.image
 
 import android.net.Uri
 import com.bumptech.glide.load.model.GlideUrl
+import expo.modules.image.okhttp.GlideUrlWrapper
 
 sealed class GlideModel {
   abstract val glideData: Any
@@ -19,7 +20,7 @@ sealed class GlideModel {
 class GlideUrlModel(
   glideUrl: GlideUrl
 ) : GlideModel() {
-  override val glideData: GlideUrl = glideUrl
+  override val glideData: GlideUrlWrapper = GlideUrlWrapper(glideUrl)
 }
 
 class GlideRawModel(
