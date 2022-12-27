@@ -624,10 +624,10 @@ SPEC CHECKSUMS:
   EXManifests: 347f49430b63444579aa013f0ad057d16b8d1cc8
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
   expo-dev-launcher: 953f564f7d006f1af50b119cacb48cafcad40c73
-  expo-dev-menu: 9e3dddd191ef96d9b60cff56f707e02223200bf1
+  expo-dev-menu: 330211ba6e93b8195b43aa9e84555ec861131af4
   expo-dev-menu-interface: c8ad2dc7bb9513c6668c0b0fdf2391727a3d19a7
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
-  ExpoModulesCore: e47e5d3e3f8fbc03b6c41cfc1d54421381201dd5
+  ExpoModulesCore: f58d3a1df4c7ac1c2342a933795714a20af44668
   ExpoModulesTestCore: fe0a7344268158f254dadc9ac947b2c66bb19fed
   EXStructuredHeaders: fb774e45eac2e5d62ba40b28176bfbfba61b843e
   EXUpdates: d0c361e15f668d22dd33633717a8d24991ea4925
