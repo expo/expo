@@ -1,6 +1,6 @@
 # Changelog
 
-## Unpublished
+## Unpublished - 2022-12-26
 
 ### 🛠 Breaking changes
 
@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix link in README that was incorrectly pointing to to expo-asset. ([#20616](https://github.com/expo/expo/pull/20616) by [@stereoplegic](https://github.com/stereoplegic)
+
 ## 3.2.3 — 2022-10-25
 
 ### 🐛 Bug fixes
@@ -18,7 +20,7 @@
 
 ### 💡 Others
 
-- Update docs link. ([#18935](https://github.com/expo/expo/pull/18935) by [@EvanBacon](https://github.com/EvanBacon))
+  - Update docs link. ([#18935](https://github.com/expo/expo/pull/18935) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 3.2.2 — 2022-07-25
 
