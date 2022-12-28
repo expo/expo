@@ -10,6 +10,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
@@ -296,7 +297,7 @@ Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be
 
 ## Troubleshooting
 
-<Collapsible summary="I'm seeing `error: project not found` in my build logs">
+<Collapsible summary={<>I'm seeing <CODE>error: project not found</CODE> in my build logs</>}>
 
 This error is caused by the script that tries to upload sourcemaps during build.
   
