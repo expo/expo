@@ -670,7 +670,7 @@ PODS:
   - RNScreens (3.18.0):
     - React-Core
     - React-RCTImage
-  - RNSharedElement (0.8.4):
+  - RNSharedElement (0.8.7):
     - React-Core
   - RNSVG (13.4.0):
     - React-Core
@@ -1292,7 +1292,7 @@ SPEC CHECKSUMS:
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNReanimated: 95fde05503235f14cd4a0cf526ffbad3d54af688
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
-  RNSharedElement: eb7d506733952d58634f34c82ec17e82f557e377
+  RNSharedElement: 14409838520c8b50850aa4d33e15d0b8afdf7052
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
   SDWebImage: b9a731e1d6307f44ca703b3976d18c24ca561e84
   SDWebImageAVIFCoder: 6337ea93faf8de93edf3433d75be6055add74552

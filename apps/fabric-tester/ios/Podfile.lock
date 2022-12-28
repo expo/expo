@@ -18,7 +18,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBlur (12.0.1):
     - ExpoModulesCore
-  - ExpoImage (0.2.3):
+  - ExpoImage (1.0.0-alpha.3):
     - ExpoModulesCore
     - SDWebImage (~> 5.14.2)
     - SDWebImageAVIFCoder (~> 0.9.3)
@@ -885,10 +885,10 @@ SPEC CHECKSUMS:
   EXFont: 319606bfe48c33b5b5063fb0994afdc496befe80
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
   ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
-  ExpoImage: da2c9a0f17c5b00727619f0f0777c1a0b9da8c07
+  ExpoImage: 191ac66d00b42323adebd48d594001a4b70fa336
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
   ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
-  ExpoModulesCore: acaecea3545503433c4ce834cec5cccbcf15fc68
+  ExpoModulesCore: 7943cd2c431999fa45b57be42fccd5ec05600132
   EXSplashScreen: 20052670daff7650fa01140a178d0af1a914584b
   FBLazyVector: affa4ba1bfdaac110a789192f4d452b053a86624
   FBReactNativeSpec: cb1e21b7a388cc8529b9939ebf91eb10dac69714
