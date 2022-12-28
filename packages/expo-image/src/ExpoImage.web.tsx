@@ -6,7 +6,6 @@ import {
   ImageNativeProps,
   ImageProps,
   ImageSource,
-  ImageTransition,
   ImageLoadEventData,
 } from './Image.types';
 import { useBlurhash } from './utils/blurhash/useBlurhash';
@@ -51,82 +50,99 @@ function getObjectPositionFromContentPositionObject(
   );
 }
 
-type ImageState = 'empty' | 'loading' | 'loaded' | 'error';
+// type ImageState = 'empty' | 'loading' | 'loaded' | 'error';
 
-function useImageState(source?: ImageSource[]) {
-  const hasAnySource = source && source.length > 0;
-  const [imageState, setImageState] = React.useState<ImageState>(
-    hasAnySource ? 'loading' : 'empty'
-  );
-  React.useEffect(() => {
-    setImageState((prevState) =>
-      prevState === 'empty' ? (hasAnySource ? 'loading' : 'empty') : prevState
-    );
-  }, [hasAnySource]);
+// function useImageState(source?: ImageSource[]) {
+//   const hasAnySource = source && source.length > 0;
+//   const [imageState, setImageState] = React.useState<ImageState>(
+//     hasAnySource ? 'loading' : 'empty'
+//   );
 
-  const onLoad = React.useCallback(
-    () => setImageState((prevState) => (imageState === 'loading' ? 'loaded' : prevState)),
-    []
-  );
-  const handlers = React.useMemo(
-    () => ({
-      onLoad,
-    }),
-    [onLoad]
-  );
-  return [imageState, handlers] as [ImageState, { onLoad: () => void }];
-}
+//   React.useEffect(() => {
+//     setImageState(hasAnySource ? 'loading' : 'empty');
+//   }, [source]);
 
-function useTransition(
-  transition: ImageTransition | null | undefined,
-  state: ImageState
-): Record<'placeholder' | 'image', Partial<React.CSSProperties>> {
-  if (!transition) {
-    return { placeholder: {}, image: {} };
-  }
-  const { duration, timing, effect } = {
-    timing: 'ease-in-out',
-    effect: 'cross-dissolve',
-    duration: 1000,
-    ...transition,
-  };
+//   React.useEffect(() => {
+//     setImageState((prevState) =>
+//       prevState === 'empty' ? (hasAnySource ? 'loading' : 'empty') : prevState
+//     );
+//   }, [hasAnySource]);
 
-  if (effect === 'cross-dissolve') {
-    const commonStyles = {
-      transition: `opacity ${duration}ms`,
-      transitionTimingFunction: timing,
-    };
-    return {
-      image: {
-        opacity: state === 'loaded' ? '1' : '0',
-        ...commonStyles,
-      },
-      placeholder: {
-        opacity: state === 'loaded' ? '0' : '1',
-        ...commonStyles,
-      },
-    };
-  }
-  if (effect === 'flip-from-top') {
-    const commonStyles = {
-      transition: `transform ${duration}ms`,
-      transformOrigin: 'top',
-      transitionTimingFunction: timing,
-    };
-    return {
-      placeholder: {
-        transform: `rotateX(${state !== 'loaded' ? '0' : '90deg'})`,
-        ...commonStyles,
-      },
-      image: {
-        transform: `rotateX(${state === 'loaded' ? '0' : '90deg'})`,
-        ...commonStyles,
-      },
-    };
-  }
+//   const onLoad = React.useCallback(
+//     () => setImageState((prevState) => (imageState === 'loading' ? 'loaded' : prevState)),
+//     []
+//   );
+//   const handlers = React.useMemo(
+//     () => ({
+//       onLoad,
+//     }),
+//     [onLoad]
+//   );
+//   return [imageState, handlers] as [ImageState, { onLoad: () => void }];
+// }
 
-  return { placeholder: {}, image: {} };
-}
+// function useTransition(
+//   transition: ImageTransition | null | undefined,
+//   polarity: boolean
+// ): Record<'first' | 'second', Partial<React.CSSProperties>> {
+//   if (!transition) {
+//     return { first: {}, second: {} };
+//   }
+//   const { duration, timing, effect } = {
+//     timing: 'ease-in-out',
+//     effect: 'cross-disolve',
+//     duration: 1000,
+//     ...transition,
+//   };
+//   if (!effect || !timing || !duration) {
+//     return { first: {}, second: {} };
+//   }
+//   if (effect === 'cross-disolve') {
+//     const commonStyles = {
+//       // transition: `opacity ${duration}ms ${timing}`,
+//       'animation-duration': `${duration}ms`,
+//     };
+//     return {
+//       first: {
+//         ...commonStyles,
+//         // @ts-ignore
+//         'animation-name': 'cross-disolve-in',
+//         // opacity: polarity ? '1' : '0',
+//         // ...commonStyles,
+//       },
+//       second: {
+//         ...commonStyles,
+//         // @ts-ignore
+//         'animation-name': 'cross-disolve-out',
+//       },
+//     };
+//   }
+//   if (
+//     ['flip-from-top', 'flip-from-bottom', 'flip-from-left', 'flip-from-right'].includes(
+//       effect || ''
+//     )
+//   ) {
+//     const origin = effect.replace('flip-from-', '');
+//     const axis = origin === 'top' || origin === 'bottom' ? 'X' : 'Y';
+//     const commonStyles = {
+//       transition: `transform ${duration}ms ${timing}`,
+//       transformOrigfirst: origin,
+//     };
+//     const sign = origin === 'bottom' || origin === 'right' ? '-' : '';
+//     return {
+//       second: {
+//         transform: `rotate${axis}(${polarity ? '0' : `${sign}90deg`})`,
+//         ...commonStyles,
+//       },
+//       first: {
+//         transform: `rotate${axis}(${polarity ? '0' : `${sign}90deg`})`,
+//         ...commonStyles,
+//       },
+//     };
+//   }
+
+//   return { first: {}, second: {} };
+// }
 
 function findBestSourceForSize(
   sources: ImageSource[] | undefined,
@@ -196,6 +212,7 @@ function useSourceSelection(
 
   const bestSourceForSize = size !== undefined ? findBestSourceForSize(sources, size) : null;
   const source = (hasMoreThanOneSource ? bestSourceForSize : sources?.[0]) ?? null;
+
   return React.useMemo(
     () => ({
       containerRef,
@@ -209,53 +226,100 @@ function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'
   return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
 
-function Image({
-  source,
-  events,
-  contentPosition,
-  blurhashContentPosition,
-  priority,
-  style,
-  blurhashStyle,
-}: {
-  source?: ImageSource | null;
-  events?: {
-    onLoad: (((event: React.SyntheticEvent<HTMLImageElement, Event>) => void) | undefined)[];
-    onError: ((({ source }: { source?: ImageSource | null }) => void) | undefined)[];
-  };
-  contentPosition?: ImageContentPositionObject;
-  blurhashContentPosition?: ImageContentPositionObject;
-  priority?: string | null;
-  style: React.CSSProperties;
-  blurhashStyle?: React.CSSProperties;
-}) {
-  const isBlurhash = isBlurhashString(source?.uri || '');
-  const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
-  const objectPosition = getObjectPositionFromContentPositionObject(
-    isBlurhash ? blurhashContentPosition : contentPosition
-  );
-  const uri = isBlurhash ? blurhashUri : source?.uri;
-  return (
-    <img
-      src={uri || undefined}
-      style={{
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        objectPosition,
-        ...style,
-        ...(isBlurhash ? blurhashStyle : {}),
-      }}
-      // @ts-ignore
-      // eslint-disable-next-line react/no-unknown-property
-      fetchpriority={getFetchPriorityFromImagePriority(priority)}
-      onLoad={(event) => events?.onLoad.forEach((e) => e?.(event))}
-      onError={() => events?.onError.forEach((e) => e?.({ source }))}
-    />
-  );
+function setClassOnElement(element: HTMLImageElement | null, classes: string[]) {
+  if (!element) {
+    return;
+  }
+  element.setAttribute('class', classes.join(' '));
 }
+
+function getAnimatorFromClass(animationClass: string | null) {
+  if (!animationClass) return null;
+  return {
+    startingClass: `${animationClass}-start`,
+    run: (to: React.RefObject<HTMLImageElement>, from: React.RefObject<HTMLImageElement>[]) => {
+      // setClassOnElement(to.current, [`${animationClass}-start`]);
+      // // Needed to apply the class by causing reflow before applying the next one
+      // // eslint-disable-next-line no-unused-expressions
+      // to.current?.offsetWidth;
+
+      setClassOnElement(to.current, [animationClass, 'transitioning', `${animationClass}-active`]);
+      from.forEach((element) => {
+        if (!element.current?.classList.contains(`unmount`)) {
+          setClassOnElement(element.current, [animationClass, `${animationClass}-end`, 'unmount']);
+        }
+      });
+    },
+  };
+}
+
+const Image = React.forwardRef(
+  (
+    {
+      source,
+      events,
+      contentPosition,
+      blurhashContentPosition,
+      priority,
+      style,
+      blurhashStyle,
+      className,
+    }: {
+      source?: ImageSource | null;
+      events?: {
+        onLoad?: (((event: React.SyntheticEvent<HTMLImageElement, Event>) => void) | undefined)[];
+        onError?: ((({ source }: { source: ImageSource | null }) => void) | undefined)[];
+        onTransitionEnd?: ((() => void) | undefined)[];
+        onMount?: ((() => void) | undefined)[];
+      };
+      contentPosition?: ImageContentPositionObject;
+      blurhashContentPosition?: ImageContentPositionObject;
+      priority?: string | null;
+      style: React.CSSProperties;
+      blurhashStyle?: React.CSSProperties;
+      className?: string;
+    },
+    ref: React.Ref<HTMLImageElement>
+  ) => {
+    React.useEffect(() => {
+      events?.onMount?.forEach((e) => e?.());
+    }, []);
+
+    const isBlurhash = isBlurhashString(source?.uri || '');
+    const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
+    const objectPosition = getObjectPositionFromContentPositionObject(
+      isBlurhash ? blurhashContentPosition : contentPosition
+    );
+    const uri = isBlurhash ? blurhashUri : source?.uri;
+
+    return (
+      <img
+        ref={ref}
+        className={className}
+        src={uri || undefined}
+        key={source?.uri}
+        style={{
+          width: '100%',
+          height: '100%',
+          position: 'absolute',
+          left: 0,
+          right: 0,
+          objectPosition,
+          ...style,
+          ...(isBlurhash ? blurhashStyle : {}),
+        }}
+        // @ts-ignore
+        // eslint-disable-next-line react/no-unknown-property
+        fetchpriority={getFetchPriorityFromImagePriority(priority || 'normal')}
+        onLoad={(event) => {
+          events?.onLoad?.forEach((e) => e?.(event));
+        }}
+        onTransitionEnd={() => events?.onTransitionEnd?.forEach((e) => e?.())}
+        onError={() => events?.onError?.forEach((e) => e?.({ source: source || null }))}
+      />
+    );
+  }
+);
 
 function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
   return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
@@ -280,6 +344,143 @@ function onErrorAdapter(onError?: { (event: { error: string }): void }) {
   };
 }
 
+function useAnimationManagerNode(node: AnimationManagerNode | null) {
+  const callbackContainer: {
+    onReady: (() => void) | null;
+    onFinished: (() => void) | null;
+    onMount: (() => void) | null;
+  } = {
+    onReady: null,
+    onFinished: null,
+    onMount: null,
+  };
+  const newNode = React.useMemo(() => {
+    console.log({ node });
+    if (!node) {
+      return null;
+    }
+    const [animationKey, renderFunction] = node;
+    const ref = React.createRef<HTMLImageElement>();
+    const child = renderFunction({
+      onReady: () => {
+        callbackContainer.onReady?.();
+      },
+      onFinished: () => {
+        callbackContainer.onFinished?.();
+      },
+      onMount: () => {
+        callbackContainer.onMount?.();
+      },
+      ref,
+    });
+    // key, ReactElement, ref, callbacks
+    return [animationKey, child, ref, callbackContainer] as [
+      string,
+      React.ReactElement,
+      React.RefObject<HTMLImageElement>,
+      typeof callbackContainer
+    ];
+  }, [node?.[1]]);
+  return newNode;
+}
+
+type AnimationManagerNode = [
+  key: string,
+  renderFunction: (callbacks: {
+    onReady: () => void;
+    onFinished: () => void;
+    onMount: () => void;
+    ref: React.RefObject<HTMLImageElement>;
+  }) => React.ReactElement
+];
+
+type Animation = null | {
+  run: (to: React.RefObject<HTMLImageElement>, from: React.RefObject<HTMLImageElement>[]) => void;
+  startingClass: string;
+};
+
+function AnimationManager({
+  children: renderFunction,
+  initial,
+  animation,
+}: {
+  children: AnimationManagerNode;
+  initial: AnimationManagerNode | null;
+  animation: null | Animation;
+}) {
+  const initialNode = useAnimationManagerNode(initial);
+  if (initialNode) {
+    initialNode[3].onFinished = () =>
+      setNodes((n) =>
+        n.filter((node, index) => node[0] !== initialNode[0] || index === n.length - 1)
+      );
+  }
+
+  const [nodes, setNodes] = React.useState<
+    [
+      string,
+      React.ReactElement,
+      React.RefObject<HTMLImageElement>,
+      {
+        onReady: (() => void) | null;
+        onFinished: (() => void) | null;
+        onMount: (() => void) | null;
+      }
+    ][]
+  >(initialNode ? [initialNode] : []);
+  const newNode = useAnimationManagerNode(renderFunction);
+  if (newNode) {
+    newNode[3].onFinished = () => {
+      if (newNode[2].current?.classList.contains('unmount')) {
+        setNodes((n) =>
+          n.filter((node, index) => node[0] !== newNode[0] || index === n.length - 1)
+        );
+      }
+    };
+  }
+  React.useEffect(() => {
+    setNodes((n) => {
+      if (!newNode) {
+        return n;
+      }
+      const existingNodeIndex = n.findIndex((node) => node[0] === newNode[0]);
+
+      if (existingNodeIndex >= 0) {
+        const copy = [...n];
+        copy.splice(existingNodeIndex, 1, newNode);
+        return copy;
+      }
+
+      newNode[3].onMount = () => {
+        if (!newNode?.[2].current || !animation?.startingClass) {
+          return;
+        }
+        setClassOnElement(newNode?.[2].current, [animation?.startingClass]);
+      };
+
+      newNode[3].onReady = () => {
+        if (animation) {
+          animation.run(
+            newNode[2],
+            n.map((n2) => n2[2])
+          );
+        } else {
+          nodes.forEach((oldNode) => oldNode[3]?.onFinished?.());
+        }
+      };
+      n.forEach((prevNode) => (prevNode[3].onReady = () => null));
+      return [...n, newNode];
+    });
+  }, [newNode]);
+  return (
+    <>
+      {[...nodes].reverse().map((n, idx) => (
+        <div key={n[0]}>{n[1]}</div>
+      ))}
+    </>
+  );
+}
+
 export default function ExpoImage({
   source,
   placeholder,
@@ -294,10 +495,8 @@ export default function ExpoImage({
   ...props
 }: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
-  const [state, handlers] = useImageState(source);
-  const { placeholder: placeholderStyle, image: imageStyle } = useTransition(transition, state);
-
   const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
+  const animation = getAnimatorFromClass(transition?.effect || null);
   return (
     <div
       ref={containerRef}
@@ -310,31 +509,85 @@ export default function ExpoImage({
         overflow: 'hidden',
         position: 'relative',
       }}>
-      <Image
-        source={placeholder?.[0]}
-        style={{
-          objectFit: 'scale-down',
-          ...placeholderStyle,
-        }}
-        contentPosition={{ left: '50%', top: '50%' }}
-        blurhashContentPosition={contentPosition}
-        blurhashStyle={{
-          objectFit: contentFit,
-        }}
-      />
-      <Image
-        source={selectedSource}
-        events={{
-          onError: [onErrorAdapter(onError), onLoadEnd],
-          onLoad: [onLoadAdapter(onLoad), handlers.onLoad, onLoadEnd],
-        }}
-        style={{
-          objectFit: contentFit,
-          ...imageStyle,
-        }}
-        priority={priority}
-        contentPosition={contentPosition}
-      />
+      <style>
+        {`
+        .cross-dissolve {
+          transition-property: opacity;
+          animation-fill-mode: forwards;
+        }
+        .cross-dissolve-start:not(.transitioning) {
+          opacity: 0;
+        }
+        .cross-dissolve-active {
+          opacity: 1;
+        }
+        .cross-dissolve-end {
+          opacity: 0;
+        }
+        .flip-from-top {
+          transition-property: transform;
+          animation-fill-mode: forwards;
+          transform-origin: top;
+        }
+        .flip-from-top-start:not(.transitioning) {
+          transform: rotateX(90deg);
+        }
+        .flip-from-top-active {
+          transform: rotateX(0);
+        }
+        .flip-from-top-end {
+          transform: rotateX(-90deg);
+        }
+          `}
+      </style>
+      <AnimationManager
+        animation={animation}
+        initial={
+          placeholder?.[0]?.uri
+            ? [
+                placeholder?.[0]?.uri || '',
+                ({ onFinished, ref }) => (
+                  <Image
+                    ref={ref}
+                    source={placeholder?.[0]}
+                    style={{
+                      objectFit: 'scale-down',
+                    }}
+                    events={{
+                      onTransitionEnd: [onFinished],
+                    }}
+                    contentPosition={{ left: '50%', top: '50%' }}
+                    blurhashContentPosition={contentPosition}
+                    blurhashStyle={{
+                      objectFit: contentFit,
+                    }}
+                  />
+                ),
+              ]
+            : null
+        }>
+        {[
+          (selectedSource as any)?.uri,
+          ({ onFinished, onReady, ref, onMount }) => (
+            <Image
+              ref={ref}
+              source={selectedSource || placeholder?.[0]}
+              events={{
+                onError: [onErrorAdapter(onError), onLoadEnd],
+                onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
+                onMount: [onMount],
+                onTransitionEnd: [onFinished],
+              }}
+              style={{
+                objectFit: selectedSource ? contentFit : 'scale-down',
+                transitionDuration: `${transition?.duration || 0}ms`,
+              }}
+              priority={priority}
+              contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
+            />
+          ),
+        ]}
+      </AnimationManager>
     </div>
   );
 }
