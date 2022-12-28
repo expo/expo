@@ -78,6 +78,12 @@ const summaryStyle = css({
     marginTop: 0,
     marginBottom: 0,
   },
+
+  code: {
+    backgroundColor: theme.background.tertiary,
+    display: 'inline',
+    fontSize: '90%',
+  },
 });
 
 const markerWrapperStyle = css({
