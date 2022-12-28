@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Migrated to Expo Modules API and Swift. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
+- Added support for Fabric. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
