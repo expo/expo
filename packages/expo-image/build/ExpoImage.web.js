@@ -28,93 +28,6 @@ function getObjectPositionFromContentPositionObject(contentPosition) {
     })
         .join(' ') || '50% 50%');
 }
-// type ImageState = 'empty' | 'loading' | 'loaded' | 'error';
-// function useImageState(source?: ImageSource[]) {
-//   const hasAnySource = source && source.length > 0;
-//   const [imageState, setImageState] = React.useState<ImageState>(
-//     hasAnySource ? 'loading' : 'empty'
-//   );
-//   React.useEffect(() => {
-//     setImageState(hasAnySource ? 'loading' : 'empty');
-//   }, [source]);
-//   React.useEffect(() => {
-//     setImageState((prevState) =>
-//       prevState === 'empty' ? (hasAnySource ? 'loading' : 'empty') : prevState
-//     );
-//   }, [hasAnySource]);
-//   const onLoad = React.useCallback(
-//     () => setImageState((prevState) => (imageState === 'loading' ? 'loaded' : prevState)),
-//     []
-//   );
-//   const handlers = React.useMemo(
-//     () => ({
-//       onLoad,
-//     }),
-//     [onLoad]
-//   );
-//   return [imageState, handlers] as [ImageState, { onLoad: () => void }];
-// }
-// function useTransition(
-//   transition: ImageTransition | null | undefined,
-//   polarity: boolean
-// ): Record<'first' | 'second', Partial<React.CSSProperties>> {
-//   if (!transition) {
-//     return { first: {}, second: {} };
-//   }
-//   const { duration, timing, effect } = {
-//     timing: 'ease-in-out',
-//     effect: 'cross-disolve',
-//     duration: 1000,
-//     ...transition,
-//   };
-//   if (!effect || !timing || !duration) {
-//     return { first: {}, second: {} };
-//   }
-//   if (effect === 'cross-disolve') {
-//     const commonStyles = {
-//       // transition: `opacity ${duration}ms ${timing}`,
-//       'animation-duration': `${duration}ms`,
-//     };
-//     return {
-//       first: {
-//         ...commonStyles,
-//         // @ts-ignore
-//         'animation-name': 'cross-disolve-in',
-//         // opacity: polarity ? '1' : '0',
-//         // ...commonStyles,
-//       },
-//       second: {
-//         ...commonStyles,
-//         // @ts-ignore
-//         'animation-name': 'cross-disolve-out',
-//       },
-//     };
-//   }
-//   if (
-//     ['flip-from-top', 'flip-from-bottom', 'flip-from-left', 'flip-from-right'].includes(
-//       effect || ''
-//     )
-//   ) {
-//     const origin = effect.replace('flip-from-', '');
-//     const axis = origin === 'top' || origin === 'bottom' ? 'X' : 'Y';
-//     const commonStyles = {
-//       transition: `transform ${duration}ms ${timing}`,
-//       transformOrigfirst: origin,
-//     };
-//     const sign = origin === 'bottom' || origin === 'right' ? '-' : '';
-//     return {
-//       second: {
-//         transform: `rotate${axis}(${polarity ? '0' : `${sign}90deg`})`,
-//         ...commonStyles,
-//       },
-//       first: {
-//         transform: `rotate${axis}(${polarity ? '0' : `${sign}90deg`})`,
-//         ...commonStyles,
-//       },
-//     };
-//   }
-//   return { first: {}, second: {} };
-// }
 function findBestSourceForSize(sources, size) {
     return ([...(sources || [])]
         // look for the smallest image that's still larger then a container
@@ -186,10 +99,6 @@ function getAnimatorFromClass(animationClass) {
     return {
         startingClass: `${animationClass}-start`,
         run: (to, from) => {
-            // setClassOnElement(to.current, [`${animationClass}-start`]);
-            // // Needed to apply the class by causing reflow before applying the next one
-            // // eslint-disable-next-line no-unused-expressions
-            // to.current?.offsetWidth;
             setClassOnElement(to.current, [animationClass, 'transitioning', `${animationClass}-active`]);
             from.forEach((element) => {
                 if (!element.current?.classList.contains(`unmount`)) {
@@ -247,7 +156,7 @@ function onErrorAdapter(onError) {
 function useAnimationManagerNode(node) {
     const callbackContainer = {
         onReady: null,
-        onFinished: null,
+        onAnimationFinished: null,
         onMount: null,
     };
     const newNode = React.useMemo(() => {
@@ -261,8 +170,8 @@ function useAnimationManagerNode(node) {
             onReady: () => {
                 callbackContainer.onReady?.();
             },
-            onFinished: () => {
-                callbackContainer.onFinished?.();
+            onAnimationFinished: () => {
+                callbackContainer.onAnimationFinished?.();
             },
             onMount: () => {
                 callbackContainer.onMount?.();
@@ -277,13 +186,13 @@ function useAnimationManagerNode(node) {
 function AnimationManager({ children: renderFunction, initial, animation, }) {
     const initialNode = useAnimationManagerNode(initial);
     if (initialNode) {
-        initialNode[3].onFinished = () => setNodes((n) => n.filter((node, index) => node[0] !== initialNode[0] || index === n.length - 1));
+        initialNode[3].onAnimationFinished = () => setNodes((n) => n.filter((node, index) => node[0] !== initialNode[0] || index === n.length - 1));
     }
     const [nodes, setNodes] = React.useState(initialNode ? [initialNode] : []);
     const newNode = useAnimationManagerNode(renderFunction);
     if (newNode) {
-        newNode[3].onFinished = () => {
-            if (newNode[2].current?.classList.contains('unmount')) {
+        newNode[3].onAnimationFinished = (forceUnmount = false) => {
+            if (newNode[2].current?.classList.contains('unmount') || forceUnmount) {
                 setNodes((n) => n.filter((node, index) => node[0] !== newNode[0] || index === n.length - 1));
             }
         };
@@ -310,7 +219,7 @@ function AnimationManager({ children: renderFunction, initial, animation, }) {
                     animation.run(newNode[2], n.map((n2) => n2[2]));
                 }
                 else {
-                    nodes.forEach((oldNode) => oldNode[3]?.onFinished?.());
+                    n.forEach((oldNode) => oldNode[3]?.onAnimationFinished?.(true));
                 }
             };
             n.forEach((prevNode) => (prevNode[3].onReady = () => null));
@@ -322,7 +231,7 @@ function AnimationManager({ children: renderFunction, initial, animation, }) {
 export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
-    const animation = getAnimatorFromClass(transition?.effect || null);
+    const animation = (transition?.duration || -1) > 0 ? getAnimatorFromClass(transition?.effect || null) : null;
     return (React.createElement("div", { ref: containerRef, style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
@@ -364,21 +273,21 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
         React.createElement(AnimationManager, { animation: animation, initial: placeholder?.[0]?.uri
                 ? [
                     placeholder?.[0]?.uri || '',
-                    ({ onFinished, ref }) => (React.createElement(Image, { ref: ref, source: placeholder?.[0], style: {
+                    ({ onAnimationFinished, ref }) => (React.createElement(Image, { ref: ref, source: placeholder?.[0], style: {
                             objectFit: 'scale-down',
                         }, events: {
-                            onTransitionEnd: [onFinished],
+                            onTransitionEnd: [onAnimationFinished],
                         }, contentPosition: { left: '50%', top: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
                             objectFit: contentFit,
                         } })),
                 ]
                 : null }, [
             selectedSource?.uri,
-            ({ onFinished, onReady, ref, onMount }) => (React.createElement(Image, { ref: ref, source: selectedSource || placeholder?.[0], events: {
+            ({ onAnimationFinished, onReady, ref, onMount }) => (React.createElement(Image, { ref: ref, source: selectedSource || placeholder?.[0], events: {
                     onError: [onErrorAdapter(onError), onLoadEnd],
                     onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                     onMount: [onMount],
-                    onTransitionEnd: [onFinished],
+                    onTransitionEnd: [onAnimationFinished],
                 }, style: {
                     objectFit: selectedSource ? contentFit : 'scale-down',
                     transitionDuration: `${transition?.duration || 0}ms`,
