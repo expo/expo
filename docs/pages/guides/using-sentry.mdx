@@ -294,6 +294,16 @@ In order to ensure that errors are reported reliably, Sentry defers reporting th
 
 Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.Native.captureException(new Error('Oops!'))` but these methods will be no-op.
 
+## Troubleshooting
+
+<Collapsible summary="I'm seeing `error: project not found` in my build logs">
+
+This error is caused by the script that tries to upload sourcemaps during build.
+  
+Make sure your `organization`, `project` and `authToken` properties are set correctly.
+
+</Collapsible>
+
 ## Learn more about Sentry
 
 Sentry does more than just catch fatal errors, learn more about how to use Sentry from their [JavaScript usage docs](https://docs.sentry.io/platforms/javascript/).
