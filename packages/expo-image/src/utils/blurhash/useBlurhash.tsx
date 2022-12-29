@@ -14,10 +14,10 @@ export function useBlurhash(
 ) {
   punch = punch || 1;
 
-  const [url, setUrl] = useState(null as string | null);
+  const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    let isCancelled = false;
+    let isCanceled = false;
 
     if (!blurhash) return;
 
@@ -31,7 +31,7 @@ export function useBlurhash(
     imageData.data.set(pixels);
     context!.putImageData(imageData, 0, 0);
     canvas.toBlob((blob) => {
-      if (!isCancelled) {
+      if (!isCanceled) {
         setUrl((oldUrl) => {
           if (oldUrl) {
             URL.revokeObjectURL(oldUrl);
@@ -42,7 +42,7 @@ export function useBlurhash(
     });
 
     return function cleanupBlurhash() {
-      isCancelled = true;
+      isCanceled = true;
       setUrl((oldUrl) => {
         if (oldUrl) {
           URL.revokeObjectURL(oldUrl);
