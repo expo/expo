@@ -202,6 +202,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/push-notifications/': '/push-notifications/overview/',
   '/guides/using-fcm/': '/push-notifications/using-fcm/',
 
+  // Redirects based on Sentry (29/12/2022)
+  '/push-notifications/': '/push-notifications/overview/',
+
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
   '/submit/submit-android': '/submit/android/',
