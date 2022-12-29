@@ -277,6 +277,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                     ({ onAnimationFinished, ref }) => (React.createElement(Image, { ref: ref, source: placeholder?.[0], style: {
                             objectFit: 'scale-down',
                             transitionDuration: `${transition?.duration || 0}ms`,
+                            transitionTimingFunction: transition?.timing,
                         }, events: {
                             onTransitionEnd: [onAnimationFinished],
                         }, contentPosition: { left: '50%', top: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
@@ -293,6 +294,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 }, style: {
                     objectFit: selectedSource ? contentFit : 'scale-down',
                     transitionDuration: `${transition?.duration || 0}ms`,
+                    transitionTimingFunction: transition?.timing,
                 }, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
                     objectFit: contentFit,
                 } })),

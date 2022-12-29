@@ -455,6 +455,7 @@ export default function ExpoImage({
                     style={{
                       objectFit: 'scale-down',
                       transitionDuration: `${transition?.duration || 0}ms`,
+                      transitionTimingFunction: transition?.timing,
                     }}
                     events={{
                       onTransitionEnd: [onAnimationFinished],
@@ -484,6 +485,7 @@ export default function ExpoImage({
               style={{
                 objectFit: selectedSource ? contentFit : 'scale-down',
                 transitionDuration: `${transition?.duration || 0}ms`,
+                transitionTimingFunction: transition?.timing,
               }}
               priority={priority}
               contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
