@@ -26,12 +26,7 @@ async function run() {
     const schema = await preprocessSchema(response.data.data.schema);
 
     await fs.writeFile(
-      `scripts/schemas/unversioned/app-config-schema.js`,
-      'export default ',
-      'utf8'
-    );
-    await fs.appendFile(
-      `scripts/schemas/unversioned/app-config-schema.js`,
+      `public/static/schemas/unversioned/app-config-schema.json`,
       JSON.stringify(schema.properties),
       'utf8'
     );
@@ -47,7 +42,7 @@ async function run() {
 }
 
 async function fetchAndWriteSchema(version, staging) {
-  const schemaPath = `scripts/schemas/v${version}.0.0/app-config-schema.js`;
+  const schemaPath = `public/static/schemas/v${version}.0.0/app-config-schema.json`;
   fs.ensureDirSync(path.dirname(schemaPath));
 
   const hostname = staging ? 'staging.exp.host' : 'exp.host';
@@ -57,8 +52,7 @@ async function fetchAndWriteSchema(version, staging) {
   );
   const schema = await preprocessSchema(response.data.data.schema);
 
-  await fs.writeFile(schemaPath, 'export default ', 'utf8');
-  await fs.appendFile(schemaPath, JSON.stringify(schema.properties), 'utf8');
+  await fs.writeFile(schemaPath, JSON.stringify(schema.properties), 'utf8');
 }
 
 async function preprocessSchema(schema) {
