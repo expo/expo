@@ -27,11 +27,6 @@ async function run() {
 
     await fs.writeFile(
       `public/static/schemas/unversioned/app-config-schema.json`,
-      'export default ',
-      'utf8'
-    );
-    await fs.appendFile(
-      `public/static/schemas/unversioned/app-config-schema.json`,
       JSON.stringify(schema.properties),
       'utf8'
     );
