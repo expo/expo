@@ -8,4 +8,3 @@ node_modules
 pages/versions/latest
 public/static
 react-native-website
-scripts/schemas
