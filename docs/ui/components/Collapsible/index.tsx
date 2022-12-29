@@ -80,7 +80,7 @@ const summaryStyle = css({
   },
 
   code: {
-    backgroundColor: theme.background.tertiary,
+    backgroundColor: theme.background.element,
     display: 'inline',
     fontSize: '90%',
   },
