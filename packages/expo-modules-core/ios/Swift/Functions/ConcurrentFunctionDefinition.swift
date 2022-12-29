@@ -45,6 +45,7 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       let result: Result<Any, Exception>
 
       do {
+        // swiftlint:disable force_cast
         let argumentsTuple = try Conversions.toTuple(arguments) as! Args
         let returnValue = try await action(argumentsTuple)
 
@@ -232,7 +233,17 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, 
 /**
  Asynchronous function with eight arguments.
  */
-public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument, A7: AnyArgument>(
+public func AsyncFunction<
+  R,
+  A0: AnyArgument,
+  A1: AnyArgument,
+  A2: AnyArgument,
+  A3: AnyArgument,
+  A4: AnyArgument,
+  A5: AnyArgument,
+  A6: AnyArgument,
+  A7: AnyArgument
+>(
   _ name: String,
   @_implicitSelfCapture _ closure: @escaping (A0, A1, A2, A3, A4, A5, A6, A7) async throws -> R
 ) -> ConcurrentFunctionDefinition<(A0, A1, A2, A3, A4, A5, A6, A7), A0, R> {
