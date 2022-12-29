@@ -71,7 +71,7 @@ The docs are written with Next.js and TypeScript. If you need to make code chang
 yarn watch
 ```
 
-When you are done, you should run _prettier_ to format your code. Also, don't forget to run tests and linter before committing your changes.
+When you are done, you should run `prettier` to format your code. Also, don't forget to run tests and linter before committing your changes.
 
 ```sh
 yarn prettier
@@ -117,7 +117,6 @@ Currently, the base results for Expo docs are combined with other results from m
 ## Quirks
 
 - You can't have curly brace without quotes: \`{}\` -> `{}`
-- Make sure to leave an empty newline between a table and following content
 
 ## A note about versioning
 
@@ -149,21 +148,20 @@ The docs are deployed automatically via a GitHub Action each time a PR with docs
 
 ## How-tos
 
-## Internal linking
+### Internal linking
 
-If you need to link from one MDX file to another, please use the path-reference to this file including extension.
-This allows us to automatically validate these links and see if the file and/or headers still exists.
+If you need to link from one MDX file to another, please use the static/full path to this file (avoid relative links):
 
-- from: `tutorial/button.md`, to: `/workflow/guides/` -> `../workflow/guides.md`
-- from: **index.md**, to: `/guides/errors/#tracking-js-errors` -> `./guides/errors.md#tracking-js-errors` (or without `./`)
+- from: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
+- from: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
-You can validate all current links by running `yarn lint-links`.
+You can validate all current links by running `yarn lint-links` script.
 
 ### Updating latest version of docs
 
 When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well.
 
-Make sure to also grab the upgrade instructions from the release notes blog post and put them in `upgrading-expo-sdk-walkthrough.md`.
+Make sure to also grab the upgrade instructions from the release notes blog post and put them in **upgrading-expo-sdk-walkthrough.mdx**.
 
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
@@ -296,8 +294,3 @@ import { Terminal } from '~/ui/components/Snippet';
 Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
 
 If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
-
-## TODOs:
-
-- Handle image sizing in imports better
-- Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks
