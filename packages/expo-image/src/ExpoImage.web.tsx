@@ -85,7 +85,6 @@ function useSourceSelection(
   sizeCalculation: ImageProps['responsivePolicy'] = 'live'
 ) {
   const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
-
   // null - not calculated yet, DOMRect - size available
   const [size, setSize] = React.useState<null | DOMRect>(null);
   const resizeObserver = React.useRef<ResizeObserver | null>(null);
@@ -101,6 +100,7 @@ function useSourceSelection(
       if (!hasMoreThanOneSource) {
         return;
       }
+
       setSize(element?.getBoundingClientRect());
       if (sizeCalculation === 'live') {
         resizeObserver.current?.disconnect();
@@ -256,7 +256,6 @@ function useAnimationManagerNode(node: AnimationManagerNode | null) {
     onMount: null,
   };
   const newNode = React.useMemo(() => {
-    console.log({ node });
     if (!node) {
       return null;
     }
@@ -345,7 +344,6 @@ function AnimationManager({
         return n;
       }
       const existingNodeIndex = n.findIndex((node) => node[0] === newNode[0]);
-
       if (existingNodeIndex >= 0) {
         const copy = [...n];
         copy.splice(existingNodeIndex, 1, newNode);
@@ -398,7 +396,9 @@ export default function ExpoImage({
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
   const animation =
-    (transition?.duration || -1) > 0 ? getAnimatorFromClass(transition?.effect || null) : null;
+    (transition?.duration || -1) > 0
+      ? getAnimatorFromClass(transition?.effect || 'cross-dissolve')
+      : null;
   return (
     <div
       ref={containerRef}
@@ -454,6 +454,7 @@ export default function ExpoImage({
                     source={placeholder?.[0]}
                     style={{
                       objectFit: 'scale-down',
+                      transitionDuration: `${transition?.duration || 0}ms`,
                     }}
                     events={{
                       onTransitionEnd: [onAnimationFinished],
@@ -469,7 +470,7 @@ export default function ExpoImage({
             : null
         }>
         {[
-          (selectedSource as any)?.uri,
+          (selectedSource as any)?.uri || placeholder?.[0]?.uri,
           ({ onAnimationFinished, onReady, ref, onMount }) => (
             <Image
               ref={ref}
@@ -486,6 +487,10 @@ export default function ExpoImage({
               }}
               priority={priority}
               contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
+              blurhashContentPosition={contentPosition}
+              blurhashStyle={{
+                objectFit: contentFit,
+              }}
             />
           ),
         ]}

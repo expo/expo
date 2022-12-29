@@ -160,7 +160,6 @@ function useAnimationManagerNode(node) {
         onMount: null,
     };
     const newNode = React.useMemo(() => {
-        console.log({ node });
         if (!node) {
             return null;
         }
@@ -231,7 +230,9 @@ function AnimationManager({ children: renderFunction, initial, animation, }) {
 export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
-    const animation = (transition?.duration || -1) > 0 ? getAnimatorFromClass(transition?.effect || null) : null;
+    const animation = (transition?.duration || -1) > 0
+        ? getAnimatorFromClass(transition?.effect || 'cross-dissolve')
+        : null;
     return (React.createElement("div", { ref: containerRef, style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
@@ -275,6 +276,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                     placeholder?.[0]?.uri || '',
                     ({ onAnimationFinished, ref }) => (React.createElement(Image, { ref: ref, source: placeholder?.[0], style: {
                             objectFit: 'scale-down',
+                            transitionDuration: `${transition?.duration || 0}ms`,
                         }, events: {
                             onTransitionEnd: [onAnimationFinished],
                         }, contentPosition: { left: '50%', top: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
@@ -282,7 +284,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                         } })),
                 ]
                 : null }, [
-            selectedSource?.uri,
+            selectedSource?.uri || placeholder?.[0]?.uri,
             ({ onAnimationFinished, onReady, ref, onMount }) => (React.createElement(Image, { ref: ref, source: selectedSource || placeholder?.[0], events: {
                     onError: [onErrorAdapter(onError), onLoadEnd],
                     onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
@@ -291,7 +293,9 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 }, style: {
                     objectFit: selectedSource ? contentFit : 'scale-down',
                     transitionDuration: `${transition?.duration || 0}ms`,
-                }, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' } })),
+                }, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
+                    objectFit: contentFit,
+                } })),
         ])));
 }
 //# sourceMappingURL=ExpoImage.web.js.map
