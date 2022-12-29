@@ -291,4 +291,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/appstate/': '/versions/latest/react-native/appstate/',
   '/versions/latest/sdk/google/': '/guides/authentication/',
   '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
+  '/versions/latest/sdk/util/': '/versions/latest/',
 };
