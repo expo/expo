@@ -6,4 +6,3 @@ out
 node_modules
 pages/versions/latest
 public/static
-scripts/schemas
