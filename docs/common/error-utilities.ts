@@ -188,19 +188,18 @@ const RENAMED_PAGES: Record<string, string> = {
   // Errors and debugging is better suited for getting started than tutorial
   '/tutorial/errors/': '/get-started/errors/',
 
-  // Additional redirects based on Sentry (04/28/2020)
-  '/next-steps/installation/': '/get-started/installation/',
-  '/guides/release-channels/': '/archive/classic-updates/release-channels/',
-
   // Redirects based on Next 9 upgrade (09/11/2020)
   '/api/': '/versions/latest/',
 
   // Redirect to expand Expo Accounts and permissions
   '/guides/account-permissions/': '/accounts/personal/',
 
-  // Redirects based on Sentry (11/26/2020)
+  // Redirects based on Sentry reports
+  '/next-steps/installation/': '/get-started/installation/',
+  '/guides/release-channels/': '/archive/classic-updates/release-channels/',
   '/guides/push-notifications/': '/push-notifications/overview/',
   '/guides/using-fcm/': '/push-notifications/using-fcm/',
+  '/push-notifications/': '/push-notifications/overview/',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
@@ -288,4 +287,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/appstate/': '/versions/latest/react-native/appstate/',
   '/versions/latest/sdk/google/': '/guides/authentication/',
   '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
+  '/versions/latest/sdk/util/': '/versions/latest/',
 };

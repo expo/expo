@@ -171,6 +171,10 @@ redirects[versions/latest/sdk/app-auth]=guides/authentication/
 redirects[versions/latest/sdk/google-sign-in]=guides/authentication/
 redirects[versions/latest/sdk/google]=guides/authentication/
 redirects[versions/latest/sdk/amplitude/]=guides/using-analytics/
+redirects[versions/latest/sdk/util/]=versions/latest/
+
+# Redirects based on Sentry reports
+redirects[push-notifications]=push-notifications/overview/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys
