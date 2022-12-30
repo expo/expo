@@ -1,5 +1,5 @@
 import { ConfigPlugin, InfoPlist } from '@expo/config-plugins';
-declare type Props = {
+type Props = {
     photosPermission?: string | false;
     cameraPermission?: string | false;
     microphonePermission?: string | false;
