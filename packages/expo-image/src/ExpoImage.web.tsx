@@ -9,6 +9,8 @@ import {
   ImageTransition,
   ImageLoadEventData,
 } from './Image.types';
+import { useBlurhash } from './utils/blurhash/useBlurhash';
+import { isBlurhashString } from './utils/resolveSources';
 
 function ensureUnit(value: string | number) {
   const trimmedValue = String(value).trim();
@@ -211,8 +213,10 @@ function Image({
   source,
   events,
   contentPosition,
+  blurhashContentPosition,
   priority,
   style,
+  blurhashStyle,
 }: {
   source?: ImageSource | null;
   events?: {
@@ -225,8 +229,12 @@ function Image({
   style: React.CSSProperties;
   blurhashStyle?: React.CSSProperties;
 }) {
-  const objectPosition = getObjectPositionFromContentPositionObject(contentPosition);
-  const { uri = undefined } = source ?? {};
+  const isBlurhash = isBlurhashString(source?.uri || '');
+  const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
+  const objectPosition = getObjectPositionFromContentPositionObject(
+    isBlurhash ? blurhashContentPosition : contentPosition
+  );
+  const uri = isBlurhash ? blurhashUri : source?.uri;
   return (
     <img
       src={uri || undefined}
@@ -238,6 +246,7 @@ function Image({
         right: 0,
         objectPosition,
         ...style,
+        ...(isBlurhash ? blurhashStyle : {}),
       }}
       // @ts-ignore
       // eslint-disable-next-line react/no-unknown-property
