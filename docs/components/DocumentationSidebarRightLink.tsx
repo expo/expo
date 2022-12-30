@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
+import Link from 'next/link';
 import * as React from 'react';
 
 import { BASE_HEADING_LEVEL, Heading, HeadingType } from '~/common/headingManager';
@@ -89,7 +90,8 @@ const isOverflowing = (el: HTMLElement) => {
   }
 
   const childrenWidth = Array.from(el.children).reduce((sum, child) => sum + child.scrollWidth, 0);
-  return childrenWidth >= el.scrollWidth - parseInt(el.style.paddingLeft, 10);
+  const indent = parseInt(window.getComputedStyle(el).paddingLeft, 10);
+  return childrenWidth >= el.scrollWidth - indent;
 };
 
 type TooltipProps = React.PropsWithChildren<{
@@ -145,7 +147,7 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
             {displayTitle}
           </Tooltip>
         )}
-        <a
+        <Link
           ref={ref}
           onMouseOver={onMouseOver}
           onMouseOut={onMouseOut}
@@ -167,7 +169,7 @@ const DocumentationSidebarRightLink = React.forwardRef<HTMLAnchorElement, Sideba
               ))}
             </div>
           ) : undefined}
-        </a>
+        </Link>
       </>
     );
   }
