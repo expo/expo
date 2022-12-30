@@ -50,7 +50,7 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   !child?.implementationOf;
 
 const remapClass = (clx: ClassDefinitionData) => {
-  clx.isSensor = clx.name.endsWith('Sensor') || clx.extendedTypes?.[0].name === 'DeviceSensors';
+  clx.isSensor = !!classNamesMap[clx.name] || Object.values(classNamesMap).includes(clx.name);
   clx.name = classNamesMap[clx.name] ?? clx.name;
 
   if (clx.isSensor && clx.extendedTypes) {
