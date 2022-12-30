@@ -10,6 +10,16 @@ export default class ExponentVideo extends React.Component {
     componentWillUnmount() {
         this._removeFullscreenListener?.();
     }
+    componentDidUpdate(prevProps) {
+        if (this.props.status && this.props.status.shouldPlay !== prevProps.status?.shouldPlay) {
+            if (this.props.status.shouldPlay) {
+                this._video?.play();
+            }
+            else {
+                this._video?.pause();
+            }
+        }
+    }
     onFullscreenChange = (isFullscreen) => {
         if (!this.props.onFullscreenUpdate)
             return;

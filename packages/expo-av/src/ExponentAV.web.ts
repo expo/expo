@@ -71,9 +71,11 @@ function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
     isLoaded: true,
     uri: media.src,
     progressUpdateIntervalMillis: 100, //TODO: Bacon: Add interval between calls
-    durationMillis: media.duration * 1000,
+    durationMillis: isNaN(media.duration) ? undefined : media.duration * 1000,
     positionMillis: media.currentTime * 1000,
-    // playableDurationMillis: media.buffered * 1000,
+    playableDurationMillis: media.buffered.length
+      ? media.buffered.end(media.buffered.length - 1) * 1000
+      : 0,
     // seekMillisToleranceBefore?: number
     // seekMillisToleranceAfter?: number
     shouldPlay: media.autoplay,
