@@ -3,7 +3,7 @@
 /**
  A protocol that allows converting raw values to enum cases.
  */
-public protocol Enumerable: AnyArgument {
+public protocol Enumerable: AnyArgument, CaseIterable {
   /**
    Tries to create an enum case using given raw value.
    May throw errors, e.g. when the raw value doesn't match any case.
@@ -44,21 +44,7 @@ public extension Enumerable where Self: RawRepresentable, Self: Hashable {
   }
 
   static var allRawValues: [Any] {
-    // Be careful — it operates on unsafe pointers!
-    let sequence = AnySequence { () -> AnyIterator<RawValue> in
-      var raw = 0
-      return AnyIterator {
-        let current: Self? = withUnsafePointer(to: &raw) { ptr in
-          ptr.withMemoryRebound(to: Self.self, capacity: 1) { $0.pointee }
-        }
-        guard let value = current?.rawValue else {
-          return nil
-        }
-        raw += 1
-        return value
-      }
-    }
-    return Array(sequence)
+    return allCases.map { $0.rawValue }
   }
 }
 
