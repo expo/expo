@@ -1,4 +1,6 @@
 import React from 'react';
+import { useBlurhash } from './utils/blurhash/useBlurhash';
+import { isBlurhashString } from './utils/resolveSources';
 function ensureUnit(value) {
     const trimmedValue = String(value).trim();
     if (trimmedValue.endsWith('%')) {
@@ -142,9 +144,11 @@ function useSourceSelection(sources, sizeCalculation = 'live') {
 function getFetchPriorityFromImagePriority(priority = 'normal') {
     return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
-function Image({ source, events, contentPosition, priority, style, }) {
-    const objectPosition = getObjectPositionFromContentPositionObject(contentPosition);
-    const { uri = undefined } = source ?? {};
+function Image({ source, events, contentPosition, blurhashContentPosition, priority, style, blurhashStyle, }) {
+    const isBlurhash = isBlurhashString(source?.uri || '');
+    const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
+    const objectPosition = getObjectPositionFromContentPositionObject(isBlurhash ? blurhashContentPosition : contentPosition);
+    const uri = isBlurhash ? blurhashUri : source?.uri;
     return (React.createElement("img", { src: uri || undefined, style: {
             width: '100%',
             height: '100%',
@@ -153,6 +157,7 @@ function Image({ source, events, contentPosition, priority, style, }) {
             right: 0,
             objectPosition,
             ...style,
+            ...(isBlurhash ? blurhashStyle : {}),
         }, 
         // @ts-ignore
         // eslint-disable-next-line react/no-unknown-property

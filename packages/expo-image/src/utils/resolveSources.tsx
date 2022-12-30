@@ -1,22 +1,9 @@
 import { ImageNativeProps, ImageProps, ImageSource } from '../Image.types';
 import resolveAssetSource from './resolveAssetSource';
+import resolveBlurhashString from './resolveBlurhashString';
 
-function isBlurhashString(str: string): boolean {
+export function isBlurhashString(str: string): boolean {
   return /^(blurhash:\/)?[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
-}
-
-function blurhashToURI(blurhash: string): string {
-  const encodedBlurhash = encodeURI(blurhash).replace(/#/g, '%23').replace(/\?/g, '%3F');
-  return `blurhash:/${encodedBlurhash}`;
-}
-
-function resolveBlurhashString(str: string): ImageSource {
-  const [blurhash, width, height] = str.replace(/^blurhash:\//, '').split('/');
-  return {
-    uri: blurhashToURI(blurhash),
-    width: parseInt(width, 10) || 16,
-    height: parseInt(height, 10) || 16,
-  };
 }
 
 function resolveSource(source?: ImageSource | string | number | null): ImageSource | null {
