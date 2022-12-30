@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "expo": "~47.0.0-alpha.1",
-    "expo-av": "~13.0.0-beta.1",
-    "expo-blur": "~12.0.0",
+    "expo-av": "~13.1.0",
+    "expo-blur": "~12.1.0",
     "expo-camera": "~13.0.0-beta.1",
     "expo-image": "^1.0.0-alpha.1",
     "expo-linear-gradient": "~12.0.0-beta.1",

@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Migrated iOS codebase to Swift and the new Expo modules API. ([#19786](https://github.com/expo/expo/pull/19786) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated iOS codebase to Swift and the new Expo modules API. ([#19786](https://github.com/expo/expo/pull/19786) by [@tsapeta](https://github.com/tsapeta))
 
 ## 12.0.1 — 2022-11-02
 
