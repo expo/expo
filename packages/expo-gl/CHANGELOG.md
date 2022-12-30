@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 12.2.0 — 2022-12-30
+
+### 🐛 Bug fixes
+
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
 
 ## 12.1.0 — 2022-12-05
 

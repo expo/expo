@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Native module for barcode scanner view is now written in Swift using the new API. ([#20441](https://github.com/expo/expo/pull/20441) by [@alanhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.2.0 — 2022-12-30
+
+### 🎉 New features
+
+- Native module for barcode scanner view is now written in Swift using the new API. ([#20441](https://github.com/expo/expo/pull/20441) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 12.1.0 - 2022-11-23
 

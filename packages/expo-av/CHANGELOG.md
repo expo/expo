@@ -8,11 +8,15 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 13.1.0 — 2022-12-30
+
+### 🐛 Bug fixes
+
 - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
 - Fixed crashes when ProGuard or R8 is enabled on Android. ([#20197](https://github.com/expo/expo/pull/20197) by [@lukmccall](https://github.com/lukmccall))
 - Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 13.0.2 - 2022-11-29
 
