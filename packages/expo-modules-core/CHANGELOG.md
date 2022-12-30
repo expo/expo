@@ -26,6 +26,8 @@
 
 ### 💡 Others
 
+- [iOS] Make `Enumerable` protocol implement `CaseIterable` to get rid of operating on unsafe pointers. ([#20640](https://github.com/expo/expo/pull/20640) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.0.4 - 2022-12-21
 
 ### 🐛 Bug fixes
