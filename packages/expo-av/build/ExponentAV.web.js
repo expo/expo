@@ -76,7 +76,7 @@ function getStatusFromMedia(media) {
     };
     return status;
 }
-function setStatusForMedia(media, status) {
+async function setStatusForMedia(media, status) {
     if (status.positionMillis !== undefined) {
         media.currentTime = status.positionMillis / 1000;
     }
@@ -94,10 +94,10 @@ function setStatusForMedia(media, status) {
     // }
     if (status.shouldPlay !== undefined) {
         if (status.shouldPlay) {
-            media.play();
+            await media.play();
         }
         else {
-            media.pause();
+            await media.pause();
         }
     }
     if (status.rate !== undefined) {
@@ -165,7 +165,7 @@ export default {
                 error: media.error.message,
             });
         };
-        const status = setStatusForMedia(media, fullInitialStatus);
+        const status = await setStatusForMedia(media, fullInitialStatus);
         return [media, status];
     },
     async unloadForSound(element) {

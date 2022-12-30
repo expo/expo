@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `HTMLMediaElement.play` and `HTMLMediaElement.pause` calls on the Web aren't properly awaited. ([#20439](https://github.com/expo/expo/pull/20439)) by [@zhigang1992](https://github.com/zhigang1992)
+
 ### 💡 Others
 
 ## 13.1.0 — 2022-12-30
