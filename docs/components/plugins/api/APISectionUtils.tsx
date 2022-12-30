@@ -682,7 +682,7 @@ export const STYLES_NESTED_SECTION_HEADER = css({
   borderTop: `1px solid ${theme.border.default}`,
   borderBottom: `1px solid ${theme.border.default}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
-  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  padding: `${spacing[2]}px ${spacing[5]}px`,
   backgroundColor: theme.background.secondary,
 
   h4: {

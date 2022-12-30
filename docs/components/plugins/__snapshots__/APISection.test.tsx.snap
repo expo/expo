@@ -1124,7 +1124,7 @@ This should come from the user field of an
       </div>
     </blockquote>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -1307,7 +1307,7 @@ value depending on the state of the credential.
       Determine if the current device's operating system supports Apple authentication.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -1571,7 +1571,7 @@ value depending on the state of the credential.
 Calling this method will show the sign in modal before actually refreshing the user credentials.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -1892,7 +1892,7 @@ You can use
 the user, since this remains the same for apps released by the same developer.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -2200,7 +2200,7 @@ from using
        methods.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -2496,7 +2496,7 @@ sign-out operation.
     </div>
     <br />
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -7283,7 +7283,7 @@ Same as
 This can be used to quickly create specific permission hooks in every module.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="css-1gu5rqd-TextComponent"
@@ -7366,7 +7366,7 @@ This can be used to quickly create specific permission hooks in every module.
       </pre>
     </pre>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -7603,7 +7603,7 @@ This can be used to quickly create specific permission hooks in every module.
       Checks user's permissions for accessing the camera.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -7805,7 +7805,7 @@ This can be used to quickly create specific permission hooks in every module.
       .
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -8141,7 +8141,7 @@ the platform.
       Scan bar codes from the image given by the URL.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -8368,7 +8368,7 @@ code.
       An object obtained by permissions get and request functions.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10314,7 +10314,7 @@ exports[`APISection expo-pedometer 1`] = `
       </a>
     </h3>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10592,7 +10592,7 @@ exports[`APISection expo-pedometer 1`] = `
       Get the step count between two dates.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10834,7 +10834,7 @@ a start date that is more than seven days in the past returns only the available
       Returns whether the pedometer is enabled on the device.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -11001,7 +11001,7 @@ available on this device.
       </a>
     </h3>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -11250,7 +11250,7 @@ provided with a single argument that is
       Subscribe to pedometer updates.
     </p>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -11469,7 +11469,7 @@ provided with a single argument that is
       </a>
     </h3>
     <div
-      class="css-r72x6k"
+      class="css-1cc2eo9"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
