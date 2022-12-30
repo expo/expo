@@ -507,7 +507,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       /* rest of the code remains unchanged */
-      <EmojiPicker modalVisible={modalVisible} onClose={onModalClose}>
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
         /* @info Render the EmojiList component inside the EmojiPicker component. */
         <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
         /* @end */
