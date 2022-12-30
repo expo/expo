@@ -84,7 +84,7 @@ export default function LinkingScreen() {
           Linking.openSettings();
         }}
       />
-      {url && <TextInputButton text={Linking.makeUrl('deep-link')} />}
+      {url && <TextInputButton text={Linking.createURL('deep-link')} />}
       <TextInputButton text="https://github.com/search?q=Expo" />
       <TextInputButton text="https://www.expo.dev" />
       <TextInputButton text="http://www.expo.dev" />

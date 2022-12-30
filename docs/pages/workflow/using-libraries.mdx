@@ -1,5 +1,6 @@
 ---
-title: Using libraries
+title: Use libraries
+description: Learn how to use libraries based on React Native, Expo SDK and third-party in your project.
 ---
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
@@ -11,9 +12,9 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 Every app is inevitably going to use a third-party library, so it's important to understand how to determine whether a library is compatible with your project.
 
-## Using React Native Core Libraries
+## React Native core libraries
 
-React Native provides a set of built-in primitives that most developers will need in their apps. These include components such as `<ActivityIndicator>`, `<TextInput>`, `<Text>`, `<ScrollView>`, and `<View>`. These are listed at [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) in React Native documentation. You can see the React Native version that corresponds to your Expo SDK version in the table on the [API Reference index](/versions/latest/).
+React Native provides a set of built-in primitives that most developers will need in their apps. These include components such as `<ActivityIndicator>`, `<TextInput>`, `<Text>`, `<ScrollView>`, and `<View>`. These are listed at [Core Components and APIs](https://reactnative.dev/docs/components-and-apis) in React Native documentation. You can also view the [React Native version that corresponds to your Expo SDK version](/versions/latest).
 
 To use a React Native component or API in your project, import it from the `react-native` package in your code:
 
@@ -34,9 +35,9 @@ export default function App() {
 
 </SnackInline>
 
-## Using Expo SDK Libraries
+## Expo SDK libraries
 
-The Expo SDK picks up where the React Native core libraries end - it provides access to a lot of useful device and system functionality like audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like updates, maps, OAuth authentication tools, and more. For more information, see how we decide [what goes into the Expo SDK](https://expo.fyi/whats-in-the-sdk).
+The Expo SDK picks up where the React Native core libraries end. It provides access to a lot of device and system functionality such as audio, barcode scanning, camera, calendar, contacts, video, and so on. It also adds other powerful libraries like updates, maps, OAuth authentication tools, and more. For more information, see how we decide [what goes into the Expo SDK](https://expo.fyi/whats-in-the-sdk).
 
 To use a library from the Expo SDK, find the one you are looking for in the [API Reference](/versions/latest/) or through the documentation Search bar.
 
@@ -62,7 +63,7 @@ Next, under the API section the reference page will tell you how to import the l
 import * as Device from 'expo-device';
 ```
 
-This section also lists all of the types, functions, and classes available. If you use TypeScript, you can see this information in your TypeScript-compatible code editor (such as Visual Studio Code) with autocompletion.
+This section also lists all of the types, functions, and classes available. If you use TypeScript, you can see this information in your TypeScript-compatible code editor (such as Visual Studio Code) with auto-completion.
 
 Now you can use the library in your project:
 
@@ -86,15 +87,15 @@ export default function App() {
 
 </SnackInline>
 
-## Using Third-Party Libraries
+## Third-Party libraries
 
-### Finding Third-Party Libraries
+### Finding a third-party library
 
 [React Native Directory](https://reactnative.directory) is a searchable database of libraries built specifically for React Native. If the library that you are looking for is not provided by React Native or the Expo SDK then this is the best place to look first when trying to find a library for your app.
 
 After React Native Directory, the [npm registry](https://www.npmjs.com/) is the next best place. The npm registry is the definitive source for JavaScript libraries, but the libraries that it lists may not all be compatible with React Native. React Native is one of many JavaScript programming environments, including Node.js, web browsers, Electron, and more, and npm includes libraries that work for all of these environments. Other libraries may be compatible with React Native, but not compatible with the [Expo Go][expo-go] app. How do you figure this out?
 
-### Determining Third-Party Library Compatibility
+### Determining third-party library compatibility
 
 **Check React Native Directory**: find the library on the website (if it's there) and verify that it has a "✔️ Expo Go" tag. You can also enable the [filter by Expo Go](https://reactnative.directory/?expo=true).
 
@@ -108,7 +109,7 @@ Now check the following:
 - Does the README mention linking?
 - Is it built specifically for Node.js, the web, electron, or another platform?
 
-If you answered yes to any of these questions and the library is not part of the Expo SDK, this library may not be supported in [Expo Go][expo-go]. You can go ahead and try it in a new project to be sure! Run `npx create-expo-app` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
+If you answered yes to any of these questions and the library is not part of the Expo SDK, this library may not be supported in [Expo Go][expo-go]. You can go ahead and try it in a new project to be sure. Run `npx create-expo-app` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
 
 Many React Native libraries are not compatible with [Expo Go][expo-go]. For these libraries, you can create a [development build](/development/introduction):
 
@@ -118,9 +119,9 @@ Many React Native libraries are not compatible with [Expo Go][expo-go]. For thes
   href="/workflow/customizing"
 />
 
-> If you want some help determining library compatibility, [please create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will also help other developers have an easy answer in the future!
+> If you want some help determining library compatibility, [create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will also help other developers have an easy answer in the future!
 
-### Installing a Third-Party Library
+### Installing a third-party library
 
 > We recommend always using `npx expo install` instead of `npm install` or `yarn add` directly because it allows [Expo CLI][expo-cli] to pick a compatible version of a library when possible and also warn you about known incompatibilities.
 

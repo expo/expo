@@ -104,6 +104,10 @@ For an in-detail reference on Bytes and Bits, read the [Writing API documentatio
 
 In most cases, to refer to multiple platforms (Android, iOS and Web) in one sentence or order sections on a particular page, follow the pattern: **"Android, iOS, and Web"**.
 
+### Referencing Expo Go
+
+When referencing Expo Go, the supported text should avoid implying: "running an app", "developing an app" or "previewing an app". One alternative to avoid these constraints is: "testing your project".
+
 ## Punctuation
 
 ### Use double quotes in prose
@@ -369,7 +373,7 @@ Standardize on the term URL. URI and IRI are just confusing. In practice, a sing
 - Most Expo APIs work with powers of two like kibibytes. Write "KiB", "MiB", and "GiB" to communicate clearly to developers. We do not need to explain that a KiB refers to 1,024 bytes.
 - Some APIs, especially those related to disk storage and transmission rates like baud rates, use powers of 10. Write "kB", "MB", and "GB" **and** be clear we're referring to 1,000 bytes, 1,000,000 bytes, and so on.
 - Typically write "kbit", "Mbit", and "Gbit" when referring to bits to remove ambiguity between bits and bytes. Both "kbit/s" and "kbps" are acceptable when describing rates.
-- Always use a capital "B" for bytes. Write "bit" or a lowercase "b" for bits.
+  Always use a capital "B" for bytes. Write "bit" or a lowercase "b" for bits.
 - Insert a space between the number and unit, like "10 MiB".
 - Decimal byte units: kB, MB, GB, TB
 - Binary byte units: kiB, MiB, GiB, TiB

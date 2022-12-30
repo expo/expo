@@ -29,7 +29,7 @@ const tableCellStyle = css({
   },
 
   '> *:last-child': {
-    marginBottom: 0,
+    marginBottom: '0 !important',
   },
 });
 

@@ -1,11 +1,11 @@
 ---
 title: Custom native code in Expo Go
-sidebar_title: Using Expo Go
+description: Learn how to detect and disable unsupported native features in Expo Go.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { InlineCode } from '~/components/base/code';
+import { CODE } from '~/ui/components/Text';
 import { SnackInline } from '~/ui/components/Snippet';
 
 The [Expo Go][expo-go] app can be used to experiment with most React Native apps regardless of how they are bootstrapped.
@@ -26,13 +26,13 @@ Inside any React Native app, start a [development server with Expo CLI](/workflo
 <BoxLink
   title={
     <>
-      Don't have <InlineCode>npx expo start</InlineCode>?
+      Don't have <CODE>npx expo start</CODE>?
     </>
   }
   href="/bare/installing-expo-modules"
   description={
     <>
-      Install and configure the <InlineCode>expo</InlineCode> package in your project.
+      Install and configure the <CODE>expo</CODE> package in your project.
     </>
   }
 />
@@ -98,7 +98,7 @@ export default function App() {
 
 </SnackInline>
 
-If you run this code in the Expo Go app, you'll see the fallback view. If you are able to build this locally with the [Expo CLI run commands](/workflow/expo-cli#compiling) then you'll see the native blur hash view.
+If you run this code in the Expo Go app, you'll see the fallback view. If you can build this locally with the [Expo CLI run commands](/workflow/expo-cli#compiling) then you'll see the native blur hash view.
 
 ## Native module detection
 

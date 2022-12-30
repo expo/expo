@@ -67,7 +67,7 @@ for (const platform of ['darwin', 'win32']) {
     for (const { xcodeVersion, promptRegex, condition } of [
       {
         xcodeVersion: '',
-        promptRegex: /Xcode needs to be installed/,
+        promptRegex: /Xcode must be fully installed before you can continue/,
         condition: 'Xcode is not installed',
       },
       {

@@ -16,6 +16,10 @@ public class CryptoModule: Module {
     Function("getRandomBase64String", getRandomBase64String)
 
     Function("getRandomValues", getRandomValues)
+
+    Function("randomUUID") {
+      UUID().uuidString
+    }
   }
 }
 

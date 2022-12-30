@@ -1,6 +1,6 @@
-import { ImageContentFit, ImageResizeMode, } from './Image.types';
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
+let loggedFadeDurationDeprecationWarning = false;
 /**
  * If the `contentFit` is not provided, it's resolved from the equivalent `resizeMode` prop
  * that we support to provide compatibility with React Native Image.
@@ -15,22 +15,21 @@ export function resolveContentFit(contentFit, resizeMode) {
             loggedResizeModeDeprecationWarning = true;
         }
         switch (resizeMode) {
-            case ImageResizeMode.CONTAIN:
-                return ImageContentFit.CONTAIN;
-            case ImageResizeMode.COVER:
-                return ImageContentFit.COVER;
-            case ImageResizeMode.STRETCH:
-                return ImageContentFit.FILL;
-            case ImageResizeMode.CENTER:
-                return ImageContentFit.SCALE_DOWN;
-            case ImageResizeMode.REPEAT:
+            case 'contain':
+            case 'cover':
+                return resizeMode;
+            case 'stretch':
+                return 'fill';
+            case 'center':
+                return 'scale-down';
+            case 'repeat':
                 if (!loggedRepeatDeprecationWarning) {
                     console.log('[expo-image]: Resize mode "repeat" is no longer supported');
                     loggedRepeatDeprecationWarning = true;
                 }
         }
     }
-    return ImageContentFit.CONTAIN;
+    return 'cover';
 }
 /**
  * It resolves a stringified form of the `contentPosition` prop to an object,
@@ -64,6 +63,23 @@ export function resolveContentPosition(contentPosition) {
         }
         return contentPositionObject;
     }
-    return contentPosition;
+    return contentPosition ?? { top: '50%', left: '50%' };
+}
+/**
+ * If `transition` or `fadeDuration` is a number, it's resolved to a cross dissolve transition with the given duration.
+ * When `fadeDuration` is used, it logs an appropriate deprecation warning.
+ */
+export function resolveTransition(transition, fadeDuration) {
+    if (typeof transition === 'number') {
+        return { duration: transition };
+    }
+    if (!transition && typeof fadeDuration === 'number') {
+        if (!loggedFadeDurationDeprecationWarning) {
+            console.warn('[expo-image]: Prop "fadeDuration" is deprecated, use "transition" instead');
+            loggedFadeDurationDeprecationWarning = true;
+        }
+        return { duration: fadeDuration };
+    }
+    return transition ?? null;
 }
 //# sourceMappingURL=utils.js.map

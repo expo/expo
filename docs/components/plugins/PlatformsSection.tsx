@@ -1,23 +1,19 @@
 import { css } from '@emotion/react';
 import { StatusWaitingIcon, theme } from '@expo/styleguide';
 
-import { H4 } from '~/components/base/headings';
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
-import { A } from '~/ui/components/Text';
+import { A, H4 } from '~/ui/components/Text';
 
 const STYLES_TITLE = css`
   margin-bottom: 1rem;
 `;
 
 const STYLES_LINK = css`
-  text-decoration: none;
   display: grid;
   grid-template-columns: 20px auto;
-  text-align: left;
   grid-gap: 8px;
-  color: ${theme.link.default};
 `;
 
 const platforms = [

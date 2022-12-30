@@ -1,8 +1,3 @@
-import React from 'react';
-
-import { InlineCode } from '~/components/base/code';
-import { B, P } from '~/components/base/paragraph';
-import { H2, H3Code } from '~/components/plugins/Headings';
 import {
   CommentData,
   GeneratedData,
@@ -17,7 +12,9 @@ import {
   getComponentName,
   STYLES_APIBOX,
   getTagNamesList,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
+import { H2, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];
@@ -38,11 +35,11 @@ const renderComponent = (
     <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={extractedComment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <InlineCode>{resolvedName}</InlineCode>
+        <CODE>{resolvedName}</CODE>
       </H3Code>
       {resolvedType && (
         <P>
-          <B>Type:</B> <InlineCode>{resolveTypeName(resolvedType)}</InlineCode>
+          <BOLD>Type:</BOLD> <CODE>{resolveTypeName(resolvedType)}</CODE>
         </P>
       )}
       <CommentTextBlock comment={extractedComment} />

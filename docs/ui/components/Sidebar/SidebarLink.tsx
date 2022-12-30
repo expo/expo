@@ -1,14 +1,14 @@
 import { css } from '@emotion/react';
 import { theme, typography, spacing, ArrowUpRightIcon, iconSize } from '@expo/styleguide';
 import { useRouter } from 'next/router';
-import * as React from 'react';
+import type { PropsWithChildren } from 'react';
 import { useEffect, useRef } from 'react';
 
-import stripVersionFromPath from '~/common/stripVersionFromPath';
+import { stripVersionFromPath } from '~/common/utilities';
 import { NavigationRoute } from '~/types/common';
 import { LinkBase } from '~/ui/components/Text';
 
-type SidebarLinkProps = React.PropsWithChildren<{
+type SidebarLinkProps = PropsWithChildren<{
   info: NavigationRoute;
 }>;
 
@@ -95,7 +95,6 @@ const STYLES_LINK = css`
 `;
 
 const STYLES_LINK_ACTIVE = css`
-  font-family: ${typography.fontFaces.medium};
   color: ${theme.link.default};
   padding-left: 0;
 `;

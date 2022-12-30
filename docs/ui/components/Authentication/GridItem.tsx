@@ -3,8 +3,7 @@ import { borderRadius, breakpoints, shadows, spacing, theme } from '@expo/styleg
 
 import { Icon } from './Icon';
 
-import { H4 as RawH4 } from '~/components/base/headings';
-import { A, CALLOUT } from '~/ui/components/Text';
+import { A, CALLOUT, RawH4 } from '~/ui/components/Text';
 
 type GridItemProps = React.PropsWithChildren<{
   title: string;
@@ -19,7 +18,7 @@ export const GridItem = ({
   protocol = [],
   href = `#${title.toLowerCase().replaceAll(' ', '-')}`,
 }: GridItemProps) => (
-  <A href={href} css={itemStyle}>
+  <A href={href} css={itemStyle} isStyled>
     <Icon title={title} image={image} />
     <RawH4 css={titleStyle}>{title}</RawH4>
     {(protocol || []).length && (

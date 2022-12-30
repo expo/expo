@@ -51,4 +51,16 @@ export declare function digestStringAsync(algorithm: CryptoDigestAlgorithm, data
  * ```
  */
 export declare function getRandomValues<T extends IntBasedTypedArray | UintBasedTypedArray>(typedArray: T): T;
+/**
+ * The `randomUUID()` method returns a unique identifier based on the V4 UUID spec (RFC4122).
+ * It uses cryptographically secure random values to generate the UUID.
+ *
+ * @return A string containing a newly generated UUIDv4 identifier
+ * @example
+ * ```ts
+ * const UUID = Crypto.randomUUID();
+ * console.log('Your UUID: ' + UUID);
+ * ```
+ */
+export declare function randomUUID(): any;
 //# sourceMappingURL=Crypto.d.ts.map

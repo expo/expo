@@ -78,7 +78,9 @@ android {
         }
 
         def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 69, 0)) {
+        if (rnVersion >= versionToNumber(0, 71, 0)) {
+          srcDirs += "src/react-native-71"
+        } else if (rnVersion >= versionToNumber(0, 69, 0)) {
           srcDirs += "src/react-native-69"
         } else if (rnVersion >= versionToNumber(0, 67, 0)) {
           srcDirs += "src/react-native-67"

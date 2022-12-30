@@ -1,4 +1,4 @@
-import { Image, ImageContentFit, ImageSource } from 'expo-image';
+import { Image, ImageSource } from 'expo-image';
 import * as React from 'react';
 import {
   SectionList,
@@ -116,7 +116,7 @@ function keyExtractor(item: any, index: number) {
 }
 
 function renderItem({ item }: SectionListRenderItemInfo<ImageSource>) {
-  return <Image style={styles.image} contentFit={ImageContentFit.CONTAIN} source={item} />;
+  return <Image style={styles.image} contentFit="contain" source={item} />;
 }
 
 function renderSectionHeader({ section }: { section: SectionListData<ImageSource> }) {

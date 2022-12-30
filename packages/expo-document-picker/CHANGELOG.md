@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Avoid dependency on `uuid`. ([#20477](https://github.com/expo/expo/pull/20477) by [@LinusU](https://github.com/LinusU))
 
 ## 11.0.1 — 2022-10-28
 

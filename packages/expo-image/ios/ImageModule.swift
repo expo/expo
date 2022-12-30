@@ -14,6 +14,7 @@ public final class ImageModule: Module {
 
     OnCreate {
       ImageModule.registerCoders()
+      ImageModule.registerLoaders()
     }
 
     View(ImageView.self) {
@@ -69,6 +70,10 @@ public final class ImageModule: Module {
       }
     }
 
+    Function("prefetch") { (urls: [URL]) in
+      SDWebImagePrefetcher.shared.prefetchURLs(urls)
+    }
+
     AsyncFunction("clearMemoryCache") { () -> Bool in
       SDImageCache.shared.clearMemory()
       return true
@@ -86,5 +91,9 @@ public final class ImageModule: Module {
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)
+  }
+
+  static func registerLoaders() {
+    SDImageLoadersManager.shared.addLoader(BlurhashLoader())
   }
 }

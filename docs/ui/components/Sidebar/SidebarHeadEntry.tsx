@@ -14,7 +14,7 @@ type SidebarHeadEntryProps = {
 
 export const SidebarHeadEntry = ({ href, title, isActive, Icon }: SidebarHeadEntryProps) => {
   return (
-    <A href={href} css={[entryContainerStyle, isActive && activeEntryContainerStyle]}>
+    <A href={href} css={[entryContainerStyle, isActive && activeEntryContainerStyle]} isStyled>
       <Icon
         css={entryIconStyle}
         color={isActive ? theme.link.default : theme.icon.default}
@@ -50,7 +50,7 @@ const entryContainerStyle = css({
 
 const activeEntryContainerStyle = css({
   color: theme.text.default,
-  fontFamily: typography.fontFaces.medium,
+  fontWeight: 500,
   background: theme.background.tertiary,
   borderRadius: borderRadius.medium,
 
