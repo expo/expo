@@ -98,7 +98,7 @@ class BarCodeScannerModule(
   }
 
   companion object {
-    private const val TAG = "ExpoBarCodeScannerModule"
+    private const val TAG = "ExpoBarCodeScanner"
     private const val ERROR_TAG = "E_BARCODE_SCANNER"
   }
 }

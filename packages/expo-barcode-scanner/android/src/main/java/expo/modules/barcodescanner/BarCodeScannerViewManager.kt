@@ -48,6 +48,6 @@ class BarCodeScannerViewManager(
   }
 
   companion object {
-    private const val TAG = "ExpoBarCodeScannerView"
+    private const val TAG = "ExpoBarCodeScanner"
   }
 }
