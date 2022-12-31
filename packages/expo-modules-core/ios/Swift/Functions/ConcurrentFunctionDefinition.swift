@@ -1,18 +1,22 @@
-import Dispatch
+// Copyright 2022-present 650 Industries. All rights reserved.
 
+/**
+ Represents a concurrent function that can only be called asynchronously, thus its JavaScript equivalent returns a Promise.
+ As opposed to `AsyncFunctionComponent`, it can leverage the new Swift's concurrency model and take the async/await closure.
+ */
 public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyFunction {
   typealias ClosureType = (Args) async throws -> ReturnType
 
-  let action: ClosureType
+  let body: ClosureType
 
   init(
     _ name: String,
     firstArgType: FirstArgType.Type,
     dynamicArgumentTypes: [AnyDynamicType],
-    _ action: @escaping ClosureType
+    _ body: @escaping ClosureType
   ) {
     self.name = name
-    self.action = action
+    self.body = body
     self.dynamicArgumentTypes = dynamicArgumentTypes
   }
 
@@ -41,13 +45,15 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       return
     }
 
+    // Switch from the synchronous context to asynchronous
     Task { [arguments] in
       let result: Result<Any, Exception>
 
       do {
+        // TODO: Right now we force cast the tuple in all types of functions, but we should throw another exception here.
         // swiftlint:disable force_cast
         let argumentsTuple = try Conversions.toTuple(arguments) as! Args
-        let returnValue = try await action(argumentsTuple)
+        let returnValue = try await body(argumentsTuple)
 
         result = .success(returnValue)
       } catch let error as Exception {
@@ -81,7 +87,7 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 }
 
 /**
- Asynchronous function without arguments.
+ Concurrently-executing asynchronous function without arguments.
  */
 public func AsyncFunction<R>(
   _ name: String,
@@ -96,7 +102,7 @@ public func AsyncFunction<R>(
 }
 
 /**
- Asynchronous function with one argument.
+ Concurrently-executing asynchronous function with one argument.
  */
 public func AsyncFunction<R, A0: AnyArgument>(
   _ name: String,
@@ -111,7 +117,7 @@ public func AsyncFunction<R, A0: AnyArgument>(
 }
 
 /**
- Asynchronous function with two arguments.
+ Concurrently-executing asynchronous function with two arguments.
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument>(
   _ name: String,
@@ -126,7 +132,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument>(
 }
 
 /**
- Asynchronous function with three arguments.
+ Concurrently-executing asynchronous function with three arguments.
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
   _ name: String,
@@ -145,7 +151,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
 }
 
 /**
- Asynchronous function with four arguments.
+ Concurrently-executing asynchronous function with four arguments.
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument>(
   _ name: String,
@@ -165,7 +171,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, 
 }
 
 /**
- Asynchronous function with five arguments.
+ Concurrently-executing asynchronous function with five arguments.
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument>(
   _ name: String,
@@ -186,7 +192,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, 
 }
 
 /**
- Asynchronous function with six arguments.
+ Concurrently-executing asynchronous function with six arguments.
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument>(
   _ name: String,
@@ -208,7 +214,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, 
 }
 
 /**
- Asynchronous function with seven arguments.
+ Concurrently-executing asynchronous function with seven arguments.
  */
 public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: AnyArgument, A4: AnyArgument, A5: AnyArgument, A6: AnyArgument>(
   _ name: String,
@@ -231,7 +237,7 @@ public func AsyncFunction<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, 
 }
 
 /**
- Asynchronous function with eight arguments.
+ Concurrently-executing asynchronous function with eight arguments.
  */
 public func AsyncFunction<
   R,
