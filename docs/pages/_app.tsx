@@ -59,7 +59,7 @@ export default function App({ Component, pageProps }: AppProps) {
               'html, body, kbd, button, input, select': {
                 fontFamily: regularFont.style.fontFamily,
               },
-              'code, pre': {
+              'code, pre, table.diff': {
                 fontFamily: monospaceFont.style.fontFamily,
               },
             })}
