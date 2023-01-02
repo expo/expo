@@ -135,6 +135,8 @@ PODS:
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
+  - ExpoAppleAuthentication (5.0.1):
+    - ExpoModulesCore
   - ExpoBattery (7.0.0):
     - ExpoModulesCore
   - ExpoBlur (12.1.0):
@@ -725,6 +727,7 @@ DEPENDENCIES:
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
+  - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
@@ -933,6 +936,9 @@ EXTERNAL SOURCES:
   expo-dev-menu-interface:
     inhibit_warnings: false
     :path: "../../../packages/expo-dev-menu-interface/ios"
+  ExpoAppleAuthentication:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-apple-authentication/ios"
   ExpoBattery:
     inhibit_warnings: false
     :path: "../../../packages/expo-battery/ios"
@@ -1184,6 +1190,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 953f564f7d006f1af50b119cacb48cafcad40c73
   expo-dev-menu: 330211ba6e93b8195b43aa9e84555ec861131af4
   expo-dev-menu-interface: c8ad2dc7bb9513c6668c0b0fdf2391727a3d19a7
+  ExpoAppleAuthentication: c0e39d8cf1aec4495e719ea108f5fb8c9970c2db
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoBlur: 6802b7e333badc26aa37d1fdd085fa27d961476b
   ExpoBrightness: 5d8971ae90d471cc59792cf1f3ef10d56239da01
