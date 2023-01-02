@@ -200,6 +200,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/push-notifications/': '/push-notifications/overview/',
   '/guides/using-fcm/': '/push-notifications/using-fcm/',
   '/push-notifications/': '/push-notifications/overview/',
+  '/distribution/hosting-your-app/': '/distribution/publishing-websites/',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
