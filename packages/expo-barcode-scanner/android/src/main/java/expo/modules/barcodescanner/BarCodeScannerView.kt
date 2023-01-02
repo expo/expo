@@ -22,7 +22,9 @@ class BarCodeScannerView(
   context: Context,
   appContext: AppContext,
 ) : ExpoView(context, appContext) {
-  private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>()
+  private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
+    coalescingKey = { event -> (event.data.hashCode() % Short.MAX_VALUE).toShort() }
+  )
 
   private val orientationListener = object : OrientationEventListener(
     context,
