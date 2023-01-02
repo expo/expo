@@ -2,6 +2,8 @@ import React from 'react';
 import { useBlurhash } from './utils/blurhash/useBlurhash';
 import { isBlurhashString } from './utils/resolveSources';
 import AnimationManager, { getAnimatorFromClass } from './web/AnimationManager';
+import loadStyle from './web/style';
+loadStyle();
 function ensureUnit(value) {
     const trimmedValue = String(value).trim();
     if (trimmedValue.endsWith('%')) {
@@ -148,35 +150,6 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
             overflow: 'hidden',
             position: 'relative',
         } },
-        React.createElement("style", null, `
-        .cross-dissolve {
-          transition-property: opacity;
-          animation-fill-mode: forwards;
-        }
-        .cross-dissolve-start:not(.transitioning) {
-          opacity: 0;
-        }
-        .cross-dissolve-active {
-          opacity: 1;
-        }
-        .cross-dissolve-end {
-          opacity: 0;
-        }
-        .flip-from-top {
-          transition-property: transform;
-          animation-fill-mode: forwards;
-          transform-origin: top;
-        }
-        .flip-from-top-start:not(.transitioning) {
-          transform: rotateX(90deg);
-        }
-        .flip-from-top-active {
-          transform: rotateX(0);
-        }
-        .flip-from-top-end {
-          transform: rotateX(-90deg);
-        }
-          `),
         React.createElement(AnimationManager, { animation: animation, initial: placeholder?.[0]?.uri
                 ? [
                     placeholder?.[0]?.uri || '',
