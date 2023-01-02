@@ -4,8 +4,8 @@ import ExpoModulesCore
 public final class AppleAuthenticationButton: ExpoView {
   let onButtonPress = EventDispatcher()
 
-  var type: ASAuthorizationAppleIDButton.ButtonType = .default
-  var style: ASAuthorizationAppleIDButton.Style = .white
+  var type: ButtonType = .signIn
+  var style: ButtonStyle = .white
   var childView: ASAuthorizationAppleIDButton?
 
   var needsUpdate = true
@@ -26,7 +26,10 @@ public final class AppleAuthenticationButton: ExpoView {
   }
 
   private func mountNewChild() {
-    let newChildView = ASAuthorizationAppleIDButton(authorizationButtonType: type, authorizationButtonStyle: style)
+    let newChildView = ASAuthorizationAppleIDButton(
+      authorizationButtonType: type.toAppleAuthButtonType(),
+      authorizationButtonStyle: style.toAppleAuthButtonStyle()
+    )
 
     newChildView.cornerRadius = cornerRadius
     newChildView.translatesAutoresizingMaskIntoConstraints = false
