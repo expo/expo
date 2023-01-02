@@ -1956,8 +1956,6 @@ PODS:
     - ExpoModulesCore
   - EASClient/Tests (0.4.1):
     - ExpoModulesCore
-  - EXAppleAuthentication (5.0.1):
-    - ExpoModulesCore
   - EXApplication (5.0.1):
     - ExpoModulesCore
   - EXAV (13.1.0):
@@ -2022,6 +2020,8 @@ PODS:
   - EXPermissions (14.0.0):
     - ExpoModulesCore
   - Expo (47.0.1):
+    - ExpoModulesCore
+  - ExpoAppleAuthentication (5.0.1):
     - ExpoModulesCore
   - ExpoBattery (7.0.0):
     - ExpoModulesCore
@@ -3087,7 +3087,6 @@ DEPENDENCIES:
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../packages/expo-eas-client/ios`)
   - EASClient/Tests (from `../packages/expo-eas-client/ios`)
-  - EXAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - EXApplication (from `../packages/expo-application/ios`)
   - EXAV (from `../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../packages/expo-background-fetch/ios`)
@@ -3114,6 +3113,7 @@ DEPENDENCIES:
   - EXNotifications (from `../packages/expo-notifications/ios`)
   - EXPermissions (from `../packages/expo-permissions/ios`)
   - Expo (from `../packages/expo`)
+  - ExpoAppleAuthentication (from `../packages/expo-apple-authentication/ios`)
   - ExpoBattery (from `../packages/expo-battery/ios`)
   - ExpoBlur (from `../packages/expo-blur/ios`)
   - ExpoBrightness (from `../packages/expo-brightness/ios`)
@@ -3924,8 +3924,6 @@ EXTERNAL SOURCES:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec"
   EASClient:
     :path: "../packages/expo-eas-client/ios"
-  EXAppleAuthentication:
-    :path: "../packages/expo-apple-authentication/ios"
   EXApplication:
     :path: "../packages/expo-application/ios"
   EXAV:
@@ -3974,6 +3972,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-permissions/ios"
   Expo:
     :path: "../packages/expo"
+  ExpoAppleAuthentication:
+    :path: "../packages/expo-apple-authentication/ios"
   ExpoBattery:
     :path: "../packages/expo-battery/ios"
   ExpoBlur:
@@ -4487,7 +4487,6 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 19efe9e8ef9b3917c5f3dcb3ed82319de4d8c0bd
-  EXAppleAuthentication: d93f7acd71fb3dcfa14eb6cb12ada053e06d4b66
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
   EXAV: 4b92292fb107520a25956bea940a94a3bb4911ca
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
@@ -4512,6 +4511,7 @@ SPEC CHECKSUMS:
   EXNotifications: 2bda232eb900aa6d602e40cad363879ae827d672
   EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
+  ExpoAppleAuthentication: c0e39d8cf1aec4495e719ea108f5fb8c9970c2db
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoBlur: 6802b7e333badc26aa37d1fdd085fa27d961476b
   ExpoBrightness: 5d8971ae90d471cc59792cf1f3ef10d56239da01
