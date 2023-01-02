@@ -60,6 +60,10 @@ extension AnyFunction {
     return argumentsCount - trailingOptionalArgumentsCount
   }
 
+  var argumentsCount: Int {
+    return dynamicArgumentTypes.count
+  }
+
   /**
    Calls the function just like `call(by:withArguments:callback:)`, but without an owner
    and with an empty callback. Might be useful when you only want to call the function,
