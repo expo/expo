@@ -354,7 +354,9 @@ function AnimationManager({
         if (!newNode?.[2].current || !animation?.startingClass) {
           return;
         }
-        setClassOnElement(newNode?.[2].current, [animation?.startingClass]);
+        if (!newNode?.[2].current.classList.contains('transitioning')) {
+          setClassOnElement(newNode?.[2].current, [animation?.startingClass]);
+        }
       };
 
       newNode[3].onReady = () => {
