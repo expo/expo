@@ -12,6 +12,7 @@ declare const _default: {
     readonly osBuildId: null;
     readonly osInternalBuildId: null;
     readonly deviceName: null;
+    readonly deviceType: DeviceType;
     getDeviceTypeAsync(): Promise<DeviceType>;
     isRootedExperimentalAsync(): Promise<boolean>;
 };

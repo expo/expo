@@ -9,6 +9,21 @@ if (Platform.isDOMAvailable) {
 function convertGiBtoBytes(gib) {
     return Math.round(gib * 1024 ** 3);
 }
+let deviceType = DeviceType.UNKNOWN;
+switch (result.device.type) {
+    case 'mobile':
+        deviceType = DeviceType.PHONE;
+    case 'tablet':
+        deviceType = DeviceType.TABLET;
+    case 'smarttv':
+        deviceType = DeviceType.TV;
+    case 'console':
+    case 'embedded':
+    case 'wearable':
+        deviceType = DeviceType.UNKNOWN;
+    default:
+        deviceType = DeviceType.DESKTOP;
+}
 export default {
     get isDevice() {
         return true;
@@ -50,21 +65,11 @@ export default {
     get deviceName() {
         return null;
     },
+    get deviceType() {
+        return deviceType;
+    },
     async getDeviceTypeAsync() {
-        switch (result.device.type) {
-            case 'mobile':
-                return DeviceType.PHONE;
-            case 'tablet':
-                return DeviceType.TABLET;
-            case 'smarttv':
-                return DeviceType.TV;
-            case 'console':
-            case 'embedded':
-            case 'wearable':
-                return DeviceType.UNKNOWN;
-            default:
-                return DeviceType.DESKTOP;
-        }
+        return deviceType;
     },
     async isRootedExperimentalAsync() {
         return false;

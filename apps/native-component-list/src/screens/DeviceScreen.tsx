@@ -90,6 +90,10 @@ export default function DeviceScreen() {
           <DeviceConstants name="Device platformApiLevel" value={Device.platformApiLevel} />
         </View>
       )}
+      <DeviceConstants
+        name="Device deviceType (constant)"
+        value={deviceTypeMap[Device.deviceType]}
+      />
       <DeviceMethods
         name="Device deviceType"
         method={async () => deviceTypeMap[await Device.getDeviceTypeAsync()]}

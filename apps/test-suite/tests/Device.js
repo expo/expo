@@ -33,6 +33,7 @@ export async function test(t) {
         const osInternalBuildId = Device.osInternalBuildId;
         const osVersion = Device.osVersion;
         const deviceName = Device.deviceName;
+        const deviceType = Device.deviceType;
         const deviceYearClass = Device.deviceYearClass;
         t.expect(brand).toBeDefined();
         t.expect(typeof brand).toEqual('string');
@@ -56,6 +57,8 @@ export async function test(t) {
         t.expect(typeof deviceYearClass).toEqual('number');
         t.expect(deviceName).toBeDefined();
         t.expect(typeof deviceName).toEqual('string');
+        t.expect(deviceType).toBeDefined();
+        t.expect(Object.values(Device.DeviceType).includes(deviceType)).toBeTruthy();
       });
 
       t.it(`doesn't get Android-only constants`, async () => {
@@ -128,6 +131,7 @@ export async function test(t) {
         const platformApiLevel = await Device.platformApiLevel;
         const osVersion = await Device.osVersion;
         const deviceName = await Device.deviceName;
+        const deviceType = Device.deviceType;
         const deviceYearClass = await Device.deviceYearClass;
         t.expect(designName).toBeDefined();
         t.expect(typeof designName).toEqual('string');
@@ -163,6 +167,8 @@ export async function test(t) {
         } else {
           t.expect(deviceName).toBeNull();
         }
+        t.expect(deviceType).toBeDefined();
+        t.expect(Object.values(Device.DeviceType).includes(deviceType)).toBeTruthy();
       });
 
       t.it(`doesn't get modelId`, async () => {

@@ -15,6 +15,22 @@ function convertGiBtoBytes(gib: number): number {
   return Math.round(gib * 1024 ** 3);
 }
 
+let deviceType = DeviceType.UNKNOWN;
+switch (result.device.type) {
+  case 'mobile':
+    deviceType = DeviceType.PHONE;
+  case 'tablet':
+    deviceType = DeviceType.TABLET;
+  case 'smarttv':
+    deviceType = DeviceType.TV;
+  case 'console':
+  case 'embedded':
+  case 'wearable':
+    deviceType = DeviceType.UNKNOWN;
+  default:
+    deviceType = DeviceType.DESKTOP;
+}
+
 export default {
   get isDevice(): boolean {
     return true;
@@ -56,21 +72,11 @@ export default {
   get deviceName(): null {
     return null;
   },
+  get deviceType(): DeviceType {
+    return deviceType;
+  },
   async getDeviceTypeAsync(): Promise<DeviceType> {
-    switch (result.device.type) {
-      case 'mobile':
-        return DeviceType.PHONE;
-      case 'tablet':
-        return DeviceType.TABLET;
-      case 'smarttv':
-        return DeviceType.TV;
-      case 'console':
-      case 'embedded':
-      case 'wearable':
-        return DeviceType.UNKNOWN;
-      default:
-        return DeviceType.DESKTOP;
-    }
+    return deviceType;
   },
   async isRootedExperimentalAsync(): Promise<boolean> {
     return false;

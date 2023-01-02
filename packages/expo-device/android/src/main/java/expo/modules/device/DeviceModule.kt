@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.UiModeManager
 import android.content.Context
 import android.content.res.Configuration
+import android.graphics.Rect
 import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
@@ -15,10 +16,10 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 private const val NAME = "ExpoDevice"
+// Devices with a size higher than 600dp are considered tablets.
+private const val MIN_TABLET_SIZE_DP = 600
 
 class DeviceModule : Module() {
   // Keep this enum in sync with JavaScript
@@ -57,6 +58,7 @@ class DeviceModule : Module() {
         "osInternalBuildId" to Build.ID,
         "osBuildFingerprint" to Build.FINGERPRINT,
         "platformApiLevel" to Build.VERSION.SDK_INT,
+        "deviceType" to getDeviceType(context).JSValue,
         "deviceName" to if (Build.VERSION.SDK_INT <= 31)
           Settings.Secure.getString(context.contentResolver, "bluetooth_name")
         else
@@ -151,23 +153,32 @@ class DeviceModule : Module() {
         ?: return DeviceType.UNKNOWN
 
       // Get display metrics to see if we can differentiate phones and tablets.
-      val metrics = DisplayMetrics()
-      windowManager.defaultDisplay.getMetrics(metrics)
+      val bounds: Rect = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        windowManager.maximumWindowMetrics.bounds
+      } else {
+        val metrics = DisplayMetrics()
+        windowManager.defaultDisplay.getRealMetrics(metrics)
 
-      // Calculate physical size.
-      val widthInches = metrics.widthPixels / metrics.xdpi.toDouble()
-      val heightInches = metrics.heightPixels / metrics.ydpi.toDouble()
-      val diagonalSizeInches = sqrt(widthInches.pow(2.0) + heightInches.pow(2.0))
-      return if (diagonalSizeInches in 3.0..6.9) {
+        Rect(0, 0, metrics.widthPixels, metrics.heightPixels)
+      }
+
+      val smallestWidth: Float = dpiFromPx(
+        bounds.width().coerceAtMost(bounds.height()),
+        context.resources.configuration.densityDpi
+      )
+
+      return if (smallestWidth < MIN_TABLET_SIZE_DP) {
         // Devices in a sane range for phones are considered to be phones.
         DeviceType.PHONE
-      } else if (diagonalSizeInches > 6.9 && diagonalSizeInches <= 18.0) {
-        // Devices larger than a phone and in a sane range for tablets are tablets.
-        DeviceType.TABLET
       } else {
-        // Otherwise, we don't know what device type we're on.
-        DeviceType.UNKNOWN
+        // Devices larger than MIN_TABLET_SIZE_DP are considered tablets
+        DeviceType.TABLET
       }
+    }
+
+    private fun dpiFromPx(size: Int, densityDpi: Int): Float {
+      val densityRatio = densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT
+      return size / densityRatio
     }
   }
 }

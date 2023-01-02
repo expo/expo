@@ -182,11 +182,24 @@ export const platformApiLevel = ExpoDevice
  */
 export const deviceName = ExpoDevice ? ExpoDevice.deviceName : null;
 /**
+ * The type of the device as a [`DeviceType`](#devicetype) enum value.
+ *
+ * On Android, for devices other than TVs, the device type is determined by the screen resolution (screen minimum width), so the result may not be completely accurate.
+ * If the screen minimum width is less than 600dp, the method returns `DeviceType.PHONE`. For lengths larger than 600dp, the method returns `DeviceType.TABLET`.
+ *
+ * @return Returns a a [`DeviceType`](#devicetype) enum value.
+ * @example
+ * ```js
+ * await Device.deviceType;
+ * // DeviceType.PHONE
+ * ```
+ */
+export const deviceType = ExpoDevice ? ExpoDevice.deviceType : null;
+/**
  * Checks the type of the device as a [`DeviceType`](#devicetype) enum value.
  *
- * On Android, for devices other than TVs, the device type is determined by the screen resolution (screen diagonal size), so the result may not be completely accurate.
- * If the screen diagonal length is between 3" and 6.9", the method returns `DeviceType.PHONE`. For lengths between 7" and 18", the method returns `DeviceType.TABLET`.
- * Otherwise, the method returns `DeviceType.UNKNOWN`.
+ * On Android, for devices other than TVs, the device type is determined by the screen resolution (screen minimum width), so the result may not be completely accurate.
+ * If the screen minimum width is less than 600dp, the method returns `DeviceType.PHONE`. For lengths larger than 600dp, the method returns `DeviceType.TABLET`.
  *
  * @return Returns a promise that resolves to a [`DeviceType`](#devicetype) enum value.
  * @example
