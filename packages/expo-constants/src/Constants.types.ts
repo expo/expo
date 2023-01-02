@@ -279,7 +279,7 @@ export interface NativeConstants {
    */
   manifest: AppManifest | null;
   /**
-   * New manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
+   * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
    * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
    * > Prefer using `Constants.expoConfig` instead, which behaves more consistently across classic
    * updates and modern Expo Updates.
