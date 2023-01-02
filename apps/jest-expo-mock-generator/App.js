@@ -1,5 +1,4 @@
 import mux from '@expo/mux';
-import { getNativeModuleIfExists } from 'expo';
 import Constants from 'expo-constants';
 import getInstallationIdAsync from 'expo/build/environment/getInstallationIdAsync';
 import React from 'react';
@@ -81,7 +80,7 @@ async function _getExpoModuleSpecsAsync() {
   const expoModuleNames = moduleNames.filter((moduleName) => whitelist.test(moduleName)).sort();
   const specPromises = {};
   for (const moduleName of expoModuleNames) {
-    specPromises[moduleName] = _getModuleSpecAsync(moduleName, getNativeModuleIfExists(moduleName));
+    specPromises[moduleName] = _getModuleSpecAsync(moduleName, NativeModules[moduleName]);
   }
   return await mux(specPromises);
 }

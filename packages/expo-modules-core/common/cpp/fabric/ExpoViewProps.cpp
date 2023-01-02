@@ -3,6 +3,8 @@
 #include "ExpoViewProps.h"
 #include <react/renderer/core/propsConversions.h>
 
+namespace react = facebook::react;
+
 namespace expo {
 
 ExpoViewProps::ExpoViewProps(const react::PropsParserContext &context,

@@ -82,7 +82,6 @@ export const globalReset = css`
   mark,
   audio,
   video {
-    font-weight: normal;
     box-sizing: border-box;
     margin: 0;
     padding: 0;

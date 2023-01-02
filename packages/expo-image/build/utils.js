@@ -1,4 +1,3 @@
-import { ImageContentFit, ImageResizeMode, } from './Image.types';
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
 let loggedFadeDurationDeprecationWarning = false;
@@ -16,22 +15,21 @@ export function resolveContentFit(contentFit, resizeMode) {
             loggedResizeModeDeprecationWarning = true;
         }
         switch (resizeMode) {
-            case ImageResizeMode.CONTAIN:
-                return ImageContentFit.CONTAIN;
-            case ImageResizeMode.COVER:
-                return ImageContentFit.COVER;
-            case ImageResizeMode.STRETCH:
-                return ImageContentFit.FILL;
-            case ImageResizeMode.CENTER:
-                return ImageContentFit.SCALE_DOWN;
-            case ImageResizeMode.REPEAT:
+            case 'contain':
+            case 'cover':
+                return resizeMode;
+            case 'stretch':
+                return 'fill';
+            case 'center':
+                return 'scale-down';
+            case 'repeat':
                 if (!loggedRepeatDeprecationWarning) {
                     console.log('[expo-image]: Resize mode "repeat" is no longer supported');
                     loggedRepeatDeprecationWarning = true;
                 }
         }
     }
-    return ImageContentFit.COVER;
+    return 'cover';
 }
 /**
  * It resolves a stringified form of the `contentPosition` prop to an object,

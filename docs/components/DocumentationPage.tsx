@@ -14,8 +14,9 @@ import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
+import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar';
-import { H1 } from '~/ui/components/Text';
+import { H1, P } from '~/ui/components/Text';
 
 const STYLES_DOCUMENT = css`
   background: ${theme.background.default};
@@ -129,6 +130,8 @@ export default function DocumentationPage(props: Props) {
       </Head>
       <div css={STYLES_DOCUMENT}>
         {props.title && <H1>{props.title}</H1>}
+        {props.description && <P theme="secondary">{props.description}</P>}
+        {props.title && <Separator />}
         {props.children}
         {props.title && (
           <Footer

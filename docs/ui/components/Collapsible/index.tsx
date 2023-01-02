@@ -5,12 +5,11 @@ import {
   shadows,
   spacing,
   theme,
-  typography,
   TriangleDownIcon,
 } from '@expo/styleguide';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 
-import { HEADLINE } from '~/ui/components/Text';
+import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
   /**
@@ -31,7 +30,7 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
         <div css={markerWrapperStyle}>
           <TriangleDownIcon css={markerStyle} size={iconSize.small} />
         </div>
-        <HEADLINE tag="span">{summary}</HEADLINE>
+        <DEMI>{summary}</DEMI>
       </summary>
       <div css={contentStyle}>{children}</div>
     </details>
@@ -79,6 +78,12 @@ const summaryStyle = css({
     marginTop: 0,
     marginBottom: 0,
   },
+
+  code: {
+    backgroundColor: theme.background.tertiary,
+    display: 'inline',
+    fontSize: '90%',
+  },
 });
 
 const markerWrapperStyle = css({
@@ -95,7 +100,7 @@ const markerStyle = css({
   'details[open] &': { transform: 'rotate(0)' },
 });
 
-const contentStyle = css(typography.body.paragraph, {
+const contentStyle = css({
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   p: {

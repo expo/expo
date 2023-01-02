@@ -7,6 +7,7 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
@@ -49,7 +50,7 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   !child?.implementationOf;
 
 const remapClass = (clx: ClassDefinitionData) => {
-  clx.isSensor = clx.name.endsWith('Sensor');
+  clx.isSensor = !!classNamesMap[clx.name] || Object.values(classNamesMap).includes(clx.name);
   clx.name = classNamesMap[clx.name] ?? clx.name;
 
   if (clx.isSensor && clx.extendedTypes) {
@@ -75,6 +76,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
   return (
     <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <H3Code tags={getTagNamesList(comment)}>
         <CODE>{name}</CODE>
       </H3Code>
@@ -102,7 +104,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
           )}
         </P>
       )}
-      <CommentTextBlock comment={comment} />
+      <CommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
           <div css={STYLES_NESTED_SECTION_HEADER}>

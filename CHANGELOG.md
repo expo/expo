@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-shared-element` from `0.8.4` to `0.8.7`. ([#20593](https://github.com/expo/expo/pull/20593) by [@ijzerenhein](https://github.com/ijzerenhein))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features

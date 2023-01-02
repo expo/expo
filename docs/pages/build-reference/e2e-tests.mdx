@@ -1,6 +1,7 @@
 ---
 title: Running E2E tests on EAS Build
 sidebar_title: Running E2E tests
+description: Learn how to set up and run E2E tests on EAS Build with popular libraries such as Detox.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -493,6 +494,7 @@ Development builds typically display an onboarding welcome screen when an app is
 An example of such a Detox test is shown below. Full example code is available on the [eas-tests-example](https://github.com/expo/eas-tests-example) repository.
 
 <Collapsible summary="e2e/homeScreen.e2e.js">
+
 ```js
 /* @info New line */
 const { openApp } = require('./utils/openApp');
@@ -530,7 +532,7 @@ module.exports.openApp = async function openApp() {
       newInstance: true,
     });
   }
-}
+};
 
 async function openAppForDebugBuild(platform) {
   const deepLinkUrl = process.env.EXPO_USE_UPDATES
@@ -557,7 +559,7 @@ async function openAppForDebugBuild(platform) {
   }
 
   await sleep(3000);
-};
+}
 
 const getDeepLinkUrl = url =>
   /* @info This is project-specific, replace eastestsexample with correct value */
@@ -589,7 +591,7 @@ const sleep = t => new Promise(res => setTimeout(res, t));
       "type": "ios.app",
       "build": "xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Debug -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
       "binaryPath": "ios/build/Build/Products/Debug-iphonesimulator/eastestsexample.app"
-    }, /* @end */
+    } /* @end */,
     "ios.release": {
       "type": "ios.app",
       "build": "xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build",
@@ -599,7 +601,7 @@ const sleep = t => new Promise(res => setTimeout(res, t));
       "type": "android.apk",
       "build": "cd android && ./gradlew :app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug && cd ..",
       "binaryPath": "android/app/build/outputs/apk/debug/app-debug.apk"
-    }, /* @end */
+    } /* @end */,
     "android.release": {
       "type": "android.apk",
       "build": "cd android && ./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release && cd ..",
@@ -624,7 +626,7 @@ const sleep = t => new Promise(res => setTimeout(res, t));
     /* @info New section */ "ios.debug": {
       "device": "simulator",
       "app": "ios.debug"
-    }, /* @end */
+    } /* @end */,
     "ios.release": {
       "device": "simulator",
       "app": "ios.release"
@@ -632,7 +634,7 @@ const sleep = t => new Promise(res => setTimeout(res, t));
     /* @info New section */ "android.debug": {
       "device": "emulator",
       "app": "android.debug"
-    }, /* @end */
+    } /* @end */,
     "android.release": {
       "device": "emulator",
       "app": "android.release"
@@ -640,6 +642,7 @@ const sleep = t => new Promise(res => setTimeout(res, t));
   }
 }
 ```
+
 </Collapsible>
 
 <Collapsible summary="eas-hooks/eas-build-on-success.sh">

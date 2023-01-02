@@ -108,6 +108,7 @@ const nonLinkableTypes = [
   'ColorValue',
   'Component',
   'ComponentClass',
+  'PureComponent',
   'E',
   'EventSubscription',
   'Listener',
@@ -681,12 +682,12 @@ export const STYLES_NESTED_SECTION_HEADER = css({
   borderTop: `1px solid ${theme.border.default}`,
   borderBottom: `1px solid ${theme.border.default}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
-  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  padding: `${spacing[2]}px ${spacing[5]}px`,
   backgroundColor: theme.background.secondary,
 
   h4: {
     ...typography.fontSizes[16],
-    fontFamily: typography.fontFaces.medium,
+    fontWeight: 600,
     marginBottom: 0,
     marginTop: 0,
     color: theme.text.secondary,
