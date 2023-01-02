@@ -22,7 +22,6 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import java.io.OutputStream
 
 class VideoThumbnailsModule : Module() {
   private val context
@@ -34,7 +33,7 @@ class VideoThumbnailsModule : Module() {
 
     AsyncFunction("getThumbnail") { sourceFilename: String, options: VideoThumbnailOptions, promise: Promise ->
       if (URLUtil.isFileUrl(sourceFilename) && !isAllowedToRead(Uri.decode(sourceFilename).replace("file://", ""))) {
-        throw ThumbnailException()
+        throw ThumbnailFileException()
       }
 
       withModuleScope(promise) {
@@ -43,10 +42,9 @@ class VideoThumbnailsModule : Module() {
 
         try {
           val path = FileUtilities.generateOutputPath(context.cacheDir, "VideoThumbnails", "jpg")
-          val outputStream: OutputStream = FileOutputStream(path)
-          thumbnail.compress(Bitmap.CompressFormat.JPEG, (options.quality * 100).toInt(), outputStream)
-          outputStream.flush()
-          outputStream.close()
+          FileOutputStream(path).use { outputStream ->
+            thumbnail.compress(Bitmap.CompressFormat.JPEG, (options.quality * 100).toInt(), outputStream)
+          }
           promise.resolve(
             VideoThumbnailResult(
               uri = Uri.fromFile(File(path)).toString(),
@@ -79,11 +77,10 @@ class VideoThumbnailsModule : Module() {
         retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
       } else if (URLUtil.isContentUrl(sourceFilename)) {
         val fileUri = Uri.parse(sourceFilename)
-        val descriptor = context.contentResolver.openFileDescriptor(fileUri, "r")
-        val fileDescriptor = descriptor!!.fileDescriptor
-        val inputStream = FileInputStream(fileDescriptor)
-        retriever.setDataSource(inputStream.fd)
-        descriptor.close()
+        val fileDescriptor = context.contentResolver.openFileDescriptor(fileUri, "r")!!.fileDescriptor
+        FileInputStream(fileDescriptor).use { inputStream ->
+          retriever.setDataSource(inputStream.fd)
+        }
       } else {
         retriever.setDataSource(sourceFilename, videoOptions.headers)
       }

@@ -2,7 +2,7 @@ package expo.modules.videothumbnails
 
 import expo.modules.kotlin.exception.CodedException
 
-class ThumbnailException :
+class ThumbnailFileException :
   CodedException("Can't read file")
 
 class GenerateThumbnailException :
