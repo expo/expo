@@ -3,9 +3,6 @@ import ExpoModulesCore
 
 let credentialRevokedEventName = "Expo.appleIdCredentialRevoked"
 
-extension ASAuthorizationAppleIDButton.ButtonType: Enumerable {}
-extension ASAuthorizationAppleIDButton.Style: Enumerable {}
-
 public final class AppleAuthenticationModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoAppleAuthentication")
@@ -39,8 +36,8 @@ public final class AppleAuthenticationModule: Module {
     View(AppleAuthenticationButton.self) {
       Events("onButtonPress")
 
-      Prop("buttonType") { (view, type: ASAuthorizationAppleIDButton.ButtonType?) in
-        let type = type ?? .default
+      Prop("buttonType") { (view, type: ButtonType?) in
+        let type = type ?? .signIn
 
         if view.type != type {
           view.type = type
@@ -48,7 +45,7 @@ public final class AppleAuthenticationModule: Module {
         }
       }
 
-      Prop("buttonStyle") { (view, style: ASAuthorizationAppleIDButton.Style?) in
+      Prop("buttonStyle") { (view, style: ButtonStyle?) in
         let style = style ?? .white
 
         if view.style != style {
