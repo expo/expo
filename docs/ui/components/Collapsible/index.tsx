@@ -49,7 +49,7 @@ const detailsStyle = css({
     boxShadow: shadows.micro,
   },
 
-  'h4 + &, li > &': {
+  'h4 + &, p + &, li > &': {
     marginTop: spacing[3],
   },
 });

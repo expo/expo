@@ -675,6 +675,15 @@ export const STYLES_APIBOX_NESTED = css({
   },
 });
 
+export const STYLES_APIBOX_WRAPPER = css({
+  marginBottom: spacing[4],
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
+
+  [`.css-${tableWrapperStyle.name}:last-child`]: {
+    marginBottom: spacing[4],
+  },
+});
+
 export const STYLE_APIBOX_NO_SPACING = css({ marginBottom: -spacing[5] });
 
 export const STYLES_NESTED_SECTION_HEADER = css({

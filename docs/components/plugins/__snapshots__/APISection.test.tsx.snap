@@ -5010,7 +5010,7 @@ OAuth 2.0 protocol
          
       </strong>
       <div
-        class="css-149efi7-PlatformTag"
+        class="css-mfw8bi-PlatformTag"
       >
         <svg
           color="var(--expo-theme-palette-blue-900)"
@@ -5030,7 +5030,7 @@ OAuth 2.0 protocol
           />
         </svg>
         <span
-          class="css-1y4xxhe-PlatformTag"
+          class="css-6g4m4t-PlatformTag"
         >
           iOS 13.2+
         </span>
