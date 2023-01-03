@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+
 import { ImageProps, ImageSource } from '../Image.types';
 
 function findBestSourceForSize(

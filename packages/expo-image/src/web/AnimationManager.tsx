@@ -51,30 +51,42 @@ function useAnimationManagerNode(node: AnimationManagerNode | null) {
       ref,
     });
     // key, ReactElement, ref, callbacks
-    return [animationKey, child, ref, callbackContainer] as [
-      string,
-      React.ReactElement,
-      React.RefObject<HTMLImageElement>,
-      typeof callbackContainer
-    ];
+    return { animationKey, child, ref, callbackContainer };
   }, [node?.[1]]);
   return newNode;
 }
 
 export function getAnimatorFromClass(animationClass: string | null) {
   if (!animationClass) return null;
+
+  const runAnimation = (
+    to: React.RefObject<HTMLImageElement>,
+    from: React.RefObject<HTMLImageElement>[]
+  ) => {
+    setClassOnElement(to.current, [animationClass, 'transitioning', `${animationClass}-active`]);
+    from.forEach((element) => {
+      if (!element.current?.classList.contains(`unmount`)) {
+        setClassOnElement(element.current, [animationClass, `${animationClass}-end`, 'unmount']);
+      }
+    });
+  };
+
   return {
     startingClass: `${animationClass}-start`,
-    run: (to: React.RefObject<HTMLImageElement>, from: React.RefObject<HTMLImageElement>[]) => {
-      setClassOnElement(to.current, [animationClass, 'transitioning', `${animationClass}-active`]);
-      from.forEach((element) => {
-        if (!element.current?.classList.contains(`unmount`)) {
-          setClassOnElement(element.current, [animationClass, `${animationClass}-end`, 'unmount']);
-        }
-      });
-    },
+    run: runAnimation,
   };
 }
+
+type MountedAnimationNode = {
+  animationKey: string;
+  child: React.ReactElement;
+  ref: React.RefObject<HTMLImageElement>;
+  callbackContainer: {
+    onReady: (() => void) | null;
+    onAnimationFinished: ((forceUnmount?: boolean) => void) | null;
+    onMount: (() => void) | null;
+  };
+};
 
 export default function AnimationManager({
   children: renderFunction,
@@ -87,30 +99,25 @@ export default function AnimationManager({
 }) {
   const initialNode = useAnimationManagerNode(initial);
   if (initialNode) {
-    initialNode[3].onAnimationFinished = () =>
+    initialNode.callbackContainer.onAnimationFinished = () =>
       setNodes((n) =>
-        n.filter((node, index) => node[0] !== initialNode[0] || index === n.length - 1)
+        n.filter(
+          (node, index) => node.animationKey !== initialNode.animationKey || index === n.length - 1
+        )
       );
   }
 
-  const [nodes, setNodes] = React.useState<
-    [
-      string,
-      React.ReactElement,
-      React.RefObject<HTMLImageElement>,
-      {
-        onReady: (() => void) | null;
-        onAnimationFinished: ((forceUnmount?: boolean) => void) | null;
-        onMount: (() => void) | null;
-      }
-    ][]
-  >(initialNode ? [initialNode] : []);
+  const [nodes, setNodes] = React.useState<MountedAnimationNode[]>(
+    initialNode ? [initialNode] : []
+  );
   const newNode = useAnimationManagerNode(renderFunction);
   if (newNode) {
-    newNode[3].onAnimationFinished = (forceUnmount = false) => {
-      if (newNode[2].current?.classList.contains('unmount') || forceUnmount) {
+    newNode.callbackContainer.onAnimationFinished = (forceUnmount = false) => {
+      if (newNode.ref.current?.classList.contains('unmount') || forceUnmount) {
         setNodes((n) =>
-          n.filter((node, index) => node[0] !== newNode[0] || index === n.length - 1)
+          n.filter(
+            (node, index) => node.animationKey !== newNode.animationKey || index === n.length - 1
+          )
         );
       }
     };
@@ -120,40 +127,40 @@ export default function AnimationManager({
       if (!newNode) {
         return n;
       }
-      const existingNodeIndex = n.findIndex((node) => node[0] === newNode[0]);
+      const existingNodeIndex = n.findIndex((node) => node.animationKey === newNode.animationKey);
       if (existingNodeIndex >= 0) {
         const copy = [...n];
         copy.splice(existingNodeIndex, 1, newNode);
         return copy;
       }
 
-      newNode[3].onMount = () => {
-        if (!newNode?.[2].current || !animation?.startingClass) {
+      newNode.callbackContainer.onMount = () => {
+        if (!newNode?.ref.current || !animation?.startingClass) {
           return;
         }
-        if (!newNode?.[2].current.classList.contains('transitioning')) {
-          setClassOnElement(newNode?.[2].current, [animation?.startingClass]);
+        if (!newNode?.ref.current.classList.contains('transitioning')) {
+          setClassOnElement(newNode?.ref.current, [animation?.startingClass]);
         }
       };
 
-      newNode[3].onReady = () => {
+      newNode.callbackContainer.onReady = () => {
         if (animation) {
           animation.run(
-            newNode[2],
-            n.map((n2) => n2[2])
+            newNode.ref,
+            n.map((n2) => n2.ref)
           );
         } else {
-          n.forEach((oldNode) => oldNode[3]?.onAnimationFinished?.(true));
+          n.forEach((oldNode) => oldNode.callbackContainer?.onAnimationFinished?.(true));
         }
       };
-      n.forEach((prevNode) => (prevNode[3].onReady = () => null));
+      n.forEach((prevNode) => (prevNode.callbackContainer.onReady = () => null));
       return [...n, newNode];
     });
   }, [newNode]);
   return (
     <>
       {[...nodes].reverse().map((n, idx) => (
-        <div key={n[0]}>{n[1]}</div>
+        <div key={n.animationKey}>{n.child}</div>
       ))}
     </>
   );
