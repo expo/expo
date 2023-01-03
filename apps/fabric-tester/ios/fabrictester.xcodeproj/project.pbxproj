@@ -32,6 +32,7 @@
 		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = fabrictester/SplashScreen.storyboard; sourceTree = "<group>"; };
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F171B05D295C5FAD00CB8AB7 /* fabrictester.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = fabrictester.entitlements; path = fabrictester/fabrictester.entitlements; sourceTree = "<group>"; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-fabrictester/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -50,15 +51,16 @@
 		13B07FAE1A68108700A75B9A /* fabrictester */ = {
 			isa = PBXGroup;
 			children = (
-				BB2F792B24A3F905000567C9 /* Supporting */,
-				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
+				F171B05D295C5FAD00CB8AB7 /* fabrictester.entitlements */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
+				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FB71A68108700A75B9A /* main.m */,
-				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				A0DB1EF9BC6248218DEE76C0 /* noop-file.swift */,
+				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
+				BB2F792B24A3F905000567C9 /* Supporting */,
 			);
 			name = fabrictester;
 			sourceTree = "<group>";
