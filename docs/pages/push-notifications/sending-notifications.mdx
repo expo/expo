@@ -209,16 +209,19 @@ Inside both push tickets and push receipts, look for a `details` object with an 
 
 - `DeviceNotRegistered`: the device cannot receive push notifications anymore and you should stop sending messages to the corresponding Expo push token.
 
-- `MessageTooBig`: the total notification payload was too large. On Android and iOS the total payload must be at most 4096 bytes.
+- `MessageTooBig`: the total notification payload was too large. On Android and iOS, the total payload must be at most 4096 bytes.
 
 - `MessageRateExceeded`: you are sending messages too frequently to the given device. Implement exponential backoff and slowly retry sending messages.
 
 - `MismatchSenderId`: There is an issue with your FCM push credentials. There are two pieces to FCM push credentials: your FCM server key, and your `google-services.json` file. Both must be associated with the same sender ID. You can find your sender ID in the [same place you find your server key](/push-notifications/using-fcm.mdx#uploading-server-credentials). Check that the server key is the same as the one returned from running `expo push:android:show`, and that the sender ID is the same as the one in your project's `google-services.json` file (under `project_number`).
 
-- `InvalidCredentials`: your push notification credentials for your standalone app are invalid (ex: you may have revoked them). Run `expo build:ios -c` to regenerate new push notification credentials for iOS. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key will **not** change your users' Expo Push Tokens.
-  - Sometimes, these errors will contain further details claiming an `InvalidProviderToken` error. This is actually tied to both your APN key **and** your provisioning profile. To resolve this error, you should rebuild the app and regenerate a new push key and provisioning profile.
+- `InvalidCredentials`: Your push notification credentials for your standalone app are invalid (ex: you may have revoked them).
 
-> For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](/app-signing/app-credentials.mdx#ios)
+  - **Android**: Make sure that you have correctly uploaded the server key from the Firebase Console as specified in [uploading FCM server credentials](using-fcm/#uploading-server-credentials).
+
+  - **iOS**: Run `eas credentials` and follow the prompts to regenerate new push notification credentials. If you revoke an APN key, all apps that rely on that key will no longer be able to send or receive push notifications until you upload a new key to replace it. Uploading a new APN key will **not** change your users' Expo Push Tokens. Sometimes, these errors will contain further details claiming an `InvalidProviderToken` error. This is actually tied to both your APN key **and** your provisioning profile. To resolve this error, you should rebuild the app and regenerate a new push key and provisioning profile.
+
+> For a better understanding of iOS credentials, including push notification credentials, read our [App Signing docs](/app-signing/app-credentials.mdx#ios).
 
 ### Request errors
 
