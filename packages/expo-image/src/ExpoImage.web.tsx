@@ -227,6 +227,14 @@ function onErrorAdapter(onError?: { (event: { error: string }): void }) {
   };
 }
 
+const SUPPORTED_ANIMATIONS = [
+  'cross-dissolve',
+  'flip-from-left',
+  'flip-from-right',
+  'flip-from-top',
+  'flip-from-bottom',
+];
+
 export default function ExpoImage({
   source,
   placeholder,
@@ -242,10 +250,11 @@ export default function ExpoImage({
 }: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
   const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
-  const animation =
-    (transition?.duration ?? -1) > 0
-      ? getAnimatorFromClass(transition?.effect || 'cross-dissolve')
-      : null;
+  const animator = getAnimatorFromClass(
+    transition?.effect && SUPPORTED_ANIMATIONS.includes(transition?.effect)
+      ? transition?.effect
+      : 'cross-dissolve'
+  );
   return (
     <div
       ref={containerRef}
@@ -259,7 +268,7 @@ export default function ExpoImage({
         position: 'relative',
       }}>
       <AnimationManager
-        animation={animation}
+        animation={(transition?.duration ?? -1) > 0 ? animator : null}
         initial={
           placeholder?.[0]?.uri
             ? [

@@ -135,12 +135,19 @@ function onErrorAdapter(onError) {
         });
     };
 }
+const SUPPORTED_ANIMATIONS = [
+    'cross-dissolve',
+    'flip-from-left',
+    'flip-from-right',
+    'flip-from-top',
+    'flip-from-bottom',
+];
 export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
-    const animation = (transition?.duration ?? -1) > 0
-        ? getAnimatorFromClass(transition?.effect || 'cross-dissolve')
-        : null;
+    const animator = getAnimatorFromClass(transition?.effect && SUPPORTED_ANIMATIONS.includes(transition?.effect)
+        ? transition?.effect
+        : 'cross-dissolve');
     return (React.createElement("div", { ref: containerRef, style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
@@ -150,7 +157,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
             overflow: 'hidden',
             position: 'relative',
         } },
-        React.createElement(AnimationManager, { animation: animation, initial: placeholder?.[0]?.uri
+        React.createElement(AnimationManager, { animation: (transition?.duration ?? -1) > 0 ? animator : null, initial: placeholder?.[0]?.uri
                 ? [
                     placeholder?.[0]?.uri || '',
                     ({ onAnimationFinished, ref }) => (React.createElement(Image, { ref: ref, source: placeholder?.[0], style: {
