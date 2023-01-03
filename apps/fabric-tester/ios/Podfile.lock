@@ -16,6 +16,8 @@ PODS:
     - ExpoModulesCore
   - Expo (47.0.1):
     - ExpoModulesCore
+  - ExpoAppleAuthentication (5.0.1):
+    - ExpoModulesCore
   - ExpoBlur (12.0.1):
     - ExpoModulesCore
   - ExpoImage (1.0.0-alpha.3):
@@ -710,6 +712,7 @@ DEPENDENCIES:
   - EXFileSystem (from `../../../packages/expo-file-system/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - Expo (from `../../../packages/expo`)
+  - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
@@ -789,6 +792,8 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-font/ios"
   Expo:
     :path: "../../../packages/expo"
+  ExpoAppleAuthentication:
+    :path: "../../../packages/expo-apple-authentication/ios"
   ExpoBlur:
     :path: "../../../packages/expo-blur/ios"
   ExpoImage:
@@ -884,6 +889,7 @@ SPEC CHECKSUMS:
   EXFileSystem: ed61548927905e157b95b3b49bd83a26ff24e1ce
   EXFont: 319606bfe48c33b5b5063fb0994afdc496befe80
   Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
+  ExpoAppleAuthentication: c0e39d8cf1aec4495e719ea108f5fb8c9970c2db
   ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
   ExpoImage: 191ac66d00b42323adebd48d594001a4b70fa336
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
