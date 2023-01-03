@@ -4,6 +4,7 @@ import expo.modules.application.ApplicationPackage
 import expo.modules.av.AVPackage
 import expo.modules.av.video.VideoViewModule
 import expo.modules.backgroundfetch.BackgroundFetchPackage
+import expo.modules.barcodescanner.BarCodeScannerModule
 import expo.modules.barcodescanner.BarCodeScannerPackage
 import expo.modules.battery.BatteryPackage
 import expo.modules.brightness.BrightnessPackage
@@ -60,7 +61,7 @@ import expo.modules.systemui.SystemUIModule
 import expo.modules.systemui.SystemUIPackage
 import expo.modules.taskManager.TaskManagerPackage
 import expo.modules.updates.UpdatesPackage
-import expo.modules.videothumbnails.VideoThumbnailsPackage
+import expo.modules.videothumbnails.VideoThumbnailsModule
 import expo.modules.webbrowser.WebBrowserModule
 
 object ExperiencePackagePicker : ModulesProvider {
@@ -101,7 +102,6 @@ object ExperiencePackagePicker : ModulesProvider {
     SystemUIPackage(),
     TaskManagerPackage(),
     UpdatesPackage(),
-    VideoThumbnailsPackage(),
   )
 
   /**
@@ -120,6 +120,7 @@ object ExperiencePackagePicker : ModulesProvider {
   }
 
   override fun getModulesList(): List<Class<out Module>> = listOf(
+    BarCodeScannerModule::class.java,
     CameraViewModule::class.java,
     CellularModule::class.java,
     ClipboardModule::class.java,
@@ -139,6 +140,7 @@ object ExperiencePackagePicker : ModulesProvider {
     SharingModule::class.java,
     StoreReviewModule::class.java,
     SystemUIModule::class.java,
+    VideoThumbnailsModule::class.java,
     VideoViewModule::class.java,
     WebBrowserModule::class.java,
   )
