@@ -92,7 +92,7 @@ export default function DeviceScreen() {
       )}
       <DeviceConstants
         name="Device deviceType (constant)"
-        value={deviceTypeMap[Device.deviceType]}
+        value={deviceTypeMap[Device.deviceType ?? Device.DeviceType.UNKNOWN]}
       />
       <DeviceMethods
         name="Device deviceType"

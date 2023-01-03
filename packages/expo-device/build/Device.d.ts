@@ -179,11 +179,10 @@ export declare const deviceName: string | null;
  * On Android, for devices other than TVs, the device type is determined by the screen resolution (screen minimum width), so the result may not be completely accurate.
  * If the screen minimum width is less than 600dp, the method returns `DeviceType.PHONE`. For lengths larger than 600dp, the method returns `DeviceType.TABLET`.
  *
- * @return Returns a a [`DeviceType`](#devicetype) enum value.
+ * @return Returns a [`DeviceType`](#devicetype) enum value.
  * @example
  * ```js
- * await Device.deviceType;
- * // DeviceType.PHONE
+ * await Device.deviceType; // DeviceType.PHONE
  * ```
  */
 export declare const deviceType: DeviceType | null;
