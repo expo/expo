@@ -16,7 +16,7 @@ function convertGiBtoBytes(gib: number): number {
 }
 
 let deviceType = DeviceType.UNKNOWN;
-switch (result.device.type) {
+switch (result?.device?.type) {
   case 'mobile':
     deviceType = DeviceType.PHONE;
   case 'tablet':

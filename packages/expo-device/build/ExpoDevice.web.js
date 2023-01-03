@@ -10,7 +10,7 @@ function convertGiBtoBytes(gib) {
     return Math.round(gib * 1024 ** 3);
 }
 let deviceType = DeviceType.UNKNOWN;
-switch (result.device.type) {
+switch (result?.device?.type) {
     case 'mobile':
         deviceType = DeviceType.PHONE;
     case 'tablet':
