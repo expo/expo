@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Added a new `deviceType` constant that returns the same value as `getDeviceTypeAsync` ([#20678](https://github.com/expo/expo/pull/20678) by [@maxencehenneron](https://github.com/maxencehenneron))
+
 ### 🐛 Bug fixes
+
+- Fixed a bug where some android phones were returning a deviceType of DeviceType.TABLET. ([#20678](https://github.com/expo/expo/pull/20678) by [@maxencehenneron](https://github.com/maxencehenneron))
 
 ### 💡 Others
 
