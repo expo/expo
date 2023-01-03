@@ -31,7 +31,9 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
               {!!property.platform && (
                 <APISectionPlatformTags
                   prefix="Only for:"
-                  platforms={[{ text: property.platform, tag: 'platform' }]}
+                  platforms={[
+                    { content: [{ kind: 'text', text: property.platform }], tag: 'platform' },
+                  ]}
                 />
               )}
               {property.description}

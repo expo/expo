@@ -72,7 +72,7 @@ describe('APISection', () => {
 
   test('expo-pedometer', () => {
     const { container } = renderWithHeadings(
-      <APISection packageName="expo-pedometer" forceVersion="v45.0.0" testRequire={require} />
+      <APISection packageName="expo-pedometer" forceVersion="unversioned" testRequire={require} />
     );
 
     expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);

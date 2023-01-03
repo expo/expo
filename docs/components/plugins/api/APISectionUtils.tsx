@@ -10,6 +10,7 @@ import { APIDataType } from './APIDataType';
 import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
 import {
+  CommentContentData,
   CommentData,
   MethodDefinitionData,
   MethodParamData,
@@ -17,6 +18,7 @@ import {
   PropData,
   TypeDefinitionData,
   TypePropertyDataFlags,
+  TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { Callout } from '~/ui/components/Callout';
@@ -163,9 +165,9 @@ const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
-  View: '/versions/latest/react-native/view',
-  ViewProps: '/versions/latest/react-native/view#props',
-  ViewStyle: '/versions/latest/react-native/view-style-props',
+  View: 'https://reactnative.dev/docs/view',
+  ViewProps: 'https://reactnative.dev/docs/view#props',
+  ViewStyle: 'https://reactnative.dev/docs/view-style-props',
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
@@ -372,7 +374,10 @@ export const renderParamRow = ({
   flags,
   defaultValue,
 }: MethodParamData): JSX.Element => {
-  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  const defaultData = getTagData('default', comment);
+  const initValue = parseCommentContent(
+    defaultValue || (defaultData ? getCommentContent(defaultData.content) : '')
+  );
   return (
     <Row key={`param-${name}`}>
       <Cell>
@@ -422,26 +427,10 @@ export const renderDefaultValue = (defaultValue?: string) =>
 
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
-  signatures?: MethodSignatureData[],
+  signatures?: MethodSignatureData[] | TypeSignaturesData[],
   allowBlock: boolean = false
 ) => {
-  if (signatures && signatures.length) {
-    return (
-      <CODE key={`signature-type-${signatures[0].name}`}>
-        (
-        {signatures?.map(({ parameters }) =>
-          parameters?.map(param => (
-            <span key={`signature-param-${param.name}`}>
-              {param.name}
-              {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
-            </span>
-          ))
-        )}
-        ) =&gt;{' '}
-        {type ? <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE> : 'void'}
-      </CODE>
-    );
-  } else if (type) {
+  if (type) {
     if (allowBlock) {
       return <APIDataType typeDefinition={type} />;
     }
@@ -487,18 +476,20 @@ export const parseCommentContent = (content?: string): string =>
 
 export const getCommentOrSignatureComment = (
   comment?: CommentData,
-  signatures?: MethodSignatureData[]
+  signatures?: MethodSignatureData[] | TypeSignaturesData[]
 ) => comment || (signatures && signatures[0]?.comment);
 
 export const getTagData = (tagName: string, comment?: CommentData) =>
   getAllTagData(tagName, comment)?.[0];
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
-  comment?.tags?.filter(tag => tag.tag === tagName);
+  comment?.blockTags?.filter(tag => tag.tag.substring(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
-    ...(getAllTagData('platform', comment)?.map(platformData => platformData.text) || []),
+    ...(getAllTagData('platform', comment)?.map(platformData =>
+      getCommentContent(platformData.content)
+    ) || []),
     ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
@@ -529,6 +520,13 @@ const getParamTags = (shortText?: string) => {
   return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
 };
 
+export const getCommentContent = (content: CommentContentData[]) => {
+  return content
+    .map(entry => entry.text)
+    .join('')
+    .trim();
+};
+
 export const CommentTextBlock = ({
   comment,
   components = mdComponents,
@@ -538,24 +536,18 @@ export const CommentTextBlock = ({
   includePlatforms = true,
   emptyCommentFallback,
 }: CommentTextBlockProps) => {
-  const paramTags = getParamTags(comment?.shortText?.trim());
+  const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
 
-  const shortText = comment?.shortText?.trim().length ? (
-    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(
-        paramTags ? comment.shortText.replaceAll(PARAM_TAGS_REGEX, '') : comment.shortText
-      )}
-    </ReactMarkdown>
-  ) : null;
-  const text = comment?.text?.trim().length ? (
-    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(comment.text)}
-    </ReactMarkdown>
-  ) : null;
-
-  if (emptyCommentFallback && (!comment || (!shortText && !text))) {
+  if (emptyCommentFallback && (!comment || !content || !content.length)) {
     return <>{emptyCommentFallback}</>;
   }
+
+  const paramTags = content ? getParamTags(content) : undefined;
+  const parsedContent = (
+    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
+      {parseCommentContent(paramTags ? content?.replaceAll(PARAM_TAGS_REGEX, '') : content)}
+    </ReactMarkdown>
+  );
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
@@ -569,7 +561,7 @@ export const CommentTextBlock = ({
           <RawH4>Example</RawH4>
         </div>
       )}
-      <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
+      <ReactMarkdown components={components}>{getCommentContent(example.content)}</ReactMarkdown>
     </Fragment>
   ));
 
@@ -577,7 +569,9 @@ export const CommentTextBlock = ({
   const seeText = see && (
     <Callout>
       <BOLD>See: </BOLD>
-      <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
+      <ReactMarkdown components={mdInlineComponents}>
+        {getCommentContent(see.content)}
+      </ReactMarkdown>
     </Callout>
   );
 
@@ -597,10 +591,9 @@ export const CommentTextBlock = ({
         </>
       )}
       {beforeContent}
-      {withDash && (shortText || text) && ' - '}
+      {withDash && parsedContent && ' - '}
       {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
-      {shortText}
-      {text}
+      {parsedContent}
       {afterContent}
       {seeText}
       {exampleText}
@@ -642,7 +635,7 @@ export const STYLES_APIBOX = css({
     marginBottom: spacing[2],
   },
 
-  'h3, h4': {
+  'h2, h3, h4': {
     marginTop: 0,
   },
 
