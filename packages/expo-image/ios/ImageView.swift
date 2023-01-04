@@ -3,7 +3,7 @@
 import SDWebImage
 import ExpoModulesCore
 
-private typealias SDWebImageContext = [SDWebImageContextOption: Any]
+typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
 // swiftlint:disable:next type_body_length
 public final class ImageView: ExpoView {

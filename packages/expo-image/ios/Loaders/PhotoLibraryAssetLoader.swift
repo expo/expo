@@ -16,7 +16,7 @@ final class PhotoLibraryAssetLoader: NSObject, SDImageLoader {
   func requestImage(
     with url: URL?,
     options: SDWebImageOptions = [],
-    context: [SDWebImageContextOption: Any]?,
+    context: SDWebImageContext?,
     progress progressBlock: SDImageLoaderProgressBlock?,
     completed completedBlock: SDImageLoaderCompletedBlock? = nil
   ) -> SDWebImageOperation? {
@@ -28,7 +28,7 @@ final class PhotoLibraryAssetLoader: NSObject, SDImageLoader {
     let operation = PhotoLibraryAssetLoaderOperation()
 
     DispatchQueue.global(qos: .userInitiated).async {
-      guard let assetLocalIdentifier = assetLocalIdentifier(fromUrl: url) else {
+      guard let url = url, let assetLocalIdentifier = assetLocalIdentifier(fromUrl: url) else {
         let error = makeNSError(description: "Unable to obtain the asset identifier from the url: '\(url?.absoluteString)'")
         completedBlock?(nil, nil, error, false)
         return
@@ -38,40 +38,13 @@ final class PhotoLibraryAssetLoader: NSObject, SDImageLoader {
         completedBlock?(nil, nil, error, false)
         return
       }
-
-      let options = PHImageRequestOptions()
-      options.isSynchronous = false
-      options.version = .current
-      options.deliveryMode = .highQualityFormat
-      options.resizeMode = .fast
-      options.normalizedCropRect = .zero
-      options.isNetworkAccessAllowed = true
-
-      if let progressBlock = progressBlock {
-        options.progressHandler = { (progress, error, stop, info) in
-          // The `progress` is a double from 0.0 to 1.0, but the loader needs integers so we map it to 0...100 range
-          let progressPercentage = Int((progress * 100.0).rounded())
-          progressBlock(progressPercentage, 100, url)
-        }
-      }
-
-      let screenScale = context?[ImageView.screenScaleKey] as? Double ?? UIScreen.main.scale
-      let targetSize = CGSize(width: Double(asset.pixelWidth) / screenScale, height: Double(asset.pixelHeight) / screenScale)
-
-      let requestId = PHImageManager.default().requestImage(
-        for: asset,
-        targetSize: targetSize,
-        contentMode: .aspectFit,
-        options: options,
-        resultHandler: { image, info in
-          // This value can be `true` only when network access is allowed and the photo is stored in the iCloud.
-          let isDegraded: Bool = info?[PHImageResultIsDegradedKey] as? Bool ?? false
-
-          completedBlock?(image, nil, nil, !isDegraded)
-        }
+      operation.requestId = requestAsset(
+        asset,
+        url: url,
+        context: context,
+        progressBlock: progressBlock,
+        completedBlock: completedBlock
       )
-
-      operation.requestId = requestId
     }
     return operation
   }
@@ -84,6 +57,9 @@ final class PhotoLibraryAssetLoader: NSObject, SDImageLoader {
   }
 }
 
+/**
+ Returns a bool value whether the given url references the Photo Library asset.
+ */
 internal func isPhotoLibraryAssetUrl(_ url: URL?) -> Bool {
   return url?.scheme == "ph"
 }
@@ -93,8 +69,8 @@ internal func isPhotoLibraryAssetUrl(_ url: URL?) -> Bool {
  These urls have the form of "ph://26687849-33F9-4402-8EC0-A622CD011D70",
  where the asset local identifier is used as the host part.
  */
-private func assetLocalIdentifier(fromUrl url: URL?) -> String? {
-  return url?.host
+private func assetLocalIdentifier(fromUrl url: URL) -> String? {
+  return url.host
 }
 
 /**
@@ -106,6 +82,43 @@ private func isPhotoLibraryStatusAuthorized() -> Bool {
   } else {
     return PHPhotoLibrary.authorizationStatus() == .authorized
   }
+}
+
+/**
+ Requests the image of the given asset object and returns the request identifier.
+ */
+private func requestAsset(_ asset: PHAsset, url: URL, context: SDWebImageContext?, progressBlock: SDImageLoaderProgressBlock?, completedBlock: SDImageLoaderCompletedBlock?) -> PHImageRequestID {
+  let options = PHImageRequestOptions()
+  options.isSynchronous = false
+  options.version = .current
+  options.deliveryMode = .highQualityFormat
+  options.resizeMode = .fast
+  options.normalizedCropRect = .zero
+  options.isNetworkAccessAllowed = true
+
+  if let progressBlock = progressBlock {
+    options.progressHandler = { progress, error, stop, info in
+      // The `progress` is a double from 0.0 to 1.0, but the loader needs integers so we map it to 0...100 range
+      let progressPercentage = Int((progress * 100.0).rounded())
+      progressBlock(progressPercentage, 100, url)
+    }
+  }
+
+  let screenScale = context?[ImageView.screenScaleKey] as? Double ?? UIScreen.main.scale
+  let targetSize = CGSize(width: Double(asset.pixelWidth) / screenScale, height: Double(asset.pixelHeight) / screenScale)
+
+  return PHImageManager.default().requestImage(
+    for: asset,
+    targetSize: targetSize,
+    contentMode: .aspectFit,
+    options: options,
+    resultHandler: { image, info in
+      // This value can be `true` only when network access is allowed and the photo is stored in the iCloud.
+      let isDegraded: Bool = info?[PHImageResultIsDegradedKey] as? Bool ?? false
+
+      completedBlock?(image, nil, nil, !isDegraded)
+    }
+  )
 }
 
 /**
