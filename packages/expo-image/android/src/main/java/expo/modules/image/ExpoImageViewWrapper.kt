@@ -392,7 +392,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
     }
     transformationMatrixChanged = false
-
   }
 
   init {
