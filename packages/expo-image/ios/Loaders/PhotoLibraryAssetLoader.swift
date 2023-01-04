@@ -87,7 +87,13 @@ private func isPhotoLibraryStatusAuthorized() -> Bool {
 /**
  Requests the image of the given asset object and returns the request identifier.
  */
-private func requestAsset(_ asset: PHAsset, url: URL, context: SDWebImageContext?, progressBlock: SDImageLoaderProgressBlock?, completedBlock: SDImageLoaderCompletedBlock?) -> PHImageRequestID {
+private func requestAsset(
+  _ asset: PHAsset,
+  url: URL,
+  context: SDWebImageContext?,
+  progressBlock: SDImageLoaderProgressBlock?,
+  completedBlock: SDImageLoaderCompletedBlock?
+) -> PHImageRequestID {
   let options = PHImageRequestOptions()
   options.isSynchronous = false
   options.version = .current
@@ -97,7 +103,7 @@ private func requestAsset(_ asset: PHAsset, url: URL, context: SDWebImageContext
   options.isNetworkAccessAllowed = true
 
   if let progressBlock = progressBlock {
-    options.progressHandler = { progress, error, stop, info in
+    options.progressHandler = { progress, _, _, _ in
       // The `progress` is a double from 0.0 to 1.0, but the loader needs integers so we map it to 0...100 range
       let progressPercentage = Int((progress * 100.0).rounded())
       progressBlock(progressPercentage, 100, url)
