@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `ImageProps` type not allowing an array of styles.
+- Fixed `ImageProps` type not allowing an array of styles. ([#20701](https://github.com/expo/expo/pull/20701) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
