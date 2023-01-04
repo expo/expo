@@ -37,7 +37,7 @@
     "find-up": "^5.0.0",
     "jest-watch-select-projects": "^2.0.0",
     "jest-watch-typeahead": "0.6.4",
-    "json5": "^2.1.0",
+    "json5": "^2.2.2",
     "lodash": "^4.17.19",
     "react-test-renderer": "~18.1.0"
   },
