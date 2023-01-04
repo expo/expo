@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `ImageProps` type not allowing an array of styles.
+
 ### 💡 Others
 
 ## 1.0.0-alpha.4 — 2022-12-30

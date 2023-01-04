@@ -41,7 +41,7 @@ export type ImageStyle = RNImageStyle;
  */
 export type ImageProps = {
   /** @hidden */
-  style?: RNImageStyle;
+  style?: RNImageStyle | RNImageStyle[];
 
   /**
    * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
@@ -201,6 +201,7 @@ export type ImageProps = {
  * @hidden
  */
 export interface ImageNativeProps extends ImageProps {
+  style?: RNImageStyle;
   source?: ImageSource[];
   placeholder?: ImageSource[];
   contentPosition?: ImageContentPositionObject;
