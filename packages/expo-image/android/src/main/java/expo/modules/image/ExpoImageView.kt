@@ -1,127 +1,48 @@
 package expo.modules.image
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.Rect
 import android.graphics.RectF
 import android.graphics.drawable.Drawable
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
-import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestManager
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.load.resource.bitmap.DownsampleStrategy
-import com.bumptech.glide.request.RequestOptions
+import androidx.core.view.isVisible
 import com.facebook.react.modules.i18nmanager.I18nUtil
 import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.views.view.ReactViewBackgroundDrawable
 import expo.modules.image.drawing.OutlineProvider
 import expo.modules.image.enums.ContentFit
-import expo.modules.image.enums.Priority
-import expo.modules.image.events.GlideRequestListener
-import expo.modules.image.events.OkHttpProgressListener
-import expo.modules.image.okhttp.GlideUrlWrapper
-import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
-import expo.modules.image.records.ImageErrorEvent
-import expo.modules.image.records.ImageLoadEvent
-import expo.modules.image.records.ImageProgressEvent
-import expo.modules.image.records.SourceMap
-import expo.modules.image.svg.SVGSoftwareLayerSetter
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.viewevent.EventDispatcher
-import expo.modules.kotlin.views.ExpoView
-import jp.wasabeef.glide.transformations.BlurTransformation
-import java.lang.ref.WeakReference
-import kotlin.math.abs
-import kotlin.math.min
-
-@SuppressLint("ViewConstructor")
-class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
-  internal val onLoadStart by EventDispatcher<Unit>()
-  internal val onProgress by EventDispatcher<ImageProgressEvent>()
-  internal val onError by EventDispatcher<ImageErrorEvent>()
-  internal val onLoad by EventDispatcher<ImageLoadEvent>()
-
-  private val activity: Activity
-    get() = appContext.currentActivity ?: throw MissingActivity()
-
-  internal val imageView = run {
-    val activity = activity
-    ExpoImageView(
-      activity,
-      getOrCreateRequestManager(appContext, activity),
-      WeakReference(this)
-    ).apply {
-      layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-      addView(this)
-    }
-  }
-
-  companion object {
-    private var requestManager: RequestManager? = null
-    private var appContextRef: WeakReference<AppContext?> = WeakReference(null)
-
-    fun getOrCreateRequestManager(
-      appContext: AppContext,
-      activity: Activity
-    ): RequestManager = synchronized(Companion) {
-      val cachedRequestManager = requestManager
-        ?: return createNewRequestManager(activity).also {
-          requestManager = it
-          appContextRef = WeakReference(appContext)
-        }
-
-      // Request manager was created using different activity
-      if (appContextRef.get() != appContext) {
-        return createNewRequestManager(activity).also {
-          requestManager = it
-          appContextRef = WeakReference(appContext)
-        }
-      }
-
-      return cachedRequestManager
-    }
-
-    private fun createNewRequestManager(activity: Activity): RequestManager =
-      Glide.with(activity).addDefaultRequestListener(SVGSoftwareLayerSetter())
-  }
-}
 
 @SuppressLint("ViewConstructor")
 class ExpoImageView(
-  context: Context,
-  private val requestManager: RequestManager,
-  private val expoImageViewWrapper: WeakReference<ExpoImageViewWrapper>
+  context: Context
 ) : AppCompatImageView(context) {
-  private val outlineProvider = OutlineProvider(context)
-  private val progressListener = OkHttpProgressListener(expoImageViewWrapper)
+  var currentTarget: ImageViewWrapperTarget? = null
+  var isPlaceholder: Boolean = false
+  var placeholderContentFit: ContentFit? = null
 
-  private var target: ViewConnectedTarget = ViewConnectedTarget(
-    requestManager,
-    WeakReference(this)
-  ).also {
-    val bgTarget = ViewConnectedTarget(requestManager, WeakReference(this), it)
-    it.bgTarget = bgTarget
-  }
+  fun recycleView(): ImageViewWrapperTarget? {
+    setImageDrawable(null)
 
-  private val activeTarget: ViewConnectedTarget?
-    get() = if (target.state == ViewConnectedTarget.State.ACTIVE) {
-      target
-    } else if (target.bgTarget?.state == ViewConnectedTarget.State.ACTIVE) {
-      target.bgTarget
-    } else {
-      null
+    val target = currentTarget?.apply {
+      isUsed = false
     }
 
-  private var propsChanged = false
-  private var transformationMatrixChanged = false
+    currentTarget = null
+    isVisible = false
+    isPlaceholder = false
+    placeholderContentFit = null
 
-  private var loadedSource: GlideModel? = null
+    return target
+  }
+
+  private val outlineProvider = OutlineProvider(context)
+
+  private var transformationMatrixChanged = false
 
   private val borderDrawableLazyHolder = lazy {
     ReactViewBackgroundDrawable(context).apply {
@@ -142,45 +63,34 @@ class ExpoImageView(
 
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     super.onLayout(changed, left, top, right, bottom)
-    onAfterUpdateTransaction()
+    applyTransformationMatrix()
+  }
 
+  fun applyTransformationMatrix() {
     if (drawable == null) {
       return
     }
 
-    val currentTarget = activeTarget
-
-    // We have to check if the placeholder is currently displayed.
-    // If it is, we want to apply different transformations.
-    if (currentTarget != null && currentTarget.placeholderIsVisible) {
-      applyTransformationMatrix(drawable, currentTarget.placeholderContentFit)
+    if (isPlaceholder) {
+      applyTransformationMatrix(drawable, placeholderContentFit ?: ContentFit.ScaleDown)
     } else {
-      applyTransformationMatrix()
+      applyTransformationMatrix(drawable, contentFit, contentPosition)
     }
   }
 
-  fun applyTransformationMatrix() {
+  private fun applyTransformationMatrix(
+    drawable: Drawable,
+    contentFit: ContentFit,
+    contentPosition: ContentPosition = ContentPosition.center
+  ) {
     val imageRect = RectF(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
     val viewRect = RectF(0f, 0f, width.toFloat(), height.toFloat())
 
     val matrix = contentFit.toMatrix(imageRect, viewRect)
-
     val scaledImageRect = imageRect.transform(matrix)
 
     imageMatrix = matrix.apply {
       contentPosition.apply(this, scaledImageRect, viewRect)
-    }
-  }
-
-  fun applyTransformationMatrix(drawable: Drawable, contentFit: ContentFit) {
-    val imageRect = RectF(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
-    val viewRect = RectF(0f, 0f, width.toFloat(), height.toFloat())
-
-    val matrix = contentFit.toMatrix(imageRect, viewRect)
-    val scaledImageRect = imageRect.transform(matrix)
-
-    imageMatrix = matrix.apply {
-      ContentPosition().apply(this, scaledImageRect, viewRect)
     }
   }
 
@@ -194,26 +104,6 @@ class ExpoImageView(
   }
 
   // region Component Props
-  internal var sources: List<SourceMap> = emptyList()
-  private val bestSource: SourceMap?
-    get() = getBestSource(sources)
-
-  internal var placeholders: List<SourceMap> = emptyList()
-  private val bestPlaceholder: SourceMap?
-    get() = getBestSource(placeholders)
-
-  internal var blurRadius: Int? = null
-    set(value) {
-      field = value?.takeIf { it > 0 }
-      propsChanged = true
-    }
-
-  internal var fadeDuration: Int? = null
-    set(value) {
-      field = value?.takeIf { it > 0 }
-      propsChanged = true
-    }
-
   internal var contentFit: ContentFit = ContentFit.Cover
     set(value) {
       field = value
@@ -225,10 +115,6 @@ class ExpoImageView(
       field = value
       transformationMatrixChanged = true
     }
-
-  internal var priority: Priority = Priority.NORMAL
-
-  internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
   internal fun setBorderRadius(position: Int, borderRadius: Float) {
     val isInvalidated = outlineProvider.setBorderRadius(borderRadius, position)
@@ -276,140 +162,7 @@ class ExpoImageView(
   internal fun setTintColor(color: Int?) {
     color?.let { setColorFilter(it, PorterDuff.Mode.SRC_IN) } ?: clearColorFilter()
   }
-  // endregion
 
-  // region ViewManager Lifecycle methods
-  internal fun onAfterUpdateTransaction() {
-    val bestSource = bestSource
-    val bestPlaceholder = bestPlaceholder
-
-    val sourceToLoad = bestSource?.createGlideModel(context)
-    val placeholder = bestPlaceholder?.createGlideModel(context)
-    // We only clean the image when the source is set to null and we don't have a placeholder.
-    if ((bestSource == null || sourceToLoad == null) && placeholder == null) {
-      target.clearBothTargets()
-      setImageDrawable(null)
-      loadedSource = null
-      transformationMatrixChanged = false
-      propsChanged = false
-      return
-    }
-
-    if (sourceToLoad != loadedSource || propsChanged || (sourceToLoad == null && placeholder != null)) {
-      propsChanged = false
-      loadedSource = sourceToLoad
-      val options = bestSource?.createOptions(context)
-      val propOptions = createPropOptions()
-
-      val model = sourceToLoad?.glideData
-      if (model is GlideUrlWrapper) {
-        model.progressListener = progressListener
-      }
-
-      expoImageViewWrapper.get()?.onLoadStart?.invoke(Unit)
-
-      val newTarget = target.getUnusedTarget() ?: return
-      newTarget.hasSource = sourceToLoad != null
-      val request = requestManager
-        .asDrawable()
-        .load(model)
-        .apply {
-          if (placeholder != null) {
-            thumbnail(requestManager.load(placeholder.glideData))
-            val placeholderContentFit = if (bestPlaceholder.isBlurhash()) {
-              contentFit
-            } else {
-              ContentFit.ScaleDown
-            }
-            newTarget.placeholderContentFit = placeholderContentFit
-          }
-        }
-        .apply {
-          options?.let {
-            apply(it)
-          }
-        }
-        .downsample(DownsampleStrategy.NONE)
-        .addListener(GlideRequestListener(expoImageViewWrapper))
-        .encodeQuality(100)
-        .apply(propOptions)
-
-      request.into(newTarget)
-    } else {
-      // In the case where the source didn't change, but the transformation matrix has to be
-      // recalculated, we can apply the new transformation right away.
-      // When the source and the matrix is different, we don't want to do anything.
-      // We don't want to changed the transformation of the currently displayed image.
-      // The new matrix will be applied when new resource is loaded.
-      if (transformationMatrixChanged && drawable != null) {
-        applyTransformationMatrix()
-      }
-    }
-    transformationMatrixChanged = false
-  }
-
-  internal fun onDrop() {
-    requestManager.clear(this)
-  }
-  // endregion
-
-  // region Helper methods
-
-  private fun getBestSource(sources: List<SourceMap>): SourceMap? {
-    if (sources.isEmpty()) {
-      return null
-    }
-
-    if (sources.size == 1) {
-      return sources.first()
-    }
-
-    val parent = parent as? ExpoImageViewWrapper ?: return null
-    val parentRect = Rect(0, 0, parent.width, parent.height)
-    if (parentRect.isEmpty) {
-      return null
-    }
-
-    val targetPixelCount = parentRect.width() * parentRect.height()
-
-    var bestSource: SourceMap? = null
-    var bestFit = Double.MAX_VALUE
-
-    sources.forEach {
-      val fit = abs(1 - (it.pixelCount / targetPixelCount))
-      if (fit < bestFit) {
-        bestFit = fit
-        bestSource = it
-      }
-    }
-
-    return bestSource
-  }
-
-  private fun createPropOptions(): RequestOptions {
-    return RequestOptions()
-      .apply {
-        priority(this@ExpoImageView.priority.toGlidePriority())
-
-        if (cachePolicy != CachePolicy.MEMORY_AND_DISK && cachePolicy != CachePolicy.MEMORY) {
-          skipMemoryCache(true)
-        }
-        if (cachePolicy == CachePolicy.NONE || cachePolicy == CachePolicy.MEMORY) {
-          diskCacheStrategy(DiskCacheStrategy.NONE)
-        }
-
-        blurRadius?.let {
-          transform(BlurTransformation(min(it, 25), 4))
-        }
-        fadeDuration?.let {
-          alpha = 0f
-          animate().alpha(1f).duration = it.toLong()
-        }
-      }
-  }
-  // endregion
-
-  // region Drawing overrides
   override fun invalidateDrawable(drawable: Drawable) {
     super.invalidateDrawable(drawable)
     if (borderDrawableLazyHolder.isInitialized() && drawable === borderDrawable) {
@@ -442,21 +195,4 @@ class ExpoImageView(
       }
     }
   }
-
-  // TODO(@lukmccall): Fix `repeat`
-//  /**
-//   * Called when Glide "injects" drawable into the view.
-//   * When `resizeMode = REPEAT`, we need to update
-//   * received drawable (unless null) and set correct tiling.
-//   */
-//  override fun setImageDrawable(drawable: Drawable?) {
-//    val maybeUpdatedDrawable = drawable
-//      ?.takeIf { resizeMode == ImageResizeMode.REPEAT }
-//      ?.toBitmapDrawable(resources)
-//      ?.apply {
-//        setTileModeXY(Shader.TileMode.REPEAT, Shader.TileMode.REPEAT)
-//      }
-//    super.setImageDrawable(maybeUpdatedDrawable ?: drawable)
-//  }
-  // endregion
 }
