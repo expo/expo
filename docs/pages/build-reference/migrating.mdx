@@ -1,6 +1,6 @@
 ---
 title: Migrating from "expo build"
-description: A reference for migrating from "expo build" to EAS Build.
+description: A reference for migrating from "expo build" (classic builds) to EAS Build.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -139,7 +139,7 @@ EAS Build needs to be able to install all of your project dependencies to set up
 
 ### `expo-branch` is not supported on EAS Build
 
-Remove `expo-branch` from your app to build with EAS Build. You can use the official [react-native-branch](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) with [@config-plugins/react-native-branch](https://github.com/expo/config-plugins/tree/master/packages/react-native-branch).
+Remove `expo-branch` from your app to build with EAS Build. You can use the official [`react-native-branch`](https://github.com/BranchMetrics/react-native-branch-deep-linking-attribution) with [`@config-plugins/react-native-branch`](https://github.com/expo/config-plugins/tree/master/packages/react-native-branch).
 
 ### `amazon-cognito-identity-js` is required if you use AWS Amplify
 
