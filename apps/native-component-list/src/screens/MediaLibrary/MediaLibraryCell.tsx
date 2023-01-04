@@ -1,8 +1,9 @@
 import FontAwesome from '@expo/vector-icons/build/FontAwesome';
+import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
 import {
-  Image,
+  Image as RNImage,
   StyleProp,
   StyleSheet,
   Text,
@@ -10,7 +11,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-
+global.expo?.modules.ExpoImage.clearDiskCache();
 export default class MediaLibraryCell extends React.Component<{
   asset: MediaLibrary.Asset;
   onPress: (asset: MediaLibrary.Asset) => void;

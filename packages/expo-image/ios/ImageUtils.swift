@@ -173,3 +173,8 @@ extension CGSize {
     return CGSize(width: width.rounded(rule), height: height.rounded(rule))
   }
 }
+
+func makeNSError(description: String) -> NSError {
+  let userInfo = [NSLocalizedDescriptionKey: description]
+  return NSError(domain: "expo.modules.image", code: 0, userInfo: userInfo)
+}
