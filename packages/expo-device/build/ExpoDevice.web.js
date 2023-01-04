@@ -13,14 +13,18 @@ let deviceType = DeviceType.UNKNOWN;
 switch (result?.device?.type) {
     case 'mobile':
         deviceType = DeviceType.PHONE;
+        break;
     case 'tablet':
         deviceType = DeviceType.TABLET;
+        break;
     case 'smarttv':
         deviceType = DeviceType.TV;
+        break;
     case 'console':
     case 'embedded':
     case 'wearable':
         deviceType = DeviceType.UNKNOWN;
+        break;
     default:
         deviceType = DeviceType.DESKTOP;
 }
