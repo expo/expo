@@ -49,7 +49,7 @@ Create a [`androidClientId`](/versions/latest/sdk/auth-session/#googleauthreques
 - In the Google Cloud console, go to **Credentials** > **Create OAuth client** page.
 - For **Application type**, select **Android** from the dropdown menu.
 - For **Name**, enter the name such as **Android Client ID** to identify different client IDs in case you have more than one for multiple platforms.
-- Under **Package name**, enter the package name of your app. This is the same package name you have set up in the Expo config file under [`expo.android.package`](/versions/latest/config/app/#package) field, for example, `com.example.myapp`.
+- Under **Package name**, enter the package name of your app. This is the same package name you have set up in the Expo config file under [`android.package`](/versions/latest/config/app/#package) field, for example, `com.example.myapp`.
 - Under **SHA-1 certificate fingerprint**, you'll need to add the signing certificate value. To get this value:
   - In the terminal window, run `eas credentials -p android`, then select the build profile. For example, if you are generating the credential for development, select the build profile for it.
   - Select **Keystore: Manage everything needed to build your project** > **Set up a new keystore** > select the default value for **Assign a name to your build credentials** > press <kbd>Y</kbd> to **Generate a new Android Keystore**.
@@ -69,7 +69,7 @@ Create a [`iosClientId`](/versions/latest/sdk/auth-session/#googleauthrequestcon
 - In the Google Cloud console, go to **Credentials** > **Create OAuth client** page.
 - For **Application type**, select **iOS** from the dropdown menu.
 - For **Name**, enter the name such as **iOS Client ID** to identify different client IDs in case you have more than one for multiple platforms.
-- Under **Bundle ID**, enter the bundle ID of your app. This is the same bundler identifier you have set up in the Expo config file under [`expo.ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) field, for example, `com.example.myapp`.
+- Under **Bundle ID**, enter the bundle ID of your app. This is the same bundler identifier you have set up in the Expo config file under [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) field, for example, `com.example.myapp`.
 - Click **Save**.
 
 > Whenever you change values in the Expo config file, you'll need to rebuild the native app.
@@ -87,7 +87,7 @@ Create a [`expoClientId`](/versions/latest/sdk/auth-session/#googleauthrequestco
 - For **Application type**, select **Web application** from the dropdown menu.
 - For **Name**, enter the name such as **Expo Go Proxy** to identify different client IDs in case you have more than one for multiple platforms.
 - For **Authorized JavaScript origins**, add the URI: `https://auth.expo.io`.
-- For **Authorized redirect URIs**, add the URI: `https://auth.expo.io/@your-username/your-project-slug`. Replace `your-username` with your Expo account's username and `your-project-slug` with your project's slug. You can find the project's slug in the Expo config file under the [`expo.slug`](/versions/latest/config/app/#slug) field.
+- For **Authorized redirect URIs**, add the URI: `https://auth.expo.io/@your-username/your-project-slug`. Replace `your-username` with your Expo account's username and `your-project-slug` with your project's slug. You can find the project's slug in the Expo config file on the [`slug`](/versions/latest/config/app/#slug) field.
 - Click **Save**.
 
 After completing the above steps, you'll get the client ID which you can use as `expoClientId` in your project.
