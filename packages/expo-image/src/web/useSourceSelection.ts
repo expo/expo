@@ -34,7 +34,8 @@ function findBestSourceForSize(
 
 export default function useSourceSelection(
   sources?: ImageSource[],
-  sizeCalculation: ImageProps['responsivePolicy'] = 'live'
+  sizeCalculation: ImageProps['responsivePolicy'] = 'live',
+  measurementCallback?: (target: HTMLElement, size: DOMRect) => void
 ) {
   const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
   // null - not calculated yet, DOMRect - size available
@@ -49,11 +50,13 @@ export default function useSourceSelection(
 
   const containerRef = React.useCallback(
     (element: HTMLDivElement) => {
-      if (!hasMoreThanOneSource) {
+      if (!hasMoreThanOneSource && !measurementCallback) {
         return;
       }
+      const rect = element?.getBoundingClientRect();
+      measurementCallback?.(element, rect);
+      setSize(rect);
 
-      setSize(element?.getBoundingClientRect());
       if (sizeCalculation === 'live') {
         resizeObserver.current?.disconnect();
         if (!element) {
@@ -61,6 +64,7 @@ export default function useSourceSelection(
         }
         resizeObserver.current = new ResizeObserver((entries) => {
           setSize(entries[0].contentRect);
+          measurementCallback?.(entries[0].target as any, entries[0].contentRect);
         });
         resizeObserver.current.observe(element);
       }

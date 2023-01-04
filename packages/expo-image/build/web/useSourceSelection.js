@@ -22,7 +22,7 @@ function findBestSourceForSize(sources, size) {
         .sort((a, b) => a.penalty - b.penalty)
         .sort((a, b) => Number(b.covers) - Number(a.covers))[0]?.source ?? null);
 }
-export default function useSourceSelection(sources, sizeCalculation = 'live') {
+export default function useSourceSelection(sources, sizeCalculation = 'live', measurementCallback) {
     const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
     // null - not calculated yet, DOMRect - size available
     const [size, setSize] = useState(null);
@@ -33,10 +33,12 @@ export default function useSourceSelection(sources, sizeCalculation = 'live') {
         };
     }, []);
     const containerRef = React.useCallback((element) => {
-        if (!hasMoreThanOneSource) {
+        if (!hasMoreThanOneSource && !measurementCallback) {
             return;
         }
-        setSize(element?.getBoundingClientRect());
+        const rect = element?.getBoundingClientRect();
+        measurementCallback?.(element, rect);
+        setSize(rect);
         if (sizeCalculation === 'live') {
             resizeObserver.current?.disconnect();
             if (!element) {
@@ -44,6 +46,7 @@ export default function useSourceSelection(sources, sizeCalculation = 'live') {
             }
             resizeObserver.current = new ResizeObserver((entries) => {
                 setSize(entries[0].contentRect);
+                measurementCallback?.(entries[0].target, entries[0].contentRect);
             });
             resizeObserver.current.observe(element);
         }

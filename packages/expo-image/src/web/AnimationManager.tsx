@@ -13,6 +13,9 @@ type AnimationManagerNode = [
 type Animation = null | {
   run: (to: React.RefObject<HTMLImageElement>, from: React.RefObject<HTMLImageElement>[]) => void;
   startingClass: string;
+  containerClass: string;
+  timingFunction: string | null;
+  animationClass: string | null;
 };
 
 function setClassOnElement(element: HTMLImageElement | null, classes: string[]) {
@@ -56,7 +59,20 @@ function useAnimationManagerNode(node: AnimationManagerNode | null) {
   return newNode;
 }
 
-export function getAnimatorFromClass(animationClass: string | null) {
+const validateTimingFunctionForAnimation = (
+  animationClass: string | null,
+  timingFunction: string | null
+) => {
+  if (animationClass?.includes('flip')) {
+    if (timingFunction?.includes('ease')) {
+      return 'ease-in-out';
+    }
+    return 'linear';
+  }
+  return timingFunction;
+};
+
+export function getAnimatorFromClass(animationClass: string | null, timingFunction: string | null) {
   if (!animationClass) return null;
 
   const runAnimation = (
@@ -67,6 +83,10 @@ export function getAnimatorFromClass(animationClass: string | null) {
     from.forEach((element) => {
       if (!element.current?.classList.contains(`unmount`)) {
         setClassOnElement(element.current, [animationClass, `${animationClass}-end`, 'unmount']);
+        element.current?.style.setProperty(
+          '--expo-image-timing',
+          validateTimingFunctionForAnimation(animationClass, timingFunction)
+        );
       }
     });
   };
@@ -74,6 +94,9 @@ export function getAnimatorFromClass(animationClass: string | null) {
   return {
     startingClass: `${animationClass}-start`,
     run: runAnimation,
+    containerClass: `${animationClass}-container`,
+    timingFunction,
+    animationClass,
   };
 }
 
@@ -139,6 +162,12 @@ export default function AnimationManager({
           return;
         }
         if (!newNode?.ref.current.classList.contains('transitioning')) {
+          if (animation?.timingFunction) {
+            newNode.ref.current.style.setProperty(
+              '--expo-image-timing',
+              validateTimingFunctionForAnimation(animation.animationClass, animation.timingFunction)
+            );
+          }
           setClassOnElement(newNode?.ref.current, [animation?.startingClass]);
         }
       };
@@ -160,7 +189,9 @@ export default function AnimationManager({
   return (
     <>
       {[...nodes].reverse().map((n, idx) => (
-        <div key={n.animationKey}>{n.child}</div>
+        <div className={animation?.containerClass} key={n.animationKey}>
+          {n.child}
+        </div>
       ))}
     </>
   );

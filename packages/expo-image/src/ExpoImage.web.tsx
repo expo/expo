@@ -39,6 +39,11 @@ const SUPPORTED_ANIMATIONS = [
   'flip-from-bottom',
 ];
 
+const setCssVariables = (element: HTMLElement, size: DOMRect) => {
+  element?.style.setProperty('--expo-image-width', `${size.width}px`);
+  element?.style.setProperty('--expo-image-height', `${size.height}px`);
+};
+
 export default function ExpoImage({
   source,
   placeholder,
@@ -53,11 +58,17 @@ export default function ExpoImage({
   ...props
 }: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
-  const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy);
+
+  const { containerRef, source: selectedSource } = useSourceSelection(
+    source,
+    responsivePolicy,
+    setCssVariables
+  );
   const animator = getAnimatorFromClass(
     transition?.effect && SUPPORTED_ANIMATIONS.includes(transition?.effect)
       ? transition?.effect
-      : 'cross-dissolve'
+      : 'cross-dissolve',
+    transition?.timing || null
   );
   return (
     <div

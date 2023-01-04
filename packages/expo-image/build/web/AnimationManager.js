@@ -34,7 +34,16 @@ function useAnimationManagerNode(node) {
     }, [node?.[1]]);
     return newNode;
 }
-export function getAnimatorFromClass(animationClass) {
+const validateTimingFunctionForAnimation = (animationClass, timingFunction) => {
+    if (animationClass?.includes('flip')) {
+        if (timingFunction?.includes('ease')) {
+            return 'ease-in-out';
+        }
+        return 'linear';
+    }
+    return timingFunction;
+};
+export function getAnimatorFromClass(animationClass, timingFunction) {
     if (!animationClass)
         return null;
     const runAnimation = (to, from) => {
@@ -42,12 +51,16 @@ export function getAnimatorFromClass(animationClass) {
         from.forEach((element) => {
             if (!element.current?.classList.contains(`unmount`)) {
                 setClassOnElement(element.current, [animationClass, `${animationClass}-end`, 'unmount']);
+                element.current?.style.setProperty('--expo-image-timing', validateTimingFunctionForAnimation(animationClass, timingFunction));
             }
         });
     };
     return {
         startingClass: `${animationClass}-start`,
         run: runAnimation,
+        containerClass: `${animationClass}-container`,
+        timingFunction,
+        animationClass,
     };
 }
 export default function AnimationManager({ children: renderFunction, initial, animation, }) {
@@ -80,6 +93,9 @@ export default function AnimationManager({ children: renderFunction, initial, an
                     return;
                 }
                 if (!newNode?.ref.current.classList.contains('transitioning')) {
+                    if (animation?.timingFunction) {
+                        newNode.ref.current.style.setProperty('--expo-image-timing', validateTimingFunctionForAnimation(animation.animationClass, animation.timingFunction));
+                    }
                     setClassOnElement(newNode?.ref.current, [animation?.startingClass]);
                 }
             };
@@ -95,6 +111,6 @@ export default function AnimationManager({ children: renderFunction, initial, an
             return [...n, newNode];
         });
     }, [newNode]);
-    return (React.createElement(React.Fragment, null, [...nodes].reverse().map((n, idx) => (React.createElement("div", { key: n.animationKey }, n.child)))));
+    return (React.createElement(React.Fragment, null, [...nodes].reverse().map((n, idx) => (React.createElement("div", { className: animation?.containerClass, key: n.animationKey }, n.child)))));
 }
 //# sourceMappingURL=AnimationManager.js.map
