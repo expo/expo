@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing peer dependency on `url` for web.
+
 ### 💡 Others
 
 ## 12.0.0 — 2022-10-25
