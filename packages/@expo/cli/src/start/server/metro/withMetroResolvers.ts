@@ -68,8 +68,9 @@ export function withMetroResolvers(
             if (!isResolutionError) {
               throw error;
             }
-            debug(`${error.constructor.name}: ${error.message}`);
-            debug(error);
+            debug(
+              `Custom resolver threw: ${error.constructor.name}. (module: ${args[1]}, platform: ${args[2]})`
+            );
           }
         }
         // If we haven't returned by now, use the original resolver or upstream resolver.
