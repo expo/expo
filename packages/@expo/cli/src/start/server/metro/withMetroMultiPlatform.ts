@@ -15,6 +15,7 @@ import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjec
 import { PlatformBundlers } from '../platformBundlers';
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
+import { withMetroNodePolyfills } from './withMetroNodePolyfills';
 import { withMetroResolvers } from './withMetroResolvers';
 
 function withWebPolyfills(config: ConfigT): ConfigT {
@@ -155,6 +156,8 @@ export async function withMetroMultiPlatformAsync(
   process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
   process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
 
+  config = withMetroNodePolyfills(config, projectRoot);
+
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
   } else {
@@ -183,5 +186,7 @@ function withMetroMultiPlatform(
 
   config = withWebPolyfills(config);
 
-  return withWebResolvers(config, projectRoot);
+  config = withWebResolvers(config, projectRoot);
+
+  return config;
 }
