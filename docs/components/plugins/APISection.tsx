@@ -1,6 +1,3 @@
-import React from 'react';
-
-import { P } from '~/components/base/paragraph';
 import { ClassDefinitionData, GeneratedData } from '~/components/plugins/api/APIDataTypes';
 import APISectionClasses from '~/components/plugins/api/APISectionClasses';
 import APISectionComponents from '~/components/plugins/api/APISectionComponents';
@@ -8,11 +5,13 @@ import APISectionConstants from '~/components/plugins/api/APISectionConstants';
 import APISectionEnums from '~/components/plugins/api/APISectionEnums';
 import APISectionInterfaces from '~/components/plugins/api/APISectionInterfaces';
 import APISectionMethods from '~/components/plugins/api/APISectionMethods';
+import APISectionNamespaces from '~/components/plugins/api/APISectionNamespaces';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
 import { getComponentName, TypeDocKind } from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
+import { P } from '~/ui/components/Text';
 
 const { LATEST_VERSION } = versions;
 
@@ -49,7 +48,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
   if (type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name)) {
     return true;
   } else if (extendedTypes && extendedTypes.length) {
-    return extendedTypes[0].name === 'Component';
+    return extendedTypes[0].name === 'Component' || extendedTypes[0].name === 'PureComponent';
   } else if (signatures && signatures.length) {
     if (
       signatures[0].type.name === 'Element' ||
@@ -112,11 +111,7 @@ const renderAPI = (
       entry => entry.name === 'defaultProps'
     )[0];
 
-    const enums = filterDataByKind(
-      data,
-      [TypeDocKind.Enum, TypeDocKind.LegacyEnum],
-      entry => entry.name !== 'default'
-    );
+    const enums = filterDataByKind(data, TypeDocKind.Enum, entry => entry.name !== 'default');
     const interfaces = filterDataByKind(data, TypeDocKind.Interface);
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
@@ -131,6 +126,8 @@ const renderAPI = (
     const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
       componentsPropNames.includes(entry.name)
     );
+
+    const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
 
     const classes = filterDataByKind(
       data,
@@ -193,6 +190,7 @@ const renderAPI = (
           apiName={apiName}
           header="Event Subscriptions"
         />
+        <APISectionNamespaces data={namespaces} />
         <APISectionInterfaces data={interfaces} />
         <APISectionTypes data={types} />
         <APISectionEnums data={enums} />

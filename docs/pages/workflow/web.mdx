@@ -1,6 +1,6 @@
 ---
-title: Developing for Web
-sidebar_title: Developing for Web
+title: Develop for Web
+description: Learn how to develop your app for the web so you can build a universal app.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -10,16 +10,13 @@ If you build your native app with the Expo SDK, then you can also run it directl
 
 ## Getting started
 
-Install the `expo` package which contains the [Expo CLI](/workflow/expo-cli.mdx) used for starting the dev server:
+Install the `expo` package which contains the [Expo CLI](/workflow/expo-cli) used for starting the dev server:
 
 <Terminal cmd={['$ yarn add expo']} />
 
 Then you can use Expo CLI to install the web dependencies in your project:
 
-<Terminal
-  cmd={['$ npx expo install react-dom react-native-web @expo/webpack-config']}
-  cmdCopy="npx expo install react-dom react-native-web @expo/webpack-config"
-/>
+<Terminal cmd={['$ npx expo install react-dom react-native-web @expo/webpack-config']} />
 
 ### Update the entry file
 

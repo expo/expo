@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Define `KeepAwakeOptions` type, update the doc comments. ([#20489](https://github.com/expo/expo/pull/20489) by [@Simek](https://github.com/Simek))
+
 ## 11.0.1 — 2022-10-28
 
 _This version does not introduce any user-facing changes._

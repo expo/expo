@@ -24,6 +24,11 @@ internal protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder {
   var argumentsCount: Int { get }
 
   /**
+   A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
+   */
+  var requiredArgumentsCount: Int { get }
+
+  /**
    Indicates whether the function's arguments starts from the owner that calls this function.
    */
   var takesOwner: Bool { get set }
@@ -42,6 +47,23 @@ internal protocol AnyFunction: AnyDefinition, JavaScriptObjectBuilder {
 }
 
 extension AnyFunction {
+  var requiredArgumentsCount: Int {
+    var trailingOptionalArgumentsCount: Int = 0
+
+    for dynamicArgumentType in dynamicArgumentTypes.reversed() {
+      if dynamicArgumentType is DynamicOptionalType {
+        trailingOptionalArgumentsCount += 1
+      } else {
+        break
+      }
+    }
+    return argumentsCount - trailingOptionalArgumentsCount
+  }
+
+  var argumentsCount: Int {
+    return dynamicArgumentTypes.count
+  }
+
   /**
    Calls the function just like `call(by:withArguments:callback:)`, but without an owner
    and with an empty callback. Might be useful when you only want to call the function,

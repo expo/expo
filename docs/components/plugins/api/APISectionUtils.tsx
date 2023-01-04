@@ -1,16 +1,14 @@
 import { css } from '@emotion/react';
 import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
-import React from 'react';
+import type { ComponentProps, ComponentType } from 'react';
+import { Fragment } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import { APIDataType } from './APIDataType';
 
-import { Code, InlineCode } from '~/components/base/code';
-import { H4 } from '~/components/base/headings';
-import Link from '~/components/base/link';
-import { LI, UL, OL } from '~/components/base/list';
-import { B, P } from '~/components/base/paragraph';
+import { HeadingType } from '~/common/headingManager';
+import { Code as PrismCodeBlock } from '~/components/base/code';
 import {
   CommentData,
   MethodDefinitionData,
@@ -24,12 +22,25 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
-import { A } from '~/ui/components/Text';
+import { Tag } from '~/ui/components/Tag';
+import {
+  A,
+  BOLD,
+  CODE,
+  H4,
+  LI,
+  OL,
+  P,
+  RawH3,
+  RawH4,
+  UL,
+  createPermalinkedComponent,
+} from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export enum TypeDocKind {
-  LegacyEnum = 4,
+  Namespace = 4,
   Enum = 8,
   Variable = 32,
   Function = 64,
@@ -38,10 +49,11 @@ export enum TypeDocKind {
   Property = 1024,
   Method = 2048,
   Parameter = 32768,
+  Accessor = 262144,
   TypeAlias = 4194304,
 }
 
-export type MDComponents = React.ComponentProps<typeof ReactMarkdown>['components'];
+export type MDComponents = ComponentProps<typeof ReactMarkdown>['components'];
 
 const getInvalidLinkMessage = (href: string) =>
   `Using "../" when linking other packages in doc comments produce a broken link! Please use "./" instead. Problematic link:\n\t${href}`;
@@ -49,10 +61,14 @@ const getInvalidLinkMessage = (href: string) =>
 export const mdComponents: MDComponents = {
   blockquote: ({ children }) => <Callout>{children}</Callout>,
   code: ({ children, className }) =>
-    className ? <Code className={className}>{children}</Code> : <InlineCode>{children}</InlineCode>,
+    className ? (
+      <PrismCodeBlock className={className}>{children}</PrismCodeBlock>
+    ) : (
+      <CODE css={css({ display: 'inline' })}>{children}</CODE>
+    ),
   h1: ({ children }) => <H4>{children}</H4>,
-  ul: ({ children }) => <UL>{children}</UL>,
-  ol: ({ children }) => <OL>{children}</OL>,
+  ul: ({ children }) => <UL css={STYLES_ELEMENT_SPACING}>{children}</UL>,
+  ol: ({ children }) => <OL css={STYLES_ELEMENT_SPACING}>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
     if (
@@ -66,10 +82,10 @@ export const mdComponents: MDComponents = {
         console.warn(getInvalidLinkMessage(href));
       }
     }
-    return <Link href={href}>{children}</Link>;
+    return <A href={href}>{children}</A>;
   },
-  p: ({ children }) => (children ? <P>{children}</P> : null),
-  strong: ({ children }) => <B>{children}</B>,
+  p: ({ children }) => (children ? <P css={STYLES_ELEMENT_SPACING}>{children}</P> : null),
+  strong: ({ children }) => <BOLD>{children}</BOLD>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
   table: ({ children }) => <Table>{children}</Table>,
   thead: ({ children }) => <TableHead>{children}</TableHead>,
@@ -85,13 +101,14 @@ export const mdInlineComponents: MDComponents = {
 
 export const mdInlineComponentsNoValidation: MDComponents = {
   ...mdInlineComponents,
-  a: ({ href, children }) => <Link href={href}>{children}</Link>,
+  a: ({ href, children }) => <A href={href}>{children}</A>,
 };
 
 const nonLinkableTypes = [
   'ColorValue',
   'Component',
   'ComponentClass',
+  'PureComponent',
   'E',
   'EventSubscription',
   'Listener',
@@ -156,15 +173,17 @@ const hardcodedTypeLinks: Record<string, string> = {
 const renderWithLink = (name: string, type?: string) => {
   const replacedName = replaceableTypes[name] ?? name;
 
+  if (name.includes('.')) return name;
+
   return nonLinkableTypes.includes(replacedName) ? (
     replacedName + (type === 'array' ? '[]' : '')
   ) : (
-    <Link
+    <A
       href={hardcodedTypeLinks[replacedName] || `#${replacedName.toLowerCase()}`}
       key={`type-link-${replacedName}`}>
       {replacedName}
       {type === 'array' && '[]'}
-    </Link>
+    </A>
   );
 };
 
@@ -332,6 +351,8 @@ export const resolveTypeName = (
       return `${objectType?.name}['${indexType?.value}']`;
     } else if (type === 'typeOperator') {
       return operator || 'undefined';
+    } else if (type === 'intrinsic') {
+      return name || 'undefined';
     } else if (value === null) {
       return 'null';
     }
@@ -355,7 +376,7 @@ export const renderParamRow = ({
   return (
     <Row key={`param-${name}`}>
       <Cell>
-        <B>{parseParamName(name)}</B>
+        <BOLD>{parseParamName(name)}</BOLD>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell>
@@ -372,7 +393,7 @@ export const renderParamRow = ({
   );
 };
 
-export const renderTableHeadRow = () => (
+export const ParamsTableHeadRow = () => (
   <TableHead>
     <Row>
       <HeaderCell>Name</HeaderCell>
@@ -384,7 +405,7 @@ export const renderTableHeadRow = () => (
 
 export const renderParams = (parameters: MethodParamData[]) => (
   <Table>
-    {renderTableHeadRow()}
+    <ParamsTableHeadRow />
     <tbody>{parameters?.map(renderParamRow)}</tbody>
   </Table>
 );
@@ -395,7 +416,7 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <B>Default:</B> <InlineCode>{defaultValue}</InlineCode>
+      <BOLD>Default:</BOLD> <CODE>{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -406,7 +427,7 @@ export const renderTypeOrSignatureType = (
 ) => {
   if (signatures && signatures.length) {
     return (
-      <InlineCode key={`signature-type-${signatures[0].name}`}>
+      <CODE key={`signature-type-${signatures[0].name}`}>
         (
         {signatures?.map(({ parameters }) =>
           parameters?.map(param => (
@@ -417,18 +438,14 @@ export const renderTypeOrSignatureType = (
           ))
         )}
         ) =&gt;{' '}
-        {type ? (
-          <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>
-        ) : (
-          'void'
-        )}
-      </InlineCode>
+        {type ? <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE> : 'void'}
+      </CODE>
     );
   } else if (type) {
     if (allowBlock) {
       return <APIDataType typeDefinition={type} />;
     }
-    return <InlineCode key={`signature-type-${type.name}`}>{resolveTypeName(type)}</InlineCode>;
+    return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE>;
   }
   return undefined;
 };
@@ -503,6 +520,15 @@ export const getMethodName = (
 
 export const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1);
 
+const PARAM_TAGS_REGEX = /@tag-\S*/g;
+
+const getParamTags = (shortText?: string) => {
+  if (!shortText || !shortText.includes('@tag-')) {
+    return undefined;
+  }
+  return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
+};
+
 export const CommentTextBlock = ({
   comment,
   components = mdComponents,
@@ -512,9 +538,13 @@ export const CommentTextBlock = ({
   includePlatforms = true,
   emptyCommentFallback,
 }: CommentTextBlockProps) => {
+  const paramTags = getParamTags(comment?.shortText?.trim());
+
   const shortText = comment?.shortText?.trim().length ? (
     <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(comment.shortText)}
+      {parseCommentContent(
+        paramTags ? comment.shortText.replaceAll(PARAM_TAGS_REGEX, '') : comment.shortText
+      )}
     </ReactMarkdown>
   ) : null;
   const text = comment?.text?.trim().length ? (
@@ -529,24 +559,24 @@ export const CommentTextBlock = ({
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
-    <React.Fragment key={'example-' + index}>
+    <Fragment key={'example-' + index}>
       {components !== mdComponents ? (
         <div css={STYLES_EXAMPLE_IN_TABLE}>
-          <B>Example</B>
+          <BOLD>Example</BOLD>
         </div>
       ) : (
         <div css={STYLES_NESTED_SECTION_HEADER}>
-          <H4>Example</H4>
+          <RawH4>Example</RawH4>
         </div>
       )}
       <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
-    </React.Fragment>
+    </Fragment>
   ));
 
   const see = getTagData('see', comment);
   const seeText = see && (
     <Callout>
-      <B>See: </B>
+      <BOLD>See: </BOLD>
       <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
     </Callout>
   );
@@ -557,6 +587,14 @@ export const CommentTextBlock = ({
     <>
       {!withDash && includePlatforms && hasPlatforms && (
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      )}
+      {paramTags && (
+        <>
+          <BOLD>Only for:&ensp;</BOLD>
+          {paramTags.map(tag => (
+            <Tag key={tag} name={tag.split('-')[1]} />
+          ))}
+        </>
       )}
       {beforeContent}
       {withDash && (shortText || text) && ' - '}
@@ -570,6 +608,20 @@ export const CommentTextBlock = ({
   );
 };
 
+export const getAPISectionHeader = (exposeInSidebar?: boolean) =>
+  exposeInSidebar ? createPermalinkedComponent(RawH4, { baseNestingLevel: 2 }) : H4;
+
+const getMonospaceHeader = (element: ComponentType<any>) => {
+  const level = parseInt(element?.displayName?.replace(/\D/g, '') ?? '0', 10);
+  return createPermalinkedComponent(element, {
+    baseNestingLevel: level !== 0 ? level : undefined,
+    sidebarType: HeadingType.InlineCode,
+  });
+};
+
+export const H3Code = getMonospaceHeader(RawH3);
+export const H4Code = getMonospaceHeader(RawH4);
+
 export const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') return name;
   const ctor = children.filter((child: PropData) => child.name === 'constructor')[0];
@@ -581,7 +633,7 @@ export const STYLES_APIBOX = css({
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  padding: `${spacing[5]}px ${spacing[5]}px 0`,
+  padding: spacing[5],
   boxShadow: shadows.micro,
   marginBottom: spacing[6],
   overflowX: 'hidden',
@@ -599,8 +651,13 @@ export const STYLES_APIBOX = css({
     padding: `${spacing[3]}px ${spacing[4]}px`,
   },
 
+  li: {
+    marginBottom: 0,
+  },
+
   [`.css-${tableWrapperStyle.name}`]: {
     boxShadow: 'none',
+    marginBottom: 0,
   },
 
   [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
@@ -610,23 +667,36 @@ export const STYLES_APIBOX = css({
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
+  marginBottom: spacing[4],
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   h4: {
     marginTop: 0,
   },
 });
 
+export const STYLES_APIBOX_WRAPPER = css({
+  marginBottom: spacing[4],
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
+
+  [`.css-${tableWrapperStyle.name}:last-child`]: {
+    marginBottom: spacing[4],
+  },
+});
+
+export const STYLE_APIBOX_NO_SPACING = css({ marginBottom: -spacing[5] });
+
 export const STYLES_NESTED_SECTION_HEADER = css({
   display: 'flex',
   borderTop: `1px solid ${theme.border.default}`,
   borderBottom: `1px solid ${theme.border.default}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
-  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  padding: `${spacing[2]}px ${spacing[5]}px`,
   backgroundColor: theme.background.secondary,
 
   h4: {
     ...typography.fontSizes[16],
-    fontFamily: typography.fontFaces.medium,
+    fontWeight: 600,
     marginBottom: 0,
     marginTop: 0,
     color: theme.text.secondary,
@@ -665,4 +735,8 @@ const defaultValueContainerStyle = css({
 
 const STYLES_EXAMPLE_IN_TABLE = css({
   margin: `${spacing[2]}px 0`,
+});
+
+export const STYLES_ELEMENT_SPACING = css({
+  marginBottom: spacing[4],
 });

@@ -2,9 +2,9 @@ import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
 import assert from 'assert';
+import crypto from 'crypto';
 import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
-import { v4 as uuidv4 } from 'uuid';
 
 import { getProjectAsync } from '../../../api/getProject';
 import { APISettings } from '../../../api/settings';
@@ -112,7 +112,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       : await this.getScopeKeyForProjectIdAsync(easProjectId);
 
     const expoUpdatesManifest: ExpoUpdatesManifest = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       runtimeVersion,
       launchAsset: {

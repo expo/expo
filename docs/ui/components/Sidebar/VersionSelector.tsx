@@ -23,7 +23,6 @@ const STYLES_CONTAINER = css({
 
 const STYLES_SELECT = css({
   ...typography.fontSizes[14],
-  fontFamily: typography.fontFaces.regular,
   color: theme.text.default,
   margin: 0,
   marginTop: spacing[1],

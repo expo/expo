@@ -1,7 +1,7 @@
 /// <reference types="react" />
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../types';
-declare type SelectedStoriesDetailProps = {
+type SelectedStoriesDetailProps = {
     route: RouteProp<RootStackParamList, 'Stories Detail'>;
 };
 export declare function SelectedStoriesDetail({ route }: SelectedStoriesDetailProps): JSX.Element;

@@ -134,14 +134,20 @@ type Asset = {
   - `fileExtension`: The suggested extension to use when a file is saved on a client. Some platforms, such as iOS, require certain file types to be saved with an extension. The extension MUST be prefixed with a `.`. e.g. **.jpeg**. In some cases, such as the launchAsset, this field will be ignored in favor of a locally determined extension. If the field is omitted and there is no locally stipulated extension, the asset will be saved without an extension, e.g. `./filename` with no `.` at the end.
     A conforming client SHOULD prefix a file extension with a `.` if a file extension is not empty and missing the `.` prefix.
   - `url`: Location at which the file may be fetched.
-- `metadata`: The metadata associated with an update. It is a string-valued dictionary. The server MAY send back anything it wishes to be used for filtering the updates. The metadata MUST pass the filter defined in the accompanying `expo-manifest-filters` header.
-- `extra`: For storage of optional "extra" information such as third-party configuration. For example, if the update is hosted on Expo Application Services (EAS), the EAS project ID may be included:
+- `metadata`: The metadata associated with an update. It is a string-valued dictionary. The server MUST send back an empty object at a minimum, but MAY send back anything it wishes within the object to be used for filtering the updates. The metadata MUST pass the filter defined in the accompanying `expo-manifest-filters` header.
+- `extra`: For specification of optional "extra" information such as third-party configuration. The server MUST send back an empty object at a minimum. Expo Updates does not specify or rely upon this field, but other libraries may. For example, if the update is hosted on Expo Application Services (EAS), the EAS project ID and Expo config (which is used by many Expo libraries through `expo-constants`) may be included:
 
 ```json
 "extra": {
   "eas": {
     "projectId": "00000000-0000-0000-0000-000000000000"
-  }
+  },
+  "expoConfig": {
+    "name": "...",
+    "version": "...",
+    "iconUrl": "...",
+    /* @hide ... */ /* @end */
+  },
 }
 ```
 

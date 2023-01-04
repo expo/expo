@@ -19,7 +19,7 @@ export const TabButton = ({ selected, ...props }: Props) => (
 
 const tabButtonStyles = css({
   ...typography.fontSizes[15],
-  fontFamily: typography.fontFaces.medium,
+  fontWeight: 500,
   transition: 'all 0.05s ease 0s',
   padding: `${spacing[2.5]}px ${spacing[6]}px ${spacing[2] - 1}px`,
   border: 0,

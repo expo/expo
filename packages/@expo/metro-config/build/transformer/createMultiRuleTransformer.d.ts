@@ -1,5 +1,5 @@
 import type { BabelTransformer, BabelTransformerArgs } from 'metro-babel-transformer';
-export declare type Rule = {
+export type Rule = {
     warn?: boolean;
     type?: 'module' | 'app';
     name?: string;

@@ -22,12 +22,6 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
   override init() {
     appContext = AppContext()
     super.init()
-
-    // Listen to React Native notifications posted just before the JS is executed.
-    NotificationCenter.default.addObserver(self,
-                                           selector: #selector(javaScriptWillStartExecutingNotification(_:)),
-                                           name: NSNotification.Name.RCTJavaScriptWillStartExecuting,
-                                           object: nil)
   }
 
   deinit {
@@ -47,6 +41,12 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
   public var bridge: RCTBridge! {
     didSet {
       appContext.reactBridge = bridge
+      bridge.dispatchBlock({ [weak self] in
+        guard let self = self, let bridge = self.appContext.reactBridge else {
+          return
+        }
+        self.appContext.runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
+      }, queue: RCTJSThread)
     }
   }
   
@@ -63,17 +63,5 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
     // otherwise legacy modules (e.g. permissions) won't be available in OnCreate { }
     appContext.useModulesProvider("ExpoModulesProvider")
     appContext.moduleRegistry.register(moduleType: NativeModulesProxyModule.self)
-  }
-
-  // MARK: - Notifications
-
-  @objc
-  public func javaScriptWillStartExecutingNotification(_ notification: Notification) {
-    if (notification.object as? RCTBridge)?.batched == bridge {
-      // The JavaScript bundle will start executing in a moment,
-      // so the runtime is already initialized and we can get it from the bridge.
-      // This should automatically install the ExpoModules host object.
-      appContext.runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
-    }
   }
 }

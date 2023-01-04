@@ -1,45 +1,24 @@
 import React from 'react';
-import { AccessibilityProps, ImageResizeMode, ImageSourcePropType, ImageStyle as RNImageStyle, NativeSyntheticEvent, StyleProp } from 'react-native';
-import { ImageErrorEventData, ImageLoadEventData, ImageLoadProgressEventData } from './Image.types';
-interface ImageStyle extends RNImageStyle {
-    elevation?: number;
-}
-export interface ImageProps extends AccessibilityProps {
-    source?: ImageSourcePropType | null;
-    style?: StyleProp<ImageStyle>;
-    defaultSource?: ImageSourcePropType | null;
-    loadingIndicatorSource?: ImageSourcePropType | null;
-    resizeMode?: ImageResizeMode;
+import { ImageProps } from './Image.types';
+export declare class Image extends React.PureComponent<ImageProps> {
     /**
-     * @Android only
+     * Preloads images at the given urls that can be later used in the image view.
+     * Preloaded images are always cached on the disk, so make sure to use
+     * `disk` (default) or `memory-disk` cache policy.
      */
-    blurRadius?: number;
-    fadeDuration?: number;
-    onLoadStart?: () => void;
-    onProgress?: (event: NativeSyntheticEvent<ImageLoadProgressEventData>) => void;
-    onLoad?: (event: NativeSyntheticEvent<ImageLoadEventData>) => void;
-    onError?: (error: NativeSyntheticEvent<ImageErrorEventData>) => void;
-    onLoadEnd?: () => void;
-}
-interface ImageState {
-    onLoad: ImageProps['onLoad'];
-    onError: ImageProps['onError'];
-}
-export default class Image extends React.Component<ImageProps, ImageState> {
-    static getDerivedStateFromProps(props: ImageProps): {
-        onLoad: ((event: NativeSyntheticEvent<ImageLoadEventData>) => void) | undefined;
-        onError: ((error: NativeSyntheticEvent<ImageErrorEventData>) => void) | undefined;
-    };
+    static prefetch(urls: string | string[]): void;
     /**
-     * **Available on @Android only.** Caching the image that can be later used in ImageView
-     * @return an empty promise.
+     * Asynchronously clears all images stored in memory.
+     * @return A promise resolving to `true` when the operation succeeds.
+     * It may resolve to `false` on Android when the activity is no longer available.
      */
-    static prefetch(url: string): Promise<void>;
-    state: {
-        onLoad: undefined;
-        onError: undefined;
-    };
+    static clearMemoryCache(): Promise<boolean>;
+    /**
+     * Asynchronously clears all images from the disk cache.
+     * @return A promise resolving to `true` when the operation succeeds.
+     * It may resolve to `false` on Android when the activity is no longer available.
+     */
+    static clearDiskCache(): Promise<boolean>;
     render(): JSX.Element;
 }
-export {};
 //# sourceMappingURL=Image.d.ts.map

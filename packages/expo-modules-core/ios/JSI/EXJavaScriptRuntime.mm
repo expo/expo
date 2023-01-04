@@ -4,6 +4,9 @@
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
+#elif __has_include(<React-jsc/JSCRuntime.h>)
+// react-native@>=0.71 has a specific React-jsc pod
+#import <React-jsc/JSCRuntime.h>
 #else
 #import <jsi/JSCRuntime.h>
 #endif

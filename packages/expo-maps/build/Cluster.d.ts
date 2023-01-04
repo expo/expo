@@ -3,7 +3,7 @@ import { BaseMarkerOptions, MarkerObject } from './Marker';
 /**
  * Props of Cluster component of Expo Maps library.
  */
-export declare type ClusterProps = PropsWithChildren<{
+export type ClusterProps = PropsWithChildren<{
     /**
      * Cluster name
      *
@@ -22,7 +22,7 @@ export declare type ClusterProps = PropsWithChildren<{
  *
  * See {@link ClusterProps} for more detail.
  */
-export declare type ClusterObject = {
+export type ClusterObject = {
     type: 'cluster';
     markers: MarkerObject[];
     name: string;

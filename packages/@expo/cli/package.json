@@ -37,7 +37,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
   "dependencies": {
     "@babel/runtime": "^7.14.0",
-    "@expo/code-signing-certificates": "^0.0.2",
+    "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~7.0.2",
     "@expo/config-plugins": "~5.0.3",
     "@expo/dev-server": "0.1.122",
@@ -95,7 +95,6 @@
     "terminal-link": "^2.1.1",
     "text-table": "^0.2.0",
     "url-join": "4.0.0",
-    "uuid": "^3.4.0",
     "wrap-ansi": "^7.0.0"
   },
   "taskr": {
@@ -116,6 +115,7 @@
     "@types/cacache": "^15.0.1",
     "@types/debug": "^4.1.7",
     "@types/form-data": "^2.2.0",
+    "@types/getenv": "^1.0.0",
     "@types/js-yaml": "^3.12.2",
     "@types/metro": "~0.66.1",
     "@types/metro-core": "~0.66.0",
@@ -127,7 +127,6 @@
     "@types/tar": "^6.1.1",
     "@types/text-table": "^0.2.1",
     "@types/url-join": "^4.0.0",
-    "@types/uuid": "^3.4.7",
     "@types/webpack": "~4.41.32",
     "@types/webpack-dev-server": "3.11.0",
     "@types/wrap-ansi": "^8.0.1",

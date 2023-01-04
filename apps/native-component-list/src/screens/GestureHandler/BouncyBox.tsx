@@ -1,4 +1,3 @@
-// tslint:disable max-classes-per-file
 import React, { Component } from 'react';
 import { Animated, StyleSheet, View, StyleProp, ViewStyle } from 'react-native';
 import {

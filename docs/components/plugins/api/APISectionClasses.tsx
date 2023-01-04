@@ -1,8 +1,5 @@
 import ReactMarkdown from 'react-markdown';
 
-import { InlineCode } from '~/components/base/code';
-import { B, P } from '~/components/base/paragraph';
-import { H2, H2Nested, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
   GeneratedData,
@@ -10,17 +7,22 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
+  getAPISectionHeader,
+  H3Code,
   getTagData,
   getTagNamesList,
   mdComponents,
   resolveTypeName,
   STYLES_APIBOX,
+  STYLES_APIBOX_NESTED,
   STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
+import { H2, H4, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -41,13 +43,14 @@ const isProp = (child: PropData) =>
   !child.implementationOf;
 
 const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
-  child.kind === TypeDocKind.Method &&
+  child.kind &&
+  [TypeDocKind.Method, TypeDocKind.Function, TypeDocKind.Accessor].includes(child.kind) &&
   (allowOverwrites || !child.overwrites) &&
   !child.name.startsWith('_') &&
   !child?.implementationOf;
 
 const remapClass = (clx: ClassDefinitionData) => {
-  clx.isSensor = clx.name.endsWith('Sensor');
+  clx.isSensor = !!classNamesMap[clx.name] || Object.values(classNamesMap).includes(clx.name);
   clx.name = classNamesMap[clx.name] ?? clx.name;
 
   if (clx.isSensor && clx.extendedTypes) {
@@ -62,7 +65,7 @@ const remapClass = (clx: ClassDefinitionData) => {
 
 const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
-  const Header = exposeInSidebar ? H2Nested : H4;
+  const Header = getAPISectionHeader(exposeInSidebar);
 
   const properties = children?.filter(isProp);
   const methods = children
@@ -71,22 +74,21 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
   const returnComment = getTagData('returns', comment);
 
   return (
-    <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
+    <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <H3Code tags={getTagNamesList(comment)}>
-        <InlineCode>{name}</InlineCode>
+        <CODE>{name}</CODE>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
         <P>
-          <B>Type: </B>
-          {type ? <InlineCode>{resolveTypeName(type)}</InlineCode> : 'Class'}
+          <BOLD>Type: </BOLD>
+          {type ? <CODE>{resolveTypeName(type)}</CODE> : 'Class'}
           {extendedTypes?.length && (
             <>
               <span> extends </span>
               {extendedTypes.map(extendedType => (
-                <InlineCode key={`extends-${extendedType.name}`}>
-                  {resolveTypeName(extendedType)}
-                </InlineCode>
+                <CODE key={`extends-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
               ))}
             </>
           )}
@@ -94,15 +96,15 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
             <>
               <span> implements </span>
               {implementedTypes.map(implementedType => (
-                <InlineCode key={`implements-${implementedType.name}`}>
+                <CODE key={`implements-${implementedType.name}`}>
                   {resolveTypeName(implementedType)}
-                </InlineCode>
+                </CODE>
               ))}
             </>
           )}
         </P>
       )}
-      <CommentTextBlock comment={comment} />
+      <CommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
           <div css={STYLES_NESTED_SECTION_HEADER}>

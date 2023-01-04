@@ -1,4 +1,4 @@
-declare type ExpoObject = {
+type ExpoObject = {
     modules: undefined | {
         [key: string]: any;
     };

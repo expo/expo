@@ -1,5 +1,6 @@
 ---
 title: Module API Reference
+description: An API reference of Expo modules API.
 ---
 
 import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
@@ -151,7 +152,7 @@ async function getMessageAsync() {
 }
 ```
 
-<hr />
+---
 
 #### Kotlin coroutines <PlatformTags prefix="" platforms={['android']} />
 
@@ -371,6 +372,8 @@ All functions and view prop setters accept all common primitive types in Swift a
 
 _Convertibles_ are native types that can be initialized from certain specific kinds of data received from JavaScript. Such types are allowed to be used as an argument type in `Function`'s body. For example, when the `CGPoint` type is used as a function argument type, its instance can be created from an array of two numbers `(x, y)` or a JavaScript object with numeric `x` and `y` properties.
 
+---
+
 Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are already made convertible.
 
 | Native iOS Type         | TypeScript                                                                                                                                                                        |
@@ -382,6 +385,8 @@ Some common iOS types from `CoreGraphics` and `UIKit` system frameworks are alre
 | `CGVector`              | `{ dx: number, dy: number }` or `number[]` with _dx_ and _dy_ vector differentials                                                                                                |
 | `CGRect`                | `{ x: number, y: number, width: number, height: number }` or `number[]` with _x_, _y_, _width_ and _height_ values                                                                |
 | `CGColor`<br/>`UIColor` | Color hex strings (`#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`), named colors following the [CSS3/SVG specification](https://www.w3.org/TR/css-color-3/#svg-color) or `"transparent"` |
+
+---
 
 Similarly, some common Android types from packages like `java.io`, `java.net`, or `android.graphics` are also made convertible.
 
@@ -670,8 +675,6 @@ On iOS, `ExpoView` extends the `RCTView` which handles some styles (e.g. borders
   isReturnTypeReference={true}
 />
 
-<hr />
-
 #### Extending `ExpoView`
 
 To export your view using the [`View`](#view) component, your custom class must inherit from the `ExpoView`. By doing that you will get access to the [`AppContext`](#appcontext) object. It's the only way of communicating with other modules and the JavaScript runtime. Also, you can't change constructor parameters, because provided view will be initialized by `expo-modules-core`.
@@ -921,6 +924,7 @@ For more examples from real modules, you can refer to Expo modules that already 
 - `expo-cellular` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-cellular/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-cellular/android/src/main/java/expo/modules/cellular))
 - `expo-clipboard` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-clipboard/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-clipboard/android/src/main/java/expo/modules/clipboard))
 - `expo-crypto` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-crypto/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-crypto/android/src/main/java/expo/modules/crypto))
+- `expo-device` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-device/ios))
 - `expo-haptics` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-haptics/ios))
 - `expo-image-manipulator` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-manipulator/ios))
 - `expo-image-picker` ([Swift](https://github.com/expo/expo/tree/main/packages/expo-image-picker/ios), [Kotlin](https://github.com/expo/expo/tree/main/packages/expo-image-picker/android/src/main/java/expo/modules/imagepicker))

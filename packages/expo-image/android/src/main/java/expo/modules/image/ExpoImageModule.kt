@@ -1,6 +1,5 @@
 package expo.modules.image
 
-import android.util.Log
 import android.view.View
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
@@ -8,51 +7,43 @@ import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.Spacing
 import com.facebook.react.uimanager.ViewProps
 import com.facebook.yoga.YogaConstants
-import expo.modules.core.errors.ModuleDestroyedException
-import expo.modules.image.enums.ImageResizeMode
+import expo.modules.image.enums.ContentFit
+import expo.modules.image.enums.Priority
+import expo.modules.image.records.CachePolicy
+import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.SourceMap
-import expo.modules.kotlin.Promise
-import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.views.ViewDefinitionBuilder
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 
 class ExpoImageModule : Module() {
-  private val moduleCoroutineScope = CoroutineScope(Dispatchers.IO)
-
   override fun definition() = ModuleDefinition {
     Name("ExpoImage")
 
-    AsyncFunction("prefetch") { url: String, promise: Promise ->
-      val context = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-      moduleCoroutineScope.launch {
-        try {
-          val glideUrl = GlideUrl(url)
-          val result = Glide.with(context)
-            .download(glideUrl)
-            .submit()
-            .awaitGet()
-          if (result != null) {
-            promise.resolve(null)
-          } else {
-            promise.reject(ImagePrefetchFailure("cannot download $url"))
-          }
-        } catch (e: Exception) {
-          promise.reject(ImagePrefetchFailure(e.message ?: e.toString()))
-        }
+    Function("prefetch") { urls: List<String> ->
+      val context = appContext.reactContext ?: return@Function
+      urls.forEach {
+        Glide
+          .with(context)
+          .download(GlideUrl(it))
+          .submit()
       }
     }
 
-    OnDestroy {
-      try {
-        moduleCoroutineScope.cancel(ModuleDestroyedException())
-      } catch (e: IllegalStateException) {
-        Log.w("ExpoImageModule", "No coroutines to cancel")
+    AsyncFunction("clearMemoryCache") {
+      val activity = appContext.currentActivity ?: return@AsyncFunction false
+      Glide.get(activity).clearMemory()
+      return@AsyncFunction true
+    }.runOnQueue(Queues.MAIN)
+
+    AsyncFunction("clearDiskCache") {
+      val activity = appContext.currentActivity ?: return@AsyncFunction false
+      activity.let {
+        Glide.get(activity).clearDiskCache()
       }
+
+      return@AsyncFunction true
     }
 
     View(ExpoImageViewWrapper::class) {
@@ -63,12 +54,16 @@ class ExpoImageModule : Module() {
         "onLoad"
       )
 
-      Prop("source") { view: ExpoImageViewWrapper, sourceMap: SourceMap? ->
-        view.imageView.sourceMap = sourceMap
+      Prop("source") { view: ExpoImageViewWrapper, sources: List<SourceMap>? ->
+        view.imageView.sources = sources ?: emptyList()
       }
 
-      Prop("resizeMode") { view: ExpoImageViewWrapper, resizeMode: ImageResizeMode ->
-        view.imageView.resizeMode = resizeMode
+      Prop("contentFit") { view: ExpoImageViewWrapper, contentFit: ContentFit? ->
+        view.imageView.contentFit = contentFit ?: ContentFit.Cover
+      }
+
+      Prop("contentPosition") { view: ExpoImageViewWrapper, contentPosition: ContentPosition? ->
+        view.imageView.contentPosition = contentPosition ?: ContentPosition.center
       }
 
       Prop("blurRadius") { view: ExpoImageViewWrapper, blurRadius: Int ->
@@ -126,16 +121,28 @@ class ExpoImageModule : Module() {
         view.imageView.setBorderStyle(borderStyle)
       }
 
+      Prop("backgroundColor") { view: ExpoImageViewWrapper, color: Int? ->
+        view.imageView.setBackgroundColor(color)
+      }
+
       Prop("tintColor") { view: ExpoImageViewWrapper, color: Int? ->
         view.imageView.setTintColor(color)
       }
 
-      Prop("defaultSource") { view: ExpoImageViewWrapper, defaultSource: SourceMap? ->
-        view.imageView.defaultSourceMap = defaultSource
+      Prop("placeholder") { view: ExpoImageViewWrapper, placeholder: List<SourceMap>? ->
+        view.imageView.placeholders = placeholder ?: emptyList()
       }
 
       Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean ->
         view.imageView.isFocusable = accessible
+      }
+
+      Prop("priority") { view: ExpoImageViewWrapper, priority: Priority? ->
+        view.imageView.priority = priority ?: Priority.NORMAL
+      }
+
+      Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy? ->
+        view.imageView.cachePolicy = cachePolicy ?: CachePolicy.DISK
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->
@@ -150,6 +157,7 @@ class ExpoImageModule : Module() {
 }
 
 // TODO(@lukmccall): Remove when the same functionality will be defined by the expo-modules-core in SDK 48
+@Suppress("FunctionName")
 private inline fun <reified T : View, reified PropType, reified CustomValueType> ViewDefinitionBuilder<T>.PropGroup(
   vararg props: Pair<String, CustomValueType>,
   noinline body: (view: T, value: CustomValueType, prop: PropType) -> Unit

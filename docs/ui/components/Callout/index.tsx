@@ -3,11 +3,11 @@ import {
   borderRadius,
   iconSize,
   theme,
-  typography,
   spacing,
   ErrorIcon,
   InfoIcon,
   WarningIcon,
+  typography,
 } from '@expo/styleguide';
 import { IconProps } from '@expo/styleguide/dist/types';
 import { Children, ComponentType, PropsWithChildren, isValidElement, ReactNode } from 'react';
@@ -112,6 +112,11 @@ const containerStyle = css({
   code: {
     backgroundColor: theme.background.tertiary,
   },
+
+  // TODO(simek): remove after migration to new components is completed
+  p: {
+    marginBottom: `0 !important`,
+  },
 });
 
 const iconStyle = css({
@@ -122,7 +127,7 @@ const iconStyle = css({
 });
 
 const contentStyle = css({
-  ...typography.body.paragraph,
+  ...typography.fontSizes[16],
   color: theme.text.default,
 
   '*:last-child': {

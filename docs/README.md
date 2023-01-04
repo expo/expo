@@ -55,11 +55,13 @@ metadata: goes here
 
 These metadata items include:
 
-- `title`: Title of the page shown as the heading and in search results
+- `title`: Title of the page shown as the heading and in search results.
+- `description`: Description of the page shown in search results and open graph descriptions when the page is shared on social media sites.
 - `hideFromSearch`: Whether to hide the page from Algolia search results. Defaults to `false`.
 - `hideInSidebar`: Whether to hide this page from the sidebar. Defaults to `false`.
 - `hideTOC`: Whether to hide the table of contents (appears on the right sidebar). Defaults to `false`.
 - `sidebar_title`: The title of the page to display in the sidebar. Defaults to the page title.
+- `maxHeadingDepth`: The max level of headings shown in Table of Content on the right side. Defaults to `3`.
 
 ### Editing Code
 
@@ -69,7 +71,7 @@ The docs are written with Next.js and TypeScript. If you need to make code chang
 yarn watch
 ```
 
-When you are done, you should run _prettier_ to format your code. Also, don't forget to run tests and linter before committing your changes.
+When you are done, you should run `prettier` to format your code. Also, don't forget to run tests and linter before committing your changes.
 
 ```sh
 yarn prettier
@@ -96,20 +98,25 @@ Use these for more complex rules than one-to-one path-to-path redirect mapping. 
 
 You can add your own client-side redirect rules in `common/error-utilities.ts`.
 
-## Algolia Docsearch
+## Search
 
-We use Algolia Docsearch as the search engine for our docs. Right now, it's searching for any keywords with the proper `version` tag based on the current location. This is set in the `components/DocumentationPage` header.
+We use Algolia as a main search results provider for our docs. Besides the query, results are also filtered based on the `version` tag which represents the user current location. The tag set in the `components/DocumentationPage.tsx` head.
 
-In `components/plugins/AlgoliaSearch`, you can see the `facetFilters` set to `[['version:none', 'version:{currentVersion}']]`. Translated to English, this means "Search on all pages where `version` is `none`, or the currently selected version.".
+In `ui/components/CommandMenu/utils.ts`, you can see the `facetFilters` set to `[['version:none', 'version:{version}']]`. Translated to English, this means - search on all pages where `version` is `none`, or the currently selected version. Here are the rules we use to set this tag:
 
-- All unversioned pages use the version tag `none`.
-- All versioned pages use the SDK version (e.g. `v40.0.0` or `v39.0.0`).
-- All `hideFromSearch: true` pages don't have the version tag.
+- all unversioned pages use the version tag `none`,
+- all versioned pages use the SDK version (e.g. `v46.0.0` or `v47.0.0`),
+- all pages with `hideFromSearch: true` frontmatter entry don't have the version tag.
+
+Currently, the base results for Expo docs are combined with other results from multiple sources, like:
+
+- manually defined paths for Expo dashboard located in `ui/components/CommandMenu/expoEntries.ts`,
+- public Algolia index for React Native website,
+- React Native directory public API, see the directory [README.md](https://github.com/react-native-community/directory#i-dont-like-your-website-can-i-hit-an-api-instead-and-build-my-own-better-stuff) for more details.
 
 ## Quirks
 
 - You can't have curly brace without quotes: \`{}\` -> `{}`
-- Make sure to leave an empty newline between a table and following content
 
 ## A note about versioning
 
@@ -141,21 +148,20 @@ The docs are deployed automatically via a GitHub Action each time a PR with docs
 
 ## How-tos
 
-## Internal linking
+### Internal linking
 
-If you need to link from one MDX file to another, please use the path-reference to this file including extension.
-This allows us to automatically validate these links and see if the file and/or headers still exists.
+If you need to link from one MDX file to another, please use the static/full path to this file (avoid relative links):
 
-- from: `tutorial/button.md`, to: `/workflow/guides/` -> `../workflow/guides.md`
-- from: **index.md**, to: `/guides/errors/#tracking-js-errors` -> `./guides/errors.md#tracking-js-errors` (or without `./`)
+- from: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
+- from: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
-You can validate all current links by running `yarn lint-links`.
+You can validate all current links by running `yarn lint-links` script.
 
 ### Updating latest version of docs
 
 When we release a new SDK, we copy the `unversioned` directory, and rename it to the new version. Latest version of docs is read from **package.json** so make sure to update the `version` key there as well.
 
-Make sure to also grab the upgrade instructions from the release notes blog post and put them in `upgrading-expo-sdk-walkthrough.md`.
+Make sure to also grab the upgrade instructions from the release notes blog post and put them in **upgrading-expo-sdk-walkthrough.mdx**.
 
 That's all you need to do. The `versions` directory is listed on server start to find all available versions. The routes and navbar contents are automatically inferred from the directory structure within `versions`.
 
@@ -167,18 +173,6 @@ So, if you wish to override the alphabetical ordering, manipulate page titles in
 To render the app.json / app.config.js properties table, we currently store a local copy of the appropriate version of the schema.
 
 If the schema is updated, in order to sync and rewrite our local copy, run `yarn run schema-sync <SDK version integer>` or `yarn run schema-sync unversioned`.
-
-### Importing from the React Native docs
-
-You can import the React Native docs in an automated way into these docs.
-
-1. Update the react-native-website submodule here
-2. `yarn run import-react-native-docs`
-
-This will write all the relevant RN doc stuff into the unversioned version directory.
-You may need to tweak the script as the source docs change; the script hackily translates between the different forms of markdown that have different quirks.
-
-The React Native docs are actually versioned but we currently read off of main.
 
 ### Adding Images and Assets
 
@@ -234,7 +228,7 @@ The `Tabs` plugin is really useful for this, and this is how you'd use it in a m
 
 <!-- prettier-ignore -->
 ```jsx
-import { Tab, Tabs } from '~/components/plugins/Tabs';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 <Tabs>
 <Tab label="Add 1 One Way">
@@ -300,8 +294,3 @@ import { Terminal } from '~/ui/components/Snippet';
 Please commit any sizeable diffs that are the result of `prettier` separately to make reviews as easy as possible.
 
 If you have a code block using `/* @info */` highlighting, use `{/* prettier-ignore */}` on the block and take care to preview the block in the browser to ensure that the indentation is correct - the highlighting annotation will sometimes swallow newlines.
-
-## TODOs:
-
-- Handle image sizing in imports better
-- Make Snack embeds work; these are marked in some of the React Native docs but they are just imported as plain JS code blocks

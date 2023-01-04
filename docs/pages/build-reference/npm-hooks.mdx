@@ -1,5 +1,6 @@
 ---
 title: Build lifecycle hooks
+description: Learn how to use the EAS Build lifecycle hooks with npm to customize your build process.
 ---
 
 There are five EAS Build lifecycle npm hooks that you can set in your **package.json**. See the [Android build process](android-builds.mdx) and [iOS build process](ios-builds.mdx) docs to get a better understanding about the internals of the build process.
@@ -12,7 +13,7 @@ There are five EAS Build lifecycle npm hooks that you can set in your **package.
 - `eas-build-on-error` - this hook is triggered at the end of the build process if the build failed.
 - `eas-build-on-complete` - this hook is triggered at the end of the build process. You can check the build's status with the `EAS_BUILD_STATUS` environment variable. It's either `finished` or `errored`.
 
-This is an example of how your **package.json** might look like:
+Below is an example of how your **package.json** can look with lifecycle hooks:
 
 ```json package.json
 {

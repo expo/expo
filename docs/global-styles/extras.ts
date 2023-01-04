@@ -8,7 +8,6 @@ export const globalExtras = css`
 
   body {
     ${typography.body.paragraph}
-    font-family: ${typography.fontFaces.regular};
     text-rendering: optimizeLegibility;
     line-height: 1;
   }
@@ -75,8 +74,7 @@ export const globalExtras = css`
     text-decoration: line-through;
   }
 
-  // TODO: investigate why some style is forcing nested ordered lists to have 1rem bottom margin!
-
+  // TODO(simek): investigate why some style is forcing nested ordered lists to have 1rem bottom margin!
   ul ul,
   ol ul {
     margin-bottom: 0 !important;
@@ -86,7 +84,6 @@ export const globalExtras = css`
 
   .diff-unified {
     ${typography.fontSizes[13]};
-    font-family: ${typography.fontStacks.mono};
     border-collapse: collapse;
     white-space: pre-wrap;
     width: 100%;

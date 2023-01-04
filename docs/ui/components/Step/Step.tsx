@@ -40,11 +40,11 @@ const stepContentStyle = css({
   paddingTop: spacing[1],
 
   'h2:first-child': {
-    marginTop: -spacing[1],
+    marginTop: `${-spacing[1]}px !important`,
   },
 
   'h3:first-child, h4:first-child': {
-    marginTop: -spacing[0.5],
+    marginTop: `0 !important`,
   },
 
   'ul, ol': {

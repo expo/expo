@@ -3,27 +3,29 @@ package expo.modules.medialibrary.albums
 import android.os.Bundle
 import android.provider.MediaStore.Files.FileColumns
 import android.provider.MediaStore.MediaColumns
+import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.CursorResults
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
 import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.throwableContentResolver
+import expo.modules.test.core.PromiseMock
+import expo.modules.test.core.assertRejected
+import expo.modules.test.core.assertRejectedWithCode
+import expo.modules.test.core.promiseResolved
+import expo.modules.test.core.promiseResolvedWithType
 import io.mockk.justRun
 import io.mockk.mockkStatic
 import io.mockk.slot
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.fakes.RoboCursor
-import org.unimodules.test.core.PromiseMock
-import org.unimodules.test.core.assertRejected
-import org.unimodules.test.core.assertRejectedWithCode
-import org.unimodules.test.core.promiseResolved
-import org.unimodules.test.core.promiseResolvedWithType
 import java.lang.IllegalArgumentException
 
 private const val ALBUM_SELECTION = "${FileColumns.MEDIA_TYPE} != ${FileColumns.MEDIA_TYPE_NONE}" +
@@ -62,7 +64,7 @@ internal class GetAlbumTests {
     val albumName = "TestAlbum"
 
     // act
-    GetAlbum(context, albumName, promise).doInBackground()
+    GetAlbum(context, albumName, promise).execute()
 
     // assert
     assertEquals(expectedSelection, selectionSlot.captured)
@@ -111,10 +113,10 @@ internal class GetAlbumTests {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    queryAlbum(context, "", emptyArray(), promise)
-
     // assert
-    assertRejected(promise)
+    assertThrows(AlbumException::class.java) {
+      queryAlbum(context, "", emptyArray(), promise)
+    }
   }
 
   @Test

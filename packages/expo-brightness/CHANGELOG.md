@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated iOS codebase to use the new Expo modules API. ([#20316](https://github.com/expo/expo/pull/20316) by [@alanhughes](https://github.com/alanjhughes))
+
 ## 11.0.1 — 2022-11-02
 
 ### 💡 Others

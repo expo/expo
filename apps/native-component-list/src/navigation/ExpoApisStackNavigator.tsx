@@ -266,6 +266,12 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/CryptoScreen'));
+    },
+    name: 'Crypto',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/NotificationScreen'));
     },
     name: 'Notification',

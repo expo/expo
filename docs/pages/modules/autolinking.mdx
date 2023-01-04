@@ -1,5 +1,6 @@
 ---
 title: Autolinking
+description: Learn how to use Expo Autolinking to automatically link native dependencies in your Expo project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -12,6 +13,7 @@ installing a library will require configuring even up to three different package
 
 Expo Autolinking is a mechanism that automates this process and reduces the library installation process to the minimum — usually just installing the package from `npm` and re-running `pod install`.
 The core implementation can be found in the [`expo-modules-autolinking`](https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking) package and is divided into three parts:
+
 1. common JavaScript CLI tool with the module resolution algorithm
 2. code that integrates with the Gradle build system for Android platform
 3. Ruby script that integrates with CocoaPods for iOS platform
@@ -33,13 +35,14 @@ The above command returns an object in JSON format with modules that have been f
   "expo-random": {
     "path": "/absolute/path/to/node_modules/expo-random",
     "version": "13.0.0",
-    "config": { // Contents of `expo-module.config.json`
-      "platforms": [ "ios", "android" ],
-      "ios": { "modules": [ "RandomModule" ] },
-      "android": { "modules": [ "expo.modules.random.RandomModule" ] }
+    "config": {
+      // Contents of `expo-module.config.json`
+      "platforms": ["ios", "android"],
+      "ios": { "modules": ["RandomModule"] },
+      "android": { "modules": ["expo.modules.random.RandomModule"] }
     },
     "duplicates": [] // An array of other revisions (with lower precedence) of the same module
-  },
+  }
   // more modules...
 }
 ```
@@ -67,12 +70,12 @@ For example, with the `--platform ios` option it returns an object in JSON forma
           "podspecDir": "/absolute/path/to/node_modules/expo-random/ios"
         }
       ],
-      "swiftModuleNames": [ "ExpoRandom" ],
-      "modules": [ "RandomModule" ],
+      "swiftModuleNames": ["ExpoRandom"],
+      "modules": ["RandomModule"],
       "appDelegateSubscribers": [],
       "reactDelegateHandlers": [],
       "debugOnly": false
-    },
+    }
     // more modules...
   ]
 }
@@ -92,6 +95,7 @@ Verifies the search results by checking whether there are no duplicate packages,
 ## Configuration
 
 The behavior of the module resolution can be customized using some configuration options. These options can be defined in three different places, from the lowest to the highest precedence:
+
 - `expo.autolinking` config object in application's **package.json**
 - per platform overrides with `expo.autolinking.ios` and `expo.autolinking.android` objects
 - options provided to the CLI command, the `use_expo_modules!` method in the **Podfile** or `useExpoModules` function in the **settings.gradle**

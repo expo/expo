@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Fix link in README that was incorrectly pointing to to expo-asset. ([#20616](https://github.com/expo/expo/pull/20616) by [@stereoplegic](https://github.com/stereoplegic))
+
 ## 3.2.3 — 2022-10-25
 
 ### 🐛 Bug fixes
