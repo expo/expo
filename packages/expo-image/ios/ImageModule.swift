@@ -95,5 +95,6 @@ public final class ImageModule: Module {
 
   static func registerLoaders() {
     SDImageLoadersManager.shared.addLoader(BlurhashLoader())
+    SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
   }
 }

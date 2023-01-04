@@ -25,4 +25,13 @@ struct ImageSource: Record {
   var isBlurhash: Bool {
     return uri?.scheme == "blurhash"
   }
+
+  var isPhotoLibraryAsset: Bool {
+    return isPhotoLibraryAssetUrl(uri)
+  }
+
+  var isCachingAllowed: Bool {
+    // TODO: Don't cache other non-network requests (e.g. data URIs, local files)
+    return !isPhotoLibraryAsset
+  }
 }

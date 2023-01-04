@@ -3,11 +3,12 @@
 import SDWebImage
 import ExpoModulesCore
 
-private typealias SDWebImageContext = [SDWebImageContextOption: Any]
+typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
 // swiftlint:disable:next type_body_length
 public final class ImageView: ExpoView {
   static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
+  static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
 
   let sdImageView = SDAnimatedImageView(frame: .zero)
 
@@ -117,17 +118,22 @@ public final class ImageView: ExpoView {
     // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
     context[.imageScaleFactor] = source.scale
 
+    if source.isCachingAllowed {
+      let sdCacheType = cachePolicy.toSdCacheType().rawValue
+      context[.originalQueryCacheType] = sdCacheType
+      context[.originalStoreCacheType] = sdCacheType
+    } else {
+      context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
+      context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
+    }
     // Set which cache can be used to query and store the downloaded image.
     // We want to store only original images (without transformations).
-    // TODO: Don't cache non-network requests (e.g. data URIs, local files)
-    let sdCacheType = cachePolicy.toSdCacheType().rawValue
-    context[.originalQueryCacheType] = sdCacheType
-    context[.originalStoreCacheType] = sdCacheType
     context[.queryCacheType] = SDImageCacheType.none.rawValue
     context[.storeCacheType] = SDImageCacheType.none.rawValue
 
-    // Some loaders (e.g. blurhash) need access to the source.
+    // Some loaders (e.g. blurhash) need access to the source and the screen scale.
     context[ImageView.contextSourceKey] = source
+    context[ImageView.screenScaleKey] = screenScale
 
     onLoadStart([:])
 
@@ -143,9 +149,14 @@ public final class ImageView: ExpoView {
   // MARK: - Loading
 
   private func imageLoadProgress(_ receivedSize: Int, _ expectedSize: Int, _ imageUrl: URL?) {
+    // Photos library requester emits the progress as a double `0...1` that we map to `0...100` int in `PhotosLoader`.
+    // When that loader is used, we don't have any information about the sizes in bytes, so we only send the `progress` param.
+    let isPhotoLibraryAsset = isPhotoLibraryAssetUrl(imageUrl)
+
     onProgress([
-      "loaded": receivedSize,
-      "total": expectedSize
+      "loaded": isPhotoLibraryAsset ? nil : receivedSize,
+      "total": isPhotoLibraryAsset ? nil : expectedSize,
+      "progress": Double(receivedSize) / Double(expectedSize)
     ])
   }
 
