@@ -2,11 +2,11 @@ import { UnavailabilityError } from 'expo-modules-core';
 import { NativeEventEmitter } from 'react-native';
 
 import ExponentSpeech from './ExponentSpeech';
-import { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice } from './Speech.types';
+import { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice, WillSayNextString } from './Speech.types';
 
 const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);
 
-export { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice };
+export { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice, WillSayNextString };
 
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
@@ -15,6 +15,7 @@ let _didSetListeners = false;
 function _unregisterListenersIfNeeded() {
   if (Object.keys(_CALLBACKS).length === 0) {
     removeSpeakingListener('Exponent.speakingStarted');
+    removeSpeakingListener('Exponent.speakingWillSayNextString');
     removeSpeakingListener('Exponent.speakingDone');
     removeSpeakingListener('Exponent.speakingStopped');
     removeSpeakingListener('Exponent.speakingError');
@@ -31,6 +32,18 @@ function _registerListenersIfNeeded() {
       options.onStart();
     }
   });
+  setSpeakingListener(
+    'Exponent.speakingWillSayNextString',
+    ({ id, characterLocation, characterLength }) => {
+      const options = _CALLBACKS[id];
+      if (options && options.onWillSayNextString) {
+        options.onWillSayNextString({
+          length: characterLength,
+          location: characterLocation,
+        });
+      }
+    },
+  );
   setSpeakingListener('Exponent.speakingDone', ({ id }) => {
     const options = _CALLBACKS[id];
     if (options && options.onDone) {
