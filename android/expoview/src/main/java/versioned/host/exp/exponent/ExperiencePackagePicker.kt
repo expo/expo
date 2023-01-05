@@ -28,6 +28,7 @@ import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
 import expo.modules.haptics.HapticsModule
+import expo.modules.image.ExpoImageModule
 import expo.modules.imageloader.ImageLoaderPackage
 import expo.modules.imagemanipulator.ImageManipulatorPackage
 import expo.modules.imagepicker.ImagePickerModule
@@ -132,6 +133,7 @@ object ExperiencePackagePicker : ModulesProvider {
     EASClientModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
+    ExpoImageModule::class.java,
     IntentLauncherModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,

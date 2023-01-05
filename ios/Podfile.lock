@@ -2045,6 +2045,12 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.1.0):
     - ExpoModulesCore
+  - ExpoImage (1.0.0-alpha.5):
+    - ExpoModulesCore
+    - SDWebImage (~> 5.14.2)
+    - SDWebImageAVIFCoder (~> 0.9.3)
+    - SDWebImageSVGCoder (~> 1.6.1)
+    - SDWebImageWebPCoder (~> 0.9.1)
   - ExpoImageManipulator (11.0.0):
     - EXImageLoader
     - ExpoModulesCore
@@ -2306,7 +2312,25 @@ PODS:
   - GTMSessionFetcher/Core (1.7.2)
   - hermes-engine (0.70.5)
   - JKBigInteger (0.0.6)
+  - libaom (2.0.2):
+    - libvmaf
+  - libavif (0.10.1):
+    - libavif/libaom (= 0.10.1)
+  - libavif/core (0.10.1)
+  - libavif/libaom (0.10.1):
+    - libaom (>= 2.0.0)
+    - libavif/core
   - libevent (2.1.12)
+  - libvmaf (2.2.0)
+  - libwebp (1.2.4):
+    - libwebp/demux (= 1.2.4)
+    - libwebp/mux (= 1.2.4)
+    - libwebp/webp (= 1.2.4)
+  - libwebp/demux (1.2.4):
+    - libwebp/webp
+  - libwebp/mux (1.2.4):
+    - libwebp/demux
+  - libwebp/webp (1.2.4)
   - lottie-ios (3.4.4)
   - lottie-react-native (5.1.4):
     - lottie-ios (~> 3.4.0)
@@ -2717,6 +2741,17 @@ PODS:
     - React-RCTImage
   - RNSVG (13.4.0):
     - React-Core
+  - SDWebImage (5.14.2):
+    - SDWebImage/Core (= 5.14.2)
+  - SDWebImage/Core (5.14.2)
+  - SDWebImageAVIFCoder (0.9.4):
+    - libavif (>= 0.9.1)
+    - SDWebImage (~> 5.10)
+  - SDWebImageSVGCoder (1.6.1):
+    - SDWebImage/Core (~> 5.6)
+  - SDWebImageWebPCoder (0.9.1):
+    - libwebp (~> 1.0)
+    - SDWebImage/Core (~> 5.13)
   - Stripe (22.8.3):
     - Stripe/Stripe3DS2 (= 22.8.3)
     - StripeApplePay (= 22.8.3)
@@ -3124,6 +3159,7 @@ DEPENDENCIES:
   - ExpoDevice (from `../packages/expo-device/ios`)
   - ExpoGL (from `../packages/expo-gl`)
   - ExpoHaptics (from `../packages/expo-haptics/ios`)
+  - ExpoImage (from `../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../packages/expo-keep-awake/ios`)
@@ -3245,7 +3281,11 @@ SPEC REPOS:
     - GoogleUtilitiesComponents
     - GTMAppAuth
     - GTMSessionFetcher
+    - libaom
+    - libavif
     - libevent
+    - libvmaf
+    - libwebp
     - lottie-ios
     - MBProgressHUD
     - MLImage
@@ -3258,6 +3298,10 @@ SPEC REPOS:
     - PromisesObjC
     - Protobuf
     - Quick
+    - SDWebImage
+    - SDWebImageAVIFCoder
+    - SDWebImageSVGCoder
+    - SDWebImageWebPCoder
     - Stripe
     - StripeApplePay
     - StripeCore
@@ -3992,6 +4036,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-gl"
   ExpoHaptics:
     :path: "../packages/expo-haptics/ios"
+  ExpoImage:
+    :path: "../packages/expo-image/ios"
   ExpoImageManipulator:
     :path: "../packages/expo-image-manipulator/ios"
   ExpoImagePicker:
@@ -4521,6 +4567,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 458bb44dab3e955480e3642ecdfb6f8240955dbf
   ExpoGL: 5cc4c55cb83a9620c08ba6d797cb0ec812038e62
   ExpoHaptics: 129d3f8d44c2205adcdf8db760602818463d5437
+  ExpoImage: f090b06ec4bccf4e26f5008ceed90aca1661face
   ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
   ExpoImagePicker: ce37302446e70145bb413f0f74886441abdae022
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
@@ -4579,7 +4626,11 @@ SPEC CHECKSUMS:
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   hermes-engine: 7fe5fc6ef707b7fdcb161b63898ec500e285653d
   JKBigInteger: 5c72131974815e969c0782c41e3452f1bbe5619f
+  libaom: 9bb51e0f8f9192245e3ca2a1c9e4375d9cbccc52
+  libavif: e242998ccec1c83bcba0bbdc256f460ad5077348
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
+  libvmaf: 8d61aabc2f4ed3e6591cf7406fa00a223ec11289
+  libwebp: f62cb61d0a484ba548448a4bd52aabf150ff6eef
   lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
   lottie-react-native: b702fab740cdb952a8e2354713d3beda63ff97b0
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
@@ -4633,6 +4684,10 @@ SPEC CHECKSUMS:
   RNReanimated: fa9ee65f05e359382230f70c37dd973cac9e2b1d
   RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
+  SDWebImage: b9a731e1d6307f44ca703b3976d18c24ca561e84
+  SDWebImageAVIFCoder: 5bf07409ab8a02f0a8e0ac976719b321d8fce209
+  SDWebImageSVGCoder: 6fc109f9c2a82ab44510fff410b88b1a6c271ee8
+  SDWebImageWebPCoder: 18503de6621dd2c420d680e33d46bf8e1d5169b0
   Stripe: 90c12b350ae9e8a262efa87d230c00110c741f88
   stripe-react-native: 001c3d794839be02fd3857f1284adfc0c7dea5c7
   StripeApplePay: ce1edb7b3cb8b1abe29734f0fb887ee839a08043
@@ -4643,6 +4698,6 @@ SPEC CHECKSUMS:
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: fd7c64eb4c4017715b4513f664b093b80bc78d3f
+PODFILE CHECKSUM: f0b98edb28145432d32732ca640cbda19f0a0d09
 
 COCOAPODS: 1.11.2
