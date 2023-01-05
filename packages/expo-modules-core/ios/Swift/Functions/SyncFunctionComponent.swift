@@ -82,6 +82,10 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
   // MARK: - JavaScriptObjectBuilder
 
   func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
+    // We intentionally capture a strong reference to `self`, otherwise the "detached" objects would
+    // immediately lose the reference to the definition and thus the underlying native function.
+    // It may potentially cause memory leaks, but at the time of writing this comment,
+    // the native definition instance deallocates correctly when the JS VM triggers the garbage collector.
     return runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak runtime, self] this, args in
       guard let runtime = runtime else {
         throw Exceptions.RuntimeLost()
