@@ -13,3 +13,5 @@
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Bump `@expo/json-file`, `@expo/plist`.

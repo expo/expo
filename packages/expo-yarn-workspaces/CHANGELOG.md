@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump `@expo/metro-config`, `@expo/webpack-config`.
+
 ## 2.0.4 — 2022-10-25
 
 _This version does not introduce any user-facing changes._
