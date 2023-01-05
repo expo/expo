@@ -12,6 +12,7 @@ import expo.modules.calendar.CalendarPackage
 import expo.modules.camera.CameraViewModule
 import expo.modules.cellular.CellularModule
 import expo.modules.clipboard.ClipboardModule
+import expo.modules.constants.ConstantsModule
 import expo.modules.constants.ConstantsPackage
 import expo.modules.contacts.ContactsPackage
 import expo.modules.core.interfaces.Package
@@ -125,6 +126,7 @@ object ExperiencePackagePicker : ModulesProvider {
     CellularModule::class.java,
     ClipboardModule::class.java,
     CryptoModule::class.java,
+    ConstantsModule::class.java,
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
