@@ -1,6 +1,12 @@
 /// This file implements definition components that are allowed in any object-based definition — `ObjectDefinition`.
 /// So far only constants and functions belong to plain object.
 
+// MARK: - Object
+
+public func Object(@ObjectDefinitionBuilder @_implicitSelfCapture _ body: () -> [AnyDefinition]) -> ObjectDefinition {
+  return ObjectDefinition(definitions: body())
+}
+
 // MARK: - Constants
 
 /**

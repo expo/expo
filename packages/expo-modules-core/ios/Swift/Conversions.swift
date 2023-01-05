@@ -151,14 +151,17 @@ internal final class Conversions {
   /**
    Converts the function result to the type compatible with JavaScript.
    */
-  static func convertFunctionResult<ValueType>(_ value: ValueType?) -> Any {
+  static func convertFunctionResult<ValueType>(_ value: ValueType?, runtime: JavaScriptRuntime? = nil) -> Any {
     if let value = value as? Record {
       return value.toDictionary()
     }
     if let value = value as? [Record] {
       return value.map { $0.toDictionary() }
     }
-    return value
+    if let runtime = runtime, let value = value as? JavaScriptObjectBuilder {
+      return value.build(inRuntime: runtime)
+    }
+    return value as Any
   }
 
   // MARK: - Exceptions
