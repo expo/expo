@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add missing peer dependency on `url` for web.
+- Add missing peer dependency on `url` for web. ([#20708](https://github.com/expo/expo/pull/20708) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
