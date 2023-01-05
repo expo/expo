@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.1.0 — 2023-01-5
+
+### 🎉 New features
+
+- Added utterance word tracking support for iOS and Android. This allows the ability to highlight each word in an utterance.
+
 ## 11.0.0 — 2022-10-25
 
 ### 🛠 Breaking changes
