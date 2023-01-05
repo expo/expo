@@ -34,7 +34,6 @@ abstract_target 'Expo Go' do
       'expo-dev-menu-interface',
       'expo-dev-launcher',
       'expo-dev-client',
-      'expo-image',
       'expo-maps'
     ],
     includeTests: true,
