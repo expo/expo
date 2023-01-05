@@ -1,4 +1,14 @@
 export type SpeechEventCallback = (this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any;
+export type WillSayNextString = {
+    /**
+     * Count of characters of word.
+     */
+    length: number;
+    /**
+     * Index of word in full string.
+     */
+    location: number;
+};
 export type SpeechOptions = {
     /**
      * The code of a language that should be used to read the `text`, refer to IETF BCP 47 to see
@@ -17,6 +27,10 @@ export type SpeechOptions = {
      * A callback that is invoked when speaking starts.
      */
     onStart?: () => void | SpeechEventCallback;
+    /**
+     * A callback that is invoked when speaking is about to speak a word in the text.
+     */
+    onWillSayNextString?: (params: WillSayNextString) => void | SpeechEventCallback;
     /**
      * A callback that is invoked when speaking is stopped by calling `Speech.stop()`.
      */
