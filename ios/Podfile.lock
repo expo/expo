@@ -2093,7 +2093,7 @@ PODS:
     - ExpoModulesCore
   - ExpoWebBrowser (12.0.0):
     - ExpoModulesCore
-  - EXPrint (12.0.0):
+  - EXPrint (12.1.0):
     - ExpoModulesCore
   - EXScreenCapture (5.0.0):
     - ExpoModulesCore
@@ -4585,7 +4585,7 @@ SPEC CHECKSUMS:
   ExpoTrackingTransparency: 8d02327d4414009f03a43e6b2dbad52265996936
   ExpoVideoThumbnails: 424db02cedfbbe2d498bcb2712ea4ba8a9dcb453
   ExpoWebBrowser: 073e50f16669d498fb49063b9b7fe780b24f7fda
-  EXPrint: d0c207c654fcfefcbfca061998593a023014f84b
+  EXPrint: 72d06856abf849ea54db8841ac76e4edbcb37566
   EXScreenCapture: d9f1ec31042dfef109290d06c2b4789b7444d16d
   EXScreenOrientation: 07e5aeff07bce09a2b214981e612d87fd7719997
   EXSecureStore: daec0117c922a67c658cb229152a9e252e5c1750
