@@ -109,9 +109,11 @@ Create a [`webClientId`](/versions/latest/sdk/auth-session/#googleauthrequestcon
 
 </Tabs>
 
-## Adding scheme
+## Using AuthSession API
 
-For development builds apps and production apps, you'll need to set [`scheme`](/versions/latest/config/app/#scheme) in the Expo config file. It is required for the authentication flow to complete the process and redirect the user back to the app. This is done by deep linking back to the app.
+### Adding scheme
+
+For a development build and when setting up production apps, define [`scheme`](/versions/latest/config/app/#scheme) in the Expo config file. It is required for the authentication flow to complete the process and redirect the user back to the app. It handles the process of deep linking back to the app.
 
 {/* prettier-ignore */}
 ```json app.json
@@ -124,20 +126,18 @@ For development builds apps and production apps, you'll need to set [`scheme`](/
 }
 ```
 
-If you do not provide a value for the `scheme`, the authentication flow will complete, however, the user will not be redirected back to the app. They will have to manually exit the authentication modal which will result in rejection.
+If you do not provide a value for the `scheme`, the authentication flow will complete, however, the user will not be redirected back to the app. They will have to manually exit the authentication modal which will result in rejection of the the process.
 
-## Using AuthSession API
+### Minimal working example
 
-The AuthSession API requires the following rules to apply in your project's code:
+To use the AuthSession API, you'll need to take care of implementing the following rules in your project's code:
 
 - `WebBrowser.maybeCompleteAuthSession()` is used to dismiss the modal when the authentication session is completed automatically. It must be invoked. If you don't invoke this method, the modal will remain open.
 - [`Google.useAuthRequest`](/versions/latest/sdk/auth-session/#useauthrequest) hook provides instances and a method to invoke an auth session. It allows for async setup, which means that the mobile web browsers won't block the request. It also accepts an object of client IDs that are generated in the Google Cloud console for supported platforms. It a
 - The login button must be disabled until the request is loaded asynchronously. This is done by passing the `request` object from the `useAuthRequest` hook to the `disabled` prop of the component.
 - The `promptAsync()` method prompts the user to authenticate using a modal.
 
-### Minimal working example
-
-Add or modify the following example in your project to use AuthSession API with Google provider:
+Now, add the following example in your project to use AuthSession API with Google provider:
 
 {/* prettier-ignore */}
 ```jsx App.js
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
 
 ## Testing your app
 
-**For development builds**, see [Use development builds](/development/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or [`npx expo run:android` or `npx expo run:ios`](/workflow/expo-cli/#compiling) command to test it locally.
+**For a development build**, see [Use development builds](/development/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or [`npx expo run:android` or `npx expo run:ios`](/workflow/expo-cli/#compiling) command to test it locally.
 
 **For testing the web app**, start your project with the following command:
 
@@ -243,7 +243,7 @@ Make sure that you have added the correct `iosClientId` in the `Google.useAuthRe
 
 <Collapsible summary="URI scheme in bare workflow">
 
-For development builds or projects using EAS, the URI scheme is automatically added.
+For a development build or projects using EAS, the URI scheme is automatically added.
 
 For bare workflow, your project needs to conform to the URI scheme matching your `android.package` for Android and `ios.bundleIdentifier` for iOS. You can do that by running the following command for each platform:
 
