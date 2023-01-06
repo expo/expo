@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 47.0.12 — 2023-01-06
+
+_This version does not introduce any user-facing changes._
+
 ## 47.0.11 — 2023-01-04
 
 _This version does not introduce any user-facing changes._
