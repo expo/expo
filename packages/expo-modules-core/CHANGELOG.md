@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.1.1 — 2023-01-06
+
+### 🎉 New features
+
 - Added support for concurrent (async/await) functions in Swift. ([#20645](https://github.com/expo/expo/pull/20645) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added experimental support for building the function result from the object definition. ([#20623](https://github.com/expo/expo/pull/20623) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Fixed boost build error on Android. ([#20719](https://github.com/expo/expo/pull/20719) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 1.1.0 — 2022-12-30
 
