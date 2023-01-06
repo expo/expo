@@ -115,7 +115,7 @@
     "expo-sensors": "~12.0.0",
     "expo-sharing": "~11.1.0",
     "expo-sms": "~11.1.0",
-    "expo-speech": "~11.0.0",
+    "expo-speech": "~11.1.0",
     "expo-splash-screen": "^0.17.0",
     "expo-sqlite": "~11.0.0",
     "expo-standard-web-crypto": "~1.4.0",
