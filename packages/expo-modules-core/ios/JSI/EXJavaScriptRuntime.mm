@@ -4,8 +4,9 @@
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
-#elif __has_include(<hermes/hermes.h>)
-#import <hermes/hermes.h>
+#elif __has_include(<React-jsc/JSCRuntime.h>)
+// react-native@>=0.71 has a specific React-jsc pod
+#import <React-jsc/JSCRuntime.h>
 #else
 #import <jsi/JSCRuntime.h>
 #endif
@@ -16,7 +17,6 @@
 #import <ExpoModulesCore/EXJSIConversions.h>
 #import <ExpoModulesCore/Swift.h>
 
-using namespace facebook;
 
 /**
  Property name of the main object in the Expo JS runtime.
@@ -37,8 +37,8 @@ static NSString *mainObjectPropertyName = @"expo";
 - (nonnull instancetype)init
 {
   if (self = [super init]) {
-#if __has_include(<reacthermes/HermesExecutorFactory.h>) || __has_include(<hermes/hermes.h>)
-    _runtime = hermes::makeHermesRuntime();
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
+    _runtime = facebook::hermes::makeHermesRuntime();
 #else
     _runtime = jsc::makeJSCRuntime();
 #endif

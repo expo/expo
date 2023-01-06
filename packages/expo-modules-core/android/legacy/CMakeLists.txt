@@ -1,3 +1,4 @@
+# Remove this legacy folder when we drop SDK 47
 cmake_minimum_required(VERSION 3.4.1)
 
 project(expo-modules-core)
@@ -5,16 +6,16 @@ project(expo-modules-core)
 set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
-set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_NATIVE_TARGET_VERSION} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR}")
+set(BUILD_DIR ${CMAKE_SOURCE_DIR}/../build)
+set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR}")
 
 if (${NATIVE_DEBUG})
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
 endif ()
 
-set(SRC_DIR ${CMAKE_SOURCE_DIR}/src)
-set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../common/cpp)
+set(SRC_DIR ${CMAKE_SOURCE_DIR}/../src)
+set(COMMON_DIR ${CMAKE_SOURCE_DIR}/../../common/cpp)
 file(GLOB sources_android "${SRC_DIR}/main/cpp/*.cpp")
 file(GLOB sources_android_types "${SRC_DIR}/main/cpp/types/*.cpp")
 file(GLOB sources_android_javaclasses "${SRC_DIR}/main/cpp/javaclasses/*.cpp")
@@ -42,7 +43,7 @@ add_library(
 )
 
 if(IS_NEW_ARCHITECTURE_ENABLED)
-  add_subdirectory("${SRC_DIR}/fabric")
+  add_subdirectory("fabric")
   set(NEW_ARCHITECTURE_DEPENDENCIES "fabric")
   set(NEW_ARCHITECTURE_COMPILE_OPTIONS -DIS_NEW_ARCHITECTURE_ENABLED=1 -DRN_FABRIC_ENABLED=1)
 else()
@@ -98,32 +99,74 @@ else()
   set(JSEXECUTOR_INCLUDE "")
 endif()
 
-# find libraries
-
-find_library(LOG_LIB log)
-
-find_package(ReactAndroid REQUIRED CONFIG)
-
-find_package(fbjni REQUIRED CONFIG)
 
 # includes
 
-get_target_property(INCLUDE_reactnativejni
-        ReactAndroid::reactnativejni
-        INTERFACE_INCLUDE_DIRECTORIES)
 target_include_directories(
         ${PACKAGE_NAME}
         PRIVATE
-        ${INCLUDE_reactnativejni}/react
-
-        # header only imports from turbomodule, e.g. CallInvokerHolder.h
+        "${REACT_NATIVE_DIR}/React"
+        "${REACT_NATIVE_DIR}/React/Base"
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react"
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
-
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
+        "${REACT_NATIVE_DIR}/ReactCommon"
+        "${REACT_NATIVE_DIR}/ReactCommon/react/nativemodule/core"
+        "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
+        "${REACT_NATIVE_DIR}/ReactCommon/jsi"
         "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
+        "${BUILD_DIR}/third-party-ndk/double-conversion"
+        "${BUILD_DIR}/third-party-ndk/folly"
         "${COMMON_DIR}"
         "${JSEXECUTOR_INCLUDE}"
         "${SRC_DIR}/fabric"
 )
+
+# find libraries
+
+find_library(LOG_LIB log)
+
+if(${REACT_NATIVE_TARGET_VERSION} LESS 69)
+    find_library(
+        FOLLY_LIB
+        folly_json
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+    )
+else()
+    find_library(
+        FOLLY_LIB
+        folly_runtime
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+    )
+endif()
+
+find_package(fbjni REQUIRED CONFIG)
+
+find_library(
+        JSI_LIB
+        jsi
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+)
+
+find_library(
+        REACT_NATIVE_JNI_LIB
+        reactnativejni
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+)
+
+find_library(
+        REACT_NATIVE_MODULES_CORE
+        react_nativemodule_core
+        PATHS ${LIBRN_DIR}
+        NO_CMAKE_FIND_ROOT_PATH
+)
+
+#reactnativejni
 
 # linking
 
@@ -141,11 +184,11 @@ target_link_libraries(
         CommonSettings
         ${LOG_LIB}
         fbjni::fbjni
-        ReactAndroid::jsi
-        ReactAndroid::reactnativejni
-        ReactAndroid::folly_runtime
-        ReactAndroid::react_nativemodule_core
-        android
+        ${JSI_LIB}
         ${JSEXECUTOR_LIB}
+        ${REACT_NATIVE_JNI_LIB}
+        ${FOLLY_LIB}
+        ${REACT_NATIVE_MODULES_CORE}
+        android
         ${NEW_ARCHITECTURE_DEPENDENCIES}
 )
