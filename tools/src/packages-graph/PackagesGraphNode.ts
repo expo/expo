@@ -27,7 +27,7 @@ export default class PackagesGraphNode {
   outgoingEdges: PackagesGraphEdge[] = [];
 
   /**
-   * Edges connecting this node with its dependants.
+   * Edges connecting this node with its dependents.
    */
   incomingEdges: PackagesGraphEdge[] = [];
 
@@ -44,21 +44,21 @@ export default class PackagesGraphNode {
     return this.incomingEdges.find((edge) => edge.origin === node) ?? null;
   }
 
-  getAllDependantEdges(kinds: DependencyKind[] = DefaultDependencyKind): PackagesGraphEdge[] {
-    const allDependantEdges = this.incomingEdges
+  getAllDependentEdges(kinds: DependencyKind[] = DefaultDependencyKind): PackagesGraphEdge[] {
+    const allDependentEdges = this.incomingEdges
       .map((edge) => {
         if (!edge.isCyclic && kinds.includes(edge.getDominantKind())) {
-          return [edge, ...edge.origin.getAllDependantEdges(kinds)];
+          return [edge, ...edge.origin.getAllDependentEdges(kinds)];
         }
         return [];
       })
       .flat();
 
-    return [...new Set(allDependantEdges)];
+    return [...new Set(allDependentEdges)];
   }
 
-  getAllDependants(kinds: DependencyKind[] = DefaultDependencyKind): PackagesGraphNode[] {
-    return [...new Set(this.getAllDependantEdges(kinds).map((edge) => edge.origin))];
+  getAllDependents(kinds: DependencyKind[] = DefaultDependencyKind): PackagesGraphNode[] {
+    return [...new Set(this.getAllDependentEdges(kinds).map((edge) => edge.origin))];
   }
 
   getOutgoingEdgesOfKinds(kinds: DependencyKind[]): PackagesGraphEdge[] {
@@ -67,7 +67,7 @@ export default class PackagesGraphNode {
     });
   }
 
-  isDependantOf(node: PackagesGraphNode): boolean {
+  isDependentOf(node: PackagesGraphNode): boolean {
     return !!this.getOutgoingEdgeForNode(node);
   }
 

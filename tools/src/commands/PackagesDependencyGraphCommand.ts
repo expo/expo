@@ -1,12 +1,12 @@
 import { Command } from '@expo/commander';
 
 import { DependencyKind } from '../Packages';
-import { PackagesGraph, printGraph, printNodeDependants } from '../packages-graph';
+import { PackagesGraph, printGraph, printNodeDependents } from '../packages-graph';
 
 type ActionOptions = {
   dev: boolean;
   peer: boolean;
-  listDependantsOf: string;
+  listDependentsOf: string;
 };
 
 async function action(packageNames: string[], options: ActionOptions) {
@@ -17,14 +17,14 @@ async function action(packageNames: string[], options: ActionOptions) {
     options.peer && DependencyKind.Peer,
   ].filter(Boolean) as DependencyKind[];
 
-  if (options.listDependantsOf) {
-    const packageName = options.listDependantsOf;
+  if (options.listDependentsOf) {
+    const packageName = options.listDependentsOf;
     const node = graph.getNode(packageName);
 
     if (!node) {
       throw new Error(`Package with name "${packageName}" not found`);
     }
-    printNodeDependants(node, dependencyKinds);
+    printNodeDependents(node, dependencyKinds);
     return;
   }
 
@@ -37,6 +37,6 @@ export default (program: Command) => {
     .alias('pdg')
     .option('--dev', 'Whether to include dev dependencies', false)
     .option('--peer', 'Whether to include peer dependencies', false)
-    .option('--list-dependants-of <packageName>', 'Lists all dependants of the given package', '')
+    .option('--list-dependents-of <packageName>', 'Lists all dependents of the given package', '')
     .asyncAction(action);
 };

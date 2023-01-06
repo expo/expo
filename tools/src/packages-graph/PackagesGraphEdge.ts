@@ -11,7 +11,7 @@ export default class PackagesGraphEdge {
   origin: PackagesGraphNode;
 
   /**
-   * The graph node that is dependant of the origin node.
+   * The graph node that is dependent of the origin node.
    */
   destination: PackagesGraphNode;
 

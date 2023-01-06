@@ -75,18 +75,18 @@ export function printGraph(
   }
 }
 
-export function printNodeDependants(
+export function printNodeDependents(
   node: PackagesGraphNode,
   kinds: DependencyKind[] = DefaultDependencyKind
 ) {
-  const nodes = node.getAllDependants(kinds);
+  const nodes = node.getAllDependents(kinds);
 
   if (nodes.length === 0) {
-    console.log(`${chalk.bold(node.name)} has no dependants`);
+    console.log(`${chalk.bold(node.name)} has no dependents`);
     return;
   }
 
-  console.log(`All dependants of the ${chalk.bold(node.name)} package:`);
+  console.log(`All dependents of the ${chalk.bold(node.name)} package:`);
 
   for (const node of nodes) {
     console.log(`- ${chalk.bold(node.name)}`);
