@@ -9,7 +9,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { CODE } from '~/ui/components/Text';
 
-AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on using the API with Google as one of the most popular providers.
+AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on configuring and using the API with Google as one of the most popular providers.
 
 ## Installing libraries
 
@@ -170,7 +170,7 @@ In the above code snippet, replace the `GOOGLE_GUID` with the client ID generate
 
 `promptAsync()` method prompts the user to authenticate by opening a web browser. It is invoked when the user clicks the login button. The button must be disabled until the request is loaded asynchronously. This is done by passing the `request` object from the `useAuthRequest` hook to the `disabled` prop of the button component.
 
-Add the following code to the button component:
+An example button component is shown below:
 
 ```jsx App.js
 <Button
@@ -184,7 +184,7 @@ Add the following code to the button component:
 
 ### Minimal working example
 
-In the code snippet below, you can see a minimal working example of the AuthSession API with Google provider. It also stores the access token retrieved from the successful authentication request to fetch the user's public information and display it on the app screen.
+In the code snippet below, you can see a minimal working example of the AuthSession API with Google provider. It stores the access token retrieved from the successful authentication request to fetch the user's public information and display it on the app screen.
 
 {/* prettier-ignore */}
 ```jsx App.js
@@ -274,7 +274,7 @@ const styles = StyleSheet.create({
 
 ## Testing your app
 
-**For a development build**, see [Use development builds](/development/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or [`npx expo run:android` or `npx expo run:ios`](/workflow/expo-cli/#compiling) command to test it locally.
+**For a development build**, see [Use development builds](/development/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or run [`npx expo run:android` or `npx expo run:ios`](/workflow/expo-cli/#compiling) command to test it locally.
 
 **For testing the web app**, start your project with the following command:
 
