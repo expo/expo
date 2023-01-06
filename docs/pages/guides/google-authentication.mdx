@@ -30,7 +30,7 @@ There are four types of client IDs you can provide to the AuthSession API depend
 
 ### Setting up consent screen
 
-On the Credentials page, click the **Create credentials** button, select **OAuth client ID** and then click **Configure Consent screen**. You will be prompted to select properties such as **User Type** and other app-related information on this page. Continue the steps there and proceed with the next step when you are done.
+On the Credentials page, click the **Create credentials** button, select **OAuth client ID** and then click **Configure Consent screen**. You will be prompted to select properties such as **User Type** and other app-related information on this page. Continue the process and when you are done, proceed with the next step.
 
 ### Creating client IDs
 
@@ -126,18 +126,65 @@ For a development build and when setting up production apps, define [`scheme`](/
 }
 ```
 
-If you do not provide a value for the `scheme`, the authentication flow will complete, however, the user will not be redirected back to the app. They will have to manually exit the authentication modal which will result in rejection of the the process.
+If you do not provide a value for the `scheme`, the authentication flow will complete, however, the user will not be redirected back to the app. They will have to manually exit the authentication popup which will result in the rejection of the process.
+
+### Adding import statements
+
+Add the following import statements to your project code. The `WebBrowser` API and the `Google` provider from the `expo-auth-session` are essential to handle the authentication process.
+
+```jsx App.js
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+```
+
+### Adding a method to dismiss the popup
+
+Expo's [WebBrowser API](https://docs.expo.dev/versions/latest/sdk/webbrowser/) provides `maybeCompleteAuthSession()` method to dismiss the popup when the authentication sessions is completed successfully. It uses the redirect URL added in the provider's authorized list of URLs.
+
+Invoke this method to the app screen you want to redirect back to by adding the following code snippet:
+
+```js App.js
+WebBrowser.maybeCompleteAuthSession();
+```
+
+If this method is not invoked, the popup will not dismiss itself.
+
+### Invoking auth session
+
+[`Google.useAuthRequest()`](/versions/latest/sdk/auth-session/#useauthrequest) hook provides instances and a method to invoke an auth session. It allows for async setup, which means that a mobile web browser won't block the request. It also accepts an object of client IDs that are generated in the Google Cloud console.
+
+Define this hook inside the React component by adding the code snippet below:
+
+```js App.js
+const [request, response, promptAsync] = Google.useAuthRequest({
+  expoClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+  iosClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+  androidClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+  webClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+});
+```
+
+In the above code snippet, replace the `GOOGLE_GUID` with the client ID generated in the Google Cloud console for your app. Also, you include the client IDs for the platforms you want to support.
+
+### Adding a login button
+
+`promptAsync()` method prompts the user to authenticate by opening a web browser. It is invoked when the user clicks the login button. The button must be disabled until the request is loaded asynchronously. This is done by passing the `request` object from the `useAuthRequest` hook to the `disabled` prop of the button component.
+
+Add the following code to the button component:
+
+```jsx App.js
+<Button
+  title="Sign in with Google"
+  disabled={!request}
+  onPress={() => {
+    promptAsync();
+  }}
+/>
+```
 
 ### Minimal working example
 
-To use the AuthSession API, you'll need to take care of implementing the following rules in your project's code:
-
-- `WebBrowser.maybeCompleteAuthSession()` is used to dismiss the modal when the authentication session is completed automatically. It must be invoked. If you don't invoke this method, the modal will remain open.
-- [`Google.useAuthRequest`](/versions/latest/sdk/auth-session/#useauthrequest) hook provides instances and a method to invoke an auth session. It allows for async setup, which means that the mobile web browsers won't block the request. It also accepts an object of client IDs that are generated in the Google Cloud console for supported platforms. It a
-- The login button must be disabled until the request is loaded asynchronously. This is done by passing the `request` object from the `useAuthRequest` hook to the `disabled` prop of the component.
-- The `promptAsync()` method prompts the user to authenticate using a modal.
-
-Now, add the following example in your project to use AuthSession API with Google provider:
+In the code snippet below, you can see a minimal working example of the AuthSession API with Google provider. It also stores the access token retrieved from the successful authentication request to fetch the user's public information and display it on the app screen.
 
 {/* prettier-ignore */}
 ```jsx App.js
