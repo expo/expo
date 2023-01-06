@@ -181,7 +181,7 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.1.0)
     - GooglePlaces (= 7.1.0)
-  - ExpoModulesCore (1.1.0):
+  - ExpoModulesCore (1.1.1):
     - React-Core
     - ReactCommon/turbomodule/core
   - ExpoNetwork (5.1.0):
@@ -1209,7 +1209,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
   ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
   ExpoMaps: da84a66611924dd53beaa2d2801cbd677758796a
-  ExpoModulesCore: 089e1ac0f0edee4dd0af0eb4e3f7b44d72cc418d
+  ExpoModulesCore: 485dff3a59b036a33b6050c0a5aea3cf1037fdd1
   ExpoNetwork: 3a7787b5cd93d32897c51e9f74b98dca6061ece4
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
   ExpoSMS: 95e1ac17d8e953b0364ad46195893e9060869c5b
