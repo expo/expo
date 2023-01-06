@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed boost build error on Android. ([#20719](https://github.com/expo/expo/pull/20719) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.1.0 — 2022-12-30
