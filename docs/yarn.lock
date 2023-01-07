@@ -450,10 +450,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@expo/styleguide@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-6.1.0.tgz#c1066074495595c1d5374689b5f508e1ecaf08b3"
-  integrity sha512-Q5W3C7QqyDejoOjfcGrBdYG/TAEllfsT3h8RrZbZd3AmpnEWIOiq1tr4OvSXSc5j+7aiV7Lb6A6wPkkJi3Y++Q==
+"@expo/styleguide@^6.1.1":
+  version "6.1.1"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-6.1.1.tgz#1f5e3b65a771a052887dee49040450337b27ab28"
+  integrity sha512-P73gKKMtsQkZlUXPtgTO8AcDaO3hD3/5tif/4pEM9y44h+wsnyvJF21wvPbT8fWgSt03l+Xwt5yvr8esp1zcow==
   dependencies:
     "@radix-ui/colors" "^0.1.8"
 
