@@ -155,12 +155,8 @@ const errorColorStyle = css({
   borderColor: theme.border.danger,
 
   code: {
-    backgroundColor: theme.palette.red2,
-    borderColor: theme.palette.red5,
-  },
-
-  '.dark-theme & code': {
-    backgroundColor: theme.palette.red4,
+    backgroundColor: theme.palette.red5,
+    borderColor: theme.palette.red7,
   },
 });
 
@@ -169,11 +165,7 @@ const infoColorStyle = css({
   borderColor: theme.border.info,
 
   code: {
-    backgroundColor: theme.palette.blue2,
-    borderColor: theme.palette.blue5,
-  },
-
-  '.dark-theme & code': {
-    backgroundColor: theme.palette.blue4,
+    backgroundColor: theme.palette.blue5,
+    borderColor: theme.palette.blue7,
   },
 });

@@ -136,21 +136,21 @@ const Home = () => {
               xl={6}
               lg={6}
               css={css({
-                backgroundColor: palette.blue2,
-                borderColor: palette.blue5,
+                backgroundColor: palette.purple2,
+                borderColor: palette.purple5,
               })}>
               <SnackImage />
-              <RawH3 css={css({ color: palette.blue12 })}>Try Expo in your browser</RawH3>
-              <P css={css({ color: palette.blue12, ...typography.fontSizes[14] })}>
+              <RawH3 css={css({ color: palette.purple12 })}>Try Expo in your browser</RawH3>
+              <P css={css({ color: palette.purple12, ...typography.fontSizes[14] })}>
                 Expo’s Snack lets you try Expo
                 <br />
                 with zero local setup.
               </P>
               <HomeButton
-                css={css({ backgroundColor: palette.blue10, color: palette.blue4 })}
+                css={css({ backgroundColor: palette.purple10, color: palette.purple4 })}
                 href="https://snack.expo.dev/"
                 target="_blank"
-                iconRight={<ArrowUpRightIcon color={palette.blue4} />}>
+                iconRight={<ArrowUpRightIcon color={palette.purple4} />}>
                 Create a Snack
               </HomeButton>
             </GridCell>
@@ -169,8 +169,11 @@ const Home = () => {
               </RawH3>
               <HomeButton
                 css={css({
-                  backgroundColor: palette.orange12,
+                  backgroundColor: palette.orange11,
                   color: palette.orange4,
+                  '.dark-theme &': {
+                    backgroundColor: palette.orange12,
+                  },
                 })}
                 href="https://www.codecademy.com/learn/learn-react-native"
                 target="_blank"
@@ -215,8 +218,11 @@ const Home = () => {
               </P>
               <HomeButton
                 css={css({
-                  backgroundColor: palette.yellow12,
+                  backgroundColor: palette.yellow11,
                   color: palette.yellow2,
+                  '.dark-theme &': {
+                    backgroundColor: palette.yellow12,
+                  },
                 })}
                 href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
                 target="_blank"

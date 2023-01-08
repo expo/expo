@@ -45,6 +45,7 @@ export const CommandMenuTrigger = ({ setOpen }: Props) => {
 };
 
 const buttonStyle = css({
+  backgroundColor: theme.background.default,
   width: '20vw',
   minWidth: 240,
   maxWidth: 320,
