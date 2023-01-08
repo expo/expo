@@ -283,7 +283,7 @@ When building tests for your application, you want to assert that the right flow
 
 [`sentry-testkit`](https://wix.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
 
-See how to get started with `sentry-testkit` in their [documentation site here](https://wix.github.io/sentry-testkit/)
+For more information on how to get started, see [`sentry-testkit` documentation](https://wix.github.io/sentry-testkit/).
 
 > If you're using `jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
@@ -300,7 +300,7 @@ Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be
 <Collapsible summary={<>I'm seeing <CODE>error: project not found</CODE> in my build logs</>}>
 
 This error is caused by the script that tries to upload source maps during build.
-  
+
 Make sure your `organization`, `project` and `authToken` properties are set correctly.
 
 </Collapsible>
