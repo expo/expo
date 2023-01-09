@@ -1,6 +1,8 @@
 import './environment/validate.fx';
 // load remote logging for compatibility with custom development clients
 import './environment/logging.fx';
+// Install Yoga assertions to prevent crashes in development
+import './environment/react-native-styles.fx';
 // load expo-asset immediately to set a custom `source` transformer in React Native
 import 'expo-asset';
 import Constants, { ExecutionEnvironment } from 'expo-constants';

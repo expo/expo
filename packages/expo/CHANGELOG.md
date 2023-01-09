@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Improve error handling for unsupported style usages.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

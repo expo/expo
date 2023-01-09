@@ -45,6 +45,7 @@ export function getTestModules() {
   const modules = [
     // Sanity
     require('./tests/Basic'),
+    require('./tests/MissingStyles'),
   ];
 
   // Expo core modules should run everywhere

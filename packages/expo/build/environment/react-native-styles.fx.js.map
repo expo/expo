@@ -1,0 +1,1 @@
+{"version":3,"file":"react-native-styles.fx.js","sourceRoot":"","sources":["../../src/environment/react-native-styles.fx.ts"],"names":[],"mappings":"AAAA,gDAAgD","sourcesContent":["// Default to no assertions (e.g. web, Node.js).\n"]}
