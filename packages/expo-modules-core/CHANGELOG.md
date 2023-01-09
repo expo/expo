@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix view prop setter not being called when its new value is `null` or `undefined`.
+
 ### 💡 Others
 
 ## 1.1.1 — 2023-01-06
