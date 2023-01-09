@@ -28,13 +28,19 @@ if (process.env.NODE_ENV === 'development') {
     default: Platform.OS,
   });
 
+  // Mostly based on react-native-web:
+  // https://github.com/necolas/react-native-web/blob/1aa84d54479fb64e77c86d064263144370195f86/packages/react-native-web/src/types/styles.js
   const CSS_GRID = [
+    'grid',
+    'gridArea',
     'gridAutoColumns',
     'gridAutoFlow',
     'gridAutoRows',
+    'gridColumn',
     'gridColumnEnd',
     'gridColumnGap',
     'gridColumnStart',
+    'gridRow',
     'gridRowEnd',
     'gridRowGap',
     'gridRowStart',
@@ -96,6 +102,7 @@ if (process.env.NODE_ENV === 'development') {
     'perspectiveOrigin',
     'touchAction',
     'transformOrigin',
+    'transformStyle',
     'visibility',
     'willChange',
   ];
@@ -118,13 +125,13 @@ if (process.env.NODE_ENV === 'development') {
       ) {
         // eslint-disable-next-line no-inner-declarations
         function assertUnsupportedStyle(value: any): undefined {
-          const warning = [
+          const errorMessage = [
             `${message} property "${prop}" is not currently supported on ${PLATFORM_NAME}.`,
             `style={{ ${prop}: '${value}' }}`,
             `This is a development error, production use may lead to fatal crashes.`,
           ];
           // Use console.error instead of throwing so devs can see more than one issue at a time.
-          console.error(warning.join('\n'));
+          console.error(errorMessage.join('\n'));
           return undefined;
         }
         assertUnsupportedStyle.name = '__yoga_assertUnsupportedStyle__';
