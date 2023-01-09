@@ -6,7 +6,7 @@
  */
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
-import { ResolutionContext, Resolution } from 'metro-resolver';
+import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -15,6 +15,7 @@ import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjec
 import { PlatformBundlers } from '../platformBundlers';
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
+import { withMetroResolvers } from './withMetroResolvers';
 
 function withWebPolyfills(config: ConfigT): ConfigT {
   const originalGetPolyfills = config.serializer.getPolyfills
@@ -36,43 +37,6 @@ function withWebPolyfills(config: ConfigT): ConfigT {
     serializer: {
       ...config.serializer,
       getPolyfills,
-    },
-  };
-}
-
-function getDefaultResolveRequest(projectRoot: string) {
-  const { resolve } = importMetroResolverFromProject(projectRoot);
-  return (context: ResolutionContext, moduleName: string, platform: string | null) => {
-    return resolve(context, moduleName, platform);
-  };
-}
-
-export type ExpoCustomMetroResolver = (
-  ...args: Parameters<import('metro-resolver').CustomResolver>
-) => import('metro-resolver').Resolution | null;
-
-/** Extend the `resolver.resolveRequest` method with custom methods that can exit early by returning a `Resolution`. */
-function withCustomResolvers(
-  config: ConfigT,
-  projectRoot: string,
-  resolvers: ExpoCustomMetroResolver[]
-): ConfigT {
-  const originalResolveRequest =
-    config.resolver.resolveRequest || getDefaultResolveRequest(projectRoot);
-
-  return {
-    ...config,
-    resolver: {
-      ...config.resolver,
-      resolveRequest(...args: Parameters<import('metro-resolver').CustomResolver>) {
-        for (const resolver of resolvers) {
-          const resolution = resolver(...args);
-          if (resolution) {
-            return resolution;
-          }
-        }
-        return originalResolveRequest(...args);
-      },
     },
   };
 }
@@ -116,14 +80,17 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
     web: ['browser', 'module', 'main'],
   };
 
-  return withCustomResolvers(config, projectRoot, [
+  return withMetroResolvers(config, projectRoot, [
     // Add a resolver to alias the web asset resolver.
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       const context = { ...immutableContext } as ResolutionContext & { mainFields: string[] };
 
       // Conditionally remap `react-native` to `react-native-web`
       if (platform && platform in extraNodeModules) {
-        context.extraNodeModules = extraNodeModules[platform];
+        context.extraNodeModules = {
+          ...extraNodeModules[platform],
+          ...context.extraNodeModules,
+        };
       }
 
       const mainFields = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE

@@ -23,10 +23,15 @@ export const tagStyle = css({
   'nav &': {
     whiteSpace: 'pre',
   },
+
+  'h3 &': {
+    fontSize: '80%',
+  },
 });
 
 export const labelStyle = css({
   lineHeight: `${spacing[4]}px`,
+  fontWeight: 'normal',
 });
 
 export const tagToCStyle = css({
@@ -34,5 +39,5 @@ export const tagToCStyle = css({
   marginBottom: 0,
   marginRight: 0,
   marginLeft: spacing[1],
-  padding: `0px ${spacing[1.5]}px`,
+  padding: `0 ${spacing[1.5]}px`,
 });

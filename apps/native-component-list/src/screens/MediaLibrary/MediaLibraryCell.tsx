@@ -1,15 +1,8 @@
 import FontAwesome from '@expo/vector-icons/build/FontAwesome';
+import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library';
 import React from 'react';
-import {
-  Image,
-  StyleProp,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
 
 export default class MediaLibraryCell extends React.Component<{
   asset: MediaLibrary.Asset;

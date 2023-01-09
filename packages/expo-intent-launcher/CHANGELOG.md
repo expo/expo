@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Migrated to Expo Modules API. ([#20327](https://github.com/expo/expo/pull/20327) by [@alanhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 10.4.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated to Expo Modules API. ([#20327](https://github.com/expo/expo/pull/20327) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 10.3.1 — 2022-10-25
 

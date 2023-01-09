@@ -103,6 +103,7 @@ export async function readAsStringAsync(
  * ```
  * @return Returns a Promise that resolves to a `string` containing a `content://` URI pointing to the file.
  * The URI is the same as the `fileUri` input parameter but in a different format.
+ * @platform android
  */
 export async function getContentUriAsync(fileUri: string): Promise<string> {
   if (Platform.OS === 'android') {
@@ -111,9 +112,7 @@ export async function getContentUriAsync(fileUri: string): Promise<string> {
     }
     return await ExponentFileSystem.getContentUriAsync(fileUri);
   } else {
-    return new Promise(function (resolve, reject) {
-      resolve(fileUri);
-    });
+    return fileUri;
   }
 }
 

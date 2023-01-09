@@ -1,18 +1,7 @@
 import resolveAssetSource from './resolveAssetSource';
-function isBlurhashString(str) {
+import resolveBlurhashString from './resolveBlurhashString';
+export function isBlurhashString(str) {
     return /^(blurhash:\/)?[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
-}
-function blurhashToURI(blurhash) {
-    const encodedBlurhash = encodeURI(blurhash).replace(/#/g, '%23').replace(/\?/g, '%3F');
-    return `blurhash:/${encodedBlurhash}`;
-}
-function resolveBlurhashString(str) {
-    const [blurhash, width, height] = str.replace(/^blurhash:\//, '').split('/');
-    return {
-        uri: blurhashToURI(blurhash),
-        width: parseInt(width, 10) || 16,
-        height: parseInt(height, 10) || 16,
-    };
 }
 function resolveSource(source) {
     if (typeof source === 'string') {

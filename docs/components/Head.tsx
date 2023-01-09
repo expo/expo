@@ -4,12 +4,9 @@ import type { PropsWithChildren } from 'react';
 type HeadProps = PropsWithChildren<{ title?: string; description?: string }>;
 
 const BASE_TITLE = 'Expo Documentation';
+const DEFAULT_DESCRIPTION = `Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.`;
 
-const Head = ({
-  title,
-  description = `Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.`,
-  children,
-}: HeadProps) => (
+const Head = ({ title, description, children }: HeadProps) => (
   <NextHead>
     <title>{title ? `${title} - ${BASE_TITLE}` : BASE_TITLE}</title>
     <meta charSet="utf-8" />
@@ -17,7 +14,7 @@ const Head = ({
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/static/images/favicon.ico" sizes="32x32" />
 
-    <meta name="description" content={description} />
+    <meta name="description" content={description === '' ? DEFAULT_DESCRIPTION : description} />
     <meta property="og:title" content={title} />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="https://docs.expo.dev/static/images/og.png" />

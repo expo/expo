@@ -16,12 +16,12 @@ class BlurhashLoader: NSObject, SDImageLoader {
     completed completedBlock: SDImageLoaderCompletedBlock? = nil
   ) -> SDWebImageOperation? {
     guard let url = url else {
-      let error = error(description: "URL provided to BlurhashLoader is missing")
+      let error = makeNSError(description: "URL provided to BlurhashLoader is missing")
       completedBlock?(nil, nil, error, false)
       return nil
     }
     guard let source = context?[ImageView.contextSourceKey] as? ImageSource else {
-      let error = error(description: "Image source was not provided to the context")
+      let error = makeNSError(description: "Image source was not provided to the context")
       completedBlock?(nil, nil, error, false)
       return nil
     }
@@ -37,7 +37,7 @@ class BlurhashLoader: NSObject, SDImageLoader {
           completedBlock?(UIImage(cgImage: image), nil, nil, true)
         }
       } else {
-        let error = error(description: "Unable to generate an image from the given blurhash")
+        let error = makeNSError(description: "Unable to generate an image from the given blurhash")
         completedBlock?(nil, nil, error, false)
       }
     }
@@ -49,9 +49,4 @@ class BlurhashLoader: NSObject, SDImageLoader {
     // it's not possible that next time it will work :)
     return true
   }
-}
-
-private func error(description: String) -> NSError {
-  let userInfo = [NSLocalizedDescriptionKey: description]
-  return NSError(domain: "expo.modules.image", code: 0, userInfo: userInfo)
 }

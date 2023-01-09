@@ -136,6 +136,7 @@ redirects[guides/testing-on-devices]=workflow/run-on-device
 redirects[distribution/uploading-apps]=submit/introduction
 redirects[guides/setup-native-firebase/]=guides/using-firebase
 redirects[guides/using-clojurescript/]=/
+redirects[distribution/hosting-your-app/]=distribution/publishing-websites/
 
 # We should change this redirect to a more general EAS guide later
 redirects[guides/setting-up-continuous-integration]=build/building-on-ci
@@ -174,6 +175,10 @@ redirects[versions/latest/sdk/app-auth]=guides/authentication/
 redirects[versions/latest/sdk/google-sign-in]=guides/authentication/
 redirects[versions/latest/sdk/google]=guides/authentication/
 redirects[versions/latest/sdk/amplitude/]=guides/using-analytics/
+redirects[versions/latest/sdk/util/]=versions/latest/
+
+# Redirects based on Sentry reports
+redirects[push-notifications]=push-notifications/overview/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

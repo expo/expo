@@ -49,7 +49,7 @@ const detailsStyle = css({
     boxShadow: shadows.micro,
   },
 
-  'h4 + &, li > &': {
+  'h4 + &, p + &, li > &': {
     marginTop: spacing[3],
   },
 });
@@ -77,6 +77,12 @@ const summaryStyle = css({
   h4: {
     marginTop: 0,
     marginBottom: 0,
+  },
+
+  code: {
+    backgroundColor: theme.background.tertiary,
+    display: 'inline',
+    fontSize: '90%',
   },
 });
 
