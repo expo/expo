@@ -139,7 +139,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            path file('CMakeLists.txt')            
+            path file('CMakeLists.txt')
         }
     }
 
@@ -161,6 +161,10 @@ android {
     configurations {
         extractHeaders
         extractJNI
+    }
+
+    buildFeatures {
+        prefab true
     }
 }
 
@@ -261,7 +265,7 @@ def nativeBuildDependsOn(dependsOnTask, variant) {
 
 afterEvaluate {
   nativeBuildDependsOn(extractAARHeaders, null)
-  nativeBuildDependsOn(extractJNIFiles, null)  
+  nativeBuildDependsOn(extractJNIFiles, null)
 }
 
 tasks.whenTaskAdded { task ->
