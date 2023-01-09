@@ -109,15 +109,13 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
     }
     let props = viewManager.propsDict()
 
-    for (key, value) in json {
-      if let prop = props[key] {
-        let value = Conversions.fromNSObject(value)
+    for (key, prop) in props {
+      let newValue = json[key] as Any
 
-        // TODO: @tsapeta: Figure out better way to rethrow errors from here.
-        // Adding `throws` keyword to the function results in different
-        // method signature in Objective-C. Maybe just call `RCTLogError`?
-        try? prop.set(value: value, onView: view)
-      }
+      // TODO: @tsapeta: Figure out better way to rethrow errors from here.
+      // Adding `throws` keyword to the function results in different
+      // method signature in Objective-C. Maybe just call `RCTLogError`?
+      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view)
     }
     viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
   }
