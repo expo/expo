@@ -442,8 +442,7 @@ export const renderTypeOrSignatureType = (
             </span>
           ))
         )}
-        ) =&gt;{' '}
-        {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
+        ) =&gt; {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
       </CODE>
     );
   } else if (type) {
