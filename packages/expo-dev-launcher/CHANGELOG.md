@@ -8,9 +8,17 @@
 
 ### 🐛 Bug fixes
 
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Locked `layoutDirection` to LTR to prevent incorrect rendering when used together with a RTL enabled app. ([#19634](https://github.com/expo/expo/pull/19634) by [@aleqsio](https://github.com/aleqsio))
+
+## 2.0.2 - 2022-11-21
+
+### 🐛 Bug fixes
+
+- Fixed `RCTStatusBarManager` module requires that the `UIViewControllerBasedStatusBarAppearance` to be false on iOS. ([#20104](https://github.com/expo/expo/pull/20104) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.0.1 - 2022-11-08
 

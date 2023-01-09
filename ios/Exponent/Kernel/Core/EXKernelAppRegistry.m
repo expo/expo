@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelAppRegistry.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXEnvironment.h"
 #import "EXReactAppManager.h"
 #import "EXKernel.h"

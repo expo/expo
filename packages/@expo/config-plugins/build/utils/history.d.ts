@@ -1,6 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 import { ModPlatform } from '../Plugin.types';
-export declare type PluginHistoryItem = {
+export type PluginHistoryItem = {
     name: string;
     version: string;
     platform?: ModPlatform;

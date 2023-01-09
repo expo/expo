@@ -137,11 +137,6 @@ export default {
             // but it seems to work even when provided jpeg data
             const blob = base64toBlob(base64image, 'image/png');
             await navigator.clipboard.write([
-                // I cannot use `@ts-expect-error` here because some environments consider this correct:
-                // expo-module build - OK,
-                // et gdad - error
-                // Fixed in TS >4.4.3: https://github.com/microsoft/TypeScript/issues/46116#issuecomment-932443415
-                // @ts-ignore Some tools seem to use TS <= 4.4.3
                 new ClipboardItem({
                     [blob.type]: blob,
                 }),

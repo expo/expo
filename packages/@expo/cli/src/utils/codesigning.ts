@@ -6,7 +6,7 @@ import {
   generateCSR,
   convertPrivateKeyPEMToPrivateKey,
   validateSelfSignedCertificate,
-  signStringRSASHA256AndVerify,
+  signBufferRSASHA256AndVerify,
 } from '@expo/code-signing-certificates';
 import { ExpoConfig } from '@expo/config';
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
@@ -373,5 +373,9 @@ export function signManifestString(
 ): string {
   const privateKey = convertPrivateKeyPEMToPrivateKey(codeSigningInfo.privateKey);
   const certificate = convertCertificatePEMToCertificate(codeSigningInfo.certificateForPrivateKey);
-  return signStringRSASHA256AndVerify(privateKey, certificate, stringifiedManifest);
+  return signBufferRSASHA256AndVerify(
+    privateKey,
+    certificate,
+    Buffer.from(stringifiedManifest, 'utf8')
+  );
 }

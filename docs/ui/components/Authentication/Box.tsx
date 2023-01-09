@@ -5,7 +5,8 @@ import { CreateAppButton } from './CreateAppButton';
 import { Icon } from './Icon';
 
 import { APIBox } from '~/components/plugins/APIBox';
-import { H3 } from '~/components/plugins/Headings';
+import { tableWrapperStyle } from '~/ui/components/Table/Table';
+import { H3 } from '~/ui/components/Text';
 
 type BoxProps = React.PropsWithChildren<{
   name: string;
@@ -28,6 +29,10 @@ export const Box = ({ name, image, createUrl, children }: BoxProps) => (
 
 const boxStyle = css({
   marginTop: spacing[6],
+
+  [`.css-${tableWrapperStyle.name}`]: {
+    marginBottom: spacing[4],
+  },
 });
 
 const headerStyle = css({

@@ -3,7 +3,7 @@
 @import UIKit;
 
 #import "EXAnalytics.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXAppViewController.h"
 #import "EXAppLoadingProgressWindowController.h"
 #import "EXAppLoadingCancelView.h"
@@ -377,7 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
   });
 }
 
-- (void)_setLoadingViewStatusIfEnabledFromAppLoader:(EXAppLoader *)appLoader
+- (void)_setLoadingViewStatusIfEnabledFromAppLoader:(EXAbstractLoader *)appLoader
 {
   if (appLoader.shouldShowRemoteUpdateStatus) {
     [self.appLoadingProgressWindowController updateStatus:appLoader.remoteUpdateStatus];
@@ -455,7 +455,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
+- (void)appLoader:(EXAbstractLoader *)appLoader didLoadOptimisticManifest:(EXManifestsManifest *)manifest
 {
   if (_appLoadingCancelView) {
     EX_WEAKIFY(self);
@@ -473,14 +473,14 @@ NS_ASSUME_NONNULL_BEGIN
   [self _rebuildBridge];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
+- (void)appLoader:(EXAbstractLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress
 {
   if (self->_appRecord.appManager.status != kEXReactAppManagerStatusRunning) {
     [self.appLoadingProgressWindowController updateStatusWithProgress:progress];
   }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAbstractLoader *)appLoader didFinishLoadingManifest:(EXManifestsManifest *)manifest bundle:(NSData *)data
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   if (!_isHomeApp) {
@@ -496,7 +496,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFailWithError:(NSError *)error
+- (void)appLoader:(EXAbstractLoader *)appLoader didFailWithError:(NSError *)error
 {
   if (_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [_appRecord.appManager appLoaderFailedWithError:error];
@@ -504,7 +504,7 @@ NS_ASSUME_NONNULL_BEGIN
   [self maybeShowError:error];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
+- (void)appLoader:(EXAbstractLoader *)appLoader didResolveUpdatedBundleWithManifest:(EXManifestsManifest * _Nullable)manifest isFromCache:(BOOL)isFromCache error:(NSError * _Nullable)error
 {
   [[EXKernel sharedInstance].serviceRegistry.updatesManager notifyApp:_appRecord ofDownloadWithManifest:manifest isNew:!isFromCache error:error];
 }

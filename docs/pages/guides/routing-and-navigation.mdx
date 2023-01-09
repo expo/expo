@@ -1,5 +1,7 @@
 ---
-title: Routing & Navigation
+title: Routing and Navigation
+sidebar_title: Routing & Navigation
+description: A guide on getting started with routing and navigation using react-navigation.
 ---
 
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -55,7 +57,23 @@ export default App;
 
 </SnackInline>
 
-## Next
+## FAQ
+
+<Collapsible summary="Can I use Next.js routing for web?">
+
+Yes, you can use [Next.js](/guides/using-nextjs) routing for the web. You can read more about this in [Using Next.js with Expo for Web](/guides/using-nextjs).
+
+</Collapsible>
+
+<Collapsible summary="Can I use React Native Navigation by Wix?">
+
+This library is not available in the Expo Go app and is not yet compatible with `expo-dev-client`.
+
+We recommend [`createNativeStackNavigator`](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation to use Android and iOS native navigation APIs.
+
+</Collapsible>
+
+## Next steps
 
 <BoxLink
   title="Linking"
@@ -72,19 +90,3 @@ export default App;
   description="Forward URLs to React Navigation screens."
   href="https://reactnavigation.org/docs/configuring-links"
 />
-
-## FAQ
-
-<Collapsible summary="Can I use Next.js routing for web?">
-
-Yes, you can use [Next.js](/guides/using-nextjs) routing for the web. You can read more about this in [Using Next.js with Expo for Web](/guides/using-nextjs).
-
-</Collapsible>
-
-<Collapsible summary="Can I use React Native Navigation by Wix?">
-
-This library is not available in the Expo Go app and is not yet compatible with `expo-dev-client`.
-
-We recommend [`createNativeStackNavigator`](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation to use Android and iOS native navigation APIs.
-
-</Collapsible>

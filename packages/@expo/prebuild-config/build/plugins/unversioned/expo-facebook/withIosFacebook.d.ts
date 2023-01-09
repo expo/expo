@@ -1,6 +1,6 @@
 import { ConfigPlugin, InfoPlist } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-declare type ExpoConfigFacebook = Pick<ExpoConfig, 'facebookScheme' | 'facebookAdvertiserIDCollectionEnabled' | 'facebookAppId' | 'facebookAutoInitEnabled' | 'facebookAutoLogAppEventsEnabled' | 'facebookDisplayName'>;
+type ExpoConfigFacebook = Pick<ExpoConfig, 'facebookScheme' | 'facebookAdvertiserIDCollectionEnabled' | 'facebookAppId' | 'facebookAutoInitEnabled' | 'facebookAutoLogAppEventsEnabled' | 'facebookDisplayName'>;
 export declare const withIosFacebook: ConfigPlugin;
 /**
  * Getters

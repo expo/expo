@@ -79,11 +79,11 @@ const general = [
     makePage('workflow/expo-cli.mdx'),
     makePage('workflow/expo-go.mdx'),
     makePage('workflow/using-libraries.mdx'),
-    makePage('workflow/logging.mdx'),
     makePage('workflow/development-mode.mdx'),
+    makePage('workflow/logging.mdx'),
     makePage('workflow/prebuild.mdx'),
-    makePage('workflow/ios-simulator.mdx'),
     makePage('workflow/android-studio-emulator.mdx'),
+    makePage('workflow/ios-simulator.mdx'),
     makePage('workflow/run-on-device.mdx'),
     makePage('workflow/debugging.mdx'),
     makePage('workflow/configuration.mdx'),
@@ -105,13 +105,10 @@ const general = [
   ]),
   makeSection('Development builds', [
     makePage('development/introduction.mdx'),
-    makePage('development/getting-started.mdx'),
-    makePage('development/build.mdx'),
+    makePage('development/create-development-builds.mdx'),
+    makePage('development/use-development-builds.mdx'),
     makePage('development/installation.mdx'),
     makePage('development/development-workflows.mdx'),
-    makePage('development/extensions.mdx'),
-    makePage('development/upgrading.mdx'),
-    makePage('development/troubleshooting.mdx'),
   ]),
   makeSection('Expo Modules API', [
     makePage('modules/overview.mdx'),
@@ -129,7 +126,6 @@ const general = [
     makePage('guides/using-firebase.mdx'),
     makePage('guides/using-sentry.mdx'),
     makePage('guides/using-bugsnag.mdx'),
-    makePage('guides/using-clojurescript.mdx'),
     makePage('guides/using-graphql.mdx'),
     makePage('guides/using-styled-components.mdx'),
     makePage('guides/using-nextjs.mdx'),
@@ -159,6 +155,7 @@ const general = [
     makePage('guides/using-hermes.mdx'),
     makePage('guides/adopting-prebuild.mdx'),
     makePage('guides/ios-developer-mode.mdx'),
+    makePage('guides/localization.mdx'),
   ]),
   makeSection('Expo accounts', [
     makePage('accounts/account-types.mdx'),
@@ -242,8 +239,10 @@ const eas = [
         makePage('build-reference/eas-json.mdx'),
         makePage('build-reference/migrating.mdx'),
         makePage('build-reference/npm-hooks.mdx'),
-        makePage('build-reference/how-tos.mdx'),
         makePage('build-reference/private-npm-packages.mdx'),
+        makePage('build-reference/git-submodules.mdx'),
+        makePage('build-reference/npm-cache-with-yarn.mdx'),
+        makePage('build-reference/build-with-monorepos.mdx'),
         makePage('build-reference/variables.mdx'),
         makePage('build-reference/apk.mdx'),
         makePage('build-reference/simulators.mdx'),
@@ -363,7 +362,16 @@ const versionsReference = VERSIONS.reduce(
         expanded: true,
       }),
       makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
-      makeSection('React Native', sortLegacyReactNative(version), { expanded: true }),
+      makeSection(
+        'React Native',
+        [
+          make('page', {
+            href: 'https://reactnative.dev/docs/components-and-apis',
+            sidebarTitle: 'Visit documentation',
+          }),
+        ],
+        { expanded: true }
+      ),
     ],
   }),
   {}
@@ -466,136 +474,4 @@ function sortAlphabetical(pages) {
     const bTitle = b.sidebarTitle || b.name;
     return aTitle.localeCompare(bTitle);
   });
-}
-
-/**
- * Sort the list of React Native pages by legacy custom sorting.
- */
-function sortLegacyReactNative(version) {
-  const pages = pagesFromDir(`versions/${version}/react-native`);
-
-  const components = [
-    'ActivityIndicator',
-    'Button',
-    'DatePickerIOS',
-    'DrawerLayoutAndroid',
-    'FlatList',
-    'Image',
-    'ImageBackground',
-    'InputAccessoryView',
-    'KeyboardAvoidingView',
-    'ListView',
-    'MaskedViewIOS',
-    'Modal',
-    'NavigatorIOS',
-    'Picker',
-    'PickerIOS',
-    'Pressable',
-    'ProgressBarAndroid',
-    'ProgressViewIOS',
-    'RefreshControl',
-    'SafeAreaView',
-    'ScrollView',
-    'SectionList',
-    'SegmentedControl',
-    'SegmentedControlIOS',
-    'Slider',
-    'SnapshotViewIOS',
-    'StatusBar',
-    'Switch',
-    'TabBarIOS.Item',
-    'TabBarIOS',
-    'Text',
-    'TextInput',
-    'ToolbarAndroid',
-    'TouchableHighlight',
-    'TouchableNativeFeedback',
-    'TouchableOpacity',
-    'TouchableWithoutFeedback',
-    'View',
-    'ViewPagerAndroid',
-    'VirtualizedList',
-    'WebView',
-  ];
-
-  const apis = [
-    'AccessibilityInfo',
-    'ActionSheetIOS',
-    'Alert',
-    'AlertIOS',
-    'Animated',
-    'Animated.Value',
-    'Animated.ValueXY',
-    'Appearance',
-    'AppState',
-    'AsyncStorage',
-    'BackAndroid',
-    'BackHandler',
-    'Clipboard',
-    'DatePickerAndroid',
-    'Dimensions',
-    'DynamicColorIOS',
-    'Easing',
-    'ImageStore',
-    'InteractionManager',
-    'Keyboard',
-    'LayoutAnimation',
-    'ListViewDataSource',
-    'NetInfo',
-    'PanResponder',
-    'PixelRatio',
-    'Platform',
-    'PlatformColor',
-    'Settings',
-    'Share',
-    'StatusBarIOS',
-    'StyleSheet',
-    'Systrace',
-    'TimePickerAndroid',
-    'ToastAndroid',
-    'Transforms',
-    'Vibration',
-    'VibrationIOS',
-  ];
-
-  const hooks = ['useColorScheme', 'useWindowDimensions'];
-
-  const props = [
-    'Image Style Props',
-    'Layout Props',
-    'Shadow Props',
-    'Text Style Props',
-    'View Style Props',
-  ];
-
-  const types = [
-    'LayoutEvent Object Type',
-    'PressEvent Object Type',
-    'React Node Object Type',
-    'Rect Object Type',
-    'ViewToken Object Type',
-  ];
-
-  return [
-    makeGroup(
-      'Components',
-      pages.filter(page => components.includes(page.name))
-    ),
-    makeGroup(
-      'Props',
-      pages.filter(page => props.includes(page.name))
-    ),
-    makeGroup(
-      'APIs',
-      pages.filter(page => apis.includes(page.name))
-    ),
-    makeGroup(
-      'Hooks',
-      pages.filter(page => hooks.includes(page.name))
-    ),
-    makeGroup(
-      'Types',
-      pages.filter(page => types.includes(page.name))
-    ),
-  ];
 }

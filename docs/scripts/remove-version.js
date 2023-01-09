@@ -25,7 +25,7 @@ const run = () => {
       fs.rmSync(examplesPath, { recursive: true });
     }
 
-    const schemaPath = `scripts/schemas/v${version}.0.0`;
+    const schemaPath = `public/static/schemas/v${version}.0.0`;
     if (fs.pathExistsSync(schemaPath)) {
       fs.rmSync(schemaPath, { recursive: true });
     }

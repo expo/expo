@@ -12,6 +12,16 @@
 
 ### 💡 Others
 
+- Bump `@expo/metro-config`. ([#20720](https://github.com/expo/expo/pull/20720) by [@EvanBacon](https://github.com/EvanBacon))
+- Improvements to setup for Updates E2E tests. ([#20120](https://github.com/expo/expo/pull/20120) by [@douglowder](https://github.com/douglowder))
+- Convert updates E2E workflow to use EAS. ([#20399](https://github.com/expo/expo/pull/20399) by [@douglowder](https://github.com/douglowder))
+
+## 0.15.5 - 2022-11-14
+
+### 🎉 New features
+
+- New API Updates.isEmbeddedLaunch. ([#20014](https://github.com/expo/expo/pull/20014) by [@douglowder](https://github.com/douglowder))
+
 ## 0.15.4 — 2022-11-03
 
 ### 🐛 Bug fixes

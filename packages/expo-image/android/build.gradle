@@ -24,18 +24,12 @@ buildscript {
     }
   }
 
-  // The Android Gradle plugin is only required when opening the android folder stand-alone.
-  // This avoids unnecessary downloads and potential conflicts when the library is included as a
-  // module dependency in an application project.
-  // ref: https://docs.gradle.org/current/userguide/tutorial_using_tasks.html#sec:build_script_external_dependencies
-  if (project == rootProject) {
-    repositories {
-      google()
-    }
-    dependencies {
-      classpath 'com.android.tools.build:gradle:4.2.2'
-      classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-    }
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
 }
 
@@ -55,7 +49,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     versionCode 1
-    versionName "0.2.3"
+    versionName "1.0.0-alpha.5"
   }
   lintOptions {
     abortOnError false
@@ -99,6 +93,9 @@ dependencies {
   api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
   kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   api 'com.caverock:androidsvg-aar:1.4'
+
+  implementation "com.github.penfeizhou.android.animation:glide-plugin:2.24.0"
+  implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
 
   api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
   api "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", '4.9.2')}"

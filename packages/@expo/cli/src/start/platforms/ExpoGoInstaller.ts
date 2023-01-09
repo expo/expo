@@ -54,7 +54,16 @@ export class ExpoGoInstaller<IDevice> {
       return false;
     }
     ExpoGoInstaller.cache[cacheId] = true;
+
     if (await this.isClientOutdatedAsync(deviceManager)) {
+      if (this.sdkVersion === 'UNVERSIONED') {
+        // This should only happen in the expo/expo repo, e.g. `apps/test-suite`
+        Log.log(
+          `Skipping Expo Go upgrade check for UNVERSIONED project. Manually ensure the Expo Go app is built from source.`
+        );
+        return false;
+      }
+
       // Only prompt once per device, per run.
       const confirm = await confirmAsync({
         initial: true,

@@ -20,6 +20,10 @@ Pod::Spec.new do |s|
   s.requires_arc   = true
   s.header_dir     = 'EXDevMenuInterface'
 
+  s.user_target_xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu-interface/Swift Compatibility Header\"",
+  }
+
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
 

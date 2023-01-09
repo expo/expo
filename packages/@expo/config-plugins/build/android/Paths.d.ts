@@ -4,8 +4,8 @@ export interface ProjectFile<L extends string = string> {
     language: L;
     contents: string;
 }
-export declare type ApplicationProjectFile = ProjectFile<'java' | 'kt'>;
-export declare type GradleProjectFile = ProjectFile<'groovy' | 'kt'>;
+export type ApplicationProjectFile = ProjectFile<'java' | 'kt'>;
+export type GradleProjectFile = ProjectFile<'groovy' | 'kt'>;
 export declare function getProjectFilePath(projectRoot: string, name: string): string;
 export declare function getFileInfo(filePath: string): {
     path: string;

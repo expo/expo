@@ -179,6 +179,37 @@ class FunctionSpec: ExpoSpec {
         }
       }
 
+      it("allows to skip trailing optional arguments") {
+        let returnedValue = "something"
+        let fn = Function(functionName) { (a: String, b: Int?, c: Bool?) in
+          expect(c).to(beNil())
+          return returnedValue
+        }
+
+        expect({ try fn.call(by: nil, withArguments: ["test"]) })
+          .notTo(throwError())
+          .to(be(returnedValue))
+
+        expect({ try fn.call(by: nil, withArguments: ["test", 3]) })
+          .notTo(throwError())
+          .to(be(returnedValue))
+      }
+
+      it("throws when called without required arguments") {
+        let fn = Function(functionName) { (requiredArgument: String, optionalArgument: Int?) in
+          return "something"
+        }
+
+        expect({ try fn.call(by: nil, withArguments: []) })
+          .to(throwError(errorType: FunctionCallException.self) { error in
+            expect(error.rootCause).to(beAKindOf(InvalidArgsNumberException.self))
+            let exception = error.rootCause as! InvalidArgsNumberException
+            expect(exception.param.received) == 0
+            expect(exception.param.required) == 1
+            expect(exception.param.expected) == 2
+          })
+      }
+
       it("throws when called with arguments of incompatible types") {
         waitUntil { done in
           mockModuleHolder(appContext) {
@@ -218,17 +249,41 @@ class FunctionSpec: ExpoSpec {
           Function("isArgNull") { (arg: Double?) -> Bool in
             return arg == nil
           }
+
+          Function("returnObjectDefinition") { (initial: Int) -> ObjectDefinition in
+            var foo = initial
+
+            return Object {
+              Function("increment") { () -> Int in
+                foo += 1
+                return foo
+              }
+            }
+          }
         })
       }
-      
+
       it("returns values") {
         expect(try runtime?.eval("expo.modules.TestModule.returnPi()").asDouble()) == Double.pi
         expect(try runtime?.eval("expo.modules.TestModule.returnNull()").isNull()) == true
       }
-      
+
       it("accepts optional arguments") {
         expect(try runtime?.eval("expo.modules.TestModule.isArgNull(3.14)").asBool()) == false
         expect(try runtime?.eval("expo.modules.TestModule.isArgNull(null)").asBool()) == true
+      }
+
+      it("returns object made from definition") {
+        let initialValue = Int.random(in: 1..<100)
+        let object = try runtime?.eval("object = expo.modules.TestModule.returnObjectDefinition(\(initialValue))")
+
+        expect(object?.kind) == .object
+        expect(object?.getObject().hasProperty("increment")) == true
+
+        let result = try runtime?.eval("object.increment()")
+
+        expect(result?.kind) == .number
+        expect(result?.getInt()) == initialValue + 1
       }
     }
   }

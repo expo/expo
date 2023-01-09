@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 13.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Native module on iOS is now written in Swift using the Sweet API. ([#19980](https://github.com/expo/expo/pull/19980) by [@fobos531](https://github.com/fobos531))
+
 ## 13.0.2 — 2022-11-02
 
 _This version does not introduce any user-facing changes._

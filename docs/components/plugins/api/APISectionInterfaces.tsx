@@ -1,10 +1,5 @@
-import React from 'react';
-
 import { renderMethod } from './APISectionMethods';
 
-import { InlineCode } from '~/components/base/code';
-import { B, P } from '~/components/base/paragraph';
-import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   CommentData,
@@ -17,18 +12,22 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getTagData,
-  mdInlineComponents,
+  mdComponents,
   parseCommentContent,
   renderFlags,
   renderParamRow,
-  renderTableHeadRow,
+  ParamsTableHeadRow,
   resolveTypeName,
   renderDefaultValue,
   STYLES_APIBOX,
   STYLES_NESTED_SECTION_HEADER,
   getTagNamesList,
+  STYLES_APIBOX_NESTED,
+  STYLES_ELEMENT_SPACING,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
+import { H2, H4, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -45,15 +44,15 @@ const renderInterfaceComment = (
     return (
       <>
         {parameters?.length ? parameters.map(param => renderParamRow(param)) : null}
-        <B>Returns: </B>
-        <InlineCode>{resolveTypeName(type)}</InlineCode>
+        <BOLD>Returns: </BOLD>
+        <CODE>{resolveTypeName(type)}</CODE>
         {signatureComment && (
           <>
             <br />
             <APISectionDeprecationNote comment={comment} />
             <CommentTextBlock
               comment={signatureComment}
-              components={mdInlineComponents}
+              components={mdComponents}
               afterContent={renderDefaultValue(initValue)}
             />
           </>
@@ -67,7 +66,7 @@ const renderInterfaceComment = (
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
           comment={comment}
-          components={mdInlineComponents}
+          components={mdComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />
@@ -88,7 +87,7 @@ const renderInterfacePropertyRow = ({
   return (
     <Row key={name}>
       <Cell fitContent>
-        <B>{name}</B>
+        <BOLD>{name}</BOLD>
         {renderFlags(flags, initValue)}
       </Cell>
       <Cell fitContent>
@@ -113,19 +112,17 @@ const renderInterface = ({
   const interfaceFields = interfaceChildren.filter(child => !child.signatures);
 
   return (
-    <div key={`interface-definition-${name}`} css={STYLES_APIBOX}>
+    <div key={`interface-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <H3Code tags={getTagNamesList(comment)}>
-        <InlineCode>{name}</InlineCode>
+        <CODE>{name}</CODE>
       </H3Code>
       {extendedTypes?.length ? (
-        <P>
-          <B>Extends: </B>
+        <P css={STYLES_ELEMENT_SPACING}>
+          <BOLD>Extends: </BOLD>
           {extendedTypes.map(extendedType => (
-            <InlineCode key={`extend-${extendedType.name}`}>
-              {resolveTypeName(extendedType)}
-            </InlineCode>
+            <CODE key={`extend-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
           ))}
         </P>
       ) : null}
@@ -144,9 +141,10 @@ const renderInterface = ({
             <H4>{name} Properties</H4>
           </div>
           <Table>
-            {renderTableHeadRow()}
+            <ParamsTableHeadRow />
             <tbody>{interfaceFields.map(renderInterfacePropertyRow)}</tbody>
           </Table>
+          <br />
         </>
       ) : undefined}
     </div>

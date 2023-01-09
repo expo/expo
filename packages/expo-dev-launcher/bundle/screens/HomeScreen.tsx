@@ -17,7 +17,7 @@ import {
   BranchIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Animated, ScrollView } from 'react-native';
+import { Animated, ScrollView, KeyboardAvoidingView } from 'react-native';
 
 import { AppHeader } from '../components/AppHeader';
 import { DevServerExplainerModal } from '../components/DevServerExplainerModal';
@@ -121,91 +121,96 @@ export function HomeScreen({
           paddingBottom: scale['48'],
         }}>
         <ScreenContainer>
-          {crashReport && (
-            <View px="medium" py="small" mt="small">
-              <Button.ScaleOnPressContainer
-                onPress={onCrashReportPress}
-                bg="default"
-                rounded="large">
-                <Row align="center" padding="medium" bg="default">
-                  <Button.Text color="default">
-                    The last time you tried to open an app the development build crashed. Tap to get
-                    more information.
-                  </Button.Text>
-                </Row>
-              </Button.ScaleOnPressContainer>
-            </View>
-          )}
-          <View py="large">
-            <Row px="small" align="center">
-              <View px="medium">
-                <TerminalIcon />
-              </View>
-              <Heading color="secondary">Development servers</Heading>
-
-              <Spacer.Horizontal />
-
-              {devSessions.length > 0 && (
+          <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+            {crashReport && (
+              <View px="medium" py="small" mt="small">
                 <Button.ScaleOnPressContainer
-                  bg="ghost"
-                  rounded="full"
-                  minScale={0.85}
-                  onPress={onDevServerQuestionPress}>
-                  <View rounded="full" padding="tiny">
-                    <InfoIcon />
-                  </View>
+                  onPress={onCrashReportPress}
+                  bg="default"
+                  rounded="large">
+                  <Row align="center" padding="medium" bg="default">
+                    <Button.Text color="default">
+                      The last time you tried to open an app the development build crashed. Tap to
+                      get more information.
+                    </Button.Text>
+                  </Row>
                 </Button.ScaleOnPressContainer>
-              )}
-            </Row>
+              </View>
+            )}
+            <View py="large">
+              <Row px="small" align="center">
+                <View px="medium">
+                  <TerminalIcon />
+                </View>
+                <Heading color="secondary">Development servers</Heading>
 
-            <Spacer.Vertical size="small" />
+                <Spacer.Horizontal />
 
-            <View px="medium">
-              <View>
-                {devSessions.length === 0 && (
-                  <>
-                    <View padding="medium" bg="default" roundedTop="large">
-                      <Text>Start a local development server with:</Text>
-                      <Spacer.Vertical size="small" />
+                {devSessions.length > 0 && (
+                  <Button.ScaleOnPressContainer
+                    bg="ghost"
+                    rounded="full"
+                    minScale={0.85}
+                    onPress={onDevServerQuestionPress}>
+                    <View rounded="full" padding="tiny">
+                      <InfoIcon />
+                    </View>
+                  </Button.ScaleOnPressContainer>
+                )}
+              </Row>
 
-                      <View bg="secondary" border="default" rounded="medium" padding="medium">
-                        <Text type="mono" size="small">
-                          expo start --dev-client
+              <Spacer.Vertical size="small" />
+
+              <View px="medium">
+                <View>
+                  {devSessions.length === 0 && (
+                    <>
+                      <View padding="medium" bg="default" roundedTop="large">
+                        <Text>Start a local development server with:</Text>
+                        <Spacer.Vertical size="small" />
+
+                        <View bg="secondary" border="default" rounded="medium" padding="medium">
+                          <Text type="mono" size="small">
+                            expo start --dev-client
+                          </Text>
+                        </View>
+
+                        <Spacer.Vertical size="small" />
+                        <Text>Then, select the local server when it appears here.</Text>
+                        <Spacer.Vertical size="small" />
+                        <Text>
+                          Alternatively, open the Camera app and scan the QR code that appears in
+                          your terminal
                         </Text>
                       </View>
+                      <Divider />
+                    </>
+                  )}
 
-                      <Spacer.Vertical size="small" />
-                      <Text>Then, select the local server when it appears here.</Text>
-                      <Spacer.Vertical size="small" />
-                      <Text>
-                        Alternatively, open the Camera app and scan the QR code that appears in your
-                        terminal
-                      </Text>
-                    </View>
-                    <Divider />
-                  </>
-                )}
+                  {devSessions?.length > 0 && (
+                    <DevSessionList
+                      devSessions={devSessions}
+                      onDevSessionPress={onDevSessionPress}
+                    />
+                  )}
 
-                {devSessions?.length > 0 && (
-                  <DevSessionList devSessions={devSessions} onDevSessionPress={onDevSessionPress} />
-                )}
+                  <FetchDevSessionsRow isFetching={isFetching} onRefetchPress={onRefetchPress} />
+                  <Divider />
 
-                <FetchDevSessionsRow isFetching={isFetching} onRefetchPress={onRefetchPress} />
-                <Divider />
-
-                <UrlDropdown
-                  onSubmit={onUrlSubmit}
-                  inputValue={inputValue}
-                  setInputValue={setInputValue}
-                  isLoading={inputValue !== '' && inputValue === loadingUrl}
-                />
+                  <UrlDropdown
+                    onSubmit={onUrlSubmit}
+                    inputValue={inputValue}
+                    setInputValue={setInputValue}
+                    isLoading={inputValue !== '' && inputValue === loadingUrl}
+                  />
+                </View>
               </View>
+
+              <Spacer.Vertical size="medium" />
+
+              <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
             </View>
-
-            <Spacer.Vertical size="medium" />
-
-            <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
-          </View>
+          </KeyboardAvoidingView>
         </ScreenContainer>
       </ScrollView>
     </View>

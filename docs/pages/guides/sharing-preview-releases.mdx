@@ -5,32 +5,12 @@ sidebar_title: Sharing preview releases
 
 import Video from '~/components/plugins/Video';
 
-The typical means of distribution for a mobile app is through the Apple App Store and/or Google Play Store, but this isn't the best way to share pre-production builds.
 During the development process you'll want share your progress with both technical and non-technical stakeholders of the project to gather feedback and test it,
-and there are several approaches you can take for doing this.
-
-## Expo Go
-
-If you are using the Expo Managed workflow, you can share your application with your team through the Expo Go app.
-Expo Go is the easiest option to set up, doesn't require a paid Apple Developer account, and works the same on both platforms.
-Your users will launch the application through Expo Go rather than from an app icon though, so if that experience is important to you,
-consider [Internal Distribution](#internal-distribution) or [TestFlight for iOS](#testflight) instead.
-
-1. Publish the latest version of your project to Expo's servers by running `eas update`.
-2. [Invite your teammate](https://expo.dev/accounts/[account]/settings/members) to the Expo account that owns the project.
-3. Have them [download the Expo Go app](https://expo.dev/expo-go) onto their device.
-4. They'll be able to open your application from the Profile tab of their Expo Go app.
-
-<Video
-  alt="Finding and sharing projects in Expo Go app"
-  file="guides/load-project.mp4"
-  style={{ height: '300px', width: 'auto' }}
-/>
+and there are several official approaches you can take for doing this.
 
 ## Internal Distribution
 
-If you want to share outside of Expo Go, Android and iOS both offer ways to install a build of your application directly on devices.
-This gives you full control of putting specific builds on devices, allowing you to iterate quickly and have multiple builds of your application available for review at the same time.
+Android and iOS both offer ways to install a build of your application directly on devices. This gives you full control of putting specific builds on devices, allowing you to iterate quickly and have multiple builds of your application available for review at the same time.
 
 ### Android
 

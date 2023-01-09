@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 12.1.0 — 2023-01-05
+
+### 🐛 Bug fixes
+
+- Fix `printAsync` not reflecting custom width/ height, `useMarkupFormatter` option preventing custom width/ height/ margin from being reflected. ([#18873](https://github.com/expo/expo/pull/20046) by [@keith-kurak](https://github.com/keith-kurak))
+
 ## 12.0.0 — 2022-10-25
 
 ### 🛠 Breaking changes

@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 2.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated Android codebase to use the new Expo modules API. ([#20221](https://github.com/expo/expo/pull/20221) by [@alanhughes](https://github.com/alanjhughes))
+
 ## 2.0.1 — 2022-10-28
 
 _This version does not introduce any user-facing changes._

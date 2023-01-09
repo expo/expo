@@ -1,6 +1,7 @@
 ---
 title: Submitting to the Apple App Store
 sidebar_title: Submitting to Apple
+description: Learn how to submit your app to the Apple App Store from your computer and CI.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -42,7 +43,7 @@ The command will perform the following steps:
 
 - Ensure you have the proper credentials set up. If none can be found, you can let EAS CLI set some up for you.
 
-  <Collapsible summary="🔐 Do you want to use your own credentials?">
+  <Collapsible summary="Do you want to use your own credentials?">
 
   **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
 
@@ -73,7 +74,7 @@ You must do the following:
 - Set the ASC App ID (`ascAppId` in **eas.json**). The ASC App ID is required to skip the Apple Developer log-in process, which will likely not be possible on CI due to the 2FA prompt.
 - Set up your App Store Connect API Key with EAS Servers. You can check the state of your credentials by running `eas credentials` or by running `eas submit -p ios` interactively.
 
-  <Collapsible summary="🔐 Do you want to use your own credentials?">
+  <Collapsible summary="Do you want to use your own credentials?">
 
   **App Store Connect API Key:** Create your own [API Key](https://expo.fyi/creating-asc-api-key) then set it with the `ascApiKeyPath`, `ascApiKeyIssuerId`, and `ascApiKeyId` fields in **eas.json**.
 
@@ -83,10 +84,7 @@ You must do the following:
 
 Example usage:
 
-<Terminal
-  cmd={['$ eas submit -p ios --latest --profile foobar']}
-  copyCmd="eas submit -p ios --latest --profile foobar"
-/>
+<Terminal cmd={['$ eas submit -p ios --latest --profile foobar']} />
 
 ## Manual submissions
 

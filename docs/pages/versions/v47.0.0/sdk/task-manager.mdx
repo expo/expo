@@ -30,14 +30,14 @@ Some features of this module are used by other modules under the hood. Here is a
 Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your **app.json** configuration.
 Here is an example of an **app.json** configuration that enables background location and background fetch:
 
-```json
+```json app.json
 {
   "expo": {
-    ...
+    /* @hide ... */ /* @end */
     "ios": {
-      ...
+      /* @hide ... */ /* @end */
       "infoPlist": {
-        ...
+        /* @hide ... */ /* @end */
         "UIBackgroundModes": [
           "location",
           "fetch"
@@ -52,29 +52,32 @@ For bare React Native apps, you need to add those keys manually. You can do it b
 
 ## Example
 
-<SnackInline dependencies={["expo-task-manager", "expo-location"]}>
+<SnackInline dependencies={["expo-task-manager", "expo-location"]} platforms={['android', 'ios']}>
 
-```javascript
+```jsx
 import React from 'react';
-import { Text, TouchableOpacity } from 'react-native';
+import { Button, View, StyleSheet } from 'react-native';
 import * as TaskManager from 'expo-task-manager';
 import * as Location from 'expo-location';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 
 const requestPermissions = async () => {
-  const { status } = await Location.requestPermissionsAsync();
-  if (status === 'granted') {
-    await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-      accuracy: Location.Accuracy.Balanced,
-    });
+  const { status: foregroundStatus } = await Location.requestForegroundPermissionsAsync();
+  if (foregroundStatus === 'granted') {
+    const { status: backgroundStatus } = await Location.requestBackgroundPermissionsAsync();
+    if (backgroundStatus === 'granted') {
+      await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.Balanced,
+      });
+    }
   }
 };
 
 const PermissionsButton = () => (
-  <TouchableOpacity onPress={requestPermissions}>
-    <Text>Enable background location</Text>
-  </TouchableOpacity>
+  <View style={styles.container}>
+    <Button onPress={requestPermissions} title="Enable background location" />
+  </View>
 );
 
 TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
@@ -87,6 +90,16 @@ TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
     // do something with the locations captured in the background
   }
 });
+
+/* @hide const styles = StyleSheet.create({ ... }); */
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
+});
+/* @end */
 
 export default PermissionsButton;
 ```

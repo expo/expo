@@ -62,6 +62,12 @@ export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
  */
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
 
+/**
+ * This will be true if the currently running update is the one embedded in the build,
+ * and not one downloaded from the updates server.
+ */
+export const isEmbeddedLaunch: boolean = ExpoUpdates.isEmbeddedLaunch || false;
+
 // @docsMissing
 /**
  * @hidden

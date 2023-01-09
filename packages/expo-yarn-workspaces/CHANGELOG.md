@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Bump `@expo/metro-config`, `@expo/webpack-config`. ([#20720](https://github.com/expo/expo/pull/20720) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 2.0.4 — 2022-10-25
 
 _This version does not introduce any user-facing changes._

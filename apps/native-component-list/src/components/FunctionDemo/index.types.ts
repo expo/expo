@@ -30,7 +30,7 @@ export type EnumParameter = Parameter & {
   type: 'enum';
   values: {
     name: string;
-    value: undefined | string | number | Tuple;
+    value: any;
   }[];
 };
 
@@ -59,7 +59,7 @@ export type FunctionArgument = PrimitiveArgument | Record<string, PrimitiveArgum
 /**
  * Generic and intentionally not very well typed function signature to describe any action that can be called from the FunctionDemo.
  */
-export type ActionFunction = (...args: any[]) => Promise<unknown>;
+export type ActionFunction = (...args: any[]) => Promise<unknown> | unknown;
 
 export type ArgumentName = string | [objectName: string, propertyName: string];
 
