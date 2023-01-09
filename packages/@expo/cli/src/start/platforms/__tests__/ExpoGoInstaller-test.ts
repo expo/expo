@@ -121,6 +121,9 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
       uninstallAppAsync: jest.fn(async () => null),
     } as any;
   }
+  beforeEach(() => {
+    asMock(confirmAsync).mockReset();
+  });
   it(`returns true when the user uninstalls the outdated app`, async () => {
     asMock(confirmAsync).mockResolvedValueOnce(true);
     const installer = createInstaller('android');
@@ -130,16 +133,6 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
     await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(true);
     expect(confirmAsync).toBeCalled();
     expect(deviceManager.uninstallAppAsync).toBeCalled();
-  });
-  it(`returns false when the project is unversioned`, async () => {
-    asMock(confirmAsync).mockResolvedValueOnce(true);
-    const installer = new ExpoGoInstaller('ios', 'host.fake.expo', 'UNVERSIONED');
-    installer.isClientOutdatedAsync = jest.fn(async () => true);
-    const deviceManager = createDeviceManager();
-
-    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(false);
-    expect(confirmAsync).not.toBeCalled();
-    expect(deviceManager.uninstallAppAsync).not.toBeCalled();
   });
 
   it(`prevents checking the same device twice`, async () => {
@@ -182,6 +175,16 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
     const installer = createInstaller('ios');
     installer.isClientOutdatedAsync = jest.fn(async () => false);
     const deviceManager = createDeviceManager();
+    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(false);
+    expect(confirmAsync).not.toBeCalled();
+    expect(deviceManager.uninstallAppAsync).not.toBeCalled();
+  });
+
+  it(`returns false when the project is unversioned`, async () => {
+    const installer = new ExpoGoInstaller('android', 'host.fake.expo', 'UNVERSIONED');
+    installer.isClientOutdatedAsync = jest.fn(async () => true);
+    const deviceManager = createDeviceManager();
+
     await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(false);
     expect(confirmAsync).not.toBeCalled();
     expect(deviceManager.uninstallAppAsync).not.toBeCalled();
