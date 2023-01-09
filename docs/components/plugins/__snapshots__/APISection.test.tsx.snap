@@ -7229,9 +7229,106 @@ Same as
       class="css-1oym3r-TextComponent"
       data-text="true"
     >
-      Create a new permission hook with the permission methods built-in.
-This can be used to quickly create specific permission hooks in every module.
+      Check or request permissions for the barcode scanner.
+This uses both 
+      <code
+        class="css-vixx70-TextComponent"
+        data-text="true"
+      >
+        requestPermissionAsync
+      </code>
+       and 
+      <code
+        class="css-vixx70-TextComponent"
+        data-text="true"
+      >
+        getPermissionsAsync
+      </code>
+       to interact with the permissions.
     </p>
+    <div
+      class="css-1cc2eo9"
+    >
+      <h4
+        class="css-1gu5rqd-TextComponent"
+        data-heading="true"
+      >
+        Example
+      </h4>
+    </div>
+    <pre>
+      <pre
+        class="css-p0nog9"
+        data-text="true"
+      >
+        <code
+          class="css-cosiu9"
+        >
+          <span
+            class="token keyword"
+          >
+            const
+          </span>
+           
+          <span
+            class="token punctuation"
+          >
+            [
+          </span>
+          permissionResponse
+          <span
+            class="token punctuation"
+          >
+            ,
+          </span>
+           requestPermission
+          <span
+            class="token punctuation"
+          >
+            ]
+          </span>
+           
+          <span
+            class="token operator"
+          >
+            =
+          </span>
+           
+          <span
+            class="token maybe-class-name"
+          >
+            BarCodeScanner
+          </span>
+          <span
+            class="token punctuation"
+          >
+            .
+          </span>
+          <span
+            class="token method function property-access"
+          >
+            usePermissions
+          </span>
+          <span
+            class="token punctuation"
+          >
+            (
+          </span>
+          <span
+            class="token punctuation"
+          >
+            )
+          </span>
+          <span
+            class="token punctuation"
+          >
+            ;
+          </span>
+          
+
+        </code>
+      </pre>
+    </pre>
     <div
       class="css-1cc2eo9"
     >
