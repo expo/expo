@@ -48,7 +48,7 @@ export interface GoogleAuthRequestConfig extends ProviderAuthRequestConfig {
    */
   selectAccount?: boolean;
   /**
-   * Proxy client ID for use in the Expo client on Android and iOS.
+   * Proxy client ID for use when testing with Expo Go on Android and iOS.
    */
   expoClientId?: string;
   /**
