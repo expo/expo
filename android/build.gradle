@@ -3,18 +3,18 @@
 buildscript {
   ext {
     minSdkVersion = 21
-    targetSdkVersion = 31
+    targetSdkVersion = 33
     compileSdkVersion = 33
 
     dbFlowVersion = '4.2.4'
-    buildToolsVersion = '31.0.0'
+    buildToolsVersion = '33.0.0'
     kotlinVersion = '1.6.10'
-    gradlePluginVersion = '7.2.1'
+    gradlePluginVersion = '7.3.1'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
-    // We default to the side-by-side NDK version from AGP.
-    ndkVersion = "21.4.7075529"
+    // We use NDK 23 which has both M1 support and is the side-by-side NDK version from AGP.
+    ndkVersion = "23.1.7779620"
   }
   repositories {
     google()
@@ -86,6 +86,7 @@ allprojects {
     // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
     resolutionStrategy.dependencySubstitution {
       substitute module("com.facebook.react:react-native:+") with project(":ReactAndroid")
+      substitute module("com.facebook.react:react-android") with project(":ReactAndroid")
 
       // Gradle needs another hint (apart from plain dependency substitution)
       // to know that it should first evaluate the replacing project before resolving
