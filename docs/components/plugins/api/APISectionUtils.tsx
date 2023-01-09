@@ -435,6 +435,22 @@ export const renderTypeOrSignatureType = (
       return <APIDataType typeDefinition={type} />;
     }
     return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE>;
+  } else if (signatures && signatures.length) {
+    return (
+      <CODE key={`signature-type-${signatures[0].name}`}>
+        (
+        {signatures?.map(({ parameters }) =>
+          parameters?.map(param => (
+            <span key={`signature-param-${param.name}`}>
+              {param.name}
+              {param.flags?.isOptional && '?'}: {resolveTypeName(param.type)}
+            </span>
+          ))
+        )}
+        ) =&gt;{' '}
+        {type ? <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE> : 'void'}
+      </CODE>
+    );
   }
   return undefined;
 };

@@ -96,12 +96,13 @@ const renderProps = (
 };
 
 export const renderProp = (
-  { comment, name, type, flags }: PropData,
+  { comment, name, type, flags, signatures }: PropData,
   defaultValue?: string,
   exposeInSidebar?: boolean
 ) => {
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
-  const extractedComment = getCommentOrSignatureComment(comment, type.declaration?.signatures);
+  const extractedSignatures = signatures || type?.declaration?.signatures;
+  const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
   return (
     <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={extractedComment} />
@@ -112,7 +113,7 @@ export const renderProp = (
       <P css={extractedComment && STYLES_ELEMENT_SPACING}>
         {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
         <span css={STYLES_SECONDARY}>Type:</span>{' '}
-        {renderTypeOrSignatureType(type, type.declaration?.signatures)}
+        {renderTypeOrSignatureType(type, extractedSignatures)}
         {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
           <span>
             <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}
