@@ -430,12 +430,7 @@ export const renderTypeOrSignatureType = (
   signatures?: MethodSignatureData[] | TypeSignaturesData[],
   allowBlock: boolean = false
 ) => {
-  if (type) {
-    if (allowBlock) {
-      return <APIDataType typeDefinition={type} />;
-    }
-    return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE>;
-  } else if (signatures && signatures.length) {
+  if (signatures && signatures.length) {
     return (
       <CODE key={`signature-type-${signatures[0].name}`}>
         (
@@ -451,6 +446,11 @@ export const renderTypeOrSignatureType = (
         {type ? <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE> : 'void'}
       </CODE>
     );
+  } else if (type) {
+    if (allowBlock) {
+      return <APIDataType typeDefinition={type} />;
+    }
+    return <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE>;
   }
   return undefined;
 };
