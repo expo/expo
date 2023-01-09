@@ -443,7 +443,7 @@ export const renderTypeOrSignatureType = (
           ))
         )}
         ) =&gt;{' '}
-        {type ? <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE> : 'void'}
+        {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
       </CODE>
     );
   } else if (type) {

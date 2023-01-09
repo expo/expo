@@ -662,7 +662,8 @@ for more details.
             class="css-i9jevy-TextComponent"
             data-text="true"
           >
-            () =&gt;
+            (
+            ) =&gt;
              
             void
           </code>
