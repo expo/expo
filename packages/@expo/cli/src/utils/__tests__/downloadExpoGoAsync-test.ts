@@ -3,7 +3,7 @@ import nock from 'nock';
 
 import { getExpoApiBaseUrl } from '../../api/endpoint';
 import { downloadAppAsync } from '../downloadAppAsync';
-import { downloadExpoGoAsync } from '../downloadExpoGoAsync';
+import { downloadExpoGoAsync, getExpoGoVersionEntryAsync } from '../downloadExpoGoAsync';
 import { extractAsync } from '../tar';
 
 const asMock = (fn: any): jest.Mock => fn;
@@ -17,6 +17,44 @@ jest.mock(`../downloadAppAsync`, () => ({
 jest.mock(`../tar`, () => ({
   extractAsync: jest.fn(),
 }));
+
+describe(getExpoGoVersionEntryAsync, () => {
+  beforeEach(() => {
+    vol.fromJSON({ tmp: '' }, '/tmp');
+  });
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it(`returns the entry for a version`, async () => {
+    const scope = nock(getExpoApiBaseUrl())
+      .get('/v2/versions/latest')
+      .reply(200, require('../../api/__tests__/fixtures/versions-latest.json'));
+
+    expect(await getExpoGoVersionEntryAsync('42.0.0')).toEqual(
+      expect.objectContaining({
+        expoReactNativeTag: 'sdk-42.0.0',
+      })
+    );
+
+    expect(scope.isDone()).toBe(true);
+  });
+
+  it(`returns the entry for an UNVERSIONED project`, async () => {
+    const scope = nock(getExpoApiBaseUrl())
+      .get('/v2/versions/latest')
+      .reply(200, require('../../api/__tests__/fixtures/versions-latest.json'));
+
+    expect(await getExpoGoVersionEntryAsync('UNVERSIONED')).toEqual(
+      // Latest in the fixture
+      expect.objectContaining({
+        expoReactNativeTag: 'sdk-44.0.0',
+      })
+    );
+
+    expect(scope.isDone()).toBe(true);
+  });
+});
 
 describe(downloadExpoGoAsync, () => {
   beforeEach(() => {
