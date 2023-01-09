@@ -17,13 +17,10 @@ import 'tippy.js/dist/tippy.css';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-export const regularFont = Inter({
-  subsets: ['latin'],
-});
-
+export const regularFont = Inter();
 export const monospaceFont = Fira_Code({
   weight: '400',
-  subsets: ['latin'],
+  display: 'swap',
 });
 
 Sentry.init({
