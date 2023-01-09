@@ -131,6 +131,16 @@ describe('uninstallExpoGoIfOutdatedAsync', () => {
     expect(confirmAsync).toBeCalled();
     expect(deviceManager.uninstallAppAsync).toBeCalled();
   });
+  it(`returns false when the project is unversioned`, async () => {
+    asMock(confirmAsync).mockResolvedValueOnce(true);
+    const installer = new ExpoGoInstaller('ios', 'host.fake.expo', 'UNVERSIONED');
+    installer.isClientOutdatedAsync = jest.fn(async () => true);
+    const deviceManager = createDeviceManager();
+
+    await expect(installer.uninstallExpoGoIfOutdatedAsync(deviceManager)).resolves.toBe(false);
+    expect(confirmAsync).not.toBeCalled();
+    expect(deviceManager.uninstallAppAsync).not.toBeCalled();
+  });
 
   it(`prevents checking the same device twice`, async () => {
     asMock(confirmAsync).mockResolvedValueOnce(true);
