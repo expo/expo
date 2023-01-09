@@ -8,7 +8,7 @@
 
 ### 🎉 New features
 
-- Skip uninstalling Expo Go when running in UNVERSIONED (internal).
+- Skip uninstalling Expo Go when running in UNVERSIONED (internal). ([#20754](https://github.com/expo/expo/pull/20754) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
