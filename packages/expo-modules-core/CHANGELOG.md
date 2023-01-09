@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix view prop setter not being called when its new value is `null` or `undefined`.
+- [iOS] Fix view prop setter not being called when its new value is `null` or `undefined`. ([#20755](https://github.com/expo/expo/pull/20755) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
