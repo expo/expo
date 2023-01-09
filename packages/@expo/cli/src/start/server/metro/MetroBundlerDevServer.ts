@@ -1,6 +1,9 @@
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
-
+import path from 'path';
+import fs from 'fs';
+import resolveFrom from 'resolve-from';
+import { parse } from 'url';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
@@ -14,6 +17,7 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;
@@ -98,7 +102,44 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (this.isTargetingWeb()) {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
+    }
 
+    // Middleware for hosting middleware
+    middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+      if (!req?.url) {
+        return next();
+      }
+
+      // 1. Get pathname, e.g. `/thing`
+      const pathname = parse(req.url).pathname?.replace(/\/$/, '');
+
+      if (!pathname) {
+        return next();
+      }
+
+      // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
+      const resolved = resolveFrom.silent(
+        path.join(this.projectRoot, 'app'),
+        '.' + pathname + '+api'
+      );
+
+      console.log('check:', resolved, path.join(this.projectRoot, 'app'), pathname);
+      if (!resolved || !fs.existsSync(resolved)) {
+        return next();
+      }
+
+      // 3. Import middleware file
+      const middleware = fresh(resolved);
+
+      // Interop default
+      const func = middleware.default || middleware;
+
+      console.log('run:', func);
+      // 4. Execute.
+      return func(req, res, next);
+    });
+
+    if (this.isTargetingWeb()) {
       // This MUST run last since it's the fallback.
       middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
     }
@@ -142,4 +183,17 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
       ...getDevClientProperties(projectRoot, exp),
     });
   };
+}
+
+function fresh(file: string) {
+  file = require.resolve(file);
+
+  var tmp = require.cache[file];
+  delete require.cache[file];
+
+  var mod = require(file);
+
+  require.cache[file] = tmp;
+
+  return mod;
 }
