@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
@@ -88,9 +88,6 @@ const styles = StyleSheet.create({
     lineHeight: '1rem',
     textShadowRadius: '1rem',
   },
-  position: {
-    position: 'fixed',
-  },
 
   grid: {
     grid: 'auto-flow / 1fr 1fr 1fr',
@@ -176,9 +173,12 @@ function createMockFunction() {
 }
 
 export async function test(
-  { it, describe, beforeAll, jasmine, afterAll, expect, afterEach, beforeEach },
+  { it, describe, afterAll, expect, afterEach, beforeEach },
   { setPortalChild, cleanupPortal }
 ) {
+  if (Platform.OS === 'web') {
+    return;
+  }
   afterEach(async () => {
     await cleanupPortal();
   });
@@ -187,29 +187,63 @@ export async function test(
     originalMountAndWaitFor(child, propName, setPortalChild);
 
   const originalConsoleError = console.error;
-  beforeAll(() => {
-    console.error = createMockFunction();
-  });
-  afterAll(() => {
-    console.error = originalConsoleError;
-  });
 
   describe(name, () => {
-    // The purpose of this test is to prove that the device does not
-    // fatally crash when using any of the unsupported CSS properties on native.
-    it(`renders invalid styles`, async () => {
+    beforeEach(() => {
+      console.error = createMockFunction();
+    });
+    afterAll(() => {
+      console.error = originalConsoleError;
+    });
+    it(`prints errors for invalid CSS Animation styles`, async () => {
+      await mountAndWaitFor(<View style={styles.animation} />);
+      expect(console.error.history.length).toEqual(9);
+      expect(console.error.history[0]).toMatch(/animation/);
+    });
+    it(`prints errors for invalid CSS Grid styles`, async () => {
+      await mountAndWaitFor(<View style={styles.grid} />);
+      expect(console.error.history.length).toEqual(15);
+      expect(console.error.history[0]).toMatch(/grid/);
+    });
+    it(`prints errors for invalid CSS Background styles`, async () => {
+      await mountAndWaitFor(<View style={styles.background} />);
+      expect(console.error.history.length).toEqual(8);
+      expect(console.error.history[0]).toMatch(/backgroundAttachment/);
+    });
+    it(`prints errors for invalid CSS Transition styles`, async () => {
+      await mountAndWaitFor(<View style={styles.transition} />);
+      expect(console.error.history.length).toEqual(4);
+      expect(console.error.history[0]).toMatch(/transition/);
+    });
+    it(`prints errors for invalid CSS styles`, async () => {
+      await mountAndWaitFor(<View style={styles.view} />);
+      expect(console.error.history.length).toEqual(20);
+      expect(console.error.history[0]).toMatch(/development error/);
+    });
+    it(`prints errors for invalid position style`, async () => {
       await mountAndWaitFor(
-        <>
-          <View style={styles.animation} />
-          <View style={styles.background} />
-          <View style={styles.grid} />
-          <View style={styles.numericallyInvalid} />
-          <View style={styles.position} />
-          <View style={styles.transition} />
-          <View style={styles.view} />
-        </>
+        <View
+          style={{
+            position: 'fixed',
+          }}
+        />
       );
-      expect(console.error.history).toEqual([]);
+      expect(console.error.history.length).toEqual(1);
+      expect(console.error.history[0]).toMatch(
+        /CSS Position value "fixed" is not currently supported/
+      );
+    });
+    it(`prints errors for invalid numeric units`, async () => {
+      await mountAndWaitFor(<View style={styles.numericallyInvalid} />);
+      expect(console.error.history.length).toEqual(80);
+      expect(console.error.history[0]).toMatch(/rem/);
+    });
+    it(`prints errors for numeric conversion`, async () => {
+      await mountAndWaitFor(<View style={{ width: '100px' }} />);
+      expect(console.error.history.length).toEqual(1);
+      expect(console.error.history[0]).toMatch(
+        /Convert invalid CSS numeric property usage { width: "100px" } to { width: 100 }\./
+      );
     });
   });
 }

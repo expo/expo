@@ -216,7 +216,6 @@ if (process.env.NODE_ENV === 'development') {
     'paddingStart',
     'paddingTop',
     'paddingVertical',
-    'position',
     'right',
     'rowGap',
     'start',
