@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- View-related DSL functions do not require providing the view's type in function parameters on Android.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
