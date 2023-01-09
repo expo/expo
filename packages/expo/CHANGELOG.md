@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Improve error handling for unsupported style usages.
+- Improve error handling for unsupported style usages. ([#20753](https://github.com/expo/expo/pull/20753) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
