@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Introduced the `source.cacheKey` parameter to customize the key used for caching the source image.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
