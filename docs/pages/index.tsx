@@ -136,21 +136,21 @@ const Home = () => {
               xl={6}
               lg={6}
               css={css({
-                backgroundColor: palette.purple2,
-                borderColor: palette.purple5,
+                backgroundColor: palette.purple3,
+                borderColor: palette.purple7,
               })}>
               <SnackImage />
               <RawH3 css={css({ color: palette.purple12 })}>Try Expo in your browser</RawH3>
-              <P css={css({ color: palette.purple12, ...typography.fontSizes[14] })}>
+              <P css={css({ color: palette.purple11, ...typography.fontSizes[14] })}>
                 Expo’s Snack lets you try Expo
                 <br />
                 with zero local setup.
               </P>
               <HomeButton
-                css={css({ backgroundColor: palette.purple10, color: palette.purple4 })}
+                css={css({ backgroundColor: palette.purple11, color: palette.purple3 })}
                 href="https://snack.expo.dev/"
                 target="_blank"
-                iconRight={<ArrowUpRightIcon color={palette.purple4} />}>
+                iconRight={<ArrowUpRightIcon color={palette.purple3} />}>
                 Create a Snack
               </HomeButton>
             </GridCell>
@@ -159,7 +159,7 @@ const Home = () => {
               lg={6}
               css={css({
                 backgroundColor: palette.orange4,
-                borderColor: palette.orange7,
+                borderColor: palette.orange8,
               })}>
               <CodecademyImage />
               <RawH3 css={css({ color: palette.orange12 })}>
@@ -172,7 +172,7 @@ const Home = () => {
                   backgroundColor: palette.orange11,
                   color: palette.orange4,
                   '.dark-theme &': {
-                    backgroundColor: palette.orange12,
+                    backgroundColor: palette.orange11,
                   },
                 })}
                 href="https://www.codecademy.com/learn/learn-react-native"
@@ -185,8 +185,8 @@ const Home = () => {
               xl={6}
               lg={6}
               css={css({
-                backgroundColor: palette.green2,
-                borderColor: palette.green5,
+                backgroundColor: palette.green3,
+                borderColor: palette.green7,
               })}>
               <WhyImage />
               <RawH3 css={css({ color: palette.green12 })}>Why choose Expo?</RawH3>
@@ -206,12 +206,12 @@ const Home = () => {
               xl={6}
               lg={6}
               css={css({
-                backgroundColor: palette.yellow2,
-                borderColor: palette.yellow7,
+                backgroundColor: palette.yellow3,
+                borderColor: palette.yellow8,
               })}>
               <OfficeHoursImage />
               <RawH3 css={css({ color: palette.yellow12 })}>Join us for Office Hours</RawH3>
-              <P css={css({ color: palette.yellow12, ...typography.fontSizes[14] })}>
+              <P css={css({ color: palette.yellow11, ...typography.fontSizes[14] })}>
                 Get answers to your questions and
                 <br />
                 get advice from the Expo team.
@@ -220,9 +220,6 @@ const Home = () => {
                 css={css({
                   backgroundColor: palette.yellow11,
                   color: palette.yellow2,
-                  '.dark-theme &': {
-                    backgroundColor: palette.yellow12,
-                  },
                 })}
                 href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
                 target="_blank"

@@ -69,7 +69,6 @@ export const globalPrism = css`
 
   .token.selector,
   .token.attr-name,
-  .token.string,
   .token.char,
   .token.function,
   .token.builtin,
@@ -81,14 +80,14 @@ export const globalPrism = css`
   .token.entity,
   .token.url,
   .token.variable {
-    color: ${theme.palette.yellow12}
+    color: ${theme.palette.green11}
   }
 
   .token.atrule,
   .token.attr-value,
   .token.keyword,
   .token.class-name {
-    color: ${theme.palette.blue11}
+    color: ${theme.palette.purple11}
   }
 
   .token.regex,
@@ -96,8 +95,7 @@ export const globalPrism = css`
     color: ${theme.palette.orange11}
   }
 
-  .language-css .token.string,
-  .style .token.string {
+  .token.string {
     color: ${theme.palette.yellow11}
   }
 
