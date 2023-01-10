@@ -1,4 +1,4 @@
-import { Image, ImageProps } from 'expo-image';
+import { Image } from 'expo-image';
 import { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -26,8 +26,8 @@ export default function ImagePlaceholderScreen() {
         style={styles.image}
         source={source}
         cachePolicy="disk"
-        onLoad={(event) => {
-          if (event.cacheType === 'disk') {
+        onLoad={({ cacheType }) => {
+          if (cacheType === 'disk') {
             alert('Image was loaded from the disk cache');
           }
           setIsLoading(false);
