@@ -36,7 +36,7 @@ elsif currentremote.strip.end_with?("facebook/react-native.git") and currentbran
   source[:git] = git
   source[:tag] = hermestag
 else
-  if File.exists?(File.join(__dir__, "destroot"))
+  if File.exist?(File.join(__dir__, "destroot"))
     source[:path] = '.'
   else
     source[:http] = 'https://github.com/expo/react-native/releases/download/sdk-47.0.0/ABI47_0_0hermes.tar.gz'

@@ -96,7 +96,7 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         replace:
           '  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz"',
         with: `\
-  if File.exists?(File.join(__dir__, "destroot"))
+  if File.exist?(File.join(__dir__, "destroot"))
     source[:path] = '.'
   else
     source[:http] = 'https://github.com/expo/react-native/releases/download/sdk-${versionName
