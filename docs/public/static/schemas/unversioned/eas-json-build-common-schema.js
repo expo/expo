@@ -49,6 +49,15 @@ export default [
     ],
   },
   {
+    name: 'resourceClass',
+    enum: ['default', 'large'],
+    description: [
+      'The resource class that will be used to run this build.',
+      "- `default` - Medium Intel resource class for iOS and medium resource class for Android",
+      "- `large` - Medium Intel resource class for iOS and large resource class for Android",
+    ],
+  },
+  {
     name: 'prebuildCommand',
     type: 'string',
     description: [
