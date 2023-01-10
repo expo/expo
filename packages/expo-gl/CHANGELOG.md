@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Migrated the view manager to the new Expo modules API and thus added support for Fabric on Android. ([#20749](https://github.com/expo/expo/pull/20749) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
