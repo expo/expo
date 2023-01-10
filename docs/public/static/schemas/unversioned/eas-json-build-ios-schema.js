@@ -36,9 +36,6 @@ export default [
     enum: ['default', 'm1-medium', 'intel-medium'],
     description: [
       'The iOS-specific resource class that will be used to run this build.',
-      "- `default` - Medium Intel resource class",
-      "- `m1-medium` - Medium M1 resource class",
-      "- `intel-medium` - Medium Intel resource class",
     ],
   },
   {

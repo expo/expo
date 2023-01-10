@@ -18,8 +18,6 @@ export default [
     enum: ['default', 'large'],
     description: [
       'The Android-specific resource class that will be used to run this build.',
-      "- `default` - Medium resource class",
-      "- `large` - Large resource class",
     ],
   },
   {
