@@ -172,7 +172,7 @@ cd expo/packages/expo-constants
 
 - Then, open **.ts** file in your code editor/IDE where you want to make changes/updates.
 - Start the TypeScript build compilation in watch mode using `yarn build` in the terminal window.
-- Make the update. For example, we want to update the TypeDoc description of `[manifest2` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
+- Make the update. For example, we want to update the TypeDoc description of [`manifest2` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
 
   - Inside the **src/** directory, open **Constants.types.ts** file.
   - Search for `manifest2` property. It has a current description as shown below:
