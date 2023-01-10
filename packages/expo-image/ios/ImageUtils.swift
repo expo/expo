@@ -151,6 +151,18 @@ func getBestSource(from sources: [ImageSource]?, forSize size: CGSize, scale: Do
   return bestSource
 }
 
+/**
+ Creates the cache key filter that returns the specific string.
+ */
+func createCacheKeyFilter(_ cacheKey: String?) -> SDWebImageCacheKeyFilter? {
+  guard let cacheKey = cacheKey else {
+    return nil
+  }
+  return SDWebImageCacheKeyFilter { _ in
+    return cacheKey
+  }
+}
+
 extension CGSize {
   /**
    Multiplies a size with a scalar.
