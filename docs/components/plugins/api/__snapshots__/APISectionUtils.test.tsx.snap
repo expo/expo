@@ -22,16 +22,44 @@ exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
 
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
+  <strong
+    class="css-bvflvn-TextComponent"
+  >
+    Only for:
+     
+  </strong>
+  <div
+    class="css-zkxs84-PlatformTag"
+  >
+    <svg
+      color="var(--expo-theme-palette-green-900)"
+      fill="none"
+      height="12"
+      role="img"
+      size="12"
+      viewBox="0 0 20 20"
+      width="12"
+    >
+      <title>
+        Android-icon
+      </title>
+      <path
+        d="M14.219 12.325a.766.766 0 010-1.532.765.765 0 010 1.532zm-8.438 0a.766.766 0 010-1.532.765.765 0 010 1.532zm8.712-4.613l1.525-2.651a.317.317 0 10-.55-.318l-1.544 2.684A9.393 9.393 0 0010 6.585a9.393 9.393 0 00-3.924.842L4.531 4.742a.317.317 0 10-.55.319l1.526 2.65c-2.62 1.43-4.412 4.091-4.674 7.235h18.334c-.263-3.144-2.055-5.805-4.674-7.234z"
+        fill="var(--expo-theme-palette-green-900)"
+      />
+    </svg>
+    <span
+      class="css-6g4m4t-PlatformTag"
+    >
+      Android
+    </span>
+  </div>
+  <br />
   <p
     class="css-1oym3r-TextComponent"
     data-text="true"
   >
-    <strong
-      class="css-bvflvn-TextComponent"
-    >
-      Android only.
-    </strong>
-     Gets the referrer URL of the installed app with the 
+    Gets the referrer URL of the installed app with the 
     <a
       class="css-dqmbnf-A"
       href="https://developer.android.com/google/play/installreferrer"
@@ -436,7 +464,9 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
     <span>
       <a
         class="css-dqmbnf-A"
-        href="/versions/latest/react-native/view-style-props"
+        href="https://reactnative.dev/docs/view-style-props"
+        rel="noopener noreferrer"
+        target="_blank"
       >
         ViewStyle
       </a>

@@ -52,6 +52,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
   } else if (signatures && signatures.length) {
     if (
       signatures[0].type.name === 'Element' ||
+      (signatures[0].type.types && signatures[0].type.types.map(t => t.name).includes('Element')) ||
       (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
     ) {
       return true;
