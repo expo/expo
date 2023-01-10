@@ -16,16 +16,16 @@ data class OnSurfaceCreateRecord(
 
 @SuppressLint("ViewConstructor")
 class GLView(context: Context, appContext: AppContext) : TextureView(context), SurfaceTextureListener {
-  private var mOnSurfaceCreateCalled = false
-  private var mOnSurfaceTextureCreatedWithZeroSize = false
-  private var gLContext = GLContext(
+  private var onSurfaceCreateWasCalled = false
+  private var onSurfaceTextureWasCalledWithZeroSize = false
+  private var glContext = GLContext(
     appContext
       .legacyModuleRegistry
       .getExportedModuleOfClass(GLObjectManagerModule::class.java) as GLObjectManagerModule
   )
 
-  private val eXGLCtxId: Int
-    get() = gLContext.contextId
+  private val exglContextId: Int
+    get() = glContext.contextId
 
   val onSurfaceCreate by EventDispatcher<OnSurfaceCreateRecord>()
 
@@ -36,50 +36,50 @@ class GLView(context: Context, appContext: AppContext) : TextureView(context), S
 
   // Public interface to allow running events on GL thread
   fun runOnGLThread(r: Runnable?) {
-    gLContext.runAsync(r)
+    glContext.runAsync(r)
   }
 
   // `TextureView.SurfaceTextureListener` events
   @Synchronized
   override fun onSurfaceTextureAvailable(surfaceTexture: SurfaceTexture, width: Int, height: Int) {
-    if (!mOnSurfaceCreateCalled) {
+    if (!onSurfaceCreateWasCalled) {
       // onSurfaceTextureAvailable is sometimes called with 0 size texture
       // and immediately followed by onSurfaceTextureSizeChanged with actual size
       if (width == 0 || height == 0) {
-        mOnSurfaceTextureCreatedWithZeroSize = true
+        onSurfaceTextureWasCalledWithZeroSize = true
       }
-      if (!mOnSurfaceTextureCreatedWithZeroSize) {
+      if (!onSurfaceTextureWasCalledWithZeroSize) {
         initializeSurfaceInGLContext(surfaceTexture)
       }
-      mOnSurfaceCreateCalled = true
+      onSurfaceCreateWasCalled = true
     }
   }
 
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
-    gLContext.destroy()
+    glContext.destroy()
 
     // reset flag, so the context will be recreated when the new surface is available
-    mOnSurfaceCreateCalled = false
+    onSurfaceCreateWasCalled = false
     return true
   }
 
   @Synchronized
   override fun onSurfaceTextureSizeChanged(surfaceTexture: SurfaceTexture, width: Int, height: Int) {
-    if (mOnSurfaceTextureCreatedWithZeroSize && (width != 0 || height != 0)) {
+    if (onSurfaceTextureWasCalledWithZeroSize && (width != 0 || height != 0)) {
       initializeSurfaceInGLContext(surfaceTexture)
-      mOnSurfaceTextureCreatedWithZeroSize = false
+      onSurfaceTextureWasCalledWithZeroSize = false
     }
   }
 
   override fun onSurfaceTextureUpdated(surface: SurfaceTexture) = Unit
 
   fun flush() {
-    gLContext.flush()
+    glContext.flush()
   }
 
   private fun initializeSurfaceInGLContext(surfaceTexture: SurfaceTexture) {
-    gLContext.initialize(surfaceTexture) {
-      onSurfaceCreate(OnSurfaceCreateRecord(eXGLCtxId))
+    glContext.initialize(surfaceTexture) {
+      onSurfaceCreate(OnSurfaceCreateRecord(exglContextId))
     }
   }
 }
