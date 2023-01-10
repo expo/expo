@@ -28,6 +28,12 @@ export type ImageSource = {
    * otherwise their default value is `16`.
    */
   blurhash?: string;
+
+  /**
+   * The cache key used to query and store this specific image.
+   * If not provided, the `uri` is used also as the cache key.
+   */
+  cacheKey?: string;
 };
 
 /**
