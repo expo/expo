@@ -23,7 +23,7 @@ class GlideUrlWithCustomCacheKey(
   uri: String?,
   headers: Headers?,
   private val cacheKey: String
-): GlideUrl(uri, headers) {
+) : GlideUrl(uri, headers) {
   /**
    * Cached hash code value
    */
