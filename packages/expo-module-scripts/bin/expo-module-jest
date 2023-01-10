@@ -1,7 +1,6 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+const { commandRunner, getArgs } = require("../util/commandUtils");
 
-script_dir="$(dirname "$0")"
-
-"$script_dir/npx" jest "$@"
+commandRunner('yarn', ['jest', ...getArgs()]);

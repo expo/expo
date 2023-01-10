@@ -1,24 +1,14 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+const path = require('path');
+const { commandRunner, getArgs } = require("../util/commandUtils");
 
-script_dir="$(dirname "$0")"
+let args = getArgs();
 
-args=("$@")
+if (args[0] === 'plugin') {
+  const pluginDir = path.join(process.cwd(), 'plugin');
+  args = ['-p', pluginDir, ...args.splice(1)]
+}
 
-# If the command is used like `yarn build plugin`, set the --build option to point to
-# plugin/tsconfig.json
-if [ "$1" == "plugin" ]; then
-  # `--build` must be the first argument, so reset the array
-  args=()
-  args+=("--build")
-  args+=("$(pwd)/plugin")
-  # Push the rest of the arguments minus the `plugin` arg
-  args+=("${@:2}")
-fi
-
-if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
-  args+=("--watch")
-fi
-
-"$script_dir/expo-module-tsc" "${args[@]}"
+commandRunner(path.join(__dirname, 'expo-module-tsc'), args);

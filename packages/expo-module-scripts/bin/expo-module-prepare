@@ -1,18 +1,23 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+const fs = require('fs');
+const path = require('path');
+const { commandRunner } = require("../util/commandUtils");
 
-script_dir="$(dirname "$0")"
+process.env.EXPO_NONINTERACTIVE = 1;
 
-export EXPO_NONINTERACTIVE=1
+const run = async () => {
+  console.log('expo-module-scripts: Configuring module');
+  await commandRunner(path.join(__dirname, 'expo-module-clean'));
+  await commandRunner(path.join(__dirname, 'expo-module-configure'));
+  await commandRunner(path.join(__dirname, 'expo-module-build'));
 
-echo "Configuring module"
-"$script_dir/expo-module-clean"
-"$script_dir/expo-module-configure"
-"$script_dir/expo-module-build"
+  if (fs.existsSync(path.join(process.cwd(), 'plugin'))) {
+    console.log('expo-module-scripts: Configuring plugin');
+    await commandRunner(path.join(__dirname, 'expo-module-clean'), ['plugin']);
+    await commandRunner(path.join(__dirname, 'expo-module-build'), ['plugin']);
+  }
+}
 
-if [[ -d plugin ]]; then 
-  echo "Configuring plugin"
-  "$script_dir/expo-module-clean" plugin
-  "$script_dir/expo-module-build" plugin
-fi
+run();

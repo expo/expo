@@ -1,12 +1,9 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+const path = require('path');
+const { commandRunner, getArgs } = require("../util/commandUtils");
 
-script_dir="$(dirname "$0")"
+process.env.EXPO_NONINTERACTIVE = 1;
 
-args=("$@")
-if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
-  args+=("--watch")
-fi
-
-"$script_dir/expo-module-tsc" --noEmit "${args[@]}"
+commandRunner(path.join(__dirname, 'expo-module-tsc'), ['--noEmit', ...getArgs()]);

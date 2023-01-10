@@ -1,28 +1,24 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+const { commandRunner, getArgs } = require("../util/commandUtils");
+const fs = require('fs');
+const path = require('path');
 
-script_dir="$(dirname "$0")"
+let args = getArgs();
 
-args=("$@")
+if (args[0] === 'plugin') {
+  const pluginDir = path.join(process.cwd(), 'plugin');
+  const configPath = path.join(pluginDir, 'jest.config.js');
+  if (fs.existsSync(configPath)) {
+    args = ['--rootDir', pluginDir, '--config', configPath, ...args.splice(1)]
+  } else {
+    args = ['--rootDir', pluginDir, ...args.splice(1)]
+  }
+}
 
-# If the command is used like `yarn test plugin`, set the --rootDir option to the `plugin` directory
-if [ "$1" == "plugin" ]; then
-  args=()
-  args+=("--rootDir")
-  args+=("plugin")
+if (!process.env.CI && !process.env.EXPO_NONINTERACTIVE) {
+  args = [...args, '--watch']
+}
 
-  if [[ -f plugin/jest.config.js ]]; then
-    args+=("--config")
-    args+=("plugin/jest.config.js")
-  fi
-
-  # Push the rest of the arguments minus the `plugin` arg
-  args+=("${@:2}")
-fi
-
-if [[ -t 1 && (-z "$CI" && -z "$EXPO_NONINTERACTIVE") ]]; then
-  args+=("--watch")
-fi
-
-"$script_dir/expo-module-jest" "${args[@]}"
+commandRunner(path.join(__dirname, 'expo-module-jest'), args);

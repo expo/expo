@@ -1,7 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+const { commandRunner, getArgs } = require("../util/commandUtils");
 
-script_dir="$(dirname "$0")"
+let args = getArgs();
 
-"$script_dir/npx" tsc "$@"
+if (!process.env.CI && !process.env.EXPO_NONINTERACTIVE) {
+  args = [...args, '--watch']
+}
+
+commandRunner('yarn', ['tsc', ...args], true);

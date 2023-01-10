@@ -1,9 +1,8 @@
-#!/usr/bin/env bash
+#!/usr/bin/env node
+'use strict';
 
-set -eo pipefail
+const { commandRunner } = require("../util/commandUtils");
 
-script_dir="$(dirname "$0")"
+process.env.EXPO_NONINTERACTIVE = 1;
 
-export EXPO_NONINTERACTIVE=1
-
-"$script_dir/npx" proofread
+commandRunner('yarn', ['proofread'], true);
