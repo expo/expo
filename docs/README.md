@@ -156,8 +156,8 @@ Before proceeding, make sure you:
 
 - have [**expo/**](https://github.com/expo/expo) repo cloned on your machine
   - make sure to [install `direnv`](https://direnv.net/docs/installation.html) and run `direnv allow` at the root of the **expo/** repo.
-- have gone through the steps mentioned in [**“Download and Setup” in the contribution guideline**](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-download-and-setup).
-- can run `expo/docs` repo **[locally](https://github.com/expo/expo/tree/main/docs#running-locally)**.
+- have gone through the steps mentioned in [**"Download and Setup" in the contribution guideline**](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-download-and-setup).
+- can run **expo/docs** repo **[locally](https://github.com/expo/expo/tree/main/docs#running-locally)**.
 
 Once you have made sure the development setup is ready, proceed to the next section:
 
@@ -170,11 +170,11 @@ Once you have made sure the development setup is ready, proceed to the next sect
 cd expo/packages/expo-constants
 ```
 
-- Then, open `.ts` file in your code editor/IDE where you want to make changes/updates.
+- Then, open **.ts** file in your code editor/IDE where you want to make changes/updates.
 - Start the TypeScript build compilation in watch mode using `yarn build` in the terminal window.
 - Make the update. For example, we want to update the TypeDoc description of `[manifest2` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
 
-  - Inside the `src/` directory, open `Constants.types.ts` file.
+  - Inside the **src/** directory, open **Constants.types.ts** file.
   - Search for `manifest2` property. It has a current description as shown below:
 
   ```ts
@@ -203,7 +203,7 @@ manifest2: Manifest | null;
 
 #### Step 2: Apply TypeDoc updates to expo/docs repo
 
-In the terminal window and run the following command with `expotools` to generate the JSON data file for the package (which is stored at the location `expo/docs/public/static/data/[SDK-VERSION]`)
+In the terminal window and run the following command with `expotools` (`et`) to generate the JSON data file for the package (which is stored at the location `expo/docs/public/static/data/[SDK-VERSION]`)
 
 - Read the **NOTE** in the below snippet for updating the docs for `unversioned`:
 
@@ -224,7 +224,7 @@ et gdad -p expo-constants
 
 #### Step 3: See the changes in the docs repo
 
-Now, in the terminal window, navigate to `expo/docs` repo and run the command `yarn run dev` to see the changes applied
+Now, in the terminal window, navigate to **expo/docs** repo and run the command `yarn run dev` to see the changes applied
 
 - Open [http://localhost:3002/](http://localhost:3002/) in the browser and go to the API doc to see the changes you have made. Make sure to select the right SDK version to see the changes in the left sidebar.
 
