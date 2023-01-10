@@ -36,7 +36,10 @@ public extension Record {
 
   init(from dict: Dict) throws {
     self.init()
+    try update(withDict: dict)
+  }
 
+  func update(withDict dict: Dict) throws {
     let dictKeys = dict.keys
 
     try fieldsOf(self).forEach { field in

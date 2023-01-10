@@ -51,7 +51,7 @@ export default class LinearGradientScreen extends React.Component<{}, State> {
 
   render() {
     const location = Math.sin(this.state.count / 100) * 0.5;
-    const position = Math.sin(this.state.count / 100);
+    const position = Math.abs(Math.sin(this.state.count / 100));
     return (
       <ScrollView
         style={{ flex: 1 }}

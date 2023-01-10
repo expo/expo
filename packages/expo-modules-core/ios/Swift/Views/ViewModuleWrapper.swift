@@ -117,6 +117,9 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
       // method signature in Objective-C. Maybe just call `RCTLogError`?
       try? prop.set(value: Conversions.fromNSObject(newValue), onView: view)
     }
+    if let view = view as? AnySwiftUIHostingView {
+      view.setRawProps(json)
+    }
     viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
   }
 
