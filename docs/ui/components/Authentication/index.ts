@@ -7,6 +7,7 @@ const ASSETS_PATH = '/static/images/sdk/auth-session/';
 export const ASSETS = {
   apple: ASSETS_PATH + 'apple.png',
   azure: ASSETS_PATH + 'azure.png',
+  beyondidentity: ASSETS_PATH + 'beyondidentity.png',
   cognito: ASSETS_PATH + 'cognito.png',
   coinbase: ASSETS_PATH + 'coinbase.png',
   id4: ASSETS_PATH + 'identity4.png',
