@@ -5,6 +5,7 @@ package expo.modules.kotlin.views
 
 import android.content.Context
 import android.view.View
+import android.view.ViewGroup
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.types.toAnyType
@@ -13,7 +14,7 @@ import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 
 @DefinitionMarker
-class ViewDefinitionBuilder<T : View>(private val viewType: KClass<T>) {
+class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClass<T>) {
   @PublishedApi
   internal var props = mutableMapOf<String, AnyViewProp>()
 
@@ -41,20 +42,57 @@ class ViewDefinitionBuilder<T : View>(private val viewType: KClass<T>) {
   /**
    * Creates view's lifecycle listener that is called right after the view isn't longer used by React Native.
    */
-  inline fun <reified ViewType : View> OnViewDestroys(noinline body: (view: ViewType) -> Unit) {
+  @Suppress("UNCHECKED_CAST")
+  inline fun OnViewDestroys(crossinline body: (view: T) -> Unit) {
+    onViewDestroys = {
+      body(it as T)
+    }
+  }
+
+  /**
+   * Creates view's lifecycle listener that is called right after the view isn't longer used by React Native.
+   */
+  @JvmName("OnViewDestroysGeneric")
+  inline fun <reified ViewType : T> OnViewDestroys(noinline body: (view: ViewType) -> Unit) {
     onViewDestroys = { body(it as ViewType) }
   }
 
   /**
    * Defines the view lifecycle method that is called when the view finished updating all props.
    */
-  inline fun <reified ViewType : View> OnViewDidUpdateProps(noinline body: (view: ViewType) -> Unit) {
+  @Suppress("UNCHECKED_CAST")
+  inline fun OnViewDidUpdateProps(crossinline body: (view: T) -> Unit) {
+    onViewDidUpdateProps = {
+      body(it as T)
+    }
+  }
+
+  /**
+   * Defines the view lifecycle method that is called when the view finished updating all props.
+   */
+  @JvmName("OnViewDidUpdatePropsGeneric")
+  inline fun <reified ViewType : T> OnViewDidUpdateProps(noinline body: (view: ViewType) -> Unit) {
     onViewDidUpdateProps = { body(it as ViewType) }
   }
 
   /**
    * Creates a view prop that defines its name and setter.
    */
+  inline fun <reified PropType> Prop(
+    name: String,
+    noinline body: (view: T, prop: PropType) -> Unit
+  ) {
+    props[name] = ConcreteViewProp(
+      name,
+      typeOf<PropType>().toAnyType(),
+      body
+    )
+  }
+
+  /**
+   * Creates a view prop that defines its name and setter.
+   */
+  @JvmName("PropGeneric")
   inline fun <reified ViewType : View, reified PropType> Prop(
     name: String,
     noinline body: (view: ViewType, prop: PropType) -> Unit
@@ -84,10 +122,11 @@ class ViewDefinitionBuilder<T : View>(private val viewType: KClass<T>) {
   /**
    * Creates the group view definition that scopes group view-related definitions.
    */
-  inline fun GroupView(body: ViewGroupDefinitionBuilder.() -> Unit) {
+  inline fun <reified ParentType : ViewGroup> GroupView(body: ViewGroupDefinitionBuilder<ParentType>.() -> Unit) {
+    assert(viewType == ParentType::class) { "Provided type and view type have to be the same." }
     require(viewGroupDefinition == null) { "The viewManager definition may have exported only one groupView definition." }
 
-    val groupViewDefinitionBuilder = ViewGroupDefinitionBuilder()
+    val groupViewDefinitionBuilder = ViewGroupDefinitionBuilder<ParentType>()
     body.invoke(groupViewDefinitionBuilder)
     viewGroupDefinition = groupViewDefinitionBuilder.build()
   }

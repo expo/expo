@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- View-related DSL functions do not require providing the view's type in function parameters on Android. ([#20751](https://github.com/expo/expo/pull/20751) by [@lukmccall](https://github.com/lukmccall))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix view prop setter not being called when its new value is `null` or `undefined`. ([#20755](https://github.com/expo/expo/pull/20755) by [@tsapeta](https://github.com/tsapeta))
