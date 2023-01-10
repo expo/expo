@@ -20,4 +20,6 @@ class ConcreteViewProp<ViewType : View, PropType>(
       setter(onView as ViewType, propType.convert(prop) as PropType)
     }
   }
+
+  override val isNullable: Boolean = propType.kType.isMarkedNullable
 }
