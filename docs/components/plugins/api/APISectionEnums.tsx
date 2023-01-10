@@ -18,15 +18,17 @@ export type APISectionEnumsProps = {
 };
 
 const sortByValue = (a: EnumValueData, b: EnumValueData) => {
-  if (a.defaultValue && b.defaultValue) {
-    if (a.defaultValue.includes(`'`) && b.defaultValue.includes(`'`)) {
-      return a.defaultValue.localeCompare(b.defaultValue);
-    } else {
-      return parseInt(a.defaultValue, 10) - parseInt(b.defaultValue, 10);
+  if (a.type && a.type.value !== undefined && b.type && b.type.value !== undefined) {
+    if (typeof a.type.value === 'string' && typeof b.type.value === 'string') {
+      return a.type.value.localeCompare(b.type.value);
+    } else if (typeof a.type.value === 'number' && typeof b.type.value === 'number') {
+      return (a.type.value ?? Number.MIN_VALUE) - (b.type.value ?? Number.MIN_VALUE);
     }
   }
   return 0;
 };
+
+const renderEnumValue = (value: any) => (typeof value === 'string' ? `"${value}"` : value);
 
 const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
   <div key={`enum-definition-${name}`} css={[STYLES_APIBOX, enumContentStyles]}>
@@ -43,8 +45,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
           <CODE>{enumValue.name}</CODE>
         </H4>
         <CODE css={enumValueStyles}>
-          {name}.{enumValue.name}
-          {enumValue?.defaultValue ? ` ＝ ${enumValue?.defaultValue}` : ''}
+          {`${name}.${enumValue.name} ＝ ${renderEnumValue(enumValue.type.value)}`}
         </CODE>
         <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
       </div>

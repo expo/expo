@@ -21,6 +21,7 @@ import {
   STYLES_APIBOX_NESTED,
   STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
+  getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, H4, BOLD, P, CODE } from '~/ui/components/Text';
 
@@ -110,7 +111,9 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
           <div css={STYLES_NESTED_SECTION_HEADER}>
             <H4>Returns</H4>
           </div>
-          <ReactMarkdown components={mdComponents}>{returnComment.text}</ReactMarkdown>
+          <ReactMarkdown components={mdComponents}>
+            {getCommentContent(returnComment.content)}
+          </ReactMarkdown>
         </>
       )}
       {properties?.length ? (

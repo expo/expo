@@ -50,7 +50,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -105,7 +105,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </a>
     </h3>
     <p
-      class="css-yszm2s-TextComponent"
+      class="css-1oym3r-TextComponent"
       data-text="true"
     >
       <strong
@@ -118,16 +118,14 @@ exports[`APISection expo-apple-authentication 1`] = `
         class="css-i9jevy-TextComponent"
         data-text="true"
       >
-        React.FC
+        React.Element
         &lt;
-        <span>
-          <a
-            class="css-dqmbnf-A"
-            href="#appleauthenticationbuttonprops"
-          >
-            AppleAuthenticationButtonProps
-          </a>
-        </span>
+        <a
+          class="css-dqmbnf-A"
+          href="#appleauthenticationbuttonprops"
+        >
+          AppleAuthenticationButtonProps
+        </a>
         &gt;
       </code>
     </p>
@@ -140,6 +138,8 @@ your screen. The App Store Guidelines require you to use this component to start
 authentication process instead of a custom button. Limited customization of the button is
 available via the provided properties.
     </p>
+    
+
     <p
       class="css-1oym3r-TextComponent"
       data-text="true"
@@ -334,7 +334,7 @@ for more details.
     </h2>
     <div>
       <div
-        class="css-1dyun4i"
+        class="css-8mpaon"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -418,7 +418,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-1dyun4i"
+        class="css-8mpaon"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -502,7 +502,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-1dyun4i"
+        class="css-8mpaon"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -594,7 +594,101 @@ for more details.
         </p>
       </div>
       <div
-        class="css-1dyun4i"
+        class="css-8mpaon"
+      >
+        <h3
+          class="  css-6r23rc-TextComponent"
+          data-heading="true"
+        >
+          <a
+            class="css-1y48vg3"
+            href="#onpress"
+          >
+            <span
+              class="css-s3qkfm"
+              id="onpress"
+            />
+            <span
+              class="css-6n7j50"
+            >
+              <code
+                class="css-1xgis4r-TextComponent"
+                data-text="true"
+              >
+                onPress
+              </code>
+            </span>
+            <span
+              class="css-1eysgws"
+            >
+              <svg
+                aria-label="permalink"
+                class="anchor-icon"
+                fill="none"
+                height="24"
+                viewBox="0 0 24 24"
+                width="24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+                <path
+                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
+                  stroke="#9B9B9B"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                />
+              </svg>
+            </span>
+          </a>
+        </h3>
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
+        >
+          <span
+            class="css-1lk0cux"
+          >
+            Type:
+          </span>
+           
+          <code
+            class="css-i9jevy-TextComponent"
+            data-text="true"
+          >
+            (
+            ) =&gt; 
+            void
+          </code>
+        </p>
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
+        >
+          The method to call when the user presses the button. You should call 
+          <a
+            class="css-dqmbnf-A"
+            href="#isavailableasync"
+          >
+            <code
+              class="css-vixx70-TextComponent"
+              data-text="true"
+            >
+              AppleAuthentication.signInAsync
+            </code>
+          </a>
+          
+in here.
+        </p>
+      </div>
+      <div
+        class="css-8mpaon"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -682,7 +776,9 @@ for more details.
               <span>
                 <a
                   class="css-dqmbnf-A"
-                  href="/versions/latest/react-native/view-style-props"
+                  href="https://reactnative.dev/docs/view-style-props"
+                  rel="noopener noreferrer"
+                  target="_blank"
                 >
                   ViewStyle
                 </a>
@@ -722,101 +818,6 @@ for more details.
           </code>
           
 properties.
-        </p>
-      </div>
-      <div
-        class="css-1dyun4i"
-      >
-        <h3
-          class="  css-6r23rc-TextComponent"
-          data-heading="true"
-        >
-          <a
-            class="css-1y48vg3"
-            href="#onpress"
-          >
-            <span
-              class="css-s3qkfm"
-              id="onpress"
-            />
-            <span
-              class="css-6n7j50"
-            >
-              <code
-                class="css-1xgis4r-TextComponent"
-                data-text="true"
-              >
-                onPress
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
-            >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h3>
-        <p
-          class="css-1oym3r-TextComponent"
-          data-text="true"
-        >
-          <span
-            class="css-1lk0cux"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="css-i9jevy-TextComponent"
-            data-text="true"
-          >
-            (
-            ) =&gt;
-             
-            void
-          </code>
-        </p>
-        <p
-          class="css-1oym3r-TextComponent"
-          data-text="true"
-        >
-          The method to call when the user presses the button. You should call 
-          <a
-            class="css-dqmbnf-A"
-            href="#isavailableasync"
-          >
-            <code
-              class="css-vixx70-TextComponent"
-              data-text="true"
-            >
-              AppleAuthentication.signInAsync
-            </code>
-          </a>
-          
-in here.
         </p>
       </div>
       <h3
@@ -879,7 +880,9 @@ in here.
           >
             <a
               class="css-dqmbnf-A"
-              href="/versions/latest/react-native/view#props"
+              href="https://reactnative.dev/docs/view#props"
+              rel="noopener noreferrer"
+              target="_blank"
             >
               ViewProps
             </a>
@@ -936,7 +939,7 @@ in here.
     </a>
   </h2>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1246,7 +1249,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1425,7 +1428,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1701,7 +1704,7 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1852,6 +1855,8 @@ refresh operation.
       Sends a request to the operating system to initiate the Apple authentication flow, which will
 present a modal to the user over your app and allow them to sign in.
     </p>
+    
+
     <p
       class="css-1oym3r-TextComponent"
       data-text="true"
@@ -2022,7 +2027,7 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2167,6 +2172,8 @@ sign-in operation.
       An operation that ends the authenticated session.
 Calling this method will show the sign in modal before actually signing the user out.
     </p>
+    
+
     <p
       class="css-1oym3r-TextComponent"
       data-text="true"
@@ -2377,7 +2384,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2634,7 +2641,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3154,7 +3161,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3461,7 +3468,7 @@ may be
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3766,7 +3773,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4092,7 +4099,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4327,7 +4334,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4430,8 +4437,7 @@ OAuth 2.0 protocol
                 class="css-i9jevy-TextComponent"
                 data-text="true"
               >
-                (
-                ) =&gt;
+                () =&gt;
                  
                 void
               </code>
@@ -4439,12 +4445,7 @@ OAuth 2.0 protocol
             <td
               class="css-18p3734-Cell"
             >
-              <p
-                class="css-1oym3r-TextComponent"
-                data-text="true"
-              >
-                A method to unsubscribe the listener.
-              </p>
+              -
             </td>
           </tr>
         </tbody>
@@ -4499,7 +4500,7 @@ OAuth 2.0 protocol
     </a>
   </h2>
   <div
-    class="css-1mvi0k3"
+    class="css-ewhx8l"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4572,7 +4573,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4630,10 +4631,7 @@ OAuth 2.0 protocol
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationButtonStyle
-        .
-        WHITE
-         ＝ 0
+        AppleAuthenticationButtonStyle.WHITE ＝ 0
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -4643,7 +4641,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4701,10 +4699,7 @@ OAuth 2.0 protocol
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationButtonStyle
-        .
-        WHITE_OUTLINE
-         ＝ 1
+        AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -4714,7 +4709,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4772,10 +4767,7 @@ OAuth 2.0 protocol
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationButtonStyle
-        .
-        BLACK
-         ＝ 2
+        AppleAuthenticationButtonStyle.BLACK ＝ 2
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -4786,7 +4778,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1mvi0k3"
+    class="css-ewhx8l"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4859,7 +4851,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4917,10 +4909,7 @@ OAuth 2.0 protocol
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationButtonType
-        .
-        SIGN_IN
-         ＝ 0
+        AppleAuthenticationButtonType.SIGN_IN ＝ 0
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -4930,7 +4919,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4988,10 +4977,7 @@ OAuth 2.0 protocol
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationButtonType
-        .
-        CONTINUE
-         ＝ 1
+        AppleAuthenticationButtonType.CONTINUE ＝ 1
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -5001,7 +4987,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <strong
         class="css-bvflvn-TextComponent"
@@ -5092,10 +5078,7 @@ OAuth 2.0 protocol
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationButtonType
-        .
-        SIGN_UP
-         ＝ 2
+        AppleAuthenticationButtonType.SIGN_UP ＝ 2
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -5106,7 +5089,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1mvi0k3"
+    class="css-ewhx8l"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5227,7 +5210,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5285,14 +5268,11 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationCredentialState
-        .
-        REVOKED
-         ＝ 0
+        AppleAuthenticationCredentialState.REVOKED ＝ 0
       </code>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5350,14 +5330,11 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationCredentialState
-        .
-        AUTHORIZED
-         ＝ 1
+        AppleAuthenticationCredentialState.AUTHORIZED ＝ 1
       </code>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5415,14 +5392,11 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationCredentialState
-        .
-        NOT_FOUND
-         ＝ 2
+        AppleAuthenticationCredentialState.NOT_FOUND ＝ 2
       </code>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5480,15 +5454,12 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationCredentialState
-        .
-        TRANSFERRED
-         ＝ 3
+        AppleAuthenticationCredentialState.TRANSFERRED ＝ 3
       </code>
     </div>
   </div>
   <div
-    class="css-1mvi0k3"
+    class="css-ewhx8l"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5543,7 +5514,7 @@ for more details.
       </a>
     </h3>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5601,10 +5572,7 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationOperation
-        .
-        IMPLICIT
-         ＝ 0
+        AppleAuthenticationOperation.IMPLICIT ＝ 0
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -5614,7 +5582,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5672,14 +5640,11 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationOperation
-        .
-        LOGIN
-         ＝ 1
+        AppleAuthenticationOperation.LOGIN ＝ 1
       </code>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5737,14 +5702,11 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationOperation
-        .
-        REFRESH
-         ＝ 2
+        AppleAuthenticationOperation.REFRESH ＝ 2
       </code>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5802,15 +5764,12 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationOperation
-        .
-        LOGOUT
-         ＝ 3
+        AppleAuthenticationOperation.LOGOUT ＝ 3
       </code>
     </div>
   </div>
   <div
-    class="css-1mvi0k3"
+    class="css-ewhx8l"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5882,6 +5841,8 @@ for more details.
       </a>
       .
     </p>
+    
+
     <blockquote
       class="css-u8n1yk-Callout"
       data-testid="callout-container"
@@ -5972,7 +5933,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6030,14 +5991,11 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationScope
-        .
-        FULL_NAME
-         ＝ 0
+        AppleAuthenticationScope.FULL_NAME ＝ 0
       </code>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6095,15 +6053,12 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationScope
-        .
-        EMAIL
-         ＝ 1
+        AppleAuthenticationScope.EMAIL ＝ 1
       </code>
     </div>
   </div>
   <div
-    class="css-1mvi0k3"
+    class="css-ewhx8l"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -6212,7 +6167,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6270,10 +6225,7 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationUserDetectionStatus
-        .
-        UNSUPPORTED
-         ＝ 0
+        AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -6283,7 +6235,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6341,10 +6293,7 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationUserDetectionStatus
-        .
-        UNKNOWN
-         ＝ 1
+        AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -6354,7 +6303,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6412,10 +6361,7 @@ for more details.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        AppleAuthenticationUserDetectionStatus
-        .
-        LIKELY_REAL
-         ＝ 2
+        AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -6478,7 +6424,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -6533,7 +6479,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </a>
     </h3>
     <p
-      class="css-yszm2s-TextComponent"
+      class="css-1oym3r-TextComponent"
       data-text="true"
     >
       <strong
@@ -6546,6 +6492,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         class="css-i9jevy-TextComponent"
         data-text="true"
       >
+        React.
         Component
         &lt;
         <span>
@@ -6608,7 +6555,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-        class="css-1dyun4i"
+        class="css-8mpaon"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -6714,6 +6661,8 @@ exports[`APISection expo-barcode-scanner 1`] = `
 code types. It is recommended to provide only the bar code formats you expect to scan to
 minimize battery usage.
         </p>
+        
+
         <p
           class="css-1oym3r-TextComponent"
           data-text="true"
@@ -6729,7 +6678,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-1dyun4i"
+        class="css-8mpaon"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -6889,7 +6838,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="css-1dyun4i"
+        class="css-8mpaon"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -6986,7 +6935,6 @@ data has been retrieved.
               data-text="true"
             >
               Type.back
-
             </code>
           </span>
         </p>
@@ -7086,7 +7034,9 @@ Same as
           >
             <a
               class="css-dqmbnf-A"
-              href="/versions/latest/react-native/view#props"
+              href="https://reactnative.dev/docs/view#props"
+              rel="noopener noreferrer"
+              target="_blank"
             >
               ViewProps
             </a>
@@ -7143,7 +7093,7 @@ Same as
     </a>
   </h2>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7279,8 +7229,22 @@ Same as
       class="css-1oym3r-TextComponent"
       data-text="true"
     >
-      Create a new permission hook with the permission methods built-in.
-This can be used to quickly create specific permission hooks in every module.
+      Check or request permissions for the barcode scanner.
+This uses both 
+      <code
+        class="css-vixx70-TextComponent"
+        data-text="true"
+      >
+        requestPermissionAsync
+      </code>
+       and 
+      <code
+        class="css-vixx70-TextComponent"
+        data-text="true"
+      >
+        getPermissionsAsync
+      </code>
+       to interact with the permissions.
     </p>
     <div
       class="css-1cc2eo9"
@@ -7542,7 +7506,7 @@ This can be used to quickly create specific permission hooks in every module.
     </a>
   </h2>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7724,7 +7688,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7784,6 +7748,8 @@ This can be used to quickly create specific permission hooks in every module.
     >
       Asks the user to grant permissions for accessing the camera.
     </p>
+    
+
     <p
       class="css-1oym3r-TextComponent"
       data-text="true"
@@ -7926,7 +7892,7 @@ This can be used to quickly create specific permission hooks in every module.
     </p>
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8307,7 +8273,7 @@ code.
     </a>
   </h2>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8646,7 +8612,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8811,7 +8777,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8953,7 +8919,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9075,7 +9041,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9251,7 +9217,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9376,7 +9342,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9655,7 +9621,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9810,7 +9776,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9938,7 +9904,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="css-1mvi0k3"
+    class="css-ewhx8l"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9993,7 +9959,7 @@ you don't get this value.
       </a>
     </h3>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10051,10 +10017,7 @@ you don't get this value.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        PermissionStatus
-        .
-        DENIED
-         ＝ "denied"
+        PermissionStatus.DENIED ＝ "denied"
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -10064,7 +10027,7 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10122,10 +10085,7 @@ you don't get this value.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        PermissionStatus
-        .
-        GRANTED
-         ＝ "granted"
+        PermissionStatus.GRANTED ＝ "granted"
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -10135,7 +10095,7 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10193,10 +10153,7 @@ you don't get this value.
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        PermissionStatus
-        .
-        UNDETERMINED
-         ＝ "undetermined"
+        PermissionStatus.UNDETERMINED ＝ "undetermined"
       </code>
       <p
         class="css-1oym3r-TextComponent"
@@ -10259,7 +10216,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10313,6 +10270,12 @@ exports[`APISection expo-pedometer 1`] = `
         </span>
       </a>
     </h3>
+    <p
+      class="css-1oym3r-TextComponent"
+      data-text="true"
+    >
+      Checks user's permissions for accessing pedometer.
+    </p>
     <div
       class="css-1cc2eo9"
     >
@@ -10417,7 +10380,7 @@ exports[`APISection expo-pedometer 1`] = `
     <br />
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10773,7 +10736,7 @@ a start date that is more than seven days in the past returns only the available
     </blockquote>
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10946,7 +10909,7 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11000,6 +10963,12 @@ available on this device.
         </span>
       </a>
     </h3>
+    <p
+      class="css-1oym3r-TextComponent"
+      data-text="true"
+    >
+      Asks the user to grant permissions for accessing pedometer.
+    </p>
     <div
       class="css-1cc2eo9"
     >
@@ -11104,7 +11073,7 @@ available on this device.
     <br />
   </div>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11414,7 +11383,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-1dyun4i"
+    class="css-8mpaon"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11468,6 +11437,12 @@ provided with a single argument that is
         </span>
       </a>
     </h3>
+    <p
+      class="css-1oym3r-TextComponent"
+      data-text="true"
+    >
+      An object obtained by permissions get and request functions.
+    </p>
     <div
       class="css-1cc2eo9"
     >
@@ -11575,7 +11550,14 @@ provided with a single argument that is
             <td
               class="css-18p3734-Cell"
             >
-              -
+              <p
+                class="css-1oym3r-TextComponent"
+                data-text="true"
+              >
+                Indicates if user can be asked again for specific permission.
+If not, one should be directed to the Settings app
+in order to enable/disable the permission.
+              </p>
             </td>
           </tr>
           <tr
@@ -11608,7 +11590,12 @@ provided with a single argument that is
             <td
               class="css-18p3734-Cell"
             >
-              -
+              <p
+                class="css-1oym3r-TextComponent"
+                data-text="true"
+              >
+                Determines time when the permission expires.
+              </p>
             </td>
           </tr>
           <tr
@@ -11636,7 +11623,12 @@ provided with a single argument that is
             <td
               class="css-18p3734-Cell"
             >
-              -
+              <p
+                class="css-1oym3r-TextComponent"
+                data-text="true"
+              >
+                A convenience boolean that indicates if the permission is granted.
+              </p>
             </td>
           </tr>
           <tr
@@ -11669,7 +11661,12 @@ provided with a single argument that is
             <td
               class="css-18p3734-Cell"
             >
-              -
+              <p
+                class="css-1oym3r-TextComponent"
+                data-text="true"
+              >
+                Determines the status of the permission.
+              </p>
             </td>
           </tr>
         </tbody>
@@ -11725,7 +11722,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11847,7 +11844,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11903,6 +11900,12 @@ provided with a single argument that is
       </a>
     </h3>
     <div>
+      <p
+        class="css-1oym3r-TextComponent"
+        data-text="true"
+      >
+        Callback function providing event result as an argument.
+      </p>
       <div
         class="css-rufzkc-Table"
       >
@@ -11972,7 +11975,7 @@ provided with a single argument that is
     </div>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12027,6 +12030,12 @@ provided with a single argument that is
       </a>
     </h3>
     <p
+      class="css-1oym3r-TextComponent"
+      data-text="true"
+    >
+      Permission expiration time. Currently, all permissions are granted permanently.
+    </p>
+    <p
       class="css-yszm2s-TextComponent"
       data-text="true"
     >
@@ -12053,7 +12062,7 @@ provided with a single argument that is
     </p>
   </div>
   <div
-    class="css-1tnn2a"
+    class="css-cjlyai"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12156,8 +12165,7 @@ provided with a single argument that is
                 class="css-i9jevy-TextComponent"
                 data-text="true"
               >
-                (
-                ) =&gt;
+                () =&gt;
                  
                 void
               </code>
@@ -12165,12 +12173,7 @@ provided with a single argument that is
             <td
               class="css-18p3734-Cell"
             >
-              <p
-                class="css-1oym3r-TextComponent"
-                data-text="true"
-              >
-                A method to unsubscribe the listener.
-              </p>
+              -
             </td>
           </tr>
         </tbody>
@@ -12225,7 +12228,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-1mvi0k3"
+    class="css-ewhx8l"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12280,7 +12283,7 @@ provided with a single argument that is
       </a>
     </h3>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -12338,14 +12341,17 @@ provided with a single argument that is
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        PermissionStatus
-        .
-        DENIED
-         ＝ "denied"
+        PermissionStatus.DENIED ＝ "denied"
       </code>
+      <p
+        class="css-1oym3r-TextComponent"
+        data-text="true"
+      >
+        User has denied the permission.
+      </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -12403,14 +12409,17 @@ provided with a single argument that is
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        PermissionStatus
-        .
-        GRANTED
-         ＝ "granted"
+        PermissionStatus.GRANTED ＝ "granted"
       </code>
+      <p
+        class="css-1oym3r-TextComponent"
+        data-text="true"
+      >
+        User has granted the permission.
+      </p>
     </div>
     <div
-      class="css-1dyun4i"
+      class="css-8mpaon"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -12468,11 +12477,14 @@ provided with a single argument that is
         class="css-7voxo8-TextComponent"
         data-text="true"
       >
-        PermissionStatus
-        .
-        UNDETERMINED
-         ＝ "undetermined"
+        PermissionStatus.UNDETERMINED ＝ "undetermined"
       </code>
+      <p
+        class="css-1oym3r-TextComponent"
+        data-text="true"
+      >
+        User hasn't granted or denied the permission yet.
+      </p>
     </div>
   </div>
 </div>
