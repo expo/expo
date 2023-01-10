@@ -3,6 +3,7 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { FileNotifier } from '../../utils/FileNotifier';
+import { getProjectProperties } from '../../utils/analytics/getProjectProperties';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
@@ -127,9 +128,7 @@ export class DevServerManager {
   async startAsync(startOptions: MultiBundlerStartOptions): Promise<ExpoConfig> {
     const { exp } = getConfig(this.projectRoot);
 
-    await logEventAsync('Start Project', {
-      sdkVersion: exp.sdkVersion ?? null,
-    });
+    await logEventAsync('Start Project', getProjectProperties(this.projectRoot, exp));
 
     const platformBundlers = getPlatformBundlers(exp);
 
