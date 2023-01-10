@@ -27,6 +27,7 @@ import expo.modules.firebase.analytics.FirebaseAnalyticsPackage
 import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
+import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
 import expo.modules.imageloader.ImageLoaderPackage
@@ -131,6 +132,7 @@ object ExperiencePackagePicker : ModulesProvider {
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
+    GLViewModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
     ExpoImageModule::class.java,
