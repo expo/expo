@@ -50,11 +50,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -124,23 +120,12 @@ exports[`APISection expo-apple-authentication 1`] = `
       >
         React.Element
         &lt;
-<<<<<<< HEAD
         <a
-          class="css-dqmbnf-A"
+          class="css-1pb9a83-A"
           href="#appleauthenticationbuttonprops"
         >
           AppleAuthenticationButtonProps
         </a>
-=======
-        <span>
-          <a
-            class="css-1pb9a83-A"
-            href="#appleauthenticationbuttonprops"
-          >
-            AppleAuthenticationButtonProps
-          </a>
-        </span>
->>>>>>> 15f5afe4ab (update snapshots)
         &gt;
       </code>
     </p>
@@ -349,11 +334,7 @@ for more details.
     </h2>
     <div>
       <div
-<<<<<<< HEAD
-        class="css-8mpaon"
-=======
-        class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+        class="css-1b8yuk8"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -437,11 +418,7 @@ for more details.
         </p>
       </div>
       <div
-<<<<<<< HEAD
-        class="css-8mpaon"
-=======
-        class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+        class="css-1b8yuk8"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -525,11 +502,7 @@ for more details.
         </p>
       </div>
       <div
-<<<<<<< HEAD
-        class="css-8mpaon"
-=======
-        class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+        class="css-1b8yuk8"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -621,8 +594,7 @@ for more details.
         </p>
       </div>
       <div
-<<<<<<< HEAD
-        class="css-8mpaon"
+        class="css-1b8yuk8"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -640,7 +612,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="css-1xgis4r-TextComponent"
+                class="css-1wb1qhy-TextComponent"
                 data-text="true"
               >
                 onPress
@@ -687,7 +659,7 @@ for more details.
           </span>
            
           <code
-            class="css-i9jevy-TextComponent"
+            class="css-y1i413-TextComponent"
             data-text="true"
           >
             (
@@ -701,11 +673,11 @@ for more details.
         >
           The method to call when the user presses the button. You should call 
           <a
-            class="css-dqmbnf-A"
+            class="css-1pb9a83-A"
             href="#isavailableasync"
           >
             <code
-              class="css-vixx70-TextComponent"
+              class="css-106i24p-TextComponent"
               data-text="true"
             >
               AppleAuthentication.signInAsync
@@ -716,10 +688,7 @@ in here.
         </p>
       </div>
       <div
-        class="css-8mpaon"
-=======
-        class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+        class="css-1b8yuk8"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -806,15 +775,10 @@ in here.
               &lt;
               <span>
                 <a
-<<<<<<< HEAD
-                  class="css-dqmbnf-A"
+                  class="css-1pb9a83-A"
                   href="https://reactnative.dev/docs/view-style-props"
                   rel="noopener noreferrer"
                   target="_blank"
-=======
-                  class="css-1pb9a83-A"
-                  href="/versions/latest/react-native/view-style-props"
->>>>>>> 15f5afe4ab (update snapshots)
                 >
                   ViewStyle
                 </a>
@@ -856,104 +820,6 @@ in here.
 properties.
         </p>
       </div>
-<<<<<<< HEAD
-=======
-      <div
-        class="css-1wsqno0"
-      >
-        <h3
-          class="  css-6r23rc-TextComponent"
-          data-heading="true"
-        >
-          <a
-            class="css-1y48vg3"
-            href="#onpress"
-          >
-            <span
-              class="css-s3qkfm"
-              id="onpress"
-            />
-            <span
-              class="css-6n7j50"
-            >
-              <code
-                class="css-1wb1qhy-TextComponent"
-                data-text="true"
-              >
-                onPress
-              </code>
-            </span>
-            <span
-              class="css-1eysgws"
-            >
-              <svg
-                aria-label="permalink"
-                class="anchor-icon"
-                fill="none"
-                height="24"
-                viewBox="0 0 24 24"
-                width="24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-                <path
-                  d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"
-                  stroke="#9B9B9B"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                />
-              </svg>
-            </span>
-          </a>
-        </h3>
-        <p
-          class="css-1oym3r-TextComponent"
-          data-text="true"
-        >
-          <span
-            class="css-1lk0cux"
-          >
-            Type:
-          </span>
-           
-          <code
-            class="css-y1i413-TextComponent"
-            data-text="true"
-          >
-            (
-            ) =&gt;
-             
-            void
-          </code>
-        </p>
-        <p
-          class="css-1oym3r-TextComponent"
-          data-text="true"
-        >
-          The method to call when the user presses the button. You should call 
-          <a
-            class="css-1pb9a83-A"
-            href="#isavailableasync"
-          >
-            <code
-              class="css-106i24p-TextComponent"
-              data-text="true"
-            >
-              AppleAuthentication.signInAsync
-            </code>
-          </a>
-          
-in here.
-        </p>
-      </div>
->>>>>>> 15f5afe4ab (update snapshots)
       <h3
         class="  css-6r23rc-TextComponent"
         data-heading="true"
@@ -1013,15 +879,10 @@ in here.
             data-text="true"
           >
             <a
-<<<<<<< HEAD
-              class="css-dqmbnf-A"
+              class="css-1pb9a83-A"
               href="https://reactnative.dev/docs/view#props"
               rel="noopener noreferrer"
               target="_blank"
-=======
-              class="css-1pb9a83-A"
-              href="/versions/latest/react-native/view#props"
->>>>>>> 15f5afe4ab (update snapshots)
             >
               ViewProps
             </a>
@@ -1078,11 +939,7 @@ in here.
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1392,11 +1249,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1575,11 +1428,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1855,11 +1704,7 @@ refresh operation.
     </p>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2182,11 +2027,7 @@ sign-in operation.
     </p>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2543,11 +2384,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2804,11 +2641,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3328,11 +3161,7 @@ developers.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3639,11 +3468,7 @@ may be
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3948,11 +3773,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4278,11 +4099,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4517,11 +4334,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4687,11 +4500,7 @@ OAuth 2.0 protocol
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-ewhx8l"
-=======
-    class="css-ebqg5r"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-10gr5wx"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4764,11 +4573,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4836,11 +4641,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4908,11 +4709,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4981,11 +4778,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-ewhx8l"
-=======
-    class="css-ebqg5r"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-10gr5wx"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5058,11 +4851,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5130,11 +4919,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5202,11 +4987,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <strong
         class="css-bvflvn-TextComponent"
@@ -5308,11 +5089,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-ewhx8l"
-=======
-    class="css-ebqg5r"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-10gr5wx"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5433,11 +5210,7 @@ for more details.
       </div>
     </blockquote>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5499,11 +5272,7 @@ for more details.
       </code>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5565,11 +5334,7 @@ for more details.
       </code>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5631,11 +5396,7 @@ for more details.
       </code>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5698,11 +5459,7 @@ for more details.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-ewhx8l"
-=======
-    class="css-ebqg5r"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-10gr5wx"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5757,11 +5514,7 @@ for more details.
       </a>
     </h3>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5829,11 +5582,7 @@ for more details.
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5895,11 +5644,7 @@ for more details.
       </code>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5961,11 +5706,7 @@ for more details.
       </code>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6028,11 +5769,7 @@ for more details.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-ewhx8l"
-=======
-    class="css-ebqg5r"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-10gr5wx"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -6196,11 +5933,7 @@ for more details.
       </div>
     </blockquote>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6262,11 +5995,7 @@ for more details.
       </code>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6329,11 +6058,7 @@ for more details.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-ewhx8l"
-=======
-    class="css-ebqg5r"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-10gr5wx"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -6442,11 +6167,7 @@ for more details.
       </div>
     </blockquote>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6514,11 +6235,7 @@ for more details.
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6586,11 +6303,7 @@ for more details.
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6711,11 +6424,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -6846,11 +6555,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-<<<<<<< HEAD
-        class="css-8mpaon"
-=======
-        class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+        class="css-1b8yuk8"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -6973,11 +6678,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-<<<<<<< HEAD
-        class="css-8mpaon"
-=======
-        class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+        class="css-1b8yuk8"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -7137,11 +6838,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-<<<<<<< HEAD
-        class="css-8mpaon"
-=======
-        class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+        class="css-1b8yuk8"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -7336,15 +7033,10 @@ Same as
             data-text="true"
           >
             <a
-<<<<<<< HEAD
-              class="css-dqmbnf-A"
+              class="css-1pb9a83-A"
               href="https://reactnative.dev/docs/view#props"
               rel="noopener noreferrer"
               target="_blank"
-=======
-              class="css-1pb9a83-A"
-              href="/versions/latest/react-native/view#props"
->>>>>>> 15f5afe4ab (update snapshots)
             >
               ViewProps
             </a>
@@ -7401,11 +7093,7 @@ Same as
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7544,14 +7232,14 @@ Same as
       Check or request permissions for the barcode scanner.
 This uses both 
       <code
-        class="css-vixx70-TextComponent"
+        class="css-106i24p-TextComponent"
         data-text="true"
       >
         requestPermissionAsync
       </code>
        and 
       <code
-        class="css-vixx70-TextComponent"
+        class="css-106i24p-TextComponent"
         data-text="true"
       >
         getPermissionsAsync
@@ -7818,11 +7506,7 @@ This uses both
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8004,11 +7688,7 @@ This uses both
     </p>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8212,11 +7892,7 @@ This uses both
     </p>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8597,11 +8273,7 @@ code.
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8940,11 +8612,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9109,11 +8777,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9255,11 +8919,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9381,11 +9041,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9561,11 +9217,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9690,11 +9342,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9973,11 +9621,7 @@ you don't get this value.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10132,11 +9776,7 @@ you don't get this value.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10264,11 +9904,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-ewhx8l"
-=======
-    class="css-ebqg5r"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-10gr5wx"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10323,11 +9959,7 @@ you don't get this value.
       </a>
     </h3>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10395,11 +10027,7 @@ you don't get this value.
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10467,11 +10095,7 @@ you don't get this value.
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10592,11 +10216,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10760,11 +10380,7 @@ exports[`APISection expo-pedometer 1`] = `
     <br />
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11120,11 +10736,7 @@ a start date that is more than seven days in the past returns only the available
     </blockquote>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11297,11 +10909,7 @@ available on this device.
     </p>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11465,11 +11073,7 @@ available on this device.
     <br />
   </div>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11779,11 +11383,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-8mpaon"
-=======
-    class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-1b8yuk8"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12122,11 +11722,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12248,11 +11844,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12383,11 +11975,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12474,11 +12062,7 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-<<<<<<< HEAD
-    class="css-cjlyai"
-=======
-    class="css-7qqt81"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-y2smtm"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12644,11 +12228,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-<<<<<<< HEAD
-    class="css-ewhx8l"
-=======
-    class="css-ebqg5r"
->>>>>>> 15f5afe4ab (update snapshots)
+    class="css-10gr5wx"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12703,11 +12283,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -12775,11 +12351,7 @@ in order to enable/disable the permission.
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -12847,11 +12419,7 @@ in order to enable/disable the permission.
       </p>
     </div>
     <div
-<<<<<<< HEAD
-      class="css-8mpaon"
-=======
-      class="css-1wsqno0"
->>>>>>> 15f5afe4ab (update snapshots)
+      class="css-1b8yuk8"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"

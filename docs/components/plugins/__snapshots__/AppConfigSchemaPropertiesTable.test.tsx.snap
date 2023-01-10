@@ -3,19 +3,7 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-<<<<<<< HEAD
-<<<<<<< HEAD
-    class="css-182st3s-AppConfigProperty"
-=======
-<<<<<<< HEAD
-    class="css-mhnilp-AppConfigProperty"
-=======
-    class="css-1ty0ocu-AppConfigProperty"
->>>>>>> 35e26a6de3 (update snapshots)
->>>>>>> 15f5afe4ab (update snapshots)
-=======
-    class="css-10js1fp-AppConfigProperty"
->>>>>>> de265ecf16 (update snapshots)
+    class="css-1cj5gpg-AppConfigProperty"
   >
     <p
       class="  css-yszm2s-TextComponent"
@@ -135,19 +123,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div />
   </div>
   <div
-<<<<<<< HEAD
-<<<<<<< HEAD
-    class="css-182st3s-AppConfigProperty"
-=======
-<<<<<<< HEAD
-    class="css-mhnilp-AppConfigProperty"
-=======
-    class="css-1ty0ocu-AppConfigProperty"
->>>>>>> 35e26a6de3 (update snapshots)
->>>>>>> 15f5afe4ab (update snapshots)
-=======
-    class="css-10js1fp-AppConfigProperty"
->>>>>>> de265ecf16 (update snapshots)
+    class="css-1cj5gpg-AppConfigProperty"
   >
     <p
       class="  css-yszm2s-TextComponent"
@@ -311,19 +287,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
     <div>
       <div
-<<<<<<< HEAD
-<<<<<<< HEAD
-        class="css-182st3s-AppConfigProperty"
-=======
-<<<<<<< HEAD
-        class="css-mhnilp-AppConfigProperty"
-=======
-        class="css-1ty0ocu-AppConfigProperty"
->>>>>>> 35e26a6de3 (update snapshots)
->>>>>>> 15f5afe4ab (update snapshots)
-=======
-        class="css-10js1fp-AppConfigProperty"
->>>>>>> de265ecf16 (update snapshots)
+        class="css-1cj5gpg-AppConfigProperty"
       >
         <p
           class="  css-yszm2s-TextComponent"
@@ -451,19 +415,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </details>
         <div>
           <div
-<<<<<<< HEAD
-<<<<<<< HEAD
-            class="css-182st3s-AppConfigProperty"
-=======
-<<<<<<< HEAD
-            class="css-mhnilp-AppConfigProperty"
-=======
-            class="css-1ty0ocu-AppConfigProperty"
->>>>>>> 35e26a6de3 (update snapshots)
->>>>>>> 15f5afe4ab (update snapshots)
-=======
-            class="css-10js1fp-AppConfigProperty"
->>>>>>> de265ecf16 (update snapshots)
+            class="css-1cj5gpg-AppConfigProperty"
           >
             <p
               class="  css-yszm2s-TextComponent"
@@ -549,19 +501,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-<<<<<<< HEAD
-<<<<<<< HEAD
-        class="css-182st3s-AppConfigProperty"
-=======
-<<<<<<< HEAD
-        class="css-mhnilp-AppConfigProperty"
-=======
-        class="css-1ty0ocu-AppConfigProperty"
->>>>>>> 35e26a6de3 (update snapshots)
->>>>>>> 15f5afe4ab (update snapshots)
-=======
-        class="css-10js1fp-AppConfigProperty"
->>>>>>> de265ecf16 (update snapshots)
+        class="css-1cj5gpg-AppConfigProperty"
       >
         <p
           class="  css-yszm2s-TextComponent"
@@ -661,19 +601,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-<<<<<<< HEAD
-<<<<<<< HEAD
-    class="css-182st3s-AppConfigProperty"
-=======
-<<<<<<< HEAD
-    class="css-mhnilp-AppConfigProperty"
-=======
-    class="css-1ty0ocu-AppConfigProperty"
->>>>>>> 35e26a6de3 (update snapshots)
->>>>>>> 15f5afe4ab (update snapshots)
-=======
-    class="css-10js1fp-AppConfigProperty"
->>>>>>> de265ecf16 (update snapshots)
+    class="css-1cj5gpg-AppConfigProperty"
   >
     <p
       class="  css-yszm2s-TextComponent"
@@ -829,19 +757,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </blockquote>
     <div>
       <div
-<<<<<<< HEAD
-<<<<<<< HEAD
-        class="css-182st3s-AppConfigProperty"
-=======
-<<<<<<< HEAD
-        class="css-mhnilp-AppConfigProperty"
-=======
-        class="css-1ty0ocu-AppConfigProperty"
->>>>>>> 35e26a6de3 (update snapshots)
->>>>>>> 15f5afe4ab (update snapshots)
-=======
-        class="css-10js1fp-AppConfigProperty"
->>>>>>> de265ecf16 (update snapshots)
+        class="css-1cj5gpg-AppConfigProperty"
       >
         <p
           class="  css-yszm2s-TextComponent"
@@ -925,19 +841,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div />
       </div>
       <div
-<<<<<<< HEAD
-<<<<<<< HEAD
-        class="css-182st3s-AppConfigProperty"
-=======
-<<<<<<< HEAD
-        class="css-mhnilp-AppConfigProperty"
-=======
-        class="css-1ty0ocu-AppConfigProperty"
->>>>>>> 35e26a6de3 (update snapshots)
->>>>>>> 15f5afe4ab (update snapshots)
-=======
-        class="css-10js1fp-AppConfigProperty"
->>>>>>> de265ecf16 (update snapshots)
+        class="css-1cj5gpg-AppConfigProperty"
       >
         <p
           class="  css-yszm2s-TextComponent"
@@ -1014,19 +918,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
         <div>
           <div
-<<<<<<< HEAD
-<<<<<<< HEAD
-            class="css-182st3s-AppConfigProperty"
-=======
-<<<<<<< HEAD
-            class="css-mhnilp-AppConfigProperty"
-=======
-            class="css-1ty0ocu-AppConfigProperty"
->>>>>>> 35e26a6de3 (update snapshots)
->>>>>>> 15f5afe4ab (update snapshots)
-=======
-            class="css-10js1fp-AppConfigProperty"
->>>>>>> de265ecf16 (update snapshots)
+            class="css-1cj5gpg-AppConfigProperty"
           >
             <p
               class="  css-yszm2s-TextComponent"
