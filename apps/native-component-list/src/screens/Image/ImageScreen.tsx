@@ -74,6 +74,13 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageBlurhashScreen'));
     },
   },
+  {
+    name: 'Custom cache key',
+    route: 'image/cache-key',
+    getComponent() {
+      return optionalRequire(() => require('./ImageCacheKeyScreen'));
+    },
+  },
 ];
 
 export default function ImageScreen() {
