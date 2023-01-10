@@ -36,7 +36,7 @@ class AnyFunctionTest {
     val method = MockedAnyFunction(arrayOf(typeOf<Int>()))
     val promise = PromiseMock()
 
-    assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected.") {
+    assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected") {
       method.call(
         mockk(),
         JavaOnlyArray().apply {
@@ -55,7 +55,7 @@ class AnyFunctionTest {
     val method = MockedAnyFunction(arrayOf(typeOf<Int>(), typeOf<Int>()))
     val promise = PromiseMock()
 
-    assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected.") {
+    assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected") {
       method.call(
         mockk(),
         JavaOnlyArray().apply {

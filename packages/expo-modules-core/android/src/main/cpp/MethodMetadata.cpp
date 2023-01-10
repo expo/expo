@@ -164,7 +164,7 @@ MethodMetadata::MethodMetadata(
     args(args),
     isAsync(isAsync),
     jBodyReference(std::move(jBodyReference)),
-    longLivedObjectCollection_(longLivedObjectCollection) {
+    longLivedObjectCollection_(std::move(longLivedObjectCollection)) {
   argTypes.reserve(args);
   for (size_t i = 0; i < args; i++) {
     auto expectedType = expectedArgTypes->getElement(i);
@@ -186,7 +186,7 @@ MethodMetadata::MethodMetadata(
     isAsync(isAsync),
     argTypes(std::move(expectedArgTypes)),
     jBodyReference(std::move(jBodyReference)),
-    longLivedObjectCollection_(longLivedObjectCollection) {
+    longLivedObjectCollection_(std::move(longLivedObjectCollection)) {
 }
 
 std::shared_ptr<jsi::Function> MethodMetadata::toJSFunction(
