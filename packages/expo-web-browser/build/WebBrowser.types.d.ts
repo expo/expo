@@ -1,8 +1,8 @@
-export type RedirectEvent = {
+export declare type RedirectEvent = {
     url: string;
 };
-export type WebBrowserWindowFeatures = Record<string, number | boolean | string>;
-export type WebBrowserOpenOptions = {
+export declare type WebBrowserWindowFeatures = Record<string, number | boolean | string>;
+export declare type WebBrowserOpenOptions = {
     /**
      * Color of the toolbar. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      */
@@ -83,7 +83,7 @@ export type WebBrowserOpenOptions = {
  * If there is no native AuthSession implementation available (which is the case on Android) the params inherited from
  * [`WebBrowserOpenOptions`](#webbrowseropenoptions) will be used in the browser polyfill. Otherwise, the browser parameters will be ignored.
  */
-export type AuthSessionOpenOptions = WebBrowserOpenOptions & {
+export declare type AuthSessionOpenOptions = WebBrowserOpenOptions & {
     /**
      * Determines whether the session should ask the browser for a private authentication session.
      * Set this to `true` to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session.
@@ -94,8 +94,8 @@ export type AuthSessionOpenOptions = WebBrowserOpenOptions & {
      */
     preferEphemeralSession?: boolean;
 };
-export type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;
-export type WebBrowserCustomTabsResults = {
+export declare type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;
+export declare type WebBrowserCustomTabsResults = {
     /**
      * Default package chosen by user, `null` if there is no such packages. Also `null` usually means,
      * that user will be prompted to choose from available packages.
@@ -178,32 +178,32 @@ export declare enum WebBrowserPresentationStyle {
      */
     AUTOMATIC = "automatic"
 }
-export type WebBrowserResult = {
+export declare type WebBrowserResult = {
     /**
      * Type of the result.
      */
     type: WebBrowserResultType;
 };
-export type WebBrowserRedirectResult = {
+export declare type WebBrowserRedirectResult = {
     /**
      * Type of the result.
      */
     type: 'success';
     url: string;
 };
-export type ServiceActionResult = {
+export declare type ServiceActionResult = {
     servicePackage?: string;
 };
-export type WebBrowserMayInitWithUrlResult = ServiceActionResult;
-export type WebBrowserWarmUpResult = ServiceActionResult;
-export type WebBrowserCoolDownResult = ServiceActionResult;
-export type WebBrowserCompleteAuthSessionOptions = {
+export declare type WebBrowserMayInitWithUrlResult = ServiceActionResult;
+export declare type WebBrowserWarmUpResult = ServiceActionResult;
+export declare type WebBrowserCoolDownResult = ServiceActionResult;
+export declare type WebBrowserCompleteAuthSessionOptions = {
     /**
      * Attempt to close the window without checking to see if the auth redirect matches the cached redirect URL.
      */
     skipRedirectCheck?: boolean;
 };
-export type WebBrowserCompleteAuthSessionResult = {
+export declare type WebBrowserCompleteAuthSessionResult = {
     /**
      * Type of the result.
      */
