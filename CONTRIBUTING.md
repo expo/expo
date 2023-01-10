@@ -137,6 +137,7 @@ Our docs are made with [Next.js](https://github.com/vercel/next.js). They're loc
 1. Navigate to the **docs/** directory and run `yarn`.
 2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`).
 3. Navigate to the docs you want to edit: `cd docs/pages/`.
+4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
 
 ## 📝 Writing a Commit Message
 
