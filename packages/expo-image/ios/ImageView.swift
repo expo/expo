@@ -111,7 +111,8 @@ public final class ImageView: ExpoView {
       context[SDWebImageContextOption.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headers)
     }
 
-    context[SDWebImageContextOption.imageTransformer] = createTransformPipeline()
+    context[.cacheKeyFilter] = createCacheKeyFilter(source.cacheKey)
+    context[.imageTransformer] = createTransformPipeline()
 
     // Assets from the bundler have `scale` prop which needs to be passed to the context,
     // otherwise they would be saved in cache with scale = 1.0 which may result in
@@ -251,6 +252,7 @@ public final class ImageView: ExpoView {
     let isBlurhash = placeholder.isBlurhash
 
     context[.imageScaleFactor] = placeholder.scale
+    context[.cacheKeyFilter] = createCacheKeyFilter(placeholder.cacheKey)
 
     // Cache placeholders on the disk. Should we let the user choose whether
     // to cache them or apply the same policy as with the proper image?
