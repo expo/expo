@@ -122,7 +122,7 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
   /**
    * Creates the group view definition that scopes group view-related definitions.
    */
-  inline fun <reified ParentType: ViewGroup> GroupView(body: ViewGroupDefinitionBuilder<ParentType>.() -> Unit) {
+  inline fun <reified ParentType : ViewGroup> GroupView(body: ViewGroupDefinitionBuilder<ParentType>.() -> Unit) {
     assert(viewType == ParentType::class) { "Provided type and view type have to be the same." }
     require(viewGroupDefinition == null) { "The viewManager definition may have exported only one groupView definition." }
 

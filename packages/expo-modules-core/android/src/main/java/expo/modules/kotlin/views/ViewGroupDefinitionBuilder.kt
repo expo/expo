@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import expo.modules.kotlin.modules.DefinitionMarker
 
 @DefinitionMarker
-class ViewGroupDefinitionBuilder<ParentType: ViewGroup> {
+class ViewGroupDefinitionBuilder<ParentType : ViewGroup> {
   @PublishedApi
   internal var addViewAction: AddViewAction? = null
 
