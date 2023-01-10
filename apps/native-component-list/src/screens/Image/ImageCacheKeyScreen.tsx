@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { useCallback, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../components/Button';
 import MonoText from '../../components/MonoText';
@@ -34,9 +34,9 @@ export default function ImagePlaceholderScreen() {
         }}
       />
 
-      <View style={styles.actionsContainer}>
-        <MonoText>{`const source = ${JSON.stringify(source, null, 2)}`}</MonoText>
+      <MonoText>{`const source = ${JSON.stringify(source, null, 2)}`}</MonoText>
 
+      <ScrollView style={styles.scrollView} contentContainerStyle={styles.actionsContainer}>
         <Text style={styles.text}>
           At first let's make sure the disk cache is cleared{'\n'}
           👇
@@ -62,7 +62,7 @@ export default function ImagePlaceholderScreen() {
           title="Set random source uri"
           onPress={loadRandomImage}
         />
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -81,6 +81,11 @@ const styles = StyleSheet.create({
     height: 200,
     borderWidth: 1,
     borderColor: Colors.border,
+  },
+  scrollView: {
+    marginTop: 10,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
   },
   actionsContainer: {
     alignItems: 'center',
