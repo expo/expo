@@ -47,7 +47,7 @@
     "@types/find-up": "^4.0.0",
     "@types/jest": "^29.2.1",
     "@types/rimraf": "^3.0.0",
-    "eslint": "^8.20.0",
+    "eslint": "^8.29.0",
     "eslint-config-universe": "^11.1.0",
     "expo": "^47.0.0",
     "glob": "^7.1.7",
