@@ -446,7 +446,7 @@ export type CameraNativeProps = {
     pointerEvents?: any;
     style?: any;
     ref?: Function;
-    onCameraReady?: () => void;
+    onCameraReady?: CameraReadyListener;
     onMountError?: MountErrorListener;
     onBarCodeScanned?: (event: {
         nativeEvent: BarCodeScanningResult;
