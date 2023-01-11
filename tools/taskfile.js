@@ -10,9 +10,9 @@ export async function build(task, opts) {
     .swc('cli', { dev: opts.dev })
     .target('build');
 
-  // Copy over JSON files
+  // Copy over JSON and patch files
   await task
-    .source('src/**/*.+(json)', {
+    .source('src/**/*.+(json|patch)', {
       ignore: ['**/__tests__/**', '**/__mocks__/**'],
     })
     .target('build');

@@ -63,7 +63,6 @@ async function maybeRebuildAndRun() {
     } catch (error) {
       console.error(LogModifiers.error(` 💥 Rebuilding failed: ${error.stack}`));
       process.exit(1);
-      return;
     }
     console.log(` ✨ Successfully built ${LogModifiers.name('expotools')}\n`);
   }
@@ -115,6 +114,8 @@ async function calculateSourceChecksumAsync() {
         'src/**/*.ts',
         // src/versioning files
         'src/**/*.json',
+        // src/react-native-nightlies/patches
+        'src/**/*.patch',
         'expotools.js',
         // swc build files
         'taskfile.js',
