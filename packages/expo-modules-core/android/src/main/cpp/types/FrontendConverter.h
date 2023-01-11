@@ -56,6 +56,21 @@ public:
 };
 
 /**
+ * Converter from js number to [java.lang.Long].
+ */
+class LongFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
  * Converter from js number to [java.lang.Float].
  */
 class FloatFrontendConverter : public FrontendConverter {

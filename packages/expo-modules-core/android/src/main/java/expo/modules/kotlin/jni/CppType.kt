@@ -16,6 +16,7 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   NONE(Nothing::class, 0),
   DOUBLE(Double::class),
   INT(Int::class),
+  LONG(Long::class),
   FLOAT(Float::class),
   BOOLEAN(Boolean::class),
   STRING(String::class),

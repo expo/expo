@@ -38,6 +38,7 @@ class JSIFunctionsTest {
       Function("doubleF") { a: Double -> a }
       Function("floatF") { a: Float -> a }
       Function("boolF") { a: Boolean -> a }
+      Function("longF") { a: Long -> a }
     }
   ) {
     val stringValue = evaluateScript("expo.modules.TestModule.stringF('expo')").getString()
@@ -45,12 +46,14 @@ class JSIFunctionsTest {
     val doubleValue = evaluateScript("expo.modules.TestModule.doubleF(123.3)").getDouble()
     val floatValue = evaluateScript("expo.modules.TestModule.floatF(123.3)").getDouble().toFloat()
     val boolValue = evaluateScript("expo.modules.TestModule.boolF(true)").getBool()
+    val longValue = evaluateScript("expo.modules.TestModule.longF(21474836470)").getDouble().toLong()
 
     Truth.assertThat(stringValue).isEqualTo("expo")
     Truth.assertThat(intValue).isEqualTo(123)
     Truth.assertThat(doubleValue).isEqualTo(123.3)
     Truth.assertThat(floatValue).isEqualTo(123.3.toFloat())
     Truth.assertThat(boolValue).isEqualTo(true)
+    Truth.assertThat(longValue).isEqualTo(21474836470)
   }
 
   @Test

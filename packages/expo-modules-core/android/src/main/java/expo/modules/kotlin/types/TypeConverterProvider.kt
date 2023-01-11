@@ -135,6 +135,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     val intTypeConverter = createTrivialTypeConverter(
       isOptional, ExpectedType(CppType.INT)
     ) { it.asDouble().toInt() }
+    val longTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.LONG)
+    ) { it.asDouble().toLong() }
     val doubleTypeConverter = createTrivialTypeConverter(
       isOptional, ExpectedType(CppType.DOUBLE)
     ) { it.asDouble() }
@@ -148,6 +151,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     val converters = mapOf(
       Int::class.createType(nullable = isOptional) to intTypeConverter,
       java.lang.Integer::class.createType(nullable = isOptional) to intTypeConverter,
+
+      Long::class.createType(nullable = isOptional) to longTypeConverter,
+      java.lang.Long::class.createType(nullable = isOptional) to longTypeConverter,
 
       Double::class.createType(nullable = isOptional) to doubleTypeConverter,
       java.lang.Double::class.createType(nullable = isOptional) to doubleTypeConverter,
