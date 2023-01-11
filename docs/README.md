@@ -159,8 +159,8 @@ Before proceeding, make sure you:
 - have [**expo/**](https://github.com/expo/expo) repo cloned on your machine
   - make sure to [install `direnv`](https://direnv.net/docs/installation.html) and run `direnv allow` at the root of the **expo/** repo.
 - have gone through the steps mentioned in [**"Download and Setup" in the contribution guideline**](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-download-and-setup).
-- can run **expo/docs** repo **[locally](https://github.com/expo/expo/tree/main/docs#running-locally)**.
-- can run [`et` (Expotools)](https://github.com/expo/expo/blob/9047ecfbe233924e4848722b518d8ce1fa8b7173/tools/README.md) command locally.
+- can run **expo/docs** app **[locally](https://github.com/expo/expo/tree/main/docs#running-locally)**.
+- can run [`et` (Expotools)](https://github.com/expo/expo/blob/main/tools/README.md) command locally.
 
 Once you have made sure the development setup is ready, proceed to the next section:
 

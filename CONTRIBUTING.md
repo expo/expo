@@ -130,7 +130,7 @@ Thanks again for helping to make sure that Expo is stable for everyone!
 
 ## 📚 Updating Documentation
 
-Our docs are made with [Next.js](https://github.com/vercel/next.js). They're located in the **docs/** directory. For more information look at the [`docs/readme.md`](/docs/README.md).
+Our docs are made with [Next.js](https://github.com/vercel/next.js). They're located in the **docs/** directory. For more information look at the [`docs/README.md`](/docs/README.md).
 
 **TL;DR:**
 
