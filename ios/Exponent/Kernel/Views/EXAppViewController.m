@@ -37,9 +37,6 @@
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
 #import <ABI46_0_0React/ABI46_0_0RCTAppearance.h>
 #endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
-#import <ABI45_0_0React/ABI45_0_0RCTAppearance.h>
-#endif
 
 #if defined(EX_DETACHED)
 #import "ExpoKit-Swift.h"
@@ -650,9 +647,6 @@ NS_ASSUME_NONNULL_BEGIN
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
   ABI46_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
-  ABI45_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 
 }
