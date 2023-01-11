@@ -10,6 +10,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 
@@ -132,7 +133,7 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
   }
 
   private fun createViewFactory(): (Context, AppContext) -> View = viewFactory@{ context: Context, appContext: AppContext ->
-    val primaryConstructor = requireNotNull(viewType.primaryConstructor) { "$viewType doesn't have a primary constructor" }
+    val primaryConstructor = requireNotNull(getPrimaryConstructor()) { "$viewType doesn't have a primary constructor" }
     val args = primaryConstructor.parameters
 
     if (args.isEmpty()) {
@@ -159,5 +160,15 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
     }
 
     return@viewFactory primaryConstructor.call(context, appContext)
+  }
+
+  private fun getPrimaryConstructor(): KFunction<T>? {
+    val kotlinContractor = viewType.primaryConstructor
+    if (kotlinContractor != null) {
+      return kotlinContractor
+    }
+
+    // Add compatibility with Java
+    return viewType.constructors.firstOrNull()
   }
 }
