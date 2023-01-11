@@ -41,9 +41,9 @@ class JSIFunctionsTest {
     }
   ) {
     val stringValue = evaluateScript("expo.modules.TestModule.stringF('expo')").getString()
-    val intValue = evaluateScript("expo.modules.TestModule.intF(123)").getDouble().toInt()
+    val intValue = evaluateScript("expo.modules.TestModule.intF(123)").getInt()
     val doubleValue = evaluateScript("expo.modules.TestModule.doubleF(123.3)").getDouble()
-    val floatValue = evaluateScript("expo.modules.TestModule.floatF(123.3)").getDouble().toFloat()
+    val floatValue = evaluateScript("expo.modules.TestModule.floatF(123.3)").getFloat()
     val boolValue = evaluateScript("expo.modules.TestModule.boolF(true)").getBool()
 
     Truth.assertThat(stringValue).isEqualTo("expo")
@@ -86,7 +86,7 @@ class JSIFunctionsTest {
     Truth.assertThat(e2).hasLength(3)
     val newArray = arrayOf(*e1, *e2)
     newArray.forEachIndexed { index, element ->
-      Truth.assertThat(element.getDouble().toInt()).isEqualTo(index + 1)
+      Truth.assertThat(element.getInt()).isEqualTo(index + 1)
     }
   }
 
@@ -242,7 +242,7 @@ class JSIFunctionsTest {
     ) {
       val result = evaluateScript("expo.modules.TestModule.f({ 'x': 123, 's': 'expo' })").getObject()
 
-      val x = result.getProperty("x").getDouble().toInt()
+      val x = result.getProperty("x").getInt()
       val s = result.getProperty("s").getString()
 
       Truth.assertThat(x).isEqualTo(123)
@@ -378,9 +378,9 @@ class JSIFunctionsTest {
     val array = evaluateScript("expo.modules.TestModule.intArray([1, 2, 3])").getArray()
     Truth.assertThat(array.size).isEqualTo(3)
 
-    val e1 = array[0].getDouble().toInt()
-    val e2 = array[1].getDouble().toInt()
-    val e3 = array[2].getDouble().toInt()
+    val e1 = array[0].getInt()
+    val e2 = array[1].getInt()
+    val e3 = array[2].getInt()
 
     Truth.assertThat(e1).isEqualTo(1)
     Truth.assertThat(e2).isEqualTo(2)
@@ -422,10 +422,10 @@ class JSIFunctionsTest {
     Truth.assertThat(a1.size).isEqualTo(2)
     Truth.assertThat(a2.size).isEqualTo(2)
 
-    val e1 = a1[0].getDouble().toInt()
-    val e2 = a1[1].getDouble().toInt()
-    val e3 = a2[0].getDouble().toInt()
-    val e4 = a2[1].getDouble().toInt()
+    val e1 = a1[0].getInt()
+    val e2 = a1[1].getInt()
+    val e3 = a2[0].getInt()
+    val e4 = a2[1].getInt()
 
     Truth.assertThat(e1).isEqualTo(1)
     Truth.assertThat(e2).isEqualTo(2)
@@ -475,7 +475,7 @@ class JSIFunctionsTest {
       }
     }
   ) {
-    val int = evaluateScript("expo.modules.TestModule.eitherFirst(123)").getDouble().toInt()
+    val int = evaluateScript("expo.modules.TestModule.eitherFirst(123)").getInt()
     val string = evaluateScript("expo.modules.TestModule.eitherSecond('expo')").getString()
 
     Truth.assertThat(int).isEqualTo(123)
