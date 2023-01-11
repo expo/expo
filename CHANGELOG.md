@@ -8,6 +8,7 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 📚 3rd party library updates
 
 - Updated `react-native-shared-element` from `0.8.4` to `0.8.7`. ([#20593](https://github.com/expo/expo/pull/20593) by [@ijzerenhein](https://github.com/ijzerenhein))
+- Updated `@react-native-async-storage/async-storage` from `1.17.3' to `1.17.11`. ([#20780](https://github.com/expo/expo/pull/20780) by [@kudo](https://github.com/kudo))
 
 ### 🛠 Breaking changes
 
