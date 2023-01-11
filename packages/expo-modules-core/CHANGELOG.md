@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Fix view prop setter not being called when its new value is `null` or `undefined`. ([#20755](https://github.com/expo/expo/pull/20755) & [#20766](https://github.com/expo/expo/pull/20766) by [@tsapeta](https://github.com/tsapeta) & [@lukmccall](https://github.com/lukmccall))
+- Fixed "Tried to register two views with the same name" error on fast refresh.
 
 ### 💡 Others
 
