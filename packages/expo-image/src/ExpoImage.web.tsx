@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { ImageNativeProps, ImageSource, ImageLoadEventData, ImageTransition } from './Image.types';
-import AnimationManager, { getAnimatorFromClass } from './web/AnimationManager';
+import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
+import AnimationManager from './web/AnimationManager';
 import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/style';
 import useSourceSelection from './web/useSourceSelection';
@@ -31,14 +31,6 @@ function onErrorAdapter(onError?: { (event: { error: string }): void }) {
   };
 }
 
-const SUPPORTED_ANIMATIONS: ImageTransition['effect'][] = [
-  'cross-dissolve',
-  'flip-from-left',
-  'flip-from-right',
-  'flip-from-top',
-  'flip-from-bottom',
-];
-
 const setCssVariables = (element: HTMLElement, size: DOMRect) => {
   element?.style.setProperty('--expo-image-width', `${size.width}px`);
   element?.style.setProperty('--expo-image-height', `${size.height}px`);
@@ -64,12 +56,7 @@ export default function ExpoImage({
     responsivePolicy,
     setCssVariables
   );
-  const animator = getAnimatorFromClass(
-    transition?.effect && SUPPORTED_ANIMATIONS.includes(transition?.effect)
-      ? transition?.effect
-      : 'cross-dissolve',
-    transition?.timing
-  );
+
   return (
     <div
       ref={containerRef}
@@ -84,7 +71,7 @@ export default function ExpoImage({
         position: 'relative',
       }}>
       <AnimationManager
-        animation={(transition?.duration ?? -1) > 0 ? animator : null}
+        transition={transition}
         initial={
           placeholder?.[0]?.uri
             ? [
@@ -113,34 +100,31 @@ export default function ExpoImage({
               ]
             : null
         }>
-        {[
-          (selectedSource as any)?.uri || placeholder?.[0]?.uri,
-          ({ onAnimationFinished, onReady, onMount }) =>
-            (className) =>
-              (
-                <ImageWrapper
-                  source={selectedSource || placeholder?.[0]}
-                  events={{
-                    onError: [onErrorAdapter(onError), onLoadEnd],
-                    onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
-                    onMount: [onMount],
-                    onTransitionEnd: [onAnimationFinished],
-                  }}
-                  style={{
-                    objectFit: selectedSource ? contentFit : 'scale-down',
-                    transitionDuration: `${transition?.duration || 0}ms`,
-                    transitionTimingFunction: transition?.timing,
-                  }}
-                  className={className}
-                  priority={priority}
-                  contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
-                  blurhashContentPosition={contentPosition}
-                  blurhashStyle={{
-                    objectFit: contentFit,
-                  }}
-                />
-              ),
-        ]}
+        {(selectedSource as any)?.uri || placeholder?.[0]?.uri}
+        {({ onAnimationFinished, onReady, onMount }) =>
+          (className, style) =>
+            (
+              <ImageWrapper
+                source={selectedSource || placeholder?.[0]}
+                events={{
+                  onError: [onErrorAdapter(onError), onLoadEnd],
+                  onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
+                  onMount: [onMount],
+                  onTransitionEnd: [onAnimationFinished],
+                }}
+                style={{
+                  objectFit: selectedSource ? contentFit : 'scale-down',
+                  ...style,
+                }}
+                className={className}
+                priority={priority}
+                contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
+                blurhashContentPosition={contentPosition}
+                blurhashStyle={{
+                  objectFit: contentFit,
+                }}
+              />
+            )}
       </AnimationManager>
     </div>
   );

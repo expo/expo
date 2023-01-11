@@ -3,24 +3,25 @@ import React from 'react';
 import { ImageTransition } from '../Image.types';
 
 type Callbacks = {
-  onReady?: ((event: React.SyntheticEvent<HTMLImageElement, Event>) => void) | null;
-  onAnimationFinished?: ((forceUnmount?: boolean) => void) | null;
+  onReady?: (() => void) | null;
+  onAnimationFinished?: (() => void) | null;
   onMount?: (() => void) | null;
 };
 
 type AnimationManagerNode = [
   key: string,
-  renderFunction: (renderProps: NonNullable<Callbacks>) => (className: string) => React.ReactElement
+  renderFunction: (
+    renderProps: NonNullable<Callbacks>
+  ) => (className: string, style: React.CSSProperties) => React.ReactElement
 ];
 
-type Animation = null | {
-  animateInClass: string;
-  animateOutClass: string;
-  startingClass: string;
-  containerClass: string;
-  timingFunction: ImageTransition['timing'];
-  animationClass: ImageTransition['effect'];
-};
+const SUPPORTED_ANIMATIONS: ImageTransition['effect'][] = [
+  'cross-dissolve',
+  'flip-from-left',
+  'flip-from-right',
+  'flip-from-top',
+  'flip-from-bottom',
+];
 
 type NodeStatus = 'mounted' | 'in' | 'active' | 'out';
 
@@ -53,42 +54,62 @@ function validateTimingFunctionForAnimation(
   return timingFunction || null;
 }
 
-export function getAnimatorFromClass(
-  animationClass: ImageTransition['effect'],
-  timingFunction: ImageTransition['timing']
-) {
-  if (!animationClass) return null;
-  const timingClass = `image-timing-${validateTimingFunctionForAnimation(
-    animationClass,
-    timingFunction
-  )}`;
+function validateAnimationClass(effect: ImageTransition['effect']) {
+  if (!effect) return null;
+  if (SUPPORTED_ANIMATIONS.includes(effect)) return effect;
+  return 'cross-dissolve';
+}
+
+export function getAnimatorFromTransition(transition: ImageTransition | null | undefined) {
+  if (!transition?.duration) return null;
+  const animationClass = validateAnimationClass(transition.effect);
+  if (!animationClass) {
+    return {
+      startingClass: '',
+      animateInClass: '',
+      animateOutClass: '',
+      containerClass: '',
+      timingFunction: 'linear',
+      animationClass: '',
+      duration: 0,
+    };
+  }
+
+  const timingFunction = validateTimingFunctionForAnimation(animationClass, transition.timing);
+  const timingClass = `image-timing-${timingFunction}`;
+
   return {
     startingClass: `${animationClass}-start`,
     animateInClass: [animationClass, 'transitioning', `${animationClass}-active`, timingClass].join(
       ' '
     ),
-    animateOutClass: [animationClass, `${animationClass}-end`, 'unmount', timingClass].join(' '),
+    animateOutClass: [animationClass, `${animationClass}-end`, timingClass].join(' '),
     containerClass: `${animationClass}-container`,
     timingFunction,
     animationClass,
+    duration: transition?.duration || 0,
   };
 }
 
 type MountedAnimationNode = {
   animationKey: string;
-  persistedElement: (renderProps: Callbacks) => (className: string) => React.ReactElement;
+  persistedElement: (
+    renderProps: Callbacks
+  ) => (className: string, style: React.CSSProperties) => React.ReactElement;
   status: 'mounted' | 'in' | 'active' | 'out';
 };
 
 export default function AnimationManager({
   children: renderFunction,
   initial,
-  animation,
+  transition,
 }: {
   children: AnimationManagerNode;
   initial: AnimationManagerNode | null;
-  animation: null | Animation;
+  transition: ImageTransition | null | undefined;
 }) {
+  const animation = getAnimatorFromTransition(transition);
+
   const initialNode = useAnimationManagerNode(initial, 'active');
 
   const [nodes, setNodes] = React.useState<MountedAnimationNode[]>(
@@ -158,14 +179,18 @@ export default function AnimationManager({
 
   return (
     <>
-      {[...nodes].map((n, idx) => (
+      {[...nodes].map((n) => (
         <div className={animation?.containerClass} key={n.animationKey}>
           {wrapNodeWithCallbacks(n)(
             {
               in: animation?.animateInClass,
               out: animation?.animateOutClass,
               mounted: animation?.startingClass,
-            }[n.status]
+            }[n.status],
+            {
+              transitionDuration: `${animation?.duration || 0}ms`,
+              transitionTimingFunction: animation?.timingFunction || 'linear',
+            }
           )}
         </div>
       ))}

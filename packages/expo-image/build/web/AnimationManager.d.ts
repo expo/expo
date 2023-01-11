@@ -1,34 +1,35 @@
 import React from 'react';
 import { ImageTransition } from '../Image.types';
 type Callbacks = {
-    onReady?: ((event: React.SyntheticEvent<HTMLImageElement, Event>) => void) | null;
-    onAnimationFinished?: ((forceUnmount?: boolean) => void) | null;
+    onReady?: (() => void) | null;
+    onAnimationFinished?: (() => void) | null;
     onMount?: (() => void) | null;
 };
 type AnimationManagerNode = [
     key: string,
-    renderFunction: (renderProps: NonNullable<Callbacks>) => (className: string) => React.ReactElement
+    renderFunction: (renderProps: NonNullable<Callbacks>) => (className: string, style: React.CSSProperties) => React.ReactElement
 ];
-type Animation = null | {
-    animateInClass: string;
-    animateOutClass: string;
-    startingClass: string;
-    containerClass: string;
-    timingFunction: ImageTransition['timing'];
-    animationClass: ImageTransition['effect'];
-};
-export declare function getAnimatorFromClass(animationClass: ImageTransition['effect'], timingFunction: ImageTransition['timing']): {
+export declare function getAnimatorFromTransition(transition: ImageTransition | null | undefined): {
     startingClass: string;
     animateInClass: string;
     animateOutClass: string;
     containerClass: string;
-    timingFunction: "ease-in-out" | "ease-in" | "ease-out" | "linear" | undefined;
+    timingFunction: string;
+    animationClass: string;
+    duration: number;
+} | {
+    startingClass: string;
+    animateInClass: string;
+    animateOutClass: string;
+    containerClass: string;
+    timingFunction: "ease-in-out" | "ease-in" | "ease-out" | "linear" | null;
     animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down";
+    duration: number;
 } | null;
-export default function AnimationManager({ children: renderFunction, initial, animation, }: {
+export default function AnimationManager({ children: renderFunction, initial, transition, }: {
     children: AnimationManagerNode;
     initial: AnimationManagerNode | null;
-    animation: null | Animation;
+    transition: ImageTransition | null | undefined;
 }): JSX.Element;
 export {};
 //# sourceMappingURL=AnimationManager.d.ts.map

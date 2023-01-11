@@ -1,4 +1,11 @@
 import React from 'react';
+const SUPPORTED_ANIMATIONS = [
+    'cross-dissolve',
+    'flip-from-left',
+    'flip-from-right',
+    'flip-from-top',
+    'flip-from-bottom',
+];
 function useAnimationManagerNode(node, initialStatus) {
     const newNode = React.useMemo(() => {
         if (!node) {
@@ -23,20 +30,42 @@ function validateTimingFunctionForAnimation(animationClass, timingFunction) {
     }
     return timingFunction || null;
 }
-export function getAnimatorFromClass(animationClass, timingFunction) {
-    if (!animationClass)
+function validateAnimationClass(effect) {
+    if (!effect)
         return null;
-    const timingClass = `image-timing-${validateTimingFunctionForAnimation(animationClass, timingFunction)}`;
+    if (SUPPORTED_ANIMATIONS.includes(effect))
+        return effect;
+    return 'cross-dissolve';
+}
+export function getAnimatorFromTransition(transition) {
+    if (!transition?.duration)
+        return null;
+    const animationClass = validateAnimationClass(transition.effect);
+    if (!animationClass) {
+        return {
+            startingClass: '',
+            animateInClass: '',
+            animateOutClass: '',
+            containerClass: '',
+            timingFunction: 'linear',
+            animationClass: '',
+            duration: 0,
+        };
+    }
+    const timingFunction = validateTimingFunctionForAnimation(animationClass, transition.timing);
+    const timingClass = `image-timing-${timingFunction}`;
     return {
         startingClass: `${animationClass}-start`,
         animateInClass: [animationClass, 'transitioning', `${animationClass}-active`, timingClass].join(' '),
-        animateOutClass: [animationClass, `${animationClass}-end`, 'unmount', timingClass].join(' '),
+        animateOutClass: [animationClass, `${animationClass}-end`, timingClass].join(' '),
         containerClass: `${animationClass}-container`,
         timingFunction,
         animationClass,
+        duration: transition?.duration || 0,
     };
 }
-export default function AnimationManager({ children: renderFunction, initial, animation, }) {
+export default function AnimationManager({ children: renderFunction, initial, transition, }) {
+    const animation = getAnimatorFromTransition(transition);
     const initialNode = useAnimationManagerNode(initial, 'active');
     const [nodes, setNodes] = React.useState(initialNode ? [initialNode] : []);
     const removeAllNodesOfKeyExceptShowing = (key) => {
@@ -90,10 +119,13 @@ export default function AnimationManager({ children: renderFunction, initial, an
             },
         });
     }
-    return (React.createElement(React.Fragment, null, [...nodes].map((n, idx) => (React.createElement("div", { className: animation?.containerClass, key: n.animationKey }, wrapNodeWithCallbacks(n)({
+    return (React.createElement(React.Fragment, null, [...nodes].map((n) => (React.createElement("div", { className: animation?.containerClass, key: n.animationKey }, wrapNodeWithCallbacks(n)({
         in: animation?.animateInClass,
         out: animation?.animateOutClass,
         mounted: animation?.startingClass,
-    }[n.status]))))));
+    }[n.status], {
+        transitionDuration: `${animation?.duration || 0}ms`,
+        transitionTimingFunction: animation?.timingFunction || 'linear',
+    }))))));
 }
 //# sourceMappingURL=AnimationManager.js.map
