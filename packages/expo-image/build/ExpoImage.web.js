@@ -44,10 +44,9 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
         React.createElement(AnimationManager, { transition: transition, initial: placeholder?.[0]?.uri
                 ? [
                     placeholder?.[0]?.uri || '',
-                    ({ onAnimationFinished }) => (className) => (React.createElement(ImageWrapper, { source: placeholder?.[0], style: {
+                    ({ onAnimationFinished }) => (className, style) => (React.createElement(ImageWrapper, { source: placeholder?.[0], style: {
                             objectFit: 'scale-down',
-                            transitionDuration: `${transition?.duration || 0}ms`,
-                            transitionTimingFunction: transition?.timing,
+                            ...style,
                         }, className: className, events: {
                             onTransitionEnd: [onAnimationFinished],
                         }, contentPosition: { left: '50%', top: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {

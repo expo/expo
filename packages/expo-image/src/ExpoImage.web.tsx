@@ -77,14 +77,13 @@ export default function ExpoImage({
             ? [
                 placeholder?.[0]?.uri || '',
                 ({ onAnimationFinished }) =>
-                  (className) =>
+                  (className, style) =>
                     (
                       <ImageWrapper
                         source={placeholder?.[0]}
                         style={{
                           objectFit: 'scale-down',
-                          transitionDuration: `${transition?.duration || 0}ms`,
-                          transitionTimingFunction: transition?.timing,
+                          ...style,
                         }}
                         className={className}
                         events={{
