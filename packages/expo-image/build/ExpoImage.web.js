@@ -41,7 +41,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
     const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, setCssVariables);
     const animator = getAnimatorFromClass(transition?.effect && SUPPORTED_ANIMATIONS.includes(transition?.effect)
         ? transition?.effect
-        : 'cross-dissolve', transition?.timing || null);
+        : 'cross-dissolve', transition?.timing);
     return (React.createElement("div", { ref: containerRef, style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
@@ -54,11 +54,11 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
         React.createElement(AnimationManager, { animation: (transition?.duration ?? -1) > 0 ? animator : null, initial: placeholder?.[0]?.uri
                 ? [
                     placeholder?.[0]?.uri || '',
-                    ({ onAnimationFinished, ref }) => (React.createElement(ImageWrapper, { ref: ref, source: placeholder?.[0], style: {
+                    ({ onAnimationFinished }) => (className) => (React.createElement(ImageWrapper, { source: placeholder?.[0], style: {
                             objectFit: 'scale-down',
                             transitionDuration: `${transition?.duration || 0}ms`,
                             transitionTimingFunction: transition?.timing,
-                        }, events: {
+                        }, className: className, events: {
                             onTransitionEnd: [onAnimationFinished],
                         }, contentPosition: { left: '50%', top: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
                             objectFit: contentFit,
@@ -66,7 +66,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 ]
                 : null }, [
             selectedSource?.uri || placeholder?.[0]?.uri,
-            ({ onAnimationFinished, onReady, ref, onMount }) => (React.createElement(ImageWrapper, { ref: ref, source: selectedSource || placeholder?.[0], events: {
+            ({ onAnimationFinished, onReady, onMount }) => (className) => (React.createElement(ImageWrapper, { source: selectedSource || placeholder?.[0], events: {
                     onError: [onErrorAdapter(onError), onLoadEnd],
                     onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                     onMount: [onMount],
@@ -75,7 +75,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                     objectFit: selectedSource ? contentFit : 'scale-down',
                     transitionDuration: `${transition?.duration || 0}ms`,
                     transitionTimingFunction: transition?.timing,
-                }, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
+                }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
                     objectFit: contentFit,
                 } })),
         ])));

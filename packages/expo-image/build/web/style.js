@@ -113,6 +113,19 @@ const style = `
           transform:  translateZ(calc(var(--expo-image-height,1000px) * -1.25)) rotateX(180deg);
           opacity: 0;
         }
+        .image-timing-linear {
+          --expo-image-timing: linear;
+        }
+        .image-timing-ease-in {
+          --expo-image-timing: ease-in;
+        }
+        .image-timing-ease-out {
+          --expo-image-timing: ease-out;
+        }
+        .image-timing-ease-in-out {
+          --expo-image-timing: ease-in-out;
+        }
+
           `;
 export default function loadStyle() {
     const styleTag = document.createElement('style');

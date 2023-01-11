@@ -3,12 +3,12 @@ import { ImageContentPositionObject, ImageSource } from '../Image.types';
 declare const ImageWrapper: React.ForwardRefExoticComponent<{
     source?: ImageSource | null | undefined;
     events?: {
-        onLoad?: (((event: SyntheticEvent<HTMLImageElement, Event>) => void) | undefined)[] | undefined;
+        onLoad?: (((event: SyntheticEvent<HTMLImageElement, Event>) => void) | null | undefined)[] | undefined;
         onError?: ((({ source }: {
             source: ImageSource | null;
-        }) => void) | undefined)[] | undefined;
-        onTransitionEnd?: ((() => void) | undefined)[] | undefined;
-        onMount?: ((() => void) | undefined)[] | undefined;
+        }) => void) | null | undefined)[] | undefined;
+        onTransitionEnd?: ((() => void) | null | undefined)[] | undefined;
+        onMount?: ((() => void) | null | undefined)[] | undefined;
     } | undefined;
     contentPosition?: ImageContentPositionObject | undefined;
     blurhashContentPosition?: ImageContentPositionObject | undefined;

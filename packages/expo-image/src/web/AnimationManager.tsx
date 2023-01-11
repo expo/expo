@@ -1,99 +1,73 @@
 import React from 'react';
 
+import { ImageTransition } from '../Image.types';
+
+type Callbacks = {
+  onReady?: ((event: React.SyntheticEvent<HTMLImageElement, Event>) => void) | null;
+  onAnimationFinished?: ((forceUnmount?: boolean) => void) | null;
+  onMount?: (() => void) | null;
+};
+
 type AnimationManagerNode = [
   key: string,
-  renderFunction: (callbacks: {
-    onReady: () => void;
-    onAnimationFinished: () => void;
-    onMount: () => void;
-    ref: React.RefObject<HTMLImageElement>;
-  }) => React.ReactElement
+  renderFunction: (renderProps: NonNullable<Callbacks>) => (className: string) => React.ReactElement
 ];
 
 type Animation = null | {
-  run: (to: React.RefObject<HTMLImageElement>, from: React.RefObject<HTMLImageElement>[]) => void;
+  animateInClass: string;
+  animateOutClass: string;
   startingClass: string;
   containerClass: string;
-  timingFunction: string | null;
-  animationClass: string | null;
+  timingFunction: ImageTransition['timing'];
+  animationClass: ImageTransition['effect'];
 };
 
-function setClassOnElement(element: HTMLImageElement | null, classes: string[]) {
-  if (!element) {
-    return;
-  }
-  element.setAttribute('class', classes.join(' '));
-}
+type NodeStatus = 'mounted' | 'in' | 'active' | 'out';
 
-function useAnimationManagerNode(node: AnimationManagerNode | null) {
-  const callbackContainer: {
-    onReady: (() => void) | null;
-    onAnimationFinished: (() => void) | null;
-    onMount: (() => void) | null;
-  } = {
-    onReady: null,
-    onAnimationFinished: null,
-    onMount: null,
-  };
+function useAnimationManagerNode(node: AnimationManagerNode | null, initialStatus?: NodeStatus) {
   const newNode = React.useMemo(() => {
     if (!node) {
       return null;
     }
     const [animationKey, renderFunction] = node;
-    const ref = React.createRef<HTMLImageElement>();
-    const child = renderFunction({
-      onReady: () => {
-        callbackContainer.onReady?.();
-      },
-      onAnimationFinished: () => {
-        callbackContainer.onAnimationFinished?.();
-      },
-      onMount: () => {
-        callbackContainer.onMount?.();
-      },
-      ref,
-    });
     // key, ReactElement, ref, callbacks
-    return { animationKey, child, ref, callbackContainer };
-  }, [node?.[1]]);
+    return {
+      animationKey,
+      persistedElement: renderFunction,
+      status: (initialStatus || 'mounted') as NodeStatus,
+    };
+  }, [node?.[0]]);
   return newNode;
 }
 
-const validateTimingFunctionForAnimation = (
-  animationClass: string | null,
-  timingFunction: string | null
-) => {
+function validateTimingFunctionForAnimation(
+  animationClass: ImageTransition['effect'],
+  timingFunction: ImageTransition['timing']
+) {
   if (animationClass?.includes('flip')) {
     if (timingFunction?.includes('ease')) {
       return 'ease-in-out';
     }
     return 'linear';
   }
-  return timingFunction;
-};
+  return timingFunction || null;
+}
 
-export function getAnimatorFromClass(animationClass: string | null, timingFunction: string | null) {
+export function getAnimatorFromClass(
+  animationClass: ImageTransition['effect'],
+  timingFunction: ImageTransition['timing']
+) {
   if (!animationClass) return null;
-
-  const runAnimation = (
-    to: React.RefObject<HTMLImageElement>,
-    from: React.RefObject<HTMLImageElement>[]
-  ) => {
-    setClassOnElement(to.current, [animationClass, 'transitioning', `${animationClass}-active`]);
-    from.forEach((element) => {
-      if (!element.current?.classList.contains(`unmount`)) {
-        setClassOnElement(element.current, [animationClass, `${animationClass}-end`, 'unmount']);
-        element.current?.style.setProperty(
-          '--expo-image-timing',
-          validateTimingFunctionForAnimation(animationClass, timingFunction)
-        );
-      }
-    });
-  };
-
+  const timingClass = `image-timing-${validateTimingFunctionForAnimation(
+    animationClass,
+    timingFunction
+  )}`;
   return {
     startingClass: `${animationClass}-start`,
-    run: runAnimation,
+    animateInClass: [animationClass, 'transitioning', `${animationClass}-active`, timingClass].join(
+      ' '
+    ),
+    animateOutClass: [animationClass, `${animationClass}-end`, 'unmount', timingClass].join(' '),
     containerClass: `${animationClass}-container`,
     timingFunction,
     animationClass,
@@ -102,13 +76,8 @@ export function getAnimatorFromClass(animationClass: string | null, timingFuncti
 
 type MountedAnimationNode = {
   animationKey: string;
-  child: React.ReactElement;
-  ref: React.RefObject<HTMLImageElement>;
-  callbackContainer: {
-    onReady: (() => void) | null;
-    onAnimationFinished: ((forceUnmount?: boolean) => void) | null;
-    onMount: (() => void) | null;
-  };
+  persistedElement: (renderProps: Callbacks) => (className: string) => React.ReactElement;
+  status: 'mounted' | 'in' | 'active' | 'out';
 };
 
 export default function AnimationManager({
@@ -120,31 +89,25 @@ export default function AnimationManager({
   initial: AnimationManagerNode | null;
   animation: null | Animation;
 }) {
-  const initialNode = useAnimationManagerNode(initial);
-  if (initialNode) {
-    initialNode.callbackContainer.onAnimationFinished = () =>
-      setNodes((n) =>
-        n.filter(
-          (node, index) => node.animationKey !== initialNode.animationKey || index === n.length - 1
-        )
-      );
-  }
+  const initialNode = useAnimationManagerNode(initial, 'active');
 
   const [nodes, setNodes] = React.useState<MountedAnimationNode[]>(
     initialNode ? [initialNode] : []
   );
+
+  const removeAllNodesOfKeyExceptShowing = (key?: string) => {
+    setNodes((n) =>
+      n.filter(
+        (node) =>
+          (key ? node.animationKey !== key : false) ||
+          node.status === 'in' ||
+          node.status === 'active'
+      )
+    );
+  };
+
   const newNode = useAnimationManagerNode(renderFunction);
-  if (newNode) {
-    newNode.callbackContainer.onAnimationFinished = (forceUnmount = false) => {
-      if (newNode.ref.current?.classList.contains('unmount') || forceUnmount) {
-        setNodes((n) =>
-          n.filter(
-            (node, index) => node.animationKey !== newNode.animationKey || index === n.length - 1
-          )
-        );
-      }
-    };
-  }
+
   React.useEffect(() => {
     setNodes((n) => {
       if (!newNode) {
@@ -156,41 +119,54 @@ export default function AnimationManager({
         copy.splice(existingNodeIndex, 1, newNode);
         return copy;
       }
-
-      newNode.callbackContainer.onMount = () => {
-        if (!newNode?.ref.current || !animation?.startingClass) {
-          return;
-        }
-        if (!newNode?.ref.current.classList.contains('transitioning')) {
-          if (animation?.timingFunction) {
-            newNode.ref.current.style.setProperty(
-              '--expo-image-timing',
-              validateTimingFunctionForAnimation(animation.animationClass, animation.timingFunction)
-            );
-          }
-          setClassOnElement(newNode?.ref.current, [animation?.startingClass]);
-        }
-      };
-
-      newNode.callbackContainer.onReady = () => {
-        if (animation) {
-          animation.run(
-            newNode.ref,
-            n.map((n2) => n2.ref)
-          );
-        } else {
-          n.forEach((oldNode) => oldNode.callbackContainer?.onAnimationFinished?.(true));
-        }
-      };
-      n.forEach((prevNode) => (prevNode.callbackContainer.onReady = () => null));
       return [...n, newNode];
     });
   }, [newNode]);
+
+  function wrapNodeWithCallbacks(node: MountedAnimationNode) {
+    if (renderFunction[0] === node.animationKey) {
+      return renderFunction[1]({
+        onReady: () => {
+          if (animation) {
+            setNodes((nodes) =>
+              nodes.map((n) => (n === newNode ? { ...n, status: 'in' } : { ...n, status: 'out' }))
+            );
+          } else {
+            setNodes([{ ...node, status: 'in' }]);
+          }
+        },
+        onAnimationFinished: () => {
+          setNodes([{ ...node, status: 'in' }]);
+        },
+      });
+    }
+    if (initial?.[0] === node.animationKey) {
+      return initial[1]({
+        onAnimationFinished: () => {
+          if (node.status === 'out') {
+            removeAllNodesOfKeyExceptShowing(node.animationKey);
+          }
+        },
+      });
+    }
+    return node.persistedElement({
+      onAnimationFinished: () => {
+        removeAllNodesOfKeyExceptShowing(node.animationKey);
+      },
+    });
+  }
+
   return (
     <>
-      {[...nodes].reverse().map((n, idx) => (
+      {[...nodes].map((n, idx) => (
         <div className={animation?.containerClass} key={n.animationKey}>
-          {n.child}
+          {wrapNodeWithCallbacks(n)(
+            {
+              in: animation?.animateInClass,
+              out: animation?.animateOutClass,
+              mounted: animation?.startingClass,
+            }[n.status]
+          )}
         </div>
       ))}
     </>

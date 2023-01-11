@@ -1,26 +1,29 @@
 import React from 'react';
+import { ImageTransition } from '../Image.types';
+type Callbacks = {
+    onReady?: ((event: React.SyntheticEvent<HTMLImageElement, Event>) => void) | null;
+    onAnimationFinished?: ((forceUnmount?: boolean) => void) | null;
+    onMount?: (() => void) | null;
+};
 type AnimationManagerNode = [
     key: string,
-    renderFunction: (callbacks: {
-        onReady: () => void;
-        onAnimationFinished: () => void;
-        onMount: () => void;
-        ref: React.RefObject<HTMLImageElement>;
-    }) => React.ReactElement
+    renderFunction: (renderProps: NonNullable<Callbacks>) => (className: string) => React.ReactElement
 ];
 type Animation = null | {
-    run: (to: React.RefObject<HTMLImageElement>, from: React.RefObject<HTMLImageElement>[]) => void;
+    animateInClass: string;
+    animateOutClass: string;
     startingClass: string;
     containerClass: string;
-    timingFunction: string | null;
-    animationClass: string | null;
+    timingFunction: ImageTransition['timing'];
+    animationClass: ImageTransition['effect'];
 };
-export declare function getAnimatorFromClass(animationClass: string | null, timingFunction: string | null): {
+export declare function getAnimatorFromClass(animationClass: ImageTransition['effect'], timingFunction: ImageTransition['timing']): {
     startingClass: string;
-    run: (to: React.RefObject<HTMLImageElement>, from: React.RefObject<HTMLImageElement>[]) => void;
+    animateInClass: string;
+    animateOutClass: string;
     containerClass: string;
-    timingFunction: string | null;
-    animationClass: string;
+    timingFunction: "ease-in-out" | "ease-in" | "ease-out" | "linear" | undefined;
+    animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down";
 } | null;
 export default function AnimationManager({ children: renderFunction, initial, animation, }: {
     children: AnimationManagerNode;

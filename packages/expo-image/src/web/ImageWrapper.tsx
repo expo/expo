@@ -66,10 +66,10 @@ const ImageWrapper = React.forwardRef(
     }: {
       source?: ImageSource | null;
       events?: {
-        onLoad?: (((event: SyntheticEvent<HTMLImageElement, Event>) => void) | undefined)[];
-        onError?: ((({ source }: { source: ImageSource | null }) => void) | undefined)[];
-        onTransitionEnd?: ((() => void) | undefined)[];
-        onMount?: ((() => void) | undefined)[];
+        onLoad?: (((event: SyntheticEvent<HTMLImageElement, Event>) => void) | undefined | null)[];
+        onError?: ((({ source }: { source: ImageSource | null }) => void) | undefined | null)[];
+        onTransitionEnd?: ((() => void) | undefined | null)[];
+        onMount?: ((() => void) | undefined | null)[];
       };
       contentPosition?: ImageContentPositionObject;
       blurhashContentPosition?: ImageContentPositionObject;
@@ -83,7 +83,6 @@ const ImageWrapper = React.forwardRef(
     useEffect(() => {
       events?.onMount?.forEach((e) => e?.());
     }, []);
-
     const isBlurhash = isBlurhashString(source?.uri || '');
     const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
     const objectPosition = getObjectPositionFromContentPositionObject(
