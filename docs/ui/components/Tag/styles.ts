@@ -6,7 +6,6 @@ export const tagStyle = css({
   backgroundColor: theme.background.tertiary,
   color: theme.text.default,
   fontSize: '90%',
-  fontWeight: 700,
   padding: `${spacing[1]}px ${spacing[2]}px`,
   marginBottom: spacing[3],
   marginRight: spacing[2],
@@ -24,10 +23,15 @@ export const tagStyle = css({
   'nav &': {
     whiteSpace: 'pre',
   },
+
+  'h3 &': {
+    fontSize: '80%',
+  },
 });
 
 export const labelStyle = css({
   lineHeight: `${spacing[4]}px`,
+  fontWeight: 'normal',
 });
 
 export const tagToCStyle = css({
@@ -35,5 +39,5 @@ export const tagToCStyle = css({
   marginBottom: 0,
   marginRight: 0,
   marginLeft: spacing[1],
-  padding: `0px ${spacing[1.5]}px`,
+  padding: `0 ${spacing[1.5]}px`,
 });

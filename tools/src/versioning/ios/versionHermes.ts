@@ -96,7 +96,7 @@ function createHermesTransforms(versionName: string, versionedJsiDir: string): F
       paths: 'API/hermes/CMakeLists.txt',
       find: 'MACOSX_FRAMEWORK_IDENTIFIER dev.hermesengine.',
       // CFBundleIdentifier does not support underscores, replacing with hyphens.
-      // https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html#//apple_ref/doc/uid/TP40009249-102070-TPXREF105
+      // https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
       replaceWith: `MACOSX_FRAMEWORK_IDENTIFIER dev.${versionName.replace(/_/g, '-')}hermesengine.`,
     },
     {

@@ -6,21 +6,57 @@
 
 ### 🎉 New features
 
+- View-related DSL functions do not require providing the view's type in function parameters on Android. ([#20751](https://github.com/expo/expo/pull/20751) by [@lukmccall](https://github.com/lukmccall))
+
+### 🐛 Bug fixes
+
+- Fix view prop setter not being called when its new value is `null` or `undefined`. ([#20755](https://github.com/expo/expo/pull/20755) & [#20766](https://github.com/expo/expo/pull/20766) by [@tsapeta](https://github.com/tsapeta) & [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+## 1.1.1 — 2023-01-06
+
+### 🎉 New features
+
+- Added support for concurrent (async/await) functions in Swift. ([#20645](https://github.com/expo/expo/pull/20645) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Added experimental support for building the function result from the object definition. ([#20623](https://github.com/expo/expo/pull/20623) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed boost build error on Android. ([#20719](https://github.com/expo/expo/pull/20719) by [@kudo](https://github.com/kudo))
+
+## 1.1.0 — 2022-12-30
+
+### 🎉 New features
+
 - Added TS definitions for `TypedArray` and additional union types for Int, Uint and Float TypedArrays. ([#20257](https://github.com/expo/expo/pull/20257) by [@aleqsio](https://github.com/aleqsio))
 - Added a new `executeOnJavaScriptThread` method to `appContext` to allow for running code blocks on the JS thread. ([#20161](https://github.com/expo/expo/pull/20161) by [@aleqsio](https://github.com/aleqsio))
 - Added the `Exceptions.MissingActivity` on Android. ([#20174](https://github.com/expo/expo/pull/20174) by [@lukmccall](https://github.com/lukmccall))
 - Trailing optional arguments can be skipped when calling native functions from JavaScript on iOS. ([#20234](https://github.com/expo/expo/pull/20234) by [@tsapeta](https://github.com/tsapeta))
+- `Events` component can now be initialized with an array of event names (not only variadic arguments). ([#20590](https://github.com/expo/expo/pull/20590) by [@tsapeta](https://github.com/tsapeta))
+- `Property` component can now take the native shared object instance as the first argument. ([#20608](https://github.com/expo/expo/pull/20608) by [@tsapeta](https://github.com/tsapeta))
+- Added support for referencing to `Property`'s owner properties using Swift key paths. ([#20610](https://github.com/expo/expo/pull/20610) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
 - Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
 - Fixed failed resolution of 'java.nio.file.Path' on Android. ([#20037](https://github.com/expo/expo/pull/20037) by [@lukmccall](https://github.com/lukmccall))
-- Fixed views are not correctly initialized after reloading on Android. ([#20063](https://github.com/expo/expo/pull/20063) by [@lukmccall](https://github.com/lukmccall))
 - Fixed libraries using the `ViewDefinitionBuilder` crashes when ProGuard or R8 is enabled on Android. ([#20197](https://github.com/expo/expo/pull/20197) by [@lukmccall](https://github.com/lukmccall))
 - Fixed Either types not supporting non-primitive types on iOS. ([#20247](https://github.com/expo/expo/pull/20247) by [@tsapeta](https://github.com/tsapeta))
 - Fixed Function not supporting certain arities on Android. ([#20419](https://github.com/expo/expo/pull/20419) by [@motiz88](https://github.com/motiz88))
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+- Fixed the `SharedObject` initializer being inaccessible due to `internal` protection level. ([#20588](https://github.com/expo/expo/pull/20588) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
+
+- [iOS] Make `Enumerable` protocol implement `CaseIterable` to get rid of operating on unsafe pointers. ([#20640](https://github.com/expo/expo/pull/20640) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.0.4 - 2022-12-21
+
+### 🐛 Bug fixes
+
+- Fixed views are not correctly initialized after reloading on Android. ([#20063](https://github.com/expo/expo/pull/20063) by [@lukmccall](https://github.com/lukmccall))
+- Fixed threading crash issue when running with Hermes on iOS. ([#20506](https://github.com/expo/expo/pull/20506) by [@kudo](https://github.com/kudo))
 
 ## 1.0.2 - 2022-11-08
 

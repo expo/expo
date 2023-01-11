@@ -140,15 +140,9 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 - (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps
 {
   const auto &newViewProps = *std::static_pointer_cast<ExpoViewProps const>(props);
-  auto proxiedProperties = newViewProps.proxiedProperties;
-  if (proxiedProperties.isObject()) {
-    for (auto& item : proxiedProperties.items()) {
-      NSString *name = [NSString stringWithCString:item.first.c_str() encoding:NSUTF8StringEncoding];
-      id value = convertFollyDynamicToId(item.second);
-      [self updateProp:name withValue:value];
-    }
-  }
+  NSDictionary<NSString *, id> *proxiedProperties = convertFollyDynamicToId(newViewProps.proxiedProperties);
 
+  [self updateProps:proxiedProperties];
   [super updateProps:props oldProps:oldProps];
   [self viewDidUpdateProps];
 }
@@ -170,7 +164,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 
 #pragma mark - Methods to override in Swift
 
-- (void)updateProp:(nonnull NSString *)propName withValue:(nonnull id)value
+- (void)updateProps:(nonnull NSDictionary<NSString *, id> *)props
 {
   // Implemented in `ExpoFabricView.swift`
 }

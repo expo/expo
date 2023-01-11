@@ -249,17 +249,41 @@ class FunctionSpec: ExpoSpec {
           Function("isArgNull") { (arg: Double?) -> Bool in
             return arg == nil
           }
+
+          Function("returnObjectDefinition") { (initial: Int) -> ObjectDefinition in
+            var foo = initial
+
+            return Object {
+              Function("increment") { () -> Int in
+                foo += 1
+                return foo
+              }
+            }
+          }
         })
       }
-      
+
       it("returns values") {
         expect(try runtime?.eval("expo.modules.TestModule.returnPi()").asDouble()) == Double.pi
         expect(try runtime?.eval("expo.modules.TestModule.returnNull()").isNull()) == true
       }
-      
+
       it("accepts optional arguments") {
         expect(try runtime?.eval("expo.modules.TestModule.isArgNull(3.14)").asBool()) == false
         expect(try runtime?.eval("expo.modules.TestModule.isArgNull(null)").asBool()) == true
+      }
+
+      it("returns object made from definition") {
+        let initialValue = Int.random(in: 1..<100)
+        let object = try runtime?.eval("object = expo.modules.TestModule.returnObjectDefinition(\(initialValue))")
+
+        expect(object?.kind) == .object
+        expect(object?.getObject().hasProperty("increment")) == true
+
+        let result = try runtime?.eval("object.increment()")
+
+        expect(result?.kind) == .number
+        expect(result?.getInt()) == initialValue + 1
       }
     }
   }

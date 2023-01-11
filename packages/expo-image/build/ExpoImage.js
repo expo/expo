@@ -43,6 +43,7 @@ class ExpoImage extends React.PureComponent {
             delete resolvedStyle.shadowRadius;
         }
         else {
+            // @ts-expect-error
             delete resolvedStyle.elevation;
         }
         // @ts-ignore

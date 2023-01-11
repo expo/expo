@@ -18,6 +18,7 @@ export default {
   },
   async getCellularGenerationAsync(): Promise<CellularGeneration> {
     const connection =
+      // @ts-expect-error
       navigator.connection || navigator.mozConnection || navigator.webkitConnection || null;
     if (connection !== null) {
       switch (connection.effectiveType) {

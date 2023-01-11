@@ -6,5 +6,5 @@ enum class CachePolicy(val value: String) : Enumerable {
   NONE("none"),
   DISK("disk"),
   MEMORY("memory"),
-  MEMORY_AND_DISK("memoryAndDisk")
+  MEMORY_AND_DISK("memory-disk")
 }

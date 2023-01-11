@@ -19,7 +19,7 @@ const promptToOpenAppStoreAsync = async (message: string) => {
   // This prompt serves no purpose accept informing the user what to do next, we could just open the App Store but it could be confusing if they don't know what's going on.
   const confirm = await confirmAsync({ initial: true, message });
   if (confirm) {
-    Log.log(`Going to the App Store, re-run Expo when Xcode has finished installing.`);
+    Log.log(`Going to the App Store, re-run Expo CLI when Xcode has finished installing.`);
     openAppStore(APP_STORE_ID);
   }
 };
@@ -82,7 +82,7 @@ export class XcodePrerequisite extends Prerequisite {
     if (!version) {
       // Almost certainly Xcode isn't installed.
       await promptToOpenAppStoreAsync(
-        `Xcode needs to be installed (don't worry, you won't have to use it), would you like to continue to the App Store?`
+        `Xcode must be fully installed before you can continue. Continue to the App Store?`
       );
       throw new AbortCommandError();
     }
@@ -90,7 +90,7 @@ export class XcodePrerequisite extends Prerequisite {
     if (semver.lt(version, SUGGESTED_XCODE_VERSION)) {
       // Xcode version is too old.
       await promptToOpenAppStoreAsync(
-        `Xcode (${version}) needs to be updated to at least version ${MIN_XCODE_VERSION}, would you like to continue to the App Store?`
+        `Xcode (${version}) needs to be updated to at least version ${MIN_XCODE_VERSION}. Continue to the App Store?`
       );
       throw new AbortCommandError();
     }

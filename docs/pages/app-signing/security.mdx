@@ -1,5 +1,6 @@
 ---
 title: Security
+description: Learn how credentials and other sensitive data are handled when using EAS.
 ---
 
 Before you enter outside credentials or provide other sensitive data to third-party software you should ask yourself whether you trust the software to use it responsibly and protect it. Due to the nature of what goes into building an app binary for distribution on app stores, the Expo standalone app build service requires various pieces of information with varying degrees of sensitivity. This document explains what those are, how we store them, and what could go wrong if they were to be compromised.
@@ -10,7 +11,7 @@ All of the data related to the information explained below can be downloaded and
 
 ## iOS Push Notification credentials
 
-There are two types of iOS push notification credentials: one modern recommended approach recommended by Apple and the legacy approach. The default behavior is to use the modern approach, but developers may opt in to the legacy approach by providing a p12 certificate.
+There are two types of iOS push notification credentials: one modern recommended approach recommended by Apple and the legacy approach. The default behavior is to use the modern approach, but developers may opt-in to the legacy approach by providing a p12 certificate.
 
 ### APNs auth key (p8) + key ID (string)
 
@@ -28,11 +29,11 @@ The Apple Developer console lets you download an APNs Auth Key only when it is c
 
 ## iOS build credentials
 
-This refers to the production distribution certificate and password (which are automatically generated if you let Expo manage them for you) and provisioning profiles (which are not secret). Like most credential data stored by Expo these are all encrypted with KMS. Your build credentials let you build an app to upload to App Store Connect. In order to actually upload it and submit it for review, though, you need to have your Apple Developer account credentials.
+This refers to the production distribution certificate and password (which are automatically generated if you let Expo manage them for you) and provisioning profiles (which are not secret). Like most credential data stored by Expo these are all encrypted with KMS. Your build credentials let you build an app to upload to App Store Connect. To actually upload it and submit it for review, though, you need to have your Apple Developer account credentials.
 
 ### Consequences if compromised
 
-There isn't much that a malicious actor could do with this alone &mdash; they would be unable to actually submit any apps without having your Apple Developer account credentials. You can revoke the distribution certificate and provisioning profile from the Apple Developer website.
+There isn't much that a malicious actor could do with this alone &mdash; they would be unable to submit any apps without having your Apple Developer account credentials. You can revoke the distribution certificate and provisioning profile from the Apple Developer website.
 
 ### Consequences if lost
 
@@ -42,7 +43,7 @@ None, they are available through the Apple Developer console.
 
 When creating a standalone app build, or uploading to the App Store you will be prompted for your Apple Developer account credentials. We do not store these on our servers &mdash; EAS CLI only uses them locally. Your computer alone provisions distribution certificates and auth keys that are sent to Expo servers; your developer credentials are not sent to Expo servers. An additional layer of security is enforced by Apple, as they require two-factor authentication for all Apple Developer accounts.
 
-When creating ad-hoc builds, we temporarily store an Apple Developer session token used to create an ad-hoc provisioning profile with your development device’s UDID. Once we are done using this session token we destroy it.
+When creating ad-hoc builds, we temporarily store an Apple Developer session token used to create an ad-hoc provisioning profile with your development device's UDID. Once we are done using this session token we destroy it.
 
 ### Keychain
 
@@ -53,11 +54,11 @@ Disable Keychain support with the environment variable `EXPO_NO_KEYCHAIN=1`. You
 
 ### Changing Apple ID Password in Keychain
 
-To delete the locally stored password, open the "Keychain Access" app, switch to "All Items", and search for "deliver.[Your Apple ID]" (ex. `deliver.bacon@expo.dev`). Select the item you wish to modify and delete it. Next time running an Expo command you'll be prompted for a new password.
+To delete the locally stored password, open the "Keychain Access" app, switch to "All Items", and search for "deliver. [Your Apple ID]" (example: `deliver.bacon@expo.dev`). Select the item you wish to modify and delete it. Next time running an Expo command you'll be prompted for a new password.
 
 ### Consequences if compromised
 
-For standalone builds, as explained above, your own machine would need to be compromised for a malicious actor to have access to your username and password. They would also need to have access to your two-factor authentication code generator, which for Apple Developer accounts is a pre-authorized Apple device. At this point you may have worse problems, but as you may expect, the actor would be able to do whatever they like with your Apple Developer account.
+For standalone builds, as explained above, your machine would need to be compromised for a malicious actor to have access to your username and password. They would also need to have access to your two-factor authentication code generator, which for Apple Developer accounts is a pre-authorized Apple device. At this point, you may have worse problems, but as you may expect, the actor would be able to do whatever they like with your Apple Developer account.
 
 For ad-hoc builds, if a user were to gain access to your session token it would be comparable to being signed in to your account.
 
@@ -81,7 +82,7 @@ None, you can access it through the Firebase console.
 
 ## Android build credentials
 
-A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. After an app is first submitted to the Google Play Store, the same keystore must be used to sign the app again in order to update it. It proves that the APK came from the developer who owns the keystore. The keystore alone doesn’t let you submit to Google Play &mdash; your Google account needs access to the Google Play Console as well.
+A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. After an app is first submitted to the Google Play Store, the same keystore must be used to sign the app again to update it. It proves that the APK came from the developer who owns the keystore. The keystore alone doesn’t let you submit to Google Play &mdash; your Google account needs access to the Google Play Console as well.
 
 ### Consequences if compromised
 
@@ -95,7 +96,7 @@ You will not be able to update your app on Google Play. You may want to download
 
 Expo tools never ask you to provide your Google account credentials.
 
-## Device tokens for iOS and Android push notifications
+## Device tokens for Android and iOS push notifications
 
 On top of the platform-specific credentials, a device token is necessary to send a push notification. Expo manages this for you and provides an abstraction on top of it with the Expo Push Token. The device token identifies the recipient, i.e., the device who the notification is being sent to. The device tokens are encrypted at rest and periodically cycled automatically by iOS and Android.
 

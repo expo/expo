@@ -18,11 +18,23 @@ struct ImageSource: Record {
   @Field
   var headers: [String: String]?
 
+  @Field
+  var cacheKey: String?
+
   var pixelCount: Double {
     return width * height * scale * scale
   }
 
   var isBlurhash: Bool {
     return uri?.scheme == "blurhash"
+  }
+
+  var isPhotoLibraryAsset: Bool {
+    return isPhotoLibraryAssetUrl(uri)
+  }
+
+  var isCachingAllowed: Bool {
+    // TODO: Don't cache other non-network requests (e.g. data URIs, local files)
+    return !isPhotoLibraryAsset
   }
 }

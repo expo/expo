@@ -1,4 +1,3 @@
-import { H2, H3, H3Code, H4, H4Code } from '~/components/plugins/Headings';
 import {
   DefaultPropsDefinitionData,
   PropData,
@@ -20,8 +19,11 @@ import {
   STYLES_NOT_EXPOSED_HEADER,
   STYLES_SECONDARY,
   STYLES_ELEMENT_SPACING,
+  H3Code,
+  H4Code,
+  getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
-import { LI, UL, P, CODE } from '~/ui/components/Text';
+import { H2, H3, H4, LI, UL, P, CODE } from '~/ui/components/Text';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -37,7 +39,7 @@ const extractDefaultPropValue = (
 ): string | undefined => {
   const annotationDefault = getTagData('default', comment);
   if (annotationDefault) {
-    return annotationDefault.text;
+    return getCommentContent(annotationDefault.content);
   }
   return defaultProps?.type?.declaration?.children?.filter(
     (defaultProp: PropData) => defaultProp.name === name
@@ -99,7 +101,8 @@ export const renderProp = (
   exposeInSidebar?: boolean
 ) => {
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
-  const extractedComment = getCommentOrSignatureComment(comment, signatures);
+  const extractedSignatures = signatures || type?.declaration?.signatures;
+  const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
   return (
     <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={extractedComment} />
@@ -109,7 +112,8 @@ export const renderProp = (
       </HeaderComponent>
       <P css={extractedComment && STYLES_ELEMENT_SPACING}>
         {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
-        <span css={STYLES_SECONDARY}>Type:</span> {renderTypeOrSignatureType(type, signatures)}
+        <span css={STYLES_SECONDARY}>Type:</span>{' '}
+        {renderTypeOrSignatureType(type, extractedSignatures)}
         {defaultValue && defaultValue !== UNKNOWN_VALUE ? (
           <span>
             <span css={STYLES_SECONDARY}>&emsp;&bull;&emsp;Default:</span>{' '}

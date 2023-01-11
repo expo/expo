@@ -1,6 +1,7 @@
 import { render } from '@testing-library/react';
 import * as React from 'react';
 
+import type { CommentData } from './APIDataTypes';
 import { CommentTextBlock, mdInlineComponents, resolveTypeName } from './APISectionUtils';
 
 describe('APISectionUtils.resolveTypeName', () => {
@@ -414,8 +415,8 @@ describe('APISectionUtils.CommentTextBlock component', () => {
   });
 
   test('basic comment', () => {
-    const comment = {
-      text: 'This is the basic comment.',
+    const comment: CommentData = {
+      summary: [{ kind: 'text', text: 'This is the basic comment.' }],
     };
 
     const { container } = render(<CommentTextBlock comment={comment} />);
@@ -423,8 +424,8 @@ describe('APISectionUtils.CommentTextBlock component', () => {
   });
 
   test('basic inline comment', () => {
-    const comment = {
-      shortText: 'This is the basic comment.',
+    const comment: CommentData = {
+      summary: [{ kind: 'text', text: 'This is the basic comment.' }],
     };
 
     const { container } = render(
@@ -434,13 +435,64 @@ describe('APISectionUtils.CommentTextBlock component', () => {
   });
 
   test('comment with example', () => {
-    const comment = {
-      shortText:
-        '**Android only.** Gets the referrer URL of the installed app with the [`Install Referrer API`](https://developer.android.com/google/play/installreferrer)\nfrom the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.',
-      tags: [
+    const comment: CommentData = {
+      summary: [
         {
-          tag: 'example',
-          text: '\n```ts\nawait Application.getInstallReferrerAsync();\n// "utm_source=google-play&utm_medium=organic"\n```\n',
+          kind: 'text',
+          text: 'Gets the referrer URL of the installed app with the [',
+        },
+        {
+          kind: 'code',
+          text: '`Install Referrer API`',
+        },
+        {
+          kind: 'text',
+          text: '](https://developer.android.com/google/play/installreferrer)\nfrom the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.',
+        },
+      ],
+      blockTags: [
+        {
+          tag: '@returns',
+          content: [
+            {
+              kind: 'text',
+              text: 'A ',
+            },
+            {
+              kind: 'code',
+              text: '`Promise`',
+            },
+            {
+              kind: 'text',
+              text: ' that fulfills with a ',
+            },
+            {
+              kind: 'code',
+              text: '`string`',
+            },
+            {
+              kind: 'text',
+              text: ' of the referrer URL of the installed app.',
+            },
+          ],
+        },
+        {
+          tag: '@example',
+          content: [
+            {
+              kind: 'code',
+              text: '```ts\nawait Application.getInstallReferrerAsync();\n// "utm_source=google-play&utm_medium=organic"\n```',
+            },
+          ],
+        },
+        {
+          tag: '@platform',
+          content: [
+            {
+              kind: 'text',
+              text: 'android',
+            },
+          ],
         },
       ],
     };

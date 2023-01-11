@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 1.0.2 — 2023-01-10
+
+### 🐛 Bug fixes
+
+- Replace deprecated `File.exists?` with `File.exist?` to fix usage with `ruby@3.2`. ([#20470](https://github.com/expo/expo/pull/20757) by [@KiwiKilian](https://github.com/kiwikilian))
+
+## 1.0.1 — 2022-12-30
+
+### 🐛 Bug fixes
+
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+
 ## 1.0.0 — 2022-11-03
 
 _This version does not introduce any user-facing changes._

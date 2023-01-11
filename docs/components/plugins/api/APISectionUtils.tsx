@@ -1,15 +1,16 @@
 import { css } from '@emotion/react';
 import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
+import type { ComponentProps, ComponentType } from 'react';
 import { Fragment } from 'react';
-import type { ComponentProps } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
 import { APIDataType } from './APIDataType';
 
+import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
-import { H4 } from '~/components/base/headings';
 import {
+  CommentContentData,
   CommentData,
   MethodDefinitionData,
   MethodParamData,
@@ -17,13 +18,26 @@ import {
   PropData,
   TypeDefinitionData,
   TypePropertyDataFlags,
+  TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 import { Tag } from '~/ui/components/Tag';
-import { LI, UL, OL, CODE, BOLD, P, A } from '~/ui/components/Text';
+import {
+  A,
+  BOLD,
+  CODE,
+  H4,
+  LI,
+  OL,
+  P,
+  RawH3,
+  RawH4,
+  UL,
+  createPermalinkedComponent,
+} from '~/ui/components/Text';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -96,6 +110,7 @@ const nonLinkableTypes = [
   'ColorValue',
   'Component',
   'ComponentClass',
+  'PureComponent',
   'E',
   'EventSubscription',
   'Listener',
@@ -150,9 +165,9 @@ const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
-  View: '/versions/latest/react-native/view',
-  ViewProps: '/versions/latest/react-native/view#props',
-  ViewStyle: '/versions/latest/react-native/view-style-props',
+  View: 'https://reactnative.dev/docs/view',
+  ViewProps: 'https://reactnative.dev/docs/view#props',
+  ViewStyle: 'https://reactnative.dev/docs/view-style-props',
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
@@ -359,7 +374,10 @@ export const renderParamRow = ({
   flags,
   defaultValue,
 }: MethodParamData): JSX.Element => {
-  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  const defaultData = getTagData('default', comment);
+  const initValue = parseCommentContent(
+    defaultValue || (defaultData ? getCommentContent(defaultData.content) : '')
+  );
   return (
     <Row key={`param-${name}`}>
       <Cell>
@@ -409,7 +427,7 @@ export const renderDefaultValue = (defaultValue?: string) =>
 
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
-  signatures?: MethodSignatureData[],
+  signatures?: MethodSignatureData[] | TypeSignaturesData[],
   allowBlock: boolean = false
 ) => {
   if (signatures && signatures.length) {
@@ -424,8 +442,7 @@ export const renderTypeOrSignatureType = (
             </span>
           ))
         )}
-        ) =&gt;{' '}
-        {type ? <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE> : 'void'}
+        ) =&gt; {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
       </CODE>
     );
   } else if (type) {
@@ -474,18 +491,20 @@ export const parseCommentContent = (content?: string): string =>
 
 export const getCommentOrSignatureComment = (
   comment?: CommentData,
-  signatures?: MethodSignatureData[]
+  signatures?: MethodSignatureData[] | TypeSignaturesData[]
 ) => comment || (signatures && signatures[0]?.comment);
 
 export const getTagData = (tagName: string, comment?: CommentData) =>
   getAllTagData(tagName, comment)?.[0];
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
-  comment?.tags?.filter(tag => tag.tag === tagName);
+  comment?.blockTags?.filter(tag => tag.tag.substring(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
-    ...(getAllTagData('platform', comment)?.map(platformData => platformData.text) || []),
+    ...(getAllTagData('platform', comment)?.map(platformData =>
+      getCommentContent(platformData.content)
+    ) || []),
     ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
@@ -516,6 +535,13 @@ const getParamTags = (shortText?: string) => {
   return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
 };
 
+export const getCommentContent = (content: CommentContentData[]) => {
+  return content
+    .map(entry => entry.text)
+    .join('')
+    .trim();
+};
+
 export const CommentTextBlock = ({
   comment,
   components = mdComponents,
@@ -525,24 +551,18 @@ export const CommentTextBlock = ({
   includePlatforms = true,
   emptyCommentFallback,
 }: CommentTextBlockProps) => {
-  const paramTags = getParamTags(comment?.shortText?.trim());
+  const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
 
-  const shortText = comment?.shortText?.trim().length ? (
-    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(
-        paramTags ? comment.shortText.replaceAll(PARAM_TAGS_REGEX, '') : comment.shortText
-      )}
-    </ReactMarkdown>
-  ) : null;
-  const text = comment?.text?.trim().length ? (
-    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(comment.text)}
-    </ReactMarkdown>
-  ) : null;
-
-  if (emptyCommentFallback && (!comment || (!shortText && !text))) {
+  if (emptyCommentFallback && (!comment || !content || !content.length)) {
     return <>{emptyCommentFallback}</>;
   }
+
+  const paramTags = content ? getParamTags(content) : undefined;
+  const parsedContent = (
+    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
+      {parseCommentContent(paramTags ? content?.replaceAll(PARAM_TAGS_REGEX, '') : content)}
+    </ReactMarkdown>
+  );
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
@@ -553,10 +573,10 @@ export const CommentTextBlock = ({
         </div>
       ) : (
         <div css={STYLES_NESTED_SECTION_HEADER}>
-          <H4>Example</H4>
+          <RawH4>Example</RawH4>
         </div>
       )}
-      <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
+      <ReactMarkdown components={components}>{getCommentContent(example.content)}</ReactMarkdown>
     </Fragment>
   ));
 
@@ -564,7 +584,9 @@ export const CommentTextBlock = ({
   const seeText = see && (
     <Callout>
       <BOLD>See: </BOLD>
-      <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
+      <ReactMarkdown components={mdInlineComponents}>
+        {getCommentContent(see.content)}
+      </ReactMarkdown>
     </Callout>
   );
 
@@ -584,16 +606,29 @@ export const CommentTextBlock = ({
         </>
       )}
       {beforeContent}
-      {withDash && (shortText || text) && ' - '}
+      {withDash && parsedContent && ' - '}
       {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
-      {shortText}
-      {text}
+      {parsedContent}
       {afterContent}
       {seeText}
       {exampleText}
     </>
   );
 };
+
+export const getAPISectionHeader = (exposeInSidebar?: boolean) =>
+  exposeInSidebar ? createPermalinkedComponent(RawH4, { baseNestingLevel: 2 }) : H4;
+
+const getMonospaceHeader = (element: ComponentType<any>) => {
+  const level = parseInt(element?.displayName?.replace(/\D/g, '') ?? '0', 10);
+  return createPermalinkedComponent(element, {
+    baseNestingLevel: level !== 0 ? level : undefined,
+    sidebarType: HeadingType.InlineCode,
+  });
+};
+
+export const H3Code = getMonospaceHeader(RawH3);
+export const H4Code = getMonospaceHeader(RawH4);
 
 export const getComponentName = (name?: string, children: PropData[] = []) => {
   if (name && name !== 'default') return name;
@@ -615,7 +650,7 @@ export const STYLES_APIBOX = css({
     marginBottom: spacing[2],
   },
 
-  'h3, h4': {
+  'h2, h3, h4': {
     marginTop: 0,
   },
 
@@ -640,11 +675,20 @@ export const STYLES_APIBOX = css({
 
 export const STYLES_APIBOX_NESTED = css({
   boxShadow: 'none',
-  paddingBottom: 0,
   marginBottom: spacing[4],
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   h4: {
     marginTop: 0,
+  },
+});
+
+export const STYLES_APIBOX_WRAPPER = css({
+  marginBottom: spacing[4],
+  padding: `${spacing[4]}px ${spacing[5]}px 0`,
+
+  [`.css-${tableWrapperStyle.name}:last-child`]: {
+    marginBottom: spacing[4],
   },
 });
 
@@ -655,12 +699,12 @@ export const STYLES_NESTED_SECTION_HEADER = css({
   borderTop: `1px solid ${theme.border.default}`,
   borderBottom: `1px solid ${theme.border.default}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
-  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  padding: `${spacing[2]}px ${spacing[5]}px`,
   backgroundColor: theme.background.secondary,
 
   h4: {
     ...typography.fontSizes[16],
-    fontFamily: typography.fontFaces.medium,
+    fontWeight: 600,
     marginBottom: 0,
     marginTop: 0,
     color: theme.text.secondary,

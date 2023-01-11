@@ -2,13 +2,12 @@ import { Subscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect } from 'react';
 
 import ExpoKeepAwake from './ExpoKeepAwake';
-import { KeepAwakeListener } from './KeepAwake.types';
+import { KeepAwakeListener, KeepAwakeOptions } from './KeepAwake.types';
 
+/** Default tag, used when no tag has been specified in keep awake method calls. */
 export const ExpoKeepAwakeTag = 'ExpoKeepAwakeDefaultTag';
 
-/**
- * Returns `true` on all platforms except [unsupported web browsers](https://caniuse.com/wake-lock).
- */
+/** @returns `true` on all platforms except [unsupported web browsers](https://caniuse.com/wake-lock). */
 export async function isAvailableAsync(): Promise<boolean> {
   if (ExpoKeepAwake.isAvailableAsync) {
     return await ExpoKeepAwake.isAvailableAsync();
@@ -16,29 +15,16 @@ export async function isAvailableAsync(): Promise<boolean> {
   return true;
 }
 
-// @needsAudit
 /**
  * A React hook to keep the screen awake for as long as the owner component is mounted.
  * The optionally provided `tag` argument is used when activating and deactivating the keep-awake
  * feature. If unspecified, the default `tag` is used. See the documentation for `activateKeepAwakeAsync`
  * below to learn more about the `tag` argument.
  *
- * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
- * @param options *Optional*
- *   - `suppressDeactivateWarnings` *Optional* -
- *      The call will throw an unhandled promise rejection on Android
- *      when the original Activity is dead or deactivated.
- *      Set the value to true for suppressing the uncaught exception.
- *   - `listener` *Optional* -
- *      A callback that is invoked when the keep-awake state changes (web-only).
+ * @param tag Tag to lock screen sleep prevention. If not provided, the default tag is used.
+ * @param options Additional options for the keep awake hook.
  */
-export function useKeepAwake(
-  tag: string = ExpoKeepAwakeTag,
-  options?: {
-    listener?: KeepAwakeListener;
-    suppressDeactivateWarnings?: boolean;
-  }
-): void {
+export function useKeepAwake(tag: string = ExpoKeepAwakeTag, options?: KeepAwakeOptions): void {
   useEffect(() => {
     let isMounted = true;
     activateKeepAwakeAsync(tag).then(() => {
@@ -67,7 +53,7 @@ export function useKeepAwake(
  *
  * Web support [is limited](https://caniuse.com/wake-lock).
  *
- * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
+ * @param tag Tag to lock screen sleep prevention. If not provided, the default tag is used.
  * @deprecated use `activateKeepAwakeAsync` instead.
  */
 export function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
@@ -85,7 +71,7 @@ export function activateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void>
  *
  * Web support [is limited](https://caniuse.com/wake-lock).
  *
- * @param tag *Optional* - Tag to lock screen sleep prevention. If not provided, the default tag is used.
+ * @param tag Tag to lock screen sleep prevention. If not provided, the default tag is used.
  */
 export async function activateKeepAwakeAsync(tag: string = ExpoKeepAwakeTag): Promise<void> {
   await ExpoKeepAwake.activate?.(tag);
@@ -95,7 +81,8 @@ export async function activateKeepAwakeAsync(tag: string = ExpoKeepAwakeTag): Pr
 /**
  * Releases the lock on screen-sleep prevention associated with the given `tag` value. If `tag`
  * is unspecified, it defaults to the same default tag that `activateKeepAwake` uses.
- * @param tag *Optional* - Tag to release the lock on screen sleep prevention. If not provided,
+ *
+ * @param tag Tag to release the lock on screen sleep prevention. If not provided,
  * the default tag is used.
  */
 export async function deactivateKeepAwake(tag: string = ExpoKeepAwakeTag): Promise<void> {
