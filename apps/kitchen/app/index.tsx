@@ -1,5 +1,6 @@
 import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Head } from '../components/head';
 
 import { getPackages } from '../data/libs';
 
@@ -7,9 +8,13 @@ export default function Page() {
   const pkgs = getPackages();
   return (
     <View style={styles.container}>
+      <Head>
+        <title>Kitchen</title>
+      </Head>
       <View style={styles.main}>
         {pkgs.map((library) => (
           <Link
+            key={library}
             href={{
               pathname: '/api/[library]',
               params: {

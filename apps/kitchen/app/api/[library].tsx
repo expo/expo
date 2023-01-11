@@ -1,4 +1,5 @@
 import { getComponent } from '../../data/libs';
+import { Head } from '../../components/head';
 import { useSearchParams } from 'expo-router';
 
 export default function Library() {
@@ -10,5 +11,12 @@ export default function Library() {
     return <p>Unknown library: {library}</p>;
   }
 
-  return <Component />;
+  return (
+    <>
+      <Head>
+        <title>{library}</title>
+      </Head>
+      <Component />
+    </>
+  );
 }

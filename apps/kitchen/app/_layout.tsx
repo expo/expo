@@ -5,5 +5,6 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  return <Slot />;
+  return <Stack />;
+  //   return <Slot />;
 }
