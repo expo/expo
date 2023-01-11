@@ -9,7 +9,7 @@ Your app's icon is what users see on the home screen of their devices, as well a
 
 ## Configuring your App's Icon
 
-The most straightforward way to provide an icon for your app is to provide the [icon](/workflow/configuration#icon) key in **app.json**. If you want to do the minimum possible, this key alone is sufficient. However, Expo also accepts platform-specific keys under `android.icon` and `icon.icon`. If either of these exists, they will take priority over the base `icon` key on their respective platform. Further customization of the Android icon is possible using the `android.adaptiveIcon` key, which will override both of the previously mentioned settings. Most production-quality apps will probably want to provide something slightly different between iOS and Android.
+The most straightforward way to provide an icon for your app is to provide the [icon](/workflow/configuration#icon) key in **app.json**. If you want to do the minimum possible, this key alone is sufficient. However, Expo also accepts platform-specific keys under `android.icon` and `ios.icon`. If either of these exists, they will take priority over the base `icon` key on their respective platform. Further customization of the Android icon is possible using the `android.adaptiveIcon` key, which will override both of the previously mentioned settings. Most production-quality apps will probably want to provide something slightly different between iOS and Android.
 
 ## Icon Best Practices
 
