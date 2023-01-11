@@ -55,6 +55,6 @@
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
-    "jest": "^26.6.3"
+    "jest": "^29.2.1"
   }
 }
