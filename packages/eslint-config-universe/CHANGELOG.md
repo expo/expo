@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix import ignore entry for `react-native`, which do not work correctly on Windows. ([#20785](https://github.com/expo/expo/pull/20785) by [@Simek](https://github.com/Simek))
+
 ### 💡 Others
 
 - Bumped `@typescript-eslint/*` dependencies from 5.27.0 to 5.45.1, to add the TypeScript 4.9 support. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
