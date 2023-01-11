@@ -1,5 +1,5 @@
 import { Link } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { getPackages } from '../data/libs';
 
@@ -15,8 +15,19 @@ export default function Page() {
               params: {
                 library,
               },
-            }}>
-            <Text style={styles.title}>{library}</Text>
+            }}
+            asChild>
+            <Pressable>
+              {({ hovered }) => (
+                <Text
+                  style={[
+                    styles.title,
+                    hovered && { color: 'blue', textDecorationLine: 'underline' },
+                  ]}>
+                  {library}
+                </Text>
+              )}
+            </Pressable>
           </Link>
         ))}
       </View>
@@ -37,8 +48,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
   },
   title: {
-    fontSize: 64,
-    fontWeight: 'bold',
+    fontSize: 36,
   },
   subtitle: {
     fontSize: 36,
