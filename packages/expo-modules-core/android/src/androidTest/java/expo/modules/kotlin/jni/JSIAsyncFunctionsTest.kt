@@ -33,6 +33,7 @@ class JSIAsyncFunctionsTest {
       AsyncFunction("doubleF") { a: Double -> a }
       AsyncFunction("floatF") { a: Float -> a }
       AsyncFunction("boolF") { a: Boolean -> a }
+      AsyncFunction("longF") { a: Long -> a }
     }
   ) { methodQueue ->
     val stringValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.stringF('expo')").getString()
@@ -40,12 +41,14 @@ class JSIAsyncFunctionsTest {
     val doubleValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.doubleF(123.3)").getDouble()
     val floatValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.floatF(123.3)").getDouble().toFloat()
     val boolValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.boolF(true)").getBool()
+    val longValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.longF(21474836470)").getDouble().toLong()
 
     Truth.assertThat(stringValue).isEqualTo("expo")
     Truth.assertThat(intValue).isEqualTo(123)
     Truth.assertThat(doubleValue).isEqualTo(123.3)
     Truth.assertThat(floatValue).isEqualTo(123.3.toFloat())
     Truth.assertThat(boolValue).isEqualTo(true)
+    Truth.assertThat(longValue).isEqualTo(21474836470)
   }
 
   @Test

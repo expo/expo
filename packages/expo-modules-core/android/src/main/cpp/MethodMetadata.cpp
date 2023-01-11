@@ -270,6 +270,9 @@ jsi::Value MethodMetadata::callSync(
   if (env->IsInstanceOf(unpackedResult, cache->getJClass("java/lang/Integer").clazz)) {
     return {jni::static_ref_cast<jni::JInteger>(result)->value()};
   }
+  if (env->IsInstanceOf(unpackedResult, cache->getJClass("java/lang/Long").clazz)) {
+    return {(double) jni::static_ref_cast<jni::JLong>(result)->value()};
+  }
   if (env->IsInstanceOf(unpackedResult, cache->getJClass("java/lang/String").clazz)) {
     return jsi::String::createFromUtf8(
       rt,
