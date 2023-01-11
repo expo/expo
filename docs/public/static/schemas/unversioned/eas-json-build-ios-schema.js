@@ -33,10 +33,7 @@ export default [
   },
   {
     name: 'resourceClass',
-    enum: ['default', 'm1-medium', 'intel-medium'],
-    description: [
-      'The iOS-specific resource class that will be used to run this build.',
-    ],
+    enum: ['default', 'medium', 'm1-medium', 'intel-medium'],
   },
   {
     name: 'bundler',
