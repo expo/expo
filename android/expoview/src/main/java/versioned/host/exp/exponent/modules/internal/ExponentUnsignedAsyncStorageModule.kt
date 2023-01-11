@@ -2,12 +2,13 @@
 package versioned.host.exp.exponent.modules.internal
 
 import com.facebook.react.bridge.*
+import com.reactnativecommunity.asyncstorage.AsyncStorageModule
 import host.exp.exponent.kernel.KernelProvider
 
 class ExponentUnsignedAsyncStorageModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext) {
   override fun getName(): String {
-    return "AsyncSQLiteDBStorage"
+    return AsyncStorageModule.NAME
   }
 
   override fun canOverrideExistingModule(): Boolean {
