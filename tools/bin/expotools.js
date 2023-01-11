@@ -114,8 +114,6 @@ async function calculateSourceChecksumAsync() {
         'src/**/*.ts',
         // src/versioning files
         'src/**/*.json',
-        // src/react-native-nightlies/patches
-        'src/**/*.patch',
         'expotools.js',
         // swc build files
         'taskfile.js',
