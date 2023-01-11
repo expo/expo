@@ -35,6 +35,11 @@ module.exports = {
       };
     },
   },
+  transformer: {
+    ...baseConfig.transformer,
+    experimentalImportBundleSupport: true,
+    asyncRequireModulePath: require.resolve('@expo/metro-runtime/asyncRequire'),
+  },
 
   resolver: {
     ...baseConfig.resolver,
