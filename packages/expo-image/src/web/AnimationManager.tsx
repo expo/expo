@@ -55,13 +55,19 @@ function validateTimingFunctionForAnimation(
 }
 
 function validateAnimationClass(effect: ImageTransition['effect']) {
-  if (!effect) return null;
-  if (SUPPORTED_ANIMATIONS.includes(effect)) return effect;
+  if (!effect) {
+    return null;
+  }
+  if (SUPPORTED_ANIMATIONS.includes(effect)) {
+    return effect;
+  }
   return 'cross-dissolve';
 }
 
 export function getAnimatorFromTransition(transition: ImageTransition | null | undefined) {
-  if (!transition?.duration) return null;
+  if (!transition?.duration) {
+    return null;
+  }
   const animationClass = validateAnimationClass(transition.effect);
   if (!animationClass) {
     return {

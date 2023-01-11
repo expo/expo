@@ -31,15 +31,18 @@ function validateTimingFunctionForAnimation(animationClass, timingFunction) {
     return timingFunction || null;
 }
 function validateAnimationClass(effect) {
-    if (!effect)
+    if (!effect) {
         return null;
-    if (SUPPORTED_ANIMATIONS.includes(effect))
+    }
+    if (SUPPORTED_ANIMATIONS.includes(effect)) {
         return effect;
+    }
     return 'cross-dissolve';
 }
 export function getAnimatorFromTransition(transition) {
-    if (!transition?.duration)
+    if (!transition?.duration) {
         return null;
+    }
     const animationClass = validateAnimationClass(transition.effect);
     if (!animationClass) {
         return {
