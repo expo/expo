@@ -22,7 +22,9 @@ import javax.annotation.Nullable;
 public class ReactDatabaseSupplier extends SQLiteOpenHelper {
 
   // VisibleForTesting
-  public static final String DATABASE_NAME = "RKStorage";
+  // NOTE(kudo): Dynamic database name for scoped async storage
+  // public static final String DATABASE_NAME = "RKStorage";
+  public String DATABASE_NAME = "RKStorage";
 
   private static final int DATABASE_VERSION = 1;
   private static final int SLEEP_TIME_MS = 30;
@@ -44,8 +46,19 @@ public class ReactDatabaseSupplier extends SQLiteOpenHelper {
   private long mMaximumDatabaseSize =  BuildConfig.AsyncStorage_db_size * 1024L * 1024L;
 
   private ReactDatabaseSupplier(Context context) {
-    super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    // NOTE(kudo): Dynamic database name for scoped async storage
+    // super(context, databaseName, null, DATABASE_VERSION);
+    // mContext = context;
+    super(context, "RKStorage", null, DATABASE_VERSION);
     mContext = context;
+    DATABASE_NAME = "RKStorage";
+  }
+
+  // NOTE(kudo): Dynamic database name for scoped async storage
+  public ReactDatabaseSupplier(Context context, String databaseName) {
+    super(context, databaseName, null, DATABASE_VERSION);
+    mContext = context;
+    DATABASE_NAME = databaseName;
   }
 
   public static ReactDatabaseSupplier getInstance(Context context) {

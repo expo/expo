@@ -33,7 +33,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @ReactModule(name = AsyncStorageModule.NAME)
-public final class AsyncStorageModule
+public class AsyncStorageModule
     extends ReactContextBaseJavaModule implements ModuleDataCleaner.Cleanable, LifecycleEventListener {
 
   // changed name to not conflict with AsyncStorage from RN repo
@@ -43,7 +43,7 @@ public final class AsyncStorageModule
   // https://raw.githubusercontent.com/android/platform_external_sqlite/master/dist/sqlite3.c
   private static final int MAX_SQL_KEYS = 999;
 
-  private ReactDatabaseSupplier mReactDatabaseSupplier;
+  public ReactDatabaseSupplier mReactDatabaseSupplier;
   private boolean mShuttingDown = false;
 
   private final SerialExecutor executor;
@@ -66,7 +66,8 @@ public final class AsyncStorageModule
     this.executor = new SerialExecutor(executor);
     reactContext.addLifecycleEventListener(this);
     // Creating the database MUST happen after the migration.
-    mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
+    // NOTE(kudo): ExponentAsyncStorageModule will setup the `mReactDatabaseSupplier`
+     mReactDatabaseSupplier = ReactDatabaseSupplier.getInstance(reactContext);
   }
 
   @Override

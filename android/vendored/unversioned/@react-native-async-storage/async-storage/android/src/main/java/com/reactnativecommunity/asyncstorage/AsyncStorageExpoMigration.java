@@ -38,7 +38,8 @@ public class AsyncStorageExpoMigration {
         try {
             // Create the storage file
             ReactDatabaseSupplier.getInstance(context).get();
-            copyFile(new FileInputStream(expoDatabase), new FileOutputStream(context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME)));
+            // NOTE(kudo): Don't run migration on Expo Go for backward compatibility
+            // copyFile(new FileInputStream(expoDatabase), new FileOutputStream(context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME)));
             Log.v(LOG_TAG, "Migrated most recently modified database " + expoDatabase.getName() + " to RKStorage");
         } catch (Exception e) {
             Log.v(LOG_TAG, "Failed to migrate scoped database " + expoDatabase.getName());
@@ -62,7 +63,9 @@ public class AsyncStorageExpoMigration {
     }
 
     private static boolean isAsyncStorageDatabaseCreated(Context context) {
-        return context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME).exists();
+        // NOTE(kudo): Don't run migration on Expo Go for backward compatibility
+        // return context.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME).exists();
+        return true;
     }
 
     // Find all database files that the user may have created while using Expo.

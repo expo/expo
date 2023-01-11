@@ -159,7 +159,9 @@ public class AsyncLocalStorageUtil {
     }
 
     File nextStorageFile = ctx.getDatabasePath("AsyncStorage");
-    File currentStorageFile = ctx.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME);
+    // NOTE(kudo): Expo Go doesn't turn on next storage, having dummy db name to pass build
+    // File currentStorageFile = ctx.getDatabasePath(ReactDatabaseSupplier.DATABASE_NAME);
+    File currentStorageFile = ctx.getDatabasePath("UNUSED");
     boolean isCheckpointRequired = !nextStorageFile.exists() && currentStorageFile.exists();
     if (!isCheckpointRequired) {
       Log.i("AsyncStorage_Next", "SQLite checkpoint not required.");
