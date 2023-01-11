@@ -150,6 +150,8 @@ The API reference docs are generated from the TypeScript source code.
 
 This section walks through the process of updating documentation for an Expo package. Throughout this document, we will assume we want to update TypeDoc definitions of property inside `expo-constants` as an example.
 
+> For more information on how TypeDoc/JSDoc parses comments, see [**Doc comments in TypeDoc documentation**](https://typedoc.org/guides/doccomments/).
+
 #### Prerequisites
 
 Before proceeding, make sure you:
@@ -158,6 +160,7 @@ Before proceeding, make sure you:
   - make sure to [install `direnv`](https://direnv.net/docs/installation.html) and run `direnv allow` at the root of the **expo/** repo.
 - have gone through the steps mentioned in [**"Download and Setup" in the contribution guideline**](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-download-and-setup).
 - can run **expo/docs** repo **[locally](https://github.com/expo/expo/tree/main/docs#running-locally)**.
+- can run [`et` (Expotools)](https://github.com/expo/expo/blob/9047ecfbe233924e4848722b518d8ce1fa8b7173/tools/README.md) command locally.
 
 Once you have made sure the development setup is ready, proceed to the next section:
 
@@ -172,52 +175,45 @@ cd expo/packages/expo-constants
 
 - Then, open **.ts** file in your code editor/IDE where you want to make changes/updates.
 - Start the TypeScript build compilation in watch mode using `yarn build` in the terminal window.
-- Make the update. For example, we want to update the TypeDoc description of [`manifest2` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
+- Make the update. For example, we want to update the TypeDoc description of [`expoConfig` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
 
   - Inside the **src/** directory, open **Constants.types.ts** file.
-  - Search for `manifest2` property. It has a current description as shown below:
+  - Search for `expoConfig` property. It has a current description as shown below:
 
   ```ts
   /**
-   * New manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
-   * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
-   * > Prefer using `Constants.expoConfig` instead, which behaves more consistently across classic
-   * updates and modern Expo Updates.
+   * The standard Expo confg object defined in `app.json` and `app.config.js` files. For both
+   * classic and modern manifests, whether they are embedded or remote.
    */
-  manifest2: Manifest | null;
+  expoConfig: ExpoConfig | null;
   ```
 
-- In the above example, let’s remove the word "New" and update some content:
+- In the above example, let’s fix the typo by changing `confg` to `config`:
 
 ```ts
 /**
- * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
- * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
- * > Use `Constants.expoConfig` instead, which behaves more consistently across classic
- * updates and modern Expo Updates.
+ * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
+ * classic and modern manifests, whether they are embedded or remote.
  */
-manifest2: Manifest | null;
+expoConfig: ExpoConfig | null;
 ```
 
 - Before moving to the next step, make sure to exit the "watch mode" by pressing `Ctrl + C` from the keyboard.
 
 #### Step 2: Apply TypeDoc updates to expo/docs repo
 
-In the terminal window and run the following command with `expotools` (`et`) to generate the JSON data file for the package (which is stored at the location `expo/docs/public/static/data/[SDK-VERSION]`)
+In the terminal window and run the following command with to generate the JSON data file for the package (which is stored at the location `expo/docs/public/static/data/[SDK-VERSION]`)
 
 - Read the **NOTE** in the below snippet for updating the docs for `unversioned`:
 
 ```shell
-# et short of expotools
-# gdad is short for generate-docs-api-data
-# -p is short for --package
-# -s is short for --sdk
-
-et gdad -p expo-constants -s 47
+et generate-docs-api-data --packageName expo-constants --sdk 47
 
 #### NOTE ####
 # To update unversioned docs, run the command without mentioning the SDK version
 et gdad -p expo-constants
+
+# For more information about et command, run: et gdad --help
 ```
 
 **Why update `unversioned` docs?** If these are new changes/updates, apply them to `unversioned` to make sure that those changes are part of the next SDK version.
