@@ -49,6 +49,13 @@ export default [
     ],
   },
   {
+    name: 'resourceClass',
+    enum: ['default', 'medium'],
+    description: [
+      'The resource class that will be used to run this build.',
+    ],
+  },
+  {
     name: 'prebuildCommand',
     type: 'string',
     description: [

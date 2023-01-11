@@ -14,6 +14,13 @@ export default [
     ],
   },
   {
+    name: 'resourceClass',
+    enum: ['default', 'medium', 'large'],
+    description: [
+      'The Android-specific resource class that will be used to run this build.',
+    ],
+  },
+  {
     name: 'ndk',
     type: 'string',
     description: [ 'Version of Android NDK.' ],
