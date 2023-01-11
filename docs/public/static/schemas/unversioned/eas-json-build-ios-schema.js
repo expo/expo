@@ -32,6 +32,13 @@ export default [
     ],
   },
   {
+    name: 'resourceClass',
+    enum: ['default', 'medium', 'm1-medium', 'intel-medium'],
+    description: [
+      'The iOS-specific resource class that will be used to run this build.',
+    ],
+  },
+  {
     name: 'bundler',
     type: 'string',
     description: [ 'Version of [bundler](https://bundler.io/).' ],
