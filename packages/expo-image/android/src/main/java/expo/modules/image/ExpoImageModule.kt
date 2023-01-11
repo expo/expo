@@ -11,6 +11,7 @@ import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -70,8 +71,8 @@ class ExpoImageModule : Module() {
         view.blurRadius = blurRadius?.takeIf { it > 0 }
       }
 
-      Prop("fadeDuration") { view: ExpoImageViewWrapper, fadeDuration: Int? ->
-        view.fadeDuration = fadeDuration?.takeIf { it > 0 }
+      Prop("transition") { view: ExpoImageViewWrapper, transition: ImageTransition? ->
+        view.transition = transition
       }
 
       PropGroup(

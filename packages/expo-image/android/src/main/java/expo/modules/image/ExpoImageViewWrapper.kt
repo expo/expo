@@ -24,6 +24,7 @@ import expo.modules.image.records.ContentPosition
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
 import expo.modules.image.records.ImageProgressEvent
+import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.image.svg.SVGSoftwareLayerSetter
 import expo.modules.kotlin.AppContext
@@ -74,11 +75,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   internal var blurRadius: Int? = null
     set(value) {
+      if (field != value) {
+        shouldRerender = true
+      }
       field = value
-      shouldRerender = true
     }
 
-  internal var fadeDuration: Int? = null
+  internal var transition: ImageTransition? = null
 
   internal var contentFit: ContentFit = ContentFit.Cover
     set(value) {
@@ -186,25 +189,50 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     resource: Drawable,
     isPlaceholder: Boolean = false
   ) {
+    val transitionDuration = (transition?.duration ?: 0).toLong()
+
     // If provided resource is a placeholder, but the target doesn't have a source, we treat it as a normal image.
-    val newView = if (!isPlaceholder || !target.hasSource) {
+    if (!isPlaceholder || !target.hasSource) {
       val (newView, previousView) = if (firstView.drawable == null) {
         firstView to secondView
       } else {
         secondView to firstView
       }
 
-      previousView
-        .recycleView()
-        ?.apply {
-          // When the placeholder is loaded, one target is displayed in both views.
-          // So we just have to move the reference to a new view instead of clearing the target.
-          if (this != target) {
-            clear(requestManager)
+      val clearPreviousView = {
+        previousView
+          .recycleView()
+          ?.apply {
+            // When the placeholder is loaded, one target is displayed in both views.
+            // So we just have to move the reference to a new view instead of clearing the target.
+            if (this != target) {
+              clear(requestManager)
+            }
+          }
+      }
+
+      configureView(newView, target, resource, isPlaceholder)
+      if (transitionDuration <= 0) {
+        clearPreviousView()
+        newView.alpha = 1f
+        newView.bringToFront()
+      } else {
+        newView.bringToFront()
+        previousView.alpha = 1f
+        newView.alpha = 0f
+
+        previousView.animate().apply {
+          duration = transitionDuration
+          alpha(0f)
+          withEndAction {
+            clearPreviousView()
           }
         }
-
-      newView
+        newView.animate().apply {
+          duration = transitionDuration
+          alpha(1f)
+        }
+      }
     } else {
       // We don't want to show the placeholder if something is currently displayed.
       // There is one exception - when we're displaying a different placeholder.
@@ -216,14 +244,16 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .recycleView()
         ?.clear(requestManager)
 
-      firstView
-    }
-
-    // Sets up the new view and connect it with the target
-    configureView(newView, target, resource, isPlaceholder)
-
-    if (resource is Animatable) {
-      resource.start()
+      configureView(firstView, target, resource, isPlaceholder)
+      if (transitionDuration > 0) {
+        firstView.bringToFront()
+        firstView.alpha = 0f
+        secondView.isVisible = false
+        firstView.animate().apply {
+          duration = transitionDuration
+          alpha(1f)
+        }
+      }
     }
   }
 
@@ -250,6 +280,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       it.currentTarget = target
     }
     target.isUsed = true
+
+    if (resource is Animatable) {
+      resource.start()
+    }
   }
 
   private fun getBestSource(sources: List<SourceMap>): SourceMap? {
@@ -342,10 +376,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       val model = sourceToLoad?.glideData
       if (model is GlideUrlWrapper) {
         model.progressListener = progressListener
-      }
-
-      assert(!firstTarget.isUsed || !secondTarget.isUsed) {
-        "Both targets are currently used."
       }
 
       onLoadStart.invoke(Unit)
