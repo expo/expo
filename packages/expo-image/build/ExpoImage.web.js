@@ -42,7 +42,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
     const animator = getAnimatorFromClass(transition?.effect && SUPPORTED_ANIMATIONS.includes(transition?.effect)
         ? transition?.effect
         : 'cross-dissolve', transition?.timing);
-    return (React.createElement("div", { ref: containerRef, style: {
+    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
             transform: transform?.toString(),

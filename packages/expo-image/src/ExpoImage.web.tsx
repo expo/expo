@@ -73,6 +73,7 @@ export default function ExpoImage({
   return (
     <div
       ref={containerRef}
+      className="expo-image-container"
       style={{
         aspectRatio: String(aspectRatio),
         backgroundColor: backgroundColor?.toString(),
