@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added utterance word tracking support for iOS and Android. This allows the ability to highlight each word in an utterance. ([#20726](https://github.com/expo/expo/pull/20726) by [@gabrieljoelc](https://github.com/gabrieljoelc))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
