@@ -118,6 +118,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
+      // TODO: Search through group syntax
       const resolved = resolveFrom.silent(
         path.join(this.projectRoot, 'app'),
         '.' + pathname + '+api'
