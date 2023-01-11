@@ -1,0 +1,26 @@
+{
+  "name": "@expo-repo/kitchen",
+  "version": "0.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios"
+  },
+  "dependencies": {
+    "expo": "~47.0.0-alpha.1",
+    "expo-constants": "~14.1.0",
+    "expo-linking": "~3.2.3",
+    "expo-router": "^0.0.43",
+    "expo-status-bar": "~1.4.2",
+    "react": "18.1.0",
+    "react-native": "0.70.5",
+    "react-native-safe-area-context": "4.4.1",
+    "react-native-screens": "~3.18.0"
+  },
+  "devDependencies": {
+    "babel-preset-expo": "~9.2.0",
+    "expo-yarn-workspaces": "^2.0.0"
+  },
+  "private": true
+}

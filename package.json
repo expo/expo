@@ -22,6 +22,8 @@
   },
   "resolutions": {
     "react-native": "0.70.5",
+    "metro": "0.73.7",
+    "metro-resolver": "0.73.7",
     "**/util": "~0.12.4"
   },
   "dependencies": {
