@@ -12,7 +12,10 @@ export type KeepAwakeOptions = {
      * Set the value to `true` for suppressing the uncaught exception.
      */
     suppressDeactivateWarnings?: boolean;
-    /** A callback that is invoked when the keep-awake state changes (web-only). */
+    /**
+     * A callback that is invoked when the keep-awake state changes.
+     * @platform web
+     */
     listener?: KeepAwakeListener;
 };
 //# sourceMappingURL=KeepAwake.types.d.ts.map

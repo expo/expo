@@ -50,6 +50,7 @@ export declare function deactivateKeepAwake(tag?: string): Promise<void>;
 /**
  * Observe changes to the keep awake timer.
  * On web, this changes when navigating away from the active window/tab. No-op on native.
+ * @platform web
  *
  * @example
  * ```ts

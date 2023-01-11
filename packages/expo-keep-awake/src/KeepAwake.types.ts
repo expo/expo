@@ -19,6 +19,9 @@ export type KeepAwakeOptions = {
    */
   suppressDeactivateWarnings?: boolean;
 
-  /** A callback that is invoked when the keep-awake state changes (web-only). */
+  /**
+   * A callback that is invoked when the keep-awake state changes.
+   * @platform web
+   */
   listener?: KeepAwakeListener;
 };
