@@ -118,30 +118,6 @@ Currently, the base results for Expo docs are combined with other results from m
 
 - You can't have curly brace without quotes: \`{}\` -> `{}`
 
-## A note about versioning
-
-Expo's SDK is versioned so that apps made on old SDKs are still supported
-when new SDKs are released. The website documents previous SDK versions too.
-
-Version names correspond to directory names under `versions`.
-
-`unversioned` is a special version for the next SDK release. It is not included in production output. Additionally, any versions greater than the package.json `version` number are not included in production output, so that it's possible to generate, test, and make changes to new SDK version docs during the release process.
-
-`latest` is an untracked folder which duplicates the contents of the folder matching the version number in **package.json**.
-
-Sometimes you want to make an edit in version `X` and have that edit also
-be applied in versions `Y, Z, ...` (say, when you're fixing documentation for an
-API call that existed in old versions too). You can use the
-`./scripts/versionpatch.sh` utility to apply your `git diff` in one version in
-other versions. For example, to update the docs in `unversioned` then apply it
-on `v8.0.0` and `v7.0.0`, you'd do the following after editing the docs in
-`unversioned` such that it shows up in `git diff`:
-
-`./scripts/versionpatch.sh unversioned v8.0.0 v7.0.0`
-
-Any changes in your `git diff` outside the `unversioned` directory are ignored
-so don't worry if you have code changes or such elsewhere.
-
 ## Deployment
 
 The docs are deployed automatically via a GitHub Action each time a PR with docs changes is merged to `main`.
@@ -167,6 +143,98 @@ That's all you need to do. The `versions` directory is listed on server start to
 
 Because the navbar is automatically generated from the directory structure, the default ordering of the links under each section is alphabetical. However, for many sections, this is not ideal UX.
 So, if you wish to override the alphabetical ordering, manipulate page titles in **constants/navigation.js**.
+
+### Updating API reference docs
+
+The API reference docs are generated from the TypeScript source code.
+
+This section walks through the process of updating documentation for an Expo package. Throughout this document, we will assume we want to update TypeDoc definitions of property inside `expo-constants` as an example.
+
+> For more information on how TypeDoc/JSDoc parses comments, see [**Doc comments in TypeDoc documentation**](https://typedoc.org/guides/doccomments/).
+
+#### Prerequisites
+
+Before proceeding, make sure you:
+
+- have [**expo/**](https://github.com/expo/expo) repo cloned on your machine
+  - make sure to [install `direnv`](https://direnv.net/docs/installation.html) and run `direnv allow` at the root of the **expo/** repo.
+- have gone through the steps mentioned in [**"Download and Setup" in the contribution guideline**](https://github.com/expo/expo/blob/main/CONTRIBUTING.md#-download-and-setup).
+- can run **expo/docs** app **[locally](https://github.com/expo/expo/tree/main/docs#running-locally)**.
+- can run [`et` (Expotools)](https://github.com/expo/expo/blob/main/tools/README.md) command locally.
+
+Once you have made sure the development setup is ready, proceed to the next section:
+
+#### Step 1: Update the package’s TypeDoc
+
+- After you have identified which package docs you want to update, open a terminal window and navigate to that package’s directory. For example:
+
+```shell
+# Navigate to expo-constants package directory inside expo/ repo
+cd expo/packages/expo-constants
+```
+
+- Then, open **.ts** file in your code editor/IDE where you want to make changes/updates.
+- Start the TypeScript build compilation in watch mode using `yarn build` in the terminal window.
+- Make the update. For example, we want to update the TypeDoc description of [`expoConfig` property](https://docs.expo.dev/versions/latest/sdk/constants/#nativeconstants)
+
+  - Inside the **src/** directory, open **Constants.types.ts** file.
+  - Search for `expoConfig` property. It has a current description as shown below:
+
+  ```ts
+  /**
+   * The standard Expo confg object defined in `app.json` and `app.config.js` files. For both
+   * classic and modern manifests, whether they are embedded or remote.
+   */
+  expoConfig: ExpoConfig | null;
+  ```
+
+- In the above example, let’s fix the typo by changing `confg` to `config`:
+
+```ts
+/**
+ * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
+ * classic and modern manifests, whether they are embedded or remote.
+ */
+expoConfig: ExpoConfig | null;
+```
+
+- Before moving to the next step, make sure to exit the "watch mode" by pressing `Ctrl + C` from the keyboard.
+
+#### Step 2: Apply TypeDoc updates to expo/docs repo
+
+In the terminal window and run the following command with to generate the JSON data file for the package (which is stored at the location `expo/docs/public/static/data/[SDK-VERSION]`)
+
+- Read the **NOTE** in the below snippet for updating the docs for `unversioned`:
+
+```shell
+et generate-docs-api-data --packageName expo-constants --sdk 47
+
+#### NOTE ####
+# To update unversioned docs, run the command without mentioning the SDK version
+et gdad -p expo-constants
+
+# For more information about et command, run: et gdad --help
+```
+
+**Why update `unversioned` docs?** If these are new changes/updates, apply them to `unversioned` to make sure that those changes are part of the next SDK version.
+
+#### Step 3: See the changes in the docs repo
+
+Now, in the terminal window, navigate to **expo/docs** repo and run the command `yarn run dev` to see the changes applied
+
+- Open [http://localhost:3002/](http://localhost:3002/) in the browser and go to the API doc to see the changes you have made. Make sure to select the right SDK version to see the changes in the left sidebar.
+
+#### Tips
+
+##### Disabling changelog
+
+After making changes, when you are opening the PR, consider adding `<!-- disable:changelog-checks -->` in the PR description if the changes you are making are docs-related changes (such as updating the field description or fixing a typo, etc.)
+
+This will make sure that the ExpoBot on GitHub will not complain about updating the package’s changelog (some of these changes, as described above, are not worth mentioning in the changelog).
+
+##### Using the correct package name
+
+Some of the packages have documentation spread over multiple pages. For example, `expo-av` package has a separate base interface, and some of the information is separated into `Audio` and `Video` components. For such packages, always make sure to check the [name of the package](https://github.com/expo/expo/blob/main/tools/src/commands/GenerateDocsAPIData.ts#L24) for `et` command.
 
 ### Syncing app.json / app.config.js with the schema
 
@@ -252,7 +320,7 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 </Tabs>
 ```
 
-n.b. The components should not be indented or they will not be parsed correctly.
+**Note:** The components should not be indented or they will not be parsed correctly.
 
 ### Excluding pages from DocSearch
 
