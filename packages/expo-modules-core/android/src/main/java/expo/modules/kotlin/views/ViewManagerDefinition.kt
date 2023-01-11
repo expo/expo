@@ -8,6 +8,7 @@ import com.facebook.react.bridge.ReadableMap
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.ViewManager
 import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.DynamicNull
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.logger
@@ -36,24 +37,27 @@ class ViewManagerDefinition(
   }
 
   fun setProps(propsToSet: ReadableMap, onView: View) {
-    val iterator = propsToSet.keySetIterator()
-    while (iterator.hasNextKey()) {
-      val key = iterator.nextKey()
-      val propDelegate = props[key] ?: continue
-      propsToSet.getDynamic(key).recycle {
-        try {
-          propDelegate.set(this, onView)
-        } catch (exception: Throwable) {
-          logger.error("❌ Cannot set the '$key' prop on the '${viewType.simpleName}'", exception)
-
-          handleException(
-            onView,
-            when (exception) {
-              is CodedException -> exception
-              else -> UnexpectedException(exception)
+    props.forEach { (name, propDelegate) ->
+      try {
+        if (propsToSet.hasKey(name)) {
+          propsToSet
+            .getDynamic(name)
+            .recycle {
+              propDelegate.set(this, onView)
             }
-          )
+        } else if (propDelegate.isNullable) {
+          propDelegate.set(DynamicNull, onView)
         }
+      } catch (exception: Throwable) {
+        logger.error("❌ Cannot set the '$name' prop on the '${viewType.simpleName}'", exception)
+
+        handleException(
+          onView,
+          when (exception) {
+            is CodedException -> exception
+            else -> UnexpectedException(exception)
+          }
+        )
       }
     }
   }
