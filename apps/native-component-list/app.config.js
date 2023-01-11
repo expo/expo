@@ -19,8 +19,6 @@ export default ({ config }) => {
     './plugins/withNotFoundModule',
     // Add the React DevMenu back to the client.
     './plugins/withDevMenu',
-    // Add AsyncStorage
-    './plugins/withExpoAsyncStorage',
 
     // Android plugins
 

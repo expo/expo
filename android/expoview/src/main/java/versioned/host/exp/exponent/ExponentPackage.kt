@@ -46,6 +46,8 @@ import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
+import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
+import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter
@@ -108,6 +110,7 @@ class ExponentPackage : ReactPackage {
       ShakeModule(reactContext),
       KeyboardModule(reactContext)
     )
+    nativeModules.add(if (isVerified) ExponentAsyncStorageModule(reactContext, manifest) else ExponentUnsignedAsyncStorageModule(reactContext))
 
     if (isKernel) {
       // WHEN_VERSIONING_REMOVE_FROM_HERE

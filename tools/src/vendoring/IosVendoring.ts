@@ -18,6 +18,7 @@ export async function vendorAsync(
 ): Promise<void> {
   const [podspecFile] = await glob('**/*.podspec', {
     cwd: sourceDirectory,
+    ignore: config.excludeFiles,
   });
 
   if (!podspecFile) {

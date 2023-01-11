@@ -488,6 +488,55 @@ const config: VendoringTargetConfig = {
         excludeFiles: ['**/src/test/**'],
       },
     },
+    '@react-native-async-storage/async-storage': {
+      source: 'https://github.com/react-native-async-storage/async-storage.git',
+      ios: {
+        excludeFiles: 'example/**/*',
+        async mutatePodspec(podspec: Podspec, sourceDirectory: string, targetDirectory: string) {
+          // patch for scoped async storage
+          const patchFile = path.join(
+            EXPOTOOLS_DIR,
+            'src/vendoring/config/react-native-async-storage-scoped-storage-ios.patch'
+          );
+          const patchContent = await fs.readFile(patchFile, 'utf8');
+          try {
+            await applyPatchAsync({
+              patchContent,
+              cwd: targetDirectory,
+              stripPrefixNum: 0,
+            });
+          } catch (e) {
+            logger.error(
+              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+            );
+            throw e;
+          }
+        },
+      },
+      android: {
+        excludeFiles: 'example/**/*',
+        async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
+          // patch for scoped async storage
+          const patchFile = path.join(
+            EXPOTOOLS_DIR,
+            'src/vendoring/config/react-native-async-storage-scoped-storage-android.patch'
+          );
+          const patchContent = await fs.readFile(patchFile, 'utf8');
+          try {
+            await applyPatchAsync({
+              patchContent,
+              cwd: targetDirectory,
+              stripPrefixNum: 0,
+            });
+          } catch (e) {
+            logger.error(
+              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+            );
+            throw e;
+          }
+        },
+      },
+    },
   },
 };
 

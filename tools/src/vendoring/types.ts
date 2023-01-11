@@ -16,6 +16,8 @@ export type VendoringModuleConfig = {
   sourceType?: 'git' | 'npm';
 
   ios?: VendoringModulePlatformConfig<{
+    excludeFiles?: string | string[];
+
     // this hook can do some transformation before running `pod ipc spec ...`.
     // use this hook as a workaround for some podspecs showing errors and violating json format.
     preReadPodspecHookAsync?: (podspecPath: string) => Promise<string>;
