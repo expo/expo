@@ -24,6 +24,9 @@
     "react-native": "0.70.5",
     "metro": "0.73.7",
     "metro-resolver": "0.73.7",
+    "@react-navigation/bottom-tabs": "^6.3.3",
+    "@react-navigation/native": "^6.0.12",
+    "@react-navigation/native-stack": "^6.8.0",
     "**/util": "~0.12.4"
   },
   "dependencies": {

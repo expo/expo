@@ -1,5 +1,6 @@
 import { Link } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
+
 import { getPackages } from '../data/libs';
 
 export default function Page() {

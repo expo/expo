@@ -8,7 +8,7 @@ export function getPackages() {
   });
 }
 
-export function getComponent(pkg: string) {
+export function getComponent(library: string) {
   const key = libs.keys().find((path) => {
     const [pkg] = path.replace(/^\.\//, '').split('/');
 
