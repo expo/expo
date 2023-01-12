@@ -11,10 +11,10 @@ import { BoxLink } from '~/ui/components/BoxLink';
 
 To use Expo's push notification service, you need to configure your app to install a set of libraries, add functions to handle notifications and configure credentials for Android and iOS. After going through these steps, you'll be able to test notification sending and receiving notifications on a device.
 
-To get the client-side ready for push notifications, the following is required:
+To get the client-side ready for push notifications, the following things are required:
 
 - The user's permission to send them push notifications
-- The user's [`ExpoPushToken`](/versions/latest/sdk/notifications/#expopushtoken) &mdash; if push notifications are mail, then the `ExpoPushToken` is the user's address.
+- The user's [`ExpoPushToken`](/versions/latest/sdk/notifications/#expopushtoken).
 
 You'll need to use [`expo-notifications`](/versions/latest/sdk/notifications) library to request for user's permission and fetch the `ExpoPushToken`. You'll also use [`expo-device`](/versions/latest/sdk/device) to check whether the app is running on a physical device. The `expo-notifications` library is not supported on an Android Emulator or an iOS simulator.
 
@@ -194,7 +194,7 @@ For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get you
 
 > **warning** FCM is not currently available for `expo-notifications` on iOS.
 
-#### Setup client
+#### Setting up FCM
 
 1. To create a Firebase project, go to the [Firebase console](https://console.firebase.google.com/) and click on **Add project**.
 
@@ -204,7 +204,7 @@ For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get you
 
    > The **google-services.json** file contains unique and non-secret identifiers of your Firebase project. For more information, see [Understand Firebase Projects](https://firebase.google.com/docs/projects/learn-more#config-files-objects).
 
-4. In the **app.json**, add an `android.googleServicesFile` field with the relative path to the downloaded **google-services.json** file. If place it in the root directory, the path is:
+4. In **app.json**, add an `android.googleServicesFile` field with the relative path to the downloaded **google-services.json** file. If you placed it in the root directory, the path is:
 
    ```json app.json
    {
@@ -277,7 +277,7 @@ If you create a development build for the first time, you'll be asked to enable 
 
 <br />
 
-> If you are using bare workflow and not EAS Build, you will need to run `eas credentials` manually.
+> If you are not using EAS Build, you will need to run `eas credentials` manually.
 
 ### Test using the push notifications tool
 
