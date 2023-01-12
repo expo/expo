@@ -59,7 +59,9 @@ react {
 }
 
 // Override `hermesEnabled` by `expo.jsEngine`
-project.setProperty('hermesEnabled', (findProperty('expo.jsEngine') ?: "jsc") == "hermes")
+ext {
+  hermesEnabled = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+}
 
 /**
  * Set this to true to create four separate APKs instead of one,
