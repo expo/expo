@@ -13,7 +13,7 @@ export const SnippetAction = (props: SnippetActionProps) => {
   const { children, icon, alwaysDark = false, ...rest } = props;
   const iconStyle = {
     color: alwaysDark ? darkTheme.text.default : undefined,
-    size: iconSize.small,
+    size: iconSize.sm,
   };
 
   const styledIcon = icon && cloneElement(icon as any, iconStyle);
@@ -39,16 +39,17 @@ const snippetActionStyle = css({
   padding: `0 16px`,
 
   ':hover': {
-    backgroundColor: theme.background.secondary,
+    backgroundColor: theme.background.subtle,
     boxShadow: 'none',
   },
 });
 
 const alwaysDarkStyle = css({
   borderColor: 'transparent',
+  background: 'transparent',
 
   ':hover': {
-    borderColor: palette.dark.gray[500],
-    boxShadow: shadows.button,
+    borderColor: palette.dark.gray9,
+    boxShadow: shadows.xs,
   },
 });

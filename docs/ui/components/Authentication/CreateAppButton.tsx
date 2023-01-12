@@ -10,7 +10,7 @@ export const CreateAppButton = ({ href, name }: CreateAppButtonProps) => (
     css={buttonStyle}
     href={href}
     openInNewTab
-    iconRight={<ArrowUpRightIcon color={theme.button.primary.foreground} />}>
+    iconRight={<ArrowUpRightIcon color={theme.button.primary.icon} />}>
     Create {name} App
   </Button>
 );

@@ -207,13 +207,13 @@ const boxStyle = css({
   paddingBottom: 0,
 
   '&:first-of-type': {
-    borderTopLeftRadius: borderRadius.medium,
-    borderTopRightRadius: borderRadius.medium,
+    borderTopLeftRadius: borderRadius.md,
+    borderTopRightRadius: borderRadius.md,
   },
 
   '&:last-of-type': {
-    borderBottomLeftRadius: borderRadius.medium,
-    borderBottomRightRadius: borderRadius.medium,
+    borderBottomLeftRadius: borderRadius.md,
+    borderBottomRightRadius: borderRadius.md,
     marginBottom: spacing[4],
     borderBottomWidth: 1,
   },
