@@ -35,7 +35,7 @@ typedef NS_ENUM(NSInteger, EXFileSystemUploadType) {
   EXFileSystemBinaryContent = 0,
   EXFileSystemMultipart = 1,
 };
- 
+
 @interface EXFileSystem ()
 
 @property (nonatomic, strong) NSURLSession *backgroundSession;
@@ -70,9 +70,9 @@ EX_REGISTER_MODULE();
     _documentDirectory = documentDirectory;
     _cachesDirectory = cachesDirectory;
     _bundleDirectory = bundleDirectory;
-    
+
     _taskHandlersManager = [EXTaskHandlersManager new];
-    
+
     [EXFileSystem ensureDirExistsWithPath:_documentDirectory];
     [EXFileSystem ensureDirExistsWithPath:_cachesDirectory];
   }
@@ -96,7 +96,7 @@ EX_REGISTER_MODULE();
 {
   _moduleRegistry = moduleRegistry;
   _eventEmitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
-  
+
   _sessionTaskDispatcher = [[EXSessionTaskDispatcher alloc] initWithSessionHandler:[moduleRegistry getSingletonModuleForName:@"SessionHandler"]];
   _backgroundSession = [self _createSession:EXFileSystemBackgroundSession delegate:_sessionTaskDispatcher];
   _foregroundSession = [self _createSession:EXFileSystemForegroundSession delegate:_sessionTaskDispatcher];
@@ -117,12 +117,12 @@ EX_REGISTER_MODULE();
 }
 
 - (void)startObserving {
-  
+
 }
 
 
 - (void)stopObserving {
-  
+
 }
 
 - (void)dealloc
@@ -190,7 +190,7 @@ EX_EXPORT_METHOD_AS(getInfoAsync,
            nil);
     return;
   }
-  
+
   if ([uri.scheme isEqualToString:@"file"]) {
     [EXFileSystemLocalFileHandler getInfoForFile:uri withOptions:options resolver:resolve rejecter:reject];
   } else if ([uri.scheme isEqualToString:@"assets-library"] || [uri.scheme isEqualToString:@"ph"]) {
@@ -219,7 +219,7 @@ EX_EXPORT_METHOD_AS(readAsStringAsync,
            nil);
     return;
   }
-  
+
   if ([uri.scheme isEqualToString:@"file"]) {
     NSString *encodingType = @"utf8";
     if (options[@"encoding"] && [options[@"encoding"] isKindOfClass:[NSString class]]) {
@@ -237,7 +237,7 @@ EX_EXPORT_METHOD_AS(readAsStringAsync,
       if ([options[@"position"] isKindOfClass:[NSNumber class]]) {
         [file seekToFileOffset:[options[@"position"] intValue]];
       }
-      
+
       NSData *data;
       if ([options[@"length"] isKindOfClass:[NSNumber class]]) {
         data = [file readDataOfLength:[options[@"length"] intValue]];
@@ -282,7 +282,7 @@ EX_EXPORT_METHOD_AS(writeAsStringAsync,
            nil);
     return;
   }
-  
+
   if ([uri.scheme isEqualToString:@"file"]) {
     NSString *encodingType = @"utf8";
     if ([options[@"encoding"] isKindOfClass:[NSString class]]) {
@@ -312,7 +312,7 @@ EX_EXPORT_METHOD_AS(writeAsStringAsync,
       if (possibleEncoding != nil) {
         encoding = [possibleEncoding integerValue];
       }
-      
+
       NSError *error;
       if ([string writeToFile:uri.path atomically:YES encoding:encoding error:&error]) {
         resolve([NSNull null]);
@@ -342,7 +342,7 @@ EX_EXPORT_METHOD_AS(deleteAsync,
            nil);
     return;
   }
-  
+
   if ([uri.scheme isEqualToString:@"file"]) {
     NSString *path = uri.path;
     if ([self _checkIfFileExists:path]) {
@@ -397,7 +397,7 @@ EX_EXPORT_METHOD_AS(moveAsync,
            nil);
     return;
   }
-  
+
   // NOTE: The destination-delete and the move should happen atomically, but we hope for the best for now
   if ([from.scheme isEqualToString:@"file"]) {
     NSString *fromPath = [from.path stringByStandardizingPath];
@@ -453,7 +453,7 @@ EX_EXPORT_METHOD_AS(copyAsync,
            nil);
     return;
   }
-  
+
   if ([from.scheme isEqualToString:@"file"]) {
     [EXFileSystemLocalFileHandler copyFrom:from to:to resolver:resolve rejecter:reject];
   } else if ([from.scheme isEqualToString:@"assets-library"] || [from.scheme isEqualToString:@"ph"]) {
@@ -471,7 +471,7 @@ EX_EXPORT_METHOD_AS(makeDirectoryAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  
+
   NSURL *uri = [NSURL URLWithString:uriString];
   if (!([self permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
@@ -479,7 +479,7 @@ EX_EXPORT_METHOD_AS(makeDirectoryAsync,
            nil);
     return;
   }
-  
+
   if ([uri.scheme isEqualToString:@"file"]) {
     NSError *error;
     if ([[NSFileManager defaultManager] createDirectoryAtPath:uri.path
@@ -512,7 +512,7 @@ EX_EXPORT_METHOD_AS(readDirectoryAsync,
            nil);
     return;
   }
-  
+
   if ([uri.scheme isEqualToString:@"file"]) {
     NSError *error;
     NSArray<NSString *> *children = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:uri.path error:&error];
@@ -565,7 +565,7 @@ EX_EXPORT_METHOD_AS(downloadAsync,
            nil);
     return;
   }
-  
+
   NSURLRequest *request = [self _createRequest:url headers:options[@"headers"]];
   NSURLSessionDownloadTask *task = [session downloadTaskWithRequest:request];
   EXSessionTaskDelegate *taskDelegate = [[EXSessionDownloadTaskDelegate alloc] initWithResolve:resolve
@@ -587,7 +587,7 @@ EX_EXPORT_METHOD_AS(uploadAsync,
   if (!task) {
     return;
   }
-  
+
   EXSessionTaskDelegate *taskDelegate = [[EXSessionUploadTaskDelegate alloc] initWithResolve:resolve reject:reject];
   [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:task];
   [task resume];
@@ -605,7 +605,7 @@ EX_EXPORT_METHOD_AS(uploadTaskStartAsync,
   if (!task) {
     return;
   }
-  
+
   EX_WEAKIFY(self);
   EXUploadDelegateOnSendCallback onSend = ^(NSURLSessionUploadTask *task, int64_t bytesSent, int64_t totalBytesSent, int64_t totalBytesExpectedToSend) {
     EX_ENSURE_STRONGIFY(self);
@@ -613,18 +613,18 @@ EX_EXPORT_METHOD_AS(uploadTaskStartAsync,
                        body:@{
                              @"uuid": uuid,
                              @"data": @{
-                                 @"totalByteSent": @(totalBytesSent),
+                                 @"totalBytesSent": @(totalBytesSent),
                                  @"totalBytesExpectedToSend": @(totalBytesExpectedToSend),
                              },
                            }];
   };
-  
+
   EXSessionTaskDelegate *taskDelegate = [[EXSessionCancelableUploadTaskDelegate alloc] initWithResolve:resolve
                                                                                           reject:reject
                                                                                   onSendCallback:onSend
                                                                                 resumableManager:_taskHandlersManager
                                                                                             uuid:uuid];
-  
+
   [_sessionTaskDispatcher registerTaskDelegate:taskDelegate forTask:task];
   [_taskHandlersManager registerTask:task uuid:uuid];
   [task resume];
@@ -670,7 +670,7 @@ EX_EXPORT_METHOD_AS(uploadTaskStartAsync,
            nil);
     return nil;
   }
-  
+
   NSURLSessionUploadTask *task;
   if (type == EXFileSystemBinaryContent) {
     task = [session uploadTaskWithRequest:request fromFile:fileUri];
@@ -715,7 +715,7 @@ EX_EXPORT_METHOD_AS(downloadResumableStartAsync,
            nil);
     return;
   }
-  
+
   NSString *path = localUrl.path;
   if (!([self _permissionsForPath:path] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
@@ -723,14 +723,14 @@ EX_EXPORT_METHOD_AS(downloadResumableStartAsync,
            nil);
     return;
   }
-  
+
   if (![self _checkHeadersDictionary:options[@"headers"]]) {
     reject(@"ERR_FILESYSTEM_INVALID_HEADERS_DICTIONARY",
            @"Invalid headers dictionary. Keys and values should be strings.",
            nil);
     return;
   }
-  
+
   NSData *resumeData = data ? [[NSData alloc] initWithBase64EncodedString:data options:0] : nil;
   [self _downloadResumableCreateSessionWithUrl:url
                                        fileUrl:localUrl
@@ -753,7 +753,7 @@ EX_EXPORT_METHOD_AS(downloadResumablePauseAsync,
            nil);
     return;
   }
-  
+
   EX_WEAKIFY(self);
   [task cancelByProducingResumeData:^(NSData * _Nullable resumeData) {
     EX_ENSURE_STRONGIFY(self);
@@ -777,7 +777,7 @@ EX_EXPORT_METHOD_AS(getFreeDiskStorageAsync, getFreeDiskStorageAsyncWithResolver
 {
   NSError *error = nil;
   NSNumber *freeDiskStorage = [self freeDiskStorageWithError:&error];
-  
+
   if(!freeDiskStorage || error) {
     reject(@"ERR_FILESYSTEM_CANNOT_DETERMINE_DISK_CAPACITY", @"Unable to determine free disk storage capacity", error);
   } else {
@@ -806,7 +806,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
     case EXFileSystemMultipart:
       return [type intValue];
   }
-  
+
   return EXFileSystemInvalidType;
 }
 
@@ -863,7 +863,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
       [request setValue:[headers valueForKey:headerKey] forHTTPHeaderField:headerKey];
     }
   }
-  
+
   return request;
 }
 
@@ -885,7 +885,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
       return false;
     }
   }
-  
+
   return true;
 }
 
@@ -929,7 +929,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
                              },
                            }];
   };
-  
+
   NSURLSessionDownloadTask *downloadTask;
   NSURLSession *session = [self _sessionForType:[options[@"sessionType"] intValue]];
   if (!session) {
@@ -938,7 +938,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
            nil);
     return;
   }
-  
+
   if (resumeData) {
     downloadTask = [session downloadTaskWithResumeData:resumeData];
   } else {
@@ -977,7 +977,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   }
 
   NSURL *documentDirectoryUrl = [NSURL fileURLWithPath:_documentDirectory];
-  NSDictionary *results = [documentDirectoryUrl resourceValuesForKeys:keys 
+  NSDictionary *results = [documentDirectoryUrl resourceValuesForKeys:keys
                                                                 error:error];
 
   if (!results) {
@@ -1048,7 +1048,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 // '<ARCType> *__autoreleasing*' problem solution: https://stackoverflow.com/a/8862061/4337317
 - (NSNumber *)totalDiskCapacityWithError:(out NSError * __autoreleasing *)error
 {
-  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeTotalCapacityKey] 
+  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeTotalCapacityKey]
                                                        error:error];
 
   return results[NSURLVolumeTotalCapacityKey];
@@ -1057,7 +1057,7 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 // '<ARCType> *__autoreleasing*' problem solution: https://stackoverflow.com/a/8862061/4337317
 - (NSNumber *)freeDiskStorageWithError:(out NSError * __autoreleasing *)error
 {
-  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeAvailableCapacityForImportantUsageKey] 
+  NSDictionary *results = [self documentFileResourcesForKeys:@[NSURLVolumeAvailableCapacityForImportantUsageKey]
                                                        error:error];
 
   return results[NSURLVolumeAvailableCapacityForImportantUsageKey];
