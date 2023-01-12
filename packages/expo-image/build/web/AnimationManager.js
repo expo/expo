@@ -125,15 +125,17 @@ export default function AnimationManager({ children: renderFunction, initial, tr
             },
         });
     }
-    return (React.createElement(React.Fragment, null, [...nodes]
-        .filter((n) => n.status !== 'errored')
-        .map((n) => (React.createElement("div", { className: animation?.containerClass, key: n.animationKey }, wrapNodeWithCallbacks(n)({
+    const styles = {
+        transitionDuration: `${animation?.duration || 0}ms`,
+        transitionTimingFunction: animation?.timingFunction || 'linear',
+    };
+    const classes = {
         in: animation?.animateInClass,
         out: animation?.animateOutClass,
         mounted: animation?.startingClass,
-    }[n.status], {
-        transitionDuration: `${animation?.duration || 0}ms`,
-        transitionTimingFunction: animation?.timingFunction || 'linear',
-    }))))));
+    };
+    return (React.createElement(React.Fragment, null, [...nodes]
+        .filter((n) => n.status !== 'errored')
+        .map((n) => (React.createElement("div", { className: animation?.containerClass, key: n.animationKey }, wrapNodeWithCallbacks(n)(classes[n.status], styles))))));
 }
 //# sourceMappingURL=AnimationManager.js.map

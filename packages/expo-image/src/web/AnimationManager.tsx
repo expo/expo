@@ -186,6 +186,15 @@ export default function AnimationManager({
       },
     });
   }
+  const styles = {
+    transitionDuration: `${animation?.duration || 0}ms`,
+    transitionTimingFunction: animation?.timingFunction || 'linear',
+  };
+  const classes = {
+    in: animation?.animateInClass,
+    out: animation?.animateOutClass,
+    mounted: animation?.startingClass,
+  };
 
   return (
     <>
@@ -193,17 +202,7 @@ export default function AnimationManager({
         .filter((n) => n.status !== 'errored')
         .map((n) => (
           <div className={animation?.containerClass} key={n.animationKey}>
-            {wrapNodeWithCallbacks(n)(
-              {
-                in: animation?.animateInClass,
-                out: animation?.animateOutClass,
-                mounted: animation?.startingClass,
-              }[n.status],
-              {
-                transitionDuration: `${animation?.duration || 0}ms`,
-                transitionTimingFunction: animation?.timingFunction || 'linear',
-              }
-            )}
+            {wrapNodeWithCallbacks(n)(classes[n.status], styles)}
           </div>
         ))}
     </>
