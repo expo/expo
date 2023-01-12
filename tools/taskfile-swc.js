@@ -1,9 +1,8 @@
 // Based on Next.js swc taskr file.
 // https://github.com/vercel/next.js/blob/5378db8f807dbb9ff0993662f0a39d0f6cba2452/packages/next/taskfile-swc.js
 
+const { transform } = require('@swc/core');
 const path = require('path');
-
-const transform = require('@swc/core').transform;
 
 module.exports = function (task) {
   task.plugin('swc', {}, function* (file, environment, { stripExtension } = {}) {
@@ -18,7 +17,7 @@ module.exports = function (task) {
         },
         env: {
           targets: {
-            node: '12.13.0',
+            node: '16.14.2',
           },
         },
         jsc: {

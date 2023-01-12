@@ -14,7 +14,7 @@
     "watch": "taskr",
     "clean": "rm -rf build cache",
     "et": "node bin/expotools.js",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src taskfile.js taskfile-swc.js"
   },
   "taskr": {
     "requires": [
