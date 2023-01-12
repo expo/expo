@@ -4,13 +4,13 @@ title: Receive notifications
 
 import { BoxLink } from '~/ui/components/BoxLink';
 
-Handling notifications with Expo is straightforward across all platforms. You can use event listeners from [`expo-notifications`](/versions/latest/sdk/notifications) library to handle how your app responds when receiving a notification and how to set the behavior of the push notifications when your app is in the foreground.
+The [`expo-notifications`](/versions/latest/sdk/notifications) library contains event listeners that handle how your app responds when receiving a notification.
 
 ## Notification event listeners
 
 The `addNotificationReceivedListener` and `addNotificationResponseReceivedListener` event listeners receive an object when a notification is received or interacted with.
 
-These two different listeners allow you to address cases where a notification comes in while your app is open and foregrounded, **and** cases where a notification comes in while your app is backgrounded or closed, and the user taps on the notification.
+These listeners allow you to add behavior when notifications are received while your app is open and foregrounded and when your app is backgrounded or closed and the user taps on the notification.
 
 ```js
 useEffect(() => {
@@ -57,7 +57,7 @@ Notifications.setNotificationHandler({
 
 ## Closed notification behavior
 
-On Android, users can set certain OS-level settings (**usually** revolving around performance and battery optimization), that can prevent notifications from being delivered when the app is closed. For example, one such setting is the **Deep Clear** option on OnePlus devices using Android 9 and lower versions.
+On Android, users can set certain OS-level settings, usually revolving around performance and battery optimization, that can prevent notifications from being delivered when the app is closed. For example, one such setting is the **Deep Clear** option on OnePlus devices using Android 9 and lower versions.
 
 ## Next
 
