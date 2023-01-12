@@ -23,7 +23,7 @@ public class ReanimatedSensorContainer {
     if (sensor.initialize()) {
       sensorId = nextSensorId;
       nextSensorId++;
-      sensors.put(sensorId, new ReanimatedSensor(reactContext, sensorType, interval, setter));
+      sensors.put(sensorId, sensor);
     }
     return sensorId;
   }
