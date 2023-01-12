@@ -76,11 +76,11 @@ module.exports = ({ types: t }, { expo }) => {
   const importDeclarationVisitor = {
     ImportDeclaration(path, state) {
       if (path.get('source').isStringLiteral({ value: '@expo/html-elements' })) {
-        state.replacedComponents.forEach(component => {
+        state.replacedComponents.forEach((component) => {
           if (
             path
               .get('specifiers')
-              .some(specifier => specifier.get('local').isIdentifier({ name: component }))
+              .some((specifier) => specifier.get('local').isIdentifier({ name: component }))
           ) {
             return;
           }
@@ -93,6 +93,7 @@ module.exports = ({ types: t }, { expo }) => {
     },
   };
 
+  const source = '@expo/html-elements';
   return {
     name: 'Rewrite React DOM to universal Expo elements',
     visitor: {
@@ -101,6 +102,13 @@ module.exports = ({ types: t }, { expo }) => {
         state.unsupportedComponents = new Set();
 
         path.traverse(htmlElementVisitor, state);
+
+        // If state.replacedComponents is not empty, then ensure `import { ... } from '@expo/html-elements'` is present
+        if (state.replacedComponents.size > 0) {
+          const importDeclaration = t.importDeclaration([], t.stringLiteral(source));
+          path.unshiftContainer('body', importDeclaration);
+        }
+
         path.traverse(importDeclarationVisitor, state);
       },
     },
