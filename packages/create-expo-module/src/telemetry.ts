@@ -58,7 +58,7 @@ function getTelemetryContext() {
 
   return {
     os: { name: PLATFORM_NAMES[os.platform()] ?? os.platform(), version: os.release() },
-    app: { name: 'create-expo-module', version: packageJson.version },
+    app: { name: 'create-expo-module', version: packageJson.version ?? undefined },
   };
 }
 
@@ -77,8 +77,14 @@ export async function logEventAsync(event: Event) {
     getTelemetryClient().identify({ anonymousId: telemetryId });
   }
 
+  const commonProperties = {
+    source: 'create-expo-module',
+    source_version: packageJson.version ?? undefined,
+  };
+
   getTelemetryClient().track({
     ...event,
+    properties: { ...event.properties, ...commonProperties },
     anonymousId: telemetryId,
     context: getTelemetryContext(),
   });
