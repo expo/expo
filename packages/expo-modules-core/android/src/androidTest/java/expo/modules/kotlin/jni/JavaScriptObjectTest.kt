@@ -178,8 +178,8 @@ class JavaScriptObjectTest {
         """.trimIndent()
       ).getObject()
 
-      Truth.assertThat(result.getProperty("expo").getDouble().toInt()).isEqualTo(123)
-      Truth.assertThat(receivedObject!!.getProperty("expo").getDouble().toInt()).isEqualTo(123)
+      Truth.assertThat(result.getProperty("expo").getInt()).isEqualTo(123)
+      Truth.assertThat(receivedObject!!.getProperty("expo").getInt()).isEqualTo(123)
     }
   }
 }

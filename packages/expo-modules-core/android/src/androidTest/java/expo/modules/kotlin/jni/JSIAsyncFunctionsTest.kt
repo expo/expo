@@ -37,9 +37,9 @@ class JSIAsyncFunctionsTest {
     }
   ) { methodQueue ->
     val stringValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.stringF('expo')").getString()
-    val intValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.intF(123)").getDouble().toInt()
+    val intValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.intF(123)").getInt()
     val doubleValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.doubleF(123.3)").getDouble()
-    val floatValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.floatF(123.3)").getDouble().toFloat()
+    val floatValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.floatF(123.3)").getFloat()
     val boolValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.boolF(true)").getBool()
     val longValue = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.longF(21474836470)").getDouble().toLong()
 
@@ -158,7 +158,7 @@ class JSIAsyncFunctionsTest {
     ) { methodQueue ->
       val result = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f({ 'x': 123, 's': 'expo' })").getObject()
 
-      val x = result.getProperty("x").getDouble().toInt()
+      val x = result.getProperty("x").getInt()
       val s = result.getProperty("s").getString()
 
       Truth.assertThat(x).isEqualTo(123)
@@ -220,9 +220,9 @@ class JSIAsyncFunctionsTest {
     val array = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.intArray([1, 2, 3])").getArray()
     Truth.assertThat(array.size).isEqualTo(3)
 
-    val e1 = array[0].getDouble().toInt()
-    val e2 = array[1].getDouble().toInt()
-    val e3 = array[2].getDouble().toInt()
+    val e1 = array[0].getInt()
+    val e2 = array[1].getInt()
+    val e3 = array[2].getInt()
 
     Truth.assertThat(e1).isEqualTo(1)
     Truth.assertThat(e2).isEqualTo(2)
@@ -264,10 +264,10 @@ class JSIAsyncFunctionsTest {
     Truth.assertThat(a1.size).isEqualTo(2)
     Truth.assertThat(a2.size).isEqualTo(2)
 
-    val e1 = a1[0].getDouble().toInt()
-    val e2 = a1[1].getDouble().toInt()
-    val e3 = a2[0].getDouble().toInt()
-    val e4 = a2[1].getDouble().toInt()
+    val e1 = a1[0].getInt()
+    val e2 = a1[1].getInt()
+    val e3 = a2[0].getInt()
+    val e4 = a2[1].getInt()
 
     Truth.assertThat(e1).isEqualTo(1)
     Truth.assertThat(e2).isEqualTo(2)
