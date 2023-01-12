@@ -5,11 +5,14 @@ const libs = require.context('../../../packages', true, /.*\.demo\.[jt]sx?/, 'la
 // const libs = require.context('../../../packages', true, /.*\.demo\.[jt]sx?/, 'lazy');
 
 export function getPackages() {
-  return libs.keys().map((path) => {
-    const [pkg] = path.replace(/^\.\//, '').split('/');
+  return libs
+    .keys()
+    .map((path) => {
+      const [pkg] = path.replace(/^\.\//, '').split('/');
 
-    return pkg;
-  });
+      return pkg;
+    })
+    .concat(['expo-blur']);
 }
 
 function MissingRoute({ route }) {
