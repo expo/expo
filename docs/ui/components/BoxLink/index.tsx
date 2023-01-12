@@ -30,7 +30,7 @@ export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps
       <div css={tileContentWrapperStyle}>
         {Icon && (
           <div css={tileIconBackgroundStyle}>
-            <Icon width={iconSize.regular} />
+            <Icon width={iconSize.md} />
           </div>
         )}
         <div>
@@ -48,12 +48,12 @@ const tileContainerStyle = css({
   flexDirection: 'row',
   justifyContent: 'space-between',
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   padding: `${spacing[3]}px ${spacing[4]}px`,
   marginBottom: spacing[3],
 
   ':hover': {
-    boxShadow: shadows.micro,
+    boxShadow: shadows.xs,
   },
 });
 
@@ -65,8 +65,8 @@ const tileContentWrapperStyle = css({
 
 const tileIconBackgroundStyle = css({
   display: 'flex',
-  backgroundColor: theme.background.tertiary,
-  borderRadius: borderRadius.medium,
+  backgroundColor: theme.background.element,
+  borderRadius: borderRadius.md,
   alignSelf: 'center',
   alignItems: 'center',
   justifyContent: 'center',
@@ -81,6 +81,6 @@ const tileIconBackgroundStyle = css({
 const arrowIconStyle = css({
   alignSelf: 'center',
   alignContent: 'flex-end',
-  minWidth: iconSize.regular,
+  minWidth: iconSize.md,
   marginLeft: spacing[3],
 });

@@ -23,7 +23,7 @@ export const IssuesLink = ({ title, repositoryUrl }: { title: string; repository
         repositoryUrl ? `${repositoryUrl}/issues` : `https://github.com/expo/expo/labels/${title}`
       }>
       <span css={iconStyle}>
-        <GithubIcon size={iconSize.small} />
+        <GithubIcon size={iconSize.sm} />
       </span>
       View open bug reports for {title}
     </A>
@@ -35,7 +35,7 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     <LI>
       <A css={linkStyle} openInNewTab href={`https://forums.expo.dev/tag/${title}`}>
         <span css={iconStyle}>
-          <MessageIcon size={iconSize.small} />
+          <MessageIcon size={iconSize.sm} />
         </span>
         Ask a question on the forums about {title}
       </A>
@@ -44,7 +44,7 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     <LI>
       <A css={linkStyle} openInNewTab href="https://forums.expo.dev/">
         <span css={iconStyle}>
-          <MessageIcon size={iconSize.small} />
+          <MessageIcon size={iconSize.sm} />
         </span>
         Ask a question on the forums
       </A>
@@ -61,7 +61,7 @@ export const SourceCodeLink = ({
   <LI>
     <A css={linkStyle} openInNewTab href={sourceCodeUrl}>
       <span css={iconStyle}>
-        <CodeIcon size={iconSize.small} />
+        <CodeIcon size={iconSize.sm} />
       </span>
       View source code for {title}
     </A>
@@ -72,7 +72,7 @@ export const GitHubLink = ({ pathname }: { pathname: string }) => (
   <LI>
     <A css={linkStyle} openInNewTab href={githubUrl(pathname)}>
       <span css={iconStyle}>
-        <EditIcon size={iconSize.small} />
+        <EditIcon size={iconSize.sm} />
       </span>
       Edit this page
     </A>
@@ -83,7 +83,7 @@ export const NpmLink = ({ packageName }: { packageName: string }) => (
   <LI>
     <A css={linkStyle} openInNewTab href={`https://www.npmjs.com/package/${packageName}`}>
       <span css={iconStyle}>
-        <BuildIcon size={iconSize.small} />
+        <BuildIcon size={iconSize.sm} />
       </span>
       View package in npm Registry
     </A>

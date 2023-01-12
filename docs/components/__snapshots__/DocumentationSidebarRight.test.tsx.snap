@@ -17,7 +17,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       href="#base-level-heading"
     >
       <p
-        class="css-166k916-TextComponent"
+        class="css-rzbmfj-TextComponent"
         data-text="true"
       >
         Base level heading
@@ -28,7 +28,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       href="#level-3-subheading"
     >
       <p
-        class="css-166k916-TextComponent"
+        class="css-rzbmfj-TextComponent"
         data-text="true"
       >
         Level 3 subheading
@@ -39,7 +39,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       href="#code-heading-depth-1"
     >
       <code
-        class="css-1vpj371-TextComponent"
+        class="css-ma1quf-TextComponent"
         data-text="true"
       >
         Code heading depth 1

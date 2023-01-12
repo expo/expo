@@ -28,8 +28,8 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
         Icon={() => (
           <div css={easIconContainerStyle}>
             <PlanEnterpriseIcon
-              color={sidebarActiveGroup === 'eas' ? theme.link.default : theme.icon.default}
-              size={iconSize.small}
+              color={sidebarActiveGroup === 'eas' ? theme.text.link : theme.icon.default}
+              size={iconSize.sm}
             />
           </div>
         )}

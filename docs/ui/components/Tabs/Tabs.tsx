@@ -35,8 +35,8 @@ export const Tabs = ({ children, tabs }: Props) => {
 
 const tabsWrapperStyle = css({
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.small,
-  boxShadow: shadows.micro,
+  borderRadius: borderRadius.sm,
+  boxShadow: shadows.xs,
   margin: `${spacing[4]}px 0`,
 });
 

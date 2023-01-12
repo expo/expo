@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { darkTheme, spacing } from '@expo/styleguide';
+import { darkTheme, palette, spacing } from '@expo/styleguide';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
@@ -67,7 +67,7 @@ function cmdMapper(line: string, index: number) {
 
   if (line.startsWith('#')) {
     return (
-      <CODE key={key} css={[codeStyle, unselectableStyle, { color: darkTheme.code.comment }]}>
+      <CODE key={key} css={[codeStyle, unselectableStyle, { color: palette.dark.gray10 }]}>
         {line}
       </CODE>
     );

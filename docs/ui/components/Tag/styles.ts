@@ -3,13 +3,13 @@ import { borderRadius, spacing, theme } from '@expo/styleguide';
 
 export const tagStyle = css({
   display: 'inline-flex',
-  backgroundColor: theme.background.tertiary,
+  backgroundColor: theme.background.element,
   color: theme.text.default,
   fontSize: '90%',
   padding: `${spacing[1]}px ${spacing[2]}px`,
   marginBottom: spacing[3],
   marginRight: spacing[2],
-  borderRadius: borderRadius.small,
+  borderRadius: borderRadius.sm,
   border: `1px solid ${theme.border.default}`,
   alignItems: 'center',
   gap: spacing[1],

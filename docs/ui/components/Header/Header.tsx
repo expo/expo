@@ -41,7 +41,7 @@ export const Header = ({
               onClick={() => {
                 setMobileMenuVisible(!isMobileMenuVisible);
               }}>
-              <HamburgerIcon size={iconSize.small} />
+              <HamburgerIcon size={iconSize.sm} />
             </Button>
           </div>
         </div>
@@ -125,17 +125,17 @@ const mobileButtonStyle = css`
   margin-left: ${spacing[2]}px;
 
   &:hover {
-    background-color: ${theme.background.tertiary};
+    background-color: ${theme.background.element};
     box-shadow: none;
   }
 `;
 
 const mobileButtonActiveStyle = css`
-  background-color: ${theme.background.secondary};
+  background-color: ${theme.background.subtle};
 `;
 
 const mobileSidebarStyle = css`
-  background-color: ${theme.background.secondary};
+  background-color: ${theme.background.subtle};
   height: calc(100vh - (60px * 2));
   overflow-y: auto;
   overflow-x: hidden;

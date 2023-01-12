@@ -116,7 +116,7 @@ export default Error;
 
 const styles = {
   layout: css({
-    backgroundColor: theme.background.secondary,
+    backgroundColor: theme.background.subtle,
   }),
   container: css({
     display: 'flex',

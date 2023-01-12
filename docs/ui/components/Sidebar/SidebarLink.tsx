@@ -68,7 +68,7 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
         {children}
         {info.href.startsWith('http') && (
           <ArrowUpRightIcon
-            size={iconSize.small}
+            size={iconSize.sm}
             color={theme.icon.secondary}
             css={STYLES_EXTERNAL_ICON}
           />
@@ -90,12 +90,12 @@ const STYLES_LINK = css`
   scroll-margin: 60px;
 
   &:hover {
-    color: ${theme.link.default};
+    color: ${theme.text.link};
   }
 `;
 
 const STYLES_LINK_ACTIVE = css`
-  color: ${theme.link.default};
+  color: ${theme.text.link};
   padding-left: 0;
 `;
 
@@ -112,7 +112,7 @@ const STYLES_ACTIVE_BULLET = css`
   width: 6px;
   min-height: 6px;
   min-width: 6px;
-  background-color: ${theme.link.default};
+  background-color: ${theme.text.link};
   border-radius: 100%;
   margin: ${spacing[2]}px ${spacing[1.5]}px;
 `;

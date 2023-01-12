@@ -51,7 +51,7 @@ export const Layout = ({
     <Global
       styles={css({
         // Ensure correct background for Overscroll
-        '[data-expo-theme="dark"] body': {
+        'body.dark-theme': {
           backgroundColor: theme.background.screen,
         },
       })}
@@ -75,7 +75,7 @@ const layoutStyle = css({
   maxHeight: `calc(100vh - ${HEADER_HEIGHT}px)`,
   marginTop: HEADER_HEIGHT,
   backgroundColor: theme.background.default,
-  '[data-expo-theme="dark"] &': {
+  '.dark-theme &': {
     backgroundColor: theme.background.screen,
   },
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {

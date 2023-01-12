@@ -20,7 +20,7 @@ export function ApiVersionSelect() {
     <div css={containerStyle}>
       <label css={labelStyle} htmlFor="api-version-select">
         <LABEL css={labelTextStyle}>{versionToText(version)}</LABEL>
-        <ChevronDownIcon css={labelIconStyle} size={iconSize.small} />
+        <ChevronDownIcon css={labelIconStyle} size={iconSize.sm} />
       </label>
       <select
         id="api-version-select"
@@ -56,8 +56,8 @@ const containerStyle = css({
   position: 'relative',
   background: theme.background.default,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
-  boxShadow: shadows.input,
+  borderRadius: borderRadius.md,
+  boxShadow: shadows.xs,
   margin: spacing[4],
   padding: `${spacing[2]}px ${spacing[3]}px`,
 });

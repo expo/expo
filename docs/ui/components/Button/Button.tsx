@@ -7,7 +7,7 @@ import { hexToAccessibleHSLA, hexToRGBA } from './colors';
 
 import { LinkBase } from '~/ui/components/Text';
 
-type ButtonTheme = keyof typeof styleguideTheme.button;
+type ButtonTheme = 'primary' | 'secondary' | 'tertiary' | 'transparent' | 'ghost';
 type ButtonSize = 'mini' | 'small' | 'large';
 
 export type ButtonProps = PropsWithChildren<{
@@ -41,24 +41,24 @@ type Theme = {
 const buttonThemes: Record<ButtonTheme, Theme> = {
   primary: {
     backgroundColor: styleguideTheme.button.primary.background,
-    color: styleguideTheme.button.primary.foreground,
+    color: styleguideTheme.button.primary.text,
   },
   secondary: {
     backgroundColor: styleguideTheme.button.secondary.background,
-    color: styleguideTheme.button.secondary.foreground,
+    color: styleguideTheme.button.secondary.text,
   },
   tertiary: {
-    backgroundColor: styleguideTheme.button.tertiary.background,
-    color: styleguideTheme.button.tertiary.foreground,
+    backgroundColor: styleguideTheme.button.primary.background,
+    color: styleguideTheme.button.primary.text,
   },
   transparent: {
-    backgroundColor: styleguideTheme.button.transparent.background,
-    color: styleguideTheme.button.transparent.foreground,
+    backgroundColor: styleguideTheme.button.quaternary.background,
+    color: styleguideTheme.button.quaternary.text,
   },
   ghost: {
-    backgroundColor: styleguideTheme.button.ghost.background,
-    color: styleguideTheme.button.ghost.foreground,
-    border: `1px solid ${styleguideTheme.button.ghost.border}`,
+    backgroundColor: styleguideTheme.button.secondary.background,
+    color: styleguideTheme.button.secondary.text,
+    border: `1px solid ${styleguideTheme.button.secondary.border}`,
   },
 };
 
@@ -179,7 +179,7 @@ const buttonStyle = css({
   fontSize: 16,
   lineHeight: 1,
   height: 40,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   border: 0,
   outline: 'none',
   padding: '0 16px',
@@ -206,7 +206,7 @@ const buttonInteractionStyle = css({
   // transform prevents a 1px shift on hover on Safari
   transform: 'translate3d(0,0,0)',
   ':hover': {
-    boxShadow: shadows.button,
+    boxShadow: shadows.xs,
     opacity: 0.85,
   },
   ':active': {

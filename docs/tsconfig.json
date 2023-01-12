@@ -4,7 +4,7 @@
     "paths": {
       "~/*": ["./*"]
     },
-    "target": "es2022",
+    "target": "esnext",
     "lib": [
       "dom",
       "dom.iterable",

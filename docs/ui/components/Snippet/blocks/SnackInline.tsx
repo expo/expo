@@ -98,8 +98,8 @@ export const SnackInline = ({
           )}
           <SnippetAction
             disabled={!isReady}
-            icon={<SnackLogo height={iconSize.regular} />}
-            iconRight={<ArrowUpRightIcon size={iconSize.small} color={theme.icon.secondary} />}
+            icon={<SnackLogo height={iconSize.md} />}
+            iconRight={<ArrowUpRightIcon size={iconSize.sm} color={theme.icon.secondary} />}
             type="submit">
             {buttonTitle || 'Open in Snack'}
           </SnippetAction>

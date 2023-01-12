@@ -32,7 +32,7 @@ const stepLabelStyle = css({
   margin: `${spacing[1]}px auto`,
   width: spacing[7],
   height: spacing[7],
-  background: theme.background.tertiary,
+  background: theme.background.element,
   borderRadius: '100%',
 });
 

@@ -37,7 +37,7 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
     return {
       children: (
         <A css={STYLES_LINK} href={isSupported.pending}>
-          <StatusWaitingIcon color={theme.status.info} /> Pending
+          <StatusWaitingIcon color={theme.icon.info} /> Pending
         </A>
       ),
       title: `${title} support is pending`,
