@@ -115,10 +115,22 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       activeView.setTintColor(value)
     }
 
-  internal var accessible: Boolean = false
+  internal var isFocusableProp: Boolean = false
     set(value) {
       field = value
       activeView.isFocusable = value
+    }
+
+  internal var accessible: Boolean = false
+    set(value) {
+      field = value
+      activeView.isScreenReaderFocusable = value
+    }
+
+  internal var accessibilityLabel: String? = null
+    set(value) {
+      field = value
+      activeView.contentDescription = accessibilityLabel
     }
 
   internal var priority: Priority = Priority.NORMAL
@@ -168,7 +180,9 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     view.setBorderStyle(borderStyle)
     view.setBackgroundColor(backgroundColor)
     view.setTintColor(tintColor)
-    view.isFocusable = accessible
+    view.isFocusable = isFocusableProp
+    view.isScreenReaderFocusable = accessible
+    view.contentDescription = accessibilityLabel
     borderColor.forEachIndexed { index, (rgb, alpha) ->
       view.setBorderColor(index, rgb, alpha)
     }
