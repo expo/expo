@@ -57,7 +57,6 @@ export const globalPrism = css`
     color: ${theme.palette.gray9}
   }
 
-  .token.property,
   .token.boolean,
   .token.function-name,
   .token.constant,
@@ -88,6 +87,7 @@ export const globalPrism = css`
     color: ${theme.palette.pink10}
   }
 
+  .token.property,
   .token.atrule,
   .token.attr-value,
   .token.function {
