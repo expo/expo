@@ -93,16 +93,21 @@ describe(ensureToolsAvailable, () => {
     const manifest = await readAndroidManifestAsync(sampleManifestPath);
     expect(XML.format(manifest)).not.toMatch(/xmlns:tools="http:\/\/schemas\.android\.com\/tools"/);
 
+    const firstFewLines = XML.format(ensureToolsAvailable(manifest))
+      .split('\n')
+      .splice(0, 1)
+      .join('\n');
+    expect(firstFewLines).toMatchInlineSnapshot(
+      `"<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.expo.mycoolapp" xmlns:tools="http://schemas.android.com/tools">"`
+    );
+    expect(firstFewLines).toMatch(/xmlns:tools="http:\/\/schemas\.android\.com\/tools"/);
+
     // ensure idempotent
-    for (let i = 0; i < 2; i++) {
-      const firstFewLines = XML.format(ensureToolsAvailable(manifest))
-        .split('\n')
-        .splice(0, 1)
-        .join('\n');
-      expect(firstFewLines).toMatchInlineSnapshot(
-        `"<manifest xmlns:android=\\"http://schemas.android.com/apk/res/android\\" package=\\"com.expo.mycoolapp\\" xmlns:tools=\\"http://schemas.android.com/tools\\">"`
-      );
-      expect(firstFewLines).toMatch(/xmlns:tools="http:\/\/schemas\.android\.com\/tools"/);
-    }
+    const firstFewLines2 = XML.format(ensureToolsAvailable(manifest))
+      .split('\n')
+      .splice(0, 1)
+      .join('\n');
+    expect(firstFewLines2).toEqual(firstFewLines);
+    expect(firstFewLines2).toEqual(firstFewLines);
   });
 });
