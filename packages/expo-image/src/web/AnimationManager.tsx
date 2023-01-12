@@ -6,6 +6,7 @@ type Callbacks = {
   onReady?: (() => void) | null;
   onAnimationFinished?: (() => void) | null;
   onMount?: (() => void) | null;
+  onError?: (() => void) | null;
 };
 
 type AnimationManagerNode = [
@@ -23,7 +24,7 @@ const SUPPORTED_ANIMATIONS: ImageTransition['effect'][] = [
   'flip-from-bottom',
 ];
 
-type NodeStatus = 'mounted' | 'in' | 'active' | 'out';
+type NodeStatus = 'mounted' | 'in' | 'active' | 'out' | 'errored';
 
 function useAnimationManagerNode(node: AnimationManagerNode | null, initialStatus?: NodeStatus) {
   const newNode = React.useMemo(() => {
@@ -55,9 +56,6 @@ function validateTimingFunctionForAnimation(
 }
 
 function validateAnimationClass(effect: ImageTransition['effect']) {
-  if (!effect) {
-    return null;
-  }
   if (SUPPORTED_ANIMATIONS.includes(effect)) {
     return effect;
   }
@@ -102,7 +100,7 @@ type MountedAnimationNode = {
   persistedElement: (
     renderProps: Callbacks
   ) => (className: string, style: React.CSSProperties) => React.ReactElement;
-  status: 'mounted' | 'in' | 'active' | 'out';
+  status: NodeStatus;
 };
 
 export default function AnimationManager({
@@ -165,6 +163,9 @@ export default function AnimationManager({
         onAnimationFinished: () => {
           setNodes([{ ...node, status: 'in' }]);
         },
+        onError: () => {
+          setNodes((nodes) => nodes.map((n) => (n === node ? { ...n, status: 'errored' } : n)));
+        },
       });
     }
     if (initial?.[0] === node.animationKey) {
@@ -173,6 +174,9 @@ export default function AnimationManager({
           if (node.status === 'out') {
             removeAllNodesOfKeyExceptShowing(node.animationKey);
           }
+        },
+        onError: () => {
+          setNodes((nodes) => nodes.map((n) => (n === node ? { ...n, status: 'errored' } : n)));
         },
       });
     }
@@ -185,21 +189,23 @@ export default function AnimationManager({
 
   return (
     <>
-      {[...nodes].map((n) => (
-        <div className={animation?.containerClass} key={n.animationKey}>
-          {wrapNodeWithCallbacks(n)(
-            {
-              in: animation?.animateInClass,
-              out: animation?.animateOutClass,
-              mounted: animation?.startingClass,
-            }[n.status],
-            {
-              transitionDuration: `${animation?.duration || 0}ms`,
-              transitionTimingFunction: animation?.timingFunction || 'linear',
-            }
-          )}
-        </div>
-      ))}
+      {[...nodes]
+        .filter((n) => n.status !== 'errored')
+        .map((n) => (
+          <div className={animation?.containerClass} key={n.animationKey}>
+            {wrapNodeWithCallbacks(n)(
+              {
+                in: animation?.animateInClass,
+                out: animation?.animateOutClass,
+                mounted: animation?.startingClass,
+              }[n.status],
+              {
+                transitionDuration: `${animation?.duration || 0}ms`,
+                transitionTimingFunction: animation?.timingFunction || 'linear',
+              }
+            )}
+          </div>
+        ))}
     </>
   );
 }

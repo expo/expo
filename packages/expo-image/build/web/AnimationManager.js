@@ -31,9 +31,6 @@ function validateTimingFunctionForAnimation(animationClass, timingFunction) {
     return timingFunction || null;
 }
 function validateAnimationClass(effect) {
-    if (!effect) {
-        return null;
-    }
     if (SUPPORTED_ANIMATIONS.includes(effect)) {
         return effect;
     }
@@ -105,6 +102,9 @@ export default function AnimationManager({ children: renderFunction, initial, tr
                 onAnimationFinished: () => {
                     setNodes([{ ...node, status: 'in' }]);
                 },
+                onError: () => {
+                    setNodes((nodes) => nodes.map((n) => (n === node ? { ...n, status: 'errored' } : n)));
+                },
             });
         }
         if (initial?.[0] === node.animationKey) {
@@ -114,6 +114,9 @@ export default function AnimationManager({ children: renderFunction, initial, tr
                         removeAllNodesOfKeyExceptShowing(node.animationKey);
                     }
                 },
+                onError: () => {
+                    setNodes((nodes) => nodes.map((n) => (n === node ? { ...n, status: 'errored' } : n)));
+                },
             });
         }
         return node.persistedElement({
@@ -122,7 +125,9 @@ export default function AnimationManager({ children: renderFunction, initial, tr
             },
         });
     }
-    return (React.createElement(React.Fragment, null, [...nodes].map((n) => (React.createElement("div", { className: animation?.containerClass, key: n.animationKey }, wrapNodeWithCallbacks(n)({
+    return (React.createElement(React.Fragment, null, [...nodes]
+        .filter((n) => n.status !== 'errored')
+        .map((n) => (React.createElement("div", { className: animation?.containerClass, key: n.animationKey }, wrapNodeWithCallbacks(n)({
         in: animation?.animateInClass,
         out: animation?.animateOutClass,
         mounted: animation?.startingClass,
