@@ -13,6 +13,7 @@
             "../../android/prebuiltHermes"
           ]
         },
+        "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
           "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
@@ -26,6 +27,7 @@
             "../../ios/Pods"
           ]
         },
+        "resourceClass": "m1-medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build"
