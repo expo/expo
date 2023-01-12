@@ -208,8 +208,8 @@ file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { rea
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 def REANIMATED_PACKAGE_BUILD = System.getenv("REANIMATED_PACKAGE_BUILD")
-def REANIMATED_VERSION = getReanimatedVersion()
-def REANIMATED_MAJOR_VERSION = getReanimatedMajorVersion()
+def REANIMATED_VERSION = "2.14.0"
+def REANIMATED_MAJOR_VERSION = 2
 
 // for React Native <= 0.70
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
