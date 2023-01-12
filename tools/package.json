@@ -20,7 +20,7 @@
   "license": "MIT",
   "dependencies": {
     "@expo/commander": "2.21.1",
-    "@expo/json-file": "^8.2.36",
+    "@expo/json-file": "^8.2.37",
     "@expo/spawn-async": "^1.7.0",
     "@expo/swiftlint": "^0.2.0",
     "@expo/xcodegen": "2.18.0-patch.1",
@@ -62,7 +62,7 @@
     "sharp": "^0.30.5",
     "strip-ansi": "^6.0.0",
     "terminal-link": "^2.1.1",
-    "typedoc": "^0.22.15",
+    "typedoc": "^0.23.24",
     "xcode": "^3.0.1"
   },
   "devDependencies": {

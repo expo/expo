@@ -2,38 +2,42 @@ package expo.modules.barcodescanner
 
 import android.content.Context
 import android.hardware.SensorManager
+import android.os.Bundle
+import android.util.Pair
 import android.view.OrientationEventListener
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager
-import expo.modules.barcodescanner.BarCodeScannedEvent.Companion.obtain
+import androidx.core.util.component1
+import androidx.core.util.component2
 import expo.modules.barcodescanner.utils.mapX
 import expo.modules.barcodescanner.utils.mapY
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.interfaces.barcodescanner.BarCodeScannerResult
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.viewevent.EventDispatcher
+import expo.modules.kotlin.views.ExpoView
 import kotlin.math.roundToInt
 
 class BarCodeScannerView(
-  private val viewContext: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate
-) : ViewGroup(viewContext) {
+  context: Context,
+  appContext: AppContext,
+) : ExpoView(context, appContext) {
+  private val onBarCodeScanned by EventDispatcher<BarCodeScannedEvent>(
+    coalescingKey = { event -> (event.data.hashCode() % Short.MAX_VALUE).toShort() }
+  )
+
   private val orientationListener = object : OrientationEventListener(
-    viewContext,
+    context,
     SensorManager.SENSOR_DELAY_NORMAL
   ) {
     override fun onOrientationChanged(orientation: Int) {
-      if (setActualDeviceOrientation(viewContext)) {
+      if (setActualDeviceOrientation()) {
         layoutViewFinder()
       }
     }
   }.apply {
     if (canDetectOrientation()) enable() else disable()
   }
-
-  private inline fun <reified T> moduleRegistry() =
-    moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   private lateinit var viewFinder: BarCodeScannerViewFinder
   private var actualDeviceOrientation = -1
@@ -59,10 +63,17 @@ class BarCodeScannerView(
   }
 
   fun onBarCodeScanned(barCode: BarCodeScannerResult) {
-    val emitter: EventEmitter by moduleRegistry()
     transformBarCodeScannerResultToViewCoordinates(barCode)
-    val event = obtain(id, barCode, displayDensity)
-    emitter.emit(id, event)
+    val (cornerPoints, boundingBox) = getCornerPointsAndBoundingBox(barCode.cornerPoints, barCode.boundingBox)
+    onBarCodeScanned(
+      BarCodeScannedEvent(
+        target = id,
+        data = barCode.value,
+        type = barCode.type,
+        cornerPoints = cornerPoints,
+        boundingBox = boundingBox
+      )
+    )
   }
 
   private val displayDensity: Float
@@ -74,10 +85,10 @@ class BarCodeScannerView(
     val previewHeight = height - topPadding * 2
 
     // fix for problem with rotation when front camera is in use
-    if (type == ExpoBarCodeScanner.CAMERA_TYPE_FRONT && getDeviceOrientation(viewContext) % 2 == 0) {
+    if (type == ExpoBarCodeScanner.CAMERA_TYPE_FRONT && getDeviceOrientation() % 2 == 0) {
       cornerPoints.mapY { barCode.referenceImageHeight - cornerPoints[it] }
     }
-    if (type == ExpoBarCodeScanner.CAMERA_TYPE_FRONT && getDeviceOrientation(viewContext) % 2 != 0) {
+    if (type == ExpoBarCodeScanner.CAMERA_TYPE_FRONT && getDeviceOrientation() % 2 != 0) {
       cornerPoints.mapX { barCode.referenceImageWidth - cornerPoints[it] }
     }
     // end of fix
@@ -94,14 +105,49 @@ class BarCodeScannerView(
     barCode.cornerPoints = cornerPoints
   }
 
+  private fun getCornerPointsAndBoundingBox(
+    cornerPoints: List<Int>,
+    boundingBox: BarCodeScannerResult.BoundingBox,
+  ): Pair<ArrayList<Bundle>, Bundle> {
+    val convertedCornerPoints = ArrayList<Bundle>()
+    for (i in cornerPoints.indices step 2) {
+      val x = cornerPoints[i].toFloat() / displayDensity
+      val y = cornerPoints[i + 1].toFloat() / displayDensity
+
+      convertedCornerPoints.add(
+        Bundle().apply {
+          putFloat("x", x)
+          putFloat("y", y)
+        }
+      )
+    }
+    val boundingBoxBundle = Bundle().apply {
+      putParcelable(
+        "origin",
+        Bundle().apply {
+          putFloat("x", boundingBox.x.toFloat() / displayDensity)
+          putFloat("y", boundingBox.y.toFloat() / displayDensity)
+        }
+      )
+      putParcelable(
+        "size",
+        Bundle().apply {
+          putFloat("width", boundingBox.width.toFloat() / displayDensity)
+          putFloat("height", boundingBox.height.toFloat() / displayDensity)
+        }
+      )
+    }
+    return Pair(convertedCornerPoints, boundingBoxBundle)
+  }
+
   fun setCameraType(cameraType: Int) {
     type = cameraType
     if (!::viewFinder.isInitialized) {
       viewFinder = BarCodeScannerViewFinder(
-        viewContext,
+        context,
         cameraType,
         this,
-        moduleRegistryDelegate
+        appContext
       )
       addView(viewFinder)
     } else {
@@ -114,8 +160,8 @@ class BarCodeScannerView(
     viewFinder.setBarCodeScannerSettings(settings)
   }
 
-  private fun setActualDeviceOrientation(context: Context): Boolean {
-    val innerActualDeviceOrientation = getDeviceOrientation(context)
+  private fun setActualDeviceOrientation(): Boolean {
+    val innerActualDeviceOrientation = getDeviceOrientation()
     return if (actualDeviceOrientation != innerActualDeviceOrientation) {
       actualDeviceOrientation = innerActualDeviceOrientation
       ExpoBarCodeScanner.instance.actualDeviceOrientation = actualDeviceOrientation
@@ -125,7 +171,7 @@ class BarCodeScannerView(
     }
   }
 
-  private fun getDeviceOrientation(context: Context) =
+  private fun getDeviceOrientation() =
     (context.getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay.rotation
 
   fun layoutViewFinder() {
@@ -159,6 +205,6 @@ class BarCodeScannerView(
   }
 
   init {
-    ExpoBarCodeScanner.createInstance(getDeviceOrientation(viewContext))
+    ExpoBarCodeScanner.createInstance(getDeviceOrientation())
   }
 }

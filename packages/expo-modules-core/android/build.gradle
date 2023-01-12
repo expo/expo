@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '1.1.0'
+version = '1.1.1'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -184,7 +184,7 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 31)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.1.0"
+    versionName "1.1.1"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -404,10 +404,25 @@ def prepareBoost = tasks.register('prepareBoost', Copy) {
   }
 }
 
+void nativeBuildDependsOn(project, dependsOnTask, buildTypesIncludes) {
+  def buildTasks = project.tasks.findAll { task ->
+    def taskName = task.name
+    if (taskName.contains("Clean")) { return false }
+    if (taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")) {
+      if (buildTypesIncludes == null) { return true }
+      for (buildType in buildTypesIncludes) {
+        if (taskName.contains(buildType)) { return true }
+      }
+    }
+    return false
+  }
+  buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
+}
+
 afterEvaluate {
-  preBuild.dependsOn(prepareBoost)
+  nativeBuildDependsOn(project, prepareBoost, null)
   if (USE_HERMES) {
-    preBuild.dependsOn(prepareHermes)
+    nativeBuildDependsOn(project, prepareHermes, null)
     if (hasHermesProject && !prebuiltHermesCacheHit) {
       prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
     }

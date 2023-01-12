@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 1.0.2 — 2023-01-10
+
+### 🐛 Bug fixes
+
+- Replace deprecated `File.exists?` with `File.exist?` to fix usage with `ruby@3.2`. ([#20470](https://github.com/expo/expo/pull/20757) by [@KiwiKilian](https://github.com/kiwikilian))
+
 ## 1.0.1 — 2022-12-30
 
 ### 🐛 Bug fixes

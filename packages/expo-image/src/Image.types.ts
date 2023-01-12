@@ -28,6 +28,12 @@ export type ImageSource = {
    * otherwise their default value is `16`.
    */
   blurhash?: string;
+
+  /**
+   * The cache key used to query and store this specific image.
+   * If not provided, the `uri` is used also as the cache key.
+   */
+  cacheKey?: string;
 };
 
 /**
@@ -41,7 +47,7 @@ export type ImageStyle = RNImageStyle;
  */
 export type ImageProps = {
   /** @hidden */
-  style?: RNImageStyle;
+  style?: RNImageStyle | RNImageStyle[];
 
   /**
    * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
@@ -194,6 +200,33 @@ export type ImageProps = {
    * Instead use [`transition`](#transition) with the provided duration.
    */
   fadeDuration?: number;
+
+  /**
+   * Whether this View should be focusable with a non-touch input device and receive focus with a hardware keyboard.
+   * @default false
+   * @platform android
+   */
+  focusable?: boolean;
+
+  /**
+   * When true, indicates that the view is an accessibility element.
+   * When a view is an accessibility element, it groups its children into a single selectable component.
+   *
+   * On Android, the `accessible` property will be translated into the native `isScreenReaderFocusable`,
+   * so it's only affecting the screen readers behaviour.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  accessible?: boolean;
+
+  /**
+   * The text that's read by the screen reader when the user interacts with the image.
+   * @default null
+   * @platform android
+   * @platform ios
+   */
+  accessibilityLabel?: string | null;
 };
 
 /**
@@ -201,6 +234,7 @@ export type ImageProps = {
  * @hidden
  */
 export interface ImageNativeProps extends ImageProps {
+  style?: RNImageStyle;
   source?: ImageSource[];
   placeholder?: ImageSource[];
   contentPosition?: ImageContentPositionObject;

@@ -36,8 +36,8 @@ internal class JSIPropertiesTest {
       Property("p2").get { return@get 321 }
     }
   ) {
-    val p1 = evaluateScript("expo.modules.TestModule.p1").getDouble().toInt()
-    val p2 = evaluateScript("expo.modules.TestModule.p2").getDouble().toInt()
+    val p1 = evaluateScript("expo.modules.TestModule.p1").getInt()
+    val p2 = evaluateScript("expo.modules.TestModule.p2").getInt()
 
     Truth.assertThat(p1).isEqualTo(123)
     Truth.assertThat(p2).isEqualTo(321)
@@ -55,9 +55,9 @@ internal class JSIPropertiesTest {
     }
   ) {
     evaluateScript("expo.modules.TestModule.p = 987")
-    val p1 = evaluateScript("expo.modules.TestModule.p").getDouble().toInt()
+    val p1 = evaluateScript("expo.modules.TestModule.p").getInt()
     evaluateScript("expo.modules.TestModule.p = 123")
-    val p2 = evaluateScript("expo.modules.TestModule.p").getDouble().toInt()
+    val p2 = evaluateScript("expo.modules.TestModule.p").getInt()
 
     Truth.assertThat(p1).isEqualTo(987)
     Truth.assertThat(p2).isEqualTo(123)

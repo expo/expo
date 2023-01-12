@@ -50,6 +50,9 @@ const styles = StyleSheet.create({
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');
 // This `forwardedRef` mechanism is necessary to make this component work properly
 // with React's `ref` prop and to react to props updates as expected.
+/**
+ * A React component that blurs everything underneath the view.
+ */
 const BlurViewWithForwardedRef = React.forwardRef((props, forwardRef) => (React.createElement(BlurView, { ...props, forwardedRef: forwardRef })));
 export default BlurViewWithForwardedRef;
 //# sourceMappingURL=BlurView.js.map

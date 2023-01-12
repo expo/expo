@@ -4,5 +4,8 @@
   "ios": {
     "podspecPath": "./ExpoGL.podspec",
     "modules": ["GLViewModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.gl.GLViewModule"]
   }
 }
