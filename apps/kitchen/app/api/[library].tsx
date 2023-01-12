@@ -1,11 +1,13 @@
-import { getComponent } from '../../data/libs';
-import { Head } from '../../components/head';
 import { useSearchParams } from 'expo-router';
+import { useMemo } from 'react';
+
+import { Head } from '../../components/head';
+import { getComponent } from '../../data/libs';
 
 export default function Library() {
   const { library } = useSearchParams();
 
-  const Component = getComponent(library);
+  const Component = useMemo(() => getComponent(library), [library]);
 
   if (!Component) {
     return <p>Unknown library: {library}</p>;

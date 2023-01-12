@@ -2,6 +2,7 @@ import React from 'react';
 import { ActivityIndicator, View, Text } from 'react-native';
 
 const libs = require.context('../../../packages', true, /.*\.demo\.[jt]sx?/, 'lazy');
+// const libs = require.context('../../../packages', true, /.*\.demo\.[jt]sx?/, 'lazy');
 
 export function getPackages() {
   return libs.keys().map((path) => {
@@ -11,7 +12,7 @@ export function getPackages() {
   });
 }
 
-function MissingRoute() {
+function MissingRoute({ route }) {
   return (
     <View
       style={{
@@ -21,7 +22,7 @@ function MissingRoute() {
         alignItems: 'center',
       }}>
       <Text style={{ color: 'white', fontSize: 24 }}>
-        No <Text style={{ color: '#E37DBB' }}>default export</Text>
+        No <Text style={{ color: '#E37DBB' }}>default export</Text> for {route}
       </Text>
     </View>
   );
@@ -40,13 +41,11 @@ export function getComponent(library: string) {
 
   const Load = React.lazy(async () => {
     const lib = await libs(key);
-
-    console.log('loaded:', lib);
     if (lib.default) {
       return lib;
     }
     return {
-      default: MissingRoute,
+      default: () => <MissingRoute route={key} />,
     };
   });
 

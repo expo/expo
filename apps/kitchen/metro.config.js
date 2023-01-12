@@ -1,4 +1,5 @@
 const { createMetroConfiguration } = require('expo-yarn-workspaces');
+const path = require('path');
 
 const baseConfig = createMetroConfiguration(__dirname);
 
@@ -8,39 +9,39 @@ module.exports = {
   // NOTE(brentvatne): This can be removed when
   // https://github.com/facebook/metro/issues/290 is fixed.
   server: {
-    enhanceMiddleware: (middleware) => {
-      return (req, res, next) => {
-        // When an asset is imported outside the project root, it has wrong path on Android
-        // This happens for the back button in stack, so we fix the path to correct one
-        const assets = '/node_modules/@react-navigation/elements/src/assets';
+    // unstable_serverRoot: path.join(__dirname, '../..'),
+    // enhanceMiddleware: (middleware) => {
+    //   return (req, res, next) => {
+    //     // When an asset is imported outside the project root, it has wrong path on Android
+    //     // This happens for the back button in stack, so we fix the path to correct one
+    //     const assets = '/node_modules/@react-navigation/elements/src/assets';
 
-        if (req.url.startsWith(assets)) {
-          req.url = req.url.replace(assets, `/assets/../..${assets}`);
-        }
+    //     if (req.url.startsWith(assets)) {
+    //       req.url = req.url.replace(assets, `/assets/../..${assets}`);
+    //     }
 
-        // Same as above when testing anything required via Asset.downloadAsync() in test-suite
-        const testSuiteAssets = '/test-suite/assets/';
+    //     // Same as above when testing anything required via Asset.downloadAsync() in test-suite
+    //     const testSuiteAssets = '/test-suite/assets/';
 
-        if (req.url.startsWith(testSuiteAssets)) {
-          req.url = req.url.replace(testSuiteAssets, '/assets/../test-suite/assets/');
-        }
+    //     if (req.url.startsWith(testSuiteAssets)) {
+    //       req.url = req.url.replace(testSuiteAssets, '/assets/../test-suite/assets/');
+    //     }
 
-        const nclAssets = '/native-component-list/';
+    //     const nclAssets = '/native-component-list/';
 
-        if (req.url.startsWith(nclAssets)) {
-          req.url = req.url.replace(nclAssets, '/assets/../native-component-list/');
-        }
+    //     if (req.url.startsWith(nclAssets)) {
+    //       req.url = req.url.replace(nclAssets, '/assets/../native-component-list/');
+    //     }
 
-        return middleware(req, res, next);
-      };
-    },
+    //     return middleware(req, res, next);
+    //   };
+    // },
+    experimentalImportBundleSupport: true,
   },
   transformer: {
     ...baseConfig.transformer,
-    experimentalImportBundleSupport: true,
     asyncRequireModulePath: require.resolve('@expo/metro-runtime/asyncRequire'),
   },
-
   resolver: {
     ...baseConfig.resolver,
     assetExts: [...baseConfig.resolver.assetExts, 'kml'],

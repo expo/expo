@@ -89,6 +89,11 @@ class Env {
     return string('EXPO_EDITOR', '');
   }
 
+  /** Disable auto server root detection for Metro. This will force the server root to be the project root. */
+  get EXPO_NO_METRO_SERVER_ROOT(): boolean {
+    return boolish('EXPO_NO_METRO_SERVER_ROOT', false);
+  }
+
   /**
    * Overwrite the dev server URL, disregarding the `--port`, `--host`, `--tunnel`, `--lan`, `--localhost` arguments.
    * This is useful for browser editors that require custom proxy URLs.
