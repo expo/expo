@@ -63,7 +63,7 @@ function getTelemetryContext() {
 }
 
 type Event = {
-  event: 'Create Expo Module';
+  event: 'create expo module';
   properties: Record<string, any>;
 };
 
@@ -86,7 +86,7 @@ export async function logEventAsync(event: Event) {
 
 export function eventCreateExpoModule(packageManager: string, options: CommandOptions) {
   return {
-    event: 'Create Expo Module' as const, // DO NOT EDIT, unless knowing what you are doing
+    event: 'create expo module' as const, // DO NOT EDIT, unless knowing what you are doing
     properties: {
       nodeVersion: process.version,
       packageManager,
