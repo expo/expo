@@ -113,6 +113,7 @@ const listStyle = css({
 });
 
 const codeStyle = css({
+  borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
   verticalAlign: 'initial',
 });

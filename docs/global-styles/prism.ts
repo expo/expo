@@ -52,14 +52,12 @@ export const globalPrism = css`
     color: ${theme.palette.gray10}
   }
 
+  .token.operator,
   .token.punctuation {
-    color: ${theme.palette.gray11}
+    color: ${theme.palette.gray9}
   }
 
-  .token.property,
-  .token.tag,
   .token.boolean,
-  .token.number,
   .token.function-name,
   .token.constant,
   .token.symbol,
@@ -68,33 +66,41 @@ export const globalPrism = css`
   }
 
   .token.selector,
-  .token.attr-name,
   .token.char,
-  .token.function,
   .token.builtin,
+  .token.script,
   .token.inserted {
-    color: ${theme.palette.green11}
+    color: ${theme.palette.green10}
   }
 
-  .token.operator,
   .token.entity,
-  .token.url,
   .token.variable {
     color: ${theme.palette.green11}
   }
+  
+  .token.attr-name,
+  .token.url {
+    color: ${theme.palette.blue11}
+  }
 
+  .token.keyword {
+    color: ${theme.palette.pink10}
+  }
+
+  .token.property,
   .token.atrule,
   .token.attr-value,
-  .token.keyword,
-  .token.class-name {
+  .token.function {
     color: ${theme.palette.purple11}
   }
 
+  .token.class-name,
   .token.regex,
   .token.important {
     color: ${theme.palette.orange11}
   }
 
+  .token.number,
   .token.string {
     color: ${theme.palette.yellow11}
   }

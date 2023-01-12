@@ -140,12 +140,12 @@ const warningColorStyle = css({
   borderColor: theme.border.warning,
 
   code: {
-    backgroundColor: theme.palette.yellow5,
-    borderColor: theme.palette.yellow7,
+    backgroundColor: theme.palette.yellow4,
+    borderColor: theme.palette.yellow6,
   },
 
   '.dark-theme & code': {
-    backgroundColor: theme.palette.yellow6,
+    backgroundColor: theme.palette.yellow5,
     borderColor: theme.palette.yellow7,
   },
 });
@@ -165,7 +165,7 @@ const infoColorStyle = css({
   borderColor: theme.border.info,
 
   code: {
-    backgroundColor: theme.palette.blue5,
-    borderColor: theme.palette.blue7,
+    backgroundColor: theme.palette.blue4,
+    borderColor: theme.palette.blue6,
   },
 });

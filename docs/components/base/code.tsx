@@ -51,7 +51,7 @@ const STYLES_CODE_BLOCK = css`
 `;
 
 const STYLES_CODE_CONTAINER_BLOCK = css`
-  border: 1px solid ${theme.border.default};
+  border: 1px solid ${theme.border.secondary};
   padding: 16px;
   margin: 16px 0;
   background-color: ${theme.background.subtle};

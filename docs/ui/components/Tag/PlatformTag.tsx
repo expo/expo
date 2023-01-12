@@ -16,10 +16,10 @@ export const PlatformTag = ({ platform, type }: PlatformTagProps) => {
     <div
       css={[
         tagStyle,
-        platformName === 'android' && getTagStyle('green'),
-        platformName === 'ios' && getTagStyle('blue'),
-        platformName === 'web' && getTagStyle('orange'),
-        platformName === 'expo' && getTagStyle('purple'),
+        platformName === 'android' && getTagStyle(platformName),
+        platformName === 'ios' && getTagStyle(platformName),
+        platformName === 'web' && getTagStyle(platformName),
+        platformName === 'expo' && getTagStyle(platformName),
         type === 'toc' && tagToCStyle,
       ]}>
       {type !== 'toc' && <PlatformIcon platform={platformName} />}

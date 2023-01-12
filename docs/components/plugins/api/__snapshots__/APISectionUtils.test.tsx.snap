@@ -20,7 +20,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
      
   </strong>
   <div
-    class="css-yr8cnu-PlatformTag"
+    class="css-1r58h1i-PlatformTag"
   >
     <svg
       color="var(--green12)"
@@ -58,7 +58,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       target="_blank"
     >
       <code
-        class="css-106i24p-TextComponent"
+        class="css-zmv3vl-TextComponent"
         data-text="true"
       >
         Install Referrer API
@@ -79,7 +79,7 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
   </div>
   <pre>
     <pre
-      class="css-micsoa"
+      class="css-1tmj8fm"
       data-text="true"
     >
       <code
