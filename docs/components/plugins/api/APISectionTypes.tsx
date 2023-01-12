@@ -9,7 +9,6 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import {
-  mdComponents,
   resolveTypeName,
   renderFlags,
   CommentTextBlock,
@@ -91,8 +90,8 @@ const renderTypePropertyRow = ({
       <Cell fitContent>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
+          inlineHeaders
           comment={commentData}
-          components={mdComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />

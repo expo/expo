@@ -746,13 +746,17 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       <div
         class="css-1m74yfi-Callout"
       >
-        
-
-        <span>
+        <strong
+          class="css-bvflvn-TextComponent"
+        >
+          Example
+        </strong>
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
+        >
           [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
-        </span>
-        
-
+        </p>
       </div>
     </blockquote>
     <div>

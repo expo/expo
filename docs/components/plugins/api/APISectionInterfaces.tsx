@@ -12,7 +12,6 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getTagData,
-  mdComponents,
   parseCommentContent,
   renderFlags,
   renderParamRow,
@@ -54,8 +53,8 @@ const renderInterfaceComment = (
             <br />
             <APISectionDeprecationNote comment={comment} />
             <CommentTextBlock
+              inlineHeaders
               comment={signatureComment}
-              components={mdComponents}
               afterContent={renderDefaultValue(initValue)}
             />
           </>
@@ -71,7 +70,6 @@ const renderInterfaceComment = (
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
           comment={comment}
-          components={mdComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />

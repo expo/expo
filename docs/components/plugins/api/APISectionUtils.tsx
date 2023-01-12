@@ -96,13 +96,8 @@ export const mdComponents: MDComponents = {
   td: ({ children }) => <Cell>{children}</Cell>,
 };
 
-export const mdInlineComponents: MDComponents = {
+export const mdComponentsNoValidation: MDComponents = {
   ...mdComponents,
-  p: ({ children }) => (children ? <span>{children}</span> : null),
-};
-
-export const mdInlineComponentsNoValidation: MDComponents = {
-  ...mdInlineComponents,
   a: ({ href, children }) => <A href={href}>{children}</A>,
 };
 
@@ -479,10 +474,10 @@ export const renderIndexSignature = (kind: TypeDocKind) =>
 export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
-  withDash?: boolean;
   beforeContent?: JSX.Element;
   afterContent?: JSX.Element;
   includePlatforms?: boolean;
+  inlineHeaders?: boolean;
   emptyCommentFallback?: string;
 };
 
@@ -544,11 +539,10 @@ export const getCommentContent = (content: CommentContentData[]) => {
 
 export const CommentTextBlock = ({
   comment,
-  components = mdComponents,
-  withDash,
   beforeContent,
   afterContent,
   includePlatforms = true,
+  inlineHeaders = false,
   emptyCommentFallback,
 }: CommentTextBlockProps) => {
   const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
@@ -559,7 +553,7 @@ export const CommentTextBlock = ({
 
   const paramTags = content ? getParamTags(content) : undefined;
   const parsedContent = (
-    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
+    <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
       {parseCommentContent(paramTags ? content?.replaceAll(PARAM_TAGS_REGEX, '') : content)}
     </ReactMarkdown>
   );
@@ -567,7 +561,7 @@ export const CommentTextBlock = ({
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
     <Fragment key={'example-' + index}>
-      {components !== mdComponents ? (
+      {inlineHeaders ? (
         <div css={STYLES_EXAMPLE_IN_TABLE}>
           <BOLD>Example</BOLD>
         </div>
@@ -576,16 +570,15 @@ export const CommentTextBlock = ({
           <RawH4>Example</RawH4>
         </div>
       )}
-      <ReactMarkdown components={components}>{getCommentContent(example.content)}</ReactMarkdown>
+      <ReactMarkdown components={mdComponents}>{getCommentContent(example.content)}</ReactMarkdown>
     </Fragment>
   ));
 
   const see = getTagData('see', comment);
   const seeText = see && (
     <Callout>
-      <BOLD>See: </BOLD>
-      <ReactMarkdown components={mdInlineComponents}>
-        {getCommentContent(see.content)}
+      <ReactMarkdown components={mdComponents}>
+        {`**See:** ` + getCommentContent(see.content)}
       </ReactMarkdown>
     </Callout>
   );
@@ -594,7 +587,7 @@ export const CommentTextBlock = ({
 
   return (
     <>
-      {!withDash && includePlatforms && hasPlatforms && (
+      {includePlatforms && hasPlatforms && (
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
       )}
       {paramTags && (
@@ -606,8 +599,6 @@ export const CommentTextBlock = ({
         </>
       )}
       {beforeContent}
-      {withDash && parsedContent && ' - '}
-      {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
       {parsedContent}
       {afterContent}
       {seeText}

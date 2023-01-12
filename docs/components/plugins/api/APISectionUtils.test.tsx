@@ -1,8 +1,7 @@
 import { render } from '@testing-library/react';
-import * as React from 'react';
 
 import type { CommentData } from './APIDataTypes';
-import { CommentTextBlock, mdInlineComponents, resolveTypeName } from './APISectionUtils';
+import { CommentTextBlock, resolveTypeName } from './APISectionUtils';
 
 describe('APISectionUtils.resolveTypeName', () => {
   test('void', () => {
@@ -420,17 +419,6 @@ describe('APISectionUtils.CommentTextBlock component', () => {
     };
 
     const { container } = render(<CommentTextBlock comment={comment} />);
-    expect(container).toMatchSnapshot();
-  });
-
-  test('basic inline comment', () => {
-    const comment: CommentData = {
-      summary: [{ kind: 'text', text: 'This is the basic comment.' }],
-    };
-
-    const { container } = render(
-      <CommentTextBlock comment={comment} components={mdInlineComponents} withDash />
-    );
     expect(container).toMatchSnapshot();
   });
 

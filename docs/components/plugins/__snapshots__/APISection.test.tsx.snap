@@ -265,12 +265,16 @@ not appear on the screen.
       <div
         class="css-1m74yfi-Callout"
       >
-        <strong
-          class="css-bvflvn-TextComponent"
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
         >
-          See: 
-        </strong>
-        <span>
+          <strong
+            class="css-bvflvn-TextComponent"
+          >
+            See:
+          </strong>
+           
           <a
             class="css-1pb9a83-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
@@ -282,7 +286,7 @@ Documentation
           </a>
           
 for more details.
-        </span>
+        </p>
       </div>
     </blockquote>
     <h2
@@ -2767,12 +2771,16 @@ which contains all of the pertinent user and credential information.
       <div
         class="css-1m74yfi-Callout"
       >
-        <strong
-          class="css-bvflvn-TextComponent"
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
         >
-          See: 
-        </strong>
-        <span>
+          <strong
+            class="css-bvflvn-TextComponent"
+          >
+            See:
+          </strong>
+           
           <a
             class="css-1pb9a83-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential"
@@ -2784,7 +2792,7 @@ Documentation
           </a>
           
 for more details.
-        </span>
+        </p>
       </div>
     </blockquote>
     <div
@@ -3569,12 +3577,16 @@ You must include the ID string of the user whose credentials you'd like to refre
       <div
         class="css-1m74yfi-Callout"
       >
-        <strong
-          class="css-bvflvn-TextComponent"
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
         >
-          See: 
-        </strong>
-        <span>
+          <strong
+            class="css-bvflvn-TextComponent"
+          >
+            See:
+          </strong>
+           
           <a
             class="css-1pb9a83-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
@@ -3586,7 +3598,7 @@ Documentation
           </a>
           
 for more details.
-        </span>
+        </p>
       </div>
     </blockquote>
     <div
@@ -3874,12 +3886,16 @@ None of these options are required.
       <div
         class="css-1m74yfi-Callout"
       >
-        <strong
-          class="css-bvflvn-TextComponent"
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
         >
-          See: 
-        </strong>
-        <span>
+          <strong
+            class="css-bvflvn-TextComponent"
+          >
+            See:
+          </strong>
+           
           <a
             class="css-1pb9a83-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
@@ -3891,7 +3907,7 @@ Documentation
           </a>
           
 for more details.
-        </span>
+        </p>
       </div>
     </blockquote>
     <div
@@ -4200,12 +4216,16 @@ You must include the ID string of the user to sign out.
       <div
         class="css-1m74yfi-Callout"
       >
-        <strong
-          class="css-bvflvn-TextComponent"
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
         >
-          See: 
-        </strong>
-        <span>
+          <strong
+            class="css-bvflvn-TextComponent"
+          >
+            See:
+          </strong>
+           
           <a
             class="css-1pb9a83-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
@@ -4217,7 +4237,7 @@ Documentation
           </a>
           
 for more details.
-        </span>
+        </p>
       </div>
     </blockquote>
     <div
@@ -5189,12 +5209,16 @@ OAuth 2.0 protocol
       <div
         class="css-1m74yfi-Callout"
       >
-        <strong
-          class="css-bvflvn-TextComponent"
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
         >
-          See: 
-        </strong>
-        <span>
+          <strong
+            class="css-bvflvn-TextComponent"
+          >
+            See:
+          </strong>
+           
           <a
             class="css-1pb9a83-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
@@ -5206,7 +5230,7 @@ Documentation
           </a>
           
 for more details.
-        </span>
+        </p>
       </div>
     </blockquote>
     <div
@@ -5912,12 +5936,16 @@ You will still need to handle null values for any fields you request.
       <div
         class="css-1m74yfi-Callout"
       >
-        <strong
-          class="css-bvflvn-TextComponent"
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
         >
-          See: 
-        </strong>
-        <span>
+          <strong
+            class="css-bvflvn-TextComponent"
+          >
+            See:
+          </strong>
+           
           <a
             class="css-1pb9a83-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
@@ -5929,7 +5957,7 @@ Documentation
           </a>
           
 for more details.
-        </span>
+        </p>
       </div>
     </blockquote>
     <div
@@ -6146,12 +6174,16 @@ for more details.
       <div
         class="css-1m74yfi-Callout"
       >
-        <strong
-          class="css-bvflvn-TextComponent"
+        <p
+          class="css-1oym3r-TextComponent"
+          data-text="true"
         >
-          See: 
-        </strong>
-        <span>
+          <strong
+            class="css-bvflvn-TextComponent"
+          >
+            See:
+          </strong>
+           
           <a
             class="css-1pb9a83-A"
             href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
@@ -6163,7 +6195,7 @@ Documentation
           </a>
           
 for more details.
-        </span>
+        </p>
       </div>
     </blockquote>
     <div

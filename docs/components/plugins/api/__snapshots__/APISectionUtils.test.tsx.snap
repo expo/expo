@@ -11,15 +11,6 @@ exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 </div>
 `;
 
-exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
-<div>
-   - 
-  <span>
-    This is the basic comment.
-  </span>
-</div>
-`;
-
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
   <strong
