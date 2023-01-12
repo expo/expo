@@ -12,15 +12,37 @@ export const getPlatformName = (text: string): PlatformName => {
   return '';
 };
 
-export const getTagStyle = (color: string) => {
-  return css({
-    // @ts-ignore
-    backgroundColor: theme.palette[`${color}2`],
-    // @ts-ignore
-    color: theme.palette[`${color}12`],
-    // @ts-ignore
-    borderColor: theme.palette[`${color}5`],
-  });
+export const getTagStyle = (platform: string) => {
+  switch (platform) {
+    case 'android': {
+      return css({
+        backgroundColor: theme.palette.green4,
+        color: theme.palette.green12,
+        borderColor: theme.palette.green5,
+      });
+    }
+    case 'ios': {
+      return css({
+        backgroundColor: theme.palette.blue4,
+        color: theme.palette.blue12,
+        borderColor: theme.palette.blue5,
+      });
+    }
+    case 'web': {
+      return css({
+        backgroundColor: theme.palette.orange4,
+        color: theme.palette.orange12,
+        borderColor: theme.palette.orange5,
+      });
+    }
+    case 'expo': {
+      return css({
+        backgroundColor: theme.palette.purple4,
+        color: theme.palette.purple12,
+        borderColor: theme.palette.purple5,
+      });
+    }
+  }
 };
 
 export const formatName = (name: PlatformName) => {
