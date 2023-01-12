@@ -28,12 +28,12 @@ const STYLES_SELECT = css({
   marginTop: spacing[1],
   padding: `${spacing[2]}px ${spacing[3]}px`,
   minHeight: 40,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   marginBottom: spacing[4],
   width: '100%',
   backgroundColor: theme.background.default,
   border: `1px solid ${theme.border.default}`,
-  boxShadow: shadows.input,
+  boxShadow: shadows.xs,
   appearance: 'none',
   outline: 'none',
   cursor: 'pointer',
@@ -77,7 +77,7 @@ export const VersionSelector = () => {
           </option>
         ))}
       </select>
-      <ChevronDownIcon size={iconSize.small} css={STYLES_ICON} />
+      <ChevronDownIcon size={iconSize.sm} css={STYLES_ICON} />
     </div>
   );
 };

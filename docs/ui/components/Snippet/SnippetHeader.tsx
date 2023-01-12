@@ -20,8 +20,8 @@ const headerStyle = css`
   background-color: ${theme.background.default};
   border: 1px solid ${theme.border.default};
   border-bottom: none;
-  border-top-left-radius: ${borderRadius.medium}px;
-  border-top-right-radius: ${borderRadius.medium}px;
+  border-top-left-radius: ${borderRadius.md}px;
+  border-top-right-radius: ${borderRadius.md}px;
   display: flex;
   padding: 0 0 0 16px;
   justify-content: space-between;
@@ -29,7 +29,7 @@ const headerStyle = css`
 `;
 
 const headerDarkStyle = css`
-  background-color: ${darkTheme.background.tertiary};
+  background-color: ${darkTheme.background.element};
   border-color: transparent;
   padding-right: 8px;
 `;

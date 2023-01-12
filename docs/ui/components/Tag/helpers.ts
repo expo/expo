@@ -12,12 +12,14 @@ export const getPlatformName = (text: string): PlatformName => {
   return '';
 };
 
-export const getTagStyle = (color: keyof typeof theme.palette) => {
+export const getTagStyle = (color: string) => {
   return css({
     // @ts-ignore
-    backgroundColor: theme.palette[color]['000'],
-    color: theme.palette[color][900],
-    borderColor: theme.palette[color][200],
+    backgroundColor: theme.palette[`${color}2`],
+    // @ts-ignore
+    color: theme.palette[`${color}12`],
+    // @ts-ignore
+    borderColor: theme.palette[`${color}5`],
   });
 };
 
