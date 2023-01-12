@@ -3,6 +3,7 @@
 #include <memory>
 #include <thread>
 #include <unordered_map>
+#include <utility>
 
 #include "EventHandlerRegistry.h"
 #include "FeaturesConfig.h"

@@ -50,6 +50,7 @@
 #import <RNReanimated/REAEventDispatcher.h>
 #import <RNReanimated/REAUIManager.h>
 #import <RNReanimated/NativeProxy.h>
+#import <RNReanimated/ReanimatedVersion.h>
 
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/CoreModulesPlugins.h>
@@ -591,6 +592,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
         runtime,
         "_WORKLET_RUNTIME",
         workletRuntimeValue);
+    runtime.global().setProperty(
+        runtime,
+        "_REANIMATED_VERSION_CPP",
+        reanimated::getReanimatedVersionString(runtime));
 
     runtime.global().setProperty(
          runtime,

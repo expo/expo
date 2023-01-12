@@ -2,8 +2,10 @@
 #import <RNReanimated/REAModule.h>
 #import <RNReanimated/REANodesManager.h>
 #import <RNReanimated/REATransitionManager.h>
+#import <RNReanimated/ReanimatedVersion.h>
 #import <RNReanimated/SingleInstanceChecker.h>
 
+using namespace facebook::react;
 using namespace reanimated;
 
 typedef void (^AnimatedOperation)(REANodesManager *nodesManager);
@@ -195,19 +197,21 @@ RCT_EXPORT_METHOD(triggerRender)
   [_nodesManager dispatchEvent:event];
 }
 
-- (void)startObserving {
-    hasListeners = YES;
+- (void)startObserving
+{
+  hasListeners = YES;
 }
 
-- (void)stopObserving {
-    hasListeners = NO;
+- (void)stopObserving
+{
+  hasListeners = NO;
 }
 
 - (void)sendEventWithName:(NSString *)eventName body:(id)body
 {
-    if (hasListeners) {
-        [super sendEventWithName:eventName body:body];
-    }
+  if (hasListeners) {
+    [super sendEventWithName:eventName body:body];
+  }
 }
 
 @end

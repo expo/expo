@@ -5,6 +5,7 @@ import path from 'path';
 import { Podspec } from '../../CocoaPods';
 import { EXPO_DIR, EXPOTOOLS_DIR, REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
 import logger from '../../Logger';
+import { transformFileAsync } from '../../Transforms';
 import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
 
@@ -133,6 +134,18 @@ const config: VendoringTargetConfig = {
         ],
         async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
           await fs.copy(path.join(sourceDirectory, 'Common'), path.join(targetDirectory, 'Common'));
+          const reanimatedVersion = require(path.join(sourceDirectory, 'package.json')).version;
+          await transformFileAsync(path.join(targetDirectory, 'android', 'build.gradle'), [
+            // set reanimated version
+            {
+              find: 'def REANIMATED_VERSION = getReanimatedVersion()',
+              replaceWith: `def REANIMATED_VERSION = "${reanimatedVersion}"`,
+            },
+            {
+              find: 'def REANIMATED_MAJOR_VERSION = getReanimatedMajorVersion()',
+              replaceWith: `def REANIMATED_MAJOR_VERSION = ${reanimatedVersion.split('.')[0]}`,
+            },
+          ]);
         },
         transforms: {
           content: [
@@ -182,12 +195,6 @@ const config: VendoringTargetConfig = {
                 `dependencies {\n` +
                 `  compileOnly(project(":ReactAndroid:hermes-engine"))\n` +
                 `}\n`,
-            },
-            {
-              // sets the major version of the package
-              paths: 'build.gradle',
-              find: /def REANIMATED_MAJOR_VERSION = getReanimatedVersion\(\)/,
-              replaceWith: 'def REANIMATED_MAJOR_VERSION = 2',
             },
             {
               // find rn libs in ReactAndroid build output

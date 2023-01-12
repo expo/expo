@@ -12,7 +12,11 @@
 #elif JS_RUNTIME_V8
 #include <v8runtime/V8RuntimeFactory.h>
 #else
+#if REACT_NATIVE_MINOR_VERSION >= 71
+#include <jsc/JSCRuntime.h>
+#else
 #include <jsi/JSCRuntime.h>
+#endif // REACT_NATIVE_MINOR_VERSION
 #endif
 
 #include <android/log.h>
@@ -21,6 +25,7 @@
 #include "LayoutAnimationsProxy.h"
 #include "NativeProxy.h"
 #include "PlatformDepMethodsHolder.h"
+#include "ReanimatedVersion.h"
 
 namespace reanimated {
 
@@ -173,6 +178,9 @@ void NativeProxy::installJSIBindings() {
 
   runtime_->global().setProperty(
       *runtime_, "_WORKLET_RUNTIME", workletRuntimeValue);
+
+  auto version = getReanimatedVersionString(*runtime_);
+  runtime_->global().setProperty(*runtime_, "_REANIMATED_VERSION_CPP", version);
 
   std::shared_ptr<ErrorHandler> errorHandler =
       std::make_shared<AndroidErrorHandler>(scheduler_);

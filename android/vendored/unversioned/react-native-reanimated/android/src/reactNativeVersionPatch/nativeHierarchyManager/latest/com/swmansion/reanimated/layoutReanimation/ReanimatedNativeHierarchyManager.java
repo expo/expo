@@ -87,9 +87,9 @@ class ReaLayoutAnimator extends LayoutAnimationController {
       view.layout(x, y, x + width, y + height);
       if (view.getId() != -1) {
         mAnimationsManager.onViewCreate(
-            view,
-            (ViewGroup) view.getParent(),
-            new Snapshot(view, mWeakNativeViewHierarchyManage.get()));
+                view,
+                (ViewGroup) view.getParent(),
+                new Snapshot(view, mWeakNativeViewHierarchyManage.get()));
       }
     } else {
       Snapshot before = new Snapshot(view, mWeakNativeViewHierarchyManage.get());
@@ -267,33 +267,6 @@ public class ReanimatedNativeHierarchyManager extends NativeViewHierarchyManager
 
   private boolean isLayoutAnimationDisabled() {
     return !initOk || !((ReaLayoutAnimator) mReaLayoutAnimator).isLayoutAnimationEnabled();
-  }
-
-  public synchronized void updateLayout(
-      int parentTag, int tag, int x, int y, int width, int height) {
-    super.updateLayout(parentTag, tag, x, y, width, height);
-    if (isLayoutAnimationDisabled()) {
-      return;
-    }
-    try {
-      View viewToUpdate = this.resolveView(tag);
-      ViewManager viewManager = this.resolveViewManager(tag);
-      String viewManagerName = viewManager.getName();
-      View container = resolveView(parentTag);
-      if (container != null
-          && viewManagerName.equals("RNSScreen")
-          && this.mReaLayoutAnimator != null) {
-        this.mReaLayoutAnimator.applyLayoutUpdate(
-            viewToUpdate,
-            (int) container.getX(),
-            (int) container.getY(),
-            container.getWidth(),
-            container.getHeight());
-      }
-    } catch (IllegalViewOperationException e) {
-      // (IllegalViewOperationException) == (vm == null)
-      e.printStackTrace();
-    }
   }
 
   @Override
