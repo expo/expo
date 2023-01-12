@@ -2,11 +2,11 @@ import { UnavailabilityError } from 'expo-modules-core';
 import { NativeEventEmitter } from 'react-native';
 
 import ExponentSpeech from './ExponentSpeech';
-import { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice, WillSayNextString } from './Speech.types';
+import { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice } from './Speech.types';
 
 const SpeechEventEmitter = ExponentSpeech && new NativeEventEmitter(ExponentSpeech);
 
-export { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice, WillSayNextString };
+export { SpeechOptions, SpeechEventCallback, VoiceQuality, Voice, WebVoice };
 
 const _CALLBACKS = {};
 let _nextCallbackId = 1;
@@ -34,12 +34,12 @@ function _registerListenersIfNeeded() {
   });
   setSpeakingListener(
     'Exponent.speakingWillSayNextString',
-    ({ id, characterLocation, characterLength }) => {
+    ({ id, charIndex, charLength }) => {
       const options = _CALLBACKS[id];
-      if (options && options.onWillSayNextString) {
-        options.onWillSayNextString({
-          length: characterLength,
-          location: characterLocation,
+      if (options && options.onBoundary) {
+        options.onBoundary({
+          charIndex,
+          charLength,
         });
       }
     },

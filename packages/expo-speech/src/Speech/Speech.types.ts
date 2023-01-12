@@ -1,16 +1,5 @@
 export type SpeechEventCallback = (this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any;
 
-export type WillSayNextString = {
-  /**
-   * Count of characters of word.
-   */
-  length: number;
-  /**
-   * Index of word in full string.
-   */
-  location: number;
-};
-
 // @needsAudit @docsMissing
 export type SpeechOptions = {
   /**
@@ -31,12 +20,6 @@ export type SpeechOptions = {
    */
   onStart?: () => void | SpeechEventCallback;
   /**
-   * A callback that is invoked when speaking is about to speak a word in the text.
-   */
-  onWillSayNextString?: (
-    params: WillSayNextString,
-  ) => void | SpeechEventCallback;
-  /**
    * A callback that is invoked when speaking is stopped by calling `Speech.stop()`.
    */
   onStopped?: () => void | SpeechEventCallback;
@@ -48,6 +31,7 @@ export type SpeechOptions = {
    * A callback that is invoked when an error occurred while speaking.
    * @param error
    * @platform android
+   * @platform ios
    */
   onError?: (error: Error) => void | SpeechEventCallback;
   /**
@@ -62,6 +46,10 @@ export type SpeechOptions = {
    */
   voice?: string;
   _voiceIndex?: number;
+
+  /**
+   * A callback that is invoked when the spoken utterance reaches a word. Android and iOS only pass the charIndex and charLength of `SpeechSynthesisEvent`.
+   */
   onBoundary?: SpeechEventCallback | null;
   onMark?: SpeechEventCallback | null;
   onPause?: SpeechEventCallback | null;
