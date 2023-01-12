@@ -16,6 +16,7 @@ const createExampleApp_1 = require("./createExampleApp");
 const packageManager_1 = require("./packageManager");
 const prompts_2 = require("./prompts");
 const resolvePackageManager_1 = require("./resolvePackageManager");
+const telemetry_1 = require("./telemetry");
 const utils_1 = require("./utils");
 const debug = require('debug')('create-expo-module:main');
 const packageJson = require('../package.json');
@@ -54,6 +55,7 @@ async function main(target, options) {
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
         : await downloadPackageAsync(targetDir);
+    (0, telemetry_1.logEventAsync)((0, telemetry_1.eventCreateExpoModule)(packageManager, options));
     await (0, utils_1.newStep)('Creating the module from template files', async (step) => {
         await createModuleFromTemplate(packagePath, targetDir, data);
         step.succeed('Created the module from template files');
@@ -252,5 +254,9 @@ program
     .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
     .option('--no-example', 'Whether to skip creating the example app.', false)
     .action(main);
-program.parse(process.argv);
+program
+    .hook('postAction', async () => {
+    await (0, telemetry_1.getTelemetryClient)().flush?.();
+})
+    .parse(process.argv);
 //# sourceMappingURL=create-expo-module.js.map

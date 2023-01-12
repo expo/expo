@@ -16,6 +16,7 @@ import {
   PackageManagerName,
   resolvePackageManager,
 } from './resolvePackageManager';
+import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import { CommandOptions, SubstitutionData } from './types';
 import { newStep } from './utils';
 
@@ -66,6 +67,8 @@ async function main(target: string | undefined, options: CommandOptions) {
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir);
+
+  logEventAsync(eventCreateExpoModule(packageManager, options));
 
   await newStep('Creating the module from template files', async (step) => {
     await createModuleFromTemplate(packagePath, targetDir, data);
@@ -324,4 +327,8 @@ program
   .option('--no-example', 'Whether to skip creating the example app.', false)
   .action(main);
 
-program.parse(process.argv);
+program
+  .hook('postAction', async () => {
+    await getTelemetryClient().flush?.();
+  })
+  .parse(process.argv);
