@@ -11,6 +11,8 @@ const packageJson = require('../package.json');
 
 /** If telemetry is disabled by the user */
 const EXPO_NO_TELEMETRY = boolish('EXPO_NO_TELEMETRY', false);
+/** If the tool is running in a sanboxed environment, either staging or local envs */
+const EXPO_SANDBOX = boolish('EXPO_STAGING', false) || boolish('EXPO_LOCAL', false);
 
 /** The telemetry client instance to use */
 let client: TelemetryClient | null = null;
@@ -19,9 +21,13 @@ let telemetryId: string | null = null;
 
 export function getTelemetryClient() {
   if (!client) {
-    client = new TelemetryClient('TODO', 'https://cdp.expo.dev/v1/batch', {
-      flushInterval: 300,
-    });
+    client = new TelemetryClient(
+      EXPO_SANDBOX ? '24TKICqYKilXM480mA7ktgVDdea' : '24TKR7CQAaGgIrLTgu3Fp4OdOkI', // expo unified,
+      'https://cdp.expo.dev/v1/batch',
+      {
+        flushInterval: 300,
+      }
+    );
 
     // Empty the telemetry queue on exit
     process.on('SIGINT', () => client?.flush?.());
