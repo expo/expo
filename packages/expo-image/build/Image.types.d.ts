@@ -175,9 +175,9 @@ export type ImageProps = {
      */
     fadeDuration?: number;
     /**
-     * Whether this View should be focusable with a non-touch input device, eg. receive focus with a hardware keyboard.
+     * Whether this View should be focusable with a non-touch input device and receive focus with a hardware keyboard.
      * @default false
-     * @patform android
+     * @platform android
      */
     focusable?: boolean;
     /**
