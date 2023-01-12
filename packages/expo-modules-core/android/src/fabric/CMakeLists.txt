@@ -18,14 +18,19 @@ target_compile_options(fabric PRIVATE
   -DFOLLY_MOBILE=1
 )
 
-target_include_directories(fabric PRIVATE
-  "${REACT_NATIVE_DIR}/ReactCommon"
-  "${COMMON_FABRIC_DIR}"
-)
-
 find_package(ReactAndroid REQUIRED CONFIG)
 
 find_package(fbjni REQUIRED CONFIG)
+
+get_target_property(INCLUDE_fabricjni
+        ReactAndroid::fabricjni
+        INTERFACE_INCLUDE_DIRECTORIES)
+
+target_include_directories(fabric PRIVATE
+  "${REACT_NATIVE_DIR}/ReactCommon"
+  "${COMMON_FABRIC_DIR}"
+  "${INCLUDE_fabricjni}/react/fabric"
+)
 
 target_link_libraries(fabric
   CommonSettings
