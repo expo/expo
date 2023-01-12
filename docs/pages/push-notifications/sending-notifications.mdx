@@ -59,7 +59,7 @@ The first step of sending push notifications is to deliver them to the Expo push
 
 Some of these failures are temporary. For example, if the Expo push notification service is down or unreachable and you get a network error, an HTTP 429 error (Too Many Requests), or an HTTP 5xx error (Server Errors), use [exponential backoff](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/) to wait a few seconds before retrying. If the first retry attempt is unsuccessful, wait for longer (follow exponential backoff) and retry again. This lets the temporarily unavailable service recover before you retry.
 
-Other failures will not resolve themselves, no matter how many times you retry. For example, if your push notification payload is malformed, you may get an HTTP 400 response explaining the issue with the payload. You will also get an error if there are no push credentials for your project or if you send push notifications for different projects in the same request. You must fix the underlying causes of these issues to resolve them.
+Other failures will not resolve themselves. For example, if your push notification payload is malformed, you may get an HTTP 400 response explaining the issue with the payload. You will also get an error if there are no push credentials for your project or if you send push notifications for different projects in the same request.
 
 ### Check push receipts for errors
 
