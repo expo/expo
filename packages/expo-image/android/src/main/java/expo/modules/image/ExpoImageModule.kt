@@ -134,8 +134,16 @@ class ExpoImageModule : Module() {
         view.placeholders = placeholder ?: emptyList()
       }
 
-      Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean ->
-        view.accessible = accessible
+      Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean? ->
+        view.accessible = accessible ?: false
+      }
+
+      Prop("accessibilityLabel") { view: ExpoImageViewWrapper, accessibilityLabel: String? ->
+        view.accessibilityLabel = accessibilityLabel
+      }
+
+      Prop("focusable") { view: ExpoImageViewWrapper, isFocusable: Boolean? ->
+        view.isFocusableProp = isFocusable ?: false
       }
 
       Prop("priority") { view: ExpoImageViewWrapper, priority: Priority? ->
