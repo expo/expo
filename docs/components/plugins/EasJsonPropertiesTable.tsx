@@ -1,7 +1,7 @@
 import ReactMarkdown from 'react-markdown';
 
 import { HeadingType } from '~/common/headingManager';
-import { mdInlineComponentsNoValidation } from '~/components/plugins/api/APISectionUtils';
+import { mdComponentsNoValidation } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { P, CODE, createPermalinkedComponent } from '~/ui/components/Text';
 
@@ -111,7 +111,7 @@ export const EasJsonPropertiesTable = ({ schema }: Props) => {
               </div>
             </Cell>
             <Cell>
-              <ReactMarkdown components={mdInlineComponentsNoValidation}>
+              <ReactMarkdown components={mdComponentsNoValidation}>
                 {property.description}
               </ReactMarkdown>
             </Cell>
