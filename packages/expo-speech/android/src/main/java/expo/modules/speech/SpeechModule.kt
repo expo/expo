@@ -144,8 +144,8 @@ class SpeechModule(
             override fun onRangeStart(utteranceId: String, start: Int, end: Int, frame: Int) {
               var map = Bundle().apply {
                 putString("id", utteranceId)
-                putInt("characterLocation", frame)
-                putInt("characterLength", start + end)
+                putInt("characterLocation", start)
+                putInt("characterLength", end - start)
               }
               emitter.emit("Exponent.speakingWillSayNextString", map)
             }
