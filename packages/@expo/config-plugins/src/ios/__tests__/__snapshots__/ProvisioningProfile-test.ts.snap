@@ -36,35 +36,35 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 		6ADAD6F126493A420001F56E /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = \\"\\";
+			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
 				6ADAD6ED26493A420001F56E /* shareextension.appex in Embed App Extensions */,
 			);
-			name = \\"Embed App Extensions\\";
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = \\"<group>\\"; };
+		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* multitarget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = multitarget.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = multitarget/AppDelegate.h; sourceTree = \\"<group>\\"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = multitarget/AppDelegate.m; sourceTree = \\"<group>\\"; };
-		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = \\"<group>\\"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = multitarget/Images.xcassets; sourceTree = \\"<group>\\"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = multitarget/Info.plist; sourceTree = \\"<group>\\"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = multitarget/main.m; sourceTree = \\"<group>\\"; };
-		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-multitarget.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = \\"libPods-multitarget.a\\"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6ADAD6E226493A420001F56E /* shareextension.appex */ = {isa = PBXFileReference; explicitFileType = \\"wrapper.app-extension\\"; includeInIndex = 0; path = shareextension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		6ADAD6E426493A420001F56E /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = \\"<group>\\"; };
-		6ADAD6E526493A420001F56E /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = \\"<group>\\"; };
-		6ADAD6E826493A420001F56E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = \\"<group>\\"; };
-		6ADAD6EA26493A420001F56E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = \\"<group>\\"; };
-		6C2E3173556A471DD304B334 /* Pods-multitarget.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = \\"Pods-multitarget.debug.xcconfig\\"; path = \\"Target Support Files/Pods-multitarget/Pods-multitarget.debug.xcconfig\\"; sourceTree = \\"<group>\\"; };
-		7A4D352CD337FB3A3BF06240 /* Pods-multitarget.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = \\"Pods-multitarget.release.xcconfig\\"; path = \\"Target Support Files/Pods-multitarget/Pods-multitarget.release.xcconfig\\"; sourceTree = \\"<group>\\"; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = multitarget/SplashScreen.storyboard; sourceTree = \\"<group>\\"; };
-		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = \\"<group>\\"; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = multitarget/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = multitarget/AppDelegate.m; sourceTree = "<group>"; };
+		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = multitarget/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = multitarget/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = multitarget/main.m; sourceTree = "<group>"; };
+		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-multitarget.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-multitarget.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6ADAD6E226493A420001F56E /* shareextension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = shareextension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		6ADAD6E426493A420001F56E /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
+		6ADAD6E526493A420001F56E /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
+		6ADAD6E826493A420001F56E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		6ADAD6EA26493A420001F56E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6C2E3173556A471DD304B334 /* Pods-multitarget.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-multitarget.debug.xcconfig"; path = "Target Support Files/Pods-multitarget/Pods-multitarget.debug.xcconfig"; sourceTree = "<group>"; };
+		7A4D352CD337FB3A3BF06240 /* Pods-multitarget.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-multitarget.release.xcconfig"; path = "Target Support Files/Pods-multitarget/Pods-multitarget.release.xcconfig"; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = multitarget/SplashScreen.storyboard; sourceTree = "<group>"; };
+		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -102,7 +102,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 			);
 			name = multitarget;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
@@ -112,7 +112,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-multitarget.a */,
 			);
 			name = Frameworks;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		6ADAD6E326493A420001F56E /* shareextension */ = {
 			isa = PBXGroup;
@@ -123,14 +123,14 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				6ADAD6EA26493A420001F56E /* Info.plist */,
 			);
 			path = shareextension;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Libraries;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
@@ -143,7 +143,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				D65327D7A22EEC0BE12398D9 /* Pods */,
 			);
 			indentWidth = 2;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 			tabWidth = 2;
 			usesTabs = 0;
 		};
@@ -154,7 +154,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				6ADAD6E226493A420001F56E /* shareextension.appex */,
 			);
 			name = Products;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
@@ -163,7 +163,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			name = Supporting;
 			path = multitarget/Supporting;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		D65327D7A22EEC0BE12398D9 /* Pods */ = {
 			isa = PBXGroup;
@@ -172,14 +172,14 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				7A4D352CD337FB3A3BF06240 /* Pods-multitarget.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		13B07F861A680F5B00A75B9A /* multitarget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget \\"multitarget\\" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "multitarget" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -198,11 +198,11 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			name = multitarget;
 			productName = multitarget;
 			productReference = 13B07F961A680F5B00A75B9A /* multitarget.app */;
-			productType = \\"com.apple.product-type.application\\";
+			productType = "com.apple.product-type.application";
 		};
 		6ADAD6E126493A420001F56E /* shareextension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6ADAD6EE26493A420001F56E /* Build configuration list for PBXNativeTarget \\"shareextension\\" */;
+			buildConfigurationList = 6ADAD6EE26493A420001F56E /* Build configuration list for PBXNativeTarget "shareextension" */;
 			buildPhases = (
 				6ADAD6DE26493A420001F56E /* Sources */,
 				6ADAD6DF26493A420001F56E /* Frameworks */,
@@ -215,7 +215,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			name = shareextension;
 			productName = shareextension;
 			productReference = 6ADAD6E226493A420001F56E /* shareextension.appex */;
-			productType = \\"com.apple.product-type.app-extension\\";
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -226,7 +226,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = \\"J5FM626PE2\\";
+						DevelopmentTeam = "J5FM626PE2";
 						LastSwiftMigration = 1120;
 						ProvisioningStyle = Manual;
 					};
@@ -237,8 +237,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject \\"multitarget\\" */;
-			compatibilityVersion = \\"Xcode 3.2\\";
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "multitarget" */;
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -247,8 +247,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
-			projectDirPath = \\"\\";
-			projectRoot = \\"\\";
+			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* multitarget */,
 				6ADAD6E126493A420001F56E /* shareextension */,
@@ -286,12 +286,12 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			inputPaths = (
 			);
-			name = \\"Bundle React Native code and images\\";
+			name = "Bundle React Native code and images";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"if [[ -f /Users/dsokal/.volta/bin/node ]]; then\\\\n  export NODE_BINARY=/Users/dsokal/.volta/bin/node\\\\nelse\\\\n  export NODE_BINARY=node\\\\nfi\\\\n../node_modules/react-native/scripts/react-native-xcode.sh\\\\n../node_modules/expo-constants/scripts/get-app-config-ios.sh\\\\n../node_modules/expo-updates/scripts/create-manifest-ios.sh\\\\n\\";
+			shellScript = "if [[ -f /Users/dsokal/.volta/bin/node ]]; then\\n  export NODE_BINARY=/Users/dsokal/.volta/bin/node\\nelse\\n  export NODE_BINARY=node\\nfi\\n../node_modules/react-native/scripts/react-native-xcode.sh\\n../node_modules/expo-constants/scripts/get-app-config-ios.sh\\n../node_modules/expo-updates/scripts/create-manifest-ios.sh\\n";
 		};
 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -301,18 +301,18 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				\\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\",
-				\\"\${PODS_ROOT}/Manifest.lock\\",
+				"\${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"\${PODS_ROOT}/Manifest.lock",
 			);
-			name = \\"[CP] Check Pods Manifest.lock\\";
+			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				\\"$(DERIVED_FILE_DIR)/Pods-multitarget-checkManifestLockResult.txt\\",
+				"$(DERIVED_FILE_DIR)/Pods-multitarget-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"diff \\\\\\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\\\\\" \\\\\\"\${PODS_ROOT}/Manifest.lock\\\\\\" > /dev/null\\\\nif [ $? != 0 ] ; then\\\\n    # print error to STDERR\\\\n    echo \\\\\\"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\\\\\\" >&2\\\\n    exit 1\\\\nfi\\\\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\\\\necho \\\\\\"SUCCESS\\\\\\" > \\\\\\"\${SCRIPT_OUTPUT_FILE_0}\\\\\\"\\\\n\\";
+			shellScript = "diff \\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\" \\"\${PODS_ROOT}/Manifest.lock\\" > /dev/null\\nif [ $? != 0 ] ; then\\n    # print error to STDERR\\n    echo \\"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\\" >&2\\n    exit 1\\nfi\\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\\necho \\"SUCCESS\\" > \\"\${SCRIPT_OUTPUT_FILE_0}\\"\\n";
 			showEnvVarsInLog = 0;
 		};
 		AF7BF8C823CE838DA4182532 /* [CP] Copy Pods Resources */ = {
@@ -321,16 +321,16 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			files = (
 			);
 			inputPaths = (
-				\\"\${PODS_ROOT}/Target Support Files/Pods-multitarget/Pods-multitarget-resources.sh\\",
-				\\"\${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle\\",
+				"\${PODS_ROOT}/Target Support Files/Pods-multitarget/Pods-multitarget-resources.sh",
+				"\${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 			);
-			name = \\"[CP] Copy Pods Resources\\";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				\\"\${TARGET_BUILD_DIR}/\${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle\\",
+				"\${TARGET_BUILD_DIR}/\${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"\\\\\\"\${PODS_ROOT}/Target Support Files/Pods-multitarget/Pods-multitarget-resources.sh\\\\\\"\\\\n\\";
+			shellScript = "\\"\${PODS_ROOT}/Target Support Files/Pods-multitarget/Pods-multitarget-resources.sh\\"\\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -342,14 +342,14 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			inputPaths = (
 			);
-			name = \\"Start Packager\\";
+			name = "Start Packager";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"export RCT_METRO_PORT=\\\\\\"\${RCT_METRO_PORT:=8081}\\\\\\"\\\\necho \\\\\\"export RCT_METRO_PORT=\${RCT_METRO_PORT}\\\\\\" > \\\\\\"\${SRCROOT}/../node_modules/react-native/scripts/.packager.env\\\\\\"\\\\nif [ -z \\\\\\"\${RCT_NO_LAUNCH_PACKAGER+xxx}\\\\\\" ] ; then\\\\n  if nc -w 5 -z localhost \${RCT_METRO_PORT} ; then\\\\n    if ! curl -s \\\\\\"http://localhost:\${RCT_METRO_PORT}/status\\\\\\" | grep -q \\\\\\"packager-status:running\\\\\\" ; then\\\\n      echo \\\\\\"Port \${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\\\\\\"\\\\n      exit 2\\\\n    fi\\\\n  else\\\\n    open \\\\\\"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\\\\\\" || echo \\\\\\"Can't start packager automatically\\\\\\"\\\\n  fi\\\\nfi\\\\n\\";
+			shellScript = "export RCT_METRO_PORT=\\"\${RCT_METRO_PORT:=8081}\\"\\necho \\"export RCT_METRO_PORT=\${RCT_METRO_PORT}\\" > \\"\${SRCROOT}/../node_modules/react-native/scripts/.packager.env\\"\\nif [ -z \\"\${RCT_NO_LAUNCH_PACKAGER+xxx}\\" ] ; then\\n  if nc -w 5 -z localhost \${RCT_METRO_PORT} ; then\\n    if ! curl -s \\"http://localhost:\${RCT_METRO_PORT}/status\\" | grep -q \\"packager-status:running\\" ; then\\n      echo \\"Port \${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\\"\\n      exit 2\\n    fi\\n  else\\n    open \\"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\\" || echo \\"Can't start packager automatically\\"\\n  fi\\nfi\\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -390,7 +390,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			name = LaunchScreen.xib;
 			path = multitarget;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		6ADAD6E726493A420001F56E /* MainInterface.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -398,7 +398,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				6ADAD6E826493A420001F56E /* Base */,
 			);
 			name = MainInterface.storyboard;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
 
@@ -413,22 +413,22 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				DEVELOPMENT_TEAM = QL76XYH73P;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					\\"$(inherited)\\",
-					\\"FB_SONARKIT_ENABLED=1\\",
+					"$(inherited)",
+					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = multitarget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
-					\\"$(inherited)\\",
-					\\"-ObjC\\",
-					\\"-lc++\\",
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.dominik.multitarget.debug;
 				PRODUCT_NAME = multitarget;
-				SWIFT_OPTIMIZATION_LEVEL = \\"-Onone\\";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				VERSIONING_SYSTEM = \\"apple-generic\\";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
@@ -438,23 +438,23 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = \\"iPhone Distribution\\";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = \\"J5FM626PE2\\";
+				DEVELOPMENT_TEAM = "J5FM626PE2";
 				INFOPLIST_FILE = multitarget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
-					\\"$(inherited)\\",
-					\\"-ObjC\\",
-					\\"-lc++\\",
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.dominik.multitarget;
 				PRODUCT_NAME = multitarget;
-				PROVISIONING_PROFILE_SPECIFIER = \\"*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z\\";
+				PROVISIONING_PROFILE_SPECIFIER = "*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z";
 				SWIFT_VERSION = 5.0;
-				VERSIONING_SYSTEM = \\"apple-generic\\";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
@@ -463,7 +463,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++14\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -474,13 +474,13 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = shareextension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.dominik.multitarget.shareextension;
-				PRODUCT_NAME = \\"$(TARGET_NAME)\\";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = \\"1,2\\";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -489,24 +489,24 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++14\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = \\"dwarf-with-dsym\\";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QL76XYH73P;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = shareextension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.dominik.multitarget.shareextension;
-				PRODUCT_NAME = \\"$(TARGET_NAME)\\";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = \\"1,2\\";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -515,8 +515,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++0x\\";
-				CLANG_CXX_LIBRARY = \\"libc++\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -538,7 +538,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				\\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\\" = \\"iPhone Developer\\";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -547,8 +547,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					\\"DEBUG=1\\",
-					\\"$(inherited)\\",
+					"DEBUG=1",
+					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -558,11 +558,11 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"/usr/lib/swift $(inherited)\\";
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(inherited)\\\\\\"\\",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\"",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\"",
+					"\\"$(inherited)\\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -575,8 +575,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++0x\\";
-				CLANG_CXX_LIBRARY = \\"libc++\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -598,7 +598,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				\\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\\" = \\"iPhone Developer\\";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -611,11 +611,11 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"/usr/lib/swift $(inherited)\\";
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(inherited)\\\\\\"\\",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\"",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\"",
+					"\\"$(inherited)\\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
@@ -626,7 +626,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget \\"multitarget\\" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "multitarget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -635,7 +635,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6ADAD6EE26493A420001F56E /* Build configuration list for PBXNativeTarget \\"shareextension\\" */ = {
+		6ADAD6EE26493A420001F56E /* Build configuration list for PBXNativeTarget "shareextension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6ADAD6EF26493A420001F56E /* Debug */,
@@ -644,7 +644,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject \\"multitarget\\" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "multitarget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
@@ -696,35 +696,35 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 		6ADAD6F126493A420001F56E /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = \\"\\";
+			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
 				6ADAD6ED26493A420001F56E /* shareextension.appex in Embed App Extensions */,
 			);
-			name = \\"Embed App Extensions\\";
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = \\"<group>\\"; };
+		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* multitarget.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = multitarget.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = multitarget/AppDelegate.h; sourceTree = \\"<group>\\"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = multitarget/AppDelegate.m; sourceTree = \\"<group>\\"; };
-		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = \\"<group>\\"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = multitarget/Images.xcassets; sourceTree = \\"<group>\\"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = multitarget/Info.plist; sourceTree = \\"<group>\\"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = multitarget/main.m; sourceTree = \\"<group>\\"; };
-		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-multitarget.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = \\"libPods-multitarget.a\\"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6ADAD6E226493A420001F56E /* shareextension.appex */ = {isa = PBXFileReference; explicitFileType = \\"wrapper.app-extension\\"; includeInIndex = 0; path = shareextension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		6ADAD6E426493A420001F56E /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = \\"<group>\\"; };
-		6ADAD6E526493A420001F56E /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = \\"<group>\\"; };
-		6ADAD6E826493A420001F56E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = \\"<group>\\"; };
-		6ADAD6EA26493A420001F56E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = \\"<group>\\"; };
-		6C2E3173556A471DD304B334 /* Pods-multitarget.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = \\"Pods-multitarget.debug.xcconfig\\"; path = \\"Target Support Files/Pods-multitarget/Pods-multitarget.debug.xcconfig\\"; sourceTree = \\"<group>\\"; };
-		7A4D352CD337FB3A3BF06240 /* Pods-multitarget.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = \\"Pods-multitarget.release.xcconfig\\"; path = \\"Target Support Files/Pods-multitarget/Pods-multitarget.release.xcconfig\\"; sourceTree = \\"<group>\\"; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = multitarget/SplashScreen.storyboard; sourceTree = \\"<group>\\"; };
-		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = \\"<group>\\"; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = multitarget/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = multitarget/AppDelegate.m; sourceTree = "<group>"; };
+		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = multitarget/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = multitarget/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = multitarget/main.m; sourceTree = "<group>"; };
+		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-multitarget.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-multitarget.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6ADAD6E226493A420001F56E /* shareextension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = shareextension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		6ADAD6E426493A420001F56E /* ShareViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShareViewController.h; sourceTree = "<group>"; };
+		6ADAD6E526493A420001F56E /* ShareViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ShareViewController.m; sourceTree = "<group>"; };
+		6ADAD6E826493A420001F56E /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		6ADAD6EA26493A420001F56E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6C2E3173556A471DD304B334 /* Pods-multitarget.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-multitarget.debug.xcconfig"; path = "Target Support Files/Pods-multitarget/Pods-multitarget.debug.xcconfig"; sourceTree = "<group>"; };
+		7A4D352CD337FB3A3BF06240 /* Pods-multitarget.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-multitarget.release.xcconfig"; path = "Target Support Files/Pods-multitarget/Pods-multitarget.release.xcconfig"; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = multitarget/SplashScreen.storyboard; sourceTree = "<group>"; };
+		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -762,7 +762,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 			);
 			name = multitarget;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
@@ -772,7 +772,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-multitarget.a */,
 			);
 			name = Frameworks;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		6ADAD6E326493A420001F56E /* shareextension */ = {
 			isa = PBXGroup;
@@ -783,14 +783,14 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				6ADAD6EA26493A420001F56E /* Info.plist */,
 			);
 			path = shareextension;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Libraries;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
@@ -803,7 +803,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				D65327D7A22EEC0BE12398D9 /* Pods */,
 			);
 			indentWidth = 2;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 			tabWidth = 2;
 			usesTabs = 0;
 		};
@@ -814,7 +814,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				6ADAD6E226493A420001F56E /* shareextension.appex */,
 			);
 			name = Products;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
@@ -823,7 +823,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			name = Supporting;
 			path = multitarget/Supporting;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		D65327D7A22EEC0BE12398D9 /* Pods */ = {
 			isa = PBXGroup;
@@ -832,14 +832,14 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				7A4D352CD337FB3A3BF06240 /* Pods-multitarget.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		13B07F861A680F5B00A75B9A /* multitarget */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget \\"multitarget\\" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "multitarget" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -858,11 +858,11 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			name = multitarget;
 			productName = multitarget;
 			productReference = 13B07F961A680F5B00A75B9A /* multitarget.app */;
-			productType = \\"com.apple.product-type.application\\";
+			productType = "com.apple.product-type.application";
 		};
 		6ADAD6E126493A420001F56E /* shareextension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6ADAD6EE26493A420001F56E /* Build configuration list for PBXNativeTarget \\"shareextension\\" */;
+			buildConfigurationList = 6ADAD6EE26493A420001F56E /* Build configuration list for PBXNativeTarget "shareextension" */;
 			buildPhases = (
 				6ADAD6DE26493A420001F56E /* Sources */,
 				6ADAD6DF26493A420001F56E /* Frameworks */,
@@ -875,7 +875,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			name = shareextension;
 			productName = shareextension;
 			productReference = 6ADAD6E226493A420001F56E /* shareextension.appex */;
-			productType = \\"com.apple.product-type.app-extension\\";
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -886,13 +886,13 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = \\"J5FM626PE2\\";
+						DevelopmentTeam = "J5FM626PE2";
 						ProvisioningStyle = Manual;
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject \\"multitarget\\" */;
-			compatibilityVersion = \\"Xcode 3.2\\";
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "multitarget" */;
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -901,8 +901,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
-			projectDirPath = \\"\\";
-			projectRoot = \\"\\";
+			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* multitarget */,
 				6ADAD6E126493A420001F56E /* shareextension */,
@@ -940,12 +940,12 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			inputPaths = (
 			);
-			name = \\"Bundle React Native code and images\\";
+			name = "Bundle React Native code and images";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"if [[ -f /Users/dsokal/.volta/bin/node ]]; then\\\\n  export NODE_BINARY=/Users/dsokal/.volta/bin/node\\\\nelse\\\\n  export NODE_BINARY=node\\\\nfi\\\\n../node_modules/react-native/scripts/react-native-xcode.sh\\\\n../node_modules/expo-constants/scripts/get-app-config-ios.sh\\\\n../node_modules/expo-updates/scripts/create-manifest-ios.sh\\\\n\\";
+			shellScript = "if [[ -f /Users/dsokal/.volta/bin/node ]]; then\\n  export NODE_BINARY=/Users/dsokal/.volta/bin/node\\nelse\\n  export NODE_BINARY=node\\nfi\\n../node_modules/react-native/scripts/react-native-xcode.sh\\n../node_modules/expo-constants/scripts/get-app-config-ios.sh\\n../node_modules/expo-updates/scripts/create-manifest-ios.sh\\n";
 		};
 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -955,18 +955,18 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				\\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\",
-				\\"\${PODS_ROOT}/Manifest.lock\\",
+				"\${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"\${PODS_ROOT}/Manifest.lock",
 			);
-			name = \\"[CP] Check Pods Manifest.lock\\";
+			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				\\"$(DERIVED_FILE_DIR)/Pods-multitarget-checkManifestLockResult.txt\\",
+				"$(DERIVED_FILE_DIR)/Pods-multitarget-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"diff \\\\\\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\\\\\" \\\\\\"\${PODS_ROOT}/Manifest.lock\\\\\\" > /dev/null\\\\nif [ $? != 0 ] ; then\\\\n    # print error to STDERR\\\\n    echo \\\\\\"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\\\\\\" >&2\\\\n    exit 1\\\\nfi\\\\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\\\\necho \\\\\\"SUCCESS\\\\\\" > \\\\\\"\${SCRIPT_OUTPUT_FILE_0}\\\\\\"\\\\n\\";
+			shellScript = "diff \\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\" \\"\${PODS_ROOT}/Manifest.lock\\" > /dev/null\\nif [ $? != 0 ] ; then\\n    # print error to STDERR\\n    echo \\"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\\" >&2\\n    exit 1\\nfi\\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\\necho \\"SUCCESS\\" > \\"\${SCRIPT_OUTPUT_FILE_0}\\"\\n";
 			showEnvVarsInLog = 0;
 		};
 		AF7BF8C823CE838DA4182532 /* [CP] Copy Pods Resources */ = {
@@ -975,16 +975,16 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			files = (
 			);
 			inputPaths = (
-				\\"\${PODS_ROOT}/Target Support Files/Pods-multitarget/Pods-multitarget-resources.sh\\",
-				\\"\${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle\\",
+				"\${PODS_ROOT}/Target Support Files/Pods-multitarget/Pods-multitarget-resources.sh",
+				"\${PODS_CONFIGURATION_BUILD_DIR}/React-Core/AccessibilityResources.bundle",
 			);
-			name = \\"[CP] Copy Pods Resources\\";
+			name = "[CP] Copy Pods Resources";
 			outputPaths = (
-				\\"\${TARGET_BUILD_DIR}/\${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle\\",
+				"\${TARGET_BUILD_DIR}/\${UNLOCALIZED_RESOURCES_FOLDER_PATH}/AccessibilityResources.bundle",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"\\\\\\"\${PODS_ROOT}/Target Support Files/Pods-multitarget/Pods-multitarget-resources.sh\\\\\\"\\\\n\\";
+			shellScript = "\\"\${PODS_ROOT}/Target Support Files/Pods-multitarget/Pods-multitarget-resources.sh\\"\\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -996,14 +996,14 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			inputPaths = (
 			);
-			name = \\"Start Packager\\";
+			name = "Start Packager";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"export RCT_METRO_PORT=\\\\\\"\${RCT_METRO_PORT:=8081}\\\\\\"\\\\necho \\\\\\"export RCT_METRO_PORT=\${RCT_METRO_PORT}\\\\\\" > \\\\\\"\${SRCROOT}/../node_modules/react-native/scripts/.packager.env\\\\\\"\\\\nif [ -z \\\\\\"\${RCT_NO_LAUNCH_PACKAGER+xxx}\\\\\\" ] ; then\\\\n  if nc -w 5 -z localhost \${RCT_METRO_PORT} ; then\\\\n    if ! curl -s \\\\\\"http://localhost:\${RCT_METRO_PORT}/status\\\\\\" | grep -q \\\\\\"packager-status:running\\\\\\" ; then\\\\n      echo \\\\\\"Port \${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\\\\\\"\\\\n      exit 2\\\\n    fi\\\\n  else\\\\n    open \\\\\\"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\\\\\\" || echo \\\\\\"Can't start packager automatically\\\\\\"\\\\n  fi\\\\nfi\\\\n\\";
+			shellScript = "export RCT_METRO_PORT=\\"\${RCT_METRO_PORT:=8081}\\"\\necho \\"export RCT_METRO_PORT=\${RCT_METRO_PORT}\\" > \\"\${SRCROOT}/../node_modules/react-native/scripts/.packager.env\\"\\nif [ -z \\"\${RCT_NO_LAUNCH_PACKAGER+xxx}\\" ] ; then\\n  if nc -w 5 -z localhost \${RCT_METRO_PORT} ; then\\n    if ! curl -s \\"http://localhost:\${RCT_METRO_PORT}/status\\" | grep -q \\"packager-status:running\\" ; then\\n      echo \\"Port \${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\\"\\n      exit 2\\n    fi\\n  else\\n    open \\"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\\" || echo \\"Can't start packager automatically\\"\\n  fi\\nfi\\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1044,7 +1044,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			);
 			name = LaunchScreen.xib;
 			path = multitarget;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		6ADAD6E726493A420001F56E /* MainInterface.storyboard */ = {
 			isa = PBXVariantGroup;
@@ -1052,7 +1052,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				6ADAD6E826493A420001F56E /* Base */,
 			);
 			name = MainInterface.storyboard;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
 
@@ -1067,22 +1067,22 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				DEVELOPMENT_TEAM = QL76XYH73P;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					\\"$(inherited)\\",
-					\\"FB_SONARKIT_ENABLED=1\\",
+					"$(inherited)",
+					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = multitarget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
-					\\"$(inherited)\\",
-					\\"-ObjC\\",
-					\\"-lc++\\",
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.dominik.multitarget.debug;
 				PRODUCT_NAME = multitarget;
-				SWIFT_OPTIMIZATION_LEVEL = \\"-Onone\\";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				VERSIONING_SYSTEM = \\"apple-generic\\";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
@@ -1092,23 +1092,23 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_IDENTITY = \\"iPhone Distribution\\";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = \\"J5FM626PE2\\";
+				DEVELOPMENT_TEAM = "J5FM626PE2";
 				INFOPLIST_FILE = multitarget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
-					\\"$(inherited)\\",
-					\\"-ObjC\\",
-					\\"-lc++\\",
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.dominik.multitarget;
 				PRODUCT_NAME = multitarget;
-				PROVISIONING_PROFILE_SPECIFIER = \\"*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z\\";
+				PROVISIONING_PROFILE_SPECIFIER = "*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z";
 				SWIFT_VERSION = 5.0;
-				VERSIONING_SYSTEM = \\"apple-generic\\";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;
 		};
@@ -1117,7 +1117,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++14\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
@@ -1128,13 +1128,13 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = shareextension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.dominik.multitarget.shareextension;
-				PRODUCT_NAME = \\"$(TARGET_NAME)\\";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = \\"1,2\\";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -1143,24 +1143,24 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++14\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = \\"dwarf-with-dsym\\";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = QL76XYH73P;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = shareextension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.swmansion.dominik.multitarget.shareextension;
-				PRODUCT_NAME = \\"$(TARGET_NAME)\\";
+				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = \\"1,2\\";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1169,8 +1169,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++0x\\";
-				CLANG_CXX_LIBRARY = \\"libc++\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -1192,7 +1192,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				\\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\\" = \\"iPhone Developer\\";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1201,8 +1201,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					\\"DEBUG=1\\",
-					\\"$(inherited)\\",
+					"DEBUG=1",
+					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1212,11 +1212,11 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"/usr/lib/swift $(inherited)\\";
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(inherited)\\\\\\"\\",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\"",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\"",
+					"\\"$(inherited)\\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1229,8 +1229,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++0x\\";
-				CLANG_CXX_LIBRARY = \\"libc++\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -1252,7 +1252,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				\\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\\" = \\"iPhone Developer\\";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1265,11 +1265,11 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"/usr/lib/swift $(inherited)\\";
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(inherited)\\\\\\"\\",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\"",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\"",
+					"\\"$(inherited)\\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
@@ -1280,7 +1280,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget \\"multitarget\\" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "multitarget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -1289,7 +1289,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6ADAD6EE26493A420001F56E /* Build configuration list for PBXNativeTarget \\"shareextension\\" */ = {
+		6ADAD6EE26493A420001F56E /* Build configuration list for PBXNativeTarget "shareextension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6ADAD6EF26493A420001F56E /* Debug */,
@@ -1298,7 +1298,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj multitarget
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject \\"multitarget\\" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "multitarget" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
@@ -1334,19 +1334,19 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = \\"<group>\\"; };
+		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* testproject.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = testproject.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = testproject/AppDelegate.h; sourceTree = \\"<group>\\"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = testproject/AppDelegate.m; sourceTree = \\"<group>\\"; };
-		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = \\"<group>\\"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = testproject/Images.xcassets; sourceTree = \\"<group>\\"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = testproject/Info.plist; sourceTree = \\"<group>\\"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = testproject/main.m; sourceTree = \\"<group>\\"; };
-		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-testproject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = \\"libPods-testproject.a\\"; sourceTree = BUILT_PRODUCTS_DIR; };
-		6C2E3173556A471DD304B334 /* Pods-testproject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = \\"Pods-testproject.debug.xcconfig\\"; path = \\"Target Support Files/Pods-testproject/Pods-testproject.debug.xcconfig\\"; sourceTree = \\"<group>\\"; };
-		7A4D352CD337FB3A3BF06240 /* Pods-testproject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = \\"Pods-testproject.release.xcconfig\\"; path = \\"Target Support Files/Pods-testproject/Pods-testproject.release.xcconfig\\"; sourceTree = \\"<group>\\"; };
-		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = testproject/SplashScreen.storyboard; sourceTree = \\"<group>\\"; };
-		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = \\"<group>\\"; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = testproject/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = testproject/AppDelegate.m; sourceTree = "<group>"; };
+		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = testproject/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = testproject/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = testproject/main.m; sourceTree = "<group>"; };
+		58EEBF8E8E6FB1BC6CAF49B5 /* libPods-testproject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-testproject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6C2E3173556A471DD304B334 /* Pods-testproject.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testproject.debug.xcconfig"; path = "Target Support Files/Pods-testproject/Pods-testproject.debug.xcconfig"; sourceTree = "<group>"; };
+		7A4D352CD337FB3A3BF06240 /* Pods-testproject.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-testproject.release.xcconfig"; path = "Target Support Files/Pods-testproject/Pods-testproject.release.xcconfig"; sourceTree = "<group>"; };
+		AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = SplashScreen.storyboard; path = testproject/SplashScreen.storyboard; sourceTree = "<group>"; };
+		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
@@ -1377,7 +1377,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 			);
 			name = testproject;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
@@ -1387,14 +1387,14 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				58EEBF8E8E6FB1BC6CAF49B5 /* libPods-testproject.a */,
 			);
 			name = Frameworks;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
 			);
 			name = Libraries;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
@@ -1406,7 +1406,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				D65327D7A22EEC0BE12398D9 /* Pods */,
 			);
 			indentWidth = 2;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 			tabWidth = 2;
 			usesTabs = 0;
 		};
@@ -1416,7 +1416,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				13B07F961A680F5B00A75B9A /* testproject.app */,
 			);
 			name = Products;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		BB2F792B24A3F905000567C9 /* Supporting */ = {
 			isa = PBXGroup;
@@ -1425,7 +1425,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			);
 			name = Supporting;
 			path = testproject/Supporting;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 		D65327D7A22EEC0BE12398D9 /* Pods */ = {
 			isa = PBXGroup;
@@ -1434,14 +1434,14 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				7A4D352CD337FB3A3BF06240 /* Pods-testproject.release.xcconfig */,
 			);
 			path = Pods;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
 		13B07F861A680F5B00A75B9A /* testproject */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget \\"testproject\\" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "testproject" */;
 			buildPhases = (
 				08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -1457,7 +1457,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			name = testproject;
 			productName = testproject;
 			productReference = 13B07F961A680F5B00A75B9A /* testproject.app */;
-			productType = \\"com.apple.product-type.application\\";
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -1469,13 +1469,13 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1120;
-						DevelopmentTeam = \\"J5FM626PE2\\";
+						DevelopmentTeam = "J5FM626PE2";
 						ProvisioningStyle = Manual;
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject \\"testproject\\" */;
-			compatibilityVersion = \\"Xcode 3.2\\";
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "testproject" */;
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -1484,8 +1484,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			);
 			mainGroup = 83CBB9F61A601CBA00E9B192;
 			productRefGroup = 83CBBA001A601CBA00E9B192 /* Products */;
-			projectDirPath = \\"\\";
-			projectRoot = \\"\\";
+			projectDirPath = "";
+			projectRoot = "";
 			targets = (
 				13B07F861A680F5B00A75B9A /* testproject */,
 			);
@@ -1514,12 +1514,12 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			);
 			inputPaths = (
 			);
-			name = \\"Bundle React Native code and images\\";
+			name = "Bundle React Native code and images";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"export NODE_BINARY=node\\\\n../node_modules/react-native/scripts/react-native-xcode.sh\\\\n../node_modules/expo-updates/scripts/create-manifest-ios.sh\\\\n\\";
+			shellScript = "export NODE_BINARY=node\\n../node_modules/react-native/scripts/react-native-xcode.sh\\n../node_modules/expo-updates/scripts/create-manifest-ios.sh\\n";
 		};
 		08A4A3CD28434E44B6B9DE2E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1529,18 +1529,18 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				\\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\",
-				\\"\${PODS_ROOT}/Manifest.lock\\",
+				"\${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"\${PODS_ROOT}/Manifest.lock",
 			);
-			name = \\"[CP] Check Pods Manifest.lock\\";
+			name = "[CP] Check Pods Manifest.lock";
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				\\"$(DERIVED_FILE_DIR)/Pods-testproject-checkManifestLockResult.txt\\",
+				"$(DERIVED_FILE_DIR)/Pods-testproject-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"diff \\\\\\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\\\\\" \\\\\\"\${PODS_ROOT}/Manifest.lock\\\\\\" > /dev/null\\\\nif [ $? != 0 ] ; then\\\\n    # print error to STDERR\\\\n    echo \\\\\\"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\\\\\\" >&2\\\\n    exit 1\\\\nfi\\\\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\\\\necho \\\\\\"SUCCESS\\\\\\" > \\\\\\"\${SCRIPT_OUTPUT_FILE_0}\\\\\\"\\\\n\\";
+			shellScript = "diff \\"\${PODS_PODFILE_DIR_PATH}/Podfile.lock\\" \\"\${PODS_ROOT}/Manifest.lock\\" > /dev/null\\nif [ $? != 0 ] ; then\\n    # print error to STDERR\\n    echo \\"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\\" >&2\\n    exit 1\\nfi\\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\\necho \\"SUCCESS\\" > \\"\${SCRIPT_OUTPUT_FILE_0}\\"\\n";
 			showEnvVarsInLog = 0;
 		};
 		FD10A7F022414F080027D42C /* Start Packager */ = {
@@ -1552,14 +1552,14 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			);
 			inputPaths = (
 			);
-			name = \\"Start Packager\\";
+			name = "Start Packager";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = \\"export RCT_METRO_PORT=\\\\\\"\${RCT_METRO_PORT:=8081}\\\\\\"\\\\necho \\\\\\"export RCT_METRO_PORT=\${RCT_METRO_PORT}\\\\\\" > \\\\\\"\${SRCROOT}/../node_modules/react-native/scripts/.packager.env\\\\\\"\\\\nif [ -z \\\\\\"\${RCT_NO_LAUNCH_PACKAGER+xxx}\\\\\\" ] ; then\\\\n  if nc -w 5 -z localhost \${RCT_METRO_PORT} ; then\\\\n    if ! curl -s \\\\\\"http://localhost:\${RCT_METRO_PORT}/status\\\\\\" | grep -q \\\\\\"packager-status:running\\\\\\" ; then\\\\n      echo \\\\\\"Port \${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\\\\\\"\\\\n      exit 2\\\\n    fi\\\\n  else\\\\n    open \\\\\\"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\\\\\\" || echo \\\\\\"Can't start packager automatically\\\\\\"\\\\n  fi\\\\nfi\\\\n\\";
+			shellScript = "export RCT_METRO_PORT=\\"\${RCT_METRO_PORT:=8081}\\"\\necho \\"export RCT_METRO_PORT=\${RCT_METRO_PORT}\\" > \\"\${SRCROOT}/../node_modules/react-native/scripts/.packager.env\\"\\nif [ -z \\"\${RCT_NO_LAUNCH_PACKAGER+xxx}\\" ] ; then\\n  if nc -w 5 -z localhost \${RCT_METRO_PORT} ; then\\n    if ! curl -s \\"http://localhost:\${RCT_METRO_PORT}/status\\" | grep -q \\"packager-status:running\\" ; then\\n      echo \\"Port \${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\\"\\n      exit 2\\n    fi\\n  else\\n    open \\"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\\" || echo \\"Can't start packager automatically\\"\\n  fi\\nfi\\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -1584,7 +1584,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			);
 			name = LaunchScreen.xib;
 			path = testproject;
-			sourceTree = \\"<group>\\";
+			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
 
@@ -1598,22 +1598,22 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				CURRENT_PROJECT_VERSION = 1;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					\\"$(inherited)\\",
-					\\"FB_SONARKIT_ENABLED=1\\",
+					"$(inherited)",
+					"FB_SONARKIT_ENABLED=1",
 				);
 				INFOPLIST_FILE = testproject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
-					\\"$(inherited)\\",
-					\\"-ObjC\\",
-					\\"-lc++\\",
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.name.testproject;
 				PRODUCT_NAME = testproject;
-				SWIFT_OPTIMIZATION_LEVEL = \\"-Onone\\";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				VERSIONING_SYSTEM = \\"apple-generic\\";
+				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
 		};
@@ -1626,19 +1626,19 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				CURRENT_PROJECT_VERSION = 1;
 				INFOPLIST_FILE = testproject/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"$(inherited) @executable_path/Frameworks\\";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
-					\\"$(inherited)\\",
-					\\"-ObjC\\",
-					\\"-lc++\\",
+					"$(inherited)",
+					"-ObjC",
+					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = org.name.testproject;
 				PRODUCT_NAME = testproject;
 				SWIFT_VERSION = 5.0;
-				VERSIONING_SYSTEM = \\"apple-generic\\";
-				PROVISIONING_PROFILE_SPECIFIER = \\"*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z\\";
-				DEVELOPMENT_TEAM = \\"J5FM626PE2\\";
-				CODE_SIGN_IDENTITY = \\"iPhone Distribution\\";
+				VERSIONING_SYSTEM = "apple-generic";
+				PROVISIONING_PROFILE_SPECIFIER = "*[expo] com.swmansion.dominik.abcd.v2 AppStore 2020-07-24T07:56:22.983Z";
+				DEVELOPMENT_TEAM = "J5FM626PE2";
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 			};
 			name = Release;
@@ -1648,8 +1648,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++0x\\";
-				CLANG_CXX_LIBRARY = \\"libc++\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -1671,7 +1671,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				\\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\\" = \\"iPhone Developer\\";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -1680,8 +1680,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
-					\\"DEBUG=1\\",
-					\\"$(inherited)\\",
+					"DEBUG=1",
+					"$(inherited)",
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -1691,11 +1691,11 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"/usr/lib/swift $(inherited)\\";
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(inherited)\\\\\\"\\",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\"",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\"",
+					"\\"$(inherited)\\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1708,8 +1708,8 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = \\"gnu++0x\\";
-				CLANG_CXX_LIBRARY = \\"libc++\\";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
@@ -1731,7 +1731,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				\\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\\" = \\"iPhone Developer\\";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -1744,11 +1744,11 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
-				LD_RUNPATH_SEARCH_PATHS = \\"/usr/lib/swift $(inherited)\\";
+				LD_RUNPATH_SEARCH_PATHS = "/usr/lib/swift $(inherited)";
 				LIBRARY_SEARCH_PATHS = (
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\\\\\"\\",
-					\\"\\\\\\"$(inherited)\\\\\\"\\",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)\\"",
+					"\\"$(TOOLCHAIN_DIR)/usr/lib/swift-5.0/$(PLATFORM_NAME)\\"",
+					"\\"$(inherited)\\"",
 				);
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
@@ -1759,7 +1759,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget \\"testproject\\" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "testproject" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -1768,7 +1768,7 @@ exports[`ProvisioningProfile module setProvisioningProfileForPbxproj single targ
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject \\"testproject\\" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "testproject" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
