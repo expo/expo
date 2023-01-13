@@ -55,8 +55,8 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 ]
                 : null },
             selectedSource?.uri || placeholder?.[0]?.uri,
-            ({ onAnimationFinished, onReady, onMount }) => (className, style) => (React.createElement(ImageWrapper, { source: selectedSource || placeholder?.[0], events: {
-                    onError: [onErrorAdapter(onError), onLoadEnd],
+            ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (React.createElement(ImageWrapper, { source: selectedSource || placeholder?.[0], events: {
+                    onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
                     onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                     onMount: [onMount],
                     onTransitionEnd: [onAnimationFinished],
