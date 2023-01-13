@@ -76,26 +76,12 @@ endif ()
 
 if(${UNIT_TEST})
   if(${USE_HERMES})
-    file(GLOB HERMES_SO_DIR "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}")
-    find_library(
-        JSEXECUTOR_LIB
-        hermes
-        PATHS ${HERMES_SO_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-    )
-    set(JSEXECUTOR_INCLUDE ${HERMES_HEADER_DIR} ${HERMES_HEADER_DIR}/API ${HERMES_HEADER_DIR}/public)
+    set(JSEXECUTOR_LIB ReactAndroid::hermes_executor)
   else()
-    find_library(
-        JSEXECUTOR_LIB
-        jscexecutor
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-    )
-    set(JSEXECUTOR_INCLUDE "")
+    set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
   endif()
 else()
   set(JSEXECUTOR_LIB "")
-  set(JSEXECUTOR_INCLUDE "")
 endif()
 
 # find libraries
@@ -121,7 +107,6 @@ target_include_directories(
 
         "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
         "${COMMON_DIR}"
-        "${JSEXECUTOR_INCLUDE}"
         "${SRC_DIR}/fabric"
 )
 
