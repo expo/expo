@@ -1,24 +1,24 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`createTemplateHtmlFromExpoConfigAsync creates using an override project file 1`] = `
-"<!DOCTYPE html><html lang=\\"en\\"><head><meta name=\\"theme-color\\" content=\\"#123456\\">
-<meta name=\\"description\\" content=\\"my static app\\">
-</head><body><div id=\\"root\\"></div><script src=\\"/script.js\\"></script></body></html>"
+"<!DOCTYPE html><html lang="en"><head><meta name="theme-color" content="#123456">
+<meta name="description" content="my static app">
+</head><body><div id="root"></div><script src="/script.js"></script></body></html>"
 `;
 
 exports[`createTemplateHtmlFromExpoConfigAsync creates using the default template 1`] = `
 "<!DOCTYPE html>
-<html lang=\\"en\\">
+<html lang="en">
   <head>
-    <meta charset=\\"utf-8\\" />
-    <meta httpEquiv=\\"X-UA-Compatible\\" content=\\"IE=edge\\" />
+    <meta charset="utf-8" />
+    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
     <!-- 
       This viewport works for phones with notches.
       It's optimized for gestures by disabling global zoom.
      -->
     <meta
-      name=\\"viewport\\"
-      content=\\"width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1.00001, viewport-fit=cover\\"
+      name="viewport"
+      content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1.00001, viewport-fit=cover"
     />
     <title>My App</title>
     <style>
@@ -69,8 +69,8 @@ exports[`createTemplateHtmlFromExpoConfigAsync creates using the default templat
         }
       }*/
     </style>
-  <meta name=\\"theme-color\\" content=\\"#123456\\">
-<meta name=\\"description\\" content=\\"my static app\\">
+  <meta name="theme-color" content="#123456">
+<meta name="description" content="my static app">
 </head>
 
   <body>
@@ -80,8 +80,8 @@ exports[`createTemplateHtmlFromExpoConfigAsync creates using the default templat
     -->
     <noscript>
       <form
-        action=\\"\\"
-        style=\\"
+        action=""
+        style="
           background-color: #fff;
           position: fixed;
           top: 0;
@@ -89,22 +89,22 @@ exports[`createTemplateHtmlFromExpoConfigAsync creates using the default templat
           right: 0;
           bottom: 0;
           z-index: 9999;
-        \\"
+        "
       >
         <div
-          style=\\"
+          style="
             font-size: 18px;
             font-family: Helvetica, sans-serif;
             line-height: 24px;
             margin: 10%;
             width: 80%;
-          \\"
+          "
         >
           <p>Oh no! It looks like JavaScript is not enabled in your browser.</p>
-          <p style=\\"margin: 20px 0;\\">
+          <p style="margin: 20px 0;">
             <button
-              type=\\"submit\\"
-              style=\\"
+              type="submit"
+              style="
                 background-color: #4630eb;
                 border-radius: 100px;
                 border: none;
@@ -114,7 +114,7 @@ exports[`createTemplateHtmlFromExpoConfigAsync creates using the default templat
                 font-weight: bold;
                 line-height: 20px;
                 padding: 6px 16px;
-              \\"
+              "
             >
               Reload
             </button>
@@ -123,8 +123,8 @@ exports[`createTemplateHtmlFromExpoConfigAsync creates using the default templat
       </form>
     </noscript>
     <!-- The root element for your Expo app. -->
-    <div id=\\"root\\"></div>
-  <script src=\\"/script.js\\"></script></body>
+    <div id="root"></div>
+  <script src="/script.js"></script></body>
 </html>
 "
 `;

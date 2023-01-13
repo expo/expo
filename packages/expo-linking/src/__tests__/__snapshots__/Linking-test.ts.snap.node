@@ -45,28 +45,28 @@ exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {
 exports[`createURL queries for hostUri "u.expo.dev/update/some-guid" makes url {"undefinedParam": undefined} 1`] = `""`;
 
 exports[`parse parses "custom://" 1`] = `
-Object {
+{
   "hostname": null,
   "path": null,
-  "queryParams": Object {},
+  "queryParams": {},
   "scheme": "custom",
 }
 `;
 
 exports[`parse parses "custom:///" 1`] = `
-Object {
+{
   "hostname": null,
   "path": "",
-  "queryParams": Object {},
+  "queryParams": {},
   "scheme": "custom",
 }
 `;
 
 exports[`parse parses "custom:///?shouldBeEscaped=x%252By%2540xxx.com" 1`] = `
-Object {
+{
   "hostname": null,
   "path": "",
-  "queryParams": Object {
+  "queryParams": {
     "shouldBeEscaped": "x+y@xxx.com",
   },
   "scheme": "custom",
@@ -74,10 +74,10 @@ Object {
 `;
 
 exports[`parse parses "custom:///test/path?foo=bar" 1`] = `
-Object {
+{
   "hostname": null,
   "path": "test/path",
-  "queryParams": Object {
+  "queryParams": {
     "foo": "bar",
   },
   "scheme": "custom",
@@ -85,10 +85,10 @@ Object {
 `;
 
 exports[`parse parses "custom://?hello=bar" 1`] = `
-Object {
+{
   "hostname": null,
   "path": null,
-  "queryParams": Object {
+  "queryParams": {
     "hello": "bar",
   },
   "scheme": "custom",
@@ -96,19 +96,19 @@ Object {
 `;
 
 exports[`parse parses "exp://127.0.0.1:19000/" 1`] = `
-Object {
+{
   "hostname": "127.0.0.1",
   "path": "",
-  "queryParams": Object {},
+  "queryParams": {},
   "scheme": "exp",
 }
 `;
 
 exports[`parse parses "exp://127.0.0.1:19000/--/test/path?query=param" 1`] = `
-Object {
+{
   "hostname": "127.0.0.1",
   "path": "--/test/path",
-  "queryParams": Object {
+  "queryParams": {
     "query": "param",
   },
   "scheme": "exp",
@@ -116,10 +116,10 @@ Object {
 `;
 
 exports[`parse parses "exp://127.0.0.1:19000?query=param" 1`] = `
-Object {
+{
   "hostname": "127.0.0.1",
   "path": null,
-  "queryParams": Object {
+  "queryParams": {
     "query": "param",
   },
   "scheme": "exp",
@@ -127,19 +127,19 @@ Object {
 `;
 
 exports[`parse parses "exp://exp.host/@test/test/--/test/path" 1`] = `
-Object {
+{
   "hostname": "exp.host",
   "path": "@test/test/--/test/path",
-  "queryParams": Object {},
+  "queryParams": {},
   "scheme": "exp",
 }
 `;
 
 exports[`parse parses "exp://exp.host/@test/test/--/test/path?query=param" 1`] = `
-Object {
+{
   "hostname": "exp.host",
   "path": "@test/test/--/test/path",
-  "queryParams": Object {
+  "queryParams": {
     "query": "param",
   },
   "scheme": "exp",
@@ -147,19 +147,19 @@ Object {
 `;
 
 exports[`parse parses "https://example.com/test/path" 1`] = `
-Object {
+{
   "hostname": "example.com",
   "path": "test/path",
-  "queryParams": Object {},
+  "queryParams": {},
   "scheme": "https",
 }
 `;
 
 exports[`parse parses "https://example.com/test/path?missingQueryValue=" 1`] = `
-Object {
+{
   "hostname": "example.com",
   "path": "test/path",
-  "queryParams": Object {
+  "queryParams": {
     "missingQueryValue": "",
   },
   "scheme": "https",
@@ -167,10 +167,10 @@ Object {
 `;
 
 exports[`parse parses "https://example.com/test/path?query=do+not+escape" 1`] = `
-Object {
+{
   "hostname": "example.com",
   "path": "test/path",
-  "queryParams": Object {
+  "queryParams": {
     "query": "do not escape",
   },
   "scheme": "https",
@@ -178,10 +178,10 @@ Object {
 `;
 
 exports[`parse parses "https://example.com/test/path?query=param" 1`] = `
-Object {
+{
   "hostname": "example.com",
   "path": "test/path",
-  "queryParams": Object {
+  "queryParams": {
     "query": "param",
   },
   "scheme": "https",
@@ -189,28 +189,28 @@ Object {
 `;
 
 exports[`parse parses "https://example.com:8000/test/path" 1`] = `
-Object {
+{
   "hostname": "example.com",
   "path": "test/path",
-  "queryParams": Object {},
+  "queryParams": {},
   "scheme": "https",
 }
 `;
 
 exports[`parse parses "https://example.com:8000/test/path+with+plus" 1`] = `
-Object {
+{
   "hostname": "example.com",
   "path": "with+plus",
-  "queryParams": Object {},
+  "queryParams": {},
   "scheme": "https",
 }
 `;
 
 exports[`parse parses "invalid" 1`] = `
-Object {
+{
   "hostname": null,
   "path": "invalid",
-  "queryParams": Object {},
+  "queryParams": {},
   "scheme": null,
 }
 `;
