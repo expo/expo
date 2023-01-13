@@ -89,17 +89,6 @@ function createExoticTransformer({
       transform: _createMultiRuleTransformer().loaders.passthroughModule,
       warn: true
     },
-    // Match React Native modules which use non-standard flow features, convert them using babel (most expensive).
-    {
-      name: 'react-native',
-      type: 'module',
-      test: (0, _createMatcher().createModuleMatcher)({
-        moduleIds: ['react-native/Libraries/Events/EventPolyfill.js'],
-        folders: nodeModulesPaths
-      }),
-      transform: _createMultiRuleTransformer().loaders.reactNativeModule,
-      warn: true
-    },
     // Match React Native modules, convert them statically using sucrase.
     {
       name: 'react-native',
