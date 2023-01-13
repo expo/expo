@@ -10,11 +10,16 @@
     "templates"
   ],
   "scripts": {
-    "build": "tsc",
-    "watch": "tsc --watch",
+    "build": "taskr release",
+    "watch": "taskr",
     "clean": "rm -rf build cache",
     "et": "node bin/expotools.js",
-    "lint": "eslint ./src"
+    "lint": "eslint ./src taskfile.js taskfile-swc.js"
+  },
+  "taskr": {
+    "requires": [
+      "./taskfile-swc.js"
+    ]
   },
   "author": "support@expo.dev",
   "license": "MIT",
@@ -66,6 +71,10 @@
     "xcode": "^3.0.1"
   },
   "devDependencies": {
+    "@swc/core": "^1.2.126",
+    "@taskr/clear": "1.1.0",
+    "@taskr/esnext": "1.1.0",
+    "@taskr/watch": "1.1.0",
     "@babel/core": "^7.16.0",
     "@types/diff": "^5.0.2",
     "@types/folder-hash": "^4.0.2",
@@ -81,6 +90,7 @@
     "eslint-config-universe": "^11.1.1",
     "eslint-plugin-lodash": "^7.4.0",
     "prettier": "^2.8.1",
-    "typescript": "^4.9.4"
+    "typescript": "^4.9.4",
+    "taskr": "1.1.0"
   }
 }
