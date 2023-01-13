@@ -3,9 +3,9 @@
 exports[`manifest type "legacy" throws from AuthSession.startAsync if authUrl is falsy 1`] = `[Error: No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.]`;
 
 exports[`manifest type "legacy" warns if user is @anonymous in getRedirectUrl 1`] = `
-Array [
-  Array [
-    "You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be \\"https://auth.expo.io/@anonymous/abc\\". If you are using an OAuth provider that requires adding redirect URLs to an allow list, we recommend that you do not add this URL -- instead, you should sign in to Expo to acquire a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.",
+[
+  [
+    "You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be "https://auth.expo.io/@anonymous/abc". If you are using an OAuth provider that requires adding redirect URLs to an allow list, we recommend that you do not add this URL -- instead, you should sign in to Expo to acquire a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.",
   ],
 ]
 `;
@@ -13,9 +13,9 @@ Array [
 exports[`manifest type "new" throws from AuthSession.startAsync if authUrl is falsy 1`] = `[Error: No authUrl provided to AuthSession.startAsync. An authUrl is required -- it points to the page where the user will be able to sign in.]`;
 
 exports[`manifest type "new" warns if user is @anonymous in getRedirectUrl 1`] = `
-Array [
-  Array [
-    "You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be \\"https://auth.expo.io/@anonymous/abc\\". If you are using an OAuth provider that requires adding redirect URLs to an allow list, we recommend that you do not add this URL -- instead, you should sign in to Expo to acquire a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.",
+[
+  [
+    "You are not currently signed in to Expo on your development machine. As a result, the redirect URL for AuthSession will be "https://auth.expo.io/@anonymous/abc". If you are using an OAuth provider that requires adding redirect URLs to an allow list, we recommend that you do not add this URL -- instead, you should sign in to Expo to acquire a unique redirect URL. Additionally, if you do decide to publish this app using Expo, you will need to register an account to do it.",
   ],
 ]
 `;
