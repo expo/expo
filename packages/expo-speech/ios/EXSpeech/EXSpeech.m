@@ -72,7 +72,7 @@ EX_EXPORT_MODULE(ExponentSpeech)
 {
   id<EXEventEmitterService> emitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   if (emitter != nil) {
-    [emitter sendEventWithName:@"Exponent.speakingWillSayNextString" body:@{ @"id": ((EXSpeechUtteranceWithId *) utterance).utteranceId, @"characterLocation": @(characterRange.location), @"characterLength": @(characterRange.length) }];
+    [emitter sendEventWithName:@"Exponent.speakingWillSayNextString" body:@{ @"id": ((EXSpeechUtteranceWithId *) utterance).utteranceId, @"charIndex": @(characterRange.location), @"charLength": @(characterRange.length) }];
   }
 }
 

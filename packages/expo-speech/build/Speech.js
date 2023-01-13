@@ -27,12 +27,12 @@ function _registerListenersIfNeeded() {
             options.onStart();
         }
     });
-    setSpeakingListener('Exponent.speakingWillSayNextString', ({ id, characterLocation, characterLength }) => {
+    setSpeakingListener('Exponent.speakingWillSayNextString', ({ id, charIndex, charLength }) => {
         const options = _CALLBACKS[id];
-        if (options && options.onWillSayNextString) {
-            options.onWillSayNextString({
-                length: characterLength,
-                location: characterLocation,
+        if (options && options.onBoundary) {
+            options.onBoundary({
+                charIndex,
+                charLength,
             });
         }
     });
