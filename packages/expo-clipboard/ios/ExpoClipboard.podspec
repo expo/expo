@@ -32,6 +32,7 @@ Pod::Spec.new do |s|
 
   s.exclude_files = 'Tests/'
   s.test_spec 'Tests' do |test_spec|
+    # ExpoModulesCore requires React-jsc in tests, add ExpoModulesTestCore for the underlying React-jsc dependency
     test_spec.dependency 'ExpoModulesTestCore'
 
     test_spec.source_files = 'Tests/**/*.{m,swift}'

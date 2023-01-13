@@ -69,6 +69,8 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Nimble'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"
+    # ExpoModulesCore requires React-jsc in tests, add ExpoModulesTestCore for the underlying React-jsc dependency
+    test_spec.dependency 'ExpoModulesTestCore'
   end
   
   s.default_subspec = 'Main'
