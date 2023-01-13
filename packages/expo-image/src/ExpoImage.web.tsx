@@ -100,13 +100,13 @@ export default function ExpoImage({
             : null
         }>
         {(selectedSource as any)?.uri || placeholder?.[0]?.uri}
-        {({ onAnimationFinished, onReady, onMount }) =>
+        {({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
           (className, style) =>
             (
               <ImageWrapper
                 source={selectedSource || placeholder?.[0]}
                 events={{
-                  onError: [onErrorAdapter(onError), onLoadEnd],
+                  onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
                   onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                   onMount: [onMount],
                   onTransitionEnd: [onAnimationFinished],
