@@ -74,7 +74,7 @@
     "@types/inquirer": "^8.2.1",
     "@types/ip": "^1.1.0",
     "@types/klaw-sync": "^6.0.1",
-    "@types/node": "16.11.43",
+    "@types/node": "^16.18.11",
     "@types/node-fetch": "^2.6.2",
     "@types/semver": "^7.3.12",
     "eslint": "^8.29.0",
