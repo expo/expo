@@ -73,6 +73,12 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
     },
   };
 
+  const aliases: { [key: string]: Record<string, string> } = {
+    web: {
+      'react-native': 'react-native-web',
+    },
+  };
+
   const preferredMainFields: { [key: string]: string[] } = {
     // Defaults from Expo Webpack. Most packages using `react-native` don't support web
     // in the `react-native` field, so we should prefer the `browser` field.
@@ -85,6 +91,14 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       const context = { ...immutableContext } as ResolutionContext & { mainFields: string[] };
 
+      // Conditionally remap `react-native` to `react-native-web` on web in
+      // a way that doesn't require Babel to resolve the alias.
+      if (platform && platform in aliases && aliases[platform][moduleName]) {
+        moduleName = aliases[platform][moduleName];
+      }
+
+      // TODO: We may be able to remove this in the future, it's doing no harm
+      // by staying here.
       // Conditionally remap `react-native` to `react-native-web`
       if (platform && platform in extraNodeModules) {
         context.extraNodeModules = {

@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Add react-native-web alias for metro web that doesn't rely on Babel. ([#20828](https://github.com/expo/expo/pull/20828) by [@EvanBacon](https://github.com/EvanBacon))
 - Allow chained Metro resolvers to resolve when the predecessor resolver throws a Metro resolution error. ([#20704](https://github.com/expo/expo/pull/20704) by [@EvanBacon](https://github.com/EvanBacon))
 - Escape ampersands in URLs sent to adb. ([#20398](https://github.com/expo/expo/pull/20398) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix web assets not loading in Metro for web on Windows. ([#19935](https://github.com/expo/expo/pull/19935) by [@EvanBacon](https://github.com/EvanBacon))
