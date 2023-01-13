@@ -43,7 +43,7 @@
       "@testing-library/jest-native/extend-expect",
       "./setupTests.ts"
     ],
-    "transformIgnorePatterns": []
+    "transformIgnorePatterns": ["/node_modules/(?!@?react-native(-reanimated)?)"]
   },
   "dependencies": {
     "expo-dev-menu-interface": "1.0.0",
