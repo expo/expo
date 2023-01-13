@@ -8,6 +8,7 @@ import {
   AVPlaybackStatusToSet,
   PitchCorrectionQuality,
   AVPlaybackTolerance,
+  AndroidBufferConfig,
 } from './AV.types';
 
 // TODO add:
@@ -107,7 +108,16 @@ export function getNativeSourceFromSource(
   ) {
     headers = source.headers;
   }
-  return { uri, overridingExtension, headers };
+
+  // Defaults are within SimpleExoPlayerData.java
+  // Has no effect on iOS
+  let bufferConfig: AndroidBufferConfig = {};
+
+  if (source != null && typeof source === 'object' && 'minBufferMs' in source) {
+    bufferConfig = { ...source };
+  }
+
+  return { ...bufferConfig, uri, overridingExtension, headers };
 }
 
 function _getAssetFromPlaybackSource(source?: AVPlaybackSource | null): Asset | null {
