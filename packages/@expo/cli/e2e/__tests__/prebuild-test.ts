@@ -54,8 +54,8 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/prebuild').expoPrebuild`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
+    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
@@ -136,7 +136,7 @@ it(
     expect(pkg.main).not.toBeDefined();
 
     // Added new packages
-    expect(Object.keys(pkg.dependencies).sort()).toStrictEqual([
+    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
       'expo',
       'expo-splash-screen',
       'expo-status-bar',
@@ -153,12 +153,10 @@ it(
 
     // If this changes then everything else probably changed as well.
     expect(files).toMatchInlineSnapshot(`
-      Array [
+      [
         "App.js",
         "android/.gitignore",
-        "android/app/BUCK",
         "android/app/build.gradle",
-        "android/app/build_defs.bzl",
         "android/app/debug.keystore",
         "android/app/proguard-rules.pro",
         "android/app/src/debug/AndroidManifest.xml",
@@ -166,17 +164,6 @@ it(
         "android/app/src/main/AndroidManifest.xml",
         "android/app/src/main/java/com/example/minimal/MainActivity.java",
         "android/app/src/main/java/com/example/minimal/MainApplication.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/MainApplicationReactNativeHost.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/components/MainComponentsRegistry.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/modules/MainApplicationTurboModuleManagerDelegate.java",
-        "android/app/src/main/jni/CMakeLists.txt",
-        "android/app/src/main/jni/MainApplicationModuleProvider.cpp",
-        "android/app/src/main/jni/MainApplicationModuleProvider.h",
-        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.cpp",
-        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.h",
-        "android/app/src/main/jni/MainComponentsRegistry.cpp",
-        "android/app/src/main/jni/MainComponentsRegistry.h",
-        "android/app/src/main/jni/OnLoad.cpp",
         "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
@@ -193,6 +180,7 @@ it(
         "android/app/src/main/res/values/strings.xml",
         "android/app/src/main/res/values/styles.xml",
         "android/app/src/main/res/values-night/colors.xml",
+        "android/app/src/release/java/com/example/minimal/ReactNativeFlipper.java",
         "android/build.gradle",
         "android/gradle/wrapper/gradle-wrapper.jar",
         "android/gradle/wrapper/gradle-wrapper.properties",

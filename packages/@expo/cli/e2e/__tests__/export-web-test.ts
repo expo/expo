@@ -1,5 +1,6 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
+import assert from 'assert';
 import execa from 'execa';
 import fs from 'fs-extra';
 import klawSync from 'klaw-sync';
@@ -26,8 +27,8 @@ it('loads expected modules by default', async () => {
     `require('../../build/src/export/web').expoExportWeb`
   );
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
+    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
@@ -97,12 +98,14 @@ it(
       ['runtime~app.js.map', expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js\.map/)],
     ];
 
+    assert(assetsManifest.files);
     for (const [key, value] of knownFiles) {
-      expect(assetsManifest.files[key]).toEqual(value);
-      delete assetsManifest.files[key];
+      const files = assetsManifest.files as Record<string, string>;
+      expect(files[key]).toEqual(value);
+      delete files[key];
     }
 
-    for (const [key, value] of Object.entries(assetsManifest.files)) {
+    for (const [key, value] of Object.entries(assetsManifest?.files ?? {})) {
       expect(key).toMatch(/static\/js\/\d\.[a-z\d]+\.chunk\.js(\.LICENSE\.txt|\.map)?/);
       expect(value).toMatch(/static\/js\/\d\.[a-z\d]+\.chunk\.js(\.LICENSE\.txt|\.map)?/);
     }
