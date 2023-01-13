@@ -20,19 +20,43 @@ interface Options {
   type?: string;
   deviceId?: string;
   development?: boolean;
-  experienceId?: string;
-  projectId?: string;
+  projectId: string;
   applicationId?: string;
   devicePushToken?: DevicePushToken;
 }
 
-export default async function getExpoPushTokenAsync(options: Options = {}): Promise<ExpoPushToken> {
+interface DeprecatedOptions extends Omit<Options, 'projectId'> {
+  /**
+   * @deprecated use `projectId` instead.
+   */
+  experienceId?: string;
+  projectId?: string;
+}
+
+/**
+ * @deprecated specifying `projectId` is now required.
+ */
+export async function getExpoPushTokenAsync(): Promise<ExpoPushToken>;
+export async function getExpoPushTokenAsync(options: Options): Promise<ExpoPushToken>;
+/**
+ * @deprecated specifying `projectId` is now required.
+ */
+export async function getExpoPushTokenAsync(options: DeprecatedOptions): Promise<ExpoPushToken>;
+export async function getExpoPushTokenAsync(
+  options: DeprecatedOptions = {}
+): Promise<ExpoPushToken> {
   const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
 
   const deviceId = options.deviceId || (await getDeviceIdAsync());
 
   const experienceId =
     options.experienceId || Constants.expoConfig?.originalFullName || Constants.manifest?.id;
+
+  if (!options.projectId) {
+    console.warn(
+      'Calling getExpoPushTokenAsync without specifying a projectId is deprecated and will no longer be supported in SDK 49+'
+    );
+  }
 
   const projectId =
     options.projectId ||

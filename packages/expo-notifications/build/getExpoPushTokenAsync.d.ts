@@ -5,11 +5,25 @@ interface Options {
     type?: string;
     deviceId?: string;
     development?: boolean;
-    experienceId?: string;
-    projectId?: string;
+    projectId: string;
     applicationId?: string;
     devicePushToken?: DevicePushToken;
 }
-export default function getExpoPushTokenAsync(options?: Options): Promise<ExpoPushToken>;
+interface DeprecatedOptions extends Omit<Options, 'projectId'> {
+    /**
+     * @deprecated use `projectId` instead.
+     */
+    experienceId?: string;
+    projectId?: string;
+}
+/**
+ * @deprecated specifying `projectId` is now required.
+ */
+export declare function getExpoPushTokenAsync(): Promise<ExpoPushToken>;
+export declare function getExpoPushTokenAsync(options: Options): Promise<ExpoPushToken>;
+/**
+ * @deprecated specifying `projectId` is now required.
+ */
+export declare function getExpoPushTokenAsync(options: DeprecatedOptions): Promise<ExpoPushToken>;
 export {};
 //# sourceMappingURL=getExpoPushTokenAsync.d.ts.map
