@@ -5,8 +5,6 @@ apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
-def hasHermesEngineDeps = false
-
 def reactProperties = new Properties()
 file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
@@ -186,7 +184,6 @@ dependencies {
       exclude(group:'com.facebook.fbjni', module: 'fbjni')
     }
   }
-  hasHermesEngineDeps = true
 
   // Expo modules
   api project(':expo')
