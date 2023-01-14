@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { ImageProps, ViewProps, StyleProp, ViewStyle } from 'react-native';
 import { AVPlaybackNativeSource, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
-export type VideoNaturalSize = {
+export declare type VideoNaturalSize = {
     /**
      * A number describing the width in pixels of the video data.
      */
@@ -29,7 +29,7 @@ export declare enum ResizeMode {
      */
     STRETCH = "stretch"
 }
-export type VideoReadyForDisplayEvent = {
+export declare type VideoReadyForDisplayEvent = {
     /**
      * An object containing the basic data about video size.
      */
@@ -57,7 +57,7 @@ export declare enum VideoFullscreenUpdate {
      */
     PLAYER_DID_DISMISS = 3
 }
-export type VideoFullscreenUpdateEvent = {
+export declare type VideoFullscreenUpdateEvent = {
     /**
      * The kind of the fullscreen update.
      */
@@ -77,7 +77,7 @@ export type VideoFullscreenUpdateEvent = {
  * Finally, the rest of props are available to control the playback of the video, but we recommend that, for finer control, you use the methods
  * available on the `ref` described in the [AV documentation](./av).
  */
-export type VideoProps = {
+export declare type VideoProps = {
     /**
      * The source of the video data to display. If this prop is `null`, or left blank, the video component will display nothing.
      * Note that this can also be set on the `ref` via `loadAsync()`. See the [AV documentation](./av) for further information.
@@ -233,7 +233,7 @@ export type VideoProps = {
 /**
  * @hidden
  */
-export type VideoNativeProps = {
+export declare type VideoNativeProps = {
     source?: AVPlaybackNativeSource | null;
     resizeMode?: unknown;
     status?: AVPlaybackStatusToSet;
@@ -258,11 +258,11 @@ export type VideoNativeProps = {
     useNativeControls?: boolean;
     videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
-export type VideoState = {
+export declare type VideoState = {
     showPoster: boolean;
 };
 /**
  * @hidden
  */
-export type ExponentVideoComponent = React.ComponentClass<VideoNativeProps>;
+export declare type ExponentVideoComponent = React.ComponentClass<VideoNativeProps>;
 //# sourceMappingURL=Video.types.d.ts.map

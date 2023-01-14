@@ -114,7 +114,7 @@ async function setStatusForMedia(media, status) {
     }
     return getStatusFromMedia(media);
 }
-let mediaRecorder /*MediaRecorder*/ = null;
+let mediaRecorder = null;
 let mediaRecorderUptimeOfLastStartResume = 0;
 let mediaRecorderDurationAlreadyRecorded = 0;
 let mediaRecorderIsRecording = false;

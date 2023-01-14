@@ -83,7 +83,13 @@ export function getNativeSourceFromSource(source) {
         typeof source.headers === 'object') {
         headers = source.headers;
     }
-    return { uri, overridingExtension, headers };
+    // Defaults are within SimpleExoPlayerData.java
+    // Has no effect on iOS
+    let bufferConfig = {};
+    if (source != null && typeof source === 'object' && 'minBufferMs' in source) {
+        bufferConfig = { ...source };
+    }
+    return { ...bufferConfig, uri, overridingExtension, headers };
 }
 function _getAssetFromPlaybackSource(source) {
     if (source == null) {

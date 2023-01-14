@@ -1,6 +1,6 @@
 import { Recording } from './Recording';
 import { AndroidAudioEncoder, AndroidOutputFormat, IOSAudioQuality, IOSOutputFormat } from './RecordingConstants';
-export type RecordingStatus = {
+export declare type RecordingStatus = {
     /**
      * A boolean describing if the `Recording` can initiate the recording.
      */
@@ -33,7 +33,7 @@ export type RecordingStatus = {
      */
     mediaServicesDidReset?: boolean;
 };
-export type RecordingOptionsAndroid = {
+export declare type RecordingOptionsAndroid = {
     /**
      * The desired file extension. Example valid values are `.3gp` and `.m4a`.
      * For more information, see the [Android docs](https://developer.android.com/guide/topics/media/media-formats)
@@ -86,7 +86,7 @@ export type RecordingOptionsAndroid = {
      */
     maxFileSize?: number;
 };
-export type RecordingOptionsIOS = {
+export declare type RecordingOptionsIOS = {
     /**
      * The desired file extension.
      *
@@ -144,7 +144,7 @@ export type RecordingOptionsIOS = {
      */
     linearPCMIsFloat?: boolean;
 };
-export type RecordingOptionsWeb = {
+export declare type RecordingOptionsWeb = {
     mimeType?: string;
     bitsPerSecond?: number;
 };
@@ -161,7 +161,7 @@ export type RecordingOptionsWeb = {
  * we will enumerate all possible valid combinations, but at this time, our goal is to make the basic use-case easy (with presets)
  * and the advanced use-case possible (by exposing all the functionality available on all supported platforms).
  */
-export type RecordingOptions = {
+export declare type RecordingOptions = {
     /**
      * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
      */
@@ -185,12 +185,12 @@ export type RecordingOptions = {
      */
     web: RecordingOptionsWeb;
 };
-export type RecordingInput = {
+export declare type RecordingInput = {
     name: string;
     type: string;
     uid: string;
 };
-export type RecordingObject = {
+export declare type RecordingObject = {
     /**
      * The newly created and started `Recording` object.
      */
