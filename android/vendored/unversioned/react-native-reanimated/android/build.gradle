@@ -1121,21 +1121,3 @@ if (CLIENT_SIDE_BUILD) {
     }
     artifacts.add("default", aar)
 }
-
-
-tasks.whenTaskAdded { task ->
-  def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake') || task.name.startsWith('buildCMake') || task.name.startsWith('generateJsonModel'))) {
-    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
-  }
-}
-
-android {
-  buildFeatures {
-    prefab true
-  }
-}
-
-dependencies {
-  compileOnly(project(":ReactAndroid:hermes-engine"))
-}
