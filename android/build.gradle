@@ -1,4 +1,5 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
+import com.android.build.api.variant.AndroidComponentsExtension
 
 buildscript {
   ext {
@@ -96,6 +97,21 @@ allprojects {
         .because("Building React Native from source")
     }
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+  }
+}
+
+// to prevent duplicated lib error, pick first of libc++_shared.so and libfbjni.so for instrumented tests
+allprojects { subProject ->
+  subProject.afterEvaluate {
+    def androidComponents = subProject.extensions.findByType(AndroidComponentsExtension.class)
+    androidComponents?.with {
+      onVariants(selector().all()) {
+        getAndroidTest()?.packaging?.jniLibs?.pickFirsts?.addAll([
+          "**/libc++_shared.so",
+          "**/libfbjni.so",
+        ])
+      }
+    }
   }
 }
 
