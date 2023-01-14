@@ -113,7 +113,14 @@ export function getNativeSourceFromSource(
   // Has no effect on iOS
   let bufferConfig: AndroidBufferConfig = {};
 
-  if (source != null && typeof source === 'object' && 'minBufferMs' in source) {
+  if (
+    source != null &&
+    typeof source === 'object' &&
+    ('minBufferMs' in source ||
+      'maxBufferMs' in source ||
+      'bufferForPlaybackMs' in source ||
+      'bufferForPlaybackAfterRebufferMs' in source)
+  ) {
     bufferConfig = { ...source };
   }
 
