@@ -86,7 +86,12 @@ export function getNativeSourceFromSource(source) {
     // Defaults are within SimpleExoPlayerData.java
     // Has no effect on iOS
     let bufferConfig = {};
-    if (source != null && typeof source === 'object' && 'minBufferMs' in source) {
+    if (source != null &&
+        typeof source === 'object' &&
+        ('minBufferMs' in source ||
+            'maxBufferMs' in source ||
+            'bufferForPlaybackMs' in source ||
+            'bufferForPlaybackAfterRebufferMs' in source)) {
         bufferConfig = { ...source };
     }
     return { ...bufferConfig, uri, overridingExtension, headers };
