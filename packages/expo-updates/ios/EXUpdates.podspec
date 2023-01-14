@@ -61,7 +61,7 @@ Pod::Spec.new do |s|
     test_spec.source_files = 'Tests/*.{h,m,swift}'
     test_spec.resources = 'Tests/Support/**/*'
 
-    # ExpoModulesCore requires React-jsc in tests, add ExpoModulesTestCore for the underlying React-jsc dependency
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
     test_spec.dependency 'OCMockito', '~> 6.0'
 
