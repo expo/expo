@@ -142,68 +142,74 @@ function createMultiRuleTransformer({
     }
   };
 }
-const loaders = {
-  // Perform the standard, and most expensive transpilation sequence.
-  app(args) {
-    debug('app:', args.filename);
-    const {
-      filename,
-      options,
-      src,
-      plugins
-    } = args;
-    const babelConfig = {
-      // ES modules require sourceType='module' but OSS may not always want that
-      sourceType: 'unambiguous',
-      ...(0, _getBabelConfig().getBabelConfig)(filename, options, plugins),
-      // Variables that are exposed to the user's babel preset.
-      caller: {
-        name: 'metro',
-        platform: options.platform
-      },
-      ast: true
-    };
+function app(args) {
+  debug('app:', args.filename);
+  const {
+    filename,
+    options,
+    src,
+    plugins
+  } = args;
+  const babelConfig = {
+    // ES modules require sourceType='module' but OSS may not always want that
+    sourceType: 'unambiguous',
+    ...(0, _getBabelConfig().getBabelConfig)(filename, options, plugins),
+    // Variables that are exposed to the user's babel preset.
+    caller: {
+      name: 'metro',
+      platform: options.platform
+    },
+    ast: true
+  };
 
-    // Surface a warning function so babel linters can be used.
-    Object.defineProperty(babelConfig.caller, 'onWarning', {
-      enumerable: false,
-      writable: false,
-      value: babelConfig.caller.onWarning = function (msg) {
-        // Format the file path first so users know where the warning came from.
-        console.warn(_chalk().default.bold.yellow`warn ` + args.filename);
-        console.warn(msg);
-      }
-    });
-    const {
-      parseSync,
-      transformFromAstSync
-    } = getBabelCoreFromProject(options.projectRoot);
-    const sourceAst = parseSync(src, babelConfig);
-
-    // Should never happen.
-    if (!sourceAst) return {
-      ast: null
-    };
-    const result = transformFromAstSync(sourceAst, src, babelConfig);
-
-    // TODO: Disable by default
-    const functionMap = (0, _generateFunctionMap().generateFunctionMap)(options.projectRoot, sourceAst, {
-      filename
-    });
-    // The result from `transformFromAstSync` can be null (if the file is ignored)
-    if (!result) {
-      return {
-        ast: null,
-        functionMap
-      };
+  // Surface a warning function so babel linters can be used.
+  Object.defineProperty(babelConfig.caller, 'onWarning', {
+    enumerable: false,
+    writable: false,
+    value: babelConfig.caller.onWarning = function (msg) {
+      // Format the file path first so users know where the warning came from.
+      console.warn(_chalk().default.bold.yellow`warn ` + args.filename);
+      console.warn(msg);
     }
+  });
+  const {
+    parseSync,
+    transformFromAstSync
+  } = getBabelCoreFromProject(options.projectRoot);
+  const sourceAst = parseSync(src, babelConfig);
+
+  // Should never happen.
+  if (!sourceAst) return {
+    ast: null
+  };
+  const result = transformFromAstSync(sourceAst, src, babelConfig);
+
+  // TODO: Disable by default
+  const functionMap = (0, _generateFunctionMap().generateFunctionMap)(options.projectRoot, sourceAst, {
+    filename
+  });
+  // The result from `transformFromAstSync` can be null (if the file is ignored)
+  if (!result) {
     return {
-      ast: result.ast,
+      ast: null,
       functionMap
     };
-  },
+  }
+  return {
+    ast: result.ast,
+    functionMap
+  };
+}
+const loaders = {
+  // Perform the standard, and most expensive transpilation sequence.
+  app,
   // Transpile react-native with sucrase.
   reactNativeModule(args) {
+    // Special file needs full transpilation.
+    if (args.filename.includes('react-native/Libraries/Events/EventPolyfill.js')) {
+      // Match React Native modules which use non-standard flow features, convert them using babel (most expensive).
+      return app(args);
+    }
     debug('rn:', args.filename);
     return sucrase(args, {
       transforms: ['jsx', 'flow', 'imports']
