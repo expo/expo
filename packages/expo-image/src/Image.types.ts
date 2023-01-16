@@ -101,8 +101,6 @@ export type ImageProps = {
    * The radius of the blur in points, `0` means no blur effect.
    * This effect is not applied to placeholders.
    * @default 0
-   * @platform android
-   * @platform ios
    */
   blurRadius?: number;
 
