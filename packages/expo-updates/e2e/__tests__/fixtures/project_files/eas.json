@@ -15,10 +15,12 @@
     "updates_testing": {
       "android": {
         "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
-        "withoutCredentials": true
+        "withoutCredentials": true,
+        "resourceClass": "large"
       },
       "ios": {
-        "simulator": true
+        "simulator": true,
+        "resourceClass": "m1-medium"
       },
       "distribution": "internal",
       "buildArtifactPaths": ["logs/*.log"]
