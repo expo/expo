@@ -3,15 +3,9 @@ title: Send notifications with FCM & APNs
 hideFromSearch: true
 ---
 
-Communicating directly with FCM and APNs is much more complicated than sending notifications through [Expo's push notification service]/push-notifications/sending-notifications/). You should only use this feature if you're prepared to undertake that complexity. Here are a few things you'll have to handle yourself if you choose to write your server for FCM and APNs:
+You may need finer-grained control over your notifications, so communicating directly with FCM and APNs may be necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic.
 
-- Differentiating between native Android & iOS device tokens on your backend
-- Twice the amount of backend code to write and maintain (code for communicating with FCM, and then code for communicating with APNs)
-- Fetching responses from FCM and APNs to check if your notification went through, error handling, credentials management
-
-Sometimes you need finer-grained control over your notifications, so communicating directly with FCM and APNs is necessary. The Expo platform does not lock you into using Expo's application services, and the `expo-notifications` API is push-service agnostic.
-
-## How do I write my own FCM & APNs servers
+## How to write FCM and APNs servers
 
 Before communicating directly with FCM & APNs, there is one client-side change you'll need to make in your app. When using Expo's notification service, you collect the `ExponentPushToken` with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken). Now that you're not using Expo's notification service, you'll need to collect the native device token instead with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
 
@@ -57,7 +51,7 @@ await fetch('https://fcm.googleapis.com/fcm/send', {
 
 FCM also provides some [server-side libraries in a few different languages](https://firebase.google.com/docs/cloud-messaging/send-message#node.js) you can use instead of raw `fetch` requests.
 
-### Where can I find my FCM server key
+### How to find FCM server key
 
 Your FCM server key can be found by making sure you've followed the [configuration steps](/push-notifications/push-notifications-setup/#android), and instead of uploading your FCM key to Expo, you would use that key directly in your server (as the `FCM-SERVER-KEY` in the previous example).
 

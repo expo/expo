@@ -16,8 +16,6 @@ To get the client-side ready for push notifications, the following things are re
 - The user's permission to send them push notifications
 - The user's [`ExpoPushToken`](/versions/latest/sdk/notifications/#expopushtoken).
 
-You'll need to use [`expo-notifications`](/versions/latest/sdk/notifications) library to request for user's permission and fetch the `ExpoPushToken`. You'll also use [`expo-device`](/versions/latest/sdk/device) to check whether the app is running on a physical device. The `expo-notifications` library is not supported on an Android Emulator or an iOS simulator.
-
 <Step label="1">
 
 ## Install libraries
@@ -25,6 +23,8 @@ You'll need to use [`expo-notifications`](/versions/latest/sdk/notifications) li
 Run the following command to install `expo-notifications` and `expo-device` libraries:
 
 <Terminal cmd={['$ npx expo install expo-notifications expo-device']} />
+
+[`expo-notifications`](/versions/latest/sdk/notifications) library is used to request for a user's permission and to fetch the `ExpoPushToken`. It is not supported on an Android Emulator or an iOS simulator. The [`expo-device`](/versions/latest/sdk/device) is used to check whether the app is running on a physical device.
 
 </Step>
 
