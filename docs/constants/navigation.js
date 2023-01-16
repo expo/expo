@@ -175,9 +175,8 @@ const general = [
     makePage('push-notifications/overview.mdx'),
     makePage('push-notifications/push-notifications-setup.mdx'),
     makePage('push-notifications/sending-notifications.mdx'),
-    makePage('push-notifications/sending-notifications-custom.mdx'),
     makePage('push-notifications/receiving-notifications.mdx'),
-    makePage('push-notifications/using-fcm.mdx'),
+    makePage('push-notifications/sending-notifications-custom.mdx'),
     makePage('push-notifications/faq.mdx'),
   ]),
   makeSection('UI programming', [

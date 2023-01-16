@@ -289,4 +289,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/google/': '/guides/authentication/',
   '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
   '/versions/latest/sdk/util/': '/versions/latest/',
+  // Push notifications
+  '/push-notifications/using-fcm/':
+    '/push-notifications/push-notifications-setup/#get-credentials-for-development-builds',
 };
