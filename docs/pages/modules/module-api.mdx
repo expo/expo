@@ -198,7 +198,7 @@ See [Sending events](#sending-events) to learn how to send events from the nativ
 
 Defines a value associated with a JavaScript object representing the native module.
 
-To declare a read-only property, you can use a shorthanded syntax that requires only two arguments:
+To declare a read-only property, you can use a shorthanded syntax that requires two arguments:
 
 - **name**: `String` — Name of the property that you'll use from JavaScript.
 - **getter**: `() -> ProperyType` — The closure to run when the getter for a property was called.
@@ -219,7 +219,7 @@ Property("foo") {
 
 </CodeBlocksTable>
 
-In the case of the mutable property, both the getter and the setter closure are needed (using that syntax is also possible to declare a property with only a setter):
+In the case of the mutable property, both the getter and the setter closure are needed (using the syntax below is also possible to declare a property with only a setter):
 
 - **name**: `String` — Name of the property that you'll use from JavaScript.
 - **getter**: `() -> ProperyType` — The closure to run when the getter for a property was called.
