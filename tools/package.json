@@ -57,6 +57,7 @@
     "npm-packlist": "^5.1.3",
     "nullthrows": "^1.1.1",
     "open": "^8.4.0",
+    "ora": "^5.4.1",
     "pacote": "^13.1.1",
     "parse-diff": "^0.9.0",
     "plist": "^3.0.6",
