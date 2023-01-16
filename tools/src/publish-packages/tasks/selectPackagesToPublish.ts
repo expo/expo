@@ -55,7 +55,7 @@ async function selectPackageToPublishAsync(
     return true;
   }
   const packageName = parcel.pkg.packageName;
-  const releaseVersion = parcel.state.releaseVersion;
+  const { releaseVersion } = parcel.state;
   const { selected } = await inquirer.prompt([
     {
       type: 'confirm',
@@ -112,7 +112,7 @@ async function selectPackageToPublishAsync(
   ]);
 
   if (customVersion || version) {
-    parcel.state.releaseVersion = customVersion || version;
+    parcel.state.releaseVersion = customVersion ?? version;
     return true;
   }
   return false;
