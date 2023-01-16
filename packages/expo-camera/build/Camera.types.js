@@ -89,7 +89,7 @@ export var VideoStabilization;
     VideoStabilization["cinematic"] = "cinematic";
     VideoStabilization["auto"] = "auto";
 })(VideoStabilization || (VideoStabilization = {}));
-// @needsAudit
+// @docsMissing
 export var VideoQuality;
 (function (VideoQuality) {
     VideoQuality["2160p"] = "2160p";

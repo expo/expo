@@ -9,26 +9,4 @@ export {
   requestMicrophonePermissionsAsync,
 } from './Camera';
 
-export {
-  BarCodePoint,
-  BarCodeScanningResult,
-  CameraCapturedPicture,
-  CameraMountError,
-  CameraNativeProps,
-  CameraPictureOptions,
-  CameraProps,
-  CameraRecordingOptions,
-  ConstantsType,
-  FaceDetectionResult,
-  PermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  Point,
-  AutoFocus,
-  FlashMode,
-  CameraType,
-  VideoCodec,
-  VideoQuality,
-  VideoStabilization,
-  WhiteBalance,
-} from './Camera.types';
+export * from './Camera.types';
