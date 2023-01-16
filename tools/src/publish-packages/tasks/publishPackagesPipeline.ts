@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
@@ -46,6 +47,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       pushCommittedChanges,
       publishPackages,
       grantTeamAccessToPackages,
+      addPublishedLabelToPullRequests,
       commentOnIssuesTask,
     ],
   },
