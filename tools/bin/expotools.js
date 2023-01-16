@@ -111,9 +111,9 @@ async function calculateSourceChecksumAsync() {
     files: {
       include: [
         // source files
-        'src/**/*.ts',
+        '**.ts',
         // src/versioning files
-        'src/**/*.json',
+        '**.json',
         'expotools.js',
         // swc build files
         'taskfile.js',
