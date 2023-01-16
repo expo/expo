@@ -86,7 +86,6 @@ jobs:
           profile: 'updates_testing'
           projectRoot: './updates-e2e'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          resourceClass: large
           noWait: ${{ github.event.schedule }}
           message: ${{ github.event.pull_request.title }}
       - name: On Android workflow canceled
