@@ -308,8 +308,10 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
     return nil;
   }
 
-  // check for duplicate rows representing a single file on disk
-  NSString * const update3Sql = @"UPDATE assets SET marked_for_deletion = 0 WHERE relative_path IN (\
+  // find any duplicate rows representing a single file on disk where `marked_for_deletion` is 1
+  // in some cases but 0 in others, and delete the rows with 1 without returning them (so the file
+  // itself is not deleted)
+  NSString * const update3Sql = @"DELETE FROM assets WHERE marked_for_deletion = 1 AND relative_path IN (\
   SELECT relative_path\
   FROM assets\
   WHERE marked_for_deletion = 0\

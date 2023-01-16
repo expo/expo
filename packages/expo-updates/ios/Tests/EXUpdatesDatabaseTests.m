@@ -292,15 +292,15 @@
       return;
     }
 
-    // asset1 should have been deleted, but asset2 should have been kept
-    // since it shared a filename with asset3, which is still in use
+    // asset `key2` should NOT be in the returned list of rows (files to delete)...
     XCTAssertEqual(1, deletedAssets.count);
     for (EXUpdatesAsset *deletedAsset in deletedAssets) {
       XCTAssertEqualObjects(@"key1", deletedAsset.key);
     }
 
+    // ...but it should have been deleted anyway
     XCTAssertNil([_db assetWithKey:@"key1" error:nil]);
-    XCTAssertNotNil([_db assetWithKey:@"key2" error:nil]);
+    XCTAssertNil([_db assetWithKey:@"key2" error:nil]);
     XCTAssertNotNil([_db assetWithKey:@"key3" error:nil]);
   });
 }

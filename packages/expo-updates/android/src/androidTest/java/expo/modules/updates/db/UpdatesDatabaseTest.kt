@@ -172,13 +172,15 @@ class UpdatesDatabaseTest {
 
     val deletedAssets = assetDao.deleteUnusedAssets()
 
+    // asset2 should NOT be in the returned list of rows (files to delete)...
     Assert.assertEquals(1, deletedAssets.size)
     for (deletedAsset in deletedAssets) {
       Assert.assertEquals("asset1", deletedAsset.key)
     }
 
+    // ...but it should have been deleted anyway
     Assert.assertNull(assetDao.loadAssetWithKey("asset1"))
-    Assert.assertNotNull(assetDao.loadAssetWithKey("asset2"))
+    Assert.assertNull(assetDao.loadAssetWithKey("asset2"))
     Assert.assertNotNull(assetDao.loadAssetWithKey("asset3"))
   }
 }
