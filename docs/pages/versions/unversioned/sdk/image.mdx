@@ -100,7 +100,7 @@ const { encode } = require('blurhash');
 const upload = multer();
 ```
 
-Assuming app is a variable that holds a reference to the Express server, an endpoint can be created that accepts an image and returns a JSON response containing the generated blurhash.
+Assuming the `app` is a variable that holds a reference to the Express server, an endpoint can be created that accepts an image and returns a JSON response containing the generated blurhash.
 
 ```js
 app.post('/blurhash', upload.single('image'), async (req, res) => {
