@@ -20,6 +20,9 @@ interface Options {
   type?: string;
   deviceId?: string;
   development?: boolean;
+  /**
+   * @deprecated use `projectId` instead.
+   */
   experienceId?: string;
   projectId?: string;
   applicationId?: string;
@@ -38,6 +41,12 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
     options.projectId ||
     Constants.expoConfig?.extra?.eas?.projectId ||
     Constants.manifest?.projectId;
+
+  if (!projectId) {
+    console.warn(
+      'Calling getExpoPushTokenAsync without specifying a projectId is deprecated and will no longer be supported in SDK 49+'
+    );
+  }
 
   if (!experienceId && !projectId) {
     throw new CodedError(

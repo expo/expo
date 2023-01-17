@@ -5,6 +5,9 @@ interface Options {
     type?: string;
     deviceId?: string;
     development?: boolean;
+    /**
+     * @deprecated use `projectId` instead.
+     */
     experienceId?: string;
     projectId?: string;
     applicationId?: string;
