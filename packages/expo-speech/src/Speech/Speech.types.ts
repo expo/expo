@@ -1,4 +1,12 @@
 export type SpeechEventCallback = (this: SpeechSynthesisUtterance, ev: SpeechSynthesisEvent) => any;
+export type NativeBoundaryEvent = { charIndex: number; charLength: number };
+
+/**
+ * Native-only callback with parameters related to the word about to be uttered.
+ * @platform ios
+ * @platform android
+ */
+export type NativeBoundaryEventCallback = (ev: NativeBoundaryEvent) => void;
 
 // @needsAudit @docsMissing
 export type SpeechOptions = {
@@ -48,9 +56,9 @@ export type SpeechOptions = {
   _voiceIndex?: number;
 
   /**
-   * A callback that is invoked when the spoken utterance reaches a word. Android and iOS only pass the `charIndex` and `charLength` of `SpeechSynthesisEvent`.
+   * A callback that is invoked when the spoken utterance reaches a word.
    */
-  onBoundary?: SpeechEventCallback | null;
+  onBoundary?: NativeBoundaryEventCallback | SpeechEventCallback | null;
   onMark?: SpeechEventCallback | null;
   onPause?: SpeechEventCallback | null;
   onResume?: SpeechEventCallback | null;
