@@ -37,13 +37,16 @@
   "jest": {
     "projects": [
       {
-        "preset": "jest-expo/ios"
+        "preset": "jest-expo/ios",
+        "testMatch": ["<rootDir>/src/**/__tests__/*.tsx"]
       },
       {
-        "preset": "jest-expo/android"
+        "preset": "jest-expo/android",
+        "testMatch": ["<rootDir>/src/**/__tests__/*.tsx"]
       },
       {
-        "preset": "jest-expo/web"
+        "preset": "jest-expo/web",
+        "testMatch": ["<rootDir>/src/**/__tests__/*.tsx"]
       }
     ]
   },
