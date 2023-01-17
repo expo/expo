@@ -272,17 +272,17 @@ export interface NativeConstants {
    */
   nativeBuildVersion: string | null;
   /**
-   * Classic manifest for Expo apps using classic updates as well as the updates embedded in builds.
+   * Classic manifest for Expo apps using classic updates and the updates embedded in builds.
    * Returns `null` in bare workflow and when `manifest2` is non-null.
-   * > Prefer using `Constants.expoConfig` instead, which behaves more consistently across classic
-   * updates and modern Expo Updates.
+   * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+   * and Update.
    */
   manifest: AppManifest | null;
   /**
-   * New manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
+   * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
    * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
-   * > Prefer using `Constants.expoConfig` instead, which behaves more consistently across classic
-   * updates and modern Expo Updates.
+   * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+   * and Update.
    */
   manifest2: Manifest | null;
   /**
