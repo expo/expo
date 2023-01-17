@@ -92,6 +92,9 @@ add_library(skshaper STATIC IMPORTED)
 set_property(TARGET skshaper PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskshaper.a")
 
 
+find_package(fbjni REQUIRED CONFIG)
+find_package(ReactAndroid REQUIRED CONFIG)
+
 find_library(
         LOG_LIB
         log
@@ -141,10 +144,10 @@ find_library(
 target_link_libraries(
         ${PACKAGE_NAME}
         ${LOG_LIB}
-        ${FBJNI_LIBRARY}
-        ${REACT_LIB}
-        ${JSI_LIB}
-        ${TURBOMODULES_LIB}
+        fbjni::fbjni
+        ReactAndroid::react_nativemodule_core
+        ReactAndroid::jsi
+        ReactAndroid::turbomodulejsijni
         ${SKIA_SVG_LIB}
         ${SKIA_SKSHAPER_LIB}
         ${SKIA_LIB}

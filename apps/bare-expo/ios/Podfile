@@ -14,7 +14,12 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
+prepare_react_native_project!
+
+flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+
 abstract_target 'BareExpoMain' do
+  pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
   use_expo_modules!(
@@ -23,6 +28,9 @@ abstract_target 'BareExpoMain' do
       'expo-dev-launcher',
     ],
   )
+
+  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -35,6 +43,7 @@ abstract_target 'BareExpoMain' do
     if installer.pods_project
       react_native_post_install(
         installer,
+        config[:reactNativePath],
         # Set `mac_catalyst_enabled` to `true` in order to apply patches
         # necessary for Mac Catalyst builds
         :mac_catalyst_enabled => false
@@ -78,7 +87,7 @@ abstract_target 'BareExpoMain' do
       #
       # Uncomment to opt-in to using Flipper
       # Note that if you have use_frameworks! enabled, Flipper will not work
-      # :flipper_configuration => !ENV['CI'] ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
+      # :flipper_configuration => flipper_config,
     )
   end
 

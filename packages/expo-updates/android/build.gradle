@@ -6,17 +6,7 @@ apply plugin: 'maven-publish'
 group = 'host.exp.exponent'
 version = '0.15.4'
 
-def ex_updates_native_debug_env = System.getenv("EX_UPDATES_NATIVE_DEBUG") ?: "0"
-def ex_updates_native_debug = ex_updates_native_debug_env == "1" ? "true" : "false"
-
-// For native updates debugging, override these properties
-if (findProject(":app")) {
-  def appProjectExt = project(":app").ext
-  if (appProjectExt.has("react") && ex_updates_native_debug) {
-    appProjectExt.react.bundleInDebug = true
-    appProjectExt.react.devDisabledInDebug = true
-  }
-}
+def ex_updates_native_debug = System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1" ? "true" : "false"
 
 apply from: "../scripts/create-manifest-android.gradle"
 
