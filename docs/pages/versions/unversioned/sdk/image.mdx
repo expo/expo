@@ -116,7 +116,7 @@ app.post('/blurhash', upload.single('image'), async (req, res) => {
   const componentY = req.body.componentY ?? 3;
 
   // We're converting provided image to a byte buffer.
-  // Sharp currently supported multiple common formats like JPEG, PNG, WebP, GIF, and AVIF.
+  // Sharp currently supports multiple common formats like JPEG, PNG, WebP, GIF, and AVIF.
   const { data, info } = await sharp(file.buffer).ensureAlpha().raw().toBuffer({
     resolveWithObject: true,
   });
