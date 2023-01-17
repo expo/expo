@@ -30,7 +30,7 @@ export interface PluginConfigType {
  */
 export interface PluginConfigTypeAndroid {
   /**
-   * Enable Fabric on Android
+   * Enable React Native new architecture mode on Android
    */
   newArchEnabled?: boolean;
 
@@ -64,7 +64,7 @@ export interface PluginConfigTypeAndroid {
  */
 export interface PluginConfigTypeIos {
   /**
-   * Enable Fabric on iOS
+   * Enable React Native new architecture mode on iOS
    */
   newArchEnabled?: boolean;
 

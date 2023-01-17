@@ -6,7 +6,7 @@ require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 
 # Libraries use this env flag to determine whether to add React-RCTFabric as a dependency.
-ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['expo.newArchEnabled'] ? '1' : '0'
+ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] ? '1' : '0'
 
 platform :ios, podfile_properties['ios.deploymentTarget'] || '13.0'
 install! 'cocoapods',
@@ -24,7 +24,7 @@ target 'HelloWorld' do
   use_react_native!(
     :path => config[:reactNativePath],
     :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
-    :fabric_enabled => flags[:fabric_enabled] || podfile_properties['expo.newArchEnabled'],
+    :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/..",
     #
